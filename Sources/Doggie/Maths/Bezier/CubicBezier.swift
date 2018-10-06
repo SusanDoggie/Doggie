@@ -84,17 +84,17 @@ extension CubicBezier: Encodable where Element : Encodable {
 extension CubicBezier {
     
     @inlinable
-    public func map(_ transform: (Element) throws -> Element) rethrows -> CubicBezier {
-        return try CubicBezier(transform(p0), transform(p1), transform(p2), transform(p3))
+    public func map(_ transform: (Element) -> Element) -> CubicBezier {
+        return CubicBezier(transform(p0), transform(p1), transform(p2), transform(p3))
     }
     
     @inlinable
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, p0)
-        try updateAccumulatingResult(&accumulator, p1)
-        try updateAccumulatingResult(&accumulator, p2)
-        try updateAccumulatingResult(&accumulator, p3)
+        updateAccumulatingResult(&accumulator, p0)
+        updateAccumulatingResult(&accumulator, p1)
+        updateAccumulatingResult(&accumulator, p2)
+        updateAccumulatingResult(&accumulator, p3)
         return accumulator
     }
 }

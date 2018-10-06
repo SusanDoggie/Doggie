@@ -33,11 +33,11 @@ public protocol Tensor : ScalarMultiplicative, Homomorphism, RandomAccessCollect
     
     func distance(to: Self) -> Scalar
     
-    func combined(_ other: Self, _ transform: (Scalar, Scalar) throws -> Scalar) rethrows -> Self
+    func combined(_ other: Self, _ transform: (Scalar, Scalar) -> Scalar) -> Self
     
-    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Scalar) throws -> Result) rethrows -> Result
+    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Scalar) -> Result) -> Result
     
-    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) throws -> ()) rethrows -> Result
+    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result
 }
 
 extension Tensor {
@@ -66,8 +66,8 @@ extension Tensor {
 extension Tensor {
     
     @_transparent
-    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Scalar) throws -> Result) rethrows -> Result {
-        return try self.reduce(into: initialResult) { $0 = try nextPartialResult($0, $1) }
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Scalar) -> Result) -> Result {
+        return self.reduce(into: initialResult) { $0 = nextPartialResult($0, $1) }
     }
 }
 

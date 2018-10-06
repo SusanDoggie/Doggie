@@ -163,22 +163,22 @@ extension CMYColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> CMYColorModel {
-        return try CMYColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
+    public func map(_ transform: (Double) -> Double) -> CMYColorModel {
+        return CMYColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, cyan)
-        try updateAccumulatingResult(&accumulator, magenta)
-        try updateAccumulatingResult(&accumulator, yellow)
+        updateAccumulatingResult(&accumulator, cyan)
+        updateAccumulatingResult(&accumulator, magenta)
+        updateAccumulatingResult(&accumulator, yellow)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: CMYColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> CMYColorModel {
-        return try CMYColorModel(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
+    public func combined(_ other: CMYColorModel, _ transform: (Double, Double) -> Double) -> CMYColorModel {
+        return CMYColorModel(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
     }
 }
 
@@ -267,21 +267,21 @@ extension CMYColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> CMYColorModel.FloatComponents {
-        return try CMYColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
+    public func map(_ transform: (Float) -> Float) -> CMYColorModel.FloatComponents {
+        return CMYColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, cyan)
-        try updateAccumulatingResult(&accumulator, magenta)
-        try updateAccumulatingResult(&accumulator, yellow)
+        updateAccumulatingResult(&accumulator, cyan)
+        updateAccumulatingResult(&accumulator, magenta)
+        updateAccumulatingResult(&accumulator, yellow)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: CMYColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> CMYColorModel.FloatComponents {
-        return try CMYColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
+    public func combined(_ other: CMYColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> CMYColorModel.FloatComponents {
+        return CMYColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
     }
 }

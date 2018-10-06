@@ -92,22 +92,22 @@ extension YCbCrColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> YCbCrColorModel {
-        return try YCbCrColorModel(y: transform(y), cb: transform(cb), cr: transform(cr))
+    public func map(_ transform: (Double) -> Double) -> YCbCrColorModel {
+        return YCbCrColorModel(y: transform(y), cb: transform(cb), cr: transform(cr))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, y)
-        try updateAccumulatingResult(&accumulator, cb)
-        try updateAccumulatingResult(&accumulator, cr)
+        updateAccumulatingResult(&accumulator, y)
+        updateAccumulatingResult(&accumulator, cb)
+        updateAccumulatingResult(&accumulator, cr)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: YCbCrColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> YCbCrColorModel {
-        return try YCbCrColorModel(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
+    public func combined(_ other: YCbCrColorModel, _ transform: (Double, Double) -> Double) -> YCbCrColorModel {
+        return YCbCrColorModel(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
     }
 }
 
@@ -196,21 +196,21 @@ extension YCbCrColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> YCbCrColorModel.FloatComponents {
-        return try YCbCrColorModel.FloatComponents(y: transform(y), cb: transform(cb), cr: transform(cr))
+    public func map(_ transform: (Float) -> Float) -> YCbCrColorModel.FloatComponents {
+        return YCbCrColorModel.FloatComponents(y: transform(y), cb: transform(cb), cr: transform(cr))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, y)
-        try updateAccumulatingResult(&accumulator, cb)
-        try updateAccumulatingResult(&accumulator, cr)
+        updateAccumulatingResult(&accumulator, y)
+        updateAccumulatingResult(&accumulator, cb)
+        updateAccumulatingResult(&accumulator, cr)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: YCbCrColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> YCbCrColorModel.FloatComponents {
-        return try YCbCrColorModel.FloatComponents(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
+    public func combined(_ other: YCbCrColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> YCbCrColorModel.FloatComponents {
+        return YCbCrColorModel.FloatComponents(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
     }
 }

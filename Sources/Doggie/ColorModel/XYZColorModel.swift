@@ -153,22 +153,22 @@ extension XYZColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> XYZColorModel {
-        return try XYZColorModel(x: transform(x), y: transform(y), z: transform(z))
+    public func map(_ transform: (Double) -> Double) -> XYZColorModel {
+        return XYZColorModel(x: transform(x), y: transform(y), z: transform(z))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, x)
-        try updateAccumulatingResult(&accumulator, y)
-        try updateAccumulatingResult(&accumulator, z)
+        updateAccumulatingResult(&accumulator, x)
+        updateAccumulatingResult(&accumulator, y)
+        updateAccumulatingResult(&accumulator, z)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: XYZColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> XYZColorModel {
-        return try XYZColorModel(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
+    public func combined(_ other: XYZColorModel, _ transform: (Double, Double) -> Double) -> XYZColorModel {
+        return XYZColorModel(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
     }
 }
 
@@ -257,22 +257,22 @@ extension XYZColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> XYZColorModel.FloatComponents {
-        return try XYZColorModel.FloatComponents(x: transform(x), y: transform(y), z: transform(z))
+    public func map(_ transform: (Float) -> Float) -> XYZColorModel.FloatComponents {
+        return XYZColorModel.FloatComponents(x: transform(x), y: transform(y), z: transform(z))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, x)
-        try updateAccumulatingResult(&accumulator, y)
-        try updateAccumulatingResult(&accumulator, z)
+        updateAccumulatingResult(&accumulator, x)
+        updateAccumulatingResult(&accumulator, y)
+        updateAccumulatingResult(&accumulator, z)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: XYZColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> XYZColorModel.FloatComponents {
-        return try XYZColorModel.FloatComponents(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
+    public func combined(_ other: XYZColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> XYZColorModel.FloatComponents {
+        return XYZColorModel.FloatComponents(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
     }
 }
 

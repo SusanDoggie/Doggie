@@ -48,21 +48,17 @@ extension ImageContext {
                 
                 var blender = blender
                 
-                let stride = 1 / Double(antialias)
+                let __transform = SDTransform.scale(1 / Double(antialias)) * _transform
                 let div = 1 / Double(antialias * antialias)
                 
-                for y in 0..<height {
-                    for x in 0..<width {
+                for y in stride(from: 0, to: height * antialias, by: antialias) {
+                    for x in stride(from: 0, to: width * antialias, by: antialias) {
                         blender.draw { () -> ColorPixel<Pixel.Model> in
-                            var _q = Point(x: x, y: y)
                             var pixel: T = 0
-                            for _ in 0..<antialias {
-                                var q = _q
-                                for _ in 0..<antialias {
-                                    pixel += stencil.pixel(q * _transform)
-                                    q.x += stride
+                            for j in 0..<antialias {
+                                for i in 0..<antialias {
+                                    pixel += stencil.pixel(Point(x: x + i, y: y + j) * __transform)
                                 }
-                                _q.y += stride
                             }
                             return ColorPixel(color: color, opacity: Double(pixel) * div)
                         }
@@ -107,21 +103,17 @@ extension ImageContext {
                 
                 var blender = blender
                 
-                let stride = 1 / Double(antialias)
+                let __transform = SDTransform.scale(1 / Double(antialias)) * _transform
                 let div = 1 / Double(antialias * antialias)
                 
-                for y in 0..<height {
-                    for x in 0..<width {
+                for y in stride(from: 0, to: height * antialias, by: antialias) {
+                    for x in stride(from: 0, to: width * antialias, by: antialias) {
                         blender.draw { () -> ColorPixel<Pixel.Model> in
-                            var _q = Point(x: x, y: y)
                             var pixel = ColorPixel<Pixel.Model>()
-                            for _ in 0..<antialias {
-                                var q = _q
-                                for _ in 0..<antialias {
-                                    pixel += texture.pixel(q * _transform)
-                                    q.x += stride
+                            for j in 0..<antialias {
+                                for i in 0..<antialias {
+                                    pixel += texture.pixel(Point(x: x + i, y: y + j) * __transform)
                                 }
-                                _q.y += stride
                             }
                             return pixel * div
                         }

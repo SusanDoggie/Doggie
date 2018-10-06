@@ -73,10 +73,10 @@ public protocol Homomorphism {
     
     associatedtype Element
     
-    func map(_ transform: (Element) throws -> Element) rethrows -> Self
+    func map(_ transform: (Element) -> Element) -> Self
 }
 
-extension Homomorphism where Self : ScalarMultiplicative, Element : ScalarMultiplicative, Self.Scalar == Element.Scalar {
+extension Homomorphism where Self : Additive, Element : Additive {
     
     @_transparent
     public static prefix func + (val: Self) -> Self {
@@ -86,6 +86,10 @@ extension Homomorphism where Self : ScalarMultiplicative, Element : ScalarMultip
     public static prefix func - (val: Self) -> Self {
         return val.map { -$0 }
     }
+}
+
+extension Homomorphism where Self : ScalarMultiplicative, Element : ScalarMultiplicative, Self.Scalar == Element.Scalar {
+    
     @_transparent
     public static func * (lhs: Scalar, rhs: Self) -> Self {
         return rhs.map { lhs * $0 }

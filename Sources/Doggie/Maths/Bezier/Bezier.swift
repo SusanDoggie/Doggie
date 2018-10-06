@@ -101,18 +101,18 @@ extension Bezier: Encodable where Element : Encodable {
 extension Bezier {
     
     @inlinable
-    public func map(_ transform: (Element) throws -> Element) rethrows -> Bezier {
-        return try Bezier(points.map(transform))
+    public func map(_ transform: (Element) -> Element) -> Bezier {
+        return Bezier(points.map(transform))
     }
     
     @inlinable
-    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) throws -> Result) rethrows -> Result {
-        return try points.reduce(initialResult, nextPartialResult)
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result {
+        return points.reduce(initialResult, nextPartialResult)
     }
     
     @inlinable
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result {
-        return try points.reduce(into: initialResult, updateAccumulatingResult)
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
+        return points.reduce(into: initialResult, updateAccumulatingResult)
     }
 }
 

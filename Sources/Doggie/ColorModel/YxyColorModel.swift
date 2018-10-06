@@ -130,22 +130,22 @@ extension YxyColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> YxyColorModel {
-        return try YxyColorModel(luminance: transform(luminance), x: transform(x), y: transform(y))
+    public func map(_ transform: (Double) -> Double) -> YxyColorModel {
+        return YxyColorModel(luminance: transform(luminance), x: transform(x), y: transform(y))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, luminance)
-        try updateAccumulatingResult(&accumulator, x)
-        try updateAccumulatingResult(&accumulator, y)
+        updateAccumulatingResult(&accumulator, luminance)
+        updateAccumulatingResult(&accumulator, x)
+        updateAccumulatingResult(&accumulator, y)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: YxyColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> YxyColorModel {
-        return try YxyColorModel(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
+    public func combined(_ other: YxyColorModel, _ transform: (Double, Double) -> Double) -> YxyColorModel {
+        return YxyColorModel(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
 }
 
@@ -234,21 +234,21 @@ extension YxyColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> YxyColorModel.FloatComponents {
-        return try YxyColorModel.FloatComponents(luminance: transform(luminance), x: transform(x), y: transform(y))
+    public func map(_ transform: (Float) -> Float) -> YxyColorModel.FloatComponents {
+        return YxyColorModel.FloatComponents(luminance: transform(luminance), x: transform(x), y: transform(y))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, luminance)
-        try updateAccumulatingResult(&accumulator, x)
-        try updateAccumulatingResult(&accumulator, y)
+        updateAccumulatingResult(&accumulator, luminance)
+        updateAccumulatingResult(&accumulator, x)
+        updateAccumulatingResult(&accumulator, y)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: YxyColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> YxyColorModel.FloatComponents {
-        return try YxyColorModel.FloatComponents(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
+    public func combined(_ other: YxyColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> YxyColorModel.FloatComponents {
+        return YxyColorModel.FloatComponents(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
 }

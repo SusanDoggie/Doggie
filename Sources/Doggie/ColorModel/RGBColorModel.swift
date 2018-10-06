@@ -254,22 +254,22 @@ extension RGBColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> RGBColorModel {
-        return try RGBColorModel(red: transform(red), green: transform(green), blue: transform(blue))
+    public func map(_ transform: (Double) -> Double) -> RGBColorModel {
+        return RGBColorModel(red: transform(red), green: transform(green), blue: transform(blue))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, red)
-        try updateAccumulatingResult(&accumulator, green)
-        try updateAccumulatingResult(&accumulator, blue)
+        updateAccumulatingResult(&accumulator, red)
+        updateAccumulatingResult(&accumulator, green)
+        updateAccumulatingResult(&accumulator, blue)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: RGBColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> RGBColorModel {
-        return try RGBColorModel(red: transform(self.red, other.red), green: transform(self.green, other.green), blue: transform(self.blue, other.blue))
+    public func combined(_ other: RGBColorModel, _ transform: (Double, Double) -> Double) -> RGBColorModel {
+        return RGBColorModel(red: transform(self.red, other.red), green: transform(self.green, other.green), blue: transform(self.blue, other.blue))
     }
 }
 
@@ -358,21 +358,21 @@ extension RGBColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> RGBColorModel.FloatComponents {
-        return try RGBColorModel.FloatComponents(red: transform(red), green: transform(green), blue: transform(blue))
+    public func map(_ transform: (Float) -> Float) -> RGBColorModel.FloatComponents {
+        return RGBColorModel.FloatComponents(red: transform(red), green: transform(green), blue: transform(blue))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, red)
-        try updateAccumulatingResult(&accumulator, green)
-        try updateAccumulatingResult(&accumulator, blue)
+        updateAccumulatingResult(&accumulator, red)
+        updateAccumulatingResult(&accumulator, green)
+        updateAccumulatingResult(&accumulator, blue)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: RGBColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> RGBColorModel.FloatComponents {
-        return try RGBColorModel.FloatComponents(red: transform(self.red, other.red), green: transform(self.green, other.green), blue: transform(self.blue, other.blue))
+    public func combined(_ other: RGBColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> RGBColorModel.FloatComponents {
+        return RGBColorModel.FloatComponents(red: transform(self.red, other.red), green: transform(self.green, other.green), blue: transform(self.blue, other.blue))
     }
 }

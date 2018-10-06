@@ -79,16 +79,16 @@ extension QuadBezier: Encodable where Element : Encodable {
 extension QuadBezier {
     
     @inlinable
-    public func map(_ transform: (Element) throws -> Element) rethrows -> QuadBezier {
-        return try QuadBezier(transform(p0), transform(p1), transform(p2))
+    public func map(_ transform: (Element) -> Element) -> QuadBezier {
+        return QuadBezier(transform(p0), transform(p1), transform(p2))
     }
     
     @inlinable
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, p0)
-        try updateAccumulatingResult(&accumulator, p1)
-        try updateAccumulatingResult(&accumulator, p2)
+        updateAccumulatingResult(&accumulator, p0)
+        updateAccumulatingResult(&accumulator, p1)
+        updateAccumulatingResult(&accumulator, p2)
         return accumulator
     }
 }

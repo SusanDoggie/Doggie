@@ -174,23 +174,23 @@ extension CMYKColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> CMYKColorModel {
-        return try CMYKColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow), black: transform(black))
+    public func map(_ transform: (Double) -> Double) -> CMYKColorModel {
+        return CMYKColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow), black: transform(black))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, cyan)
-        try updateAccumulatingResult(&accumulator, magenta)
-        try updateAccumulatingResult(&accumulator, yellow)
-        try updateAccumulatingResult(&accumulator, black)
+        updateAccumulatingResult(&accumulator, cyan)
+        updateAccumulatingResult(&accumulator, magenta)
+        updateAccumulatingResult(&accumulator, yellow)
+        updateAccumulatingResult(&accumulator, black)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: CMYKColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> CMYKColorModel {
-        return try CMYKColorModel(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow), black: transform(self.black, other.black))
+    public func combined(_ other: CMYKColorModel, _ transform: (Double, Double) -> Double) -> CMYKColorModel {
+        return CMYKColorModel(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow), black: transform(self.black, other.black))
     }
 }
 
@@ -286,22 +286,22 @@ extension CMYKColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> CMYKColorModel.FloatComponents {
-        return try CMYKColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow), black: transform(black))
+    public func map(_ transform: (Float) -> Float) -> CMYKColorModel.FloatComponents {
+        return CMYKColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow), black: transform(black))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, cyan)
-        try updateAccumulatingResult(&accumulator, magenta)
-        try updateAccumulatingResult(&accumulator, yellow)
-        try updateAccumulatingResult(&accumulator, black)
+        updateAccumulatingResult(&accumulator, cyan)
+        updateAccumulatingResult(&accumulator, magenta)
+        updateAccumulatingResult(&accumulator, yellow)
+        updateAccumulatingResult(&accumulator, black)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: CMYKColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> CMYKColorModel.FloatComponents {
-        return try CMYKColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow), black: transform(self.black, other.black))
+    public func combined(_ other: CMYKColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> CMYKColorModel.FloatComponents {
+        return CMYKColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow), black: transform(self.black, other.black))
     }
 }

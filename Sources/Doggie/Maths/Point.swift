@@ -138,20 +138,20 @@ extension Point : Tensor {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> Point {
-        return try Point(x: transform(x), y: transform(y))
+    public func map(_ transform: (Double) -> Double) -> Point {
+        return Point(x: transform(x), y: transform(y))
     }
     
     @_transparent
-    public func combined(_ other: Point, _ transform: (Double, Double) throws -> Double) rethrows -> Point {
-        return try Point(x: transform(self.x, other.x), y: transform(self.y, other.y))
+    public func combined(_ other: Point, _ transform: (Double, Double) -> Double) -> Point {
+        return Point(x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, x)
-        try updateAccumulatingResult(&accumulator, y)
+        updateAccumulatingResult(&accumulator, x)
+        updateAccumulatingResult(&accumulator, y)
         return accumulator
     }
 }

@@ -73,15 +73,15 @@ extension LineSegment: Encodable where Element : Encodable {
 extension LineSegment {
     
     @inlinable
-    public func map(_ transform: (Element) throws -> Element) rethrows -> LineSegment {
-        return try LineSegment(transform(p0), transform(p1))
+    public func map(_ transform: (Element) -> Element) -> LineSegment {
+        return LineSegment(transform(p0), transform(p1))
     }
     
     @inlinable
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, p0)
-        try updateAccumulatingResult(&accumulator, p1)
+        updateAccumulatingResult(&accumulator, p0)
+        updateAccumulatingResult(&accumulator, p1)
         return accumulator
     }
 }

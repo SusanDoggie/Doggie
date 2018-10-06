@@ -135,22 +135,22 @@ extension LabColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> LabColorModel {
-        return try LabColorModel(lightness: transform(lightness), a: transform(a), b: transform(b))
+    public func map(_ transform: (Double) -> Double) -> LabColorModel {
+        return LabColorModel(lightness: transform(lightness), a: transform(a), b: transform(b))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, lightness)
-        try updateAccumulatingResult(&accumulator, a)
-        try updateAccumulatingResult(&accumulator, b)
+        updateAccumulatingResult(&accumulator, lightness)
+        updateAccumulatingResult(&accumulator, a)
+        updateAccumulatingResult(&accumulator, b)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: LabColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> LabColorModel {
-        return try LabColorModel(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
+    public func combined(_ other: LabColorModel, _ transform: (Double, Double) -> Double) -> LabColorModel {
+        return LabColorModel(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
     }
 }
 
@@ -239,21 +239,21 @@ extension LabColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> LabColorModel.FloatComponents {
-        return try LabColorModel.FloatComponents(lightness: transform(lightness), a: transform(a), b: transform(b))
+    public func map(_ transform: (Float) -> Float) -> LabColorModel.FloatComponents {
+        return LabColorModel.FloatComponents(lightness: transform(lightness), a: transform(a), b: transform(b))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, lightness)
-        try updateAccumulatingResult(&accumulator, a)
-        try updateAccumulatingResult(&accumulator, b)
+        updateAccumulatingResult(&accumulator, lightness)
+        updateAccumulatingResult(&accumulator, a)
+        updateAccumulatingResult(&accumulator, b)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: LabColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> LabColorModel.FloatComponents {
-        return try LabColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
+    public func combined(_ other: LabColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> LabColorModel.FloatComponents {
+        return LabColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
     }
 }

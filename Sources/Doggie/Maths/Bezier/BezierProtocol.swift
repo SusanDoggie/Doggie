@@ -31,9 +31,9 @@ public protocol BezierProtocol : ScalarMultiplicative, Homomorphism, RandomAcces
     
     func eval(_ t: Scalar) -> Element
     
-    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) throws -> Result) rethrows -> Result
+    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result
     
-    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) throws -> ()) rethrows -> Result
+    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result
 }
 
 extension BezierProtocol {
@@ -66,8 +66,8 @@ extension BezierProtocol {
 extension BezierProtocol {
     
     @_transparent
-    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) throws -> Result) rethrows -> Result {
-        return try self.reduce(into: initialResult) { $0 = try nextPartialResult($0, $1) }
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result {
+        return self.reduce(into: initialResult) { $0 = nextPartialResult($0, $1) }
     }
 }
 

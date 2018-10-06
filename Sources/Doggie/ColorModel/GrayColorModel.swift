@@ -98,20 +98,20 @@ extension GrayColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> GrayColorModel {
-        return try GrayColorModel(white: transform(white))
+    public func map(_ transform: (Double) -> Double) -> GrayColorModel {
+        return GrayColorModel(white: transform(white))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, white)
+        updateAccumulatingResult(&accumulator, white)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: GrayColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> GrayColorModel {
-        return try GrayColorModel(white: transform(self.white, other.white))
+    public func combined(_ other: GrayColorModel, _ transform: (Double, Double) -> Double) -> GrayColorModel {
+        return GrayColorModel(white: transform(self.white, other.white))
     }
 }
 
@@ -186,19 +186,19 @@ extension GrayColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> GrayColorModel.FloatComponents {
-        return try GrayColorModel.FloatComponents(white: transform(white))
+    public func map(_ transform: (Float) -> Float) -> GrayColorModel.FloatComponents {
+        return GrayColorModel.FloatComponents(white: transform(white))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, white)
+        updateAccumulatingResult(&accumulator, white)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: GrayColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> GrayColorModel.FloatComponents {
-        return try GrayColorModel.FloatComponents(white: transform(self.white, other.white))
+    public func combined(_ other: GrayColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> GrayColorModel.FloatComponents {
+        return GrayColorModel.FloatComponents(white: transform(self.white, other.white))
     }
 }

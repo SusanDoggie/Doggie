@@ -134,22 +134,22 @@ extension LuvColorModel {
     }
     
     @_transparent
-    public func map(_ transform: (Double) throws -> Double) rethrows -> LuvColorModel {
-        return try LuvColorModel(lightness: transform(lightness), u: transform(u), v: transform(v))
+    public func map(_ transform: (Double) -> Double) -> LuvColorModel {
+        return LuvColorModel(lightness: transform(lightness), u: transform(u), v: transform(v))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, lightness)
-        try updateAccumulatingResult(&accumulator, u)
-        try updateAccumulatingResult(&accumulator, v)
+        updateAccumulatingResult(&accumulator, lightness)
+        updateAccumulatingResult(&accumulator, u)
+        updateAccumulatingResult(&accumulator, v)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: LuvColorModel, _ transform: (Double, Double) throws -> Double) rethrows -> LuvColorModel {
-        return try LuvColorModel(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
+    public func combined(_ other: LuvColorModel, _ transform: (Double, Double) -> Double) -> LuvColorModel {
+        return LuvColorModel(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
     }
 }
 
@@ -238,21 +238,21 @@ extension LuvColorModel.FloatComponents {
     }
     
     @_transparent
-    public func map(_ transform: (Float) throws -> Float) rethrows -> LuvColorModel.FloatComponents {
-        return try LuvColorModel.FloatComponents(lightness: transform(lightness), u: transform(u), v: transform(v))
+    public func map(_ transform: (Float) -> Float) -> LuvColorModel.FloatComponents {
+        return LuvColorModel.FloatComponents(lightness: transform(lightness), u: transform(u), v: transform(v))
     }
     
     @_transparent
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) throws -> ()) rethrows -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
-        try updateAccumulatingResult(&accumulator, lightness)
-        try updateAccumulatingResult(&accumulator, u)
-        try updateAccumulatingResult(&accumulator, v)
+        updateAccumulatingResult(&accumulator, lightness)
+        updateAccumulatingResult(&accumulator, u)
+        updateAccumulatingResult(&accumulator, v)
         return accumulator
     }
     
     @_transparent
-    public func combined(_ other: LuvColorModel.FloatComponents, _ transform: (Float, Float) throws -> Float) rethrows -> LuvColorModel.FloatComponents {
-        return try LuvColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
+    public func combined(_ other: LuvColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> LuvColorModel.FloatComponents {
+        return LuvColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
     }
 }
