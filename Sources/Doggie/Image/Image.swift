@@ -96,7 +96,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, Hashable {
                 self.pixels = image.pixels.map(option: option) { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }
             }
         } else {
-            self.pixels = image.colorSpace.convert(image.pixels, to: self.colorSpace, intent: intent, option: option)
+            self.pixels = image.colorSpace.convert(image.pixels, to: colorSpace, intent: intent, option: option)
         }
     }
 }
@@ -217,6 +217,56 @@ extension Image {
     @inlinable
     public var isOpaque: Bool {
         return pixels.allSatisfy { $0.isOpaque }
+    }
+    
+    @inlinable
+    public var visibleRect: Rect {
+        
+        return self.withUnsafeBufferPointer {
+            
+            guard let ptr = $0.baseAddress else { return Rect() }
+            
+            var top = 0
+            var left = 0
+            var bottom = 0
+            var right = 0
+            
+            loop: for y in (0..<height).reversed() {
+                let ptr = ptr + width * y
+                for x in 0..<width where ptr[x].opacity != 0 {
+                    break loop
+                }
+                bottom += 1
+            }
+            
+            let max_y = height - bottom
+            
+            loop: for y in 0..<max_y {
+                let ptr = ptr + width * y
+                for x in 0..<width where ptr[x].opacity != 0 {
+                    break loop
+                }
+                top += 1
+            }
+            
+            loop: for x in (0..<width).reversed() {
+                for y in top..<max_y where ptr[x + width * y].opacity != 0 {
+                    break loop
+                }
+                right += 1
+            }
+            
+            let max_x = width - right
+            
+            loop: for x in 0..<max_x {
+                for y in top..<max_y where ptr[x + width * y].opacity != 0 {
+                    break loop
+                }
+                left += 1
+            }
+            
+            return Rect(x: left, y: top, width: max_x - left, height: max_y - top)
+        }
     }
 }
 

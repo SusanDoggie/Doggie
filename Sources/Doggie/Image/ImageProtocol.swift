@@ -53,6 +53,8 @@ public protocol ImageProtocol {
     
     var isOpaque: Bool { get }
     
+    var visibleRect: Rect { get }
+    
     var option: MappedBufferOption { get }
     
     mutating func setOrientation(_ orientation: ImageOrientation)

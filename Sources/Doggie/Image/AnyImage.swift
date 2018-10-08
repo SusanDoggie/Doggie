@@ -36,6 +36,8 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     var isOpaque: Bool { get }
     
+    var visibleRect: Rect { get }
+    
     var option: MappedBufferOption { get }
     
     func color(x: Int, y: Int) -> AnyColor
@@ -213,6 +215,11 @@ extension AnyImage {
     @inlinable
     public var isOpaque: Bool {
         return _base.isOpaque
+    }
+    
+    @inlinable
+    public var visibleRect: Rect {
+        return _base.visibleRect
     }
     
     @inlinable
