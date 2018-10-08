@@ -36,7 +36,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, Hashable {
     public var colorSpace: ColorSpace<Pixel.Model>
     
     @usableFromInline
-    var cache = Cache<String>()
+    var cache = ImageCache()
     
     @inlinable
     init(width: Int, height: Int, resolution: Resolution, pixels: MappedBuffer<Pixel>, colorSpace: ColorSpace<Pixel.Model>) {
@@ -85,18 +85,39 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, Hashable {
     
     @inlinable
     public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default, option: MappedBufferOption) {
-        self.width = image.width
-        self.height = image.height
-        self.resolution = image.resolution
-        self.colorSpace = colorSpace
+        
         if image.colorSpace as? ColorSpace<Pixel.Model> == colorSpace {
+            
+            self.width = image.width
+            self.height = image.height
+            self.resolution = image.resolution
+            self.colorSpace = colorSpace
+            
             if let buffer = image.pixels as? MappedBuffer<Pixel> {
                 self.pixels = MappedBuffer(buffer, option: option)
             } else {
                 self.pixels = image.pixels.map(option: option) { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }
             }
         } else {
-            self.pixels = image.colorSpace.convert(image.pixels, to: colorSpace, intent: intent, option: option)
+            
+            let key = ImageCacheColorConversionKey<Pixel>(colorSpace: colorSpace, intent: intent)
+            
+            if let _image = image.cache.lck.synchronized(block: { image.cache.color_conversion[key] as? Image }) {
+                
+                self = _image
+                self.pixels = MappedBuffer(self.pixels, option: option)
+                
+            } else {
+                
+                self.width = image.width
+                self.height = image.height
+                self.resolution = image.resolution
+                self.colorSpace = colorSpace
+                self.pixels = image.colorSpace.convert(image.pixels, to: colorSpace, intent: intent, option: option)
+                
+                let _self = self
+                image.cache.lck.synchronized { image.cache.color_conversion[key] = _self }
+            }
         }
     }
 }
@@ -106,6 +127,94 @@ extension Image {
     @inlinable
     public init<P>(image: Image<P>) where P.Model == Pixel.Model {
         self.init(image: image, option: image.option)
+    }
+}
+
+@usableFromInline
+class ImageCache {
+    
+    @usableFromInline
+    let lck = SDLock()
+    
+    var isOpaque: Bool?
+    var visibleRect: Rect?
+    
+    @usableFromInline
+    var color_conversion: [AnyHashable : Any]
+    
+    var table: [String : Any]
+    
+    @usableFromInline
+    init() {
+        self.isOpaque = nil
+        self.visibleRect = nil
+        self.color_conversion = [:]
+        self.table = [:]
+    }
+}
+
+@usableFromInline
+struct ImageCacheColorConversionKey<Pixel: ColorPixelProtocol> : Hashable {
+    
+    @usableFromInline
+    let colorSpace: ColorSpace<Pixel.Model>
+    
+    @usableFromInline
+    let intent: RenderingIntent
+    
+    @usableFromInline
+    init(colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent) {
+        self.colorSpace = colorSpace
+        self.intent = intent
+    }
+    
+    @inlinable
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(Pixel.self))
+        hasher.combine(colorSpace)
+        hasher.combine(intent)
+    }
+}
+
+extension Image {
+    
+    @inlinable
+    var cacheId: ObjectIdentifier {
+        return ObjectIdentifier(cache)
+    }
+}
+
+extension ImageCache {
+    
+    subscript<Value>(key: String) -> Value? {
+        get {
+            return lck.synchronized { table[key] as? Value }
+        }
+        set {
+            lck.synchronized { table[key] = newValue }
+        }
+    }
+    
+    subscript<Value>(key: String, default defaultValue: @autoclosure () -> Value) -> Value {
+        get {
+            return self[key] ?? defaultValue()
+        }
+        set {
+            self[key] = newValue
+        }
+    }
+    
+    subscript<Value>(key: String, body: () -> Value) -> Value {
+        
+        return lck.synchronized {
+            
+            if let object = table[key], let value = object as? Value {
+                return value
+            }
+            let value = body()
+            table[key] = value
+            return value
+        }
     }
 }
 
@@ -126,7 +235,7 @@ extension Image {
     
     @inlinable
     public static func ==(lhs: Image, rhs: Image) -> Bool {
-        return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resolution == rhs.resolution && lhs.colorSpace == rhs.colorSpace && (lhs.cache.identifier == rhs.cache.identifier || lhs.pixels == rhs.pixels)
+        return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resolution == rhs.resolution && lhs.colorSpace == rhs.colorSpace && (lhs.cacheId == rhs.cacheId || lhs.pixels == rhs.pixels)
     }
 }
 
@@ -162,7 +271,7 @@ extension Image {
     
     @inlinable
     public mutating func setColor<C: ColorProtocol>(x: Int, y: Int, color: C) {
-        cache = Cache()
+        cache = ImageCache()
         precondition(0..<width ~= x && 0..<height ~= y)
         pixels[width * y + x] = Pixel(color.convert(to: colorSpace, intent: .default))
     }
@@ -191,7 +300,7 @@ extension Image {
     @inlinable
     public mutating func setWhiteBalance(_ white: Point) {
         
-        cache = Cache()
+        cache = ImageCache()
         
         let colorSpace = self.colorSpace
         
@@ -214,58 +323,68 @@ extension Image {
 
 extension Image {
     
-    @inlinable
     public var isOpaque: Bool {
-        return pixels.allSatisfy { $0.isOpaque }
+        return cache.lck.synchronized {
+            if cache.isOpaque == nil {
+                cache.isOpaque = pixels.allSatisfy { $0.isOpaque }
+            }
+            return cache.isOpaque!
+        }
     }
     
-    @inlinable
     public var visibleRect: Rect {
         
-        return self.withUnsafeBufferPointer {
+        return cache.lck.synchronized {
             
-            guard let ptr = $0.baseAddress else { return Rect() }
-            
-            var top = 0
-            var left = 0
-            var bottom = 0
-            var right = 0
-            
-            loop: for y in (0..<height).reversed() {
-                let ptr = ptr + width * y
-                for x in 0..<width where ptr[x].opacity != 0 {
-                    break loop
+            if cache.visibleRect == nil {
+                
+                cache.visibleRect = self.withUnsafeBufferPointer {
+                    
+                    guard let ptr = $0.baseAddress else { return Rect() }
+                    
+                    var top = 0
+                    var left = 0
+                    var bottom = 0
+                    var right = 0
+                    
+                    loop: for y in (0..<height).reversed() {
+                        let ptr = ptr + width * y
+                        for x in 0..<width where ptr[x].opacity != 0 {
+                            break loop
+                        }
+                        bottom += 1
+                    }
+                    
+                    let max_y = height - bottom
+                    
+                    loop: for y in 0..<max_y {
+                        let ptr = ptr + width * y
+                        for x in 0..<width where ptr[x].opacity != 0 {
+                            break loop
+                        }
+                        top += 1
+                    }
+                    
+                    loop: for x in (0..<width).reversed() {
+                        for y in top..<max_y where ptr[x + width * y].opacity != 0 {
+                            break loop
+                        }
+                        right += 1
+                    }
+                    
+                    let max_x = width - right
+                    
+                    loop: for x in 0..<max_x {
+                        for y in top..<max_y where ptr[x + width * y].opacity != 0 {
+                            break loop
+                        }
+                        left += 1
+                    }
+                    
+                    return Rect(x: left, y: top, width: max_x - left, height: max_y - top)
                 }
-                bottom += 1
             }
-            
-            let max_y = height - bottom
-            
-            loop: for y in 0..<max_y {
-                let ptr = ptr + width * y
-                for x in 0..<width where ptr[x].opacity != 0 {
-                    break loop
-                }
-                top += 1
-            }
-            
-            loop: for x in (0..<width).reversed() {
-                for y in top..<max_y where ptr[x + width * y].opacity != 0 {
-                    break loop
-                }
-                right += 1
-            }
-            
-            let max_x = width - right
-            
-            loop: for x in 0..<max_x {
-                for y in top..<max_y where ptr[x + width * y].opacity != 0 {
-                    break loop
-                }
-                left += 1
-            }
-            
-            return Rect(x: left, y: top, width: max_x - left, height: max_y - top)
+            return cache.visibleRect!
         }
     }
 }
@@ -284,7 +403,7 @@ extension Image {
     public mutating func setOrientation(_ orientation: ImageOrientation) {
         
         switch orientation {
-        case .up, .upMirrored, .down, .downMirrored: cache = Cache()
+        case .up, .upMirrored, .down, .downMirrored: cache = ImageCache()
         case .leftMirrored, .left, .rightMirrored, .right: self = self.transposed()
         }
         
@@ -373,7 +492,7 @@ extension Image {
     
     @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
-        cache = Cache()
+        cache = ImageCache()
         return try pixels.withUnsafeMutableBufferPointer(body)
     }
     
@@ -384,7 +503,7 @@ extension Image {
     
     @inlinable
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
-        cache = Cache()
+        cache = ImageCache()
         return try pixels.withUnsafeMutableBytes(body)
     }
 }
