@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <playground version='6.0' target-platform='macos'>
     <pages>
-        <page name='Atomic'/>
         <page name='Benchmark'/>
         <page name='Doggie'/>
-        <page name='Path'/>
-        <page name='MappedBuffer'/>
         <page name='Font'/>
-        <page name='Polynomial'/>
         <page name='Blending'/>
         <page name='Clip'/>
         <page name='Circle'/>
@@ -21,5 +17,6 @@
         <page name='Stroke'/>
         <page name='TensorPatchView'/>
         <page name='3D'/>
+        <page name='Gradient'/>
     </pages>
 </playground>

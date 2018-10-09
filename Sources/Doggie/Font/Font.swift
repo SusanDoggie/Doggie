@@ -25,10 +25,11 @@
 
 protocol FontFaceBase {
     
+    var isVariationSelectors: Bool { get }
+    
     func shape(glyph: Int) -> [Shape.Component]
-    var isUVS: Bool { get }
-    func glyph(unicode: UnicodeScalar) -> Int
-    func glyph(unicode: UnicodeScalar, _ uvs: UnicodeScalar) -> Int?
+    func glyph(with unicode: UnicodeScalar) -> Int
+    func glyph(with unicode: UnicodeScalar, _ uvs: UnicodeScalar) -> Int?
     func metric(glyph: Int) -> Font.Metric
     func verticalMetric(glyph: Int) -> Font.Metric
     
@@ -174,7 +175,7 @@ extension Font {
 extension Font {
     
     private func _shape(glyph: Int) -> [Shape.Component] {
-        precondition(0..<base.numberOfGlyphs ~= glyph, "Index out of range.")
+        let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         return cache.lck.synchronized {
             if cache.glyphs[glyph] == nil {
                 cache.glyphs[glyph] = base.shape(glyph: glyph).filter { $0.count != 0 }
@@ -207,51 +208,47 @@ extension Font {
     }
     
     public func glyph(with unicode: UnicodeScalar) -> Int {
-        let glyph = base.glyph(unicode: unicode)
-        return 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
+        return base.glyph(with: unicode)
     }
     
     public func glyphs<S: Sequence>(with unicodes: S) -> [Int] where S.Element == UnicodeScalar {
         
-        if base.isUVS {
+        guard base.isVariationSelectors else { return unicodes.map { base.glyph(with: $0) } }
+        
+        var last: UnicodeScalar?
+        var result: [Int] = []
+        result.reserveCapacity(unicodes.underestimatedCount)
+        
+        for unicode in unicodes {
             
-            var last: UnicodeScalar?
-            var result: [Int] = []
-            result.reserveCapacity(unicodes.underestimatedCount)
-            
-            for unicode in unicodes {
-                
-                if let _last = last {
-                    if let glyph = base.glyph(unicode: _last, unicode) {
-                        result.append(glyph)
-                        last = nil
-                    } else {
-                        result.append(self.glyph(with: _last))
-                        last = unicode
-                    }
+            if let _last = last {
+                if let glyph = base.glyph(with: _last, unicode) {
+                    result.append(glyph)
+                    last = nil
                 } else {
+                    result.append(base.glyph(with: _last))
                     last = unicode
                 }
+            } else {
+                last = unicode
             }
-            
-            if let last = last {
-                result.append(self.glyph(with: last))
-            }
-            
-            return result
         }
         
-        return unicodes.map { glyph(with: $0) }
+        if let last = last {
+            result.append(base.glyph(with: last))
+        }
+        
+        return result
     }
     
     public func metric(forGlyph glyph: Int) -> Metric {
-        precondition(0..<base.numberOfGlyphs ~= glyph, "Index out of range.")
+        let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         let metric = base.metric(glyph: glyph)
         return Metric(advance: metric.advance * _pointScale, bearing: metric.bearing * _pointScale)
     }
     
     public func verticalMetric(forGlyph glyph: Int) -> Metric {
-        precondition(0..<base.numberOfGlyphs ~= glyph, "Index out of range.")
+        let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         let metric = base.verticalMetric(glyph: glyph)
         return Metric(advance: metric.advance * _pointScale, bearing: metric.bearing * _pointScale)
     }
@@ -286,6 +283,10 @@ extension Font {
     
     private var _pointScale: Double {
         return pointSize / unitsPerEm
+    }
+    
+    public var isVariationSelectors: Bool {
+        return base.isVariationSelectors
     }
     
     public var ascender: Double {
