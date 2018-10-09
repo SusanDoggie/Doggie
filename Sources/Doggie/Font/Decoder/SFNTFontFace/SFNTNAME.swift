@@ -75,11 +75,11 @@ struct SFNTNAME : ByteDecodable, RandomAccessCollection {
         return record.count
     }
     
-    subscript(position: Int) -> String {
+    subscript(position: Int) -> String? {
         
         precondition(position < count, "Index out of range.")
         
-        guard let encoding = self.record[position].platform.encoding else { return "" }
+        guard let encoding = self.record[position].platform.encoding else { return nil }
         
         let offset = Int(self.record[position].offset)
         let length = Int(self.record[position].length)
@@ -88,7 +88,7 @@ struct SFNTNAME : ByteDecodable, RandomAccessCollection {
         
         guard strData.count == length else { return "" }
         
-        return String(data: strData, encoding: encoding) ?? ""
+        return String(data: strData, encoding: encoding)
     }
     
 }

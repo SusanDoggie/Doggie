@@ -145,7 +145,7 @@ extension SFNTFontFace {
         if let result = cmap.uvs?.mapping(unicode.value, uvs.value) {
             switch result {
             case .none: return nil
-            case .default: return self.glyph(unicode: unicode)
+            case .default: return self.glyph(with: unicode)
             case let .glyph(id): return Int(id)
             }
         }

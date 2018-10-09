@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-protocol FontFaceBase {
+public protocol FontFaceBase {
     
     var isVariationSelectors: Bool { get }
     
@@ -86,24 +86,25 @@ protocol FontFaceBase {
 public struct Font {
     
     private let details: Details
-    private let base: FontFaceBase
+    public let base: FontFaceBase
+    public var pointSize: Double
+    
     private let cache: Cache
     
-    public var pointSize: Double = 0
-    
-    init?(_ base: FontFaceBase) {
+    public init?(_ base: FontFaceBase) {
         guard base.numberOfGlyphs > 0 else { return nil }
         guard let details = Details(base) else { return nil }
         self.details = details
         self.base = base
+        self.pointSize = 0
         self.cache = Cache()
     }
     
     public init(font: Font, size: Double) {
         self.details = font.details
         self.base = font.base
-        self.cache = font.cache
         self.pointSize = size
+        self.cache = font.cache
     }
 }
 
