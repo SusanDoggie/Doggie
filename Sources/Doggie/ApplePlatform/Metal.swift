@@ -37,5 +37,29 @@ extension MTLDevice {
     }
 }
 
+@available(OSX 10.13, iOS 8.0, tvOS 9.0, *)
+extension MTLDevice {
+    
+    private func makeTexture<T>(_ buffer: MappedBuffer<T>, descriptor: MTLTextureDescriptor, options: MTLResourceOptions) -> MTLTexture? {
+        guard let buffer = self.makeBuffer(buffer, options: options) else { return nil }
+        return buffer.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: descriptor.width * MemoryLayout<T>.stride)
+    }
+    
+    public func makeTexture(_ image: Image<RGBA32ColorPixel>, options: MTLResourceOptions = []) -> MTLTexture? {
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: image.width, height: image.height, mipmapped: false)
+        return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
+    }
+    
+    public func makeTexture(_ image: Image<RGBA64ColorPixel>, options: MTLResourceOptions = []) -> MTLTexture? {
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Uint, width: image.width, height: image.height, mipmapped: false)
+        return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
+    }
+    
+    public func makeTexture(_ image: Image<FloatColorPixel<RGBColorModel>>, options: MTLResourceOptions = []) -> MTLTexture? {
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: image.width, height: image.height, mipmapped: false)
+        return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
+    }
+}
+
 #endif
 
