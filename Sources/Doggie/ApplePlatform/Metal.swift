@@ -59,6 +59,21 @@ extension MTLDevice {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: image.width, height: image.height, mipmapped: false)
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
+    
+    public func makeTexture(_ texture: Texture<RGBA32ColorPixel>, options: MTLResourceOptions = []) -> MTLTexture? {
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: texture.width, height: texture.height, mipmapped: false)
+        return self.makeTexture(texture.pixels, descriptor: descriptor, options: options)
+    }
+    
+    public func makeTexture(_ texture: Texture<RGBA64ColorPixel>, options: MTLResourceOptions = []) -> MTLTexture? {
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Uint, width: texture.width, height: texture.height, mipmapped: false)
+        return self.makeTexture(texture.pixels, descriptor: descriptor, options: options)
+    }
+    
+    public func makeTexture(_ texture: Texture<FloatColorPixel<RGBColorModel>>, options: MTLResourceOptions = []) -> MTLTexture? {
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: texture.width, height: texture.height, mipmapped: false)
+        return self.makeTexture(texture.pixels, descriptor: descriptor, options: options)
+    }
 }
 
 #endif
