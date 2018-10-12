@@ -34,7 +34,7 @@ public struct YxyColorModel : ColorModelProtocol {
         return 3
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -44,19 +44,19 @@ public struct YxyColorModel : ColorModelProtocol {
     public var x: Double
     public var y: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.luminance = 0
         self.x = 0
         self.y = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(luminance: Double, point: Point) {
         self.init(luminance: luminance, x: point.x, y: point.y)
     }
     
-    @_transparent
+    @inline(__always)
     public init(luminance: Double, x: Double, y: Double) {
         self.luminance = luminance
         self.x = x
@@ -119,22 +119,22 @@ extension YxyColorModel {
 
 extension YxyColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(luminance, x, y)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(luminance, x, y)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> YxyColorModel {
         return YxyColorModel(luminance: transform(luminance), x: transform(x), y: transform(y))
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, luminance)
@@ -143,7 +143,7 @@ extension YxyColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: YxyColorModel, _ transform: (Double, Double) -> Double) -> YxyColorModel {
         return YxyColorModel(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
@@ -151,7 +151,7 @@ extension YxyColorModel {
 
 extension YxyColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.luminance = Double(floatComponents.luminance)
         self.x = Double(floatComponents.x)
@@ -185,14 +185,14 @@ extension YxyColorModel {
         public var x: Float
         public var y: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.luminance = 0
             self.x = 0
             self.y = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(luminance: Float, x: Float, y: Float) {
             self.luminance = luminance
             self.x = x
@@ -223,22 +223,22 @@ extension YxyColorModel {
 
 extension YxyColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(luminance, x, y)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(luminance, x, y)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> YxyColorModel.FloatComponents {
         return YxyColorModel.FloatComponents(luminance: transform(luminance), x: transform(x), y: transform(y))
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, luminance)
@@ -247,7 +247,7 @@ extension YxyColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: YxyColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> YxyColorModel.FloatComponents {
         return YxyColorModel.FloatComponents(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
     }

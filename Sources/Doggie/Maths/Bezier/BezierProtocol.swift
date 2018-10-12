@@ -65,7 +65,7 @@ extension BezierProtocol {
 
 extension BezierProtocol {
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result {
         return self.reduce(into: initialResult) { $0 = nextPartialResult($0, $1) }
     }
@@ -73,11 +73,11 @@ extension BezierProtocol {
 
 extension BezierProtocol {
     
-    @_transparent
+    @inline(__always)
     public static func += (lhs: inout Self, rhs: Self) {
         lhs = lhs + rhs
     }
-    @_transparent
+    @inline(__always)
     public static func -= (lhs: inout Self, rhs: Self) {
         lhs = lhs - rhs
     }
@@ -85,11 +85,11 @@ extension BezierProtocol {
 
 extension BezierProtocol where Element == Point {
     
-    @_transparent
+    @inline(__always)
     public static func * (lhs: Self, rhs: SDTransform) -> Self {
         return lhs.map { $0 * rhs }
     }
-    @_transparent
+    @inline(__always)
     public static func *= (lhs: inout Self, rhs: SDTransform) {
         lhs = lhs * rhs
     }
@@ -97,11 +97,11 @@ extension BezierProtocol where Element == Point {
 
 extension BezierProtocol where Element == Vector {
     
-    @_transparent
+    @inline(__always)
     public static func * (lhs: Self, rhs: Matrix) -> Self {
         return lhs.map { $0 * rhs }
     }
-    @_transparent
+    @inline(__always)
     public static func *= (lhs: inout Self, rhs: Matrix) {
         lhs = lhs * rhs
     }

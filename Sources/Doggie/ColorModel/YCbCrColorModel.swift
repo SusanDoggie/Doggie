@@ -34,7 +34,7 @@ public struct YCbCrColorModel : ColorModelProtocol {
         return 3
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -44,14 +44,14 @@ public struct YCbCrColorModel : ColorModelProtocol {
     public var cb: Double
     public var cr: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.y = 0
         self.cb = 0
         self.cr = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(y: Double, cb: Double, cr: Double) {
         self.y = y
         self.cb = cb
@@ -81,22 +81,22 @@ public struct YCbCrColorModel : ColorModelProtocol {
 
 extension YCbCrColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(y, cb, cr)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(y, cb, cr)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> YCbCrColorModel {
         return YCbCrColorModel(y: transform(y), cb: transform(cb), cr: transform(cr))
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, y)
@@ -105,7 +105,7 @@ extension YCbCrColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: YCbCrColorModel, _ transform: (Double, Double) -> Double) -> YCbCrColorModel {
         return YCbCrColorModel(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
     }
@@ -113,7 +113,7 @@ extension YCbCrColorModel {
 
 extension YCbCrColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.y = Double(floatComponents.y)
         self.cb = Double(floatComponents.cb)
@@ -147,14 +147,14 @@ extension YCbCrColorModel {
         public var cb: Float
         public var cr: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.y = 0
             self.cb = 0
             self.cr = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(y: Float, cb: Float, cr: Float) {
             self.y = y
             self.cb = cb
@@ -185,22 +185,22 @@ extension YCbCrColorModel {
 
 extension YCbCrColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(y, cb, cr)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(y, cb, cr)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> YCbCrColorModel.FloatComponents {
         return YCbCrColorModel.FloatComponents(y: transform(y), cb: transform(cb), cr: transform(cr))
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, y)
@@ -209,7 +209,7 @@ extension YCbCrColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: YCbCrColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> YCbCrColorModel.FloatComponents {
         return YCbCrColorModel.FloatComponents(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
     }

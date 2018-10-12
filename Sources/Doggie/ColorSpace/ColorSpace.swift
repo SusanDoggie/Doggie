@@ -264,8 +264,8 @@ extension ColorSpace {
 
 extension CIEXYZColorSpace {
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     func _intentMatrix(to other: CIEXYZColorSpace, chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm, intent: RenderingIntent) -> Matrix {
         switch intent {
         case .perceptual: return self.chromaticAdaptationMatrix(to: other, chromaticAdaptationAlgorithm)
@@ -291,8 +291,8 @@ extension ColorSpace {
 
 extension ColorSpace {
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     func convert<S, R>(_ color: MappedBuffer<S>, to other: ColorSpace<R.Model>, intent: RenderingIntent, option: MappedBufferOption) -> MappedBuffer<R> where S: ColorPixelProtocol, S.Model == Model, R: ColorPixelProtocol {
         let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
         return color.map(option: option) { R(color: other.convertFromXYZ(self.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }

@@ -28,18 +28,18 @@ public struct Radius : Hashable {
     public var x: Double
     public var y: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.x = 0
         self.y = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
-    @_transparent
+    @inline(__always)
     public init(x: Int, y: Int) {
         self.x = Double(x)
         self.y = Double(y)
@@ -56,14 +56,14 @@ extension Radius: CustomStringConvertible {
 
 extension Radius : Codable {
     
-    @_transparent
+    @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         self.x = try container.decode(Double.self)
         self.y = try container.decode(Double.self)
     }
     
-    @_transparent
+    @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(x)

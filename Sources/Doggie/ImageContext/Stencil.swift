@@ -36,19 +36,22 @@ struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
     @usableFromInline
     var height: Int
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     init(stencil: UnsafeMutablePointer<Int16>, width: Int, height: Int) {
         self.stencil = stencil
         self.width = width
         self.height = height
     }
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     static func + (lhs: ShapeRasterizeBuffer, rhs: Int) -> ShapeRasterizeBuffer {
         return ShapeRasterizeBuffer(stencil: lhs.stencil + rhs, width: lhs.width, height: lhs.height)
     }
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     static func += (lhs: inout ShapeRasterizeBuffer, rhs: Int) {
         lhs.stencil += rhs
     }

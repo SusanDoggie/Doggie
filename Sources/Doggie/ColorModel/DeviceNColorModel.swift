@@ -34,7 +34,7 @@ public struct Device2ColorModel : ColorModelProtocol {
         return 2
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -43,13 +43,13 @@ public struct Device2ColorModel : ColorModelProtocol {
     public var component_0: Double
     public var component_1: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double) {
         self.component_0 = component_0
         self.component_1 = component_1
@@ -76,24 +76,24 @@ public struct Device2ColorModel : ColorModelProtocol {
 
 extension Device2ColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(component_0, component_1)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(component_0, component_1)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device2ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         return Device2ColorModel(component_0, component_1)
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -101,7 +101,7 @@ extension Device2ColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device2ColorModel, _ transform: (Double, Double) -> Double) -> Device2ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -120,7 +120,7 @@ public struct Device3ColorModel : ColorModelProtocol {
         return 3
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -130,14 +130,14 @@ public struct Device3ColorModel : ColorModelProtocol {
     public var component_1: Double
     public var component_2: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
         self.component_2 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double) {
         self.component_0 = component_0
         self.component_1 = component_1
@@ -167,17 +167,17 @@ public struct Device3ColorModel : ColorModelProtocol {
 
 extension Device3ColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(component_0, component_1, component_2)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(component_0, component_1, component_2)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device3ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -185,7 +185,7 @@ extension Device3ColorModel {
         return Device3ColorModel(component_0, component_1, component_2)
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -194,7 +194,7 @@ extension Device3ColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device3ColorModel, _ transform: (Double, Double) -> Double) -> Device3ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -214,7 +214,7 @@ public struct Device4ColorModel : ColorModelProtocol {
         return 4
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -225,7 +225,7 @@ public struct Device4ColorModel : ColorModelProtocol {
     public var component_2: Double
     public var component_3: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -233,7 +233,7 @@ public struct Device4ColorModel : ColorModelProtocol {
         self.component_3 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double, _ component_3: Double) {
         self.component_0 = component_0
         self.component_1 = component_1
@@ -266,17 +266,17 @@ public struct Device4ColorModel : ColorModelProtocol {
 
 extension Device4ColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(component_0, component_1, component_2, component_3)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(component_0, component_1, component_2, component_3)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device4ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -285,7 +285,7 @@ extension Device4ColorModel {
         return Device4ColorModel(component_0, component_1, component_2, component_3)
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -295,7 +295,7 @@ extension Device4ColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device4ColorModel, _ transform: (Double, Double) -> Double) -> Device4ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -316,7 +316,7 @@ public struct Device5ColorModel : ColorModelProtocol {
         return 5
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -328,7 +328,7 @@ public struct Device5ColorModel : ColorModelProtocol {
     public var component_3: Double
     public var component_4: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -337,7 +337,7 @@ public struct Device5ColorModel : ColorModelProtocol {
         self.component_4 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double) {
         self.component_0 = component_0
@@ -374,7 +374,7 @@ public struct Device5ColorModel : ColorModelProtocol {
 
 extension Device5ColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -382,7 +382,7 @@ extension Device5ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -390,7 +390,7 @@ extension Device5ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device5ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -403,7 +403,7 @@ extension Device5ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -414,7 +414,7 @@ extension Device5ColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device5ColorModel, _ transform: (Double, Double) -> Double) -> Device5ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -439,7 +439,7 @@ public struct Device6ColorModel : ColorModelProtocol {
         return 6
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -452,7 +452,7 @@ public struct Device6ColorModel : ColorModelProtocol {
     public var component_4: Double
     public var component_5: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -462,7 +462,7 @@ public struct Device6ColorModel : ColorModelProtocol {
         self.component_5 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double) {
         self.component_0 = component_0
@@ -502,7 +502,7 @@ public struct Device6ColorModel : ColorModelProtocol {
 
 extension Device6ColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -510,7 +510,7 @@ extension Device6ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -518,7 +518,7 @@ extension Device6ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device6ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -532,7 +532,7 @@ extension Device6ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -544,7 +544,7 @@ extension Device6ColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device6ColorModel, _ transform: (Double, Double) -> Double) -> Device6ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -570,7 +570,7 @@ public struct Device7ColorModel : ColorModelProtocol {
         return 7
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -584,7 +584,7 @@ public struct Device7ColorModel : ColorModelProtocol {
     public var component_5: Double
     public var component_6: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -595,7 +595,7 @@ public struct Device7ColorModel : ColorModelProtocol {
         self.component_6 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double) {
@@ -639,7 +639,7 @@ public struct Device7ColorModel : ColorModelProtocol {
 
 extension Device7ColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -648,7 +648,7 @@ extension Device7ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -657,7 +657,7 @@ extension Device7ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device7ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -673,7 +673,7 @@ extension Device7ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -686,7 +686,7 @@ extension Device7ColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device7ColorModel, _ transform: (Double, Double) -> Double) -> Device7ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -714,7 +714,7 @@ public struct Device8ColorModel : ColorModelProtocol {
         return 8
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -729,7 +729,7 @@ public struct Device8ColorModel : ColorModelProtocol {
     public var component_6: Double
     public var component_7: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -741,7 +741,7 @@ public struct Device8ColorModel : ColorModelProtocol {
         self.component_7 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double) {
@@ -788,7 +788,7 @@ public struct Device8ColorModel : ColorModelProtocol {
 
 extension Device8ColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -797,7 +797,7 @@ extension Device8ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -806,7 +806,7 @@ extension Device8ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device8ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -823,7 +823,7 @@ extension Device8ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -837,7 +837,7 @@ extension Device8ColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device8ColorModel, _ transform: (Double, Double) -> Double) -> Device8ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -866,7 +866,7 @@ public struct Device9ColorModel : ColorModelProtocol {
         return 9
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -882,7 +882,7 @@ public struct Device9ColorModel : ColorModelProtocol {
     public var component_7: Double
     public var component_8: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -895,7 +895,7 @@ public struct Device9ColorModel : ColorModelProtocol {
         self.component_8 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double) {
@@ -945,7 +945,7 @@ public struct Device9ColorModel : ColorModelProtocol {
 
 extension Device9ColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -954,7 +954,7 @@ extension Device9ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -963,7 +963,7 @@ extension Device9ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device9ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -981,7 +981,7 @@ extension Device9ColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -996,7 +996,7 @@ extension Device9ColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device9ColorModel, _ transform: (Double, Double) -> Double) -> Device9ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1026,7 +1026,7 @@ public struct DeviceAColorModel : ColorModelProtocol {
         return 10
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1043,7 +1043,7 @@ public struct DeviceAColorModel : ColorModelProtocol {
     public var component_8: Double
     public var component_9: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1057,7 +1057,7 @@ public struct DeviceAColorModel : ColorModelProtocol {
         self.component_9 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1111,7 +1111,7 @@ public struct DeviceAColorModel : ColorModelProtocol {
 
 extension DeviceAColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -1121,7 +1121,7 @@ extension DeviceAColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -1131,7 +1131,7 @@ extension DeviceAColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceAColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1151,7 +1151,7 @@ extension DeviceAColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1167,7 +1167,7 @@ extension DeviceAColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceAColorModel, _ transform: (Double, Double) -> Double) -> DeviceAColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1199,7 +1199,7 @@ public struct DeviceBColorModel : ColorModelProtocol {
         return 11
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1217,7 +1217,7 @@ public struct DeviceBColorModel : ColorModelProtocol {
     public var component_9: Double
     public var component_10: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1232,7 +1232,7 @@ public struct DeviceBColorModel : ColorModelProtocol {
         self.component_10 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1289,7 +1289,7 @@ public struct DeviceBColorModel : ColorModelProtocol {
 
 extension DeviceBColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -1299,7 +1299,7 @@ extension DeviceBColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -1309,7 +1309,7 @@ extension DeviceBColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceBColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1330,7 +1330,7 @@ extension DeviceBColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1347,7 +1347,7 @@ extension DeviceBColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceBColorModel, _ transform: (Double, Double) -> Double) -> DeviceBColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1380,7 +1380,7 @@ public struct DeviceCColorModel : ColorModelProtocol {
         return 12
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1399,7 +1399,7 @@ public struct DeviceCColorModel : ColorModelProtocol {
     public var component_10: Double
     public var component_11: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1415,7 +1415,7 @@ public struct DeviceCColorModel : ColorModelProtocol {
         self.component_11 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1475,7 +1475,7 @@ public struct DeviceCColorModel : ColorModelProtocol {
 
 extension DeviceCColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -1485,7 +1485,7 @@ extension DeviceCColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -1495,7 +1495,7 @@ extension DeviceCColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceCColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1517,7 +1517,7 @@ extension DeviceCColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1535,7 +1535,7 @@ extension DeviceCColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceCColorModel, _ transform: (Double, Double) -> Double) -> DeviceCColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1569,7 +1569,7 @@ public struct DeviceDColorModel : ColorModelProtocol {
         return 13
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1589,7 +1589,7 @@ public struct DeviceDColorModel : ColorModelProtocol {
     public var component_11: Double
     public var component_12: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1606,7 +1606,7 @@ public struct DeviceDColorModel : ColorModelProtocol {
         self.component_12 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1670,7 +1670,7 @@ public struct DeviceDColorModel : ColorModelProtocol {
 
 extension DeviceDColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -1681,7 +1681,7 @@ extension DeviceDColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -1692,7 +1692,7 @@ extension DeviceDColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceDColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1716,7 +1716,7 @@ extension DeviceDColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1735,7 +1735,7 @@ extension DeviceDColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceDColorModel, _ transform: (Double, Double) -> Double) -> DeviceDColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1771,7 +1771,7 @@ public struct DeviceEColorModel : ColorModelProtocol {
         return 14
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1792,7 +1792,7 @@ public struct DeviceEColorModel : ColorModelProtocol {
     public var component_12: Double
     public var component_13: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1810,7 +1810,7 @@ public struct DeviceEColorModel : ColorModelProtocol {
         self.component_13 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1877,7 +1877,7 @@ public struct DeviceEColorModel : ColorModelProtocol {
 
 extension DeviceEColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -1888,7 +1888,7 @@ extension DeviceEColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -1899,7 +1899,7 @@ extension DeviceEColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceEColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1924,7 +1924,7 @@ extension DeviceEColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1944,7 +1944,7 @@ extension DeviceEColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceEColorModel, _ transform: (Double, Double) -> Double) -> DeviceEColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1981,7 +1981,7 @@ public struct DeviceFColorModel : ColorModelProtocol {
         return 15
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -2003,7 +2003,7 @@ public struct DeviceFColorModel : ColorModelProtocol {
     public var component_13: Double
     public var component_14: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -2022,7 +2022,7 @@ public struct DeviceFColorModel : ColorModelProtocol {
         self.component_14 = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -2092,7 +2092,7 @@ public struct DeviceFColorModel : ColorModelProtocol {
 
 extension DeviceFColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(
             component_0, component_1, component_2,
@@ -2103,7 +2103,7 @@ extension DeviceFColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(
             component_0, component_1, component_2,
@@ -2114,7 +2114,7 @@ extension DeviceFColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceFColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2140,7 +2140,7 @@ extension DeviceFColorModel {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2161,7 +2161,7 @@ extension DeviceFColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceFColorModel, _ transform: (Double, Double) -> Double) -> DeviceFColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2192,7 +2192,7 @@ extension DeviceFColorModel {
 
 extension Device2ColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -2223,13 +2223,13 @@ extension Device2ColorModel {
         public var component_0: Float
         public var component_1: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float) {
             self.component_0 = component_0
             self.component_1 = component_1
@@ -2257,24 +2257,24 @@ extension Device2ColorModel {
 
 extension Device2ColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(component_0, component_1)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(component_0, component_1)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> Device2ColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         return Device2ColorModel.FloatComponents(component_0, component_1)
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2282,7 +2282,7 @@ extension Device2ColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device2ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device2ColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2292,7 +2292,7 @@ extension Device2ColorModel.FloatComponents {
 
 extension Device3ColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -2326,14 +2326,14 @@ extension Device3ColorModel {
         public var component_1: Float
         public var component_2: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
             self.component_2 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float) {
             self.component_0 = component_0
             self.component_1 = component_1
@@ -2364,17 +2364,17 @@ extension Device3ColorModel {
 
 extension Device3ColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(component_0, component_1, component_2)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(component_0, component_1, component_2)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> Device3ColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2382,7 +2382,7 @@ extension Device3ColorModel.FloatComponents {
         return Device3ColorModel.FloatComponents(component_0, component_1, component_2)
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2391,7 +2391,7 @@ extension Device3ColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device3ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device3ColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2402,7 +2402,7 @@ extension Device3ColorModel.FloatComponents {
 
 extension Device4ColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -2439,7 +2439,7 @@ extension Device4ColorModel {
         public var component_2: Float
         public var component_3: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -2447,7 +2447,7 @@ extension Device4ColorModel {
             self.component_3 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float, _ component_3: Float) {
             self.component_0 = component_0
             self.component_1 = component_1
@@ -2481,17 +2481,17 @@ extension Device4ColorModel {
 
 extension Device4ColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(component_0, component_1, component_2, component_3)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(component_0, component_1, component_2, component_3)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> Device4ColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2500,7 +2500,7 @@ extension Device4ColorModel.FloatComponents {
         return Device4ColorModel.FloatComponents(component_0, component_1, component_2, component_3)
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2510,7 +2510,7 @@ extension Device4ColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device4ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device4ColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2522,7 +2522,7 @@ extension Device4ColorModel.FloatComponents {
 
 extension Device5ColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -2565,7 +2565,7 @@ extension Device5ColorModel {
         public var component_3: Float
         public var component_4: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -2574,7 +2574,7 @@ extension Device5ColorModel {
             self.component_4 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float) {
             self.component_0 = component_0
@@ -2612,7 +2612,7 @@ extension Device5ColorModel {
 
 extension Device5ColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -2620,7 +2620,7 @@ extension Device5ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -2628,7 +2628,7 @@ extension Device5ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> Device5ColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2641,7 +2641,7 @@ extension Device5ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2652,7 +2652,7 @@ extension Device5ColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device5ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device5ColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2668,7 +2668,7 @@ extension Device5ColorModel.FloatComponents {
 
 extension Device6ColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -2714,7 +2714,7 @@ extension Device6ColorModel {
         public var component_4: Float
         public var component_5: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -2724,7 +2724,7 @@ extension Device6ColorModel {
             self.component_5 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float) {
             self.component_0 = component_0
@@ -2765,7 +2765,7 @@ extension Device6ColorModel {
 
 extension Device6ColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -2773,7 +2773,7 @@ extension Device6ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -2781,7 +2781,7 @@ extension Device6ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> Device6ColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2795,7 +2795,7 @@ extension Device6ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2807,7 +2807,7 @@ extension Device6ColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device6ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device6ColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2824,7 +2824,7 @@ extension Device6ColorModel.FloatComponents {
 
 extension Device7ColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -2874,7 +2874,7 @@ extension Device7ColorModel {
         public var component_5: Float
         public var component_6: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -2885,7 +2885,7 @@ extension Device7ColorModel {
             self.component_6 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float,
                     _ component_6: Float) {
@@ -2930,7 +2930,7 @@ extension Device7ColorModel {
 
 extension Device7ColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -2939,7 +2939,7 @@ extension Device7ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -2948,7 +2948,7 @@ extension Device7ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> Device7ColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2964,7 +2964,7 @@ extension Device7ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2977,7 +2977,7 @@ extension Device7ColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device7ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device7ColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2996,7 +2996,7 @@ extension Device7ColorModel.FloatComponents {
 
 extension Device8ColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -3049,7 +3049,7 @@ extension Device8ColorModel {
         public var component_6: Float
         public var component_7: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3061,7 +3061,7 @@ extension Device8ColorModel {
             self.component_7 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float,
                     _ component_6: Float, _ component_7: Float) {
@@ -3109,7 +3109,7 @@ extension Device8ColorModel {
 
 extension Device8ColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -3118,7 +3118,7 @@ extension Device8ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -3127,7 +3127,7 @@ extension Device8ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> Device8ColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3144,7 +3144,7 @@ extension Device8ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3158,7 +3158,7 @@ extension Device8ColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device8ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device8ColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -3178,7 +3178,7 @@ extension Device8ColorModel.FloatComponents {
 
 extension Device9ColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -3234,7 +3234,7 @@ extension Device9ColorModel {
         public var component_7: Float
         public var component_8: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3247,7 +3247,7 @@ extension Device9ColorModel {
             self.component_8 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float,
                     _ component_6: Float, _ component_7: Float, _ component_8: Float) {
@@ -3298,7 +3298,7 @@ extension Device9ColorModel {
 
 extension Device9ColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -3307,7 +3307,7 @@ extension Device9ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -3316,7 +3316,7 @@ extension Device9ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> Device9ColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3334,7 +3334,7 @@ extension Device9ColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3349,7 +3349,7 @@ extension Device9ColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: Device9ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device9ColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -3370,7 +3370,7 @@ extension Device9ColorModel.FloatComponents {
 
 extension DeviceAColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -3430,7 +3430,7 @@ extension DeviceAColorModel {
         public var component_8: Float
         public var component_9: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3444,7 +3444,7 @@ extension DeviceAColorModel {
             self.component_9 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float,
                     _ component_6: Float, _ component_7: Float, _ component_8: Float,
@@ -3499,7 +3499,7 @@ extension DeviceAColorModel {
 
 extension DeviceAColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -3509,7 +3509,7 @@ extension DeviceAColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -3519,7 +3519,7 @@ extension DeviceAColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> DeviceAColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3539,7 +3539,7 @@ extension DeviceAColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3555,7 +3555,7 @@ extension DeviceAColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceAColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceAColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -3578,7 +3578,7 @@ extension DeviceAColorModel.FloatComponents {
 
 extension DeviceBColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -3641,7 +3641,7 @@ extension DeviceBColorModel {
         public var component_9: Float
         public var component_10: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3656,7 +3656,7 @@ extension DeviceBColorModel {
             self.component_10 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float,
                     _ component_6: Float, _ component_7: Float, _ component_8: Float,
@@ -3714,7 +3714,7 @@ extension DeviceBColorModel {
 
 extension DeviceBColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -3724,7 +3724,7 @@ extension DeviceBColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -3734,7 +3734,7 @@ extension DeviceBColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> DeviceBColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3755,7 +3755,7 @@ extension DeviceBColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3772,7 +3772,7 @@ extension DeviceBColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceBColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceBColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -3796,7 +3796,7 @@ extension DeviceBColorModel.FloatComponents {
 
 extension DeviceCColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -3862,7 +3862,7 @@ extension DeviceCColorModel {
         public var component_10: Float
         public var component_11: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3878,7 +3878,7 @@ extension DeviceCColorModel {
             self.component_11 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float,
                     _ component_6: Float, _ component_7: Float, _ component_8: Float,
@@ -3939,7 +3939,7 @@ extension DeviceCColorModel {
 
 extension DeviceCColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -3949,7 +3949,7 @@ extension DeviceCColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -3959,7 +3959,7 @@ extension DeviceCColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> DeviceCColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3981,7 +3981,7 @@ extension DeviceCColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3999,7 +3999,7 @@ extension DeviceCColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceCColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceCColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -4024,7 +4024,7 @@ extension DeviceCColorModel.FloatComponents {
 
 extension DeviceDColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -4094,7 +4094,7 @@ extension DeviceDColorModel {
         public var component_11: Float
         public var component_12: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -4111,7 +4111,7 @@ extension DeviceDColorModel {
             self.component_12 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float,
                     _ component_6: Float, _ component_7: Float, _ component_8: Float,
@@ -4176,7 +4176,7 @@ extension DeviceDColorModel {
 
 extension DeviceDColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -4187,7 +4187,7 @@ extension DeviceDColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -4198,7 +4198,7 @@ extension DeviceDColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> DeviceDColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -4222,7 +4222,7 @@ extension DeviceDColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -4241,7 +4241,7 @@ extension DeviceDColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceDColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceDColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -4268,7 +4268,7 @@ extension DeviceDColorModel.FloatComponents {
 
 extension DeviceEColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -4341,7 +4341,7 @@ extension DeviceEColorModel {
         public var component_12: Float
         public var component_13: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -4359,7 +4359,7 @@ extension DeviceEColorModel {
             self.component_13 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float,
                     _ component_6: Float, _ component_7: Float, _ component_8: Float,
@@ -4427,7 +4427,7 @@ extension DeviceEColorModel {
 
 extension DeviceEColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -4438,7 +4438,7 @@ extension DeviceEColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -4449,7 +4449,7 @@ extension DeviceEColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> DeviceEColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -4474,7 +4474,7 @@ extension DeviceEColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -4494,7 +4494,7 @@ extension DeviceEColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceEColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceEColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -4522,7 +4522,7 @@ extension DeviceEColorModel.FloatComponents {
 
 extension DeviceFColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
@@ -4598,7 +4598,7 @@ extension DeviceFColorModel {
         public var component_13: Float
         public var component_14: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -4617,7 +4617,7 @@ extension DeviceFColorModel {
             self.component_14 = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
                     _ component_3: Float, _ component_4: Float, _ component_5: Float,
                     _ component_6: Float, _ component_7: Float, _ component_8: Float,
@@ -4688,7 +4688,7 @@ extension DeviceFColorModel {
 
 extension DeviceFColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(
             component_0, component_1, component_2,
@@ -4699,7 +4699,7 @@ extension DeviceFColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(
             component_0, component_1, component_2,
@@ -4710,7 +4710,7 @@ extension DeviceFColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> DeviceFColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -4736,7 +4736,7 @@ extension DeviceFColorModel.FloatComponents {
         )
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -4757,7 +4757,7 @@ extension DeviceFColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: DeviceFColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceFColorModel.FloatComponents {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)

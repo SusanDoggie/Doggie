@@ -59,8 +59,8 @@ extension ColorCompositingMode {
 
 extension ColorCompositingMode {
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     func mix<T : ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
         
         switch self {
@@ -84,7 +84,7 @@ extension ColorCompositingMode {
 
 extension ColorPixelProtocol {
     
-    @_transparent
+    @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model {
         
         let d_alpha = self.opacity
@@ -102,7 +102,7 @@ extension ColorPixelProtocol {
         }
     }
     
-    @_transparent
+    @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
         
         let d_alpha = self.opacity
@@ -123,17 +123,17 @@ extension ColorPixelProtocol {
 
 extension FloatColorPixel {
     
-    @_transparent
+    @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> FloatColorPixel where C.Model == Model {
         return blended(source: source, compositingMode: compositingMode, blending: { Float(blending(Double($0), Double($1))) })
     }
     
-    @_transparent
+    @inline(__always)
     public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blending: (Float, Float) -> Float) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blending: blending)
     }
     
-    @_transparent
+    @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Float, Float) -> Float) -> FloatColorPixel where C.Model == Model {
         
         let source = FloatColorPixel(source)
@@ -153,7 +153,7 @@ extension FloatColorPixel {
         }
     }
     
-    @_transparent
+    @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> FloatColorPixel where C.Model == Model {
         
         let source = FloatColorPixel(source)

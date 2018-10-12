@@ -34,7 +34,7 @@ public struct CMYKColorModel : ColorModelProtocol {
         return 4
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -45,7 +45,7 @@ public struct CMYKColorModel : ColorModelProtocol {
     public var yellow: Double
     public var black: Double
     
-    @_transparent
+    @inline(__always)
     public init(cyan: Double, magenta: Double, yellow: Double, black: Double) {
         self.cyan = cyan
         self.magenta = magenta
@@ -78,7 +78,7 @@ public struct CMYKColorModel : ColorModelProtocol {
 
 extension CMYKColorModel {
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.cyan = 0
         self.magenta = 0
@@ -163,22 +163,22 @@ extension CMYKColorModel {
 
 extension CMYKColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(cyan, magenta, yellow, black)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(cyan, magenta, yellow, black)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> CMYKColorModel {
         return CMYKColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow), black: transform(black))
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, cyan)
@@ -188,7 +188,7 @@ extension CMYKColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: CMYKColorModel, _ transform: (Double, Double) -> Double) -> CMYKColorModel {
         return CMYKColorModel(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow), black: transform(self.black, other.black))
     }
@@ -196,7 +196,7 @@ extension CMYKColorModel {
 
 extension CMYKColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.cyan = Double(floatComponents.cyan)
         self.magenta = Double(floatComponents.magenta)
@@ -233,7 +233,7 @@ extension CMYKColorModel {
         public var yellow: Float
         public var black: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.cyan = 0
             self.magenta = 0
@@ -241,7 +241,7 @@ extension CMYKColorModel {
             self.black = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(cyan: Float, magenta: Float, yellow: Float, black: Float) {
             self.cyan = cyan
             self.magenta = magenta
@@ -275,22 +275,22 @@ extension CMYKColorModel {
 
 extension CMYKColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(cyan, magenta, yellow, black)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(cyan, magenta, yellow, black)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> CMYKColorModel.FloatComponents {
         return CMYKColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow), black: transform(black))
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, cyan)
@@ -300,7 +300,7 @@ extension CMYKColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: CMYKColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> CMYKColorModel.FloatComponents {
         return CMYKColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow), black: transform(self.black, other.black))
     }

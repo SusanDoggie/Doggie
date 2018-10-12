@@ -34,7 +34,7 @@ public struct LabColorModel : ColorModelProtocol {
         return 3
     }
     
-    @_transparent
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         switch i {
@@ -50,20 +50,20 @@ public struct LabColorModel : ColorModelProtocol {
     /// The b color component.
     public var b: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.lightness = 0
         self.a = 0
         self.b = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(lightness: Double, a: Double, b: Double) {
         self.lightness = lightness
         self.a = a
         self.b = b
     }
-    @_transparent
+    @inline(__always)
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
         self.a = chroma * cos(2 * Double.pi * hue)
@@ -124,22 +124,22 @@ extension LabColorModel {
 
 extension LabColorModel {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Double {
         return Swift.min(lightness, a, b)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Double {
         return Swift.max(lightness, a, b)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> LabColorModel {
         return LabColorModel(lightness: transform(lightness), a: transform(a), b: transform(b))
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, lightness)
@@ -148,7 +148,7 @@ extension LabColorModel {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: LabColorModel, _ transform: (Double, Double) -> Double) -> LabColorModel {
         return LabColorModel(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
     }
@@ -156,7 +156,7 @@ extension LabColorModel {
 
 extension LabColorModel {
     
-    @_transparent
+    @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.lightness = Double(floatComponents.lightness)
         self.a = Double(floatComponents.a)
@@ -190,14 +190,14 @@ extension LabColorModel {
         public var a: Float
         public var b: Float
         
-        @_transparent
+        @inline(__always)
         public init() {
             self.lightness = 0
             self.a = 0
             self.b = 0
         }
         
-        @_transparent
+        @inline(__always)
         public init(lightness: Float, a: Float, b: Float) {
             self.lightness = lightness
             self.a = a
@@ -228,22 +228,22 @@ extension LabColorModel {
 
 extension LabColorModel.FloatComponents {
     
-    @_transparent
+    @inline(__always)
     public func min() -> Float {
         return Swift.min(lightness, a, b)
     }
     
-    @_transparent
+    @inline(__always)
     public func max() -> Float {
         return Swift.max(lightness, a, b)
     }
     
-    @_transparent
+    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> LabColorModel.FloatComponents {
         return LabColorModel.FloatComponents(lightness: transform(lightness), a: transform(a), b: transform(b))
     }
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, lightness)
@@ -252,7 +252,7 @@ extension LabColorModel.FloatComponents {
         return accumulator
     }
     
-    @_transparent
+    @inline(__always)
     public func combined(_ other: LabColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> LabColorModel.FloatComponents {
         return LabColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
     }

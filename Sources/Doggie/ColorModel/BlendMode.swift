@@ -64,20 +64,20 @@ extension ColorBlendMode {
 
 extension ColorBlendMode {
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func Multiply<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return destination * source
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func Screen<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return destination + source - destination * source
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func Overlay<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         
         if destination < 0.5 {
@@ -88,32 +88,32 @@ extension ColorBlendMode {
         return 1 - 2 * u * v
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func Darken<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return min(destination, source)
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func Lighten<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return max(destination, source)
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func ColorDodge<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return source < 1 ? min(1, destination / (1 - source)) : 1
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func ColorBurn<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return source > 0 ? 1 - min(1, (1 - destination) / source) : 0
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func SoftLight<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         
         let db: T
@@ -134,32 +134,32 @@ extension ColorBlendMode {
         return destination - u * (db - destination)
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func HardLight<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return Overlay(source, destination)
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func Difference<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return abs(destination - source)
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func Exclusion<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return destination + source - 2 * destination * source
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func PlusDarker<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return max(0, 1 - ((1 - destination) + (1 - source)))
     }
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     static func PlusLighter<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
         return min(1, destination + source)
     }
@@ -167,12 +167,12 @@ extension ColorBlendMode {
 
 extension ColorModelProtocol {
     
-    @_transparent
+    @inline(__always)
     public mutating func blend(source: Self, blendMode: ColorBlendMode = .default) {
         self = self.blended(source: source, blendMode: blendMode)
     }
     
-    @_transparent
+    @inline(__always)
     public func blended(source: Self, blendMode: ColorBlendMode = .default) -> Self {
         switch blendMode {
         case .normal: return source
@@ -195,12 +195,12 @@ extension ColorModelProtocol {
 
 extension FloatColorComponents {
     
-    @_transparent
+    @inline(__always)
     public mutating func blend(source: Self, blendMode: ColorBlendMode = .default) {
         self = self.blended(source: source, blendMode: blendMode)
     }
     
-    @_transparent
+    @inline(__always)
     public func blended(source: Self, blendMode: ColorBlendMode = .default) -> Self {
         switch blendMode {
         case .normal: return source

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_transparent
+@inline(__always)
 public func sort<T>(_ a: inout T, _ b: inout T, _ c: inout T, compare: (T, T) -> Bool) {
     if compare(b, a) { swap(&a, &b) }
     if compare(c, b) { swap(&b, &c) }

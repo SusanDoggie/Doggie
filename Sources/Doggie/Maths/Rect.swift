@@ -28,18 +28,18 @@ public struct Size: Hashable {
     public var width: Double
     public var height: Double
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.width = 0
         self.height = 0
     }
     
-    @_transparent
+    @inline(__always)
     public init(width: Double, height: Double) {
         self.width = width
         self.height = height
     }
-    @_transparent
+    @inline(__always)
     public init(width: Int, height: Int) {
         self.width = Double(width)
         self.height = Double(height)
@@ -56,14 +56,14 @@ extension Size: CustomStringConvertible {
 
 extension Size : Codable {
     
-    @_transparent
+    @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         self.width = try container.decode(Double.self)
         self.height = try container.decode(Double.self)
     }
     
-    @_transparent
+    @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(width)
@@ -73,7 +73,7 @@ extension Size : Codable {
 
 extension Size {
     
-    @_transparent
+    @inline(__always)
     public func aspectFit(_ bound: Size) -> Size {
         let u = width * bound.height
         let v = bound.width * height
@@ -84,7 +84,7 @@ extension Size {
         }
     }
     
-    @_transparent
+    @inline(__always)
     public func aspectFill(_ bound: Size) -> Size {
         let u = width * bound.height
         let v = bound.width * height
@@ -102,53 +102,53 @@ extension Size : ScalarMultiplicative {
     
 }
 
-@_transparent
+@inline(__always)
 public prefix func +(val: Size) -> Size {
     return val
 }
-@_transparent
+@inline(__always)
 public prefix func -(val: Size) -> Size {
     return Size(width: -val.width, height: -val.height)
 }
-@_transparent
+@inline(__always)
 public func +(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
 }
-@_transparent
+@inline(__always)
 public func -(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 }
 
-@_transparent
+@inline(__always)
 public func *(lhs: Double, rhs: Size) -> Size {
     return Size(width: lhs * rhs.width, height: lhs * rhs.height)
 }
-@_transparent
+@inline(__always)
 public func *(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width * rhs, height: lhs.height * rhs)
 }
 
-@_transparent
+@inline(__always)
 public func /(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width / rhs, height: lhs.height / rhs)
 }
 
-@_transparent
+@inline(__always)
 public func *= (lhs: inout Size, rhs: Double) {
     lhs.width *= rhs
     lhs.height *= rhs
 }
-@_transparent
+@inline(__always)
 public func /= (lhs: inout Size, rhs: Double) {
     lhs.width /= rhs
     lhs.height /= rhs
 }
-@_transparent
+@inline(__always)
 public func += (lhs: inout Size, rhs: Size) {
     lhs.width += rhs.width
     lhs.height += rhs.height
 }
-@_transparent
+@inline(__always)
 public func -= (lhs: inout Size, rhs: Size) {
     lhs.width -= rhs.width
     lhs.height -= rhs.height
@@ -159,25 +159,25 @@ public struct Rect: Hashable {
     public var origin : Point
     public var size : Size
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.origin = Point()
         self.size = Size()
     }
     
-    @_transparent
+    @inline(__always)
     public init(origin: Point, size: Size) {
         self.origin = origin
         self.size = size
     }
     
-    @_transparent
+    @inline(__always)
     public init(x: Double, y: Double, width: Double, height: Double) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
     
-    @_transparent
+    @inline(__always)
     public init(x: Int, y: Int, width: Int, height: Int) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
@@ -194,14 +194,14 @@ extension Rect: CustomStringConvertible {
 
 extension Rect : Codable {
     
-    @_transparent
+    @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         self.origin = try container.decode(Point.self)
         self.size = try container.decode(Size.self)
     }
     
-    @_transparent
+    @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(origin)
@@ -310,14 +310,14 @@ extension Rect {
 
 extension Rect {
     
-    @_transparent
+    @inline(__always)
     public func aspectFit(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFit(bound.size))
         rect.center = bound.center
         return rect
     }
     
-    @_transparent
+    @inline(__always)
     public func aspectFill(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFill(bound.size))
         rect.center = bound.center
@@ -340,7 +340,7 @@ extension Rect {
         return [a, b, c, d]
     }
     
-    @_transparent
+    @inline(__always)
     public static func bound<S : Sequence>(_ points: S) -> Rect where S.Element == Point {
         
         var minX = 0.0
@@ -367,7 +367,7 @@ extension Rect {
 
 extension Rect {
     
-    @_transparent
+    @inline(__always)
     public func union(_ other : Rect) -> Rect {
         let minX = min(self.minX, other.minX)
         let minY = min(self.minY, other.minY)
@@ -375,7 +375,7 @@ extension Rect {
         let maxY = max(self.maxY, other.maxY)
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
-    @_transparent
+    @inline(__always)
     public func intersect(_ other : Rect) -> Rect {
         let minX = max(self.minX, other.minX)
         let minY = max(self.minY, other.minY)
@@ -383,31 +383,31 @@ extension Rect {
         let _height = max(0, min(self.maxY, other.maxY) - minY)
         return Rect(x: minX, y: minY, width: _width, height: _height)
     }
-    @_transparent
+    @inline(__always)
     public func inset(dx: Double, dy: Double) -> Rect {
         let rect = self.standardized
         return Rect(x: rect.x + dx, y: rect.y + dy, width: rect.width - 2 * dx, height: rect.height - 2 * dy)
     }
-    @_transparent
+    @inline(__always)
     public func inset(top: Double, left: Double, right: Double, bottom: Double) -> Rect {
         let rect = self.standardized
         return Rect(x: rect.x + left, y: rect.y + top, width: rect.width - left - right, height: rect.height - top - bottom)
     }
-    @_transparent
+    @inline(__always)
     public func offset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
     }
-    @_transparent
+    @inline(__always)
     public func contains(_ point: Point) -> Bool {
         return minX...maxX ~= point.x && minY...maxY ~= point.y
     }
-    @_transparent
+    @inline(__always)
     public func contains(_ rect: Rect) -> Bool {
         let a = Point(x: rect.minX, y: rect.minY)
         let b = Point(x: rect.maxX, y: rect.maxY)
         return self.contains(a) && self.contains(b)
     }
-    @_transparent
+    @inline(__always)
     public func isIntersect(_ rect: Rect) -> Bool {
         return self.minX < rect.maxX && self.maxX > rect.minX && self.minY < rect.maxY && self.maxY > rect.minY
     }
@@ -415,7 +415,7 @@ extension Rect {
 
 extension Rect {
     
-    @_transparent
+    @inline(__always)
     public func apply(_ transform: SDTransform) -> Rect? {
         
         let minX = self.minX
@@ -452,26 +452,26 @@ extension Rect {
     }
 }
 
-@_transparent
+@inline(__always)
 public func *(lhs: Double, rhs: Rect) -> Rect {
     return Rect(origin: lhs * rhs.origin, size: lhs * rhs.size)
 }
-@_transparent
+@inline(__always)
 public func *(lhs: Rect, rhs: Double) -> Rect {
     return Rect(origin: lhs.origin * rhs, size: lhs.size * rhs)
 }
 
-@_transparent
+@inline(__always)
 public func /(lhs: Rect, rhs: Double) -> Rect {
     return Rect(origin: lhs.origin / rhs, size: lhs.size / rhs)
 }
 
-@_transparent
+@inline(__always)
 public func *= (lhs: inout Rect, rhs: Double) {
     lhs.origin *= rhs
     lhs.size *= rhs
 }
-@_transparent
+@inline(__always)
 public func /= (lhs: inout Rect, rhs: Double) {
     lhs.origin /= rhs
     lhs.size /= rhs

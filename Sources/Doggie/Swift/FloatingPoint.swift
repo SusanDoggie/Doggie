@@ -56,107 +56,107 @@ public protocol FloatingMathProtocol : FloatingPoint, ExpressibleByFloatLiteral 
 
 extension Float : FloatingMathProtocol {
     
-    @_transparent
+    @inline(__always)
     public static func exp(_ x: Float) -> Float {
         return Foundation.exp(x)
     }
-    @_transparent
+    @inline(__always)
     public static func exp2(_ x: Float) -> Float {
         return Foundation.exp2(x)
     }
-    @_transparent
+    @inline(__always)
     public static func expm1(_ x: Float) -> Float {
         return Foundation.expm1(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log(_ x: Float) -> Float {
         return Foundation.log(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log10(_ x: Float) -> Float {
         return Foundation.log10(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log2(_ x: Float) -> Float {
         return Foundation.log2(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log1p(_ x: Float) -> Float {
         return Foundation.log1p(x)
     }
-    @_transparent
+    @inline(__always)
     public static func pow(_ x: Float, _ y: Float) -> Float {
         return Foundation.pow(x, y)
     }
-    @_transparent
+    @inline(__always)
     public static func cbrt(_ x: Float) -> Float {
         return Foundation.cbrt(x)
     }
-    @_transparent
+    @inline(__always)
     public static func hypot(_ x: Float, _ y: Float) -> Float {
         return Foundation.hypot(x, y)
     }
-    @_transparent
+    @inline(__always)
     public static func sin(_ x: Float) -> Float {
         return Foundation.sin(x)
     }
-    @_transparent
+    @inline(__always)
     public static func cos(_ x: Float) -> Float {
         return Foundation.cos(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tan(_ x: Float) -> Float {
         return Foundation.tan(x)
     }
-    @_transparent
+    @inline(__always)
     public static func asin(_ x: Float) -> Float {
         return Foundation.asin(x)
     }
-    @_transparent
+    @inline(__always)
     public static func acos(_ x: Float) -> Float {
         return Foundation.acos(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atan(_ x: Float) -> Float {
         return Foundation.atan(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atan2(_ y: Float, _ x: Float) -> Float {
         return Foundation.atan2(y, x)
     }
-    @_transparent
+    @inline(__always)
     public static func sinh(_ x: Float) -> Float {
         return Foundation.sinh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func cosh(_ x: Float) -> Float {
         return Foundation.cosh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tanh(_ x: Float) -> Float {
         return Foundation.tanh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func asinh(_ x: Float) -> Float {
         return Foundation.asinh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func acosh(_ x: Float) -> Float {
         return Foundation.acosh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atanh(_ x: Float) -> Float {
         return Foundation.atanh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func erf(_ x: Float) -> Float {
         return Foundation.erf(x)
     }
-    @_transparent
+    @inline(__always)
     public static func erfc(_ x: Float) -> Float {
         return Foundation.erfc(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tgamma(_ x: Float) -> Float {
         return Foundation.tgamma(x)
     }
@@ -165,107 +165,107 @@ extension Float : FloatingMathProtocol {
 
 extension Double : FloatingMathProtocol {
     
-    @_transparent
+    @inline(__always)
     public static func exp(_ x: Double) -> Double {
         return Foundation.exp(x)
     }
-    @_transparent
+    @inline(__always)
     public static func exp2(_ x: Double) -> Double {
         return Foundation.exp2(x)
     }
-    @_transparent
+    @inline(__always)
     public static func expm1(_ x: Double) -> Double {
         return Foundation.expm1(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log(_ x: Double) -> Double {
         return Foundation.log(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log10(_ x: Double) -> Double {
         return Foundation.log10(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log2(_ x: Double) -> Double {
         return Foundation.log2(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log1p(_ x: Double) -> Double {
         return Foundation.log1p(x)
     }
-    @_transparent
+    @inline(__always)
     public static func pow(_ x: Double, _ y: Double) -> Double {
         return Foundation.pow(x, y)
     }
-    @_transparent
+    @inline(__always)
     public static func cbrt(_ x: Double) -> Double {
         return Foundation.cbrt(x)
     }
-    @_transparent
+    @inline(__always)
     public static func hypot(_ x: Double, _ y: Double) -> Double {
         return Foundation.hypot(x, y)
     }
-    @_transparent
+    @inline(__always)
     public static func sin(_ x: Double) -> Double {
         return Foundation.sin(x)
     }
-    @_transparent
+    @inline(__always)
     public static func cos(_ x: Double) -> Double {
         return Foundation.cos(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tan(_ x: Double) -> Double {
         return Foundation.tan(x)
     }
-    @_transparent
+    @inline(__always)
     public static func asin(_ x: Double) -> Double {
         return Foundation.asin(x)
     }
-    @_transparent
+    @inline(__always)
     public static func acos(_ x: Double) -> Double {
         return Foundation.acos(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atan(_ x: Double) -> Double {
         return Foundation.atan(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atan2(_ y: Double, _ x: Double) -> Double {
         return Foundation.atan2(y, x)
     }
-    @_transparent
+    @inline(__always)
     public static func sinh(_ x: Double) -> Double {
         return Foundation.sinh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func cosh(_ x: Double) -> Double {
         return Foundation.cosh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tanh(_ x: Double) -> Double {
         return Foundation.tanh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func asinh(_ x: Double) -> Double {
         return Foundation.asinh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func acosh(_ x: Double) -> Double {
         return Foundation.acosh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atanh(_ x: Double) -> Double {
         return Foundation.atanh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func erf(_ x: Double) -> Double {
         return Foundation.erf(x)
     }
-    @_transparent
+    @inline(__always)
     public static func erfc(_ x: Double) -> Double {
         return Foundation.erfc(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tgamma(_ x: Double) -> Double {
         return Foundation.tgamma(x)
     }
@@ -276,214 +276,214 @@ extension CGFloat : FloatingMathProtocol {
     
     #if canImport(CoreGraphics)
     
-    @_transparent
+    @inline(__always)
     public static func exp(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.exp(x)
     }
-    @_transparent
+    @inline(__always)
     public static func exp2(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.exp2(x)
     }
-    @_transparent
+    @inline(__always)
     public static func expm1(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.expm1(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.log(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log10(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.log10(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log2(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.log2(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log1p(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.log1p(x)
     }
-    @_transparent
+    @inline(__always)
     public static func pow(_ x: CGFloat, _ y: CGFloat) -> CGFloat {
         return CoreGraphics.pow(x, y)
     }
-    @_transparent
+    @inline(__always)
     public static func cbrt(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.cbrt(x)
     }
-    @_transparent
+    @inline(__always)
     public static func hypot(_ x: CGFloat, _ y: CGFloat) -> CGFloat {
         return CoreGraphics.hypot(x, y)
     }
-    @_transparent
+    @inline(__always)
     public static func sin(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.sin(x)
     }
-    @_transparent
+    @inline(__always)
     public static func cos(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.cos(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tan(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.tan(x)
     }
-    @_transparent
+    @inline(__always)
     public static func asin(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.asin(x)
     }
-    @_transparent
+    @inline(__always)
     public static func acos(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.acos(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atan(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.atan(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atan2(_ y: CGFloat, _ x: CGFloat) -> CGFloat {
         return CoreGraphics.atan2(y, x)
     }
-    @_transparent
+    @inline(__always)
     public static func sinh(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.sinh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func cosh(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.cosh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tanh(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.tanh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func asinh(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.asinh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func acosh(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.acosh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atanh(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.atanh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func erf(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.erf(x)
     }
-    @_transparent
+    @inline(__always)
     public static func erfc(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.erfc(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tgamma(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.tgamma(x)
     }
     
     #else
     
-    @_transparent
+    @inline(__always)
     public static func exp(_ x: CGFloat) -> CGFloat {
         return Foundation.exp(x)
     }
-    @_transparent
+    @inline(__always)
     public static func exp2(_ x: CGFloat) -> CGFloat {
         return Foundation.exp2(x)
     }
-    @_transparent
+    @inline(__always)
     public static func expm1(_ x: CGFloat) -> CGFloat {
         return Foundation.expm1(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log(_ x: CGFloat) -> CGFloat {
         return Foundation.log(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log10(_ x: CGFloat) -> CGFloat {
         return Foundation.log10(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log2(_ x: CGFloat) -> CGFloat {
         return Foundation.log2(x)
     }
-    @_transparent
+    @inline(__always)
     public static func log1p(_ x: CGFloat) -> CGFloat {
         return Foundation.log1p(x)
     }
-    @_transparent
+    @inline(__always)
     public static func pow(_ x: CGFloat, _ y: CGFloat) -> CGFloat {
         return Foundation.pow(x, y)
     }
-    @_transparent
+    @inline(__always)
     public static func cbrt(_ x: CGFloat) -> CGFloat {
         return Foundation.cbrt(x)
     }
-    @_transparent
+    @inline(__always)
     public static func hypot(_ x: CGFloat, _ y: CGFloat) -> CGFloat {
         return Foundation.hypot(x, y)
     }
-    @_transparent
+    @inline(__always)
     public static func sin(_ x: CGFloat) -> CGFloat {
         return Foundation.sin(x)
     }
-    @_transparent
+    @inline(__always)
     public static func cos(_ x: CGFloat) -> CGFloat {
         return Foundation.cos(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tan(_ x: CGFloat) -> CGFloat {
         return Foundation.tan(x)
     }
-    @_transparent
+    @inline(__always)
     public static func asin(_ x: CGFloat) -> CGFloat {
         return Foundation.asin(x)
     }
-    @_transparent
+    @inline(__always)
     public static func acos(_ x: CGFloat) -> CGFloat {
         return Foundation.acos(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atan(_ x: CGFloat) -> CGFloat {
         return Foundation.atan(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atan2(_ y: CGFloat, _ x: CGFloat) -> CGFloat {
         return Foundation.atan2(y, x)
     }
-    @_transparent
+    @inline(__always)
     public static func sinh(_ x: CGFloat) -> CGFloat {
         return Foundation.sinh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func cosh(_ x: CGFloat) -> CGFloat {
         return Foundation.cosh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tanh(_ x: CGFloat) -> CGFloat {
         return Foundation.tanh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func asinh(_ x: CGFloat) -> CGFloat {
         return Foundation.asinh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func acosh(_ x: CGFloat) -> CGFloat {
         return Foundation.acosh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func atanh(_ x: CGFloat) -> CGFloat {
         return Foundation.atanh(x)
     }
-    @_transparent
+    @inline(__always)
     public static func erf(_ x: CGFloat) -> CGFloat {
         return Foundation.erf(x)
     }
-    @_transparent
+    @inline(__always)
     public static func erfc(_ x: CGFloat) -> CGFloat {
         return Foundation.erfc(x)
     }
-    @_transparent
+    @inline(__always)
     public static func tgamma(_ x: CGFloat) -> CGFloat {
         return Foundation.tgamma(x)
     }
@@ -492,7 +492,7 @@ extension CGFloat : FloatingMathProtocol {
     
 }
 
-@_transparent
+@inline(__always)
 public func positive_mod<T: FloatingPoint>(_ x: T, _ m: T) -> T {
     let r = x.remainder(dividingBy: m)
     return r < 0 ? r + m : r
@@ -505,12 +505,12 @@ extension FloatingPoint {
         return Self(sign: .plus, exponent: Self.ulpOfOne.exponent / 2, significand: 1)
     }
     
-    @_transparent
+    @inline(__always)
     public func almostZero(epsilon: Self = Self.defaultAlmostEqualEpsilon, reference: Self = 0) -> Bool {
         return self == 0 || abs(self) < abs(epsilon) * max(1, abs(reference))
     }
     
-    @_transparent
+    @inline(__always)
     public func almostEqual(_ other: Self, epsilon: Self = Self.defaultAlmostEqualEpsilon) -> Bool {
         return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: self)
     }

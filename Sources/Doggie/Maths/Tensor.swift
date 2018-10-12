@@ -65,7 +65,7 @@ extension Tensor {
 
 extension Tensor {
     
-    @_transparent
+    @inline(__always)
     public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Scalar) -> Result) -> Result {
         return self.reduce(into: initialResult) { $0 = nextPartialResult($0, $1) }
     }
@@ -91,37 +91,37 @@ extension Tensor where Scalar : FloatingPoint {
         return m == 0 ? Self() : self / m
     }
     
-    @_transparent
+    @inline(__always)
     public func distance(to: Self) -> Scalar {
         return abs(to - self)
     }
 }
 
-@_transparent
+@inline(__always)
 public func abs<T : Tensor>(_ x: T) -> T.Scalar where T.Scalar : FloatingPoint {
     return x.reduce(0) { $0 + $1 * $1 }.squareRoot()
 }
 
-@_transparent
+@inline(__always)
 public func dot<T : Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
     return lhs.combined(rhs) { $0 * $1 }.reduce(0) { $0 + $1 }
 }
 
 extension Tensor {
     
-    @_transparent
+    @inline(__always)
     public static func + (lhs: Self, rhs: Self) -> Self {
         return lhs.combined(rhs) { $0 + $1 }
     }
-    @_transparent
+    @inline(__always)
     public static func - (lhs: Self, rhs: Self) -> Self {
         return lhs.combined(rhs) { $0 - $1 }
     }
-    @_transparent
+    @inline(__always)
     public static func += (lhs: inout Self, rhs: Self) {
         lhs = lhs + rhs
     }
-    @_transparent
+    @inline(__always)
     public static func -= (lhs: inout Self, rhs: Self) {
         lhs = lhs - rhs
     }

@@ -30,21 +30,21 @@ public struct RGBA32ColorPixel : ColorPixelProtocol {
     public var b: UInt8
     public var a: UInt8
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.r = 0
         self.g = 0
         self.b = 0
         self.a = 0
     }
-    @_transparent
+    @inline(__always)
     public init(red: UInt8, green: UInt8, blue: UInt8, opacity: UInt8 = 0xFF) {
         self.r = red
         self.g = green
         self.b = blue
         self.a = opacity
     }
-    @_transparent
+    @inline(__always)
     public init(color: RGBColorModel, opacity: Double) {
         self.r = UInt8((color.red * 255).clamped(to: 0...255).rounded())
         self.g = UInt8((color.green * 255).clamped(to: 0...255).rounded())
@@ -78,7 +78,7 @@ public struct RGBA32ColorPixel : ColorPixelProtocol {
         return a == 255
     }
     
-    @_transparent
+    @inline(__always)
     public func with(opacity: Double) -> RGBA32ColorPixel {
         var c = self
         c.opacity = opacity

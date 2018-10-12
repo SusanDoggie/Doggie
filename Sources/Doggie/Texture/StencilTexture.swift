@@ -146,8 +146,8 @@ extension StencilTexture {
 
 extension StencilTexture: _TextureProtocolImplement {
     
-    @usableFromInline
     @inline(__always)
+    @usableFromInline
     func read_source(_ x: Int, _ y: Int) -> T {
         
         guard width != 0 && height != 0 else { return 0 }

@@ -216,7 +216,7 @@ struct JPEGDecoder : ImageRepDecoder {
 
 extension YCbCrColorModel {
     
-    @_transparent
+    @inline(__always)
     @usableFromInline
     init(jpeg color: RGBColorModel) {
         self.y  = color.red * 0.299   + color.green * 0.587  + color.blue * 0.114
@@ -227,7 +227,7 @@ extension YCbCrColorModel {
 
 extension RGBColorModel {
     
-    @_transparent
+    @inline(__always)
     @usableFromInline
     init(jpeg color: YCbCrColorModel) {
         let c1 = color.cb - 0.5

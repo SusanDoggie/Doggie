@@ -29,7 +29,7 @@ struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedP
     
     var bitPattern: BitPattern
     
-    @_transparent
+    @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
@@ -50,7 +50,7 @@ struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     
     var bitPattern: BitPattern
     
-    @_transparent
+    @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
@@ -71,7 +71,7 @@ struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     
     var bitPattern: BitPattern
     
-    @_transparent
+    @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
@@ -92,7 +92,7 @@ struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     
     var bitPattern: BitPattern
     
-    @_transparent
+    @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }

@@ -28,17 +28,17 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
     public var w: UInt8
     public var a: UInt8
     
-    @_transparent
+    @inline(__always)
     public init() {
         self.w = 0
         self.a = 0
     }
-    @_transparent
+    @inline(__always)
     public init(white: UInt8, opacity: UInt8 = 0xFF) {
         self.w = white
         self.a = opacity
     }
-    @_transparent
+    @inline(__always)
     public init(color: GrayColorModel, opacity: Double) {
         self.w = UInt8((color.white * 255).clamped(to: 0...255).rounded())
         self.a = UInt8((opacity * 255).clamped(to: 0...255).rounded())
@@ -68,7 +68,7 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
         return a == 255
     }
     
-    @_transparent
+    @inline(__always)
     public func with(opacity: Double) -> Gray16ColorPixel {
         var c = self
         c.opacity = opacity

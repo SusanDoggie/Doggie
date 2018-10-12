@@ -39,7 +39,8 @@ struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtoco
     @usableFromInline
     var height: Int
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     init(blender: ImageContextPixelBlender<P>, depth: UnsafeMutablePointer<Double>?, width: Int, height: Int) {
         self.blender = blender
         self.depth = depth
@@ -47,12 +48,14 @@ struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtoco
         self.height = height
     }
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     static func + (lhs: ImageContextRenderBuffer, rhs: Int) -> ImageContextRenderBuffer {
         return ImageContextRenderBuffer(blender: lhs.blender + rhs, depth: lhs.depth.map { $0 + rhs }, width: lhs.width, height: lhs.height)
     }
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     static func += (lhs: inout ImageContextRenderBuffer, rhs: Int) {
         lhs.blender += rhs
         lhs.depth = lhs.depth.map { $0 + rhs }
