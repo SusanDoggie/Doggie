@@ -25,23 +25,19 @@
 
 @inlinable
 public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Slice<ClosedRange<T>>, T> {
-    
     return (0...n).dropFirst().lazy.scan(1, *)
 }
 @inlinable
 public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedCollection<Slice<ClosedRange<T>>>, T> {
-    
     return (0...n).dropFirst().reversed().lazy.scan(1, *)
 }
 @inlinable
 public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedCollection<Slice<ClosedRange<T>>>, T>, LazyScanSequence<Slice<ClosedRange<T>>, T>>, T> {
-    
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
 }
 
 @inlinable
 public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<Range<T>, (Int, Int)>, Int> {
-    
     return (0..<n).dropLast().lazy.scan((1, 1)) { x, _ in (x.1, x.0 + x.1) }.map { $0.0 }
 }
 
@@ -109,7 +105,7 @@ public func isPrime(_ n: UInt) -> Bool {
 
 // MARK: Polynomial
 
-@inlinable
+@inline(__always)
 public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
     if b.almostZero() {
         if c < 0 {
@@ -132,7 +128,7 @@ public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
     return []
 }
 
-@inlinable
+@inline(__always)
 public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, (Double, Double)) {
     if d.almostZero() {
         return (0, (b, c))
@@ -167,7 +163,7 @@ public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, 
     return ((-b - c3) / 3, ((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9))
 }
 
-@inlinable
+@inline(__always)
 public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> ((Double, Double), (Double, Double)) {
     if e.almostZero() {
         let z = degree3decompose(b, c, d)
@@ -213,7 +209,7 @@ public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double)
     return ((2 * k1, k1 * k1 - 0.25 * t1), (2 * k2, k2 * k2 - 0.25 * t2))
 }
 
-@inlinable
+@inline(__always)
 public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero() {
         let z = degree2roots(b, c)
@@ -244,7 +240,7 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     return Array(Set(_d2))
 }
 
-@inlinable
+@inline(__always)
 public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
     if e.almostZero() {
         let z = degree3roots(b, c, d)
@@ -269,19 +265,19 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
 
 // MARK: Interpolation
 
-@inlinable
+@inline(__always)
 public func LinearInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T {
     return a + t * (b - a)
 }
 
-@inlinable
+@inline(__always)
 public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T where T.Scalar : FloatingMathProtocol {
     let u = 1 - T.Scalar.cos(t * T.Scalar.pi)
     let v = 0.5 * u
     return LinearInterpolate(v, a, b)
 }
 
-@inlinable
+@inline(__always)
 public func CubicInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T) -> T {
     let t2 = t * t
     let m0 = d - c - a + b
@@ -294,7 +290,7 @@ public func CubicInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b
     return n0 + n1 + n2 + m3
 }
 
-@inlinable
+@inline(__always)
 public func HermiteInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T, _ s: T.Scalar, _ e: T.Scalar) -> T {
     let t2 = t * t
     let t3 = t2 * t

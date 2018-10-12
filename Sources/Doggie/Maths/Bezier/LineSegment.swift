@@ -30,20 +30,20 @@ public struct LineSegment<Element : ScalarMultiplicative> : Equatable, BezierPro
     public var p0: Element
     public var p1: Element
     
-    @inlinable
+    @inline(__always)
     public init() {
         self.p0 = Element()
         self.p1 = Element()
     }
     
-    @inlinable
+    @inline(__always)
     public init(_ p0: Element, _ p1: Element) {
         self.p0 = p0
         self.p1 = p1
     }
 }
 
-extension LineSegment {
+extension Bezier {
     
     @inlinable
     public init(_ bezier: LineSegment<Element>) {
@@ -53,7 +53,7 @@ extension LineSegment {
 
 extension LineSegment: Decodable where Element : Decodable {
     
-    @inlinable
+    @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         self.init(try container.decode(Element.self), try container.decode(Element.self))
@@ -62,7 +62,7 @@ extension LineSegment: Decodable where Element : Decodable {
 
 extension LineSegment: Encodable where Element : Encodable {
     
-    @inlinable
+    @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(p0)
@@ -72,12 +72,12 @@ extension LineSegment: Encodable where Element : Encodable {
 
 extension LineSegment {
     
-    @inlinable
+    @inline(__always)
     public func map(_ transform: (Element) -> Element) -> LineSegment {
         return LineSegment(transform(p0), transform(p1))
     }
     
-    @inlinable
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, p0)
@@ -92,11 +92,11 @@ extension LineSegment {
     
     public typealias Index = Int
     
-    @inlinable
+    @_transparent
     public var startIndex: Int {
         return 0
     }
-    @inlinable
+    @_transparent
     public var endIndex: Int {
         return 2
     }
@@ -122,7 +122,7 @@ extension LineSegment {
 
 extension LineSegment {
     
-    @inlinable
+    @inline(__always)
     public func eval(_ t: Double) -> Element {
         return p0 + t * (p1 - p0)
     }
@@ -140,7 +140,7 @@ extension LineSegment where Element == Double {
 
 extension LineSegment {
     
-    @inlinable
+    @inline(__always)
     public func elevated() -> QuadBezier<Element> {
         return QuadBezier(p0, eval(0.5), p1)
     }
@@ -148,7 +148,7 @@ extension LineSegment {
 
 extension LineSegment {
     
-    @inlinable
+    @inline(__always)
     public func split(_ t: Double) -> (LineSegment, LineSegment) {
         let q0 = p0 + t * (p1 - p0)
         return (LineSegment(p0, q0), LineSegment(q0, p1))
@@ -167,7 +167,7 @@ extension LineSegment where Element == Point {
 
 extension LineSegment where Element == Point {
     
-    @inlinable
+    @_transparent
     public var area: Double {
         return 0.5 * (p0.x * p1.y - p0.y * p1.x)
     }
@@ -175,7 +175,7 @@ extension LineSegment where Element == Point {
 
 extension LineSegment where Element: Tensor {
     
-    @inlinable
+    @inline(__always)
     public func length(_ t: Double) -> Double {
         return p0.distance(to: eval(t))
     }
@@ -183,7 +183,7 @@ extension LineSegment where Element: Tensor {
 
 extension LineSegment where Element == Point {
     
-    @inlinable
+    @_transparent
     public var boundary: Rect {
         let minX = Swift.min(p0.x, p1.x)
         let minY = Swift.min(p0.y, p1.y)
@@ -195,7 +195,7 @@ extension LineSegment where Element == Point {
 
 extension LineSegment where Element == Point {
     
-    @inlinable
+    @inline(__always)
     public func intersect(_ other: LineSegment) -> Point? {
         
         let q0 = p0 - p1
@@ -211,11 +211,11 @@ extension LineSegment where Element == Point {
     }
 }
 
-@inlinable
+@inline(__always)
 public func + <Element>(lhs: LineSegment<Element>, rhs: LineSegment<Element>) -> LineSegment<Element> {
     return LineSegment(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1)
 }
-@inlinable
+@inline(__always)
 public func - <Element>(lhs: LineSegment<Element>, rhs: LineSegment<Element>) -> LineSegment<Element> {
     return LineSegment(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1)
 }

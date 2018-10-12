@@ -42,7 +42,7 @@ public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where
     public var m32: Element
     public var m33: Element
     
-    @inlinable
+    @inline(__always)
     public init(coonsPatch m00: Element, _ m01: Element, _ m02: Element, _ m03: Element,
                 _ m10: Element, _ m13: Element, _ m20: Element, _ m23: Element,
                 _ m30: Element, _ m31: Element, _ m32: Element, _ m33: Element) {
@@ -74,7 +74,7 @@ public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where
         self.m33 = m33
     }
     
-    @inlinable
+    @inline(__always)
     public init(_ m00: Element, _ m01: Element, _ m02: Element, _ m03: Element,
                 _ m10: Element, _ m11: Element, _ m12: Element, _ m13: Element,
                 _ m20: Element, _ m21: Element, _ m22: Element, _ m23: Element,
@@ -100,7 +100,7 @@ public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where
 
 extension CubicBezierPatch {
     
-    @inlinable
+    @inline(__always)
     public func eval(_ u: Double, _ v: Double) -> Element {
         let u0 = CubicBezier(m00, m01, m02, m03).eval(u)
         let u1 = CubicBezier(m10, m11, m12, m13).eval(u)
@@ -112,7 +112,7 @@ extension CubicBezierPatch {
 
 extension CubicBezierPatch where Element == Vector {
     
-    @inlinable
+    @inline(__always)
     public func normal(_ u: Double, _ v: Double) -> Element {
         
         let s0 = CubicBezier(m00, m10, m20, m30).eval(v)
@@ -130,7 +130,7 @@ extension CubicBezierPatch where Element == Vector {
 
 extension CubicBezierPatch {
     
-    @inlinable
+    @inline(__always)
     public func split(_ u: Double, _ v: Double) -> (CubicBezierPatch, CubicBezierPatch, CubicBezierPatch, CubicBezierPatch) {
         
         let (m0, n0) = CubicBezier(m00, m01, m02, m03).split(u)
@@ -244,25 +244,25 @@ extension CubicBezierPatch where Element == Point {
     }
 }
 
-@inlinable
+@inline(__always)
 public func * (lhs: CubicBezierPatch<Point>, rhs: SDTransform) -> CubicBezierPatch<Point> {
     return CubicBezierPatch(lhs.m00 * rhs, lhs.m01 * rhs, lhs.m02 * rhs, lhs.m03 * rhs,
                             lhs.m10 * rhs, lhs.m11 * rhs, lhs.m12 * rhs, lhs.m13 * rhs,
                             lhs.m20 * rhs, lhs.m21 * rhs, lhs.m22 * rhs, lhs.m23 * rhs,
                             lhs.m30 * rhs, lhs.m31 * rhs, lhs.m32 * rhs, lhs.m33 * rhs)
 }
-@inlinable
+@inline(__always)
 public func *= (lhs: inout CubicBezierPatch<Point>, rhs: SDTransform) {
     lhs = lhs * rhs
 }
-@inlinable
+@inline(__always)
 public func * (lhs: CubicBezierPatch<Vector>, rhs: Matrix) -> CubicBezierPatch<Vector> {
     return CubicBezierPatch(lhs.m00 * rhs, lhs.m01 * rhs, lhs.m02 * rhs, lhs.m03 * rhs,
                             lhs.m10 * rhs, lhs.m11 * rhs, lhs.m12 * rhs, lhs.m13 * rhs,
                             lhs.m20 * rhs, lhs.m21 * rhs, lhs.m22 * rhs, lhs.m23 * rhs,
                             lhs.m30 * rhs, lhs.m31 * rhs, lhs.m32 * rhs, lhs.m33 * rhs)
 }
-@inlinable
+@inline(__always)
 public func *= (lhs: inout CubicBezierPatch<Vector>, rhs: Matrix) {
     lhs = lhs * rhs
 }

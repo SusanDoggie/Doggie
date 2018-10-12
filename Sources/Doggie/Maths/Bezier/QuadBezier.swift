@@ -31,14 +31,14 @@ public struct QuadBezier<Element : ScalarMultiplicative> : Equatable, BezierProt
     public var p1: Element
     public var p2: Element
     
-    @inlinable
+    @inline(__always)
     public init() {
         self.p0 = Element()
         self.p1 = Element()
         self.p2 = Element()
     }
     
-    @inlinable
+    @inline(__always)
     public init(_ p0: Element, _ p1: Element, _ p2: Element) {
         self.p0 = p0
         self.p1 = p1
@@ -46,7 +46,7 @@ public struct QuadBezier<Element : ScalarMultiplicative> : Equatable, BezierProt
     }
 }
 
-extension QuadBezier {
+extension Bezier {
     
     @inlinable
     public init(_ bezier: QuadBezier<Element>) {
@@ -56,7 +56,7 @@ extension QuadBezier {
 
 extension QuadBezier: Decodable where Element : Decodable {
     
-    @inlinable
+    @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         self.init(try container.decode(Element.self),
@@ -67,7 +67,7 @@ extension QuadBezier: Decodable where Element : Decodable {
 
 extension QuadBezier: Encodable where Element : Encodable {
     
-    @inlinable
+    @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(p0)
@@ -78,12 +78,12 @@ extension QuadBezier: Encodable where Element : Encodable {
 
 extension QuadBezier {
     
-    @inlinable
+    @inline(__always)
     public func map(_ transform: (Element) -> Element) -> QuadBezier {
         return QuadBezier(transform(p0), transform(p1), transform(p2))
     }
     
-    @inlinable
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, p0)
@@ -99,11 +99,11 @@ extension QuadBezier {
     
     public typealias Index = Int
     
-    @inlinable
+    @_transparent
     public var startIndex: Int {
         return 0
     }
-    @inlinable
+    @_transparent
     public var endIndex: Int {
         return 3
     }
@@ -131,7 +131,7 @@ extension QuadBezier {
 
 extension QuadBezier {
     
-    @inlinable
+    @inline(__always)
     public func eval(_ t: Double) -> Element {
         let _t = 1 - t
         let a = _t * _t * p0
@@ -154,7 +154,7 @@ extension QuadBezier where Element == Double {
 
 extension QuadBezier {
     
-    @inlinable
+    @inline(__always)
     public func elevated() -> CubicBezier<Element> {
         let q1 = 2 * p1
         let c1 = (q1 + p0) / 3
@@ -165,7 +165,7 @@ extension QuadBezier {
 
 extension QuadBezier {
     
-    @inlinable
+    @inline(__always)
     public func split(_ t: Double) -> (QuadBezier, QuadBezier) {
         let q0 = p0 + t * (p1 - p0)
         let q1 = p1 + t * (p2 - p1)
@@ -176,7 +176,7 @@ extension QuadBezier {
 
 extension QuadBezier {
     
-    @inlinable
+    @inline(__always)
     public func derivative() -> LineSegment<Element> {
         return LineSegment(2 * (p1 - p0), 2 * (p2 - p1))
     }
@@ -198,7 +198,7 @@ extension QuadBezier where Element == Point {
 
 extension QuadBezier where Element == Point {
     
-    @inlinable
+    @_transparent
     public var area: Double {
         let a = p0.x - 2 * p1.x + p2.x
         let b = 2 * (p1.x - p0.x)
@@ -309,7 +309,7 @@ extension QuadBezier where Element == Point {
 
 extension QuadBezier where Element == Double {
     
-    @inlinable
+    @_transparent
     public var stationary: OptionOneCollection<Double> {
         let d = p0 + p2 - 2 * p1
         if d.almostZero() {
@@ -321,7 +321,7 @@ extension QuadBezier where Element == Double {
 
 extension QuadBezier where Element == Point {
     
-    @inlinable
+    @_transparent
     public var boundary: Rect {
         
         let bx = QuadBezier<Double>(p0.x, p1.x, p2.x)
@@ -426,11 +426,11 @@ extension QuadBezier where Element == Point {
     }
 }
 
-@inlinable
+@inline(__always)
 public func + <Element>(lhs: QuadBezier<Element>, rhs: QuadBezier<Element>) -> QuadBezier<Element> {
     return QuadBezier(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1, lhs.p2 + rhs.p2)
 }
-@inlinable
+@inline(__always)
 public func - <Element>(lhs: QuadBezier<Element>, rhs: QuadBezier<Element>) -> QuadBezier<Element> {
     return QuadBezier(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1, lhs.p2 - rhs.p2)
 }

@@ -71,12 +71,12 @@ extension Radius : Codable {
     }
 }
 
-@inlinable
+@inline(__always)
 public func Ellipse(_ t: Double, _ p: Point, _ r: Radius) -> Point {
     return Point(x: r.x * cos(t) + p.x, y: r.y * sin(t) + p.y)
 }
 
-@inlinable
+@inline(__always)
 public func EllipseRadius(_ p0: Point, _ p1: Point, _ r: Radius, _ rotate: Double) -> Radius {
     let _p = p1 - p0
     let _tx = _p.x * cos(rotate) + _p.y * sin(rotate)
@@ -133,7 +133,7 @@ public func EllipseCenter(_ r: Radius, _ rotate: Double, _ a: Point, _ b: Point)
 ///     ⎜ d e f ⎟ ⎜ B sin(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
-@inlinable
+@inline(__always)
 public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
     return atan2(r.y * b, r.x * a)
 }
@@ -145,7 +145,7 @@ public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
 ///     ⎜ d e f ⎟ ⎜ B sin(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
-@inlinable
+@inline(__always)
 public func EllipseBound(_ center: Point, _ r: Radius, _ matrix: SDTransform) -> Rect {
     
     let t1 = EllipseStationary(r, matrix.a, matrix.b)
@@ -171,7 +171,7 @@ public func EllipseBound(_ center: Point, _ r: Radius, _ matrix: SDTransform) ->
 
 // MARK: Area
 
-@inlinable
+@inline(__always)
 public func ArcSignedArea(_ startAngle: Double, _ endAngle: Double, _ center: Point, _ radius: Radius) -> Double {
     
     let diffAngle = endAngle - startAngle

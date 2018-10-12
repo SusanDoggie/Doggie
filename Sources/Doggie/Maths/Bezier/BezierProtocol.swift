@@ -38,7 +38,7 @@ public protocol BezierProtocol : ScalarMultiplicative, Homomorphism, RandomAcces
 
 extension BezierProtocol {
     
-    @inlinable
+    @_transparent
     public var degree: Int {
         return count - 1
     }
