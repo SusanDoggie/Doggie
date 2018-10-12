@@ -59,7 +59,8 @@ struct ImageContextGradientMeshRasterizeBuffer<P : ColorPixelProtocol> : Rasteri
 
 extension ImageContext {
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     func _drawGradient(_ blender: ImageContextPixelBlender<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
         
         let (p0, p1, p2, p3) = patch.split(0.5, 0.5)
@@ -100,7 +101,7 @@ extension ImageContext {
         
     }
     
-    @inlinable
+    @inline(__always)
     public func drawGradient<C: ColorProtocol>(_ patch: CubicBezierPatch<Point>, color c0: C, _ c1: C, _ c2: C, _ c3: C) {
         
         let width = self.width

@@ -130,7 +130,8 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
 
 extension Shape {
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     func raster(width: Int, height: Int, stencil: inout MappedBuffer<Int16>) -> Rect {
         
         assert(stencil.count == width * height, "incorrect size of stencil.")
@@ -185,7 +186,8 @@ extension Shape {
 
 extension ImageContext {
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     func _stencil(shape: Shape) -> (Rect, MappedBuffer<Int16>) {
         
         let transform = shape.transform * self.transform

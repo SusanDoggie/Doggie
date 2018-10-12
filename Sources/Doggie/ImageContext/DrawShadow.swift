@@ -25,12 +25,14 @@
 
 extension ImageContext {
     
-    @inlinable
+    @_transparent
+    @usableFromInline
     var isShadow: Bool {
         return shadowColor.opacity > 0 && shadowBlur > 0
     }
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     func _drawWithShadow(stencil: MappedBuffer<Float>, color: ColorPixel<Pixel.Model>) {
         
         let width = self.width
@@ -73,7 +75,8 @@ extension ImageContext {
         }
     }
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     func _drawWithShadow(texture: Texture<Pixel>) {
         
         let width = self.width
@@ -116,7 +119,8 @@ extension ImageContext {
 
 extension StencilTexture {
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     func _apply(_ filter: [T]) -> StencilTexture {
         
         let width = self.width

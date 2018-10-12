@@ -25,7 +25,8 @@
 
 extension ImageContext {
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     func _shading<P : ColorPixelProtocol>(_ shader: (Point) -> P) where Pixel.Model == P.Model {
         
         let width = self.width
@@ -54,7 +55,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @inlinable
+    @inline(__always)
     public func axialShading<P : ColorPixelProtocol>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         if start.almostEqual(end) {
@@ -113,7 +114,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @inlinable
+    @inline(__always)
     public func radialShading<P : ColorPixelProtocol>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         if start.almostEqual(end) && startRadius.almostEqual(endRadius) {
@@ -200,7 +201,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @inlinable
+    @inline(__always)
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
         let colorSpace = self.colorSpace
@@ -234,7 +235,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @inlinable
+    @inline(__always)
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
         let colorSpace = self.colorSpace

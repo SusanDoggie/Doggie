@@ -25,7 +25,8 @@
 
 extension ImageContext {
     
-    @inlinable
+    @inline(__always)
+    @usableFromInline
     func draw(shape: Shape, color: ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
         
         if shape.reduce(0, { $0 + $1.count }) == 0 {
@@ -222,7 +223,7 @@ extension ImageContext {
 
 extension ImageContext {
     
-    @inlinable
+    @inline(__always)
     public func draw(shape: Shape, winding: Shape.WindingRule, color: Pixel.Model, opacity: Double = 1) {
         switch winding {
         case .nonZero: self.draw(shape: shape, color: ColorPixel(color: color, opacity: opacity)) { $0 != 0 }
