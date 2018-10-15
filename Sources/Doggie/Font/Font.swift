@@ -118,7 +118,7 @@ extension Font {
         let lck = SDLock()
         
         var coveredCharacterSet: CharacterSet?
-        var glyphs: [Int: Shape] = [:]
+        var glyphs: [Int: [Shape.Component]] = [:]
     }
 }
 
@@ -178,14 +178,20 @@ extension Font {
 
 extension Font {
     
-    public func shape(forGlyph glyph: Int) -> Shape {
+    private func _shape(glyph: Int) -> [Shape.Component] {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         return cache.lck.synchronized {
             if cache.glyphs[glyph] == nil {
-                cache.glyphs[glyph] = Shape(base.shape(glyph: glyph).filter { $0.count != 0 })
+                var component = base.shape(glyph: glyph).filter { $0.count != 0 }
+                component.makeContiguousBuffer()
+                cache.glyphs[glyph] = component
             }
-            return cache.glyphs[glyph]! * SDTransform.scale(_pointScale)
+            return cache.glyphs[glyph]!
         }
+    }
+    
+    public func shape(forGlyph glyph: Int) -> Shape {
+        return Shape(self._shape(glyph: glyph).map { $0 * SDTransform.scale(_pointScale) })
     }
     
     public func graphic(glyph: Int) -> [Font.Graphic]? {
