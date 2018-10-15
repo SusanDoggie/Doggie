@@ -24,11 +24,13 @@
 //
 
 @inlinable
+@inline(__always)
 public func Radix2CircularConvolveLength<T: FixedWidthInteger>(_ x: T, _ y: T) -> T {
     return (x + y - 2).hibit << 1
 }
 
 @inlinable
+@inline(__always)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -74,6 +76,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signa
 }
 
 @inlinable
+@inline(__always)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -119,6 +122,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal
 }
 
 @inlinable
+@inline(__always)
 public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ n: T, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -156,6 +160,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
 }
 
 @inlinable
+@inline(__always)
 public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ n: T, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -192,6 +197,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
 }
 
 @inlinable
+@inline(__always)
 public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
@@ -234,6 +240,7 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ si
 }
 
 @inlinable
+@inline(__always)
 public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level

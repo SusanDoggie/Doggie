@@ -36,6 +36,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & Additive & Float
     var buffer: [T]
     
     @inlinable
+    @inline(__always)
     public init(kernel: [T]) {
         
         let fft_length = Radix2CircularConvolveLength(kernel.count, kernel.count)
@@ -59,6 +60,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & Additive & Float
     }
     
     @inlinable
+    @inline(__always)
     public mutating func filter(_ source: UnsafeBufferPointer<T>, callback: (UnsafeBufferPointer<T>) -> Void) {
         
         let fft_length = self.fft_length
@@ -95,6 +97,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & Additive & Float
     }
     
     @inlinable
+    @inline(__always)
     public func final(callback: (UnsafeBufferPointer<T>) -> Void) {
         
         let fft_length = self.fft_length
