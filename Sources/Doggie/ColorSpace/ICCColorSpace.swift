@@ -478,20 +478,20 @@ extension ColorSpace {
 
 extension ICCColorSpace {
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func _convertToLinear(_ color: Model) -> Model {
         return a2b.convertToLinear(color)
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func _convertFromLinear(_ color: Model) -> Model {
         return b2a.convertFromLinear(color)
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func _convertLinearToConnection(_ color: Model) -> Connection.Model {
         
         switch a2b {
@@ -509,14 +509,14 @@ extension ICCColorSpace {
         }
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func _convertLinearFromConnection(_ color: Connection.Model) -> Model {
         return b2a.convertLinearFromConnection(color)
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func convertToLinear(_ color: Model) -> Model {
         
         var color = color
@@ -542,8 +542,8 @@ extension ICCColorSpace {
         return result
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func convertFromLinear(_ color: Model) -> Model {
         
         var color = color
@@ -569,8 +569,8 @@ extension ICCColorSpace {
         return result
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         
         var color = color
@@ -596,8 +596,8 @@ extension ICCColorSpace {
         return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
@@ -623,8 +623,8 @@ extension ICCColorSpace {
         return result
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func convertToXYZ(_ color: Model) -> XYZColorModel {
         
         var color = color
@@ -650,8 +650,8 @@ extension ICCColorSpace {
         return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func convertFromXYZ(_ color: XYZColorModel) -> Model {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)

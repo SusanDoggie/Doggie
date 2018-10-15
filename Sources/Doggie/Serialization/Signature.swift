@@ -34,11 +34,13 @@ public protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByInte
 
 extension SignatureProtocol {
     
+    @inlinable
     @inline(__always)
     public init(integerLiteral value: Bytes.IntegerLiteralType) {
         self.init(rawValue: Bytes(integerLiteral: value))
     }
     
+    @inlinable
     @inline(__always)
     public init(stringLiteral value: StaticString) {
         precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
@@ -54,6 +56,7 @@ extension SignatureProtocol {
 
 extension SignatureProtocol where Bytes : ByteOutputStreamable {
     
+    @inlinable
     @inline(__always)
     public func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(rawValue)
@@ -62,6 +65,7 @@ extension SignatureProtocol where Bytes : ByteOutputStreamable {
 
 extension SignatureProtocol where Bytes : ByteDecodable {
     
+    @inlinable
     @inline(__always)
     public init(from data: inout Data) throws {
         self.init(rawValue: try Bytes(from: &data))
@@ -72,6 +76,7 @@ public struct Signature<Bytes : FixedWidthInteger & ByteCodable> : SignatureProt
     
     public var rawValue: Bytes
     
+    @inlinable
     @inline(__always)
     public init(rawValue: Bytes) {
         self.rawValue = rawValue

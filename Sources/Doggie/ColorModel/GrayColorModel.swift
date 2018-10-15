@@ -34,6 +34,7 @@ public struct GrayColorModel : ColorModelProtocol {
         return 1
     }
     
+    @inlinable
     @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
@@ -42,6 +43,7 @@ public struct GrayColorModel : ColorModelProtocol {
     
     public var white: Double
     
+    @inlinable
     @inline(__always)
     public init(white: Double) {
         self.white = white
@@ -66,6 +68,7 @@ public struct GrayColorModel : ColorModelProtocol {
 
 extension GrayColorModel {
     
+    @inlinable
     @inline(__always)
     public init() {
         self.white = 0
@@ -87,21 +90,25 @@ extension GrayColorModel {
 
 extension GrayColorModel {
     
+    @inlinable
     @inline(__always)
     public func min() -> Double {
         return white
     }
     
+    @inlinable
     @inline(__always)
     public func max() -> Double {
         return white
     }
     
+    @inlinable
     @inline(__always)
     public func map(_ transform: (Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: transform(white))
     }
     
+    @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
@@ -109,6 +116,7 @@ extension GrayColorModel {
         return accumulator
     }
     
+    @inlinable
     @inline(__always)
     public func combined(_ other: GrayColorModel, _ transform: (Double, Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: transform(self.white, other.white))
@@ -117,6 +125,7 @@ extension GrayColorModel {
 
 extension GrayColorModel {
     
+    @inlinable
     @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.white = Double(floatComponents.white)
@@ -175,21 +184,25 @@ extension GrayColorModel {
 
 extension GrayColorModel.FloatComponents {
     
+    @inlinable
     @inline(__always)
     public func min() -> Float {
         return white
     }
     
+    @inlinable
     @inline(__always)
     public func max() -> Float {
         return white
     }
     
+    @inlinable
     @inline(__always)
     public func map(_ transform: (Float) -> Float) -> GrayColorModel.FloatComponents {
         return GrayColorModel.FloatComponents(white: transform(white))
     }
     
+    @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
@@ -197,6 +210,7 @@ extension GrayColorModel.FloatComponents {
         return accumulator
     }
     
+    @inlinable
     @inline(__always)
     public func combined(_ other: GrayColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> GrayColorModel.FloatComponents {
         return GrayColorModel.FloatComponents(white: transform(self.white, other.white))

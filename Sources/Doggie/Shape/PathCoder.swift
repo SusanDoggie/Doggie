@@ -28,16 +28,19 @@ private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequenc
     var iterator: I
     var current: String!
     
+    @inlinable
     @inline(__always)
     init(_ iterator: I) {
         self.iterator = iterator
     }
     
+    @inlinable
     @inline(__always)
     init<S : Sequence>(_ sequence: S) where S.Iterator == I {
         self.iterator = sequence.makeIterator()
     }
     
+    @inlinable
     @inline(__always)
     @discardableResult
     mutating func next() -> String? {

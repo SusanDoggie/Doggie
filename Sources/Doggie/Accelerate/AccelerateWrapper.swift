@@ -25,8 +25,8 @@
 
 extension UnsafePointer where Pointee == Complex {
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func _reboundToDouble(body: (UnsafePointer<Double>) throws -> Void) rethrows {
         try self.withMemoryRebound(to: Double.self, capacity: 2, body)
     }
@@ -34,8 +34,8 @@ extension UnsafePointer where Pointee == Complex {
 
 extension UnsafeMutablePointer where Pointee == Complex {
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func _reboundToDouble(body: (UnsafeMutablePointer<Double>) throws -> Void) rethrows {
         try self.withMemoryRebound(to: Double.self, capacity: 2, body)
     }

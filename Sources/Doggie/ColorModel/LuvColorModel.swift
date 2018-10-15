@@ -34,6 +34,7 @@ public struct LuvColorModel : ColorModelProtocol {
         return 3
     }
     
+    @inlinable
     @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
@@ -50,18 +51,21 @@ public struct LuvColorModel : ColorModelProtocol {
     /// The v color component.
     public var v: Double
     
+    @inlinable
     @inline(__always)
     public init() {
         self.lightness = 0
         self.u = 0
         self.v = 0
     }
+    @inlinable
     @inline(__always)
     public init(lightness: Double, u: Double, v: Double) {
         self.lightness = lightness
         self.u = u
         self.v = v
     }
+    @inlinable
     @inline(__always)
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
@@ -123,21 +127,25 @@ extension LuvColorModel {
 
 extension LuvColorModel {
     
+    @inlinable
     @inline(__always)
     public func min() -> Double {
         return Swift.min(lightness, u, v)
     }
     
+    @inlinable
     @inline(__always)
     public func max() -> Double {
         return Swift.max(lightness, u, v)
     }
     
+    @inlinable
     @inline(__always)
     public func map(_ transform: (Double) -> Double) -> LuvColorModel {
         return LuvColorModel(lightness: transform(lightness), u: transform(u), v: transform(v))
     }
     
+    @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
@@ -147,6 +155,7 @@ extension LuvColorModel {
         return accumulator
     }
     
+    @inlinable
     @inline(__always)
     public func combined(_ other: LuvColorModel, _ transform: (Double, Double) -> Double) -> LuvColorModel {
         return LuvColorModel(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
@@ -155,6 +164,7 @@ extension LuvColorModel {
 
 extension LuvColorModel {
     
+    @inlinable
     @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.lightness = Double(floatComponents.lightness)
@@ -227,21 +237,25 @@ extension LuvColorModel {
 
 extension LuvColorModel.FloatComponents {
     
+    @inlinable
     @inline(__always)
     public func min() -> Float {
         return Swift.min(lightness, u, v)
     }
     
+    @inlinable
     @inline(__always)
     public func max() -> Float {
         return Swift.max(lightness, u, v)
     }
     
+    @inlinable
     @inline(__always)
     public func map(_ transform: (Float) -> Float) -> LuvColorModel.FloatComponents {
         return LuvColorModel.FloatComponents(lightness: transform(lightness), u: transform(u), v: transform(v))
     }
     
+    @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
@@ -251,6 +265,7 @@ extension LuvColorModel.FloatComponents {
         return accumulator
     }
     
+    @inlinable
     @inline(__always)
     public func combined(_ other: LuvColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> LuvColorModel.FloatComponents {
         return LuvColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))

@@ -38,8 +38,8 @@ protocol RasterizeBufferProtocol {
 
 extension RasterizeBufferProtocol {
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Vector, Point, Self) -> Void) {
         
         let det = (p1.y - p2.y) * (p0.x - p2.x) + (p2.x - p1.x) * (p0.y - p2.y)
@@ -67,20 +67,20 @@ extension RasterizeBufferProtocol {
         }
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Point, Self) -> Void) {
         self._rasterize(p0, p1, p2) { x, y, buf in operation(Point(x: x, y: y), buf) }
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Self) -> Void) {
         self._rasterize(p0, p1, p2) { _, _, buf in operation(buf) }
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func _rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Int, Int, Self) -> Void) {
         
         if !Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) {

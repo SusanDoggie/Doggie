@@ -203,8 +203,8 @@ extension Texture {
 
 extension Texture: _TextureProtocolImplement {
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func read_source(_ x: Int, _ y: Int) -> ColorPixel<RawPixel.Model> {
         
         guard width != 0 && height != 0 else { return ColorPixel() }

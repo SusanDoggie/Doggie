@@ -42,8 +42,8 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
     @usableFromInline
     let blendMode: ColorBlendMode
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>?, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
         self.destination = destination
         self.clip = clip
@@ -52,33 +52,33 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
         self.blendMode = blendMode
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     static func + (lhs: ImageContextPixelBlender, rhs: Int) -> ImageContextPixelBlender {
         return ImageContextPixelBlender(destination: lhs.destination + rhs, clip: lhs.clip.map { $0 + rhs }, opacity: lhs.opacity, compositingMode: lhs.compositingMode, blendMode: lhs.blendMode)
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     static func += (lhs: inout ImageContextPixelBlender, rhs: Int) {
         lhs.destination += rhs
         lhs.clip = lhs.clip.map { $0 + rhs }
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func draw<C : ColorPixelProtocol>(color: () -> C) where C.Model == P.Model {
         self._draw { color() }
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func draw<C : ColorPixelProtocol>(color: () -> C?) where C.Model == P.Model {
         self._draw { color() }
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func _draw<C : ColorPixelProtocol>(color: () -> C?) where C.Model == P.Model {
         
         if let _clip = clip?.pointee {
@@ -95,8 +95,8 @@ struct ImageContextPixelBlender<P : ColorPixelProtocol> {
 
 extension ImageContext {
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func _withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
         let opacity = self.opacity
@@ -116,8 +116,8 @@ extension ImageContext {
         }
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
         let opacity = self.opacity

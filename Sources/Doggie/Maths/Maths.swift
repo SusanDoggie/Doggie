@@ -105,6 +105,7 @@ public func isPrime(_ n: UInt) -> Bool {
 
 // MARK: Polynomial
 
+@inlinable
 @inline(__always)
 public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
     if b.almostZero() {
@@ -128,6 +129,7 @@ public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
     return []
 }
 
+@inlinable
 @inline(__always)
 public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, (Double, Double)) {
     if d.almostZero() {
@@ -163,6 +165,7 @@ public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, 
     return ((-b - c3) / 3, ((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9))
 }
 
+@inlinable
 @inline(__always)
 public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> ((Double, Double), (Double, Double)) {
     if e.almostZero() {
@@ -209,6 +212,7 @@ public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double)
     return ((2 * k1, k1 * k1 - 0.25 * t1), (2 * k2, k2 * k2 - 0.25 * t2))
 }
 
+@inlinable
 @inline(__always)
 public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero() {
@@ -240,6 +244,7 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     return Array(Set(_d2))
 }
 
+@inlinable
 @inline(__always)
 public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
     if e.almostZero() {
@@ -265,11 +270,13 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
 
 // MARK: Interpolation
 
+@inlinable
 @inline(__always)
 public func LinearInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T {
     return a + t * (b - a)
 }
 
+@inlinable
 @inline(__always)
 public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T where T.Scalar : FloatingMathProtocol {
     let u = 1 - T.Scalar.cos(t * T.Scalar.pi)
@@ -277,6 +284,7 @@ public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ 
     return LinearInterpolate(v, a, b)
 }
 
+@inlinable
 @inline(__always)
 public func CubicInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T) -> T {
     let t2 = t * t
@@ -290,6 +298,7 @@ public func CubicInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b
     return n0 + n1 + n2 + m3
 }
 
+@inlinable
 @inline(__always)
 public func HermiteInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T, _ s: T.Scalar, _ e: T.Scalar) -> T {
     let t2 = t * t

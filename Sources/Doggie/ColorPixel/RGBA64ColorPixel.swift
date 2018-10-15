@@ -30,6 +30,7 @@ public struct RGBA64ColorPixel : ColorPixelProtocol {
     public var b: UInt16
     public var a: UInt16
     
+    @inlinable
     @inline(__always)
     public init() {
         self.r = 0
@@ -37,6 +38,7 @@ public struct RGBA64ColorPixel : ColorPixelProtocol {
         self.b = 0
         self.a = 0
     }
+    @inlinable
     @inline(__always)
     public init(red: UInt16, green: UInt16, blue: UInt16, opacity: UInt16 = 0xFFFF) {
         self.r = red
@@ -44,6 +46,7 @@ public struct RGBA64ColorPixel : ColorPixelProtocol {
         self.b = blue
         self.a = opacity
     }
+    @inlinable
     @inline(__always)
     public init(color: RGBColorModel, opacity: Double) {
         self.r = UInt16((color.red * 65535).clamped(to: 0...65535).rounded())
@@ -78,6 +81,7 @@ public struct RGBA64ColorPixel : ColorPixelProtocol {
         return a == 65535
     }
     
+    @inlinable
     @inline(__always)
     public func with(opacity: Double) -> RGBA64ColorPixel {
         var c = self

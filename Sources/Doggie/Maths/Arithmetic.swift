@@ -78,10 +78,12 @@ public protocol Homomorphism {
 
 extension Homomorphism where Self : Additive, Element : Additive {
     
+    @inlinable
     @inline(__always)
     public static prefix func + (val: Self) -> Self {
         return val
     }
+    @inlinable
     @inline(__always)
     public static prefix func - (val: Self) -> Self {
         return val.map { -$0 }
@@ -90,22 +92,27 @@ extension Homomorphism where Self : Additive, Element : Additive {
 
 extension Homomorphism where Self : ScalarMultiplicative, Element : ScalarMultiplicative, Self.Scalar == Element.Scalar {
     
+    @inlinable
     @inline(__always)
     public static func * (lhs: Scalar, rhs: Self) -> Self {
         return rhs.map { lhs * $0 }
     }
+    @inlinable
     @inline(__always)
     public static func * (lhs: Self, rhs: Scalar) -> Self {
         return lhs.map { $0 * rhs }
     }
+    @inlinable
     @inline(__always)
     public static func / (lhs: Self, rhs: Scalar) -> Self {
         return lhs.map { $0 / rhs }
     }
+    @inlinable
     @inline(__always)
     public static func *= (lhs: inout Self, rhs: Scalar) {
         lhs = lhs * rhs
     }
+    @inlinable
     @inline(__always)
     public static func /= (lhs: inout Self, rhs: Scalar) {
         lhs = lhs / rhs

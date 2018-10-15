@@ -47,6 +47,7 @@ public protocol FloatColorComponents : Hashable, Tensor where Scalar == Float {
 
 extension ColorModelProtocol {
     
+    @inlinable
     @inline(__always)
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         return Self.rangeOfComponent(i)
@@ -55,12 +56,14 @@ extension ColorModelProtocol {
 
 extension ColorModelProtocol {
     
+    @inlinable
     @inline(__always)
     public func normalizedComponent(_ index: Int) -> Double {
         let range = Self.rangeOfComponent(index)
         return (self[index] - range.lowerBound) / (range.upperBound - range.lowerBound)
     }
     
+    @inlinable
     @inline(__always)
     public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
         let range = Self.rangeOfComponent(index)

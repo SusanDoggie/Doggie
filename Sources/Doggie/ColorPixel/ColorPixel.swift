@@ -62,6 +62,7 @@ public protocol ColorPixelProtocol : Hashable {
 
 extension ColorPixelProtocol {
     
+    @inlinable
     @inline(__always)
     public init(_ color: Color<Model>) {
         self.init(color: color.color, opacity: color.opacity)
@@ -70,11 +71,13 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
+    @inlinable
     @inline(__always)
     public init() {
         self.init(color: Model(), opacity: 0)
     }
     
+    @inlinable
     @inline(__always)
     public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
         self = color as? Self ?? Self(color: color.color, opacity: color.opacity)
@@ -83,6 +86,7 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
+    @inlinable
     @inline(__always)
     public init(color: Model.FloatComponents, opacity: Float = 1) {
         self.init(color: Model(floatComponents: color), opacity: Double(opacity))
@@ -91,6 +95,7 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
+    @inlinable
     @inline(__always)
     public func with(opacity: Double) -> Self {
         return Self(color: color, opacity: opacity)
@@ -109,6 +114,7 @@ extension ColorPixelProtocol {
         return Self.numberOfComponents
     }
     
+    @inlinable
     @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         if i < Model.numberOfComponents {
@@ -120,11 +126,13 @@ extension ColorPixelProtocol {
         }
     }
     
+    @inlinable
     @inline(__always)
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         return Self.rangeOfComponent(i)
     }
     
+    @inlinable
     @inline(__always)
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
@@ -136,6 +144,7 @@ extension ColorPixelProtocol {
         }
     }
     
+    @inlinable
     @inline(__always)
     public mutating func setComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
@@ -150,6 +159,7 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
+    @inlinable
     @inline(__always)
     public func normalizedComponent(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
@@ -161,6 +171,7 @@ extension ColorPixelProtocol {
         }
     }
     
+    @inlinable
     @inline(__always)
     public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
@@ -183,10 +194,12 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
+    @inlinable
     @inline(__always)
     public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blending: (Double, Double) -> Double) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blending: blending)
     }
+    @inlinable
     @inline(__always)
     public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
@@ -195,16 +208,19 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol where Model == XYZColorModel {
     
+    @inlinable
     @inline(__always)
     public init(x: Double, y: Double, z: Double, opacity: Double = 1) {
         self.init(color: XYZColorModel(x: x, y: y, z: z), opacity: opacity)
     }
     
+    @inlinable
     @inline(__always)
     public init(luminance: Double, point: Point, opacity: Double = 1) {
         self.init(color: XYZColorModel(luminance: luminance, point: point), opacity: opacity)
     }
     
+    @inlinable
     @inline(__always)
     public init(luminance: Double, x: Double, y: Double, opacity: Double = 1) {
         self.init(color: XYZColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
@@ -213,11 +229,13 @@ extension ColorPixelProtocol where Model == XYZColorModel {
 
 extension ColorPixelProtocol where Model == YxyColorModel {
     
+    @inlinable
     @inline(__always)
     public init(luminance: Double, point: Point, opacity: Double = 1) {
         self.init(color: YxyColorModel(luminance: luminance, point: point), opacity: opacity)
     }
     
+    @inlinable
     @inline(__always)
     public init(luminance: Double, x: Double, y: Double, opacity: Double = 1) {
         self.init(color: YxyColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
@@ -226,11 +244,13 @@ extension ColorPixelProtocol where Model == YxyColorModel {
 
 extension ColorPixelProtocol where Model == LabColorModel {
     
+    @inlinable
     @inline(__always)
     public init(lightness: Double, a: Double, b: Double, opacity: Double = 1) {
         self.init(color: LabColorModel(lightness: lightness, a: a, b: b), opacity: opacity)
     }
     
+    @inlinable
     @inline(__always)
     public init(lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
         self.init(color: LabColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
@@ -239,11 +259,13 @@ extension ColorPixelProtocol where Model == LabColorModel {
 
 extension ColorPixelProtocol where Model == LuvColorModel {
     
+    @inlinable
     @inline(__always)
     public init(lightness: Double, u: Double, v: Double, opacity: Double = 1) {
         self.init(color: LuvColorModel(lightness: lightness, u: u, v: v), opacity: opacity)
     }
     
+    @inlinable
     @inline(__always)
     public init(lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
         self.init(color: LuvColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
@@ -252,6 +274,7 @@ extension ColorPixelProtocol where Model == LuvColorModel {
 
 extension ColorPixelProtocol where Model == GrayColorModel {
     
+    @inlinable
     @inline(__always)
     public init(white: Double, opacity: Double = 1) {
         self.init(color: GrayColorModel(white: white), opacity: opacity)
@@ -260,11 +283,13 @@ extension ColorPixelProtocol where Model == GrayColorModel {
 
 extension ColorPixelProtocol where Model == RGBColorModel {
     
+    @inlinable
     @inline(__always)
     public init(red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
     
+    @inlinable
     @inline(__always)
     public init(hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.init(color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
@@ -273,6 +298,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
 
 extension ColorPixelProtocol where Model == CMYColorModel {
     
+    @inlinable
     @inline(__always)
     public init(cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
         self.init(color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
@@ -281,6 +307,7 @@ extension ColorPixelProtocol where Model == CMYColorModel {
 
 extension ColorPixelProtocol where Model == CMYKColorModel {
     
+    @inlinable
     @inline(__always)
     public init(cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
         self.init(color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
@@ -449,18 +476,21 @@ public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, Scala
     public var color: Model
     public var opacity: Double
     
+    @inlinable
     @inline(__always)
     public init() {
         self.color = Model()
         self.opacity = 0
     }
     
+    @inlinable
     @inline(__always)
     public init(color: Model, opacity: Double = 1) {
         self.color = color
         self.opacity = opacity
     }
     
+    @inlinable
     @inline(__always)
     public init<C : ColorPixelProtocol>(_ color: C) where Model == C.Model {
         self.color = color.color
@@ -468,52 +498,63 @@ public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, Scala
     }
 }
 
+@inlinable
 @inline(__always)
 public prefix func +<Model>(val: ColorPixel<Model>) -> ColorPixel<Model> {
     return val
 }
+@inlinable
 @inline(__always)
 public prefix func -<Model>(val: ColorPixel<Model>) -> ColorPixel<Model> {
     return ColorPixel(color: -val.color, opacity: -val.opacity)
 }
+@inlinable
 @inline(__always)
 public func +<Model>(lhs: ColorPixel<Model>, rhs: ColorPixel<Model>) -> ColorPixel<Model> {
     return ColorPixel(color: lhs.color + rhs.color, opacity: lhs.opacity + rhs.opacity)
 }
+@inlinable
 @inline(__always)
 public func -<Model>(lhs: ColorPixel<Model>, rhs: ColorPixel<Model>) -> ColorPixel<Model> {
     return ColorPixel(color: lhs.color - rhs.color, opacity: lhs.opacity - rhs.opacity)
 }
 
+@inlinable
 @inline(__always)
 public func *<Model>(lhs: Double, rhs: ColorPixel<Model>) -> ColorPixel<Model> {
     return ColorPixel(color: lhs * rhs.color, opacity: lhs * rhs.opacity)
 }
+@inlinable
 @inline(__always)
 public func *<Model>(lhs: ColorPixel<Model>, rhs: Double) -> ColorPixel<Model> {
     return ColorPixel(color: lhs.color * rhs, opacity: lhs.opacity * rhs)
 }
 
+@inlinable
 @inline(__always)
 public func /<Model>(lhs: ColorPixel<Model>, rhs: Double) -> ColorPixel<Model> {
     return ColorPixel(color: lhs.color / rhs, opacity: lhs.opacity / rhs)
 }
 
+@inlinable
 @inline(__always)
 public func *=<Model> (lhs: inout ColorPixel<Model>, rhs: Double) {
     lhs.color *= rhs
     lhs.opacity *= rhs
 }
+@inlinable
 @inline(__always)
 public func /=<Model> (lhs: inout ColorPixel<Model>, rhs: Double) {
     lhs.color /= rhs
     lhs.opacity /= rhs
 }
+@inlinable
 @inline(__always)
 public func +=<Model> (lhs: inout ColorPixel<Model>, rhs: ColorPixel<Model>) {
     lhs.color += rhs.color
     lhs.opacity += rhs.opacity
 }
+@inlinable
 @inline(__always)
 public func -=<Model> (lhs: inout ColorPixel<Model>, rhs: ColorPixel<Model>) {
     lhs.color -= rhs.color
@@ -531,18 +572,21 @@ public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, 
     @usableFromInline
     var _opacity: Float
     
+    @inlinable
     @inline(__always)
     public init() {
         self._color = Model.FloatComponents()
         self._opacity = 0
     }
     
+    @inlinable
     @inline(__always)
     public init(color: Model.FloatComponents, opacity: Float = 1) {
         self._color = color
         self._opacity = opacity
     }
     
+    @inlinable
     @inline(__always)
     public init(color: Model, opacity: Double = 1) {
         self._color = color.floatComponents
@@ -569,6 +613,7 @@ public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, 
         }
     }
     
+    @inlinable
     @inline(__always)
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
@@ -580,6 +625,7 @@ public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, 
         }
     }
     
+    @inlinable
     @inline(__always)
     public mutating func setComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
@@ -592,52 +638,63 @@ public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, 
     }
 }
 
+@inlinable
 @inline(__always)
 public prefix func +<Model>(val: FloatColorPixel<Model>) -> FloatColorPixel<Model> {
     return val
 }
+@inlinable
 @inline(__always)
 public prefix func -<Model>(val: FloatColorPixel<Model>) -> FloatColorPixel<Model> {
     return FloatColorPixel(color: -val._color, opacity: -val._opacity)
 }
+@inlinable
 @inline(__always)
 public func +<Model>(lhs: FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) -> FloatColorPixel<Model> {
     return FloatColorPixel(color: lhs._color + rhs._color, opacity: lhs._opacity + rhs._opacity)
 }
+@inlinable
 @inline(__always)
 public func -<Model>(lhs: FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) -> FloatColorPixel<Model> {
     return FloatColorPixel(color: lhs._color - rhs._color, opacity: lhs._opacity - rhs._opacity)
 }
 
+@inlinable
 @inline(__always)
 public func *<Model>(lhs: Float, rhs: FloatColorPixel<Model>) -> FloatColorPixel<Model> {
     return FloatColorPixel(color: lhs * rhs._color, opacity: lhs * rhs._opacity)
 }
+@inlinable
 @inline(__always)
 public func *<Model>(lhs: FloatColorPixel<Model>, rhs: Float) -> FloatColorPixel<Model> {
     return FloatColorPixel(color: lhs._color * rhs, opacity: lhs._opacity * rhs)
 }
 
+@inlinable
 @inline(__always)
 public func /<Model>(lhs: FloatColorPixel<Model>, rhs: Float) -> FloatColorPixel<Model> {
     return FloatColorPixel(color: lhs._color / rhs, opacity: lhs._opacity / rhs)
 }
 
+@inlinable
 @inline(__always)
 public func *=<Model> (lhs: inout FloatColorPixel<Model>, rhs: Float) {
     lhs._color *= rhs
     lhs._opacity *= rhs
 }
+@inlinable
 @inline(__always)
 public func /=<Model> (lhs: inout FloatColorPixel<Model>, rhs: Float) {
     lhs._color /= rhs
     lhs._opacity /= rhs
 }
+@inlinable
 @inline(__always)
 public func +=<Model> (lhs: inout FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) {
     lhs._color += rhs._color
     lhs._opacity += rhs._opacity
 }
+@inlinable
 @inline(__always)
 public func -=<Model> (lhs: inout FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) {
     lhs._color -= rhs._color

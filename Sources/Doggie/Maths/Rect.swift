@@ -28,17 +28,20 @@ public struct Size: Hashable {
     public var width: Double
     public var height: Double
     
+    @inlinable
     @inline(__always)
     public init() {
         self.width = 0
         self.height = 0
     }
     
+    @inlinable
     @inline(__always)
     public init(width: Double, height: Double) {
         self.width = width
         self.height = height
     }
+    @inlinable
     @inline(__always)
     public init(width: Int, height: Int) {
         self.width = Double(width)
@@ -56,6 +59,7 @@ extension Size: CustomStringConvertible {
 
 extension Size : Codable {
     
+    @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
@@ -63,6 +67,7 @@ extension Size : Codable {
         self.height = try container.decode(Double.self)
     }
     
+    @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
@@ -73,6 +78,7 @@ extension Size : Codable {
 
 extension Size {
     
+    @inlinable
     @inline(__always)
     public func aspectFit(_ bound: Size) -> Size {
         let u = width * bound.height
@@ -84,6 +90,7 @@ extension Size {
         }
     }
     
+    @inlinable
     @inline(__always)
     public func aspectFill(_ bound: Size) -> Size {
         let u = width * bound.height
@@ -102,52 +109,63 @@ extension Size : ScalarMultiplicative {
     
 }
 
+@inlinable
 @inline(__always)
 public prefix func +(val: Size) -> Size {
     return val
 }
+@inlinable
 @inline(__always)
 public prefix func -(val: Size) -> Size {
     return Size(width: -val.width, height: -val.height)
 }
+@inlinable
 @inline(__always)
 public func +(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
 }
+@inlinable
 @inline(__always)
 public func -(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 }
 
+@inlinable
 @inline(__always)
 public func *(lhs: Double, rhs: Size) -> Size {
     return Size(width: lhs * rhs.width, height: lhs * rhs.height)
 }
+@inlinable
 @inline(__always)
 public func *(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width * rhs, height: lhs.height * rhs)
 }
 
+@inlinable
 @inline(__always)
 public func /(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width / rhs, height: lhs.height / rhs)
 }
 
+@inlinable
 @inline(__always)
 public func *= (lhs: inout Size, rhs: Double) {
     lhs.width *= rhs
     lhs.height *= rhs
 }
+@inlinable
 @inline(__always)
 public func /= (lhs: inout Size, rhs: Double) {
     lhs.width /= rhs
     lhs.height /= rhs
 }
+@inlinable
 @inline(__always)
 public func += (lhs: inout Size, rhs: Size) {
     lhs.width += rhs.width
     lhs.height += rhs.height
 }
+@inlinable
 @inline(__always)
 public func -= (lhs: inout Size, rhs: Size) {
     lhs.width -= rhs.width
@@ -159,24 +177,28 @@ public struct Rect: Hashable {
     public var origin : Point
     public var size : Size
     
+    @inlinable
     @inline(__always)
     public init() {
         self.origin = Point()
         self.size = Size()
     }
     
+    @inlinable
     @inline(__always)
     public init(origin: Point, size: Size) {
         self.origin = origin
         self.size = size
     }
     
+    @inlinable
     @inline(__always)
     public init(x: Double, y: Double, width: Double, height: Double) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
     
+    @inlinable
     @inline(__always)
     public init(x: Int, y: Int, width: Int, height: Int) {
         self.origin = Point(x: x, y: y)
@@ -194,6 +216,7 @@ extension Rect: CustomStringConvertible {
 
 extension Rect : Codable {
     
+    @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
@@ -201,6 +224,7 @@ extension Rect : Codable {
         self.size = try container.decode(Size.self)
     }
     
+    @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
@@ -310,6 +334,7 @@ extension Rect {
 
 extension Rect {
     
+    @inlinable
     @inline(__always)
     public func aspectFit(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFit(bound.size))
@@ -317,6 +342,7 @@ extension Rect {
         return rect
     }
     
+    @inlinable
     @inline(__always)
     public func aspectFill(bound: Rect) -> Rect {
         var rect = Rect(origin: Point(), size: self.size.aspectFill(bound.size))
@@ -340,6 +366,7 @@ extension Rect {
         return [a, b, c, d]
     }
     
+    @inlinable
     @inline(__always)
     public static func bound<S : Sequence>(_ points: S) -> Rect where S.Element == Point {
         
@@ -367,6 +394,7 @@ extension Rect {
 
 extension Rect {
     
+    @inlinable
     @inline(__always)
     public func union(_ other : Rect) -> Rect {
         let minX = min(self.minX, other.minX)
@@ -375,6 +403,7 @@ extension Rect {
         let maxY = max(self.maxY, other.maxY)
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
+    @inlinable
     @inline(__always)
     public func intersect(_ other : Rect) -> Rect {
         let minX = max(self.minX, other.minX)
@@ -383,30 +412,36 @@ extension Rect {
         let _height = max(0, min(self.maxY, other.maxY) - minY)
         return Rect(x: minX, y: minY, width: _width, height: _height)
     }
+    @inlinable
     @inline(__always)
     public func inset(dx: Double, dy: Double) -> Rect {
         let rect = self.standardized
         return Rect(x: rect.x + dx, y: rect.y + dy, width: rect.width - 2 * dx, height: rect.height - 2 * dy)
     }
+    @inlinable
     @inline(__always)
     public func inset(top: Double, left: Double, right: Double, bottom: Double) -> Rect {
         let rect = self.standardized
         return Rect(x: rect.x + left, y: rect.y + top, width: rect.width - left - right, height: rect.height - top - bottom)
     }
+    @inlinable
     @inline(__always)
     public func offset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
     }
+    @inlinable
     @inline(__always)
     public func contains(_ point: Point) -> Bool {
         return minX...maxX ~= point.x && minY...maxY ~= point.y
     }
+    @inlinable
     @inline(__always)
     public func contains(_ rect: Rect) -> Bool {
         let a = Point(x: rect.minX, y: rect.minY)
         let b = Point(x: rect.maxX, y: rect.maxY)
         return self.contains(a) && self.contains(b)
     }
+    @inlinable
     @inline(__always)
     public func isIntersect(_ rect: Rect) -> Bool {
         return self.minX < rect.maxX && self.maxX > rect.minX && self.minY < rect.maxY && self.maxY > rect.minY
@@ -415,6 +450,7 @@ extension Rect {
 
 extension Rect {
     
+    @inlinable
     @inline(__always)
     public func apply(_ transform: SDTransform) -> Rect? {
         
@@ -452,25 +488,30 @@ extension Rect {
     }
 }
 
+@inlinable
 @inline(__always)
 public func *(lhs: Double, rhs: Rect) -> Rect {
     return Rect(origin: lhs * rhs.origin, size: lhs * rhs.size)
 }
+@inlinable
 @inline(__always)
 public func *(lhs: Rect, rhs: Double) -> Rect {
     return Rect(origin: lhs.origin * rhs, size: lhs.size * rhs)
 }
 
+@inlinable
 @inline(__always)
 public func /(lhs: Rect, rhs: Double) -> Rect {
     return Rect(origin: lhs.origin / rhs, size: lhs.size / rhs)
 }
 
+@inlinable
 @inline(__always)
 public func *= (lhs: inout Rect, rhs: Double) {
     lhs.origin *= rhs
     lhs.size *= rhs
 }
+@inlinable
 @inline(__always)
 public func /= (lhs: inout Rect, rhs: Double) {
     lhs.origin /= rhs

@@ -39,6 +39,7 @@ public struct SDTransform : Hashable {
     public var e: Double
     public var f: Double
     
+    @inlinable
     @inline(__always)
     public init(a: Double, b: Double, c: Double, d: Double, e: Double, f: Double) {
         self.a = a
@@ -60,6 +61,7 @@ extension SDTransform : CustomStringConvertible {
 
 extension SDTransform : Codable {
     
+    @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
@@ -71,6 +73,7 @@ extension SDTransform : Codable {
         self.f  = try container.decode(Double.self)
     }
     
+    @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
@@ -146,6 +149,7 @@ extension SDTransform {
     ///     ⎜ -sin(a) cos(a) 0 ⎟
     ///     ⎝    0      0    1 ⎠
     ///
+    @inlinable
     @inline(__always)
     public static func rotate(_ angle: Double) -> SDTransform {
         
@@ -160,6 +164,7 @@ extension SDTransform {
     ///     ⎜ tan(a) 1 0 ⎟
     ///     ⎝   0    0 1 ⎠
     ///
+    @inlinable
     @inline(__always)
     public static func skewX(_ angle: Double) -> SDTransform {
         
@@ -174,6 +179,7 @@ extension SDTransform {
     ///     ⎜ 0   1    0 ⎟
     ///     ⎝ 0   0    1 ⎠
     ///
+    @inlinable
     @inline(__always)
     public static func skewY(_ angle: Double) -> SDTransform {
         
@@ -188,6 +194,7 @@ extension SDTransform {
     ///     ⎜ 0 y 0 ⎟
     ///     ⎝ 0 0 1 ⎠
     ///
+    @inlinable
     @inline(__always)
     public static func scale(_ scale: Double) -> SDTransform {
         
@@ -202,6 +209,7 @@ extension SDTransform {
     ///     ⎜ 0 y 0 ⎟
     ///     ⎝ 0 0 1 ⎠
     ///
+    @inlinable
     @inline(__always)
     public static func scale(x: Double = 1, y: Double = 1) -> SDTransform {
         
@@ -216,6 +224,7 @@ extension SDTransform {
     ///     ⎜ 0 1 0 ⎟
     ///     ⎝ x y 1 ⎠
     ///
+    @inlinable
     @inline(__always)
     public static func translate(x: Double = 0, y: Double = 0) -> SDTransform {
         
@@ -230,6 +239,7 @@ extension SDTransform {
     ///     ⎜  0 1 0 ⎟
     ///     ⎝ 2x 0 1 ⎠
     ///
+    @inlinable
     @inline(__always)
     public static func reflectX(_ x: Double = 0) -> SDTransform {
         
@@ -244,6 +254,7 @@ extension SDTransform {
     ///     ⎜ 0 -1 0 ⎟
     ///     ⎝ 0 2y 1 ⎠
     ///
+    @inlinable
     @inline(__always)
     public static func reflectY(_ y: Double = 0) -> SDTransform {
         
@@ -256,6 +267,7 @@ extension SDTransform : Multiplicative {
     
 }
 
+@inlinable
 @inline(__always)
 public func *(lhs: SDTransform, rhs: SDTransform) -> SDTransform {
     let a = lhs.a * rhs.a + lhs.d * rhs.b
@@ -267,16 +279,19 @@ public func *(lhs: SDTransform, rhs: SDTransform) -> SDTransform {
     return SDTransform(a: a, b: b, c: c, d: d, e: e, f: f)
 }
 
+@inlinable
 @inline(__always)
 public func *=(lhs: inout SDTransform, rhs: SDTransform) {
     lhs = lhs * rhs
 }
 
+@inlinable
 @inline(__always)
 public func *(lhs: Point, rhs: SDTransform) -> Point {
     return Point(x: lhs.x * rhs.a + lhs.y * rhs.b + rhs.c, y: lhs.x * rhs.d + lhs.y * rhs.e + rhs.f)
 }
 
+@inlinable
 @inline(__always)
 public func *=(lhs: inout Point, rhs: SDTransform) {
     lhs = lhs * rhs

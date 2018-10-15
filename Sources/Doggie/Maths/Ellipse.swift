@@ -28,17 +28,20 @@ public struct Radius : Hashable {
     public var x: Double
     public var y: Double
     
+    @inlinable
     @inline(__always)
     public init() {
         self.x = 0
         self.y = 0
     }
     
+    @inlinable
     @inline(__always)
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
+    @inlinable
     @inline(__always)
     public init(x: Int, y: Int) {
         self.x = Double(x)
@@ -56,6 +59,7 @@ extension Radius: CustomStringConvertible {
 
 extension Radius : Codable {
     
+    @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
@@ -63,6 +67,7 @@ extension Radius : Codable {
         self.y = try container.decode(Double.self)
     }
     
+    @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
@@ -71,11 +76,13 @@ extension Radius : Codable {
     }
 }
 
+@inlinable
 @inline(__always)
 public func Ellipse(_ t: Double, _ p: Point, _ r: Radius) -> Point {
     return Point(x: r.x * cos(t) + p.x, y: r.y * sin(t) + p.y)
 }
 
+@inlinable
 @inline(__always)
 public func EllipseRadius(_ p0: Point, _ p1: Point, _ r: Radius, _ rotate: Double) -> Radius {
     let _p = p1 - p0
@@ -133,6 +140,7 @@ public func EllipseCenter(_ r: Radius, _ rotate: Double, _ a: Point, _ b: Point)
 ///     ⎜ d e f ⎟ ⎜ B sin(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
+@inlinable
 @inline(__always)
 public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
     return atan2(r.y * b, r.x * a)
@@ -145,6 +153,7 @@ public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
 ///     ⎜ d e f ⎟ ⎜ B sin(t) ⎟
 ///     ⎝ 0 0 1 ⎠ ⎝    1     ⎠
 ///
+@inlinable
 @inline(__always)
 public func EllipseBound(_ center: Point, _ r: Radius, _ matrix: SDTransform) -> Rect {
     
@@ -171,6 +180,7 @@ public func EllipseBound(_ center: Point, _ r: Radius, _ matrix: SDTransform) ->
 
 // MARK: Area
 
+@inlinable
 @inline(__always)
 public func ArcSignedArea(_ startAngle: Double, _ endAngle: Double, _ center: Point, _ radius: Radius) -> Double {
     

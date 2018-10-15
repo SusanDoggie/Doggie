@@ -32,6 +32,7 @@ public struct CubicBezier<Element : ScalarMultiplicative> : Equatable, BezierPro
     public var p2: Element
     public var p3: Element
     
+    @inlinable
     @inline(__always)
     public init() {
         self.p0 = Element()
@@ -40,6 +41,7 @@ public struct CubicBezier<Element : ScalarMultiplicative> : Equatable, BezierPro
         self.p3 = Element()
     }
     
+    @inlinable
     @inline(__always)
     public init(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) {
         self.p0 = p0
@@ -59,6 +61,7 @@ extension Bezier {
 
 extension CubicBezier: Decodable where Element : Decodable {
     
+    @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
@@ -71,6 +74,7 @@ extension CubicBezier: Decodable where Element : Decodable {
 
 extension CubicBezier: Encodable where Element : Encodable {
     
+    @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
@@ -83,11 +87,13 @@ extension CubicBezier: Encodable where Element : Encodable {
 
 extension CubicBezier {
     
+    @inlinable
     @inline(__always)
     public func map(_ transform: (Element) -> Element) -> CubicBezier {
         return CubicBezier(transform(p0), transform(p1), transform(p2), transform(p3))
     }
     
+    @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
         var accumulator = initialResult
@@ -139,6 +145,7 @@ extension CubicBezier {
 
 extension CubicBezier {
     
+    @inlinable
     @inline(__always)
     public func eval(_ t: Double) -> Element {
         let t2 = t * t
@@ -174,6 +181,7 @@ extension CubicBezier {
 
 extension CubicBezier {
     
+    @inlinable
     @inline(__always)
     public func split(_ t: Double) -> (CubicBezier, CubicBezier) {
         let q0 = p0 + t * (p1 - p0)
@@ -188,6 +196,7 @@ extension CubicBezier {
 
 extension CubicBezier {
     
+    @inlinable
     @inline(__always)
     public func derivative() -> QuadBezier<Element> {
         return QuadBezier<Element>(3 * (p1 - p0), 3 * (p2 - p1), 3 * (p3 - p2))
@@ -299,6 +308,7 @@ extension CubicBezier where Element == Point {
 
 extension CubicBezier where Element == Point {
     
+    @inlinable
     @inline(__always)
     public func selfIntersect() -> (Double, Double)? {
         
@@ -493,10 +503,12 @@ extension CubicBezier where Element == Point {
     }
 }
 
+@inlinable
 @inline(__always)
 public func + <Element>(lhs: CubicBezier<Element>, rhs: CubicBezier<Element>) -> CubicBezier<Element> {
     return CubicBezier(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1, lhs.p2 + rhs.p2, lhs.p3 + rhs.p3)
 }
+@inlinable
 @inline(__always)
 public func - <Element>(lhs: CubicBezier<Element>, rhs: CubicBezier<Element>) -> CubicBezier<Element> {
     return CubicBezier(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1, lhs.p2 - rhs.p2, lhs.p3 - rhs.p3)

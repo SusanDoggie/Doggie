@@ -25,6 +25,7 @@
 
 extension ImageContext {
     
+    @inlinable
     @inline(__always)
     public func draw<T>(stencil: StencilTexture<T>, transform: SDTransform, color: Pixel.Model) {
         
@@ -80,6 +81,7 @@ extension ImageContext {
         }
     }
     
+    @inlinable
     @inline(__always)
     public func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Pixel.Model {
         

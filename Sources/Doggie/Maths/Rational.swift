@@ -28,12 +28,14 @@ public struct Rational: Comparable, Hashable {
     public let numerator: Int64
     public let denominator: Int64
     
+    @inlinable
     @inline(__always)
     public init<T: BinaryInteger>(_ numerator: T) {
         self.numerator = Int64(numerator)
         self.denominator = 1
     }
     
+    @inlinable
     @inline(__always)
     public init<T: UnsignedInteger>(_ numerator: T, _ denominator: T) {
         
@@ -51,6 +53,7 @@ public struct Rational: Comparable, Hashable {
         }
     }
     
+    @inlinable
     @inline(__always)
     public init<T: SignedInteger>(_ numerator: T, _ denominator: T) {
         
@@ -73,6 +76,7 @@ public struct Rational: Comparable, Hashable {
         }
     }
     
+    @inlinable
     @inline(__always)
     public init<T: BinaryFloatingPoint>(_ value: T) {
         
@@ -98,11 +102,13 @@ public struct Rational: Comparable, Hashable {
 
 extension Rational: ExpressibleByFloatLiteral {
     
+    @inlinable
     @inline(__always)
     public init(integerLiteral value: Int64) {
         self.init(value)
     }
     
+    @inlinable
     @inline(__always)
     public init(floatLiteral value: Double) {
         self.init(value)
@@ -119,6 +125,7 @@ extension Rational: CustomStringConvertible {
 
 extension Rational: SignedNumeric {
     
+    @inlinable
     @inline(__always)
     public init?<T>(exactly source: T) where T : BinaryInteger {
         guard let value = Int64(exactly: source) else { return nil }
@@ -127,6 +134,7 @@ extension Rational: SignedNumeric {
     
     public typealias Magnitude = Rational
     
+    @inlinable
     @inline(__always)
     public static func abs(_ x: Rational) -> Rational {
         return x.magnitude
@@ -153,11 +161,13 @@ extension Rational {
 
 extension Rational {
     
+    @inlinable
     @inline(__always)
     public func distance(to other: Rational) -> Rational {
         return other - self
     }
     
+    @inlinable
     @inline(__always)
     public func advanced(by n: Rational) -> Rational {
         return self + n
@@ -168,62 +178,74 @@ extension Rational : ScalarProtocol {
     
     public typealias Scalar = Rational
     
+    @inlinable
     @inline(__always)
     public init() {
         self.init(0)
     }
 }
 
+@inlinable
 @inline(__always)
 public func <(lhs: Rational, rhs: Rational) -> Bool {
     return lhs.numerator * rhs.denominator < lhs.denominator * rhs.numerator
 }
 
+@inlinable
 @inline(__always)
 public prefix func +(x: Rational) -> Rational {
     return x
 }
 
+@inlinable
 @inline(__always)
 public prefix func -(x: Rational) -> Rational {
     return Rational(-x.numerator, x.denominator)
 }
 
+@inlinable
 @inline(__always)
 public func +(lhs: Rational, rhs: Rational) -> Rational {
     return lhs.denominator == rhs.denominator ? Rational(lhs.numerator + rhs.numerator, lhs.denominator) : Rational(lhs.numerator * rhs.denominator + lhs.denominator * rhs.numerator, lhs.denominator * rhs.denominator)
 }
 
+@inlinable
 @inline(__always)
 public func -(lhs: Rational, rhs: Rational) -> Rational {
     return lhs.denominator == rhs.denominator ? Rational(lhs.numerator - rhs.numerator, lhs.denominator) : Rational(lhs.numerator * rhs.denominator - lhs.denominator * rhs.numerator, lhs.denominator * rhs.denominator)
 }
 
+@inlinable
 @inline(__always)
 public func *(lhs: Rational, rhs: Rational) -> Rational {
     return Rational(lhs.numerator * rhs.numerator, lhs.denominator * rhs.denominator)
 }
 
+@inlinable
 @inline(__always)
 public func /(lhs: Rational, rhs: Rational) -> Rational {
     return Rational(lhs.numerator * rhs.denominator, lhs.denominator * rhs.numerator)
 }
 
+@inlinable
 @inline(__always)
 public func +=(lhs: inout Rational, rhs: Rational) {
     lhs = lhs + rhs
 }
 
+@inlinable
 @inline(__always)
 public func -=(lhs: inout Rational, rhs: Rational) {
     lhs = lhs - rhs
 }
 
+@inlinable
 @inline(__always)
 public func *=(lhs: inout Rational, rhs: Rational) {
     lhs = lhs * rhs
 }
 
+@inlinable
 @inline(__always)
 public func /=(lhs: inout Rational, rhs: Rational) {
     lhs = lhs / rhs

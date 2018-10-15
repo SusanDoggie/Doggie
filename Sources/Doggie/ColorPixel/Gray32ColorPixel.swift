@@ -28,17 +28,20 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
     public var w: UInt16
     public var a: UInt16
     
+    @inlinable
     @inline(__always)
     public init() {
         self.w = 0
         self.a = 0
     }
+    @inlinable
     @inline(__always)
     public init(white: UInt16, opacity: UInt16 = 0xFFFF) {
         self.w = white
         self.a = opacity
     }
     
+    @inlinable
     @inline(__always)
     public init(color: GrayColorModel, opacity: Double) {
         self.w = UInt16((color.white * 65535).clamped(to: 0...65535).rounded())
@@ -69,6 +72,7 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
         return a == 65535
     }
     
+    @inlinable
     @inline(__always)
     public func with(opacity: Double) -> Gray32ColorPixel {
         var c = self

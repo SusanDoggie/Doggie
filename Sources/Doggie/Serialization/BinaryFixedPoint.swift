@@ -42,6 +42,7 @@ public protocol BinaryFixedPoint : Numeric, Hashable, Strideable, CustomStringCo
 
 extension BinaryFloatingPoint {
     
+    @inlinable
     @inline(__always)
     public init<T: BinaryFixedPoint>(_ value: T) where T.RepresentingValue == Self {
         self = value.representingValue
@@ -50,22 +51,26 @@ extension BinaryFloatingPoint {
 
 extension BinaryFixedPoint {
     
+    @inlinable
     @inline(__always)
     public init(integerLiteral value: RepresentingValue.IntegerLiteralType) {
         self.init(representingValue: RepresentingValue(integerLiteral: value))
     }
     
+    @inlinable
     @inline(__always)
     public init(floatLiteral value: RepresentingValue.FloatLiteralType) {
         self.init(representingValue: RepresentingValue(floatLiteral: value))
     }
     
+    @inlinable
     @inline(__always)
     public init?<T>(exactly source: T) where T : BinaryInteger {
         guard let value = RepresentingValue(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
     
+    @inlinable
     @inline(__always)
     public init(_ value: RepresentingValue) {
         self.init(representingValue: value)
@@ -74,6 +79,7 @@ extension BinaryFixedPoint {
 
 extension BinaryFixedPoint where BitPattern : ByteOutputStreamable {
     
+    @inlinable
     @inline(__always)
     public func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(bitPattern)
@@ -82,6 +88,7 @@ extension BinaryFixedPoint where BitPattern : ByteOutputStreamable {
 
 extension BinaryFixedPoint where BitPattern : ByteDecodable {
     
+    @inlinable
     @inline(__always)
     public init(from data: inout Data) throws {
         self.init(bitPattern: try BitPattern(from: &data))
@@ -103,6 +110,7 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
         return (1 << s) - 1
     }
     
+    @inlinable
     @inline(__always)
     public init(representingValue: RepresentingValue) {
         if representingValue.exponentBitPattern == 0 && representingValue.significandBitPattern == 0 {
@@ -184,56 +192,67 @@ extension BinaryFixedPoint {
         return Self(bitPattern: BitPattern.max)
     }
     
+    @inlinable
     @inline(__always)
     public func distance(to other: Self) -> RepresentingValue.Stride {
         return self.representingValue.distance(to: other.representingValue)
     }
     
+    @inlinable
     @inline(__always)
     public func advanced(by n: RepresentingValue.Stride) -> Self {
         return Self(representingValue: self.representingValue.advanced(by: n))
     }
     
+    @inlinable
     @inline(__always)
     public func remainder(dividingBy other: Self) -> Self {
         return self - other * (self / other).rounded(.toNearestOrEven)
     }
     
+    @inlinable
     @inline(__always)
     public mutating func formRemainder(dividingBy other: Self) {
         self = self.remainder(dividingBy: other)
     }
     
+    @inlinable
     @inline(__always)
     public func truncatingRemainder(dividingBy other: Self) -> Self {
         return self - other * (self / other).rounded(.towardZero)
     }
     
+    @inlinable
     @inline(__always)
     public mutating func formTruncatingRemainder(dividingBy other: Self) {
         self = self.truncatingRemainder(dividingBy: other)
     }
     
+    @inlinable
     @inline(__always)
     public func squareRoot() -> Self {
         return Self(representingValue: self.representingValue.squareRoot())
     }
     
+    @inlinable
     @inline(__always)
     public mutating func formSquareRoot() {
         self.representingValue.formSquareRoot()
     }
     
+    @inlinable
     @inline(__always)
     public func addingProduct(_ lhs: Self, _ rhs: Self) -> Self {
         return self + lhs * rhs
     }
     
+    @inlinable
     @inline(__always)
     public mutating func addProduct(_ lhs: Self, _ rhs: Self) {
         self += lhs * rhs
     }
     
+    @inlinable
     @inline(__always)
     public func rounded(_ rule: FloatingPointRoundingRule = .toNearestOrAwayFromZero) -> Self {
         
@@ -262,21 +281,25 @@ extension BinaryFixedPoint {
         }
     }
     
+    @inlinable
     @inline(__always)
     public mutating func round(_ rule: FloatingPointRoundingRule = .toNearestOrAwayFromZero) {
         self = self.rounded(rule)
     }
     
+    @inlinable
     @inline(__always)
     public func isEqual(to other: Self) -> Bool {
         return self.bitPattern == other.bitPattern
     }
     
+    @inlinable
     @inline(__always)
     public func isLess(than other: Self) -> Bool {
         return self.bitPattern < other.bitPattern
     }
     
+    @inlinable
     @inline(__always)
     public func isLessThanOrEqualTo(_ other: Self) -> Bool {
         return self.bitPattern <= other.bitPattern
@@ -285,33 +308,39 @@ extension BinaryFixedPoint {
 
 extension BinaryFixedPoint {
     
+    @inlinable
     @inline(__always)
     public static prefix func +(x: Self) -> Self {
         return x
     }
     
+    @inlinable
     @inline(__always)
     public static func +(lhs: Self, rhs: Self) -> Self {
         let (value, overflow) = lhs.bitPattern.addingReportingOverflow(rhs.bitPattern)
         return overflow ? (rhs < 0 ? .min : .max) : Self(bitPattern: value)
     }
     
+    @inlinable
     @inline(__always)
     public static func +=(lhs: inout Self, rhs: Self) {
         lhs = lhs + rhs
     }
     
+    @inlinable
     @inline(__always)
     public static func -(lhs: Self, rhs: Self) -> Self {
         let (value, overflow) = lhs.bitPattern.subtractingReportingOverflow(rhs.bitPattern)
         return overflow ? (rhs < 0 ? .max : .min) : Self(bitPattern: value)
     }
     
+    @inlinable
     @inline(__always)
     public static func -=(lhs: inout Self, rhs: Self) {
         lhs = lhs - rhs
     }
     
+    @inlinable
     @inline(__always)
     public static func *(lhs: Self, rhs: Self) -> Self {
         let base: BitPattern = 1 << Self.fractionBitCount
@@ -319,11 +348,13 @@ extension BinaryFixedPoint {
         return Self(bitPattern: value)
     }
     
+    @inlinable
     @inline(__always)
     public static func *=(lhs: inout Self, rhs: Self) {
         lhs = lhs * rhs
     }
     
+    @inlinable
     @inline(__always)
     public static func /(lhs: Self, rhs: Self) -> Self {
         let base: BitPattern = 1 << Self.fractionBitCount
@@ -331,26 +362,31 @@ extension BinaryFixedPoint {
         return Self(bitPattern: value)
     }
     
+    @inlinable
     @inline(__always)
     public static func /=(lhs: inout Self, rhs: Self) {
         lhs = lhs / rhs
     }
     
+    @inlinable
     @inline(__always)
     public static func <(lhs: Self, rhs: Self) -> Bool {
         return lhs.bitPattern < rhs.bitPattern
     }
     
+    @inlinable
     @inline(__always)
     public static func <=(lhs: Self, rhs: Self) -> Bool {
         return lhs.bitPattern <= rhs.bitPattern
     }
     
+    @inlinable
     @inline(__always)
     public static func >(lhs: Self, rhs: Self) -> Bool {
         return lhs.bitPattern > rhs.bitPattern
     }
     
+    @inlinable
     @inline(__always)
     public static func >=(lhs: Self, rhs: Self) -> Bool {
         return lhs.bitPattern >= rhs.bitPattern
@@ -359,6 +395,7 @@ extension BinaryFixedPoint {
 
 extension BinaryFixedPoint where Self : SignedNumeric, BitPattern : SignedNumeric {
     
+    @inlinable
     @inline(__always)
     public static prefix func -(x: Self) -> Self {
         if x < 0 {
@@ -368,6 +405,7 @@ extension BinaryFixedPoint where Self : SignedNumeric, BitPattern : SignedNumeri
         }
     }
     
+    @inlinable
     @inline(__always)
     public mutating func negate() {
         self = -self

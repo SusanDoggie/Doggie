@@ -30,6 +30,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
     public var g: UInt16
     public var b: UInt16
     
+    @inlinable
     @inline(__always)
     public init() {
         self.a = 0
@@ -37,6 +38,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         self.g = 0
         self.b = 0
     }
+    @inlinable
     @inline(__always)
     public init(red: UInt16, green: UInt16, blue: UInt16, opacity: UInt16 = 0xFFFF) {
         self.a = opacity
@@ -44,6 +46,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         self.g = green
         self.b = blue
     }
+    @inlinable
     @inline(__always)
     public init(_ hex: UInt64) {
         self.a = UInt16((hex >> 48) & 0xFFFF)
@@ -51,6 +54,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         self.g = UInt16((hex >> 16) & 0xFFFF)
         self.b = UInt16(hex & 0xFFFF)
     }
+    @inlinable
     @inline(__always)
     public init(color: RGBColorModel, opacity: Double) {
         self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
@@ -94,6 +98,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         return a == 65535
     }
     
+    @inlinable
     @inline(__always)
     public func with(opacity: Double) -> ARGB64ColorPixel {
         var c = self

@@ -34,6 +34,7 @@ public struct XYZColorModel : ColorModelProtocol {
         return 3
     }
     
+    @inlinable
     @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
@@ -47,6 +48,7 @@ public struct XYZColorModel : ColorModelProtocol {
     public var y: Double
     public var z: Double
     
+    @inlinable
     @inline(__always)
     public init() {
         self.x = 0
@@ -54,6 +56,7 @@ public struct XYZColorModel : ColorModelProtocol {
         self.z = 0
     }
     
+    @inlinable
     @inline(__always)
     public init(x: Double, y: Double, z: Double) {
         self.x = x
@@ -61,11 +64,13 @@ public struct XYZColorModel : ColorModelProtocol {
         self.z = z
     }
     
+    @inlinable
     @inline(__always)
     public init(luminance: Double, point: Point) {
         self.init(luminance: luminance, x: point.x, y: point.y)
     }
     
+    @inlinable
     @inline(__always)
     public init(luminance: Double, x: Double, y: Double) {
         if y == 0 {
@@ -142,21 +147,25 @@ extension XYZColorModel {
 
 extension XYZColorModel {
     
+    @inlinable
     @inline(__always)
     public func min() -> Double {
         return Swift.min(x, y, z)
     }
     
+    @inlinable
     @inline(__always)
     public func max() -> Double {
         return Swift.max(x, y, z)
     }
     
+    @inlinable
     @inline(__always)
     public func map(_ transform: (Double) -> Double) -> XYZColorModel {
         return XYZColorModel(x: transform(x), y: transform(y), z: transform(z))
     }
     
+    @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
@@ -166,6 +175,7 @@ extension XYZColorModel {
         return accumulator
     }
     
+    @inlinable
     @inline(__always)
     public func combined(_ other: XYZColorModel, _ transform: (Double, Double) -> Double) -> XYZColorModel {
         return XYZColorModel(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
@@ -174,6 +184,7 @@ extension XYZColorModel {
 
 extension XYZColorModel {
     
+    @inlinable
     @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.x = Double(floatComponents.x)
@@ -246,21 +257,25 @@ extension XYZColorModel {
 
 extension XYZColorModel.FloatComponents {
     
+    @inlinable
     @inline(__always)
     public func min() -> Float {
         return Swift.min(x, y, z)
     }
     
+    @inlinable
     @inline(__always)
     public func max() -> Float {
         return Swift.max(x, y, z)
     }
     
+    @inlinable
     @inline(__always)
     public func map(_ transform: (Float) -> Float) -> XYZColorModel.FloatComponents {
         return XYZColorModel.FloatComponents(x: transform(x), y: transform(y), z: transform(z))
     }
     
+    @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
@@ -270,16 +285,19 @@ extension XYZColorModel.FloatComponents {
         return accumulator
     }
     
+    @inlinable
     @inline(__always)
     public func combined(_ other: XYZColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> XYZColorModel.FloatComponents {
         return XYZColorModel.FloatComponents(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
     }
 }
 
+@inlinable
 @inline(__always)
 public func * (lhs: XYZColorModel, rhs: Matrix) -> XYZColorModel {
     return XYZColorModel(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
 }
+@inlinable
 @inline(__always)
 public func *= (lhs: inout XYZColorModel, rhs: Matrix) {
     lhs = lhs * rhs

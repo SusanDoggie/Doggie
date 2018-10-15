@@ -34,6 +34,7 @@ public struct CMYColorModel : ColorModelProtocol {
         return 3
     }
     
+    @inlinable
     @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
@@ -44,6 +45,7 @@ public struct CMYColorModel : ColorModelProtocol {
     public var magenta: Double
     public var yellow: Double
     
+    @inlinable
     @inline(__always)
     public init(cyan: Double, magenta: Double, yellow: Double) {
         self.cyan = cyan
@@ -74,6 +76,7 @@ public struct CMYColorModel : ColorModelProtocol {
 
 extension CMYColorModel {
     
+    @inlinable
     @inline(__always)
     public init() {
         self.cyan = 0
@@ -152,21 +155,25 @@ extension CMYColorModel {
 
 extension CMYColorModel {
     
+    @inlinable
     @inline(__always)
     public func min() -> Double {
         return Swift.min(cyan, magenta, yellow)
     }
     
+    @inlinable
     @inline(__always)
     public func max() -> Double {
         return Swift.max(cyan, magenta, yellow)
     }
     
+    @inlinable
     @inline(__always)
     public func map(_ transform: (Double) -> Double) -> CMYColorModel {
         return CMYColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
     
+    @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
@@ -176,6 +183,7 @@ extension CMYColorModel {
         return accumulator
     }
     
+    @inlinable
     @inline(__always)
     public func combined(_ other: CMYColorModel, _ transform: (Double, Double) -> Double) -> CMYColorModel {
         return CMYColorModel(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
@@ -184,6 +192,7 @@ extension CMYColorModel {
 
 extension CMYColorModel {
     
+    @inlinable
     @inline(__always)
     public init(floatComponents: FloatComponents) {
         self.cyan = Double(floatComponents.cyan)
@@ -256,21 +265,25 @@ extension CMYColorModel {
 
 extension CMYColorModel.FloatComponents {
     
+    @inlinable
     @inline(__always)
     public func min() -> Float {
         return Swift.min(cyan, magenta, yellow)
     }
     
+    @inlinable
     @inline(__always)
     public func max() -> Float {
         return Swift.max(cyan, magenta, yellow)
     }
     
+    @inlinable
     @inline(__always)
     public func map(_ transform: (Float) -> Float) -> CMYColorModel.FloatComponents {
         return CMYColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
     
+    @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
         var accumulator = initialResult
@@ -280,6 +293,7 @@ extension CMYColorModel.FloatComponents {
         return accumulator
     }
     
+    @inlinable
     @inline(__always)
     public func combined(_ other: CMYColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> CMYColorModel.FloatComponents {
         return CMYColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))

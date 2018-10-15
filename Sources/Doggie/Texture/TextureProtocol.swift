@@ -319,8 +319,8 @@ extension _TextureProtocolImplement {
 
 extension WrappingMode {
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func addressing(_ x: Int, _ upperbound: Int) -> (Bool, Int) {
         switch self {
         case .none: return 0..<upperbound ~= x ? (true, x) : (false, x.clamped(to: 0..<upperbound))
@@ -338,8 +338,8 @@ extension WrappingMode {
 
 extension _TextureProtocolImplement {
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func convolve(point: Point, kernel_size: Int, kernel: (Pixel.Scalar) -> Pixel.Scalar) -> Pixel {
         
         var pixel = Pixel()
@@ -365,8 +365,8 @@ extension _TextureProtocolImplement {
         return t == 0 ? Pixel() : pixel / t
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func sampling2(point: Point, sampler: (Pixel.Scalar, Pixel, Pixel) -> Pixel) -> Pixel {
         
         let _i = floor(point.x)
@@ -387,8 +387,8 @@ extension _TextureProtocolImplement {
         return sampler(_ty, sampler(_tx, _s1, _s2), sampler(_tx, _s3, _s4))
     }
     
+    @inlinable
     @inline(__always)
-    @usableFromInline
     func sampling4(point: Point, sampler: (Pixel.Scalar, Pixel, Pixel, Pixel, Pixel) -> Pixel) -> Pixel {
         
         let _i = floor(point.x)
