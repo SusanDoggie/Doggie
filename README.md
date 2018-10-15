@@ -131,6 +131,7 @@ Check out the Doggie.xcworkspace and build the project. It's suggested building 
 - [x] VMTX
 - [x] LOCA
 - [x] GLYF
+- [x] SBIX
 - [x] CFF
 - [ ] CFF2
 - [ ] KERN

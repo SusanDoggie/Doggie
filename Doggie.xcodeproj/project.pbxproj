@@ -51,6 +51,7 @@
 		0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975D1E4D6732005CF664 /* NSImage.swift */; };
 		0A1158471EF4E04700EFE3E3 /* iccTagData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1158451EF4E04700EFE3E3 /* iccTagData.swift */; };
 		0A11968C212A74DD00B2D4DB /* Metal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A11968B212A74DD00B2D4DB /* Metal.swift */; };
+		0A1A68B12171A16C00EFF088 /* SFNTSBIX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A68B02171A16C00EFF088 /* SFNTSBIX.swift */; };
 		0A1C14281EF3C5A5001ADB7F /* ICCColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A95A59D1EF3906000D030D5 /* ICCColorSpace.swift */; };
 		0A20DD5020C91C570067558F /* BezierProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A20DD4F20C91C570067558F /* BezierProtocol.swift */; };
 		0A21070E1E5BEEBB00F1E00E /* PathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2107081E5BEEBB00F1E00E /* PathCoder.swift */; };
@@ -310,6 +311,7 @@
 		0A06975D1E4D6732005CF664 /* NSImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = NSImage.swift; sourceTree = "<group>"; };
 		0A1158451EF4E04700EFE3E3 /* iccTagData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccTagData.swift; sourceTree = "<group>"; };
 		0A11968B212A74DD00B2D4DB /* Metal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metal.swift; sourceTree = "<group>"; };
+		0A1A68B02171A16C00EFF088 /* SFNTSBIX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTSBIX.swift; sourceTree = "<group>"; };
 		0A20DD4F20C91C570067558F /* BezierProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierProtocol.swift; sourceTree = "<group>"; };
 		0A2107081E5BEEBB00F1E00E /* PathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PathCoder.swift; sourceTree = "<group>"; };
 		0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PathStroke.swift; sourceTree = "<group>"; };
@@ -807,6 +809,7 @@
 				0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */,
 				0A9ED9D31F5CF5AF00205C1B /* SFNTOS2.swift */,
 				0A9ED9D61F5D360E00205C1B /* SFNTGLYF.swift */,
+				0A1A68B02171A16C00EFF088 /* SFNTSBIX.swift */,
 				0A72EF171F54FED200F0550A /* SFNTCMAP.swift */,
 				0A5E8D4D1F57CC07000D51E3 /* SFNTMAXP.swift */,
 				0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */,
@@ -1371,6 +1374,7 @@
 				0A53E46F1E35AEF80060FB83 /* Json.swift in Sources */,
 				0A9F282E1EF0DB1F00E69976 /* CMYColorModel.swift in Sources */,
 				0A9F282B1EF0D9F000E69976 /* GrayColorModel.swift in Sources */,
+				0A1A68B12171A16C00EFF088 /* SFNTSBIX.swift in Sources */,
 				0A9D27E51F0CF629003638D3 /* BinaryFixedPoint.swift in Sources */,
 				0A8DD8791F1F2FC200457676 /* TIFFDecoder.swift in Sources */,
 				08458B2F1E2E627600D01813 /* Image.swift in Sources */,

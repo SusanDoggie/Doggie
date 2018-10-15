@@ -41,6 +41,7 @@ struct SFNTFontFace : FontFaceBase {
     var gpos: OTFGPOS?
     var gsub: OTFGSUB?
     var glyf: SFNTGLYF?
+    var sbix: SFNTSBIX?
     var cff: CFFFontFace?
     var cff2: CFF2Decoder?
     
@@ -86,6 +87,10 @@ struct SFNTFontFace : FontFaceBase {
             }
         }
         
+        if let sbix = table["sbix"] {
+            self.sbix = try SFNTSBIX(numberOfGlyphs: Int(maxp.numGlyphs), data: sbix)
+        }
+        
         if let cff2 = table["CFF2"] {
             
             self.cff2 = try CFF2Decoder(cff2)
@@ -98,7 +103,8 @@ struct SFNTFontFace : FontFaceBase {
             
             self.glyf = try SFNTGLYF(format: Int(head.indexToLocFormat), numberOfGlyphs: Int(maxp.numGlyphs), loca: loca, glyf: glyf)
             
-        } else {
+        } else if sbix != nil {
+            
             throw FontCollection.Error.InvalidFormat("outlines not found.")
         }
     }
@@ -129,12 +135,43 @@ extension SFNTFontFace {
         
         return []
     }
+    
+    func graphic(glyph: Int) -> [Font.Graphic]? {
+        
+        if let sbix = sbix {
+            
+            func fetch(_ strike: SFNTSBIX.Strike, glyph: Int) -> Font.Graphic? {
+                
+                guard let record = strike.glyph(glyph: glyph) else { return nil }
+                
+                let type: Font.GraphicType
+                
+                switch record.graphicType {
+                case "jpg ": type = .jpeg
+                case "png ": type = .png
+                case "tiff": type = .tiff
+                case "pdf ": type = .pdf
+                case "dupe": return record.data.count == 2 ? fetch(strike, glyph: Int(record.data.withUnsafeBytes { $0.pointee as BEUInt16 })) : nil
+                default: return nil
+                }
+                
+                return Font.Graphic(type: type, unitsPerEm: Double(strike.ppem), resolution: Double(strike.resolution), origin: Point(x: Double(record.originOffsetX), y: Double(record.originOffsetY)), data: record.data)
+            }
+            
+            return sbix.compactMap { fetch($0, glyph: glyph) }
+        }
+        
+        return nil
+    }
 }
 
 extension SFNTFontFace {
     
     var isVariationSelectors: Bool {
         return cmap.uvs != nil
+    }
+    var isGraphic: Bool {
+        return sbix != nil
     }
     
     func glyph(with unicode: UnicodeScalar) -> Int {

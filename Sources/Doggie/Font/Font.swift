@@ -26,8 +26,11 @@
 public protocol FontFaceBase {
     
     var isVariationSelectors: Bool { get }
+    var isGraphic: Bool { get }
     
     func shape(glyph: Int) -> [Shape.Component]
+    func graphic(glyph: Int) -> [Font.Graphic]?
+    
     func glyph(with unicode: UnicodeScalar) -> Int
     func glyph(with unicode: UnicodeScalar, _ uvs: UnicodeScalar) -> Int?
     func metric(glyph: Int) -> Font.Metric
@@ -115,7 +118,7 @@ extension Font {
         let lck = SDLock()
         
         var coveredCharacterSet: CharacterSet?
-        var glyphs: [Int: [Shape.Component]] = [:]
+        var glyphs: [Int: Shape] = [:]
     }
 }
 
@@ -175,24 +178,42 @@ extension Font {
 
 extension Font {
     
-    private func _shape(glyph: Int) -> [Shape.Component] {
+    public func shape(forGlyph glyph: Int) -> Shape {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         return cache.lck.synchronized {
             if cache.glyphs[glyph] == nil {
-                cache.glyphs[glyph] = base.shape(glyph: glyph).filter { $0.count != 0 }
+                cache.glyphs[glyph] = Shape(base.shape(glyph: glyph).filter { $0.count != 0 })
             }
-            return cache.glyphs[glyph]!
+            return cache.glyphs[glyph]! * SDTransform.scale(_pointScale)
         }
     }
     
-    public func boundary(forGlyph glyph: Int) -> Rect {
-        let _pointScale = self._pointScale
-        let bound = self._shape(glyph: glyph).reduce(nil) { $0?.union($1.boundary) ?? $1.boundary } ?? Rect()
-        return bound * _pointScale
+    public func graphic(glyph: Int) -> [Font.Graphic]? {
+        let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
+        return base.graphic(glyph: glyph)
+    }
+}
+
+extension Font {
+    
+    public enum GraphicType {
+        
+        case jpeg
+        case png
+        case tiff
+        case pdf
+        case svg
     }
     
-    public func shape(forGlyph glyph: Int) -> Shape {
-        return Shape(self._shape(glyph: glyph).map { $0 * SDTransform.scale(_pointScale) })
+    public struct Graphic {
+        
+        public var type: GraphicType
+        
+        public var unitsPerEm: Double
+        public var resolution: Double
+        public var origin: Point
+        
+        public var data: Data
     }
 }
 
@@ -288,6 +309,10 @@ extension Font {
     
     public var isVariationSelectors: Bool {
         return base.isVariationSelectors
+    }
+    
+    public var isGraphic: Bool {
+        return base.isGraphic
     }
     
     public var ascender: Double {

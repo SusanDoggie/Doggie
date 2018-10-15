@@ -61,7 +61,7 @@ extension SFNTGLYF {
     
     func outline(glyph: Int, tracing: Set<Int> = []) -> ([Point], [Shape.Component])? {
         
-        guard glyph < numberOfGlyphs else { return nil }
+        guard 0..<numberOfGlyphs ~= glyph else { return nil }
         
         var data = _glyfData(glyph: glyph)
         
