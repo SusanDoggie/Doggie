@@ -99,9 +99,10 @@ extension SFNTSBIX.Strike {
         
         guard endIndex >= startIndex + 8 else { return nil }
         
-        var data = self.data.dropFirst(startIndex).prefix(endIndex - startIndex)
+        let length = endIndex - startIndex
+        var data = self.data.dropFirst(startIndex).prefix(length)
         
-        guard data.count == endIndex - startIndex else { return nil }
+        guard data.count == length else { return nil }
         
         let originOffsetX = data.popFirst(2).withUnsafeBytes { $0.pointee as BEUInt16 }
         let originOffsetY = data.popFirst(2).withUnsafeBytes { $0.pointee as BEUInt16 }

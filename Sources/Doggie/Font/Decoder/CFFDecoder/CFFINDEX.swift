@@ -46,7 +46,7 @@ struct CFFINDEX : ByteDecodable, RandomAccessCollection {
             
             guard 1...4 ~= offSize else { throw FontCollection.Error.InvalidFormat("Invalid CFF INDEX format.") }
             
-            let offsetSize = Int(offSize) * Int(_count + 1)
+            let offsetSize = Int(offSize) * (Int(_count) + 1)
             self.offset = data.popFirst(offsetSize)
             guard offset.count == offsetSize else { throw ByteDecodeError.endOfData }
             
