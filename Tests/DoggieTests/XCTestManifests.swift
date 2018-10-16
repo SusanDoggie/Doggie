@@ -72,6 +72,15 @@ extension ImageTest {
     ]
 }
 
+extension PolynomialTest {
+    static let __allTests = [
+        ("testPolynomialDivPerformance", testPolynomialDivPerformance),
+        ("testPolynomialModPerformance", testPolynomialModPerformance),
+        ("testPolynomialMulPerformance", testPolynomialMulPerformance),
+        ("testPolynomialPowPerformance", testPolynomialPowPerformance),
+    ]
+}
+
 extension XMLTest {
     static let __allTests = [
         ("testXMLA", testXMLA),
@@ -85,6 +94,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(CompressionTest.__allTests),
         testCase(FourierTest.__allTests),
         testCase(ImageTest.__allTests),
+        testCase(PolynomialTest.__allTests),
         testCase(XMLTest.__allTests),
     ]
 }

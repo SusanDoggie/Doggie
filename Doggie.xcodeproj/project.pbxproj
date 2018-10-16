@@ -244,6 +244,7 @@
 		0AE71A041EF51DF80086923C /* AnyColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE71A021EF51DF80086923C /* AnyColorSpace.swift */; };
 		0AE762561EE9475400E926D5 /* CGColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE762541EE9475400E926D5 /* CGColorSpace.swift */; };
 		0AE762591EE9583400E926D5 /* CGImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE762571EE9583400E926D5 /* CGImage.swift */; };
+		0AEB4E0721758C0600939383 /* PolynomialTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEB4E0621758C0600939383 /* PolynomialTest.swift */; };
 		0AF2BA4D1FCD00D200B185BA /* iccTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF2BA4C1FCD00D200B185BA /* iccTransform.swift */; };
 		0AF566F820D21958003B243B /* Edges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF566F720D21958003B243B /* Edges.swift */; };
 		0AF5676620D26AC9003B243B /* YxyColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF5676520D26AC9003B243B /* YxyColorModel.swift */; };
@@ -503,6 +504,7 @@
 		0AE71A021EF51DF80086923C /* AnyColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AnyColorSpace.swift; sourceTree = "<group>"; };
 		0AE762541EE9475400E926D5 /* CGColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGColorSpace.swift; sourceTree = "<group>"; };
 		0AE762571EE9583400E926D5 /* CGImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGImage.swift; sourceTree = "<group>"; };
+		0AEB4E0621758C0600939383 /* PolynomialTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolynomialTest.swift; sourceTree = "<group>"; };
 		0AF2BA4C1FCD00D200B185BA /* iccTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccTransform.swift; sourceTree = "<group>"; };
 		0AF566F720D21958003B243B /* Edges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Edges.swift; sourceTree = "<group>"; };
 		0AF5676520D26AC9003B243B /* YxyColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YxyColorModel.swift; sourceTree = "<group>"; };
@@ -672,6 +674,7 @@
 				0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */,
 				0A26A0901FA98994008BEADB /* CompressionTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
+				0AEB4E0621758C0600939383 /* PolynomialTest.swift */,
 				0A8D98A21E53ED0F0050E112 /* ImageTest.swift */,
 				0A7A4BFF1F738D18005F44CD /* XMLTest.swift */,
 			);
@@ -1510,6 +1513,7 @@
 				0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */,
 				0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */,
 				0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */,
+				0AEB4E0721758C0600939383 /* PolynomialTest.swift in Sources */,
 				0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */,
 				0A92062C1F14A1FA00AF5C49 /* FourierTest.swift in Sources */,
 			);
