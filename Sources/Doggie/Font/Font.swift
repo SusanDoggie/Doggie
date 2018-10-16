@@ -28,8 +28,8 @@ public protocol FontFaceBase {
     var isVariationSelectors: Bool { get }
     var isGraphic: Bool { get }
     
-    func shape(glyph: Int) -> [Shape.Component]
-    func graphic(glyph: Int) -> [Font.Graphic]?
+    func shape(forGlyph glyph: Int) -> [Shape.Component]
+    func graphic(forGlyph glyph: Int) -> [Font.Graphic]?
     
     func glyph(with unicode: UnicodeScalar) -> Int
     func glyph(with unicode: UnicodeScalar, _ uvs: UnicodeScalar) -> Int?
@@ -182,7 +182,7 @@ extension Font {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         return cache.lck.synchronized {
             if cache.glyphs[glyph] == nil {
-                var component = base.shape(glyph: glyph).filter { $0.count != 0 }
+                var component = base.shape(forGlyph: glyph).filter { $0.count != 0 }
                 component.makeContiguousBuffer()
                 cache.glyphs[glyph] = component
             }
@@ -194,9 +194,9 @@ extension Font {
         return Shape(self._shape(glyph: glyph).map { $0 * SDTransform.scale(_pointScale) })
     }
     
-    public func graphic(glyph: Int) -> [Font.Graphic]? {
+    public func graphic(forGlyph glyph: Int) -> [Font.Graphic]? {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
-        return base.graphic(glyph: glyph)
+        return base.graphic(forGlyph: glyph)
     }
 }
 

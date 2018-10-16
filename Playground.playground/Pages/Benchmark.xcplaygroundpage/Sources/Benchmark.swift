@@ -5,7 +5,7 @@ import Doggie
 
 public func HalfRadix2CooleyTukey_Benchmark(_ n: Int) -> Double {
     
-    var real = [Double](repeating: 0.0, count: 1 << n)
+    let real = [Double](repeating: 0.0, count: 1 << n)
     var _real = [Double](repeating: 0.0, count: 1 << (n - 1))
     var _imag = [Double](repeating: 0.0, count: 1 << (n - 1))
     
@@ -24,7 +24,7 @@ public func HalfRadix2CooleyTukey_Benchmark(_ n: Int) -> Double {
 }
 public func RealRadix2CooleyTukey_Benchmark(_ n: Int) -> Double {
     
-    var real = [Double](repeating: 0.0, count: 1 << n)
+    let real = [Double](repeating: 0.0, count: 1 << n)
     var _real = [Double](repeating: 0.0, count: 1 << n)
     var _imag = [Double](repeating: 0.0, count: 1 << n)
     
@@ -44,8 +44,8 @@ public func RealRadix2CooleyTukey_Benchmark(_ n: Int) -> Double {
 
 public func Radix2CooleyTukey_OutPlace_Benchmark(_ n: Int) -> Double {
     
-    var real = [Double](repeating: 0.0, count: 1 << n)
-    var imag = [Double](repeating: 0.0, count: 1 << n)
+    let real = [Double](repeating: 0.0, count: 1 << n)
+    let imag = [Double](repeating: 0.0, count: 1 << n)
     var _real = [Double](repeating: 0.0, count: 1 << n)
     var _imag = [Double](repeating: 0.0, count: 1 << n)
     

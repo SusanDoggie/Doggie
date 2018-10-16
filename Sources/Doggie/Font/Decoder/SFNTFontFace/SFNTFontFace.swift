@@ -123,7 +123,7 @@ extension SFNTFontFace {
 
 extension SFNTFontFace {
     
-    func shape(glyph: Int) -> [Shape.Component] {
+    func shape(forGlyph glyph: Int) -> [Shape.Component] {
         
         if let shape = cff?.shape(glyph: glyph) {
             return shape
@@ -136,7 +136,7 @@ extension SFNTFontFace {
         return []
     }
     
-    func graphic(glyph: Int) -> [Font.Graphic]? {
+    func graphic(forGlyph glyph: Int) -> [Font.Graphic]? {
         
         if let sbix = sbix {
             
