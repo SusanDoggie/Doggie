@@ -36,6 +36,15 @@ extension SignatureProtocol {
     
     @inlinable
     @inline(__always)
+    public init<S: SignatureProtocol>(_ signature: S) where S.Bytes == Bytes {
+        self.init(rawValue: signature.rawValue)
+    }
+}
+
+extension SignatureProtocol {
+    
+    @inlinable
+    @inline(__always)
     public init(integerLiteral value: Bytes.IntegerLiteralType) {
         self.init(rawValue: Bytes(integerLiteral: value))
     }

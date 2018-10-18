@@ -202,9 +202,24 @@ extension Font {
 
 extension Font {
     
+    public struct GraphicType: SignatureProtocol {
+        
+        public var rawValue: BEUInt32
+        
+        public init(rawValue: BEUInt32) {
+            self.rawValue = rawValue
+        }
+        
+        public static let jpeg: GraphicType    = "jpg "
+        public static let png: GraphicType     = "png"
+        public static let tiff: GraphicType    = "tiff"
+        public static let pdf: GraphicType     = "pdf "
+        public static let svg: GraphicType     = "svg "
+    }
+    
     public struct Graphic {
         
-        public var type: Signature<BEUInt32>
+        public var type: GraphicType
         
         public var unitsPerEm: Double
         public var resolution: Double

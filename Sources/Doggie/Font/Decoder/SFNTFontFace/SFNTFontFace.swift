@@ -150,7 +150,7 @@ extension SFNTFontFace {
                 default: break
                 }
                 
-                return Font.Graphic(type: record.graphicType, unitsPerEm: Double(strike.ppem), resolution: Double(strike.resolution), origin: Point(x: Double(record.originOffsetX), y: Double(record.originOffsetY)), data: record.data)
+                return Font.Graphic(type: Font.GraphicType(record.graphicType), unitsPerEm: Double(strike.ppem), resolution: Double(strike.resolution), origin: Point(x: Double(record.originOffsetX), y: Double(record.originOffsetY)), data: record.data)
             }
             
             return sbix.compactMap { fetch($0, glyph: glyph) }
