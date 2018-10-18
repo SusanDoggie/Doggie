@@ -132,12 +132,13 @@ Check out the Doggie.xcworkspace and build the project. It's suggested building 
 - [x] LOCA
 - [x] GLYF
 - [x] SBIX
-- [x] CFF
-- [ ] CFF2
-- [ ] KERN
+- [ ] KERX
+- [ ] MORX
 - [ ] GSUB
 - [ ] GPOS
 - [ ] GDEF
+- [x] CFF
+- [ ] CFF2
 
 #### CMAP
 
