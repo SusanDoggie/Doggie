@@ -211,7 +211,7 @@ extension Font {
         }
         
         public static let jpeg: GraphicType    = "jpg "
-        public static let png: GraphicType     = "png"
+        public static let png: GraphicType     = "png "
         public static let tiff: GraphicType    = "tiff"
         public static let pdf: GraphicType     = "pdf "
         public static let svg: GraphicType     = "svg "
