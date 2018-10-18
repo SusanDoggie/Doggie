@@ -202,18 +202,9 @@ extension Font {
 
 extension Font {
     
-    public enum GraphicType {
-        
-        case jpeg
-        case png
-        case tiff
-        case pdf
-        case svg
-    }
-    
     public struct Graphic {
         
-        public var type: GraphicType
+        public var type: Signature<BEUInt32>
         
         public var unitsPerEm: Double
         public var resolution: Double

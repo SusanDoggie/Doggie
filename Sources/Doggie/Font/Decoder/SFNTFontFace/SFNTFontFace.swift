@@ -147,15 +147,12 @@ extension SFNTFontFace {
                 let type: Font.GraphicType
                 
                 switch record.graphicType {
-                case "jpg ": type = .jpeg
-                case "png ": type = .png
-                case "tiff": type = .tiff
-                case "pdf ": type = .pdf
                 case "dupe": return record.data.count == 2 ? fetch(strike, glyph: Int(record.data.withUnsafeBytes { $0.pointee as BEUInt16 })) : nil
-                default: return nil
+                case "mask": return nil
+                default: break
                 }
                 
-                return Font.Graphic(type: type, unitsPerEm: Double(strike.ppem), resolution: Double(strike.resolution), origin: Point(x: Double(record.originOffsetX), y: Double(record.originOffsetY)), data: record.data)
+                return Font.Graphic(type: record.graphicType, unitsPerEm: Double(strike.ppem), resolution: Double(strike.resolution), origin: Point(x: Double(record.originOffsetX), y: Double(record.originOffsetY)), data: record.data)
             }
             
             return sbix.compactMap { fetch($0, glyph: glyph) }

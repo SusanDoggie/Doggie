@@ -37,11 +37,11 @@ struct OTFScriptList : ByteDecodable {
     
     struct Record : ByteDecodable {
         
-        var scriptTag: Signature<UInt32>
+        var scriptTag: Signature<BEUInt32>
         var scriptOffset: BEUInt16
         
         init(from data: inout Data) throws {
-            self.scriptTag = try data.decode(Signature<UInt32>.self)
+            self.scriptTag = try data.decode(Signature<BEUInt32>.self)
             self.scriptOffset = try data.decode(BEUInt16.self)
         }
     }

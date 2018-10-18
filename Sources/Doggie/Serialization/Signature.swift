@@ -49,8 +49,16 @@ extension SignatureProtocol {
     
     @_transparent
     public var description: String {
-        var code = self.rawValue.bigEndian
-        return String(bytes: UnsafeRawBufferPointer(start: &code, count: Bytes.bitWidth >> 3), encoding: .ascii) ?? ""
+        return String(self)
+    }
+}
+
+extension String {
+    
+    @inlinable
+    @inline(__always)
+    public init<S: SignatureProtocol>(_ signature: S) {
+        self = withUnsafeBytes(of: signature.rawValue.bigEndian) { String(bytes: $0, encoding: .ascii) ?? "" }
     }
 }
 

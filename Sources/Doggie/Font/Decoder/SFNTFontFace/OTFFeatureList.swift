@@ -34,7 +34,7 @@ struct OTFFeatureList : ByteDecodable {
         self.records = []
         self.records.reserveCapacity(Int(featureCount))
         for _ in 0..<Int(featureCount) {
-            let featureTag = try data.decode(Signature<UInt32>.self)
+            let featureTag = try data.decode(Signature<BEUInt32>.self)
             let featureOffset = try data.decode(BEUInt16.self)
             
             var record = copy.dropFirst(Int(featureOffset))
@@ -49,7 +49,7 @@ struct OTFFeatureList : ByteDecodable {
     
     struct Record {
         
-        var featureTag: Signature<UInt32>
+        var featureTag: Signature<BEUInt32>
         
         var featureParams: BEUInt16
         var lookupIndexCount: BEUInt16
