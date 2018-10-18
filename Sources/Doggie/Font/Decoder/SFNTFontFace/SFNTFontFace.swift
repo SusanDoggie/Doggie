@@ -144,8 +144,6 @@ extension SFNTFontFace {
                 
                 guard let record = strike.glyph(glyph: glyph) else { return nil }
                 
-                let type: Font.GraphicType
-                
                 switch record.graphicType {
                 case "dupe": return record.data.count == 2 ? fetch(strike, glyph: Int(record.data.withUnsafeBytes { $0.pointee as BEUInt16 })) : nil
                 case "mask": return nil
