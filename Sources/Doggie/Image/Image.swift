@@ -408,6 +408,7 @@ extension Image {
         
         switch orientation {
         case .leftMirrored, .left, .rightMirrored, .right: self = self.transposed()
+        case .upMirrored, .downMirrored, .down: cache = ImageCache()
         default: break
         }
         
@@ -419,8 +420,6 @@ extension Image {
         switch orientation {
         case .up, .leftMirrored: break
         case .right, .upMirrored:
-            
-            cache = ImageCache()
             
             pixels.withUnsafeMutableBufferPointer {
                 
@@ -438,8 +437,6 @@ extension Image {
             
         case .left, .downMirrored:
             
-            cache = ImageCache()
-            
             pixels.withUnsafeMutableBufferPointer {
                 
                 guard let buffer = $0.baseAddress else { return }
@@ -455,8 +452,6 @@ extension Image {
             }
             
         case .down, .rightMirrored:
-            
-            cache = ImageCache()
             
             pixels.withUnsafeMutableBufferPointer {
                 guard let buffer = $0.baseAddress else { return }
