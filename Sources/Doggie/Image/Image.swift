@@ -31,12 +31,14 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, Hashable {
     
     public var resolution: Resolution
     
+    @inlinable
     public internal(set) var pixels: MappedBuffer<Pixel> {
         didSet {
             cache = ImageCache()
         }
     }
     
+    @inlinable
     public var colorSpace: ColorSpace<Pixel.Model> {
         didSet {
             cache = ImageCache()
