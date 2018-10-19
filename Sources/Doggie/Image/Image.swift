@@ -31,15 +31,15 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, Hashable {
     
     public var resolution: Resolution
     
+    @_transparent
     public internal(set) var pixels: MappedBuffer<Pixel> {
-        @inlinable
         didSet {
             cache = ImageCache()
         }
     }
     
+    @_transparent
     public var colorSpace: ColorSpace<Pixel.Model> {
-        @inlinable
         didSet {
             cache = ImageCache()
         }
