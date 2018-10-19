@@ -420,6 +420,8 @@ extension Image {
         case .up, .leftMirrored: break
         case .right, .upMirrored:
             
+            cache = ImageCache()
+            
             pixels.withUnsafeMutableBufferPointer {
                 
                 guard let buffer = $0.baseAddress else { return }
@@ -436,6 +438,8 @@ extension Image {
             
         case .left, .downMirrored:
             
+            cache = ImageCache()
+            
             pixels.withUnsafeMutableBufferPointer {
                 
                 guard let buffer = $0.baseAddress else { return }
@@ -451,6 +455,8 @@ extension Image {
             }
             
         case .down, .rightMirrored:
+            
+            cache = ImageCache()
             
             pixels.withUnsafeMutableBufferPointer {
                 guard let buffer = $0.baseAddress else { return }
