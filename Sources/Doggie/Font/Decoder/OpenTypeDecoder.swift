@@ -30,7 +30,7 @@ struct OpenTypeDecoder : FontDecoder {
     
     init?(data: Data, entry: Int) throws {
         var _header = data.dropFirst(entry)
-        guard let header = try? _header.decode(OTFHeader.self), header.version == 0x00010000 || header.version == 0x4F54544F else { return nil }
+        guard let header = try? _header.decode(OTFHeader.self) else { return nil }
         
         self.header = header
         

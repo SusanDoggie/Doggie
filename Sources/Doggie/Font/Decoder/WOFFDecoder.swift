@@ -30,7 +30,7 @@ struct WOFFDecoder : FontDecoder {
     
     init?(data: Data) throws {
         var _header = data
-        guard let header = try? _header.decode(WOFFHeader.self), header.signature == "wOFF" && (header.flavor == 0x00010000 || header.flavor == 0x4F54544F) else { return nil }
+        guard let header = try? _header.decode(WOFFHeader.self), header.signature == "wOFF" else { return nil }
         
         self.header = header
         
