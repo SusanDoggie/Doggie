@@ -31,7 +31,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, Hashable {
     
     public var resolution: Resolution
     
-    public private(set) var pixels: MappedBuffer<Pixel> {
+    public internal(set) var pixels: MappedBuffer<Pixel> {
         didSet {
             cache = ImageCache()
         }
