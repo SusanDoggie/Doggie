@@ -37,11 +37,12 @@ struct SFNTFontFace : FontFaceBase {
     var hmtx: Data
     var vhea: SFNTVHEA?
     var vmtx: Data?
+    var glyf: SFNTGLYF?
+    var sbix: SFNTSBIX?
+    var morx: SFNTMORX?
     var gdef: OTFGDEF?
     var gpos: OTFGPOS?
     var gsub: OTFGSUB?
-    var glyf: SFNTGLYF?
-    var sbix: SFNTSBIX?
     var cff: CFFFontFace?
     var cff2: CFF2Decoder?
     
@@ -72,6 +73,7 @@ struct SFNTFontFace : FontFaceBase {
         
         self.os2 = try table["OS/2"].map({ try SFNTOS2($0) })
         
+        self.morx = try table["morx"].map({ try SFNTMORX($0) })
         self.gdef = try table["GDEF"].map({ try OTFGDEF($0) })
         self.gpos = try table["GPOS"].map({ try OTFGPOS($0) })
         self.gsub = try table["GSUB"].map({ try OTFGSUB($0) })

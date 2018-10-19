@@ -202,6 +202,7 @@
 		0AA4D8451F63908200AFF16B /* CGFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4D8441F63908200AFF16B /* CGFont.swift */; };
 		0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6C73A20E6190400682EFA /* RGBA32ColorPixel.swift */; };
 		0AA6C73D20E6190400682EFA /* RGBA64ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6C73B20E6190400682EFA /* RGBA64ColorPixel.swift */; };
+		0AA7B54C2178834F00F36185 /* SFNTMORX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA7B54B2178834E00F36185 /* SFNTMORX.swift */; };
 		0AA8D463204E486700ED0175 /* SwiftPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA8D462204E486700ED0175 /* SwiftPlayground.swift */; };
 		0AAA7CF220B8EC950080D1BE /* Exported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF120B8EC950080D1BE /* Exported.swift */; };
 		0AAA7CF420B8EDA30080D1BE /* AppleExported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */; };
@@ -463,6 +464,7 @@
 		0AA4D8441F63908200AFF16B /* CGFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGFont.swift; sourceTree = "<group>"; };
 		0AA6C73A20E6190400682EFA /* RGBA32ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RGBA32ColorPixel.swift; sourceTree = "<group>"; };
 		0AA6C73B20E6190400682EFA /* RGBA64ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RGBA64ColorPixel.swift; sourceTree = "<group>"; };
+		0AA7B54B2178834E00F36185 /* SFNTMORX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTMORX.swift; sourceTree = "<group>"; };
 		0AA8D462204E486700ED0175 /* SwiftPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftPlayground.swift; sourceTree = "<group>"; };
 		0AAA7CF120B8EC950080D1BE /* Exported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exported.swift; sourceTree = "<group>"; };
 		0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleExported.swift; sourceTree = "<group>"; };
@@ -819,6 +821,7 @@
 				0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */,
 				0A9F993E1F56649C0008D36D /* SFNTPOST.swift */,
 				0A9F99431F56734A0008D36D /* SFNTNAME.swift */,
+				0AA7B54B2178834E00F36185 /* SFNTMORX.swift */,
 				0A7E3E931F5FD3E40020A507 /* OTFGDEF.swift */,
 				0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */,
 				0A7E3E921F5FD3E30020A507 /* OTFGSUB.swift */,
@@ -1486,6 +1489,7 @@
 				0AE719FB1EF50EEB0086923C /* AnyColor.swift in Sources */,
 				0A7E3E9B1F5FD9090020A507 /* OTFLookupList.swift in Sources */,
 				0A7314C01F3D7B720008461E /* ShapeSegment.swift in Sources */,
+				0AA7B54C2178834F00F36185 /* SFNTMORX.swift in Sources */,
 				0A967E501F132DC0007E38E4 /* BMPEncoder.swift in Sources */,
 				08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
 				0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */,
