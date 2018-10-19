@@ -31,14 +31,8 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, Hashable {
     
     public var resolution: Resolution
     
-    @usableFromInline
-    public internal(set) var pixels: MappedBuffer<Pixel> {
-        didSet {
-            cache = ImageCache()
-        }
-    }
+    public private(set) var pixels: MappedBuffer<Pixel>
     
-    @usableFromInline
     public var colorSpace: ColorSpace<Pixel.Model> {
         didSet {
             cache = ImageCache()
@@ -281,6 +275,7 @@ extension Image {
     
     @inlinable
     public mutating func setColor<C: ColorProtocol>(x: Int, y: Int, color: C) {
+        cache = ImageCache()
         precondition(0..<width ~= x && 0..<height ~= y)
         pixels[width * y + x] = Pixel(color.convert(to: colorSpace, intent: .default))
     }
@@ -308,6 +303,8 @@ extension Image {
     
     @inlinable
     public mutating func setWhiteBalance(_ white: Point) {
+        
+        cache = ImageCache()
         
         let colorSpace = self.colorSpace
         
@@ -499,6 +496,7 @@ extension Image {
     
     @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
+        cache = ImageCache()
         return try pixels.withUnsafeMutableBufferPointer(body)
     }
     
@@ -509,6 +507,7 @@ extension Image {
     
     @inlinable
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
+        cache = ImageCache()
         return try pixels.withUnsafeMutableBytes(body)
     }
 }
