@@ -68,6 +68,8 @@ public protocol TextureProtocol {
     
     var verticalWrappingMode: WrappingMode { get set }
     
+    var option: MappedBufferOption { get set }
+    
     mutating func setOrientation(_ orientation: ImageOrientation)
     
     func transposed() -> Self
@@ -89,14 +91,6 @@ public protocol TextureProtocol {
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
 }
 
-extension TextureProtocol {
-    
-    @inlinable
-    public var option: MappedBufferOption {
-        return pixels.option
-    }
-}
-
 @usableFromInline
 protocol _TextureProtocolImplement: TextureProtocol {
     
@@ -108,6 +102,7 @@ protocol _TextureProtocolImplement: TextureProtocol {
 extension _TextureProtocolImplement {
     
     @inlinable
+    @inline(__always)
     public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P> {
         
         var texture = try Texture<P>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
@@ -122,11 +117,12 @@ extension _TextureProtocolImplement {
 extension _TextureProtocolImplement {
     
     @inlinable
+    @inline(__always)
     public mutating func setOrientation(_ orientation: ImageOrientation) {
         
         switch orientation {
-        case .up, .upMirrored, .down, .downMirrored: break
         case .leftMirrored, .left, .rightMirrored, .right: self = self.transposed()
+        default: break
         }
         
         guard pixels.count != 0 else { return }
@@ -135,7 +131,6 @@ extension _TextureProtocolImplement {
         let height = self.height
         
         switch orientation {
-        case .up, .leftMirrored: break
         case .right, .upMirrored:
             
             self.withUnsafeMutableBufferPointer {
@@ -174,6 +169,8 @@ extension _TextureProtocolImplement {
                 guard let buffer = $0.baseAddress else { return }
                 Swap($0.count >> 1, buffer, 1, buffer + $0.count - 1, -1)
             }
+            
+        default: break
         }
     }
 }
@@ -181,6 +178,7 @@ extension _TextureProtocolImplement {
 extension _TextureProtocolImplement {
     
     @inlinable
+    @inline(__always)
     public func transposed() -> Self {
         
         if pixels.count == 0 {
@@ -205,6 +203,7 @@ extension _TextureProtocolImplement {
     }
     
     @inlinable
+    @inline(__always)
     public func verticalFlipped() -> Self {
         var copy = self
         copy.setOrientation(.downMirrored)
@@ -212,6 +211,7 @@ extension _TextureProtocolImplement {
     }
     
     @inlinable
+    @inline(__always)
     public func horizontalFlipped() -> Self {
         var copy = self
         copy.setOrientation(.upMirrored)
@@ -222,6 +222,7 @@ extension _TextureProtocolImplement {
 extension _TextureProtocolImplement {
     
     @inlinable
+    @inline(__always)
     public func pixel(_ point: Point) -> Pixel {
         
         switch resamplingAlgorithm {

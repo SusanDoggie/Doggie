@@ -125,7 +125,9 @@ extension ImageRep {
 extension AnyImage : ImageRepBase {
     
     func image(option: MappedBufferOption) -> AnyImage {
-        return AnyImage(image: self, option: option)
+        var copy = self
+        copy.option = option
+        return copy
     }
 }
 

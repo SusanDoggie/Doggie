@@ -29,17 +29,9 @@ public protocol ImageProtocol {
     
     typealias ColorSpace = Color.ColorSpace
     
-    init(image: Self)
-    
-    init(image: Self, option: MappedBufferOption)
-    
     init<P>(image: Image<P>, colorSpace: ColorSpace, intent: RenderingIntent)
     
-    init<P>(image: Image<P>, colorSpace: ColorSpace, intent: RenderingIntent, option: MappedBufferOption)
-    
     init(image: AnyImage, colorSpace: ColorSpace, intent: RenderingIntent)
-    
-    init(image: AnyImage, colorSpace: ColorSpace, intent: RenderingIntent, option: MappedBufferOption)
     
     var colorSpace: ColorSpace { get }
     
@@ -55,7 +47,7 @@ public protocol ImageProtocol {
     
     var visibleRect: Rect { get }
     
-    var option: MappedBufferOption { get }
+    var option: MappedBufferOption { get set }
     
     mutating func setOrientation(_ orientation: ImageOrientation)
     
@@ -71,66 +63,31 @@ public protocol ImageProtocol {
     
     func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
     
-    func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent, option: MappedBufferOption) -> Image<P>
-    
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyImage
-    
-    func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent, option: MappedBufferOption) -> AnyImage
-}
-
-extension ImageProtocol {
-    
-    @inlinable
-    public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
-        return self.convert(to: colorSpace, intent: intent, option: self.option)
-    }
-    
-    @inlinable
-    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
-        return self.convert(to: colorSpace, intent: intent, option: self.option)
-    }
 }
 
 extension Image {
     
     @inlinable
-    public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default, option: MappedBufferOption) -> Image<P> {
-        return Image<P>(image: self, colorSpace: colorSpace, intent: intent, option: option)
+    public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
+        return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
     }
     
     @inlinable
-    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) -> AnyImage {
-        return AnyImage(image: self, colorSpace: colorSpace, intent: intent, option: option)
+    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
+        return AnyImage(image: self, colorSpace: colorSpace, intent: intent)
     }
 }
 
 extension AnyImage {
     
     @inlinable
-    public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default, option: MappedBufferOption) -> Image<P> {
-        return Image<P>(image: self, colorSpace: colorSpace, intent: intent, option: option)
+    public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
+        return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
     }
     
     @inlinable
-    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default, option: MappedBufferOption) -> AnyImage {
-        return AnyImage(image: self, colorSpace: colorSpace, intent: intent, option: option)
-    }
-}
-
-extension ImageProtocol {
-    
-    @inlinable
-    public init(image: Self) {
-        self.init(image: image, option: image.option)
-    }
-    
-    @inlinable
-    public init<P>(image: Image<P>, colorSpace: ColorSpace, intent: RenderingIntent = .default) {
-        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
-    }
-    
-    @inlinable
-    public init(image: AnyImage, colorSpace: ColorSpace, intent: RenderingIntent = .default) {
-        self.init(image: image, colorSpace: colorSpace, intent: intent, option: image.option)
+    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
+        return AnyImage(image: self, colorSpace: colorSpace, intent: intent)
     }
 }

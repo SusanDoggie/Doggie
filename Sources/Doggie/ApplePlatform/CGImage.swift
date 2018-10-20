@@ -144,7 +144,7 @@ extension Image {
                 let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
                 bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
                 
-            default: return Image<FloatColorPixel<Pixel.Model>>(image: self).cgImage
+            default: return Image<FloatColorPixel<Pixel.Model>>(self).cgImage
             }
             
             guard let colorSpace = self.colorSpace.cgColorSpace else { return nil }

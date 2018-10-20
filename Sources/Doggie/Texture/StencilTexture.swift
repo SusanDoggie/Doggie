@@ -41,6 +41,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     public var verticalWrappingMode: WrappingMode = .none
     
     @inlinable
+    @inline(__always)
     init(width: Int, height: Int, pixels: MappedBuffer<T>, resamplingAlgorithm: ResamplingAlgorithm) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
@@ -52,6 +53,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     }
     
     @inlinable
+    @inline(__always)
     public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: T = 0, option: MappedBufferOption = .default) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
@@ -62,6 +64,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     }
     
     @inlinable
+    @inline(__always)
     public init<P>(texture: Texture<P>) {
         self.width = texture.width
         self.height = texture.height
@@ -70,28 +73,14 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
         self.verticalWrappingMode = texture.verticalWrappingMode
         self.pixels = texture.pixels.map { T($0.opacity) }
     }
-    
-    @inlinable
-    public init<P>(texture: Texture<P>, option: MappedBufferOption) {
-        self.width = texture.width
-        self.height = texture.height
-        self.resamplingAlgorithm = texture.resamplingAlgorithm
-        self.horizontalWrappingMode = texture.horizontalWrappingMode
-        self.verticalWrappingMode = texture.verticalWrappingMode
-        self.pixels = texture.pixels.map(option: option) { T($0.opacity) }
-    }
 }
 
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     public init<P>(image: Image<P>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
         self.init(width: image.width, height: image.height, pixels: image.pixels.map { T($0.opacity) }, resamplingAlgorithm: resamplingAlgorithm)
-    }
-    
-    @inlinable
-    public init<P>(image: Image<P>, resamplingAlgorithm: ResamplingAlgorithm = .default, option: MappedBufferOption) {
-        self.init(width: image.width, height: image.height, pixels: image.pixels.map(option: option) { T($0.opacity) }, resamplingAlgorithm: resamplingAlgorithm)
     }
 }
 
@@ -106,6 +95,20 @@ extension StencilTexture : CustomStringConvertible {
 extension StencilTexture {
     
     @inlinable
+    public var option: MappedBufferOption {
+        get {
+            return pixels.option
+        }
+        set {
+            pixels.option = newValue
+        }
+    }
+}
+
+extension StencilTexture {
+    
+    @inlinable
+    @inline(__always)
     public func map<R>(_ transform: (T) throws -> R) rethrows -> StencilTexture<R> {
         
         var texture = try StencilTexture<R>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
@@ -120,24 +123,28 @@ extension StencilTexture {
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBufferPointer(body)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeMutableBufferPointer(body)
     }
     
     @inlinable
+    @inline(__always)
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBytes(body)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeMutableBytes(body)

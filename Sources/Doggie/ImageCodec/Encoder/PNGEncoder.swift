@@ -324,7 +324,7 @@ struct PNGEncoder : ImageRepEncoder {
             return encodeGray(image: image, interlace: interlaced)?.data
         }
         
-        if let image = Image<Gray16ColorPixel>(image: image) {
+        if let image = Image<Gray16ColorPixel>(image) {
             return encodeGray(image: image, interlace: interlaced)?.data
         }
         
@@ -332,7 +332,7 @@ struct PNGEncoder : ImageRepEncoder {
             return encodeRGB(image: image, interlace: interlaced)?.data
         }
         
-        if let image = Image<ARGB32ColorPixel>(image: image) {
+        if let image = Image<ARGB32ColorPixel>(image) {
             return encodeRGB(image: image, interlace: interlaced)?.data
         }
         

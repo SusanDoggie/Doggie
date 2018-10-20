@@ -50,9 +50,9 @@ protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
     
     func _create_image(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol
     
-    func _create_image<P>(image: Image<P>, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol
+    func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> AnyImageBaseProtocol
     
-    func _create_image(image: AnyImage, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol
+    func _create_image(image: AnyImage, intent: RenderingIntent) -> AnyImageBaseProtocol
     
     func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol
     
@@ -85,8 +85,8 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func _create_image<P>(image: Image<P>, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent, option: option)
+    func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
     }
     
     @inlinable
@@ -95,8 +95,8 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func _create_image(image: AnyImage, intent: RenderingIntent, option: MappedBufferOption) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent, option: option)
+    func _create_image(image: AnyImage, intent: RenderingIntent) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
     }
     
     @inlinable
