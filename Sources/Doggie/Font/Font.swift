@@ -33,6 +33,8 @@ public protocol FontFaceBase {
     
     func glyph(with unicode: UnicodeScalar) -> Int
     func glyph(with unicode: UnicodeScalar, _ uvs: UnicodeScalar) -> Int?
+    func substitution(glyphs: [Int], layout: Font.LayoutSetting) -> [Int]
+    
     func metric(glyph: Int) -> Font.Metric
     func verticalMetric(glyph: Int) -> Font.Metric
     
@@ -234,6 +236,17 @@ extension Font {
         public var bearing: Double
     }
     
+    public struct LayoutSetting {
+        
+        public var isVertical: Bool
+        public var isLogicalDirection: Bool
+        
+        public init(vertical: Bool, logicalDirection: Bool) {
+            self.isVertical = vertical
+            self.isLogicalDirection = logicalDirection
+        }
+    }
+    
     public var numberOfGlyphs: Int {
         return base.numberOfGlyphs
     }
@@ -269,8 +282,15 @@ extension Font {
             result.append(base.glyph(with: last))
         }
         
-        return result
+        return base.substitution(glyphs: result, layout: LayoutSetting(vertical: false, logicalDirection: true))
     }
+    
+    public func glyphSubstitution() {
+        _ = base.substitution(glyphs: [], layout: LayoutSetting(vertical: false, logicalDirection: true))
+    }
+}
+
+extension Font {
     
     public func metric(forGlyph glyph: Int) -> Metric {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0

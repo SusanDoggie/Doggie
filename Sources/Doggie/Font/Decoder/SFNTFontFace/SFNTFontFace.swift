@@ -187,6 +187,15 @@ extension SFNTFontFace {
         }
         return nil
     }
+    
+    func substitution(glyphs: [Int], layout: Font.LayoutSetting) -> [Int] {
+        
+        if let morx = morx {
+            return morx.substitution(glyphs: glyphs, layout: layout, features: [])
+        }
+        
+        return glyphs
+    }
 }
 
 extension SFNTFontFace {
