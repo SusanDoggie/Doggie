@@ -66,6 +66,7 @@
 		0A251C632101849A00E31473 /* SDObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A251C622101849A00E31473 /* SDObject.swift */; };
 		0A260FE32121688400745E3E /* DCIContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A260FE22121688400745E3E /* DCIContextExtension.swift */; };
 		0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26A0901FA98994008BEADB /* CompressionTest.swift */; };
+		0A2DFE1D217D65CF00E6EEA4 /* SFNTFEAT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */; };
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
 		0A34FBEA20AAE683001CE2F3 /* UnsafeBufferProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */; };
 		0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36612A1EEA54AB00216A26 /* CGPath.swift */; };
@@ -327,6 +328,7 @@
 		0A251C622101849A00E31473 /* SDObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDObject.swift; sourceTree = "<group>"; };
 		0A260FE22121688400745E3E /* DCIContextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCIContextExtension.swift; sourceTree = "<group>"; };
 		0A26A0901FA98994008BEADB /* CompressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CompressionTest.swift; sourceTree = "<group>"; };
+		0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTFEAT.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Tensor.swift; sourceTree = "<group>"; };
 		0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeBufferProtocol.swift; sourceTree = "<group>"; };
 		0A36612A1EEA54AB00216A26 /* CGPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGPath.swift; sourceTree = "<group>"; };
@@ -821,6 +823,7 @@
 				0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */,
 				0A9F993E1F56649C0008D36D /* SFNTPOST.swift */,
 				0A9F99431F56734A0008D36D /* SFNTNAME.swift */,
+				0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */,
 				0AA7B54B2178834E00F36185 /* SFNTMORX.swift */,
 				0A7E3E931F5FD3E40020A507 /* OTFGDEF.swift */,
 				0A7E3E901F5FD3B40020A507 /* OTFGPOS.swift */,
@@ -1274,6 +1277,7 @@
 				0A1158471EF4E04700EFE3E3 /* iccTagData.swift in Sources */,
 				0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */,
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
+				0A2DFE1D217D65CF00E6EEA4 /* SFNTFEAT.swift in Sources */,
 				0A7CC3D21FFDBE1200DEAC6D /* CompositingMode.swift in Sources */,
 				0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */,
 				0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */,

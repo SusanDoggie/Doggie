@@ -43,7 +43,7 @@ struct SFNTGLYF {
 
 extension SFNTGLYF {
     
-    private func _glyfData(glyph: Int) -> Data {
+    private func _glyfData(glyph: Int) -> Data? {
         
         let startIndex: Int
         let endIndex: Int
@@ -56,14 +56,13 @@ extension SFNTGLYF {
             endIndex = Int(loca.withUnsafeBytes { $0[glyph + 1] as BEUInt32 })
         }
         
-        return glyf.dropFirst(startIndex).prefix(endIndex - startIndex)
+        return endIndex > startIndex ? glyf.dropFirst(startIndex).prefix(endIndex - startIndex) : nil
     }
     
     func outline(glyph: Int, tracing: Set<Int> = []) -> ([Point], [Shape.Component])? {
         
         guard 0..<numberOfGlyphs ~= glyph else { return nil }
-        
-        var data = _glyfData(glyph: glyph)
+        guard var data = _glyfData(glyph: glyph) else { return nil }
         
         guard let numberOfContours = try? data.decode(BEInt16.self), numberOfContours != 0 else { return nil }
         guard let _ = try? data.decode(BEInt16.self) else { return nil }

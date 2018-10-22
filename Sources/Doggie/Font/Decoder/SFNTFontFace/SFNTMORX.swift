@@ -61,7 +61,7 @@ extension SFNTMORX {
         for _ in 0..<Int(nChains) {
             
             guard let defaultFlags = try? data.decode(BEUInt32.self) else { return }
-            guard let chainLength = try? data.decode(BEUInt32.self) else { return }
+            guard let chainLength = try? data.decode(BEUInt32.self), chainLength >= 16 else { return }
             guard let nFeatureEntries = try? data.decode(BEUInt32.self) else { return }
             guard let nSubtables = try? data.decode(BEUInt32.self) else { return }
             

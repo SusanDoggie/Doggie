@@ -39,6 +39,7 @@ struct SFNTFontFace : FontFaceBase {
     var vmtx: Data?
     var glyf: SFNTGLYF?
     var sbix: SFNTSBIX?
+    var feat: SFNTFEAT?
     var morx: SFNTMORX?
     var gdef: OTFGDEF?
     var gpos: OTFGPOS?
@@ -73,6 +74,7 @@ struct SFNTFontFace : FontFaceBase {
         
         self.os2 = try table["OS/2"].map({ try SFNTOS2($0) })
         
+        self.feat = try table["feat"].map({ try SFNTFEAT($0) })
         self.morx = try table["morx"].map({ try SFNTMORX($0) })
         self.gdef = try table["GDEF"].map({ try OTFGDEF($0) })
         self.gpos = try table["GPOS"].map({ try OTFGPOS($0) })
@@ -155,7 +157,7 @@ extension SFNTFontFace {
                 return Font.Graphic(type: Font.GraphicType(record.graphicType), unitsPerEm: Double(strike.ppem), resolution: Double(strike.resolution), origin: Point(x: Double(record.originOffsetX), y: Double(record.originOffsetY)), data: record.data)
             }
             
-            return sbix.compactMap { fetch($0, glyph: glyph) }
+            return sbix.compactMap { $0.flatMap { fetch($0, glyph: glyph) } }
         }
         
         return nil

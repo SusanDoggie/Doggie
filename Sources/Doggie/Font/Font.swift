@@ -178,30 +178,6 @@ extension Font {
 
 extension Font {
     
-    private func _shape(glyph: Int) -> [Shape.Component] {
-        let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
-        return cache.lck.synchronized {
-            if cache.glyphs[glyph] == nil {
-                var component = base.shape(forGlyph: glyph).filter { $0.count != 0 }
-                component.makeContiguousBuffer()
-                cache.glyphs[glyph] = component
-            }
-            return cache.glyphs[glyph]!
-        }
-    }
-    
-    public func shape(forGlyph glyph: Int) -> Shape {
-        return Shape(self._shape(glyph: glyph).map { $0 * SDTransform.scale(_pointScale) })
-    }
-    
-    public func graphic(forGlyph glyph: Int) -> [Font.Graphic]? {
-        let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
-        return base.graphic(forGlyph: glyph)
-    }
-}
-
-extension Font {
-    
     public struct GraphicType: SignatureProtocol {
         
         public var rawValue: BEUInt32
@@ -226,6 +202,27 @@ extension Font {
         public var origin: Point
         
         public var data: Data
+    }
+    
+    private func _shape(glyph: Int) -> [Shape.Component] {
+        let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
+        return cache.lck.synchronized {
+            if cache.glyphs[glyph] == nil {
+                var component = base.shape(forGlyph: glyph).filter { $0.count != 0 }
+                component.makeContiguousBuffer()
+                cache.glyphs[glyph] = component
+            }
+            return cache.glyphs[glyph]!
+        }
+    }
+    
+    public func shape(forGlyph glyph: Int) -> Shape {
+        return Shape(self._shape(glyph: glyph).map { $0 * SDTransform.scale(_pointScale) })
+    }
+    
+    public func graphic(forGlyph glyph: Int) -> [Font.Graphic]? {
+        let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
+        return base.graphic(forGlyph: glyph)
     }
 }
 

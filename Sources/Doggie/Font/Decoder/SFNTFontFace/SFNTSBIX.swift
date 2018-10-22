@@ -53,14 +53,17 @@ struct SFNTSBIX : RandomAccessCollection {
         return Int(numStrikes)
     }
     
-    subscript(position: Int) -> Strike {
+    subscript(position: Int) -> Strike? {
         precondition(position < count, "Index out of range.")
         
+        guard self.data.count >= position << 2 else { return nil }
         let offset = self.data.withUnsafeBytes { $0[position] as BEUInt32 }
+        
+        guard offset >= 8 else { return nil }
         var data = self.data.dropFirst(Int(offset) - 8)
         
-        let ppem = data.popFirst(2).withUnsafeBytes { $0.pointee as BEUInt16 }
-        let resolution = data.popFirst(2).withUnsafeBytes { $0.pointee as BEUInt16 }
+        guard let ppem = try? data.decode(BEUInt16.self) else { return nil }
+        guard let resolution = try? data.decode(BEUInt16.self) else { return nil }
         
         return Strike(numberOfGlyphs: numberOfGlyphs, ppem: ppem, resolution: resolution, data: data)
     }
@@ -92,7 +95,7 @@ extension SFNTSBIX.Strike {
     
     func glyph(glyph: Int) -> Record? {
         
-        guard 0..<numberOfGlyphs ~= glyph else { return nil }
+        guard 0..<numberOfGlyphs ~= glyph, self.data.count >= (glyph + 1) << 2 else { return nil }
         
         let startIndex = Int(self.data.withUnsafeBytes { $0[glyph] as BEUInt32 }) - 4
         let endIndex = Int(self.data.withUnsafeBytes { $0[glyph + 1] as BEUInt32 }) - 4
@@ -104,9 +107,9 @@ extension SFNTSBIX.Strike {
         
         guard data.count == length else { return nil }
         
-        let originOffsetX = data.popFirst(2).withUnsafeBytes { $0.pointee as BEUInt16 }
-        let originOffsetY = data.popFirst(2).withUnsafeBytes { $0.pointee as BEUInt16 }
-        let graphicType = data.popFirst(4).withUnsafeBytes { $0.pointee as Signature<BEUInt32> }
+        guard let originOffsetX = try? data.decode(BEUInt16.self) else { return nil }
+        guard let originOffsetY = try? data.decode(BEUInt16.self) else { return nil }
+        guard let graphicType = try? data.decode(Signature<BEUInt32>.self) else { return nil }
         
         return Record(originOffsetX: originOffsetX, originOffsetY: originOffsetY, graphicType: graphicType, data: data)
     }

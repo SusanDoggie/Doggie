@@ -123,6 +123,7 @@ extension SFNTCMAP {
             self.length = try data.decode(BEUInt16.self)
             self.language = try data.decode(BEUInt16.self)
             self.data = data.popFirst(256)
+            guard self.data.count == 256 else { throw ByteDecodeError.endOfData }
         }
         
         subscript(code: UInt32) -> Int {
