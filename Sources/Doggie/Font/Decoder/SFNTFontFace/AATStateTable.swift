@@ -351,8 +351,6 @@ extension AATStateMachine {
     
     func entry(_ state: AATStateMachineState, _ klass: AATStateMachineClass) -> Entry? {
         
-        guard 0..<nClasses ~= klass.rawValue else { return nil }
-        
         let stateIdx = Int(state.rawValue) * Int(nClasses) + Int(klass.rawValue)
         var state = stateHeader.stateArray.dropFirst(stateIdx << 1)
         guard let entryIdx = try? Int(state.decode(BEUInt16.self)) else { return nil }
@@ -368,6 +366,8 @@ extension AATStateMachine {
         var context = Context(self)
         
         func _perform(_ index: Int, _ klass: AATStateMachineClass) -> Bool {
+            
+            guard 0..<nClasses ~= klass.rawValue else { return false }
             
             var dont_advance = false
             var counter = 0
