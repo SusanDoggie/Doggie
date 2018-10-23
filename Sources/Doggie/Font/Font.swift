@@ -230,20 +230,20 @@ extension Font {
 
 extension Font {
     
-    public struct Metric {
+    public enum LayoutDirection {
         
-        public var advance: Double
-        public var bearing: Double
+        case leftToRight
+        case rightToLeft
     }
     
     public struct LayoutSetting {
         
+        public var direction: LayoutDirection
         public var isVertical: Bool
-        public var isLogicalDirection: Bool
         
-        public init(vertical: Bool, logicalDirection: Bool) {
+        public init(direction: LayoutDirection = .leftToRight, vertical: Bool = false) {
+            self.direction = direction
             self.isVertical = vertical
-            self.isLogicalDirection = logicalDirection
         }
     }
     
@@ -256,7 +256,7 @@ extension Font {
         return 0..<numberOfGlyphs ~= glyph ? glyph : 0
     }
     
-    public func glyphs<S: Sequence>(with unicodes: S) -> [Int] where S.Element == UnicodeScalar {
+    public func glyphs<S: Sequence>(with unicodes: S, layout: LayoutSetting = LayoutSetting()) -> [Int] where S.Element == UnicodeScalar {
         
         var result: [Int] = []
         
@@ -289,15 +289,21 @@ extension Font {
             result = unicodes.map { self.glyph(with: $0) }
         }
         
-        return base.substitution(glyphs: result, layout: LayoutSetting(vertical: false, logicalDirection: true))
+        return base.substitution(glyphs: result, layout: layout)
     }
     
-    public func glyphs<S: StringProtocol>(with string: S) -> [Int] {
-        return self.glyphs(with: string.unicodeScalars)
+    public func glyphs<S: StringProtocol>(with string: S, layout: LayoutSetting = LayoutSetting()) -> [Int] {
+        return self.glyphs(with: string.unicodeScalars, layout: layout)
     }
 }
 
 extension Font {
+    
+    public struct Metric {
+        
+        public var advance: Double
+        public var bearing: Double
+    }
     
     public func metric(forGlyph glyph: Int) -> Metric {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0

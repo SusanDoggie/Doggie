@@ -37,7 +37,7 @@ protocol AATStateMachineContext {
     
     init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Self
     
-    func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int])
+    func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool
     
 }
 
@@ -361,7 +361,7 @@ extension AATStateMachine {
         var state = AATStateMachineState.startOfText
         var context = Context(self)
         
-        func _perform(_ index: Int?, _ klass: AATStateMachineClass) -> Bool {
+        func _perform(_ index: Int, _ klass: AATStateMachineClass) -> Bool {
             
             var dont_advance = false
             var counter = 0
@@ -371,7 +371,7 @@ extension AATStateMachine {
                 guard counter < 0xFF else { return false }  // break infinite loop
                 guard let entry = self.entry(state, klass) else { return false }
                 
-                context.transform(index, entry, &buffer)
+                guard context.transform(index, entry, &buffer) else { return false }
                 
                 dont_advance = entry.flags & 0x4000 != 0
                 state = AATStateMachineState(rawValue: UInt16(entry.newState))
@@ -388,10 +388,7 @@ extension AATStateMachine {
             guard _perform(idx, klass) else { return glyphs }
         }
         
-        do {
-            let klass = AATStateMachineClass.endOfText
-            guard _perform(nil, klass) else { return glyphs }
-        }
+        guard _perform(glyphs.endIndex, .endOfText) else { return glyphs }
         
         return buffer
     }

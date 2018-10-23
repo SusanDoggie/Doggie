@@ -181,10 +181,10 @@ extension SFNTMORX.Subtable {
         let logical = UInt32(coverage) & 0x10000000 != 0
         let type = UInt32(coverage) & 0x000000FF
         
-        let reverse = logical ? backwards : backwards == layout.isLogicalDirection
+        let reverse = logical ? backwards : (backwards == (layout.direction == .leftToRight))
         
         if reverse {
-            glyphs = glyphs.reversed()
+            glyphs.reverse()
         }
         
         switch type {
@@ -217,7 +217,7 @@ extension SFNTMORX.Subtable {
         }
         
         if reverse {
-            glyphs = glyphs.reversed()
+            glyphs.reverse()
         }
         
         return glyphs
@@ -242,15 +242,15 @@ extension SFNTMORX {
             
             typealias EntryData = RearrangementSubtable.EntryData
             
-            var start: Int?
-            var end: Int?
+            var startMark: Int?
             
             init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Context {
                 
             }
             
-            func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int]) {
+            func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
                 
+                return true
             }
         }
         
@@ -290,8 +290,9 @@ extension SFNTMORX {
                 
             }
             
-            func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int]) {
+            func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
                 
+                return true
             }
         }
         
@@ -331,8 +332,9 @@ extension SFNTMORX {
                 
             }
             
-            func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int]) {
+            func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
                 
+                return true
             }
         }
         
@@ -391,8 +393,9 @@ extension SFNTMORX {
                 
             }
             
-            func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int]) {
+            func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
                 
+                return true
             }
         }
         
