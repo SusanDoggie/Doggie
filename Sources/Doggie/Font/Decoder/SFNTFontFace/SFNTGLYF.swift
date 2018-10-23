@@ -26,7 +26,6 @@
 struct SFNTGLYF {
     
     var format: Int
-    var numberOfGlyphs: Int
     var loca: Data
     var glyf: Data
     
@@ -34,7 +33,6 @@ struct SFNTGLYF {
         let locaSize = format == 0 ? (numberOfGlyphs + 1) << 1 : (numberOfGlyphs + 1) << 2
         guard loca.count >= locaSize else { throw ByteDecodeError.endOfData }
         self.format = format
-        self.numberOfGlyphs = numberOfGlyphs
         self.loca = loca
         self.glyf = glyf
     }
@@ -61,7 +59,6 @@ extension SFNTGLYF {
     
     func outline(glyph: Int, tracing: Set<Int> = []) -> ([Point], [Shape.Component])? {
         
-        guard 0..<numberOfGlyphs ~= glyph else { return nil }
         guard var data = _glyfData(glyph: glyph) else { return nil }
         
         guard let numberOfContours = try? data.decode(BEInt16.self), numberOfContours != 0 else { return nil }

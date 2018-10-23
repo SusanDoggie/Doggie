@@ -252,41 +252,48 @@ extension Font {
     }
     
     public func glyph(with unicode: UnicodeScalar) -> Int {
-        return base.glyph(with: unicode)
+        let glyph = base.glyph(with: unicode)
+        return 0..<numberOfGlyphs ~= glyph ? glyph : 0
     }
     
     public func glyphs<S: Sequence>(with unicodes: S) -> [Int] where S.Element == UnicodeScalar {
         
-        guard base.isVariationSelectors else { return unicodes.map { base.glyph(with: $0) } }
-        
-        var last: UnicodeScalar?
         var result: [Int] = []
-        result.reserveCapacity(unicodes.underestimatedCount)
         
-        for unicode in unicodes {
+        if base.isVariationSelectors {
             
-            if let _last = last {
-                if let glyph = base.glyph(with: _last, unicode) {
-                    result.append(glyph)
-                    last = nil
+            result.reserveCapacity(unicodes.underestimatedCount)
+            
+            var last: UnicodeScalar?
+            
+            for unicode in unicodes {
+                
+                if let _last = last {
+                    if let glyph = base.glyph(with: _last, unicode) {
+                        result.append(0..<numberOfGlyphs ~= glyph ? glyph : 0)
+                        last = nil
+                    } else {
+                        result.append(self.glyph(with: _last))
+                        last = unicode
+                    }
                 } else {
-                    result.append(base.glyph(with: _last))
                     last = unicode
                 }
-            } else {
-                last = unicode
             }
-        }
-        
-        if let last = last {
-            result.append(base.glyph(with: last))
+            
+            if let last = last {
+                result.append(self.glyph(with: last))
+            }
+            
+        } else {
+            result = unicodes.map { self.glyph(with: $0) }
         }
         
         return base.substitution(glyphs: result, layout: LayoutSetting(vertical: false, logicalDirection: true))
     }
     
-    public func glyphSubstitution() {
-        _ = base.substitution(glyphs: [], layout: LayoutSetting(vertical: false, logicalDirection: true))
+    public func glyphs<S: StringProtocol>(with string: S) -> [Int] {
+        return self.glyphs(with: string.unicodeScalars)
     }
 }
 

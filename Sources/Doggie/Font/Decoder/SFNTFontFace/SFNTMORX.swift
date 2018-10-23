@@ -69,7 +69,7 @@ extension SFNTMORX {
         var setting: UInt16
     }
     
-    func substitution(glyphs: [Int], layout: Font.LayoutSetting, features: Set<FeatureSetting>) -> [Int] {
+    func substitution(glyphs: [Int], numberOfGlyphs: Int, layout: Font.LayoutSetting, features: Set<FeatureSetting>) -> [Int] {
         
         do {
             
@@ -90,7 +90,7 @@ extension SFNTMORX {
                     }
                 }
                 
-                try chain.subtables { glyphs = try $0.substitution(glyphs: glyphs, layout: layout, flags: flags) }
+                try chain.subtables { glyphs = try $0.substitution(glyphs: glyphs, layout: layout, flags: flags).map { 0..<numberOfGlyphs ~= $0 ? $0 : 0 } }
             }
             
             return glyphs
@@ -293,16 +293,14 @@ extension SFNTMORX {
     
     struct NoncontextualSubtable {
         
-        var data: Data
+        var table: AATLookupTable
         
         init(_ data: Data) throws {
-            self.data = data
+            self.table = try AATLookupTable(data)
         }
         
         func perform(glyphs: [Int]) -> [Int] {
-            
-            
-            return glyphs
+            return glyphs.map { UInt16(exactly: $0).flatMap { table.search(glyph: $0).map(Int.init) } ?? $0 }
         }
     }
     

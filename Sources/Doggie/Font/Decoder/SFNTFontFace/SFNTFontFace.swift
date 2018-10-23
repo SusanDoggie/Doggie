@@ -72,13 +72,13 @@ struct SFNTFontFace : FontFaceBase {
         self.hhea = hhea
         self.hmtx = hmtx
         
-        self.os2 = try table["OS/2"].map({ try SFNTOS2($0) })
+        self.os2 = try table["OS/2"].map { try SFNTOS2($0) }
         
-        self.feat = try table["feat"].map({ try SFNTFEAT($0) })
-        self.morx = try table["morx"].map({ try SFNTMORX($0) })
-        self.gdef = try table["GDEF"].map({ try OTFGDEF($0) })
-        self.gpos = try table["GPOS"].map({ try OTFGPOS($0) })
-        self.gsub = try table["GSUB"].map({ try OTFGSUB($0) })
+        self.feat = try table["feat"].map { try SFNTFEAT($0) }
+        self.morx = try table["morx"].map { try SFNTMORX($0) }
+        self.gdef = try table["GDEF"].map { try OTFGDEF($0) }
+        self.gpos = try table["GPOS"].map { try OTFGPOS($0) }
+        self.gsub = try table["GSUB"].map { try OTFGSUB($0) }
         
         if let vhea = try table["vhea"].map({ try SFNTVHEA($0) }), maxp.numGlyphs >= vhea.numOfLongVerMetrics, let vmtx = table["vmtx"] {
             
@@ -91,24 +91,15 @@ struct SFNTFontFace : FontFaceBase {
             }
         }
         
-        if let sbix = table["sbix"] {
-            self.sbix = try SFNTSBIX(numberOfGlyphs: Int(maxp.numGlyphs), data: sbix)
+        if let loca = table["loca"], let glyf = table["glyf"] {
+            self.glyf = try SFNTGLYF(format: Int(head.indexToLocFormat), numberOfGlyphs: Int(maxp.numGlyphs), loca: loca, glyf: glyf)
         }
         
-        if let cff2 = table["CFF2"] {
-            
-            self.cff2 = try CFF2Decoder(cff2)
-            
-        } else if let cff = try table["CFF "].flatMap({ try CFFDecoder($0).faces.first }) {
-            
-            self.cff = cff
-            
-        } else if let loca = table["loca"], let glyf = table["glyf"] {
-            
-            self.glyf = try SFNTGLYF(format: Int(head.indexToLocFormat), numberOfGlyphs: Int(maxp.numGlyphs), loca: loca, glyf: glyf)
-            
-        } else if sbix != nil {
-            
+        self.sbix = try table["sbix"].map { try SFNTSBIX($0) }
+        self.cff = try table["CFF "].flatMap { try CFFDecoder($0).faces.first }
+        self.cff2 = try table["CFF2"].map { try CFF2Decoder($0) }
+        
+        if glyf == nil && sbix == nil && cff == nil && cff2 == nil {
             throw FontCollection.Error.InvalidFormat("outlines not found.")
         }
     }
@@ -191,7 +182,7 @@ extension SFNTFontFace {
     func substitution(glyphs: [Int], layout: Font.LayoutSetting) -> [Int] {
         
         if let morx = morx {
-            return morx.substitution(glyphs: glyphs, layout: layout, features: [])
+            return morx.substitution(glyphs: glyphs, numberOfGlyphs: numberOfGlyphs, layout: layout, features: [])
         }
         
         return glyphs

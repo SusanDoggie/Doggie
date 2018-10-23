@@ -29,16 +29,13 @@ struct SFNTSBIX : RandomAccessCollection {
     
     public typealias Index = Int
     
-    var numberOfGlyphs: Int
-    
     var version: BEUInt16
     var flags: BEUInt16
     var numStrikes: BEUInt32
     var data: Data
     
-    init(numberOfGlyphs: Int, data: Data) throws {
+    init(_ data: Data) throws {
         var data = data
-        self.numberOfGlyphs = numberOfGlyphs
         self.version = try data.decode(BEUInt16.self)
         self.flags = try data.decode(BEUInt16.self)
         self.numStrikes = try data.decode(BEUInt32.self)
@@ -65,7 +62,7 @@ struct SFNTSBIX : RandomAccessCollection {
         guard let ppem = try? data.decode(BEUInt16.self) else { return nil }
         guard let resolution = try? data.decode(BEUInt16.self) else { return nil }
         
-        return Strike(numberOfGlyphs: numberOfGlyphs, ppem: ppem, resolution: resolution, data: data)
+        return Strike(ppem: ppem, resolution: resolution, data: data)
     }
     
 }
@@ -73,8 +70,6 @@ struct SFNTSBIX : RandomAccessCollection {
 extension SFNTSBIX {
     
     struct Strike {
-        
-        var numberOfGlyphs: Int
         
         var ppem: BEUInt16
         var resolution: BEUInt16
@@ -95,7 +90,7 @@ extension SFNTSBIX.Strike {
     
     func glyph(glyph: Int) -> Record? {
         
-        guard 0..<numberOfGlyphs ~= glyph, self.data.count >= (glyph + 1) << 2 else { return nil }
+        guard self.data.count >= (glyph + 1) << 2 else { return nil }
         
         let startIndex = Int(self.data.withUnsafeBytes { $0[glyph] as BEUInt32 }) - 4
         let endIndex = Int(self.data.withUnsafeBytes { $0[glyph + 1] as BEUInt32 }) - 4
