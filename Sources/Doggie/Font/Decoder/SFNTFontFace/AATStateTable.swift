@@ -343,6 +343,12 @@ extension AATStateMachine {
         return UInt16(self.stateHeader.nClasses)
     }
     
+    func classOf(glyph: Int) -> AATStateMachineClass {
+        guard let glyph = UInt16(exactly: glyph) else { return .outOfBounds }
+        guard let rawValue = self.stateHeader.classTable.search(glyph: glyph) else { return .outOfBounds }
+        return AATStateMachineClass(rawValue: rawValue)
+    }
+    
     func entry(_ state: AATStateMachineState, _ klass: AATStateMachineClass) -> Entry? {
         
         guard 0..<nClasses ~= klass.rawValue else { return nil }
@@ -384,8 +390,7 @@ extension AATStateMachine {
         }
         
         for (idx, glyph) in glyphs.indexed() {
-            let klass = UInt16(exactly: glyph).flatMap { self.stateHeader.classTable.search(glyph: $0).map { AATStateMachineClass(rawValue: $0) } } ?? .outOfBounds
-            guard _perform(idx, klass) else { return glyphs }
+            guard _perform(idx, self.classOf(glyph: glyph)) else { return glyphs }
         }
         
         guard _perform(glyphs.endIndex, .endOfText) else { return glyphs }
