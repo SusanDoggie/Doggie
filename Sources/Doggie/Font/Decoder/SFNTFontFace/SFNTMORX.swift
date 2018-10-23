@@ -228,7 +228,33 @@ extension SFNTMORX {
     
     struct RearrangementSubtable : AATStateMachine {
         
-        var stateHeader: AATStateTable
+        struct EntryData : AATStateMachineEntryData {
+            
+            static var size: Int {
+                return 0
+            }
+            
+            init(from data: inout Data) throws {
+            }
+        }
+        
+        struct Context : AATStateMachineContext {
+            
+            typealias EntryData = RearrangementSubtable.EntryData
+            
+            var start: Int?
+            var end: Int?
+            
+            init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Context {
+                
+            }
+            
+            func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int]) {
+                
+            }
+        }
+        
+        var stateHeader: AATStateTable<EntryData>
         
         var data: Data
         
@@ -237,17 +263,39 @@ extension SFNTMORX {
             self.stateHeader = try data.decode(AATStateTable.self)
             self.data = data
         }
-        
-        func perform(glyphs: [Int]) -> [Int] {
-            
-            
-            return glyphs
-        }
     }
     
     struct ContextualSubtable : AATStateMachine {
         
-        var stateHeader: AATStateTable
+        struct EntryData : AATStateMachineEntryData {
+            
+            static var size: Int {
+                return 4
+            }
+            
+            var markIndex: BEUInt16
+            var currentIndex: BEUInt16
+            
+            init(from data: inout Data) throws {
+                self.markIndex = try data.decode(BEUInt16.self)
+                self.currentIndex = try data.decode(BEUInt16.self)
+            }
+        }
+        
+        struct Context : AATStateMachineContext {
+            
+            typealias EntryData = ContextualSubtable.EntryData
+            
+            init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Context {
+                
+            }
+            
+            func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int]) {
+                
+            }
+        }
+        
+        var stateHeader: AATStateTable<EntryData>
         var substitutionTable: BEUInt32
         
         var data: Data
@@ -258,17 +306,37 @@ extension SFNTMORX {
             self.substitutionTable = try data.decode(BEUInt32.self)
             self.data = data
         }
-        
-        func perform(glyphs: [Int]) -> [Int] {
-            
-            
-            return glyphs
-        }
     }
     
     struct LigatureSubtable : AATStateMachine {
         
-        var stateHeader: AATStateTable
+        struct EntryData : AATStateMachineEntryData {
+            
+            static var size: Int {
+                return 2
+            }
+            
+            var ligActionIndex: BEUInt16
+            
+            init(from data: inout Data) throws {
+                self.ligActionIndex = try data.decode(BEUInt16.self)
+            }
+        }
+        
+        struct Context : AATStateMachineContext {
+            
+            typealias EntryData = LigatureSubtable.EntryData
+            
+            init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Context {
+                
+            }
+            
+            func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int]) {
+                
+            }
+        }
+        
+        var stateHeader: AATStateTable<EntryData>
         var ligActionOffset: BEUInt32
         var componentOffset: BEUInt32
         var ligatureOffset: BEUInt32
@@ -282,12 +350,6 @@ extension SFNTMORX {
             self.componentOffset = try data.decode(BEUInt32.self)
             self.ligatureOffset = try data.decode(BEUInt32.self)
             self.data = data
-        }
-        
-        func perform(glyphs: [Int]) -> [Int] {
-            
-            
-            return glyphs
         }
     }
     
@@ -306,7 +368,35 @@ extension SFNTMORX {
     
     struct InsertionSubtable : AATStateMachine {
         
-        var stateHeader: AATStateTable
+        struct EntryData : AATStateMachineEntryData {
+            
+            static var size: Int {
+                return 4
+            }
+            
+            var currentInsertIndex: BEUInt16
+            var markedInsertIndex: BEUInt16
+            
+            init(from data: inout Data) throws {
+                self.currentInsertIndex = try data.decode(BEUInt16.self)
+                self.markedInsertIndex = try data.decode(BEUInt16.self)
+            }
+        }
+        
+        struct Context : AATStateMachineContext {
+            
+            typealias EntryData = InsertionSubtable.EntryData
+            
+            init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Context {
+                
+            }
+            
+            func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int]) {
+                
+            }
+        }
+        
+        var stateHeader: AATStateTable<EntryData>
         var insertionActionOffset: BEUInt32
         
         var data: Data
@@ -316,12 +406,6 @@ extension SFNTMORX {
             self.stateHeader = try data.decode(AATStateTable.self)
             self.insertionActionOffset = try data.decode(BEUInt32.self)
             self.data = data
-        }
-        
-        func perform(glyphs: [Int]) -> [Int] {
-            
-            
-            return glyphs
         }
     }
 }

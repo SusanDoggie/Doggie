@@ -23,19 +23,41 @@
 //  THE SOFTWARE.
 //
 
+protocol AATStateMachineEntryData : ByteDecodable {
+    
+    static var size: Int { get }
+    
+}
+
+protocol AATStateMachineContext {
+    
+    associatedtype EntryData : AATStateMachineEntryData
+    
+    typealias Entry = AATStateMachineEntry<EntryData>
+    
+    init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Self
+    
+    func transform(_ index: Int?, _ entry: Entry, _ buffer: inout [Int])
+    
+}
+
 protocol AATStateMachine {
     
-    var stateHeader: AATStateTable { get }
+    associatedtype Context: AATStateMachineContext
+    
+    typealias Entry = Context.Entry
+    
+    var stateHeader: AATStateTable<Context.EntryData> { get }
     
     func perform(glyphs: [Int]) -> [Int]
 }
 
-struct AATStateTable : ByteDecodable {
+struct AATStateTable<EntryData : AATStateMachineEntryData> : ByteDecodable {
     
     var nClasses: BEUInt32
     var classTable: AATLookupTable
     var stateArray: Data
-    var entryTable: AATEntryTable
+    var entryTable: Data
     
     init(from data: inout Data) throws {
         let copy = data
@@ -45,7 +67,7 @@ struct AATStateTable : ByteDecodable {
         let entryTableOffset = try data.decode(BEUInt32.self)
         self.classTable = try AATLookupTable(copy.dropFirst(Int(classTableOffset)))
         self.stateArray = copy.dropFirst(Int(stateArrayOffset))
-        self.entryTable = try AATEntryTable(copy.dropFirst(Int(entryTableOffset)))
+        self.entryTable = copy.dropFirst(Int(entryTableOffset))
     }
 }
 
@@ -263,18 +285,114 @@ extension AATLookupTable {
     
 }
 
-struct AATEntryTable {
+struct AATStateMachineState: RawRepresentable, Hashable, ExpressibleByIntegerLiteral {
+    
+    var rawValue: UInt16
+    
+    init(rawValue: UInt16) {
+        self.rawValue = rawValue
+    }
+    
+    init(integerLiteral value: UInt16.IntegerLiteralType) {
+        self.init(rawValue: UInt16(integerLiteral: value))
+    }
+    
+    static let startOfText: AATStateMachineState = 0
+    static let startOfLine: AATStateMachineState = 1
+}
+
+struct AATStateMachineClass: RawRepresentable, Hashable, ExpressibleByIntegerLiteral {
+    
+    var rawValue: UInt16
+    
+    init(rawValue: UInt16) {
+        self.rawValue = rawValue
+    }
+    
+    init(integerLiteral value: UInt16.IntegerLiteralType) {
+        self.init(rawValue: UInt16(integerLiteral: value))
+    }
+    
+    static let endOfText: AATStateMachineClass = 0
+    static let outOfBounds: AATStateMachineClass = 1
+    static let deletedGlyph: AATStateMachineClass = 2
+    static let endOfLine: AATStateMachineClass = 3
+}
+
+struct AATStateMachineEntry<EntryData : AATStateMachineEntryData> : ByteDecodable {
+    
+    static var size: Int {
+        return 4 + EntryData.size
+    }
     
     var newState: BEUInt16
     var flags: BEUInt16
     
-    var data: Data
+    var data: EntryData
     
-    init(_ data: Data) throws {
-        var data = data
+    init(from data: inout Data) throws {
         self.newState = try data.decode(BEUInt16.self)
         self.flags = try data.decode(BEUInt16.self)
-        self.data = data
+        self.data = try data.decode(EntryData.self)
+    }
+}
+
+extension AATStateMachine {
+    
+    var nClasses: UInt16 {
+        return UInt16(self.stateHeader.nClasses)
     }
     
+    func entry(_ state: AATStateMachineState, _ klass: AATStateMachineClass) -> Entry? {
+        
+        guard 0..<nClasses ~= klass.rawValue else { return nil }
+        
+        let stateIdx = Int(state.rawValue) * Int(nClasses) + Int(klass.rawValue)
+        var state = stateHeader.stateArray.dropFirst(stateIdx << 1)
+        guard let entryIdx = try? Int(state.decode(BEUInt16.self)) else { return nil }
+        
+        var entry = stateHeader.entryTable.dropFirst(entryIdx * Entry.size)
+        return try? entry.decode(Entry.self)
+    }
+    
+    func perform(glyphs: [Int]) -> [Int] {
+        
+        var buffer = glyphs
+        var state = AATStateMachineState.startOfText
+        var context = Context(self)
+        
+        func _perform(_ index: Int?, _ klass: AATStateMachineClass) -> Bool {
+            
+            var dont_advance = false
+            var counter = 0
+            
+            repeat {
+                
+                guard counter < 0xFF else { return false }  // break infinite loop
+                guard let entry = self.entry(state, klass) else { return false }
+                
+                context.transform(index, entry, &buffer)
+                
+                dont_advance = entry.flags & 0x4000 != 0
+                state = AATStateMachineState(rawValue: UInt16(entry.newState))
+                
+                counter += 1
+                
+            } while dont_advance
+            
+            return true
+        }
+        
+        for (idx, glyph) in glyphs.indexed() {
+            let klass = UInt16(exactly: glyph).flatMap { self.stateHeader.classTable.search(glyph: $0).map { AATStateMachineClass(rawValue: $0) } } ?? .outOfBounds
+            guard _perform(idx, klass) else { return glyphs }
+        }
+        
+        do {
+            let klass = AATStateMachineClass.endOfText
+            guard _perform(nil, klass) else { return glyphs }
+        }
+        
+        return buffer
+    }
 }

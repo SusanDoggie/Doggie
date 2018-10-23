@@ -53,7 +53,7 @@ struct SFNTSBIX : RandomAccessCollection {
     subscript(position: Int) -> Strike? {
         precondition(position < count, "Index out of range.")
         
-        guard self.data.count >= position << 2 else { return nil }
+        guard self.data.count > position << 2 else { return nil }
         let offset = self.data.withUnsafeBytes { $0[position] as BEUInt32 }
         
         guard offset >= 8 else { return nil }
@@ -90,7 +90,7 @@ extension SFNTSBIX.Strike {
     
     func glyph(glyph: Int) -> Record? {
         
-        guard self.data.count >= (glyph + 1) << 2 else { return nil }
+        guard self.data.count > (glyph + 1) << 2 else { return nil }
         
         let startIndex = Int(self.data.withUnsafeBytes { $0[glyph] as BEUInt32 }) - 4
         let endIndex = Int(self.data.withUnsafeBytes { $0[glyph + 1] as BEUInt32 }) - 4
