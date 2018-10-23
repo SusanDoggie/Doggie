@@ -55,15 +55,15 @@ struct SFNTFEAT: RandomAccessCollection {
         
         precondition(position < count, "Index out of range.")
         
-        var data = self.data.dropFirst(96 * position)
+        var data = self.data.dropFirst(12 * position)
         
         guard let feature = try? data.decode(BEUInt16.self) else { return nil }
         guard let nSettings = try? data.decode(BEUInt16.self) else { return nil }
-        guard let settingTable = try? data.decode(BEUInt32.self), settingTable >= 96 else { return nil }
+        guard let settingTable = try? data.decode(BEUInt32.self), settingTable >= 12 else { return nil }
         guard let featureFlags = try? data.decode(BEUInt16.self) else { return nil }
         guard let nameIndex = try? data.decode(BEInt16.self) else { return nil }
         
-        return Name(feature: feature, nSettings: nSettings, settingTable: settingTable, featureFlags: featureFlags, nameIndex: nameIndex, data: self.data.dropFirst(Int(settingTable) - 96))
+        return Name(feature: feature, nSettings: nSettings, settingTable: settingTable, featureFlags: featureFlags, nameIndex: nameIndex, data: self.data.dropFirst(Int(settingTable) - 12))
     }
 }
 
@@ -112,7 +112,7 @@ extension SFNTFEAT.Name: RandomAccessCollection {
         
         precondition(position < count, "Index out of range.")
         
-        var data = self.data.dropFirst(32 * position)
+        var data = self.data.dropFirst(4 * position)
         
         guard let setting = try? data.decode(BEUInt16.self) else { return nil }
         guard let nameIndex = try? data.decode(BEInt16.self) else { return nil }

@@ -151,16 +151,16 @@ extension SFNTMORX.Chain {
     
     func subtables(_ body: (SFNTMORX.Subtable) throws -> Void) throws {
         
-        var data = self.data.dropFirst(96 * Int(nFeatureEntries))
+        var data = self.data.dropFirst(12 * Int(nFeatureEntries))
         
         for _ in 0..<Int(nSubtables) {
             
-            guard let length = try? data.decode(BEUInt32.self), length >= 96 else { throw ByteDecodeError.endOfData }
+            guard let length = try? data.decode(BEUInt32.self), length >= 12 else { throw ByteDecodeError.endOfData }
             guard let coverage = try? data.decode(BEUInt32.self) else { throw ByteDecodeError.endOfData }
             guard let subFeatureFlags = try? data.decode(BEUInt32.self) else { throw ByteDecodeError.endOfData }
             
-            let _data = data.popFirst(Int(length) - 96)
-            guard _data.count + 96 == length else { throw ByteDecodeError.endOfData }
+            let _data = data.popFirst(Int(length) - 12)
+            guard _data.count + 12 == length else { throw ByteDecodeError.endOfData }
             
             let subtable = SFNTMORX.Subtable(length: length, coverage: coverage, subFeatureFlags: subFeatureFlags, data: _data)
             try body(subtable)
@@ -177,10 +177,6 @@ extension SFNTMORX.Subtable {
         guard flags & UInt32(subFeatureFlags) != 0 else { return glyphs }
         guard UInt32(coverage) & 0x20000000 != 0 || (layout.isVertical == (UInt32(coverage) & 0x80000000 != 0)) else { return glyphs }
         
-//        print("flags:", "0x" + String(flags, radix: 16))
-//        print("coverage:", "0x" + String(coverage, radix: 16))
-//        print("subFeatureFlags:", "0x" + String(subFeatureFlags, radix: 16))
-        
         let backwards = UInt32(coverage) & 0x40000000 != 0
         let logical = UInt32(coverage) & 0x10000000 != 0
         let type = UInt32(coverage) & 0x000000FF
@@ -194,23 +190,28 @@ extension SFNTMORX.Subtable {
         switch type {
         case 0:    //Rearrangement
             
-            break
+            guard let subtable = try? SFNTMORX.RearrangementSubtable(data) else { return glyphs }
+            glyphs = subtable.perform(glyphs: glyphs)
             
         case 1:    //Contextual
             
-            break
+            guard let subtable = try? SFNTMORX.ContextualSubtable(data) else { return glyphs }
+            glyphs = subtable.perform(glyphs: glyphs)
             
         case 2:    //Ligature
             
-            break
+            guard let subtable = try? SFNTMORX.LigatureSubtable(data) else { return glyphs }
+            glyphs = subtable.perform(glyphs: glyphs)
             
         case 4:    //Noncontextual
             
-            break
+            guard let subtable = try? SFNTMORX.NoncontextualSubtable(data) else { return glyphs }
+            glyphs = subtable.perform(glyphs: glyphs)
             
         case 5:    //Insertion
             
-            break
+            guard let subtable = try? SFNTMORX.InsertionSubtable(data) else { return glyphs }
+            glyphs = subtable.perform(glyphs: glyphs)
             
         default: break
         }
@@ -225,23 +226,104 @@ extension SFNTMORX.Subtable {
 
 extension SFNTMORX {
     
-    struct RearrangementSubtable {
+    struct RearrangementSubtable : AATStateMachine {
         
+        var stateHeader: AATStateTable
+        
+        var data: Data
+        
+        init(_ data: Data) throws {
+            var data = data
+            self.stateHeader = try data.decode(AATStateTable.self)
+            self.data = data
+        }
+        
+        func perform(glyphs: [Int]) -> [Int] {
+            
+            
+            return glyphs
+        }
     }
     
-    struct ContextualSubtable {
+    struct ContextualSubtable : AATStateMachine {
         
+        var stateHeader: AATStateTable
+        var substitutionTable: BEUInt32
+        
+        var data: Data
+        
+        init(_ data: Data) throws {
+            var data = data
+            self.stateHeader = try data.decode(AATStateTable.self)
+            self.substitutionTable = try data.decode(BEUInt32.self)
+            self.data = data
+        }
+        
+        func perform(glyphs: [Int]) -> [Int] {
+            
+            
+            return glyphs
+        }
     }
     
-    struct LigatureSubtable {
+    struct LigatureSubtable : AATStateMachine {
         
+        var stateHeader: AATStateTable
+        var ligActionOffset: BEUInt32
+        var componentOffset: BEUInt32
+        var ligatureOffset: BEUInt32
+        
+        var data: Data
+        
+        init(_ data: Data) throws {
+            var data = data
+            self.stateHeader = try data.decode(AATStateTable.self)
+            self.ligActionOffset = try data.decode(BEUInt32.self)
+            self.componentOffset = try data.decode(BEUInt32.self)
+            self.ligatureOffset = try data.decode(BEUInt32.self)
+            self.data = data
+        }
+        
+        func perform(glyphs: [Int]) -> [Int] {
+            
+            
+            return glyphs
+        }
     }
     
     struct NoncontextualSubtable {
         
+        var data: Data
+        
+        init(_ data: Data) throws {
+            self.data = data
+        }
+        
+        func perform(glyphs: [Int]) -> [Int] {
+            
+            
+            return glyphs
+        }
     }
     
-    struct InsertionSubtable {
+    struct InsertionSubtable : AATStateMachine {
         
+        var stateHeader: AATStateTable
+        var insertionActionOffset: BEUInt32
+        
+        var data: Data
+        
+        init(_ data: Data) throws {
+            var data = data
+            self.stateHeader = try data.decode(AATStateTable.self)
+            self.insertionActionOffset = try data.decode(BEUInt32.self)
+            self.data = data
+        }
+        
+        func perform(glyphs: [Int]) -> [Int] {
+            
+            
+            return glyphs
+        }
     }
 }
