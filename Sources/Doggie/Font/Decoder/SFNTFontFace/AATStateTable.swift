@@ -35,7 +35,7 @@ protocol AATStateMachineContext {
     
     init(_ machine: Machine) throws
     
-    mutating func transform(_ index: Int, _ glyph: Int?, _ entry: Machine.Entry, _ buffer: inout [Int]) -> Bool
+    mutating func transform(_ index: Int, _ entry: Machine.Entry, _ buffer: inout [Int]) -> Bool
     
 }
 
@@ -50,6 +50,24 @@ protocol AATStateMachine {
     var stateHeader: AATStateTable<EntryData> { get }
     
     func perform(glyphs: [Int]) -> [Int]
+}
+
+struct AATStateMachineEntry<EntryData : AATStateMachineEntryData> : ByteDecodable {
+    
+    static var size: Int {
+        return 4 + EntryData.size
+    }
+    
+    var newState: BEUInt16
+    var flags: BEUInt16
+    
+    var data: EntryData
+    
+    init(from data: inout Data) throws {
+        self.newState = try data.decode(BEUInt16.self)
+        self.flags = try data.decode(BEUInt16.self)
+        self.data = try data.decode(EntryData.self)
+    }
 }
 
 struct AATStateTable<EntryData : AATStateMachineEntryData> : ByteDecodable {
@@ -319,24 +337,6 @@ struct AATStateMachineClass: RawRepresentable, Hashable, ExpressibleByIntegerLit
     static let endOfLine: AATStateMachineClass = 3
 }
 
-struct AATStateMachineEntry<EntryData : AATStateMachineEntryData> : ByteDecodable {
-    
-    static var size: Int {
-        return 4 + EntryData.size
-    }
-    
-    var newState: BEUInt16
-    var flags: BEUInt16
-    
-    var data: EntryData
-    
-    init(from data: inout Data) throws {
-        self.newState = try data.decode(BEUInt16.self)
-        self.flags = try data.decode(BEUInt16.self)
-        self.data = try data.decode(EntryData.self)
-    }
-}
-
 extension AATStateMachine {
     
     var nClasses: UInt16 {
@@ -377,10 +377,10 @@ extension AATStateMachine {
                 guard counter < 0xFF else { return glyphs }  // break infinite loop
                 
                 let index = buffer.index(buffer.endIndex, offsetBy: -offset)
-                let glyph = index < buffer.count ? buffer[index] : nil
+                let klass = offset != 0 ? self.classOf(glyph: buffer[index]) : .endOfText
                 
-                guard let entry = self.entry(state, glyph.map { self.classOf(glyph: $0) } ?? .endOfText) else { return glyphs }
-                guard context.transform(index, glyph, entry, &buffer) else { return glyphs }
+                guard let entry = self.entry(state,klass) else { return glyphs }
+                guard context.transform(index, entry, &buffer) else { return glyphs }
                 
                 dont_advance = entry.flags & 0x4000 != 0
                 state = AATStateMachineState(rawValue: UInt16(entry.newState))
