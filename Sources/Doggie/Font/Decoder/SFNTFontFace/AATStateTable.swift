@@ -31,23 +31,23 @@ protocol AATStateMachineEntryData : ByteDecodable {
 
 protocol AATStateMachineContext {
     
-    associatedtype EntryData : AATStateMachineEntryData
+    associatedtype Machine : AATStateMachine where Machine.Context == Self
     
-    typealias Entry = AATStateMachineEntry<EntryData>
+    init(_ machine: Machine) throws
     
-    init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Self
-    
-    func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool
+    mutating func transform(_ index: Int, _ glyph: Int?, _ entry: Machine.Entry, _ buffer: inout [Int]) -> Bool
     
 }
 
 protocol AATStateMachine {
     
-    associatedtype Context: AATStateMachineContext
+    associatedtype EntryData : AATStateMachineEntryData
     
-    typealias Entry = Context.Entry
+    associatedtype Context: AATStateMachineContext where Context.Machine == Self
     
-    var stateHeader: AATStateTable<Context.EntryData> { get }
+    typealias Entry = AATStateMachineEntry<EntryData>
+    
+    var stateHeader: AATStateTable<EntryData> { get }
     
     func perform(glyphs: [Int]) -> [Int]
 }
@@ -363,9 +363,9 @@ extension AATStateMachine {
         
         var buffer = glyphs
         var state = AATStateMachineState.startOfText
-        var context = Context(self)
+        guard var context = try? Context(self) else { return glyphs }
         
-        func _perform(_ index: Int, _ klass: AATStateMachineClass) -> Bool {
+        func _perform(_ index: Int, _ glyph: Int?, _ klass: AATStateMachineClass) -> Bool {
             
             guard 0..<nClasses ~= klass.rawValue else { return false }
             
@@ -377,7 +377,7 @@ extension AATStateMachine {
                 guard counter < 0xFF else { return false }  // break infinite loop
                 guard let entry = self.entry(state, klass) else { return false }
                 
-                guard context.transform(index, entry, &buffer) else { return false }
+                guard context.transform(index, glyph, entry, &buffer) else { return false }
                 
                 dont_advance = entry.flags & 0x4000 != 0
                 state = AATStateMachineState(rawValue: UInt16(entry.newState))
@@ -389,11 +389,11 @@ extension AATStateMachine {
             return true
         }
         
-        for (idx, glyph) in glyphs.indexed() {
-            guard _perform(idx, self.classOf(glyph: glyph)) else { return glyphs }
+        for offset in (0...glyphs.count).reversed() {
+            let index = buffer.index(buffer.endIndex, offsetBy: -offset)
+            let glyph = index < buffer.count ? buffer[index] : nil
+            guard _perform(index, glyph, glyph.map { self.classOf(glyph: $0) } ?? .endOfText) else { return glyphs }
         }
-        
-        guard _perform(glyphs.endIndex, .endOfText) else { return glyphs }
         
         return buffer
     }

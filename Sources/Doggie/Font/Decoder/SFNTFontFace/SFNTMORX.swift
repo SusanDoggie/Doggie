@@ -181,7 +181,7 @@ extension SFNTMORX.Subtable {
         let logical = UInt32(coverage) & 0x10000000 != 0
         let type = UInt32(coverage) & 0x000000FF
         
-        let reverse = logical ? backwards : (backwards == (layout.direction == .leftToRight))
+        let reverse = logical ? backwards : backwards == (layout.direction == .leftToRight)
         
         if reverse {
             glyphs.reverse()
@@ -240,15 +240,88 @@ extension SFNTMORX {
         
         struct Context : AATStateMachineContext {
             
-            typealias EntryData = RearrangementSubtable.EntryData
+            var start: Int?
+            var end: Int?
             
-            var startMark: Int?
-            
-            init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Context {
+            init(_ machine: RearrangementSubtable) throws {
                 
             }
             
-            func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
+            mutating func transform(_ index: Int, _ glyph: Int?, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
+                
+                let flags = UInt16(entry.flags)
+                
+                if flags & 0x8000 != 0 {
+                    start = index
+                }
+                if flags & 0x2000 != 0 {
+                    end = min(index + 1, buffer.endIndex)
+                }
+                if flags & 0x000F != 0, let start = start, let end = end, start < end && buffer.indices ~= start {
+                    
+                    let m: (Int, Int)
+                    
+                    switch flags & 0x000F {
+                    case 1: m = (1, 0)
+                    case 2: m = (0, 1)
+                    case 3: m = (1, 1)
+                    case 4: m = (2, 0)
+                    case 5: m = (3, 0)
+                    case 6: m = (0, 2)
+                    case 7: m = (0, 3)
+                    case 8: m = (1, 2)
+                    case 9: m = (1, 3)
+                    case 10: m = (2, 1)
+                    case 11: m = (3, 1)
+                    case 12: m = (2, 2)
+                    case 13: m = (3, 2)
+                    case 14: m = (2, 3)
+                    case 15: m = (3, 3)
+                    default: return false
+                    }
+                    
+                    let l = min(2, m.0)
+                    let r = min(2, m.1)
+                    
+                    guard end - start >= l + r else { return true }
+                    
+                    let _l: (Int, Int)
+                    let _r: (Int, Int)
+                    
+                    switch m.0 {
+                    case 1: _l = (buffer[start], 0)
+                    case 2: _l = (buffer[start], buffer[start + 1])
+                    case 3: _l = (buffer[start + 1], buffer[start])
+                    default: return false
+                    }
+                    switch m.1 {
+                    case 1: _r = (buffer[end - 1], 0)
+                    case 2: _r = (buffer[end - 2], buffer[end - 1])
+                    case 3: _r = (buffer[end - 1], buffer[end - 2])
+                    default: return false
+                    }
+                    
+                    if l != r {
+                        buffer.withUnsafeMutableBufferPointer { _ = memmove($0.baseAddress! + start + r, $0.baseAddress! + start + l, (end - start - l - r) * MemoryLayout<Int>.stride) }
+                    }
+                    
+                    switch m.1 {
+                    case 1:
+                        buffer[start] = _r.0
+                    case 2, 3:
+                        buffer[start] = _r.0
+                        buffer[start + 1] = _r.1
+                    default: return false
+                    }
+                    switch m.0 {
+                    case 1:
+                        buffer[end - 1] = _l.0
+                    case 2, 3:
+                        buffer[end - 2] = _l.0
+                        buffer[end - 1] = _l.1
+                    default: return false
+                    }
+                }
                 
                 return true
             }
@@ -284,13 +357,45 @@ extension SFNTMORX {
         
         struct Context : AATStateMachineContext {
             
-            typealias EntryData = ContextualSubtable.EntryData
+            var mark: Int?
             
-            init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Context {
-                
+            var data: Data
+            
+            init(_ machine: ContextualSubtable) throws {
+                self.data = machine.data
             }
             
-            func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
+            mutating func transform(_ index: Int, _ glyph: Int?, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
+                
+                let flags = UInt16(entry.flags)
+                
+                guard glyph != nil else { return true }
+                
+                if entry.data.markIndex != 0xFFFF, let mark = mark {
+                    
+                    var _offset = self.data.dropFirst(Int(entry.data.markIndex) << 2)
+                    guard let offset = try? Int(_offset.decode(BEUInt32.self)) else { return false }
+                    guard let lookup = try? AATLookupTable(self.data.dropFirst(offset)) else { return false }
+                    
+                    if let glyph = UInt16(exactly: buffer[mark]), let replace = lookup.search(glyph: glyph) {
+                        buffer[mark] = Int(replace)
+                    }
+                }
+                
+                if entry.data.currentIndex != 0xFFFF {
+                    
+                    var _offset = self.data.dropFirst(Int(entry.data.currentIndex) << 2)
+                    guard let offset = try? Int(_offset.decode(BEUInt32.self)) else { return false }
+                    guard let lookup = try? AATLookupTable(self.data.dropFirst(offset)) else { return false }
+                    
+                    if let glyph = UInt16(exactly: buffer[index]), let replace = lookup.search(glyph: glyph) {
+                        buffer[index] = Int(replace)
+                    }
+                }
+                
+                if flags & 0x8000 != 0 {
+                    mark = index
+                }
                 
                 return true
             }
@@ -305,7 +410,8 @@ extension SFNTMORX {
             var data = data
             self.stateHeader = try data.decode(AATStateTable.self)
             self.substitutionTable = try data.decode(BEUInt32.self)
-            self.data = data
+            guard self.substitutionTable >= 20 else { throw ByteDecodeError.endOfData }
+            self.data = data.dropFirst(Int(self.substitutionTable) - 20)
         }
     }
     
@@ -326,13 +432,22 @@ extension SFNTMORX {
         
         struct Context : AATStateMachineContext {
             
-            typealias EntryData = LigatureSubtable.EntryData
+            var ligActionTable: Data
+            var componentTable: Data
+            var ligatureTable: Data
             
-            init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Context {
-                
+            var match = 0
+            
+            init(_ machine: LigatureSubtable) throws {
+                guard machine.ligActionOffset >= 28 else { throw ByteDecodeError.endOfData }
+                guard machine.componentOffset >= 28 else { throw ByteDecodeError.endOfData }
+                guard machine.ligatureOffset >= 28 else { throw ByteDecodeError.endOfData }
+                self.ligActionTable = machine.data.dropFirst(Int(machine.ligActionOffset) - 28)
+                self.componentTable = machine.data.dropFirst(Int(machine.componentOffset) - 28)
+                self.ligatureTable = machine.data.dropFirst(Int(machine.ligatureOffset) - 28)
             }
             
-            func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
+            mutating func transform(_ index: Int, _ glyph: Int?, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
                 
                 return true
             }
@@ -387,13 +502,11 @@ extension SFNTMORX {
         
         struct Context : AATStateMachineContext {
             
-            typealias EntryData = InsertionSubtable.EntryData
-            
-            init<Machine: AATStateMachine>(_ machine: Machine) where Machine.Context == Context {
+            init(_ machine: InsertionSubtable) throws {
                 
             }
             
-            func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
+            mutating func transform(_ index: Int, _ glyph: Int?, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
                 
                 return true
             }
