@@ -351,6 +351,8 @@ extension AATStateMachine {
     
     func entry(_ state: AATStateMachineState, _ klass: AATStateMachineClass) -> Entry? {
         
+        guard 0..<nClasses ~= klass.rawValue else { return nil }
+        
         let stateIdx = Int(state.rawValue) * Int(nClasses) + Int(klass.rawValue)
         var state = stateHeader.stateArray.dropFirst(stateIdx << 1)
         guard let entryIdx = try? Int(state.decode(BEUInt16.self)) else { return nil }
@@ -365,19 +367,20 @@ extension AATStateMachine {
         var state = AATStateMachineState.startOfText
         guard var context = try? Context(self) else { return glyphs }
         
-        func _perform(_ index: Int, _ glyph: Int?, _ klass: AATStateMachineClass) -> Bool {
-            
-            guard 0..<nClasses ~= klass.rawValue else { return false }
+        for offset in (0...glyphs.count).reversed() {
             
             var dont_advance = false
             var counter = 0
             
             repeat {
                 
-                guard counter < 0xFF else { return false }  // break infinite loop
-                guard let entry = self.entry(state, klass) else { return false }
+                guard counter < 0xFF else { return glyphs }  // break infinite loop
                 
-                guard context.transform(index, glyph, entry, &buffer) else { return false }
+                let index = buffer.index(buffer.endIndex, offsetBy: -offset)
+                let glyph = index < buffer.count ? buffer[index] : nil
+                
+                guard let entry = self.entry(state, glyph.map { self.classOf(glyph: $0) } ?? .endOfText) else { return glyphs }
+                guard context.transform(index, glyph, entry, &buffer) else { return glyphs }
                 
                 dont_advance = entry.flags & 0x4000 != 0
                 state = AATStateMachineState(rawValue: UInt16(entry.newState))
@@ -385,14 +388,6 @@ extension AATStateMachine {
                 counter += 1
                 
             } while dont_advance
-            
-            return true
-        }
-        
-        for offset in (0...glyphs.count).reversed() {
-            let index = buffer.index(buffer.endIndex, offsetBy: -offset)
-            let glyph = index < buffer.count ? buffer[index] : nil
-            guard _perform(index, glyph, glyph.map { self.classOf(glyph: $0) } ?? .endOfText) else { return glyphs }
         }
         
         return buffer
