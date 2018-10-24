@@ -379,7 +379,7 @@ extension AATStateMachine {
                 let index = buffer.index(buffer.endIndex, offsetBy: -offset)
                 let klass = offset != 0 ? self.classOf(glyph: buffer[index]) : .endOfText
                 
-                guard let entry = self.entry(state,klass) else { return glyphs }
+                guard let entry = self.entry(state, klass) else { return glyphs }
                 guard context.transform(index, entry, &buffer) else { return glyphs }
                 
                 dont_advance = entry.flags & 0x4000 != 0

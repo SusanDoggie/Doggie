@@ -450,67 +450,50 @@ extension SFNTMORX {
             
             mutating func transform(_ index: Int, _ entry: Entry, _ buffer: inout [Int]) -> Bool {
                 
-//                let flags = UInt16(entry.flags)
-//
-//                defer { dont_advance = flags & 0x4000 != 0 }
-//
-//                print("flags:", "0x" + String(flags, radix: 16))
-//                defer { print("transform:", buffer.map { "0x" + String($0, radix: 16) }) }
-//
-//                guard index != buffer.endIndex else { return true }
-//
-//                if flags & 0x8000 != 0 {
-//                    if !dont_advance {
-//                        match_length = match_length.map { $0 + 1 } ?? 0
-//                    }
-//                }
-//
-//                if flags & 0x2000 != 0, let _match_length = match_length {
-//
-//                    var action_idx = Int(entry.data.ligActionIndex)
-//                    var last_index = index + 1
-//                    var ligature_idx = 0
-//
-//                    for cursor in (index - _match_length...index).reversed() {
-//
-//                        print("action_idx:", "0x" + String(action_idx, radix: 16))
-//
-//                        var _action = ligActionTable.dropFirst(action_idx << 4)
-//                        guard let action = try? UInt32(_action.decode(BEUInt32.self)) else { return false }
-//
-//                        print("action:", "0x" + String(action, radix: 16))
-//
-//                        let _offset = Int32(bitPattern: action & 0x20000000 == 0 ? action & 0x3FFFFFFF : action | 0xC0000000)
-//                        let _component_idx = buffer[cursor] + Int(_offset)
-//                        guard _component_idx > 0 else { return false }
-//
-//                        print("glyph:", "0x" + String(buffer[cursor], radix: 16))
-//                        print("component_idx:", "0x" + String(_component_idx, radix: 16))
-//
-//                        var _component = componentTable.dropFirst(_component_idx << 2)
-//                        guard let component = try? Int(_component.decode(BEUInt16.self)) else { return false }
-//
-//                        ligature_idx += component
-//
-//                        print("ligature_idx:", "0x" + String(ligature_idx, radix: 16))
-//
-//                        if action & 0xC0000000 != 0 {
-//
-//                            var _ligature = ligatureTable.dropFirst(ligature_idx << 2)
-//                            guard let ligature = try? Int(_ligature.decode(BEUInt16.self)) else { return false }
-//
-//                            buffer.replaceSubrange(cursor..<last_index, with: CollectionOfOne(ligature))
-//                            last_index = cursor
-//
-//                            if action & 0x80000000 != 0 {
-//                                match_length = nil
-//                                break
-//                            }
-//                        }
-//
-//                        action_idx += 1
-//                    }
-//                }
+                let flags = UInt16(entry.flags)
+                
+                defer { dont_advance = flags & 0x4000 != 0 }
+                
+                guard index != buffer.endIndex else { return true }
+                
+                if flags & 0x8000 != 0 && !dont_advance {
+                    match_length = match_length.map { $0 + 1 } ?? 0
+                }
+                
+                if flags & 0x2000 != 0, let _match_length = match_length {
+                    
+                    var _action = ligActionTable.dropFirst(Int(entry.data.ligActionIndex) << 2)
+                    var last_index = index + 1
+                    var ligature_idx = 0
+                    
+                    for cursor in (index - _match_length...index).reversed() {
+                        
+                        guard let action = try? UInt32(_action.decode(BEUInt32.self)) else { return false }
+                        
+                        let _offset = Int32(bitPattern: action & 0x20000000 == 0 ? action & 0x3FFFFFFF : action | 0xC0000000)
+                        let _component_idx = buffer[cursor] + Int(_offset)
+                        guard _component_idx > 0 else { return false }
+                        
+                        var _component = componentTable.dropFirst(_component_idx << 1)
+                        guard let component = try? Int(_component.decode(BEUInt16.self)) else { return false }
+                        
+                        ligature_idx += component
+                        
+                        if action & 0xC0000000 != 0 {
+                            
+                            var _ligature = ligatureTable.dropFirst(ligature_idx << 1)
+                            guard let ligature = try? Int(_ligature.decode(BEUInt16.self)) else { return false }
+                            
+                            buffer.replaceSubrange(cursor..<last_index, with: CollectionOfOne(ligature))
+                            last_index = cursor
+                            
+                            if action & 0x80000000 != 0 {
+                                match_length = nil
+                                break
+                            }
+                        }
+                    }
+                }
                 
                 return true
             }
