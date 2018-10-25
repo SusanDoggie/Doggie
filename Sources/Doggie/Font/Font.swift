@@ -94,9 +94,9 @@ public struct Font {
     
     private let details: Details
     private let base: FontFaceBase
-    public var pointSize: Double
     
-    private var _features: [FontFeature: Int] = [:]
+    public var pointSize: Double
+    public var features: [FontFeature: Int]
     
     private let cache: Cache
     
@@ -106,14 +106,15 @@ public struct Font {
         self.details = details
         self.base = base
         self.pointSize = 0
+        self.features = [:]
         self.cache = Cache()
     }
     
-    public init(font: Font, size: Double) {
+    public init(font: Font, size: Double, features: [FontFeature: Int] = [:]) {
         self.details = font.details
         self.base = font.base
         self.pointSize = size
-        self._features = font._features
+        self.features = features
         self.cache = font.cache
     }
 }
@@ -179,7 +180,15 @@ extension Font : CustomStringConvertible {
 extension Font {
     
     public func with(size pointSize: Double) -> Font {
-        return Font(font: self, size: pointSize)
+        return Font(font: self, size: pointSize, features: features)
+    }
+    
+    public func with(features: [FontFeature: Int]) -> Font {
+        return Font(font: self, size: pointSize, features: features)
+    }
+    
+    public func with(size pointSize: Double, features: [FontFeature: Int]) -> Font {
+        return Font(font: self, size: pointSize, features: features)
     }
 }
 
@@ -276,16 +285,6 @@ extension Font {
     
     public func availableFeatures() -> Set<FontFeature> {
         return base.availableFeatures()
-    }
-    
-    public var features: [FontFeature: Int] {
-        get {
-            let _default = Dictionary(uniqueKeysWithValues: base.availableFeatures().lazy.map { ($0, $0.defaultSetting) })
-            return _default.merging(_features) { _, rhs in rhs }
-        }
-        set {
-            _features = newValue
-        }
     }
 }
 
