@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol FontFaceBase {
+protocol FontFaceBase {
     
     var isVariationSelectors: Bool { get }
     var isGraphic: Bool { get }
@@ -33,7 +33,9 @@ public protocol FontFaceBase {
     
     func glyph(with unicode: UnicodeScalar) -> Int
     func glyph(with unicode: UnicodeScalar, _ uvs: UnicodeScalar) -> Int?
-    func substitution(glyphs: [Int], layout: Font.LayoutSetting) -> [Int]
+    func substitution(glyphs: [Int], layout: Font.LayoutSetting, features: [FontFeature: Int]) -> [Int]
+    
+    func availableFeatures() -> Set<FontFeature>
     
     func metric(glyph: Int) -> Font.Metric
     func verticalMetric(glyph: Int) -> Font.Metric
@@ -91,12 +93,14 @@ public protocol FontFaceBase {
 public struct Font {
     
     private let details: Details
-    public let base: FontFaceBase
+    private let base: FontFaceBase
     public var pointSize: Double
+    
+    private var _features: [FontFeature: Int] = [:]
     
     private let cache: Cache
     
-    public init?(_ base: FontFaceBase) {
+    init?(_ base: FontFaceBase) {
         guard base.numberOfGlyphs > 0 else { return nil }
         guard let details = Details(base) else { return nil }
         self.details = details
@@ -109,6 +113,7 @@ public struct Font {
         self.details = font.details
         self.base = font.base
         self.pointSize = size
+        self._features = font._features
         self.cache = font.cache
     }
 }
@@ -228,6 +233,62 @@ extension Font {
     }
 }
 
+protocol FontFeatureBase : PolymorphicHashable, CustomStringConvertible {
+    
+    var defaultSetting: Int { get }
+    
+    var availableSettings: Set<Int> { get }
+}
+
+public struct FontFeature : Hashable, CustomStringConvertible {
+    
+    var base: FontFeatureBase
+    
+    init(_ base: FontFeatureBase) {
+        self.base = base
+    }
+    
+    public var defaultSetting: Int {
+        return base.defaultSetting
+    }
+    
+    public var availableSettings: Set<Int> {
+        return base.availableSettings
+    }
+    
+    public var description: String {
+        return base.description
+    }
+}
+
+extension FontFeature {
+    
+    public func hash(into hasher: inout Hasher) {
+        base.hash(into: &hasher)
+    }
+    
+    public static func ==(lhs: FontFeature, rhs: FontFeature) -> Bool {
+        return lhs.base.isEqual(rhs.base)
+    }
+}
+
+extension Font {
+    
+    public func availableFeatures() -> Set<FontFeature> {
+        return base.availableFeatures()
+    }
+    
+    public var features: [FontFeature: Int] {
+        get {
+            let _default = Dictionary(uniqueKeysWithValues: base.availableFeatures().lazy.map { ($0, $0.defaultSetting) })
+            return _default.merging(_features) { _, rhs in rhs }
+        }
+        set {
+            _features = newValue
+        }
+    }
+}
+
 extension Font {
     
     public enum LayoutDirection {
@@ -289,7 +350,7 @@ extension Font {
             result = unicodes.map { self.glyph(with: $0) }
         }
         
-        return base.substitution(glyphs: result, layout: layout)
+        return base.substitution(glyphs: result, layout: layout, features: features)
     }
     
     public func glyphs<S: StringProtocol>(with string: S, layout: LayoutSetting = LayoutSetting()) -> [Int] {

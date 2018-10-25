@@ -132,7 +132,7 @@ Check out the Doggie.xcworkspace and build the project. It's suggested building 
 - [x] LOCA
 - [x] GLYF
 - [x] SBIX
-- [ ] FEAT
+- [x] FEAT
 - [ ] KERX
 - [ ] MORX
   - [x] Rearrangement

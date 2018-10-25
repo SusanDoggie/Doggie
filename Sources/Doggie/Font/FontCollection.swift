@@ -51,7 +51,9 @@ extension FontCollection {
         let font: Font
         
         init(font: Font) {
-            self.font = font.with(size: 0)
+            var font = font.with(size: 0)
+            font.features = [:]
+            self.font = font
         }
         
         func hash(into hasher: inout Hasher) {

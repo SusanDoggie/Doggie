@@ -179,13 +179,101 @@ extension SFNTFontFace {
         return nil
     }
     
-    func substitution(glyphs: [Int], layout: Font.LayoutSetting) -> [Int] {
+    func substitution(glyphs: [Int], layout: Font.LayoutSetting, features: [FontFeature: Int]) -> [Int] {
         
         if let morx = morx {
-            return morx.substitution(glyphs: glyphs, numberOfGlyphs: numberOfGlyphs, layout: layout, features: [])
+            
+            var _features: [SFNTMORX.FeatureSetting] = []
+            
+            for (feature, value) in features {
+                
+                guard let feature = feature.base as? AATFontFeatureBase else { continue }
+                guard let value = UInt16(exactly: value) else { continue }
+                
+                if let setting = feature.setting {
+                    
+                    switch value {
+                    case 0: _features.append(SFNTMORX.FeatureSetting(type: feature.feature, setting: setting | 1))
+                    case 1: _features.append(SFNTMORX.FeatureSetting(type: feature.feature, setting: setting & ~1))
+                    default: break
+                    }
+                    
+                } else {
+                    
+                    _features.append(SFNTMORX.FeatureSetting(type: feature.feature, setting: value))
+                }
+            }
+            
+            return morx.substitution(glyphs: glyphs, numberOfGlyphs: numberOfGlyphs, layout: layout, features: Set(_features))
         }
         
         return glyphs
+    }
+}
+
+struct AATFontFeatureBase: FontFeatureBase, Hashable {
+    
+    var feature: UInt16
+    var setting: UInt16?
+    
+    var name: String?
+    
+    var defaultSetting: Int
+    var availableSettings: Set<Int>
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(feature)
+        hasher.combine(setting)
+    }
+    
+    static func ==(lhs: AATFontFeatureBase, rhs: AATFontFeatureBase) -> Bool {
+        return lhs.feature == rhs.feature && lhs.setting == rhs.setting
+    }
+    
+    var description: String {
+        return name ?? "unkonwn"
+    }
+}
+
+extension SFNTFontFace {
+    
+    func availableFeatures() -> Set<FontFeature> {
+        
+        if let feat = feat {
+            
+            var result: [AATFontFeatureBase] = []
+            
+            for feature in feat {
+                
+                guard let feature = feature else { continue }
+                
+                if feature.isExclusive {
+                    
+                    let name = queryName(Int(feature.nameIndex))
+                    let defaultSetting = feature[feature.defaultSetting]?.setting
+                    let availableSettings = feature.lazy.compactMap { $0?.setting }.map { Int($0) }
+                    
+                    result.append(AATFontFeatureBase(feature: UInt16(feature.feature), setting: nil, name: name, defaultSetting: defaultSetting.map { Int($0) } ?? 0, availableSettings: Set(availableSettings)))
+                    
+                } else {
+                    
+                    for (idx, setting) in feature.enumerated() {
+                        
+                        guard let setting = setting else { continue }
+                        
+                        let name = queryName(Int(setting.nameIndex))
+                        let isEnable = feature.defaultSetting == idx
+                        
+                        result.append(AATFontFeatureBase(feature: UInt16(feature.feature), setting: UInt16(setting.setting), name: name, defaultSetting: isEnable ? 1 : 0, availableSettings: [0, 1]))
+                        
+                    }
+                }
+            }
+            
+            return Set(result.map(FontFeature.init))
+        }
+        
+        return []
     }
 }
 

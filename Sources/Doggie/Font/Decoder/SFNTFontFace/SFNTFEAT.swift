@@ -88,7 +88,8 @@ extension SFNTFEAT.Name {
     }
     
     var defaultSetting: Int {
-        return featureFlags & 0x4000 == 0 ? 0 : Int(featureFlags & 0xff)
+        let index = featureFlags & 0x4000 == 0 ? 0 : Int(featureFlags & 0xff)
+        return index < nSettings ? index : 0
     }
 }
 
