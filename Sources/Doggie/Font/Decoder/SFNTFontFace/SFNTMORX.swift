@@ -436,8 +436,7 @@ extension SFNTMORX {
             var componentTable: Data
             var ligatureTable: Data
             
-            var dont_advance = false
-            var match_length: Int?
+            var stack: [Int] = []
             
             init(_ machine: LigatureSubtable) throws {
                 guard machine.ligActionOffset >= 28 else { throw ByteDecodeError.endOfData }
@@ -452,21 +451,20 @@ extension SFNTMORX {
                 
                 let flags = UInt16(entry.flags)
                 
-                defer { dont_advance = flags & 0x4000 != 0 }
-                
                 guard index != buffer.endIndex else { return true }
                 
-                if flags & 0x8000 != 0 && !dont_advance {
-                    match_length = match_length.map { $0 + 1 } ?? 0
+                if flags & 0x8000 != 0 && stack.last != index {
+                    stack.append(index)
                 }
                 
-                if flags & 0x2000 != 0, let _match_length = match_length {
+                if flags & 0x2000 != 0 && stack.count != 0 {
                     
                     var _action = ligActionTable.dropFirst(Int(entry.data.ligActionIndex) << 2)
-                    var last_index = index + 1
                     var ligature_idx = 0
                     
-                    for cursor in (index - _match_length...index).reversed() {
+                    var _stack: [Int] = []
+                    
+                    while let cursor = stack.popLast() {
                         
                         guard let action = try? UInt32(_action.decode(BEUInt32.self)) else { return false }
                         
@@ -478,19 +476,24 @@ extension SFNTMORX {
                         guard let component = try? Int(_component.decode(BEUInt16.self)) else { return false }
                         
                         ligature_idx += component
+                        _stack.append(cursor)
                         
                         if action & 0xC0000000 != 0 {
                             
                             var _ligature = ligatureTable.dropFirst(ligature_idx << 1)
                             guard let ligature = try? Int(_ligature.decode(BEUInt16.self)) else { return false }
                             
-                            buffer.replaceSubrange(cursor..<last_index, with: CollectionOfOne(ligature))
-                            last_index = cursor
+                            buffer[_stack.last!] = ligature
+                            for idx in _stack.dropLast() {
+                                buffer.remove(at: idx)
+                            }
                             
                             if action & 0x80000000 != 0 {
-                                match_length = nil
+                                stack.removeAll(keepingCapacity: true)
                                 break
                             }
+                            
+                            _stack.removeAll(keepingCapacity: true)
                         }
                     }
                 }
