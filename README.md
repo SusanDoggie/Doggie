@@ -135,6 +135,11 @@ Check out the Doggie.xcworkspace and build the project. It's suggested building 
 - [ ] FEAT
 - [ ] KERX
 - [ ] MORX
+  - [x] Rearrangement
+  - [x] Contextual
+  - [x] Ligature
+  - [x] Noncontextual
+  - [ ] Insertion
 - [ ] GSUB
 - [ ] GPOS
 - [ ] GDEF
