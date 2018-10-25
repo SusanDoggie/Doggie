@@ -247,6 +247,8 @@ protocol FontFeatureBase : PolymorphicHashable, CustomStringConvertible {
     var defaultSetting: Int { get }
     
     var availableSettings: Set<Int> { get }
+    
+    func name(for setting: Int) -> String?
 }
 
 public struct FontFeature : Hashable, CustomStringConvertible {
@@ -267,6 +269,10 @@ public struct FontFeature : Hashable, CustomStringConvertible {
     
     public var description: String {
         return base.description
+    }
+    
+    public func name(for setting: Int) -> String? {
+        return base.name(for: setting)
     }
 }
 

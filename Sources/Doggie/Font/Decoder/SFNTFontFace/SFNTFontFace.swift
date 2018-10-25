@@ -217,6 +217,7 @@ struct AATFontFeatureBase: FontFeatureBase, Hashable {
     var setting: UInt16?
     
     var name: String?
+    var settingNames: [Int: String]
     
     var defaultSetting: Int
     var availableSettings: Set<Int>
@@ -232,6 +233,10 @@ struct AATFontFeatureBase: FontFeatureBase, Hashable {
     
     var description: String {
         return name ?? "unkonwn"
+    }
+    
+    func name(for setting: Int) -> String? {
+        return settingNames[setting]
     }
 }
 
@@ -251,9 +256,26 @@ extension SFNTFontFace {
                     
                     let name = queryName(Int(feature.nameIndex))
                     let defaultSetting = feature[feature.defaultSetting]?.setting
-                    let availableSettings = feature.lazy.compactMap { $0?.setting }.map { Int($0) }
                     
-                    result.append(AATFontFeatureBase(feature: UInt16(feature.feature), setting: nil, name: name, defaultSetting: defaultSetting.map { Int($0) } ?? 0, availableSettings: Set(availableSettings)))
+                    var settingNames: [Int: String] = [:]
+                    var availableSettings: [Int] = []
+                    
+                    for setting in feature {
+                        
+                        guard let setting = setting else { continue }
+                        
+                        availableSettings.append(Int(setting.setting))
+                        settingNames[Int(setting.setting)] = queryName(Int(setting.nameIndex))
+                    }
+                    
+                    result.append(AATFontFeatureBase(
+                        feature: UInt16(feature.feature),
+                        setting: nil,
+                        name: name,
+                        settingNames: settingNames,
+                        defaultSetting: defaultSetting.map { Int($0) } ?? 0,
+                        availableSettings: Set(availableSettings))
+                    )
                     
                 } else {
                     
@@ -264,8 +286,14 @@ extension SFNTFontFace {
                         let name = queryName(Int(setting.nameIndex))
                         let isEnable = feature.defaultSetting == idx
                         
-                        result.append(AATFontFeatureBase(feature: UInt16(feature.feature), setting: UInt16(setting.setting), name: name, defaultSetting: isEnable ? 1 : 0, availableSettings: [0, 1]))
-                        
+                        result.append(AATFontFeatureBase(
+                            feature: UInt16(feature.feature),
+                            setting: UInt16(setting.setting),
+                            name: name,
+                            settingNames: [0: "Disable", 1: "Enable"],
+                            defaultSetting: isEnable ? 1 : 0,
+                            availableSettings: [0, 1])
+                        )
                     }
                 }
             }
