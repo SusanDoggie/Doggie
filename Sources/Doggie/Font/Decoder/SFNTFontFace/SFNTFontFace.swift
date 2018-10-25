@@ -279,19 +279,18 @@ extension SFNTFontFace {
                     
                 } else {
                     
-                    for (idx, setting) in feature.enumerated() {
+                    for setting in feature {
                         
                         guard let setting = setting else { continue }
                         
                         let name = queryName(Int(setting.nameIndex))
-                        let isEnable = feature.defaultSetting == idx
                         
                         result.append(AATFontFeatureBase(
                             feature: UInt16(feature.feature),
                             setting: UInt16(setting.setting),
                             name: name,
                             settingNames: [0: "Disable", 1: "Enable"],
-                            defaultSetting: isEnable ? 1 : 0,
+                            defaultSetting: 0,
                             availableSettings: [0, 1])
                         )
                     }
