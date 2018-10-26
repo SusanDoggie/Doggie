@@ -50,17 +50,9 @@ public enum WrappingMode {
     case mirror
 }
 
-public protocol TextureProtocol {
-    
-    associatedtype RawPixel
+public protocol TextureProtocol: RawPixelProtocol {
     
     associatedtype Pixel : ScalarMultiplicative where Pixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol
-    
-    var width: Int { get }
-    
-    var height: Int { get }
-    
-    var pixels: MappedBuffer<RawPixel> { get }
     
     var resamplingAlgorithm: ResamplingAlgorithm { get set }
     
@@ -70,25 +62,11 @@ public protocol TextureProtocol {
     
     var option: MappedBufferOption { get set }
     
-    mutating func setOrientation(_ orientation: ImageOrientation)
-    
-    func transposed() -> Self
-    
-    func verticalFlipped() -> Self
-    
-    func horizontalFlipped() -> Self
-    
     func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P>
     
+    func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> StencilTexture<P>
+    
     func pixel(_ point: Point) -> Pixel
-    
-    func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<RawPixel>) throws -> R) rethrows -> R
-    
-    mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<RawPixel>) throws -> R) rethrows -> R
-    
-    func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
-    
-    mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
 }
 
 @usableFromInline
@@ -112,66 +90,17 @@ extension _TextureProtocolImplement {
         
         return texture
     }
-}
-
-extension _TextureProtocolImplement {
     
     @inlinable
     @inline(__always)
-    public mutating func setOrientation(_ orientation: ImageOrientation) {
+    public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> StencilTexture<P> {
         
-        switch orientation {
-        case .leftMirrored, .left, .rightMirrored, .right: self = self.transposed()
-        default: break
-        }
+        var texture = try StencilTexture<P>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
         
-        guard pixels.count != 0 else { return }
+        texture.horizontalWrappingMode = self.horizontalWrappingMode
+        texture.verticalWrappingMode = self.verticalWrappingMode
         
-        let width = self.width
-        let height = self.height
-        
-        switch orientation {
-        case .right, .upMirrored:
-            
-            self.withUnsafeMutableBufferPointer {
-                
-                guard let buffer = $0.baseAddress else { return }
-                
-                var buf1 = buffer
-                var buf2 = buffer + width - 1
-                
-                for _ in 0..<width >> 1 {
-                    Swap(height, buf1, width, buf2, width)
-                    buf1 += 1
-                    buf2 -= 1
-                }
-            }
-            
-        case .left, .downMirrored:
-            
-            self.withUnsafeMutableBufferPointer {
-                
-                guard let buffer = $0.baseAddress else { return }
-                
-                var buf1 = buffer
-                var buf2 = buffer + width * (height - 1)
-                
-                for _ in 0..<height >> 1 {
-                    Swap(width, buf1, 1, buf2, 1)
-                    buf1 += width
-                    buf2 -= width
-                }
-            }
-            
-        case .down, .rightMirrored:
-            
-            self.withUnsafeMutableBufferPointer {
-                guard let buffer = $0.baseAddress else { return }
-                Swap($0.count >> 1, buffer, 1, buffer + $0.count - 1, -1)
-            }
-            
-        default: break
-        }
+        return texture
     }
 }
 
@@ -200,22 +129,6 @@ extension _TextureProtocolImplement {
         texture.verticalWrappingMode = self.verticalWrappingMode
         
         return texture
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func verticalFlipped() -> Self {
-        var copy = self
-        copy.setOrientation(.downMirrored)
-        return copy
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func horizontalFlipped() -> Self {
-        var copy = self
-        copy.setOrientation(.upMirrored)
-        return copy
     }
 }
 

@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, Hashable {
+public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol, Hashable {
     
     public let width: Int
     public let height: Int
@@ -396,67 +396,6 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    public mutating func setOrientation(_ orientation: ImageOrientation) {
-        
-        switch orientation {
-        case .leftMirrored, .left, .rightMirrored, .right: self = self.transposed()
-        default: break
-        }
-        
-        guard pixels.count != 0 else { return }
-        
-        let width = self.width
-        let height = self.height
-        
-        switch orientation {
-        case .right, .upMirrored:
-            
-            self.withUnsafeMutableBufferPointer {
-                
-                guard let buffer = $0.baseAddress else { return }
-                
-                var buf1 = buffer
-                var buf2 = buffer + width - 1
-                
-                for _ in 0..<width >> 1 {
-                    Swap(height, buf1, width, buf2, width)
-                    buf1 += 1
-                    buf2 -= 1
-                }
-            }
-            
-        case .left, .downMirrored:
-            
-            self.withUnsafeMutableBufferPointer {
-                
-                guard let buffer = $0.baseAddress else { return }
-                
-                var buf1 = buffer
-                var buf2 = buffer + width * (height - 1)
-                
-                for _ in 0..<height >> 1 {
-                    Swap(width, buf1, 1, buf2, 1)
-                    buf1 += width
-                    buf2 -= width
-                }
-            }
-            
-        case .down, .rightMirrored:
-            
-            self.withUnsafeMutableBufferPointer {
-                guard let buffer = $0.baseAddress else { return }
-                Swap($0.count >> 1, buffer, 1, buffer + $0.count - 1, -1)
-            }
-            
-        default: break
-        }
-    }
-}
-
-extension Image {
-    
-    @inlinable
-    @inline(__always)
     public func transposed() -> Image {
         if pixels.count == 0 {
             return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)
@@ -464,22 +403,6 @@ extension Image {
         var copy = pixels
         pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(height, width, source.baseAddress!, 1, destination.baseAddress!, 1) } }
         return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: copy, colorSpace: colorSpace)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func verticalFlipped() -> Image {
-        var copy = self
-        copy.setOrientation(.downMirrored)
-        return copy
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func horizontalFlipped() -> Image {
-        var copy = self
-        copy.setOrientation(.upMirrored)
-        return copy
     }
 }
 

@@ -45,34 +45,19 @@ extension MTLDevice {
         return buffer.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: descriptor.width * MemoryLayout<T>.stride)
     }
     
-    public func makeTexture(_ image: Image<RGBA32ColorPixel>, options: MTLResourceOptions = []) -> MTLTexture? {
+    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA32ColorPixel {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: image.width, height: image.height, mipmapped: false)
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    public func makeTexture(_ image: Image<RGBA64ColorPixel>, options: MTLResourceOptions = []) -> MTLTexture? {
+    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA64ColorPixel {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Uint, width: image.width, height: image.height, mipmapped: false)
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    public func makeTexture(_ image: Image<FloatColorPixel<RGBColorModel>>, options: MTLResourceOptions = []) -> MTLTexture? {
+    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == FloatColorPixel<RGBColorModel> {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: image.width, height: image.height, mipmapped: false)
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
-    }
-    
-    public func makeTexture(_ texture: Texture<RGBA32ColorPixel>, options: MTLResourceOptions = []) -> MTLTexture? {
-        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Uint, width: texture.width, height: texture.height, mipmapped: false)
-        return self.makeTexture(texture.pixels, descriptor: descriptor, options: options)
-    }
-    
-    public func makeTexture(_ texture: Texture<RGBA64ColorPixel>, options: MTLResourceOptions = []) -> MTLTexture? {
-        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Uint, width: texture.width, height: texture.height, mipmapped: false)
-        return self.makeTexture(texture.pixels, descriptor: descriptor, options: options)
-    }
-    
-    public func makeTexture(_ texture: Texture<FloatColorPixel<RGBColorModel>>, options: MTLResourceOptions = []) -> MTLTexture? {
-        let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: texture.width, height: texture.height, mipmapped: false)
-        return self.makeTexture(texture.pixels, descriptor: descriptor, options: options)
     }
 }
 

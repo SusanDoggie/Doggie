@@ -109,21 +109,6 @@ extension StencilTexture {
     
     @inlinable
     @inline(__always)
-    public func map<R>(_ transform: (T) throws -> R) rethrows -> StencilTexture<R> {
-        
-        var texture = try StencilTexture<R>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
-        
-        texture.horizontalWrappingMode = self.horizontalWrappingMode
-        texture.verticalWrappingMode = self.verticalWrappingMode
-        
-        return texture
-    }
-}
-
-extension StencilTexture {
-    
-    @inlinable
-    @inline(__always)
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBufferPointer(body)
