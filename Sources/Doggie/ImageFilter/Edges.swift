@@ -24,11 +24,13 @@
 //
 
 @inlinable
+@inline(__always)
 public func Edges<S, T>(_ image: Image<S>, _ intensity: Double) -> Image<T> where T.Model == RGBColorModel {
     return Image(texture: Edges(Texture(image: image), intensity), resolution: image.resolution, colorSpace: .default)
 }
 
 @inlinable
+@inline(__always)
 public func Edges<S, T>(_ texture: Texture<S>, _ intensity: Double) -> Texture<T> where T.Model == RGBColorModel {
     
     let width = texture.width

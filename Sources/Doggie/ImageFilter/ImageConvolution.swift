@@ -24,6 +24,7 @@
 //
 
 @inlinable
+@inline(__always)
 func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_row_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_row_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int) where T : FloatingMathProtocol {
     var signal = signal
     var kreal = kreal
@@ -39,28 +40,29 @@ func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ row: Int
 }
 
 @inlinable
-func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ horizontal_filter: [T], _ vertical_filter: [T]) -> Image<Pixel> where T : FloatingMathProtocol {
+@inline(__always)
+func _TextureConvolution<Pixel, T: BinaryFloatingPoint>(_ texture: Texture<Pixel>, _ horizontal_filter: [T], _ vertical_filter: [T]) -> Texture<Pixel> where T : FloatingMathProtocol {
     
-    let width = image.width
-    let height = image.height
+    let width = texture.width
+    let height = texture.height
     let numberOfComponents = Pixel.numberOfComponents
     
     let n_width = width + horizontal_filter.count - 1
     let n_height = height + vertical_filter.count - 1
     
-    guard width > 0 && height > 0 else { return image }
+    guard width > 0 && height > 0 else { return texture }
     
     let length1 = Radix2CircularConvolveLength(width, horizontal_filter.count)
     let length2 = Radix2CircularConvolveLength(height, vertical_filter.count)
     
-    var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, option: image.option)
-    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: n_width * length2, option: image.option)
+    var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, option: texture.option)
+    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: n_width * length2, option: texture.option)
     
     buffer.withUnsafeMutableBufferPointer {
         
         guard let buffer = $0.baseAddress else { return }
         
-        image.withUnsafeBytes {
+        texture.withUnsafeBytes {
             
             guard var source = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
             
@@ -101,30 +103,31 @@ func _ImageConvolution<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ h
     
     result.removeLast(result.count - n_width * n_height)
     
-    return Image(width: n_width, height: n_height, resolution: image.resolution, pixels: result, colorSpace: image.colorSpace)
+    return Texture(width: n_width, height: n_height, pixels: result, resamplingAlgorithm: texture.resamplingAlgorithm)
 }
 
 @inlinable
-func _ImageConvolutionHorizontal<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ filter: [T]) -> Image<Pixel> where T : FloatingMathProtocol {
+@inline(__always)
+func _TextureConvolutionHorizontal<Pixel, T: BinaryFloatingPoint>(_ texture: Texture<Pixel>, _ filter: [T]) -> Texture<Pixel> where T : FloatingMathProtocol {
     
-    let width = image.width
-    let height = image.height
+    let width = texture.width
+    let height = texture.height
     let numberOfComponents = Pixel.numberOfComponents
     
     let n_width = width + filter.count - 1
     
-    guard width > 0 && height > 0 else { return image }
+    guard width > 0 && height > 0 else { return texture }
     
     let length = Radix2CircularConvolveLength(width, filter.count)
     
-    var buffer = MappedBuffer<T>(repeating: 0, count: length + length * height, option: image.option)
-    var result = Image<Pixel>(width: n_width, height: height, resolution: image.resolution, colorSpace: image.colorSpace, option: image.option)
+    var buffer = MappedBuffer<T>(repeating: 0, count: length + length * height, option: texture.option)
+    var result = Texture<Pixel>(width: n_width, height: height, resamplingAlgorithm: texture.resamplingAlgorithm, option: texture.option)
     
     buffer.withUnsafeMutableBufferPointer {
         
         guard let buffer = $0.baseAddress else { return }
         
-        image.withUnsafeBytes {
+        texture.withUnsafeBytes {
             
             guard var source = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
             
@@ -169,26 +172,27 @@ func _ImageConvolutionHorizontal<Pixel, T: BinaryFloatingPoint>(_ image: Image<P
 }
 
 @inlinable
-func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pixel>, _ filter: [T]) -> Image<Pixel> where T : FloatingMathProtocol {
+@inline(__always)
+func _TextureConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ texture: Texture<Pixel>, _ filter: [T]) -> Texture<Pixel> where T : FloatingMathProtocol {
     
-    let width = image.width
-    let height = image.height
+    let width = texture.width
+    let height = texture.height
     let numberOfComponents = Pixel.numberOfComponents
     
     let n_height = height + filter.count - 1
     
-    guard width > 0 && height > 0 else { return image }
+    guard width > 0 && height > 0 else { return texture }
     
     let length = Radix2CircularConvolveLength(height, filter.count)
     
-    var buffer = MappedBuffer<T>(repeating: 0, count: length, option: image.option)
-    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: width * length, option: image.option)
+    var buffer = MappedBuffer<T>(repeating: 0, count: length, option: texture.option)
+    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: width * length, option: texture.option)
     
     buffer.withUnsafeMutableBufferPointer {
         
         guard let buffer = $0.baseAddress else { return }
         
-        image.withUnsafeBytes {
+        texture.withUnsafeBytes {
             
             guard var source = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
             
@@ -219,30 +223,67 @@ func _ImageConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ image: Image<Pix
     
     result.removeLast(result.count - width * n_height)
     
-    return Image(width: width, height: n_height, resolution: image.resolution, pixels: result, colorSpace: image.colorSpace)
+    return Texture(width: width, height: n_height, pixels: result, resamplingAlgorithm: texture.resamplingAlgorithm)
 }
 
 @inlinable
+@inline(__always)
+public func TextureConvolution<Model>(_ texture: Texture<ColorPixel<Model>>, horizontal horizontal_filter: [Double], vertical vertical_filter: [Double]) -> Texture<ColorPixel<Model>> {
+    return _TextureConvolution(texture, horizontal_filter, vertical_filter)
+}
+@inlinable
+@inline(__always)
+public func TextureConvolution<Model>(_ texture: Texture<FloatColorPixel<Model>>, horizontal horizontal_filter: [Float], vertical vertical_filter: [Float]) -> Texture<FloatColorPixel<Model>> {
+    return _TextureConvolution(texture, horizontal_filter, vertical_filter)
+}
+@inlinable
+@inline(__always)
+public func TextureConvolutionHorizontal<Model>(_ texture: Texture<ColorPixel<Model>>, _ filter: [Double]) -> Texture<ColorPixel<Model>> {
+    return _TextureConvolutionHorizontal(texture, filter)
+}
+@inlinable
+@inline(__always)
+public func TextureConvolutionHorizontal<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ filter: [Float]) -> Texture<FloatColorPixel<Model>> {
+    return _TextureConvolutionHorizontal(texture, filter)
+}
+@inlinable
+@inline(__always)
+public func TextureConvolutionVertical<Model>(_ texture: Texture<ColorPixel<Model>>, _ filter: [Double]) -> Texture<ColorPixel<Model>> {
+    return _TextureConvolutionVertical(texture, filter)
+}
+@inlinable
+@inline(__always)
+public func TextureConvolutionVertical<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ filter: [Float]) -> Texture<FloatColorPixel<Model>> {
+    return _TextureConvolutionVertical(texture, filter)
+}
+
+@inlinable
+@inline(__always)
 public func ImageConvolution<Model>(_ image: Image<ColorPixel<Model>>, horizontal horizontal_filter: [Double], vertical vertical_filter: [Double]) -> Image<ColorPixel<Model>> {
-    return _ImageConvolution(image, horizontal_filter, vertical_filter)
+    return Image(texture: TextureConvolution(Texture(image: image), horizontal: horizontal_filter, vertical: vertical_filter), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 @inlinable
+@inline(__always)
 public func ImageConvolution<Model>(_ image: Image<FloatColorPixel<Model>>, horizontal horizontal_filter: [Float], vertical vertical_filter: [Float]) -> Image<FloatColorPixel<Model>> {
-    return _ImageConvolution(image, horizontal_filter, vertical_filter)
+    return Image(texture: TextureConvolution(Texture(image: image), horizontal: horizontal_filter, vertical: vertical_filter), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 @inlinable
+@inline(__always)
 public func ImageConvolutionHorizontal<Model>(_ image: Image<ColorPixel<Model>>, _ filter: [Double]) -> Image<ColorPixel<Model>> {
-    return _ImageConvolutionHorizontal(image, filter)
+    return Image(texture: TextureConvolutionHorizontal(Texture(image: image), filter), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 @inlinable
+@inline(__always)
 public func ImageConvolutionHorizontal<Model>(_ image: Image<FloatColorPixel<Model>>, _ filter: [Float]) -> Image<FloatColorPixel<Model>> {
-    return _ImageConvolutionHorizontal(image, filter)
+    return Image(texture: TextureConvolutionHorizontal(Texture(image: image), filter), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 @inlinable
+@inline(__always)
 public func ImageConvolutionVertical<Model>(_ image: Image<ColorPixel<Model>>, _ filter: [Double]) -> Image<ColorPixel<Model>> {
-    return _ImageConvolutionVertical(image, filter)
+    return Image(texture: TextureConvolutionVertical(Texture(image: image), filter), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 @inlinable
+@inline(__always)
 public func ImageConvolutionVertical<Model>(_ image: Image<FloatColorPixel<Model>>, _ filter: [Float]) -> Image<FloatColorPixel<Model>> {
-    return _ImageConvolutionVertical(image, filter)
+    return Image(texture: TextureConvolutionVertical(Texture(image: image), filter), resolution: image.resolution, colorSpace: image.colorSpace)
 }

@@ -24,6 +24,7 @@
 //
 
 @inlinable
+@inline(__always)
 public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ blur: T) -> [T] where T: FloatingMathProtocol {
     
     let t = 2 * blur * blur
@@ -39,12 +40,28 @@ public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ blur: T) -> [T] where T
 }
 
 @inlinable
+@inline(__always)
+public func GaussianBlur<Model>(_ texture: Texture<ColorPixel<Model>>, _ blur: Double) -> Texture<ColorPixel<Model>> {
+    let filter = GaussianBlurFilter(blur)
+    return TextureConvolution(texture, horizontal: filter, vertical: filter)
+}
+
+@inlinable
+@inline(__always)
+public func GaussianBlur<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ blur: Float) -> Texture<FloatColorPixel<Model>> {
+    let filter = GaussianBlurFilter(blur)
+    return TextureConvolution(texture, horizontal: filter, vertical: filter)
+}
+
+@inlinable
+@inline(__always)
 public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Double) -> Image<ColorPixel<Model>> {
     let filter = GaussianBlurFilter(blur)
     return ImageConvolution(image, horizontal: filter, vertical: filter)
 }
 
 @inlinable
+@inline(__always)
 public func GaussianBlur<Model>(_ image: Image<FloatColorPixel<Model>>, _ blur: Float) -> Image<FloatColorPixel<Model>> {
     let filter = GaussianBlurFilter(blur)
     return ImageConvolution(image, horizontal: filter, vertical: filter)

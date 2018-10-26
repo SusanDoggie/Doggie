@@ -24,11 +24,13 @@
 //
 
 @inlinable
+@inline(__always)
 public func Underpainting<Pixel>(_ image: Image<Pixel>, _ expand: Double, _ background_color: Pixel.Model) -> Image<Pixel> {
     return Image(texture: Underpainting(Texture(image: image), expand, background_color), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
+@inline(__always)
 public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ background_color: Pixel.Model) -> Texture<Pixel> {
     
     let width = texture.width
