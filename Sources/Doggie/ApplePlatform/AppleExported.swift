@@ -35,6 +35,18 @@
 
 #endif
 
+#if canImport(CoreImage)
+
+@_exported import CoreImage
+
+#endif
+
+#if canImport(QuartzCore)
+
+@_exported import QuartzCore
+
+#endif
+
 #if canImport(ImageIO)
 
 @_exported import ImageIO

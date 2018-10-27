@@ -104,6 +104,8 @@ extension ImageContext {
         self.styles.shadowColor = ImageContextStyles.defaultShadowColor
         self.styles.shadowOffset = Size()
         self.styles.shadowBlur = 0
+        self.styles.compositingMode = .default
+        self.styles.blendMode = .default
         self.image.colorSpace.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
     }
 }
