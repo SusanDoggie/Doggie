@@ -89,6 +89,35 @@ extension CGContext {
         self.concatenate(CGAffineTransform(transform))
     }
     
+    public func draw(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<AnyColor>, colorSpace: AnyColorSpace) {
+        
+        self.beginTransparencyLayer()
+        
+        self.addPath(shape)
+        switch winding {
+        case .nonZero: self.clip(using: .winding)
+        case .evenOdd: self.clip(using: .evenOdd)
+        }
+        
+        let boundary = shape.originalBoundary
+        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.x, y: boundary.y) * shape.transform
+        
+        self.concatenate(transform)
+        
+        let options: CGGradientDrawingOptions = [.drawsBeforeStartLocation, .drawsAfterEndLocation]
+        
+        switch gradient.type {
+        case .linear: self.drawLinearGradient(colorSpace: colorSpace, stops: gradient.stops, start: gradient.start, end: gradient.end, options: options)
+        case .radial: self.drawRadialGradient(colorSpace: colorSpace, stops: gradient.stops, start: gradient.start, startRadius: 0, end: gradient.end, endRadius: 0.5, options: options)
+        }
+        
+        self.endTransparencyLayer()
+    }
+    
+    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<AnyColor>, colorSpace: AnyColorSpace) {
+        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, gradient: gradient, colorSpace: colorSpace)
+    }
+    
     public func drawLinearGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
