@@ -75,14 +75,19 @@ public class ImageContext<Pixel: ColorPixelProtocol> : TypedDrawableContext {
     
     public private(set) var image: Image<Pixel>
     
-    fileprivate var clip: MappedBuffer<Double>?
-    fileprivate var depth: MappedBuffer<Double>?
+    @usableFromInline
+    var clip: MappedBuffer<Double>?
+    
+    @usableFromInline
+    var depth: MappedBuffer<Double>?
     
     fileprivate var styles: ImageContextStyles = ImageContextStyles()
     
-    private var next: ImageContext?
+    @usableFromInline
+    var next: ImageContext?
     
-    private var isDirty: Bool = false
+    @usableFromInline
+    var isDirty: Bool = false
     
     private var graphicStateStack: [GraphicState] = []
     
@@ -97,7 +102,8 @@ public class ImageContext<Pixel: ColorPixelProtocol> : TypedDrawableContext {
 
 extension ImageContext {
     
-    private convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
+    @usableFromInline
+    convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
         self.init(width: context.width, height: context.height, colorSpace: colorSpace, option: context.image.option)
         self.styles = context.styles
         self.styles.opacity = 1
@@ -112,7 +118,8 @@ extension ImageContext {
 
 extension ImageContext {
     
-    private var current: ImageContext {
+    @usableFromInline
+    var current: ImageContext {
         return next ?? self
     }
 }
@@ -159,6 +166,8 @@ extension ImageContext {
         return try current.clip?.withUnsafeBufferPointer(body) ?? body(nil)
     }
     
+    @inlinable
+    @inline(__always)
     public func clearClipBuffer(with value: Double = 1) {
         
         if value == 1 {
@@ -381,6 +390,8 @@ extension ImageContext {
         }
     }
     
+    @inlinable
+    @inline(__always)
     public func clearRenderDepthBuffer(with value: Double = 1) {
         
         if value == 1 {
@@ -448,6 +459,8 @@ extension ImageContext {
         }
     }
     
+    @inlinable
+    @inline(__always)
     public func endTransparencyLayer() {
         
         if let next = self.next {
@@ -504,6 +517,8 @@ extension ImageContext {
         try self.drawClip(colorSpace: ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), body: body)
     }
     
+    @inlinable
+    @inline(__always)
     public func drawClip<P>(colorSpace: ColorSpace<GrayColorModel>, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
         
         if let next = self.next {
