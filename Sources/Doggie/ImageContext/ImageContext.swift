@@ -498,6 +498,8 @@ extension ImageContext {
 
 extension ImageContext {
     
+    @inlinable
+    @inline(__always)
     public func drawClip<P>(body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
         try self.drawClip(colorSpace: ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), body: body)
     }
@@ -530,6 +532,8 @@ extension ImageContext {
 
 extension ImageContext {
     
+    @inlinable
+    @inline(__always)
     public func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel {
         self.drawClip { (context: ImageContext<ColorPixel<GrayColorModel>>) in context.draw(texture: texture, transform: transform) }
     }

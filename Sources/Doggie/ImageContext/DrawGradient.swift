@@ -27,7 +27,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _shading<P : ColorPixelProtocol>(_ shader: (Point) -> P) where Pixel.Model == P.Model {
+    func _shading<P : ColorPixelProtocol>(_ shader: (Point) -> P?) where Pixel.Model == P.Model {
         
         let width = self.width
         let height = self.height
@@ -49,31 +49,18 @@ extension ImageContext {
                 }
             }
         }
-        
     }
-}
-
-extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func axialShading<P : ColorPixelProtocol>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
-        
-        if start.almostEqual(end) {
-            return
-        }
+    func _shading<P : ColorPixelProtocol>(startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, mapping: (Point) -> Double?, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         let startColor = shading(0)
         let endColor = shading(1)
         
-        self._shading { point -> P in
+        self._shading { point -> P? in
             
-            let a = start - point
-            let b = end - start
-            let u = b.x * a.x + b.y * a.y
-            let v = b.x * b.x + b.y * b.y
-            
-            let t = -u / v
+            guard let t = mapping(point) else { return nil }
             
             if 0...1 ~= t {
                 
@@ -117,16 +104,36 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
+    public func axialShading<P : ColorPixelProtocol>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
+        
+        if start.almostEqual(end) {
+            return
+        }
+        
+        self._shading(startSpread: startSpread, endSpread: endSpread, mapping: { point -> Double? in
+            
+            let a = start - point
+            let b = end - start
+            let u = b.x * a.x + b.y * a.y
+            let v = b.x * b.x + b.y * b.y
+            
+            return -u / v
+            
+        }, shading: shading)
+    }
+}
+
+extension ImageContext {
+    
+    @inlinable
+    @inline(__always)
     public func radialShading<P : ColorPixelProtocol>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         if start.almostEqual(end) && startRadius.almostEqual(endRadius) {
             return
         }
         
-        let startColor = shading(0)
-        let endColor = shading(1)
-        
-        self._shading { point -> P in
+        self._shading(startSpread: startSpread, endSpread: endSpread, mapping: { point -> Double? in
             
             let p0 = point - start
             let p1 = start - end
@@ -137,67 +144,32 @@ extension ImageContext {
             let b = 2 * (p0.x * p1.x + p0.y * p1.y - r0 * r1)
             let c = p0.x * p0.x + p0.y * p0.y - r0 * r0
             
-            var t: Double?
-            
+            @inline(__always)
             func _filter(_ t: Double) -> Bool {
                 return r0 + t * r1 >= 0 && (t >= 0 || startSpread != .none) && (t <= 1 || endSpread != .none)
             }
             
             if a.almostZero() {
-                if b.almostZero() {
-                    t = nil
-                } else {
+                if !b.almostZero() {
                     let _t = -c / b
                     if _filter(_t) {
-                        t = _t
+                        return _t
                     }
                 }
             } else {
+                
+                var t: Double?
+                
                 for _t in degree2roots(b / a, c / a) where _filter(_t) {
                     t = t.map { max($0, _t) } ?? _t
                 }
-            }
-            
-            if let t = t {
                 
-                if 0...1 ~= t {
-                    
-                    return shading(t)
-                    
-                } else if t > 1 {
-                    
-                    switch endSpread {
-                    case .none: return endColor.with(opacity: 0)
-                    case .pad: return endColor
-                    case .reflect:
-                        var _t = 0.0
-                        let s = modf(t, &_t)
-                        return shading(Int(_t) & 1 == 0 ? s : 1 - s)
-                    case .repeat:
-                        var _t = 0.0
-                        let s = modf(t, &_t)
-                        return shading(s)
-                    }
-                    
-                } else {
-                    
-                    switch startSpread {
-                    case .none: return startColor.with(opacity: 0)
-                    case .pad: return startColor
-                    case .reflect:
-                        var _t = 0.0
-                        let s = modf(t, &_t)
-                        return shading(Int(_t) & 1 == 0 ? -s : 1 + s)
-                    case .repeat:
-                        var _t = 0.0
-                        let s = modf(t, &_t)
-                        return shading(1 + s)
-                    }
-                }
+                return t
             }
             
-            return P()
-        }
+            return nil
+            
+        }, shading: shading)
     }
 }
 
@@ -209,7 +181,7 @@ extension ImageContext {
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.0, $0.1.offset) < ($1.0, $1.1.offset) }.map { ($0.1.offset, ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { ($0.1.offset, ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         switch stops.count {
         case 0: break
@@ -244,7 +216,7 @@ extension ImageContext {
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.0, $0.1.offset) < ($1.0, $1.1.offset) }.map { ($0.1.offset, ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { ($0.1.offset, ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         switch stops.count {
         case 0: break
