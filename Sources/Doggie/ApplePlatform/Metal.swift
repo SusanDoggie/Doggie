@@ -33,6 +33,7 @@ extension MTLDevice {
     public func makeBuffer<T>(_ buffer: MappedBuffer<T>, options: MTLResourceOptions = []) -> MTLBuffer? {
         var box = MappedBuffer<T>._Box(ref: buffer.base)
         let length = (buffer.count * MemoryLayout<T>.stride).align(Int(getpagesize()))
+        guard length != 0 else { return nil }
         return self.makeBuffer(bytesNoCopy: buffer.base.address, length: length, options: options, deallocator: { _, _ in box.ref = nil })
     }
 }
