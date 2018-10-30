@@ -38,7 +38,7 @@
 		08458B5F1E2E627600D01813 /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEE1E2E627600D01813 /* Lock.swift */; };
 		08458B611E2E627600D01813 /* SDTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* SDTask.swift */; };
 		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
-		086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */; };
+		086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* GradientMesh.swift */; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		0889F2C91F18FF1D0020E750 /* FixedNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2C71F18FF1D0020E750 /* FixedNumber.swift */; };
 		0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2CA1F1904EB0020E750 /* Signature.swift */; };
@@ -75,7 +75,6 @@
 		0A39A6B61ED9342C00804004 /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B41ED9342C00804004 /* ImageContext.swift */; };
 		0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B71ED9345100804004 /* DrawImage.swift */; };
 		0A39A6BC1ED9347C00804004 /* DrawShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6BA1ED9347C00804004 /* DrawShape.swift */; };
-		0A39A6C51ED937C700804004 /* DrawGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6C31ED937C700804004 /* DrawGradient.swift */; };
 		0A3D5C641EEA498E00A9CDEA /* CGColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3D5C621EEA498E00A9CDEA /* CGColor.swift */; };
 		0A3FD862210079BC006D4737 /* CGContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3FD861210079BC006D4737 /* CGContext.swift */; };
 		0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */; };
@@ -211,7 +210,7 @@
 		0AADB89620AC0BA400F3BF17 /* PNGInterlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */; };
 		0AAF447720EF0F1300178EA2 /* ImageOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAF447620EF0F1300178EA2 /* ImageOrientation.swift */; };
 		0AAFBEED20B53B9300A392FE /* PredefinedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAFBEEC20B53B9300A392FE /* PredefinedColor.swift */; };
-		0AAFBEEF20B5687200A392FE /* DrawShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAFBEEE20B5687200A392FE /* DrawShadow.swift */; };
+		0AAFBEEF20B5687200A392FE /* Shadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAFBEEE20B5687200A392FE /* Shadow.swift */; };
 		0AB076A321831104007BCD62 /* RawPixelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB076A221831104007BCD62 /* RawPixelProtocol.swift */; };
 		0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */; };
 		0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB23E441F22E4980033462E /* RawBitmap.swift */; };
@@ -299,7 +298,7 @@
 		08458AEE1E2E627600D01813 /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Lock.swift; sourceTree = "<group>"; };
 		08458AEF1E2E627600D01813 /* SDTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SDTask.swift; sourceTree = "<group>"; };
 		086F06481EDC623D00BA70C8 /* Rasterizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rasterizer.swift; sourceTree = "<group>"; };
-		086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawGradientMesh.swift; sourceTree = "<group>"; };
+		086F064B1EDC65D600BA70C8 /* GradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GradientMesh.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoggieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0889F2C71F18FF1D0020E750 /* FixedNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FixedNumber.swift; sourceTree = "<group>"; };
@@ -337,7 +336,6 @@
 		0A39A6B41ED9342C00804004 /* ImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ImageContext.swift; sourceTree = "<group>"; };
 		0A39A6B71ED9345100804004 /* DrawImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawImage.swift; sourceTree = "<group>"; };
 		0A39A6BA1ED9347C00804004 /* DrawShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawShape.swift; sourceTree = "<group>"; };
-		0A39A6C31ED937C700804004 /* DrawGradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawGradient.swift; sourceTree = "<group>"; };
 		0A3D5C621EEA498E00A9CDEA /* CGColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGColor.swift; sourceTree = "<group>"; };
 		0A3FD861210079BC006D4737 /* CGContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGContext.swift; sourceTree = "<group>"; };
 		0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CollectionExtension.swift; sourceTree = "<group>"; };
@@ -474,7 +472,7 @@
 		0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGInterlace.swift; sourceTree = "<group>"; };
 		0AAF447620EF0F1300178EA2 /* ImageOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOrientation.swift; sourceTree = "<group>"; };
 		0AAFBEEC20B53B9300A392FE /* PredefinedColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedColor.swift; sourceTree = "<group>"; };
-		0AAFBEEE20B5687200A392FE /* DrawShadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawShadow.swift; sourceTree = "<group>"; };
+		0AAFBEEE20B5687200A392FE /* Shadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shadow.swift; sourceTree = "<group>"; };
 		0AB076A221831104007BCD62 /* RawPixelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawPixelProtocol.swift; sourceTree = "<group>"; };
 		0AB0DA111F3AEF7B0004E43F /* ShapeRegion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ShapeRegion.swift; sourceTree = "<group>"; };
 		0AB23E441F22E4980033462E /* RawBitmap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RawBitmap.swift; sourceTree = "<group>"; };
@@ -775,7 +773,7 @@
 				0AC621C120EDF07100E5FF15 /* DrawableContext.swift */,
 				0A39A6B41ED9342C00804004 /* ImageContext.swift */,
 				0A21F0231F061AE2009C4490 /* PixelBlender.swift */,
-				0AAFBEEE20B5687200A392FE /* DrawShadow.swift */,
+				0AAFBEEE20B5687200A392FE /* Shadow.swift */,
 				0A39A6B71ED9345100804004 /* DrawImage.swift */,
 				086F06481EDC623D00BA70C8 /* Rasterizer.swift */,
 				0821D6401EED58FC007E42F5 /* Rendering.swift */,
@@ -783,8 +781,7 @@
 				0A8F4F691F622C850062FD11 /* SetClip.swift */,
 				0A39A6BA1ED9347C00804004 /* DrawShape.swift */,
 				0AC621CA20EDFBA500E5FF15 /* Gradient.swift */,
-				0A39A6C31ED937C700804004 /* DrawGradient.swift */,
-				086F064B1EDC65D600BA70C8 /* DrawGradientMesh.swift */,
+				086F064B1EDC65D600BA70C8 /* GradientMesh.swift */,
 			);
 			path = ImageContext;
 			sourceTree = "<group>";
@@ -1283,7 +1280,7 @@
 				0A7E3E941F5FD3E40020A507 /* OTFGSUB.swift in Sources */,
 				0AA6C73D20E6190400682EFA /* RGBA64ColorPixel.swift in Sources */,
 				0A7E6A6620EDBD7F0075DC15 /* Polymorphic.swift in Sources */,
-				0AAFBEEF20B5687200A392FE /* DrawShadow.swift in Sources */,
+				0AAFBEEF20B5687200A392FE /* Shadow.swift in Sources */,
 				0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */,
 				08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */,
 				0A7A1FAF1F04FBFC0016B3FB /* ColorPixel.swift in Sources */,
@@ -1423,7 +1420,6 @@
 				0A8ABC1720E4A0EF00A2634A /* Underpainting.swift in Sources */,
 				0A74D68820047BA600330C86 /* ImageConvolution.swift in Sources */,
 				0A8ABC1020E4852B00A2634A /* StencilTexture.swift in Sources */,
-				0A39A6C51ED937C700804004 /* DrawGradient.swift in Sources */,
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,
 				0A7F24AD1EF37CD500EAD9C7 /* Endianness.swift in Sources */,
 				0ADAA3B820CB7019006682EA /* IndexedCollection.swift in Sources */,
@@ -1437,7 +1433,7 @@
 				0AD4B6D01F61394D00A9A6B8 /* CFFEncoding.swift in Sources */,
 				0ABFA6C91FC67CB6009D42E2 /* ByteCodable.swift in Sources */,
 				0A85352A1F5901E1006FB85D /* CFFINDEX.swift in Sources */,
-				086F064D1EDC65D600BA70C8 /* DrawGradientMesh.swift in Sources */,
+				086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */,
 				08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				0A792CA01FDA9742003C0290 /* FileManager.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
