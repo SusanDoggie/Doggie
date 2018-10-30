@@ -104,7 +104,7 @@ extension ImageContext {
     
     @usableFromInline
     convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
-        self.init(width: context.width, height: context.height, colorSpace: colorSpace, option: context.image.option)
+        self.init(width: context.width, height: context.height, resolution: context.resolution, colorSpace: colorSpace, option: context.image.option)
         self.styles = context.styles
         self.styles.opacity = 1
         self.styles.shadowColor = ImageContextStyles.defaultShadowColor
