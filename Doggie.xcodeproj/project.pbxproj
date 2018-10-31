@@ -66,6 +66,10 @@
 		0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2406731F38109900B0EC28 /* iccNamedColor.swift */; };
 		0A251C632101849A00E31473 /* SDObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A251C622101849A00E31473 /* SDObject.swift */; };
 		0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26A0901FA98994008BEADB /* CompressionTest.swift */; };
+		0A29B20C218998710046FFB4 /* Composer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DB2189985D0046FFB4 /* Composer.swift */; };
+		0A29B237218998710046FFB4 /* DGImageContextShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1D92189985D0046FFB4 /* DGImageContextShader.metal */; };
+		0A29B266218998710046FFB4 /* DGImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */; };
+		0A29B2DD218999020046FFB4 /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; };
 		0A2DFE1D217D65CF00E6EEA4 /* SFNTFEAT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */; };
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
 		0A34FBEA20AAE683001CE2F3 /* UnsafeBufferProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */; };
@@ -327,6 +331,10 @@
 		0A2406731F38109900B0EC28 /* iccNamedColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccNamedColor.swift; sourceTree = "<group>"; };
 		0A251C622101849A00E31473 /* SDObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDObject.swift; sourceTree = "<group>"; };
 		0A26A0901FA98994008BEADB /* CompressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CompressionTest.swift; sourceTree = "<group>"; };
+		0A29B1D92189985D0046FFB4 /* DGImageContextShader.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = DGImageContextShader.metal; sourceTree = "<group>"; };
+		0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGImageContext.swift; sourceTree = "<group>"; };
+		0A29B1DB2189985D0046FFB4 /* Composer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Composer.swift; sourceTree = "<group>"; };
+		0A29B2DA218998710046FFB4 /* DGImageContext.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DGImageContext.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTFEAT.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Tensor.swift; sourceTree = "<group>"; };
 		0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeBufferProtocol.swift; sourceTree = "<group>"; };
@@ -534,6 +542,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0A29B2D2218998710046FFB4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A29B2DD218999020046FFB4 /* Doggie.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -658,6 +674,7 @@
 			isa = PBXGroup;
 			children = (
 				0858DA401C0550B7007FA426 /* Doggie */,
+				0A29B1D82189985D0046FFB4 /* DGImageContext */,
 				08AF77AE1A3A10510042491F /* Tests */,
 				087FE5971A372D5B005A2E9E /* Products */,
 			);
@@ -668,6 +685,7 @@
 			children = (
 				087FE5B51A372D97005A2E9E /* Doggie.framework */,
 				087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */,
+				0A29B2DA218998710046FFB4 /* DGImageContext.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -765,6 +783,17 @@
 				0A251C622101849A00E31473 /* SDObject.swift */,
 			);
 			path = SDObject;
+			sourceTree = "<group>";
+		};
+		0A29B1D82189985D0046FFB4 /* DGImageContext */ = {
+			isa = PBXGroup;
+			children = (
+				0A29B1D92189985D0046FFB4 /* DGImageContextShader.metal */,
+				0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */,
+				0A29B1DB2189985D0046FFB4 /* Composer.swift */,
+			);
+			name = DGImageContext;
+			path = Sources/DGImageContext;
 			sourceTree = "<group>";
 		};
 		0A39A6B31ED9342C00804004 /* ImageContext */ = {
@@ -1151,6 +1180,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0A29B2D3218998710046FFB4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -1190,6 +1226,24 @@
 			productReference = 087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		0A29B1DF218998710046FFB4 /* DGImageContext */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A29B2D7218998710046FFB4 /* Build configuration list for PBXNativeTarget "DGImageContext" */;
+			buildPhases = (
+				0A29B1E0218998710046FFB4 /* Sources */,
+				0A29B2D2218998710046FFB4 /* Frameworks */,
+				0A29B2D3218998710046FFB4 /* Headers */,
+				0A29B2D6218998710046FFB4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DGImageContext;
+			productName = Doggie_Mac;
+			productReference = 0A29B2DA218998710046FFB4 /* DGImageContext.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1227,6 +1281,7 @@
 			targets = (
 				087FE5B41A372D97005A2E9E /* Doggie */,
 				087FE5BE1A372D97005A2E9E /* DoggieTests */,
+				0A29B1DF218998710046FFB4 /* DGImageContext */,
 			);
 		};
 /* End PBXProject section */
@@ -1240,6 +1295,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		087FE5BD1A372D97005A2E9E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A29B2D6218998710046FFB4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1507,6 +1569,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		0A29B1E0218998710046FFB4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A29B20C218998710046FFB4 /* Composer.swift in Sources */,
+				0A29B237218998710046FFB4 /* DGImageContextShader.metal in Sources */,
+				0A29B266218998710046FFB4 /* DGImageContext.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1577,7 +1649,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "$(AVAILABLE_PLATFORMS)";
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/doggie_c/include/**";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1639,7 +1710,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "$(AVAILABLE_PLATFORMS)";
-				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/doggie_c/include/**";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;
@@ -1654,6 +1724,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/doggie_c/include/**";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
@@ -1664,6 +1735,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				SWIFT_INCLUDE_PATHS = "${SRCROOT}/Sources/doggie_c/include/**";
 				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
@@ -1752,6 +1824,32 @@
 			};
 			name = Release;
 		};
+		0A29B2D8218998710046FFB4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 1;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_LANGUAGE_REVISION = Metal12;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Debug;
+		};
+		0A29B2D9218998710046FFB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CURRENT_PROJECT_VERSION = 1;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_LANGUAGE_REVISION = Metal12;
+				SWIFT_VERSION = 4.2;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1778,6 +1876,15 @@
 			buildConfigurations = (
 				087FE5CC1A372D98005A2E9E /* Debug */,
 				087FE5CD1A372D98005A2E9E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A29B2D7218998710046FFB4 /* Build configuration list for PBXNativeTarget "DGImageContext" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A29B2D8218998710046FFB4 /* Debug */,
+				0A29B2D9218998710046FFB4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
