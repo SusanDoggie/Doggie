@@ -1,5 +1,5 @@
 //
-//  DGImageContext.swift
+//  ImageContext.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,10 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(Metal)
-
 import Doggie
-import Metal
 
 private struct DGImageContextStyles {
     
@@ -73,11 +70,6 @@ private struct GraphicState {
 
 public class DGImageContext<Model: ColorModelProtocol> : TypedDrawableContext {
     
-    typealias ClipComposer = DGImageContext<GrayColorModel>.Composer
-    
-    let composer: Composer
-    let clip_composer: ClipComposer
-    
     public let width: Int
     public let height: Int
     public let resolution: Resolution
@@ -92,28 +84,15 @@ public class DGImageContext<Model: ColorModelProtocol> : TypedDrawableContext {
     
     private var graphicStateStack: [GraphicState] = []
     
-    private init(composer: Composer, clip_composer: ClipComposer, width: Int, height: Int, resolution: Resolution, colorSpace: ColorSpace<Model>) {
-        self.composer = composer
-        self.clip_composer = clip_composer
-        self.width = width
-        self.height = height
-        self.resolution = resolution
-        self.colorSpace = colorSpace
-    }
-    
-    public init(device: MTLDevice = MTLCreateSystemDefaultDevice()!, image: Image<FloatColorPixel<Model>>) throws {
-        self.composer = try Composer(device: device)
-        self.clip_composer = try composer as? ClipComposer ?? ClipComposer(device: device)
-        self._image = TextureLayer(Texture(image: image))
+    public init(image: Image<FloatColorPixel<Model>>) {
         self.width = image.width
         self.height = image.height
         self.resolution = image.resolution
         self.colorSpace = image.colorSpace
+        self._image = TextureLayer(Texture(image: image))
     }
     
-    public init(device: MTLDevice = MTLCreateSystemDefaultDevice()!, width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Model>) throws {
-        self.composer = try Composer(device: device)
-        self.clip_composer = try composer as? ClipComposer ?? ClipComposer(device: device)
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Model>) {
         self.width = width
         self.height = height
         self.resolution = resolution
@@ -123,13 +102,8 @@ public class DGImageContext<Model: ColorModelProtocol> : TypedDrawableContext {
 
 extension DGImageContext {
     
-    private convenience init<M>(copyStates context: DGImageContext<M>, composer: Composer, colorSpace: ColorSpace<Model>) {
-        self.init(composer: composer,
-                  clip_composer: context.clip_composer,
-                  width: context.width,
-                  height: context.height,
-                  resolution: context.resolution,
-                  colorSpace: colorSpace)
+    private convenience init<M>(copyStates context: DGImageContext<M>, colorSpace: ColorSpace<Model>) {
+        self.init(width: context.width, height: context.height, resolution: context.resolution, colorSpace: colorSpace)
         self.styles = context.styles
         self.styles.opacity = 1
         self.styles.shadowColor = DGImageContextStyles.defaultShadowColor
@@ -301,10 +275,6 @@ extension DGImageContext {
         return shadowColor.opacity > 0 && shadowBlur > 0
     }
     
-    private var _blendMode: Composer.BlendMode {
-        return Composer.BlendMode(compositing: compositingMode, blending: blendMode)
-    }
-    
     private func draw_shadow(_ source: Layer) {
         
         guard isShadow && !source.is_empty else { return }
@@ -314,7 +284,7 @@ extension DGImageContext {
         let shadowBlur = self.shadowBlur
         
         let blur = ShadowLayer(source: source, color: shadowColor, offset: shadowOffset, blur: shadowBlur)
-        self._image = BlendedLayer(mode: _blendMode, source: blur, destination: self._image, opacity: opacity)
+        self._image = BlendedLayer(source: blur, destination: self._image, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode)
     }
     
     private func draw_layer(_ source: Layer) {
@@ -330,7 +300,7 @@ extension DGImageContext {
         }
         
         self.draw_shadow(layer)
-        self._image = BlendedLayer(mode: _blendMode, source: layer, destination: self._image, opacity: opacity)
+        self._image = BlendedLayer(source: layer, destination: self._image, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode)
     }
 }
 
@@ -349,7 +319,7 @@ extension DGImageContext {
                 return
             }
             
-            self.next = DGImageContext(copyStates: self, composer: composer, colorSpace: colorSpace)
+            self.next = DGImageContext(copyStates: self, colorSpace: colorSpace)
         }
     }
     
@@ -386,7 +356,7 @@ extension DGImageContext {
             return
         }
         
-        let _shape = ShapeLayer(shape: shape, winding: winding, color: FloatColorPixel(color: color, opacity: opacity), antialias: shouldAntialias ? antialias : 1, mode: _blendMode)
+        let _shape = ShapeLayer(shape: shape, winding: winding, color: FloatColorPixel(color: color, opacity: opacity), antialias: shouldAntialias ? antialias : 1, compositingMode: compositingMode, blendMode: blendMode)
         
         self.draw_layer(_shape)
     }
@@ -428,7 +398,7 @@ extension DGImageContext {
             return
         }
         
-        let _clip = DGImageContext<GrayColorModel>(copyStates: self, composer: clip_composer, colorSpace: colorSpace)
+        let _clip = DGImageContext<GrayColorModel>(copyStates: self, colorSpace: colorSpace)
         
         try body(_clip)
         
@@ -477,10 +447,8 @@ extension DGImageContext {
         let renderingIntent = self.renderingIntent
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { _GradientStop(offset: $0.1.offset, color: FloatColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
-        let gradient = RadialGradient(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
+        let gradient = RadialGradientLayer(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
         
         self.draw_layer(gradient)
     }
 }
-
-#endif
