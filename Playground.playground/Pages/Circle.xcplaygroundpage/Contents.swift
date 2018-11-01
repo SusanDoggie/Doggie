@@ -4,5 +4,3 @@ import Cocoa
 import Doggie
 
 sampleImage(width: 500, height: 500)
-
-sampleImage2(width: 500, height: 500)
