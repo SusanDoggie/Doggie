@@ -415,26 +415,26 @@ extension DGImageContext {
     
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
         
-        guard stops.count != 0 else { return }
+        guard stops.count != 0 && !self.transform.determinant.almostZero() else { return }
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: FloatColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
-        let gradient = LinearGradientLayer(stops: stops, transform: transform, start: start, end: end, startSpread: startSpread, endSpread: endSpread)
+        let gradient = LinearGradientLayer(stops: stops, transform: transform.inverse, start: start, end: end, startSpread: startSpread, endSpread: endSpread)
         
         self.draw_layer(gradient)
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
         
-        guard stops.count != 0 else { return }
+        guard stops.count != 0 && !self.transform.determinant.almostZero() else { return }
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: FloatColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
-        let gradient = RadialGradientLayer(stops: stops, transform: transform, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
+        let gradient = RadialGradientLayer(stops: stops, transform: transform.inverse, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
         
         self.draw_layer(gradient)
     }
