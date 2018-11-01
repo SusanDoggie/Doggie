@@ -286,7 +286,13 @@ extension DGImageContext {
                     if let cached = cache[ObjectIdentifier(clip)] as? Encoder.ClipEncoder.Buffer {
                         _clip = cached
                     } else {
-                        _clip = try clip.render(encoder: encoder.clip_encoder(), cache: &cache)
+                        if let clip_encoder = encoder as? Encoder.ClipEncoder {
+                            _clip = try clip.render(encoder: clip_encoder, cache: &cache)
+                        } else {
+                            let clip_encoder = try encoder.clip_encoder()
+                            _clip = try clip.render(encoder: clip_encoder, cache: &cache)
+                            clip_encoder.commit()
+                        }
                         cache[ObjectIdentifier(clip)] = _clip
                     }
                     try encoder.clip(_source, _clip)
