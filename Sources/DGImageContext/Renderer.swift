@@ -95,9 +95,9 @@ protocol DGRendererEncoder {
     
     func clip(_ destination: Buffer, _ clip: Renderer.ClipEncoder.Buffer) throws
     
-    func linearGradient(_ destination: Buffer, _ stops: [DGRendererEncoderGradientStop<Renderer.Model>], _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws
+    func linearGradient(_ destination: Buffer, _ stops: [DGRendererEncoderGradientStop<Renderer.Model>], _ transform: SDTransform, _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws
     
-    func radialGradient(_ destination: Buffer, _ stops: [DGRendererEncoderGradientStop<Renderer.Model>], _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws
+    func radialGradient(_ destination: Buffer, _ stops: [DGRendererEncoderGradientStop<Renderer.Model>], _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws
     
 }
 
@@ -370,13 +370,15 @@ extension DGImageContext {
     class LinearGradientLayer: Layer {
         
         let stops: [DGRendererEncoderGradientStop<Model>]
+        let transform: SDTransform
         let start: Point
         let end: Point
         let startSpread: GradientSpreadMode
         let endSpread: GradientSpreadMode
         
-        init(stops: [DGRendererEncoderGradientStop<Model>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
+        init(stops: [DGRendererEncoderGradientStop<Model>], transform: SDTransform, start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
             self.stops = stops
+            self.transform = transform
             self.start = start
             self.end = end
             self.startSpread = startSpread
@@ -388,13 +390,14 @@ extension DGImageContext {
         }
         
         override func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws where Encoder.Renderer.Model == Model {
-            try encoder.linearGradient(output, stops, start, end, startSpread, endSpread)
+            try encoder.linearGradient(output, stops, transform, start, end, startSpread, endSpread)
         }
     }
     
     class RadialGradientLayer: Layer {
         
         let stops: [DGRendererEncoderGradientStop<Model>]
+        let transform: SDTransform
         let start: Point
         let startRadius: Double
         let end: Point
@@ -402,8 +405,9 @@ extension DGImageContext {
         let startSpread: GradientSpreadMode
         let endSpread: GradientSpreadMode
         
-        init(stops: [DGRendererEncoderGradientStop<Model>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
+        init(stops: [DGRendererEncoderGradientStop<Model>], transform: SDTransform, start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
             self.stops = stops
+            self.transform = transform
             self.start = start
             self.startRadius = startRadius
             self.end = end
@@ -417,7 +421,7 @@ extension DGImageContext {
         }
         
         override func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws where Encoder.Renderer.Model == Model {
-            try encoder.radialGradient(output, stops, start, startRadius, end, endRadius, startSpread, endSpread)
+            try encoder.radialGradient(output, stops, transform, start, startRadius, end, endRadius, startSpread, endSpread)
         }
     }
 }

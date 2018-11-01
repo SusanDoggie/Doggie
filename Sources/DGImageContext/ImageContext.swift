@@ -421,7 +421,7 @@ extension DGImageContext {
         let renderingIntent = self.renderingIntent
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: FloatColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
-        let gradient = LinearGradientLayer(stops: stops, start: start, end: end, startSpread: startSpread, endSpread: endSpread)
+        let gradient = LinearGradientLayer(stops: stops, transform: transform, start: start, end: end, startSpread: startSpread, endSpread: endSpread)
         
         self.draw_layer(gradient)
     }
@@ -434,7 +434,7 @@ extension DGImageContext {
         let renderingIntent = self.renderingIntent
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: FloatColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
-        let gradient = RadialGradientLayer(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
+        let gradient = RadialGradientLayer(stops: stops, transform: transform, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
         
         self.draw_layer(gradient)
     }

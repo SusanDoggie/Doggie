@@ -56,6 +56,9 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     let fill_nonZero_stencil: MTLComputePipelineState
     let fill_evenOdd_stencil: MTLComputePipelineState
     
+    let axial_gradient: MTLComputePipelineState
+    let radial_gradient: MTLComputePipelineState
+    
     let clip: MTLComputePipelineState
     
     required init(device: MTLDevice) throws {
@@ -105,6 +108,8 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         self.set_opacity = try device.makeComputePipelineState(function: library.makeFunction(name: "set_opacity", constantValues: constant))
         self.fill_nonZero_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_nonZero_stencil", constantValues: constant))
         self.fill_evenOdd_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_evenOdd_stencil", constantValues: constant))
+        self.axial_gradient = try device.makeComputePipelineState(function: library.makeFunction(name: "axial_gradient", constantValues: constant))
+        self.radial_gradient = try device.makeComputePipelineState(function: library.makeFunction(name: "radial_gradient", constantValues: constant))
         self.clip = try device.makeComputePipelineState(function: library.makeFunction(name: "clip", constantValues: constant))
         
         var _blending: [MetalRendererBlendMode: MTLComputePipelineState] = [:]
@@ -358,12 +363,40 @@ extension MetalRenderer.Encoder {
         encoder.endEncoding()
     }
     
-    func linearGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
+    func linearGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
         
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        
+        encoder.setComputePipelineState(renderer.axial_gradient)
+        
+        encoder.setBytes([GradientParameter(stops.count, start, 0, end, 0, startSpread, endSpread)], length: 32, index: 0)
+        encoder.setBytes(stops.map(_GradientStop.init), length: 68 * stops.count, index: 1)
+        encoder.setBuffer(destination, offset: 0, index: 2)
+        
+        let w = renderer.axial_gradient.threadExecutionWidth
+        let h = renderer.axial_gradient.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
+        
+        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
     }
     
-    func radialGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
+    func radialGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
         
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        
+        encoder.setComputePipelineState(renderer.radial_gradient)
+        
+        encoder.setBytes([GradientParameter(stops.count, start, startRadius, end, endRadius, startSpread, endSpread)], length: 32, index: 0)
+        encoder.setBytes(stops.map(_GradientStop.init), length: 68 * stops.count, index: 1)
+        encoder.setBuffer(destination, offset: 0, index: 2)
+        
+        let w = renderer.radial_gradient.threadExecutionWidth
+        let h = renderer.radial_gradient.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
+        
+        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
     }
 }
 
@@ -410,6 +443,76 @@ extension MetalRenderer.Encoder {
         Float, Float, Float, Float,
         Float, Float, Float, Float)
     }
+    
+    private struct _GradientStop {
+        
+        var offset: Float
+        var color: (Float, Float, Float, Float,
+        Float, Float, Float, Float,
+        Float, Float, Float, Float,
+        Float, Float, Float, Float)
+        
+        init(_ stop: DGRendererEncoderGradientStop<Model>) {
+            
+            let _color0 = 0...Model.numberOfComponents ~= 0 ? Float(stop.color.component(0)) : 0
+            let _color1 = 0...Model.numberOfComponents ~= 1 ? Float(stop.color.component(1)) : 0
+            let _color2 = 0...Model.numberOfComponents ~= 2 ? Float(stop.color.component(2)) : 0
+            let _color3 = 0...Model.numberOfComponents ~= 3 ? Float(stop.color.component(3)) : 0
+            let _color4 = 0...Model.numberOfComponents ~= 4 ? Float(stop.color.component(4)) : 0
+            let _color5 = 0...Model.numberOfComponents ~= 5 ? Float(stop.color.component(5)) : 0
+            let _color6 = 0...Model.numberOfComponents ~= 6 ? Float(stop.color.component(6)) : 0
+            let _color7 = 0...Model.numberOfComponents ~= 7 ? Float(stop.color.component(7)) : 0
+            let _color8 = 0...Model.numberOfComponents ~= 8 ? Float(stop.color.component(8)) : 0
+            let _color9 = 0...Model.numberOfComponents ~= 9 ? Float(stop.color.component(9)) : 0
+            let _color10 = 0...Model.numberOfComponents ~= 10 ? Float(stop.color.component(10)) : 0
+            let _color11 = 0...Model.numberOfComponents ~= 11 ? Float(stop.color.component(11)) : 0
+            let _color12 = 0...Model.numberOfComponents ~= 12 ? Float(stop.color.component(12)) : 0
+            let _color13 = 0...Model.numberOfComponents ~= 13 ? Float(stop.color.component(13)) : 0
+            let _color14 = 0...Model.numberOfComponents ~= 14 ? Float(stop.color.component(14)) : 0
+            let _color15 = 0...Model.numberOfComponents ~= 15 ? Float(stop.color.component(15)) : 0
+            
+            self.offset = Float(stop.offset)
+            self.color = (_color0, _color1, _color2, _color3,
+                          _color4, _color5, _color6, _color7,
+                          _color8, _color9, _color10, _color11,
+                          _color12, _color13, _color14, _color15)
+            
+        }
+    }
+    
+    private struct GradientParameter {
+        
+        var spread: (UInt16, UInt16)
+        var start: GPPoint
+        var end: GPPoint
+        var radius: GPSize
+        var numOfStops: UInt32
+        
+        init(_ numOfStops: Int, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) {
+            let start_spread: UInt16
+            let end_spread: UInt16
+            switch startSpread {
+            case .none: start_spread = 0
+            case .pad: start_spread = 1
+            case .reflect: start_spread = 2
+            case .repeat: start_spread = 3
+            }
+            switch endSpread {
+            case .none: end_spread = 0
+            case .pad: end_spread = 1
+            case .reflect: end_spread = 2
+            case .repeat: end_spread = 3
+            }
+            self.spread = (start_spread, end_spread)
+            self.start = GPPoint(start)
+            self.end = GPPoint(end)
+            self.radius = GPSize(width: Float(startRadius), height: Float(endRadius))
+            self.numOfStops = UInt32(numOfStops)
+        }
+    }
+}
+
+extension MetalRenderer.Encoder {
     
     private func stencil(shape: Shape, width: Int, height: Int, output: MTLBuffer) throws -> Rect? {
         
