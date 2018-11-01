@@ -324,7 +324,7 @@ void _set_opacity(float opacity, device float *destination, int idx) {
 kernel void set_opacity(const device float &opacity [[buffer(0)]],
                         device float *out [[buffer(1)]],
                         uint2 id [[thread_position_in_grid]],
-                        uint2 grid [[threads_per_threadgroup]]) {
+                        uint2 grid [[threads_per_grid]]) {
     
     _set_opacity(opacity, out, grid[0] * id[1] + id[0]);
 }
