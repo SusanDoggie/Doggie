@@ -66,34 +66,28 @@ extension ImageContext {
                 
                 return shading(t)
                 
-            } else if t > 1 {
+            } else if t > 0.5 {
+                
+                let i = Int(t)
+                let s = t - Double(i)
                 
                 switch endSpread {
                 case .none: return endColor.with(opacity: 0)
                 case .pad: return endColor
-                case .reflect:
-                    var _t = 0.0
-                    let s = modf(t, &_t)
-                    return shading(Int(_t) & 1 == 0 ? s : 1 - s)
-                case .repeat:
-                    var _t = 0.0
-                    let s = modf(t, &_t)
-                    return shading(s)
+                case .reflect: return shading(i & 1 == 0 ? s : 1 - s)
+                case .repeat: return shading(s)
                 }
                 
             } else {
                 
+                let i = Int(t)
+                let s = t - Double(i)
+                
                 switch startSpread {
                 case .none: return startColor.with(opacity: 0)
                 case .pad: return startColor
-                case .reflect:
-                    var _t = 0.0
-                    let s = modf(t, &_t)
-                    return shading(Int(_t) & 1 == 0 ? -s : 1 + s)
-                case .repeat:
-                    var _t = 0.0
-                    let s = modf(t, &_t)
-                    return shading(1 + s)
+                case .reflect: return shading(i & 1 == 0 ? -s : 1 + s)
+                case .repeat: return shading(1 + s)
                 }
             }
         }
