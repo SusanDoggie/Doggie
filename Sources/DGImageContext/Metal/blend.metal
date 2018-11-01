@@ -166,21 +166,8 @@ public:
     
     Pixel() {};
     
-    const float getOpacity() const;
-    void setOpacity(float opacity);
-    
     Pixel blended(Pixel source, ColorCompositingMode compositingMode, ColorBlendMode blendMode) const;
 };
-
-template<int N>
-const float Pixel<N>::getOpacity() const {
-    return components[N];
-}
-
-template<int N>
-void Pixel<N>::setOpacity(float opacity) {
-    components[N] = opacity;
-}
 
 float _blending(float source, float destination, ColorBlendMode blendMode) {
     
@@ -225,8 +212,8 @@ float _compositing(ColorCompositingMode mode, float source, float source_alpha, 
 template<int N>
 Pixel<N> Pixel<N>::blended(Pixel<N> source, ColorCompositingMode compositingMode, ColorBlendMode blendMode) const {
     
-    float d_alpha = this->getOpacity();
-    float s_alpha = source.getOpacity();
+    float d_alpha = this->components[N];
+    float s_alpha = source.components[N];
     
     float r_alpha = _compositing(compositingMode, s_alpha, s_alpha, d_alpha, d_alpha);
     
@@ -245,7 +232,8 @@ Pixel<N> Pixel<N>::blended(Pixel<N> source, ColorCompositingMode compositingMode
             blended.components[i] = _compositing(compositingMode, s * _blended, s_alpha, d * _destination, d_alpha);
         }
         
-        blended.setOpacity(r_alpha);
+        blended.components[N] = r_alpha;
+        
         return blended;
         
     } else {
@@ -258,65 +246,64 @@ constant uint8_t compositing_mode [[function_constant(1)]];
 constant uint8_t blending_mode [[function_constant(2)]];
 
 template<int N>
-void __blend(const device float *source, int s_idx, float opacity,
+void __blend(const device float *source, int s_idx,
              device float *destination, int d_idx) {
     
     Pixel<N> _source = ((const device Pixel<N>*)source)[s_idx];
     Pixel<N> _destination = ((const device Pixel<N>*)destination)[d_idx];
     auto _out = (device Pixel<N>*)destination;
     
-    _source.setOpacity(_source.getOpacity() * opacity);
     _out[d_idx] = _destination.blended(_source, (ColorCompositingMode)compositing_mode, (ColorBlendMode)blending_mode);
 }
 
-void _blend(const device float *source, int s_idx, float opacity,
+void _blend(const device float *source, int s_idx,
             device float *destination, int d_idx) {
     
     switch (countOfComponents) {
         case 2:
-            __blend<1>(source, s_idx, opacity, destination, d_idx);
+            __blend<1>(source, s_idx, destination, d_idx);
             break;
         case 3:
-            __blend<2>(source, s_idx, opacity, destination, d_idx);
+            __blend<2>(source, s_idx, destination, d_idx);
             break;
         case 4:
-            __blend<3>(source, s_idx, opacity, destination, d_idx);
+            __blend<3>(source, s_idx, destination, d_idx);
             break;
         case 5:
-            __blend<4>(source, s_idx, opacity, destination, d_idx);
+            __blend<4>(source, s_idx, destination, d_idx);
             break;
         case 6:
-            __blend<5>(source, s_idx, opacity, destination, d_idx);
+            __blend<5>(source, s_idx, destination, d_idx);
             break;
         case 7:
-            __blend<6>(source, s_idx, opacity, destination, d_idx);
+            __blend<6>(source, s_idx, destination, d_idx);
             break;
         case 8:
-            __blend<7>(source, s_idx, opacity, destination, d_idx);
+            __blend<7>(source, s_idx, destination, d_idx);
             break;
         case 9:
-            __blend<8>(source, s_idx, opacity, destination, d_idx);
+            __blend<8>(source, s_idx, destination, d_idx);
             break;
         case 10:
-            __blend<9>(source, s_idx, opacity, destination, d_idx);
+            __blend<9>(source, s_idx, destination, d_idx);
             break;
         case 11:
-            __blend<10>(source, s_idx, opacity, destination, d_idx);
+            __blend<10>(source, s_idx, destination, d_idx);
             break;
         case 12:
-            __blend<11>(source, s_idx, opacity, destination, d_idx);
+            __blend<11>(source, s_idx, destination, d_idx);
             break;
         case 13:
-            __blend<12>(source, s_idx, opacity, destination, d_idx);
+            __blend<12>(source, s_idx, destination, d_idx);
             break;
         case 14:
-            __blend<13>(source, s_idx, opacity, destination, d_idx);
+            __blend<13>(source, s_idx, destination, d_idx);
             break;
         case 15:
-            __blend<14>(source, s_idx, opacity, destination, d_idx);
+            __blend<14>(source, s_idx, destination, d_idx);
             break;
         case 16:
-            __blend<15>(source, s_idx, opacity, destination, d_idx);
+            __blend<15>(source, s_idx, destination, d_idx);
             break;
     }
 }
@@ -327,5 +314,17 @@ kernel void blend(const device float *source [[buffer(0)]],
                   uint2 grid [[threads_per_grid]]) {
     
     const int idx = grid[0] * id[1] + id[0];
-    _blend(source, idx, 1, destination, idx);
+    _blend(source, idx, destination, idx);
+}
+
+void _set_opacity(float opacity, device float *destination, int idx) {
+    destination[idx * countOfComponents + countOfComponents - 1] *= opacity;
+}
+
+kernel void set_opacity(const device float &opacity [[buffer(0)]],
+                        device float *out [[buffer(1)]],
+                        uint2 id [[thread_position_in_grid]],
+                        uint2 grid [[threads_per_threadgroup]]) {
+    
+    _set_opacity(opacity, out, grid[0] * id[1] + id[0]);
 }

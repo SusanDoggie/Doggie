@@ -98,10 +98,6 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         constant.setConstantValue([Int32(Model.numberOfComponents + 1)], type: .int, withName: "countOfComponents")
         
         self.set_opacity = try device.makeComputePipelineState(function: library.makeFunction(name: "set_opacity", constantValues: constant))
-        
-        constant.setConstantValue([2 as UInt8], type: .uchar, withName: "compositing_mode")
-        constant.setConstantValue([0 as UInt8], type: .uchar, withName: "blending_mode")
-        
         self.fill_nonZero_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_nonZero_stencil", constantValues: constant))
         self.fill_evenOdd_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_evenOdd_stencil", constantValues: constant))
         

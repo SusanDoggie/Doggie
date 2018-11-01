@@ -158,9 +158,6 @@ kernel void stencil_cubic(const device stencil_parameter &parameter [[buffer(0)]
     
 }
 
-void _blend(const device float *source, int s_idx, float opacity,
-            device float *destination, int d_idx);
-
 struct fill_stencil_parameter {
     
     packed_uint2 offset;
@@ -168,6 +165,10 @@ struct fill_stencil_parameter {
     uint antialias;
     float color[16];
 };
+
+constant int countOfComponents [[function_constant(0)]];
+
+void _set_opacity(float opacity, device float *destination, int idx);
 
 kernel void fill_nonZero_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],
                                  const device int16_t *stencil [[buffer(1)]],
@@ -195,7 +196,11 @@ kernel void fill_nonZero_stencil(const device fill_stencil_parameter &parameter 
         }
     }
     
-    _blend(parameter.color, 0, (float)counter / (float)(antialias * antialias), out, idx);
+    for (int i = 0; i < countOfComponents; ++i) {
+        out[idx * countOfComponents + i] = parameter.color[i];
+    }
+    
+    _set_opacity((float)counter / (float)(antialias * antialias), out, idx);
 }
 
 kernel void fill_evenOdd_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],
@@ -224,5 +229,9 @@ kernel void fill_evenOdd_stencil(const device fill_stencil_parameter &parameter 
         }
     }
     
-    _blend(parameter.color, 0, (float)counter / (float)(antialias * antialias), out, idx);
+    for (int i = 0; i < countOfComponents; ++i) {
+        out[idx * countOfComponents + i] = parameter.color[i];
+    }
+    
+    _set_opacity((float)counter / (float)(antialias * antialias), out, idx);
 }
