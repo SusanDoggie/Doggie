@@ -39,6 +39,8 @@ private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
 class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     
+    typealias ClipEncoder = MetalRenderer<GrayColorModel>.Encoder
+    
     let device: MTLDevice
     
     let queue: MTLCommandQueue
@@ -178,8 +180,6 @@ extension MetalRenderer {
     
     class Encoder : DGRendererEncoder {
         
-        typealias ClipEncoder = MetalRenderer<GrayColorModel>.Encoder
-        
         let width: Int
         let height: Int
         
@@ -199,6 +199,13 @@ extension MetalRenderer.Encoder {
     
     func commit() {
         commandBuffer.commit()
+    }
+    
+    func waitUntilScheduled() {
+        commandBuffer.waitUntilScheduled()
+    }
+    
+    func waitUntilCompleted() {
         commandBuffer.waitUntilCompleted()
     }
     
