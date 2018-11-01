@@ -66,14 +66,14 @@
 		0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2406731F38109900B0EC28 /* iccNamedColor.swift */; };
 		0A251C632101849A00E31473 /* SDObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A251C622101849A00E31473 /* SDObject.swift */; };
 		0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26A0901FA98994008BEADB /* CompressionTest.swift */; };
-		0A29B20C218998710046FFB4 /* Composer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DB2189985D0046FFB4 /* Composer.swift */; };
+		0A29B20C218998710046FFB4 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DB2189985D0046FFB4 /* Renderer.swift */; };
 		0A29B237218998710046FFB4 /* stencil.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1D92189985D0046FFB4 /* stencil.metal */; };
 		0A29B266218998710046FFB4 /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DA2189985D0046FFB4 /* ImageContext.swift */; };
 		0A29B2DD218999020046FFB4 /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; };
 		0A29B2F22189A4210046FFB4 /* blend.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F12189A4210046FFB4 /* blend.metal */; };
 		0A29B2F42189A42F0046FFB4 /* set_opacity.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F32189A42F0046FFB4 /* set_opacity.metal */; };
 		0A29B2F62189A7600046FFB4 /* maths.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F52189A7600046FFB4 /* maths.metal */; };
-		0A29B2F82189A9A10046FFB4 /* MetalComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F72189A9A00046FFB4 /* MetalComposer.swift */; };
+		0A29B2F82189A9A10046FFB4 /* MetalRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */; };
 		0A2DFE1D217D65CF00E6EEA4 /* SFNTFEAT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */; };
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
 		0A34FBEA20AAE683001CE2F3 /* UnsafeBufferProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */; };
@@ -232,6 +232,7 @@
 		0AC588A920CF69AD00C326FF /* OverlapAddConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */; };
 		0AC621C220EDF07100E5FF15 /* DrawableContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC621C120EDF07100E5FF15 /* DrawableContext.swift */; };
 		0AC621CB20EDFBA500E5FF15 /* Gradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC621CA20EDFBA500E5FF15 /* Gradient.swift */; };
+		0AC821CF218A981E0042A525 /* MetalEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC821CE218A981E0042A525 /* MetalEncoder.swift */; };
 		0ACD21331EEBA55000C5811F /* AtomicTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */; };
 		0AD3E62F1F53D9FC003CC21A /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3E62E1F53D9FC003CC21A /* Font.swift */; };
 		0AD3E6321F53DA9B003CC21A /* FontDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD3E6311F53DA9B003CC21A /* FontDecoder.swift */; };
@@ -337,12 +338,12 @@
 		0A26A0901FA98994008BEADB /* CompressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CompressionTest.swift; sourceTree = "<group>"; };
 		0A29B1D92189985D0046FFB4 /* stencil.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = stencil.metal; sourceTree = "<group>"; };
 		0A29B1DA2189985D0046FFB4 /* ImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageContext.swift; sourceTree = "<group>"; };
-		0A29B1DB2189985D0046FFB4 /* Composer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Composer.swift; sourceTree = "<group>"; };
+		0A29B1DB2189985D0046FFB4 /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		0A29B2DA218998710046FFB4 /* DGImageContext.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DGImageContext.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A29B2F12189A4210046FFB4 /* blend.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = blend.metal; sourceTree = "<group>"; };
 		0A29B2F32189A42F0046FFB4 /* set_opacity.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = set_opacity.metal; sourceTree = "<group>"; };
 		0A29B2F52189A7600046FFB4 /* maths.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = maths.metal; sourceTree = "<group>"; };
-		0A29B2F72189A9A00046FFB4 /* MetalComposer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalComposer.swift; sourceTree = "<group>"; };
+		0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalRenderer.swift; sourceTree = "<group>"; };
 		0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTFEAT.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Tensor.swift; sourceTree = "<group>"; };
 		0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeBufferProtocol.swift; sourceTree = "<group>"; };
@@ -502,6 +503,7 @@
 		0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlapAddConvolve.swift; sourceTree = "<group>"; };
 		0AC621C120EDF07100E5FF15 /* DrawableContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawableContext.swift; sourceTree = "<group>"; };
 		0AC621CA20EDFBA500E5FF15 /* Gradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gradient.swift; sourceTree = "<group>"; };
+		0AC821CE218A981E0042A525 /* MetalEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalEncoder.swift; sourceTree = "<group>"; };
 		0AD3E62E1F53D9FC003CC21A /* Font.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Font.swift; sourceTree = "<group>"; };
 		0AD3E6311F53DA9B003CC21A /* FontDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FontDecoder.swift; sourceTree = "<group>"; };
 		0AD3E6341F53DB6C003CC21A /* OpenTypeDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = OpenTypeDecoder.swift; sourceTree = "<group>"; };
@@ -798,7 +800,7 @@
 			children = (
 				0A29B2F02189A3FB0046FFB4 /* Metal */,
 				0A29B1DA2189985D0046FFB4 /* ImageContext.swift */,
-				0A29B1DB2189985D0046FFB4 /* Composer.swift */,
+				0A29B1DB2189985D0046FFB4 /* Renderer.swift */,
 			);
 			name = DGImageContext;
 			path = Sources/DGImageContext;
@@ -807,7 +809,8 @@
 		0A29B2F02189A3FB0046FFB4 /* Metal */ = {
 			isa = PBXGroup;
 			children = (
-				0A29B2F72189A9A00046FFB4 /* MetalComposer.swift */,
+				0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */,
+				0AC821CE218A981E0042A525 /* MetalEncoder.swift */,
 				0A29B2F52189A7600046FFB4 /* maths.metal */,
 				0A29B1D92189985D0046FFB4 /* stencil.metal */,
 				0A29B2F32189A42F0046FFB4 /* set_opacity.metal */,
@@ -1593,11 +1596,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A29B20C218998710046FFB4 /* Composer.swift in Sources */,
+				0AC821CF218A981E0042A525 /* MetalEncoder.swift in Sources */,
+				0A29B20C218998710046FFB4 /* Renderer.swift in Sources */,
 				0A29B2F22189A4210046FFB4 /* blend.metal in Sources */,
 				0A29B2F42189A42F0046FFB4 /* set_opacity.metal in Sources */,
 				0A29B237218998710046FFB4 /* stencil.metal in Sources */,
-				0A29B2F82189A9A10046FFB4 /* MetalComposer.swift in Sources */,
+				0A29B2F82189A9A10046FFB4 /* MetalRenderer.swift in Sources */,
 				0A29B266218998710046FFB4 /* ImageContext.swift in Sources */,
 				0A29B2F62189A7600046FFB4 /* maths.metal in Sources */,
 			);

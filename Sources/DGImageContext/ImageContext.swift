@@ -271,36 +271,23 @@ extension DGImageContext {
 
 extension DGImageContext {
     
-    private var isShadow: Bool {
-        return shadowColor.opacity > 0 && shadowBlur > 0
-    }
-    
-    private func draw_shadow(_ source: Layer) {
-        
-        guard isShadow && !source.is_empty else { return }
-        
-        let shadowColor = FloatColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
-        let shadowOffset = self.shadowOffset
-        let shadowBlur = self.shadowBlur
-        
-        let blur = ShadowLayer(source: source, color: shadowColor, offset: shadowOffset, blur: shadowBlur)
-        self._image = BlendedLayer(source: blur, destination: self._image, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode)
-    }
-    
     private func draw_layer(_ source: Layer) {
         
         guard width != 0 && height != 0 else { return }
         
-        var layer = source
+        guard !source.is_empty && (clip?.is_empty != true) else { return }
         
-        guard !layer.is_empty else { return }
+        let shadowColor = FloatColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
         
-        if let clip = self.clip {
-            layer = ClipLayer(source: layer, clip: clip)
-        }
-        
-        self.draw_shadow(layer)
-        self._image = BlendedLayer(source: layer, destination: self._image, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode)
+        self._image = BlendedLayer(source: source,
+                                   destination: self._image,
+                                   clip: clip,
+                                   shadowColor: shadowColor,
+                                   shadowOffset: shadowOffset,
+                                   shadowBlur: shadowBlur,
+                                   opacity: opacity,
+                                   compositingMode: compositingMode,
+                                   blendMode: blendMode)
     }
 }
 
@@ -356,7 +343,7 @@ extension DGImageContext {
             return
         }
         
-        let _shape = ShapeLayer(shape: shape, winding: winding, color: FloatColorPixel(color: color, opacity: opacity), antialias: shouldAntialias ? antialias : 1, compositingMode: compositingMode, blendMode: blendMode)
+        let _shape = ShapeLayer(shape: shape, winding: winding, color: FloatColorPixel(color: color, opacity: opacity), antialias: shouldAntialias ? antialias : 1)
         
         self.draw_layer(_shape)
     }
@@ -372,7 +359,7 @@ extension DGImageContext {
             return
         }
         
-        let image = ImageLayer(source: Texture(texture: texture).pixels, transform: transform, antialias: shouldAntialias ? antialias : 1, resamplingAlgorithm: resamplingAlgorithm)
+        let image = ImageLayer(source: Texture(texture: texture), transform: transform, antialias: shouldAntialias ? antialias : 1)
         
         self.draw_layer(image)
     }
@@ -432,7 +419,7 @@ extension DGImageContext {
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { _GradientStop(offset: $0.1.offset, color: FloatColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: FloatColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         let gradient = LinearGradientLayer(stops: stops, start: start, end: end, startSpread: startSpread, endSpread: endSpread)
         
@@ -445,7 +432,7 @@ extension DGImageContext {
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { _GradientStop(offset: $0.1.offset, color: FloatColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: FloatColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         let gradient = RadialGradientLayer(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
         

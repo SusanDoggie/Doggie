@@ -1,5 +1,5 @@
 //
-//  MetalComposer.swift
+//  MetalEncoder.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -28,166 +28,31 @@
 import Doggie
 import Metal
 
-struct MetalComposerBlendMode : Hashable {
+struct MetalRendererEncoderBlendMode : Hashable {
     
     var compositing: ColorCompositingMode
     var blending: ColorBlendMode
 }
 
-class MetalComposer : DGImageContextComposer {
+class MetalRendererEncoder<Model : ColorModelProtocol> : DGRendererEncoder {
     
-    var device: MTLDevice
+    typealias ClipEncoder = MetalRendererEncoder<GrayColorModel>
     
     let width: Int
     let height: Int
     
-    let queue: MTLCommandQueue
+    let renderer: MetalRenderer<Model>
     let commandBuffer: MTLCommandBuffer
     
-    let set_opacity: MTLComputePipelineState
-    
-    let stencil_triangle: MTLComputePipelineState
-    let stencil_quadratic: MTLComputePipelineState
-    let stencil_cubic: MTLComputePipelineState
-    
-    let blending: [MetalComposerBlendMode: MTLComputePipelineState]
-    let fill_nonZero_stencil: [MetalComposerBlendMode: MTLComputePipelineState]
-    let fill_evenOdd_stencil: [MetalComposerBlendMode: MTLComputePipelineState]
-    
-    required init<Model>(device: MTLDevice, width: Int, height: Int, model: Model.Type) throws where Model : ColorModelProtocol {
-        self.device = device
+    init(width: Int, height: Int, renderer: MetalRenderer<Model>, commandBuffer: MTLCommandBuffer) {
         self.width = width
         self.height = height
-        
-        let pipeline = try MetalComposerPipeline<Model>(device: device, library: { try device.makeDefaultLibrary(bundle: Bundle(for: MetalComposer.self)) })
-        
-        self.set_opacity = pipeline.set_opacity
-        
-        self.stencil_triangle = pipeline.stencil_triangle
-        self.stencil_quadratic = pipeline.stencil_quadratic
-        self.stencil_cubic = pipeline.stencil_cubic
-        
-        self.blending = pipeline.blending
-        self.fill_nonZero_stencil = pipeline.fill_nonZero_stencil
-        self.fill_evenOdd_stencil = pipeline.fill_evenOdd_stencil
-        
-        guard let queue = device.makeCommandQueue() else { throw Error(description: "MTLDevice.makeCommandQueue failed.") }
-        guard let commandBuffer = queue.makeCommandBuffer() else { throw Error(description: "MTLDevice.makeCommandBuffer failed.") }
-        
-        self.queue = queue
+        self.renderer = renderer
         self.commandBuffer = commandBuffer
     }
 }
 
-extension DGImageContext {
-    
-    public func render(device: MTLDevice = MTLCreateSystemDefaultDevice()!) throws {
-        try self.render(device, MetalComposer.self)
-    }
-    
-    public func image(device: MTLDevice = MTLCreateSystemDefaultDevice()!) throws -> Image<FloatColorPixel<Model>> {
-        return try self.image(device, MetalComposer.self)
-    }
-}
-
-private let MetalComposerPipelineCacheLock = SDLock()
-
-private var MetalComposerPipelineCache: [NSObject: [Any]] = [:]
-
-struct MetalComposerPipeline<Model: ColorModelProtocol> {
-    
-    let set_opacity: MTLComputePipelineState
-    
-    let stencil_triangle: MTLComputePipelineState
-    let stencil_quadratic: MTLComputePipelineState
-    let stencil_cubic: MTLComputePipelineState
-    
-    let blending: [MetalComposerBlendMode: MTLComputePipelineState]
-    let fill_nonZero_stencil: [MetalComposerBlendMode: MTLComputePipelineState]
-    let fill_evenOdd_stencil: [MetalComposerBlendMode: MTLComputePipelineState]
-    
-    init(device: MTLDevice, library: () throws -> MTLLibrary) throws {
-        
-        MetalComposerPipelineCacheLock.lock()
-        defer { MetalComposerPipelineCacheLock.unlock() }
-        
-        if let device = device as? NSObject, let cached = MetalComposerPipelineCache[device]?.first(where: { $0 is MetalComposerPipeline }) as? MetalComposerPipeline {
-            self = cached
-            return
-        }
-        
-        let library = try library()
-        
-        self.stencil_triangle = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_triangle")!)
-        self.stencil_quadratic = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_quadratic")!)
-        self.stencil_cubic = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_cubic")!)
-        
-        var _blending: [MetalComposerBlendMode: MTLComputePipelineState] = [:]
-        var _fill_nonZero_stencil: [MetalComposerBlendMode: MTLComputePipelineState] = [:]
-        var _fill_evenOdd_stencil: [MetalComposerBlendMode: MTLComputePipelineState] = [:]
-        
-        let allCompositingMode: [ColorCompositingMode] = [
-            .clear,
-            .copy,
-            .sourceOver,
-            .sourceIn,
-            .sourceOut,
-            .sourceAtop,
-            .destinationOver,
-            .destinationIn,
-            .destinationOut,
-            .destinationAtop,
-            .xor
-        ]
-        
-        let allBlendMode: [ColorBlendMode] = [
-            .normal,
-            .multiply,
-            .screen,
-            .overlay,
-            .darken,
-            .lighten,
-            .colorDodge,
-            .colorBurn,
-            .softLight,
-            .hardLight,
-            .difference,
-            .exclusion,
-            .plusDarker,
-            .plusLighter
-        ]
-        
-        let constant = MTLFunctionConstantValues()
-        constant.setConstantValue([Int32(Model.numberOfComponents + 1)], type: .int, withName: "countOfComponents")
-        
-        self.set_opacity = try device.makeComputePipelineState(function: library.makeFunction(name: "set_opacity", constantValues: constant))
-        
-        for (i, compositing) in allCompositingMode.enumerated() {
-            
-            constant.setConstantValue([UInt8(i)], type: .uchar, withName: "compositing_mode")
-            
-            for (j, blending) in allBlendMode.enumerated() {
-                
-                constant.setConstantValue([UInt8(j)], type: .uchar, withName: "blending_mode")
-                
-                let key = MetalComposerBlendMode(compositing: compositing, blending: blending)
-                _blending[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "blend", constantValues: constant))
-                _fill_nonZero_stencil[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_nonZero_stencil", constantValues: constant))
-                _fill_evenOdd_stencil[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_evenOdd_stencil", constantValues: constant))
-            }
-        }
-        
-        self.blending = _blending
-        self.fill_nonZero_stencil = _fill_nonZero_stencil
-        self.fill_evenOdd_stencil = _fill_evenOdd_stencil
-        
-        if let device = device as? NSObject {
-            MetalComposerPipelineCache[device, default: []].append(self)
-        }
-    }
-}
-
-extension MetalComposer {
+extension MetalRendererEncoder {
     
     struct Error: Swift.Error, CustomStringConvertible {
         
@@ -195,15 +60,15 @@ extension MetalComposer {
     }
 }
 
-extension MetalComposer {
+extension MetalRendererEncoder {
     
     func commit() {
         commandBuffer.commit()
         commandBuffer.waitUntilCompleted()
     }
     
-    func alloc_buffer(_ size: Int) throws -> MTLBuffer {
-        guard let buffer = device.makeBuffer(length: size, options: .storageModePrivate) else { throw Error(description: "MTLDevice.makeBuffer failed.") }
+    func alloc_texture() throws -> MTLBuffer {
+        guard let buffer = device.makeBuffer(length: texture_size, options: .storageModePrivate) else { throw Error(description: "MTLDevice.makeBuffer failed.") }
         return buffer
     }
     
@@ -214,23 +79,25 @@ extension MetalComposer {
     
     func copy(_ source: MTLBuffer, _ destination: MTLBuffer, _ opacity: Double) throws {
         
-        do {
-            guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw Error(description: "MTLDevice.makeBlitCommandEncoder failed.") }
+        if source !== destination {
             
-            encoder.copy(from: source, sourceOffset: 0, to: destination, destinationOffset: 0, size: destination.length)
+            guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+            
+            encoder.copy(from: source, sourceOffset: 0, to: destination, destinationOffset: 0, size: texture_size)
             encoder.endEncoding()
         }
         
         if opacity != 1 {
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLDevice.makeComputeCommandEncoder failed.") }
             
-            encoder.setComputePipelineState(set_opacity)
+            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+            
+            encoder.setComputePipelineState(renderer.set_opacity)
             
             encoder.setBytes([Float(opacity)], length: 4, index: 0)
             encoder.setBuffer(destination, offset: 0, index: 1)
             
-            let w = set_opacity.threadExecutionWidth
-            let h = set_opacity.maxTotalThreadsPerThreadgroup / w
+            let w = renderer.set_opacity.threadExecutionWidth
+            let h = renderer.set_opacity.maxTotalThreadsPerThreadgroup / w
             let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
             
             encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
@@ -240,9 +107,9 @@ extension MetalComposer {
     
     func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
         
-        let pipeline = blending[MetalComposerBlendMode(compositing: compositingMode, blending: blendMode)]!
+        let pipeline = renderer.blending[MetalRendererEncoderBlendMode(compositing: compositingMode, blending: blendMode)]!
         
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLDevice.makeComputeCommandEncoder failed.") }
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         
         encoder.setComputePipelineState(pipeline)
         
@@ -261,7 +128,7 @@ extension MetalComposer {
         
     }
     
-    func draw(_ destination: MTLBuffer, _ shape: Shape, _ color: [Double], _ winding: Shape.WindingRule, _ antialias: Int, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
+    func draw(_ destination: MTLBuffer, _ shape: Shape, _ color: [Double], _ winding: Shape.WindingRule, _ antialias: Int) throws {
         
         guard let stencil = device.makeBuffer(length: width * height * antialias * antialias * 2, options: .storageModePrivate) else { throw Error(description: "MTLDevice.makeBuffer failed.") }
         
@@ -280,11 +147,11 @@ extension MetalComposer {
         let pipeline: MTLComputePipelineState
         
         switch winding {
-        case .nonZero: pipeline = fill_nonZero_stencil[MetalComposerBlendMode(compositing: compositingMode, blending: blendMode)]!
-        case .evenOdd: pipeline = fill_evenOdd_stencil[MetalComposerBlendMode(compositing: compositingMode, blending: blendMode)]!
+        case .nonZero: pipeline = renderer.fill_nonZero_stencil
+        case .evenOdd: pipeline = renderer.fill_evenOdd_stencil
         }
         
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLDevice.makeComputeCommandEncoder failed.") }
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         
         encoder.setComputePipelineState(pipeline)
         
@@ -327,24 +194,24 @@ extension MetalComposer {
         encoder.endEncoding()
     }
     
-    func draw(_ source: MTLBuffer, _ destination: MTLBuffer, _ opacity: Double, _ transform: SDTransform, _ antialias: Int, _ resamplingAlgorithm: ResamplingAlgorithm) throws {
+    func draw(_ source: Texture<FloatColorPixel<Model>>, _ destination: MTLBuffer, _ transform: SDTransform, _ antialias: Int) throws {
         
     }
     
-    func clip(_ source: MTLBuffer, _ destination: MTLBuffer, _ clip: MTLBuffer, _ opacity: Double) throws {
+    func clip(_ destination: MTLBuffer, _ clip: MTLBuffer) throws {
         
     }
     
-    func linearGradient(_ destination: MTLBuffer, _ opacity: Double, _ stops: [Double], _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
+    func linearGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
         
     }
     
-    func radialGradient(_ destination: MTLBuffer, _ opacity: Double, _ stops: [Double], _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
+    func radialGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
         
     }
 }
 
-extension MetalComposer {
+extension MetalRendererEncoder {
     
     private struct GPPoint {
         
@@ -443,16 +310,16 @@ extension MetalComposer {
         
         if triangle_render_buffer.count != 0 {
             
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLDevice.makeComputeCommandEncoder failed.") }
+            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
             guard let buffer = device.makeBuffer(triangle_render_buffer) else { throw Error(description: "MTLDevice.makeBuffer failed.") }
             
-            encoder.setComputePipelineState(stencil_triangle)
+            encoder.setComputePipelineState(renderer.stencil_triangle)
             encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(triangle_render_buffer.count)], length: 16, index: 0)
             encoder.setBuffer(buffer, offset: 0, index: 1)
             encoder.setBuffer(output, offset: 0, index: 2)
             
-            let w = stencil_triangle.threadExecutionWidth
-            let h = stencil_triangle.maxTotalThreadsPerThreadgroup / w
+            let w = renderer.stencil_triangle.threadExecutionWidth
+            let h = renderer.stencil_triangle.maxTotalThreadsPerThreadgroup / w
             let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
             
             encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
@@ -461,16 +328,16 @@ extension MetalComposer {
         
         if quadratic_render_buffer.count != 0 {
             
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLDevice.makeComputeCommandEncoder failed.") }
+            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
             guard let buffer = device.makeBuffer(quadratic_render_buffer) else { throw Error(description: "MTLDevice.makeBuffer failed.") }
             
-            encoder.setComputePipelineState(stencil_quadratic)
+            encoder.setComputePipelineState(renderer.stencil_quadratic)
             encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(quadratic_render_buffer.count)], length: 16, index: 0)
             encoder.setBuffer(buffer, offset: 0, index: 1)
             encoder.setBuffer(output, offset: 0, index: 2)
             
-            let w = stencil_quadratic.threadExecutionWidth
-            let h = stencil_quadratic.maxTotalThreadsPerThreadgroup / w
+            let w = renderer.stencil_quadratic.threadExecutionWidth
+            let h = renderer.stencil_quadratic.maxTotalThreadsPerThreadgroup / w
             let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
             
             encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
@@ -479,16 +346,16 @@ extension MetalComposer {
         
         if cubic_render_buffer.count != 0 {
             
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLDevice.makeComputeCommandEncoder failed.") }
+            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
             guard let buffer = device.makeBuffer(cubic_render_buffer) else { throw Error(description: "MTLDevice.makeBuffer failed.") }
             
-            encoder.setComputePipelineState(stencil_cubic)
+            encoder.setComputePipelineState(renderer.stencil_cubic)
             encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(cubic_render_buffer.count)], length: 16, index: 0)
             encoder.setBuffer(buffer, offset: 0, index: 1)
             encoder.setBuffer(output, offset: 0, index: 2)
             
-            let w = stencil_cubic.threadExecutionWidth
-            let h = stencil_cubic.maxTotalThreadsPerThreadgroup / w
+            let w = renderer.stencil_cubic.threadExecutionWidth
+            let h = renderer.stencil_cubic.maxTotalThreadsPerThreadgroup / w
             let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
             
             encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
