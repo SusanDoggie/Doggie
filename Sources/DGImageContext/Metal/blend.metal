@@ -246,64 +246,66 @@ constant uint8_t compositing_mode [[function_constant(1)]];
 constant uint8_t blending_mode [[function_constant(2)]];
 
 template<int N>
-void __blend(const device float *source, int s_idx,
-             device float *destination, int d_idx) {
+void __blend(const device float *source,
+             device float *destination,
+             int idx) {
     
-    Pixel<N> _source = ((const device Pixel<N>*)source)[s_idx];
-    Pixel<N> _destination = ((const device Pixel<N>*)destination)[d_idx];
+    Pixel<N> _source = ((const device Pixel<N>*)source)[idx];
     auto _out = (device Pixel<N>*)destination;
     
-    _out[d_idx] = _destination.blended(_source, (ColorCompositingMode)compositing_mode, (ColorBlendMode)blending_mode);
+    Pixel<N> _destination = _out[idx];
+    _out[idx] = _destination.blended(_source, (ColorCompositingMode)compositing_mode, (ColorBlendMode)blending_mode);
 }
 
-void _blend(const device float *source, int s_idx,
-            device float *destination, int d_idx) {
+void _blend(const device float *source,
+            device float *destination,
+            int idx) {
     
     switch (countOfComponents) {
         case 2:
-            __blend<1>(source, s_idx, destination, d_idx);
+            __blend<1>(source, destination, idx);
             break;
         case 3:
-            __blend<2>(source, s_idx, destination, d_idx);
+            __blend<2>(source, destination, idx);
             break;
         case 4:
-            __blend<3>(source, s_idx, destination, d_idx);
+            __blend<3>(source, destination, idx);
             break;
         case 5:
-            __blend<4>(source, s_idx, destination, d_idx);
+            __blend<4>(source, destination, idx);
             break;
         case 6:
-            __blend<5>(source, s_idx, destination, d_idx);
+            __blend<5>(source, destination, idx);
             break;
         case 7:
-            __blend<6>(source, s_idx, destination, d_idx);
+            __blend<6>(source, destination, idx);
             break;
         case 8:
-            __blend<7>(source, s_idx, destination, d_idx);
+            __blend<7>(source, destination, idx);
             break;
         case 9:
-            __blend<8>(source, s_idx, destination, d_idx);
+            __blend<8>(source, destination, idx);
             break;
         case 10:
-            __blend<9>(source, s_idx, destination, d_idx);
+            __blend<9>(source, destination, idx);
             break;
         case 11:
-            __blend<10>(source, s_idx, destination, d_idx);
+            __blend<10>(source, destination, idx);
             break;
         case 12:
-            __blend<11>(source, s_idx, destination, d_idx);
+            __blend<11>(source, destination, idx);
             break;
         case 13:
-            __blend<12>(source, s_idx, destination, d_idx);
+            __blend<12>(source, destination, idx);
             break;
         case 14:
-            __blend<13>(source, s_idx, destination, d_idx);
+            __blend<13>(source, destination, idx);
             break;
         case 15:
-            __blend<14>(source, s_idx, destination, d_idx);
+            __blend<14>(source, destination, idx);
             break;
         case 16:
-            __blend<15>(source, s_idx, destination, d_idx);
+            __blend<15>(source, destination, idx);
             break;
     }
 }
@@ -314,7 +316,7 @@ kernel void blend(const device float *source [[buffer(0)]],
                   uint2 grid [[threads_per_grid]]) {
     
     const int idx = grid[0] * id[1] + id[0];
-    _blend(source, idx, destination, idx);
+    _blend(source, destination, idx);
 }
 
 void _set_opacity(float opacity, device float *destination, int idx) {
@@ -326,5 +328,6 @@ kernel void set_opacity(const device float &opacity [[buffer(0)]],
                         uint2 id [[thread_position_in_grid]],
                         uint2 grid [[threads_per_grid]]) {
     
-    _set_opacity(opacity, out, grid[0] * id[1] + id[0]);
+    const int idx = grid[0] * id[1] + id[0];
+    _set_opacity(opacity, out, idx);
 }

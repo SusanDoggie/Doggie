@@ -50,8 +50,11 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     let stencil_cubic: MTLComputePipelineState
     
     let blending: [MetalRendererBlendMode: MTLComputePipelineState]
+    
     let fill_nonZero_stencil: MTLComputePipelineState
     let fill_evenOdd_stencil: MTLComputePipelineState
+    
+    let clip: MTLComputePipelineState
     
     required init(device: MTLDevice) throws {
         
@@ -100,6 +103,7 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         self.set_opacity = try device.makeComputePipelineState(function: library.makeFunction(name: "set_opacity", constantValues: constant))
         self.fill_nonZero_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_nonZero_stencil", constantValues: constant))
         self.fill_evenOdd_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_evenOdd_stencil", constantValues: constant))
+        self.clip = try device.makeComputePipelineState(function: library.makeFunction(name: "clip", constantValues: constant))
         
         var _blending: [MetalRendererBlendMode: MTLComputePipelineState] = [:]
         
@@ -332,6 +336,19 @@ extension MetalRenderer.Encoder {
     
     func clip(_ destination: MTLBuffer, _ clip: MTLBuffer) throws {
         
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        
+        encoder.setComputePipelineState(renderer.clip)
+        
+        encoder.setBuffer(clip, offset: 0, index: 0)
+        encoder.setBuffer(destination, offset: 0, index: 1)
+        
+        let w = renderer.clip.threadExecutionWidth
+        let h = renderer.clip.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
+        
+        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
     }
     
     func linearGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
