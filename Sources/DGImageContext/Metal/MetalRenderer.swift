@@ -202,32 +202,33 @@ extension MetalRenderer.Encoder {
         return buffer
     }
     
-    func copy(_ source: MTLBuffer, _ destination: MTLBuffer, _ opacity: Double) throws {
+    func copy(_ source: MTLBuffer, _ destination: MTLBuffer) throws {
         
-        if source !== destination {
-            
-            guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
-            
-            encoder.copy(from: source, sourceOffset: 0, to: destination, destinationOffset: 0, size: texture_size)
-            encoder.endEncoding()
-        }
+        guard source !== destination else { return }
         
-        if opacity != 1 {
-            
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
-            
-            encoder.setComputePipelineState(renderer.set_opacity)
-            
-            encoder.setBytes([Float(opacity)], length: 4, index: 0)
-            encoder.setBuffer(destination, offset: 0, index: 1)
-            
-            let w = renderer.set_opacity.threadExecutionWidth
-            let h = renderer.set_opacity.maxTotalThreadsPerThreadgroup / w
-            let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
-            
-            encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-            encoder.endEncoding()
-        }
+        guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+        
+        encoder.copy(from: source, sourceOffset: 0, to: destination, destinationOffset: 0, size: texture_size)
+        encoder.endEncoding()
+    }
+    
+    func setOpacity(_ destination: MTLBuffer, _ opacity: Double) throws {
+        
+        guard opacity != 1 else { return }
+        
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        
+        encoder.setComputePipelineState(renderer.set_opacity)
+        
+        encoder.setBytes([Float(opacity)], length: 4, index: 0)
+        encoder.setBuffer(destination, offset: 0, index: 1)
+        
+        let w = renderer.set_opacity.threadExecutionWidth
+        let h = renderer.set_opacity.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
+        
+        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
     }
     
     func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {

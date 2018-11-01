@@ -77,7 +77,9 @@ protocol DGRendererEncoder {
     
     func make_buffer<T>(_ buffer: MappedBuffer<T>) throws -> Buffer
     
-    func copy(_ source: Buffer, _ destination: Buffer, _ opacity: Double) throws
+    func copy(_ source: Buffer, _ destination: Buffer) throws
+    
+    func setOpacity(_ destination: Buffer, _ opacity: Double) throws
     
     func blend(_ source: Buffer, _ destination: Buffer, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws
     
@@ -211,7 +213,7 @@ extension DGImageContext {
         
         override func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer) throws where Encoder.Renderer.Model == Model {
             
-            try encoder.copy(encoder.make_buffer(source.pixels), output, 1)
+            try encoder.copy(encoder.make_buffer(source.pixels), output)
         }
     }
     
@@ -263,7 +265,7 @@ extension DGImageContext {
                 try source.render(encoder: encoder, output: _source)
                 
                 if opacity != 1 {
-                    try encoder.copy(_source, _source, opacity)
+                    try encoder.setOpacity(_source, opacity)
                 }
                 
                 if let clip = clip, !clip.is_empty {
