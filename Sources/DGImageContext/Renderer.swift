@@ -159,6 +159,8 @@ extension DGImageContext {
     
     func render<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws where Renderer.Model == Model {
         
+        guard width != 0 && height != 0 else { return }
+        
         guard self._image.cached_image == nil else { return }
         
         let renderer = try DGImageContext.make_renderer(device, Renderer.self)
@@ -173,6 +175,9 @@ extension DGImageContext {
     }
     
     func image<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws -> Image<FloatColorPixel<Model>> where Renderer.Model == Model {
+        
+        guard width != 0 && height != 0 else { return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
+        
         try self.render(device, Renderer.self)
         return Image(texture: self._image.cached_image!, resolution: resolution, colorSpace: colorSpace)
     }
