@@ -146,11 +146,21 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
 
 extension DGImageContext {
     
-    public func render(device: MTLDevice = MTLCreateSystemDefaultDevice()!) throws {
+    public func render() throws {
+        guard let device = MTLCreateSystemDefaultDevice() else { throw MetalRenderer<Model>.Error(description: "MTLCreateSystemDefaultDevice failed.") }
         try self.render(device, MetalRenderer.self)
     }
     
-    public func image(device: MTLDevice = MTLCreateSystemDefaultDevice()!) throws -> Image<FloatColorPixel<Model>> {
+    public func image() throws -> Image<FloatColorPixel<Model>> {
+        guard let device = MTLCreateSystemDefaultDevice() else { throw MetalRenderer<Model>.Error(description: "MTLCreateSystemDefaultDevice failed.") }
+        return try self.image(device, MetalRenderer.self)
+    }
+    
+    public func render(device: MTLDevice) throws {
+        try self.render(device, MetalRenderer.self)
+    }
+    
+    public func image(device: MTLDevice) throws -> Image<FloatColorPixel<Model>> {
         return try self.image(device, MetalRenderer.self)
     }
 }
