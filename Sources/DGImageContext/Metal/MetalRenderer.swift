@@ -71,35 +71,35 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         self.stencil_quadratic = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_quadratic")!)
         self.stencil_cubic = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_cubic")!)
         
-        let allCompositingMode: [ColorCompositingMode] = [
-            .clear,
-            .copy,
-            .sourceOver,
-            .sourceIn,
-            .sourceOut,
-            .sourceAtop,
-            .destinationOver,
-            .destinationIn,
-            .destinationOut,
-            .destinationAtop,
-            .xor
+        let allCompositingMode: [ColorCompositingMode: String] = [
+            .clear: "clear",
+            .copy: "copy",
+            .sourceOver: "sourceOver",
+            .sourceIn: "sourceIn",
+            .sourceOut: "sourceOut",
+            .sourceAtop: "sourceAtop",
+            .destinationOver: "destinationOver",
+            .destinationIn: "destinationIn",
+            .destinationOut: "destinationOut",
+            .destinationAtop: "destinationAtop",
+            .xor: "exclusiveOr"
         ]
         
-        let allBlendMode: [ColorBlendMode] = [
-            .normal,
-            .multiply,
-            .screen,
-            .overlay,
-            .darken,
-            .lighten,
-            .colorDodge,
-            .colorBurn,
-            .softLight,
-            .hardLight,
-            .difference,
-            .exclusion,
-            .plusDarker,
-            .plusLighter
+        let allBlendMode: [ColorBlendMode: String] = [
+            .normal: "normal",
+            .multiply: "multiply",
+            .screen: "screen",
+            .overlay: "overlay",
+            .darken: "darken",
+            .lighten: "lighten",
+            .colorDodge: "colorDodge",
+            .colorBurn: "colorBurn",
+            .softLight: "softLight",
+            .hardLight: "hardLight",
+            .difference: "difference",
+            .exclusion: "exclusion",
+            .plusDarker: "plusDarker",
+            .plusLighter: "plusLighter"
         ]
         
         let constant = MTLFunctionConstantValues()
@@ -114,16 +114,16 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         
         var _blending: [MetalRendererBlendMode: MTLComputePipelineState] = [:]
         
-        for (i, compositing) in allCompositingMode.enumerated() {
-            
-            constant.setConstantValue([UInt8(i)], type: .uchar, withName: "compositing_mode")
-            
-            for (j, blending) in allBlendMode.enumerated() {
-                
-                constant.setConstantValue([UInt8(j)], type: .uchar, withName: "blending_mode")
-                
+        let _blend_clear = try device.makeComputePipelineState(function: library.makeFunction(name: "blend_clear", constantValues: constant))
+        for (blending, _) in allBlendMode {
+            let key = MetalRendererBlendMode(compositing: .clear, blending: blending)
+            _blending[key] = _blend_clear
+        }
+        
+        for (compositing, compositing_name) in allCompositingMode where compositing != .clear {
+            for (blending, blending_name) in allBlendMode {
                 let key = MetalRendererBlendMode(compositing: compositing, blending: blending)
-                _blending[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "blend", constantValues: constant))
+                _blending[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "blend_\(compositing_name)_\(blending_name)", constantValues: constant))
             }
         }
         
@@ -159,20 +159,11 @@ extension DGImageContext {
     
     public func render() throws {
         guard let device = MTLCreateSystemDefaultDevice() else { throw MetalRenderer<Model>.Error(description: "MTLCreateSystemDefaultDevice failed.") }
-        try self.render(device, MetalRenderer.self)
-    }
-    
-    public func image() throws -> Image<FloatColorPixel<Model>> {
-        guard let device = MTLCreateSystemDefaultDevice() else { throw MetalRenderer<Model>.Error(description: "MTLCreateSystemDefaultDevice failed.") }
-        return try self.image(device, MetalRenderer.self)
+        try render(device: device)
     }
     
     public func render(device: MTLDevice) throws {
-        try self.render(device, MetalRenderer.self)
-    }
-    
-    public func image(device: MTLDevice) throws -> Image<FloatColorPixel<Model>> {
-        return try self.image(device, MetalRenderer.self)
+        try autoreleasepool { try self.render(device, MetalRenderer.self) }
     }
 }
 

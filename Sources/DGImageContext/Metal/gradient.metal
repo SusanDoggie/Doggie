@@ -217,6 +217,7 @@ void gradient_mapping(float t, const device gradient_stop *stops, int numOfStops
 struct gradient_parameter {
     
     packed_short2 spread;
+    //float3x2 transform;
     packed_float2 start;
     packed_float2 end;
     packed_float2 radius;
@@ -235,10 +236,12 @@ kernel void axial_gradient(const device gradient_parameter &parameter [[buffer(0
     float2 start = parameter.start;
     float2 end = parameter.end;
     
+    float2 point = float2(id[0], id[1]);
+    
     GradientSpreadMode start_spread = (GradientSpreadMode)parameter.spread[0];
     GradientSpreadMode end_spread = (GradientSpreadMode)parameter.spread[1];
     
-    float t = axial_shading(float2(id[0], id[1]), start, end);
+    float t = axial_shading(point, start, end);
     gradient_mapping(t, stops, numOfStops, out, idx, start_spread, end_spread);
 }
 
@@ -255,9 +258,11 @@ kernel void radial_gradient(const device gradient_parameter &parameter [[buffer(
     float2 end = parameter.end;
     float2 radius = parameter.radius;
     
+    float2 point = float2(id[0], id[1]);
+    
     GradientSpreadMode start_spread = (GradientSpreadMode)parameter.spread[0];
     GradientSpreadMode end_spread = (GradientSpreadMode)parameter.spread[1];
     
-    float t = radial_shading(float2(id[0], id[1]), start, radius[0], end, radius[1], start_spread, end_spread);
+    float t = radial_shading(point, start, radius[0], end, radius[1], start_spread, end_spread);
     gradient_mapping(t, stops, numOfStops, out, idx, start_spread, end_spread);
 }

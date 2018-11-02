@@ -117,6 +117,15 @@ extension DGImageContext {
 
 extension DGImageContext {
     
+    public var image: Image<FloatColorPixel<Model>> {
+        guard width != 0 && height != 0 else { return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
+        guard let texture = self._image.cached_image else { return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
+        return Image(texture: texture, resolution: resolution, colorSpace: colorSpace)
+    }
+}
+
+extension DGImageContext {
+    
     private var current: DGImageContext {
         return next ?? self
     }

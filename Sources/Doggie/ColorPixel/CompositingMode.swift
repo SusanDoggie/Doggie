@@ -88,6 +88,8 @@ extension ColorPixelProtocol {
     @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model {
         
+        guard compositingMode != .clear else { return Self() }
+        
         let d_alpha = self.opacity
         let s_alpha = source.opacity
         
@@ -106,6 +108,8 @@ extension ColorPixelProtocol {
     @inlinable
     @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
+        
+        guard compositingMode != .clear else { return Self() }
         
         let d_alpha = self.opacity
         let s_alpha = source.opacity
@@ -141,6 +145,8 @@ extension FloatColorPixel {
     @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Float, Float) -> Float) -> FloatColorPixel where C.Model == Model {
         
+        guard compositingMode != .clear else { return FloatColorPixel() }
+        
         let source = FloatColorPixel(source)
         
         let d_alpha = self._opacity
@@ -161,6 +167,8 @@ extension FloatColorPixel {
     @inlinable
     @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> FloatColorPixel where C.Model == Model {
+        
+        guard compositingMode != .clear else { return FloatColorPixel() }
         
         let source = FloatColorPixel(source)
         
