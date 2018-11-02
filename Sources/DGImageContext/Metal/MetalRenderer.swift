@@ -34,6 +34,12 @@ struct MetalRendererBlendMode : Hashable {
     var blending: ColorBlendMode
 }
 
+struct MetalRendererGradientSpreadMode : Hashable {
+    
+    var start: GradientSpreadMode
+    var end: GradientSpreadMode
+}
+
 private let MTLCommandQueueCacheLock = SDLock()
 private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
@@ -56,8 +62,8 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     let fill_nonZero_stencil: MTLComputePipelineState
     let fill_evenOdd_stencil: MTLComputePipelineState
     
-    let axial_gradient: MTLComputePipelineState
-    let radial_gradient: MTLComputePipelineState
+    let axial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState]
+    let radial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState]
     
     let clip: MTLComputePipelineState
     
@@ -70,6 +76,14 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         self.stencil_triangle = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_triangle")!)
         self.stencil_quadratic = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_quadratic")!)
         self.stencil_cubic = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_cubic")!)
+        
+        let constant = MTLFunctionConstantValues()
+        constant.setConstantValue([Int32(Model.numberOfComponents + 1)], type: .int, withName: "countOfComponents")
+        
+        self.set_opacity = try device.makeComputePipelineState(function: library.makeFunction(name: "set_opacity", constantValues: constant))
+        self.fill_nonZero_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_nonZero_stencil", constantValues: constant))
+        self.fill_evenOdd_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_evenOdd_stencil", constantValues: constant))
+        self.clip = try device.makeComputePipelineState(function: library.makeFunction(name: "clip", constantValues: constant))
         
         let allCompositingMode: [ColorCompositingMode: String] = [
             .clear: "clear",
@@ -102,16 +116,6 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
             .plusLighter: "plusLighter"
         ]
         
-        let constant = MTLFunctionConstantValues()
-        constant.setConstantValue([Int32(Model.numberOfComponents + 1)], type: .int, withName: "countOfComponents")
-        
-        self.set_opacity = try device.makeComputePipelineState(function: library.makeFunction(name: "set_opacity", constantValues: constant))
-        self.fill_nonZero_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_nonZero_stencil", constantValues: constant))
-        self.fill_evenOdd_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_evenOdd_stencil", constantValues: constant))
-        self.axial_gradient = try device.makeComputePipelineState(function: library.makeFunction(name: "axial_gradient", constantValues: constant))
-        self.radial_gradient = try device.makeComputePipelineState(function: library.makeFunction(name: "radial_gradient", constantValues: constant))
-        self.clip = try device.makeComputePipelineState(function: library.makeFunction(name: "clip", constantValues: constant))
-        
         var _blending: [MetalRendererBlendMode: MTLComputePipelineState] = [:]
         
         let _blend_clear = try device.makeComputePipelineState(function: library.makeFunction(name: "blend_clear", constantValues: constant))
@@ -128,6 +132,27 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         }
         
         self.blending = _blending
+        
+        let allGradientSpreadMode: [GradientSpreadMode: String] = [
+            .none: "none",
+            .pad: "pad",
+            .reflect: "reflect",
+            .repeat: "repeat"
+        ]
+        
+        var _axial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState] = [:]
+        var _radial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState] = [:]
+        
+        for (end, end_name) in allGradientSpreadMode {
+            for (start, start_name) in allGradientSpreadMode {
+                let key = MetalRendererGradientSpreadMode(start: start, end: end)
+                _axial_gradient[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "axial_gradient_\(start_name)_\(end_name)", constantValues: constant))
+                _radial_gradient[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "radial_gradient_\(start_name)_\(end_name)", constantValues: constant))
+            }
+        }
+        
+        self.axial_gradient = _axial_gradient
+        self.radial_gradient = _radial_gradient
         
         self.queue = try MetalRenderer.make_queue(device: device)
     }
@@ -246,10 +271,9 @@ extension MetalRenderer.Encoder {
     
     func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
         
-        let pipeline = renderer.blending[MetalRendererBlendMode(compositing: compositingMode, blending: blendMode)]!
-        
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         
+        let pipeline = renderer.blending[MetalRendererBlendMode(compositing: compositingMode, blending: blendMode)]!
         encoder.setComputePipelineState(pipeline)
         
         encoder.setBuffer(source, offset: 0, index: 0)
@@ -358,14 +382,15 @@ extension MetalRenderer.Encoder {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         
-        encoder.setComputePipelineState(renderer.axial_gradient)
+        let pipeline = renderer.axial_gradient[MetalRendererGradientSpreadMode(start: startSpread, end: endSpread)]!
+        encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([GradientParameter(stops.count, start, 0, end, 0, startSpread, endSpread)], length: 32, index: 0)
+        encoder.setBytes([GradientParameter(stops.count, start, 0, end, 0)], length: 32, index: 0)
         encoder.setBytes(stops.map(_GradientStop.init), length: 68 * stops.count, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         
-        let w = renderer.axial_gradient.threadExecutionWidth
-        let h = renderer.axial_gradient.maxTotalThreadsPerThreadgroup / w
+        let w = pipeline.threadExecutionWidth
+        let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
@@ -376,14 +401,15 @@ extension MetalRenderer.Encoder {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         
-        encoder.setComputePipelineState(renderer.radial_gradient)
+        let pipeline = renderer.radial_gradient[MetalRendererGradientSpreadMode(start: startSpread, end: endSpread)]!
+        encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([GradientParameter(stops.count, start, startRadius, end, endRadius, startSpread, endSpread)], length: 32, index: 0)
+        encoder.setBytes([GradientParameter(stops.count, start, startRadius, end, endRadius)], length: 32, index: 0)
         encoder.setBytes(stops.map(_GradientStop.init), length: 68 * stops.count, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         
-        let w = renderer.radial_gradient.threadExecutionWidth
-        let h = renderer.radial_gradient.maxTotalThreadsPerThreadgroup / w
+        let w = pipeline.threadExecutionWidth
+        let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
@@ -473,28 +499,12 @@ extension MetalRenderer.Encoder {
     
     private struct GradientParameter {
         
-        var spread: (UInt16, UInt16)
         var start: GPPoint
         var end: GPPoint
         var radius: GPSize
         var numOfStops: UInt32
         
-        init(_ numOfStops: Int, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) {
-            let start_spread: UInt16
-            let end_spread: UInt16
-            switch startSpread {
-            case .none: start_spread = 0
-            case .pad: start_spread = 1
-            case .reflect: start_spread = 2
-            case .repeat: start_spread = 3
-            }
-            switch endSpread {
-            case .none: end_spread = 0
-            case .pad: end_spread = 1
-            case .reflect: end_spread = 2
-            case .repeat: end_spread = 3
-            }
-            self.spread = (start_spread, end_spread)
+        init(_ numOfStops: Int, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double) {
             self.start = GPPoint(start)
             self.end = GPPoint(end)
             self.radius = GPSize(width: Float(startRadius), height: Float(endRadius))

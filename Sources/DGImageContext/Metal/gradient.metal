@@ -26,11 +26,23 @@
 #include <metal_stdlib>
 using namespace metal;
 
-enum GradientSpreadMode : uint8_t {
-    none,
-    pad,
-    _reflect,
-    repeat
+constant int countOfComponents [[function_constant(0)]];
+
+void _set_opacity(float opacity, device float *destination, int idx);
+
+struct gradient_stop {
+    
+    float offset;
+    float color[16];
+};
+
+struct gradient_parameter {
+    
+    //float3x2 transform;
+    packed_float2 start;
+    packed_float2 end;
+    packed_float2 radius;
+    uint numOfStops;
 };
 
 float axial_shading(float2 point, float2 start, float2 end) {
@@ -43,8 +55,8 @@ float axial_shading(float2 point, float2 start, float2 end) {
     return -u / v;
 }
 
-bool radial_shading_filter(float t, float r0, float r1, GradientSpreadMode start_spread, GradientSpreadMode end_spread) {
-    return r0 + t * r1 >= 0 && (t >= 0 || start_spread != none) && (t <= 1 || end_spread != none);
+bool radial_shading_filter(float t, float r0, float r1, bool start_spread, bool end_spread) {
+    return r0 + t * r1 >= 0 && (t >= 0 || start_spread) && (t <= 1 || end_spread);
 }
 
 float2 degree2roots(float b, float c) {
@@ -69,7 +81,7 @@ float2 degree2roots(float b, float c) {
     return float2(NAN, NAN);
 }
 
-float radial_shading(float2 point, float2 start, float start_radius, float2 end, float end_radius, GradientSpreadMode start_spread, GradientSpreadMode end_spread) {
+float radial_shading(float2 point, float2 start, float start_radius, float2 end, float end_radius, bool start_spread, bool end_spread) {
     
     float2 p0 = point - start;
     float2 p1 = start - end;
@@ -101,16 +113,6 @@ float radial_shading(float2 point, float2 start, float start_radius, float2 end,
     
     return NAN;
 }
-
-constant int countOfComponents [[function_constant(0)]];
-
-void _set_opacity(float opacity, device float *destination, int idx);
-
-struct gradient_stop {
-    
-    float offset;
-    float color[16];
-};
 
 void _gradient_set_color(const device gradient_stop *stops, int stop_idx, device float *destination, int idx) {
     
@@ -160,109 +162,173 @@ void gradient_set_color(float t, const device gradient_stop *stops, int numOfSto
     _gradient_set_color(stops, 0, destination, idx);
 }
 
-void gradient_mapping(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx, GradientSpreadMode start_spread, GradientSpreadMode end_spread) {
+void _none_start_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
     
-    if (t == NAN) {
-        return;
-    }
-    
-    if (t >= 0 && t <= 1) {
-        
-        gradient_set_color(t, stops, numOfStops, destination, idx);
-        
-    } else if (t > 0.5) {
-        
-        int i = (int)t;
-        float s = t - (float)i;
-        
-        switch (end_spread) {
-            case none:
-                gradient_set_color(1, stops, numOfStops, destination, idx);
-                _set_opacity(0, destination, idx);
-                return;
-            case pad:
-                gradient_set_color(1, stops, numOfStops, destination, idx);
-                return;
-            case _reflect:
-                gradient_set_color((i & 1) == 0 ? s : 1 - s, stops, numOfStops, destination, idx);
-                return;
-            case repeat:
-                gradient_set_color(s, stops, numOfStops, destination, idx);
-                return;
-        }
-        
-    } else {
-        
-        int i = (int)t;
-        float s = t - (float)i;
-        
-        switch (start_spread) {
-            case none:
-                gradient_set_color(0, stops, numOfStops, destination, idx);
-                _set_opacity(0, destination, idx);
-                return;
-            case pad:
-                gradient_set_color(0, stops, numOfStops, destination, idx);
-                return;
-            case _reflect:
-                gradient_set_color((i & 1) == 0 ? -s : 1 + s, stops, numOfStops, destination, idx);
-                return;
-            case repeat:
-                gradient_set_color(1 + s, stops, numOfStops, destination, idx);
-                return;
-        }
-    }
+    gradient_set_color(1, stops, numOfStops, destination, idx);
+    _set_opacity(0, destination, idx);
 }
 
-struct gradient_parameter {
+void _pad_start_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
     
-    packed_short2 spread;
-    //float3x2 transform;
-    packed_float2 start;
-    packed_float2 end;
-    packed_float2 radius;
-    uint numOfStops;
-};
-
-kernel void axial_gradient(const device gradient_parameter &parameter [[buffer(0)]],
-                           const device gradient_stop *stops [[buffer(1)]],
-                           device float *out [[buffer(2)]],
-                           uint2 id [[thread_position_in_grid]],
-                           uint2 grid [[threads_per_grid]]) {
-    
-    const int idx = grid[0] * id[1] + id[0];
-    
-    int numOfStops = parameter.numOfStops;
-    float2 start = parameter.start;
-    float2 end = parameter.end;
-    
-    float2 point = float2(id[0], id[1]);
-    
-    GradientSpreadMode start_spread = (GradientSpreadMode)parameter.spread[0];
-    GradientSpreadMode end_spread = (GradientSpreadMode)parameter.spread[1];
-    
-    float t = axial_shading(point, start, end);
-    gradient_mapping(t, stops, numOfStops, out, idx, start_spread, end_spread);
+    gradient_set_color(1, stops, numOfStops, destination, idx);
 }
 
-kernel void radial_gradient(const device gradient_parameter &parameter [[buffer(0)]],
-                            const device gradient_stop *stops [[buffer(1)]],
-                            device float *out [[buffer(2)]],
-                            uint2 id [[thread_position_in_grid]],
-                            uint2 grid [[threads_per_grid]]) {
+void _reflect_start_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
     
-    const int idx = grid[0] * id[1] + id[0];
+    int i = (int)t;
+    float s = t - (float)i;
     
-    int numOfStops = parameter.numOfStops;
-    float2 start = parameter.start;
-    float2 end = parameter.end;
-    float2 radius = parameter.radius;
-    
-    float2 point = float2(id[0], id[1]);
-    
-    GradientSpreadMode start_spread = (GradientSpreadMode)parameter.spread[0];
-    GradientSpreadMode end_spread = (GradientSpreadMode)parameter.spread[1];
-    
-    float t = radial_shading(point, start, radius[0], end, radius[1], start_spread, end_spread);
-    gradient_mapping(t, stops, numOfStops, out, idx, start_spread, end_spread);
+    gradient_set_color((i & 1) == 0 ? s : 1 - s, stops, numOfStops, destination, idx);
 }
+
+void _repeat_start_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
+    
+    int i = (int)t;
+    float s = t - (float)i;
+    
+    gradient_set_color(s, stops, numOfStops, destination, idx);
+}
+
+void _none_end_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
+    
+    gradient_set_color(0, stops, numOfStops, destination, idx);
+    _set_opacity(0, destination, idx);
+}
+
+void _pad_end_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
+    
+    gradient_set_color(0, stops, numOfStops, destination, idx);
+}
+
+void _reflect_end_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
+    
+    int i = (int)t;
+    float s = t - (float)i;
+    
+    gradient_set_color((i & 1) == 0 ? -s : 1 + s, stops, numOfStops, destination, idx);
+}
+
+void _repeat_end_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
+    
+    int i = (int)t;
+    float s = t - (float)i;
+    
+    gradient_set_color(1 + s, stops, numOfStops, destination, idx);
+}
+
+#define GRADIENT_MAPPING(STARTMODE, ENDMODE) \
+void gradient_mapping_##STARTMODE##_##ENDMODE(float t,                              \
+                                              const device gradient_stop *stops,    \
+                                              int numOfStops,                       \
+                                              device float *destination,            \
+                                              int idx) {                            \
+    if (t == NAN) {                                                                 \
+        return;                                                                     \
+    }                                                                               \
+    if (t >= 0 && t <= 1) {                                                         \
+        gradient_set_color(t, stops, numOfStops, destination, idx);                 \
+    } else if (t > 0.5) {                                                           \
+        _##ENDMODE##_end_spread(t, stops, numOfStops, destination, idx);            \
+    } else {                                                                        \
+        _##STARTMODE##_start_spread(t, stops, numOfStops, destination, idx);        \
+    }                                                                               \
+}
+
+GRADIENT_MAPPING(none, none)
+GRADIENT_MAPPING(pad, none)
+GRADIENT_MAPPING(reflect, none)
+GRADIENT_MAPPING(repeat, none)
+
+GRADIENT_MAPPING(none, pad)
+GRADIENT_MAPPING(pad, pad)
+GRADIENT_MAPPING(reflect, pad)
+GRADIENT_MAPPING(repeat, pad)
+
+GRADIENT_MAPPING(none, reflect)
+GRADIENT_MAPPING(pad, reflect)
+GRADIENT_MAPPING(reflect, reflect)
+GRADIENT_MAPPING(repeat, reflect)
+
+GRADIENT_MAPPING(none, repeat)
+GRADIENT_MAPPING(pad, repeat)
+GRADIENT_MAPPING(reflect, repeat)
+GRADIENT_MAPPING(repeat, repeat)
+
+#define AXIAL_GRADIENT_KERNEL(STARTMODE, ENDMODE) \
+kernel void axial_gradient_##STARTMODE##_##ENDMODE(const device gradient_parameter &parameter [[buffer(0)]],    \
+                                                   const device gradient_stop *stops [[buffer(1)]],             \
+                                                   device float *out [[buffer(2)]],                             \
+                                                   uint2 id [[thread_position_in_grid]],                        \
+                                                   uint2 grid [[threads_per_grid]]) {                           \
+                                                                                                                \
+    const int idx = grid[0] * id[1] + id[0];                                                                    \
+                                                                                                                \
+    int numOfStops = parameter.numOfStops;                                                                      \
+    float2 start = parameter.start;                                                                             \
+    float2 end = parameter.end;                                                                                 \
+                                                                                                                \
+    float2 point = float2(id[0], id[1]);                                                                        \
+                                                                                                                \
+    float t = axial_shading(point, start, end);                                                                 \
+    gradient_mapping_##STARTMODE##_##ENDMODE(t, stops, numOfStops, out, idx);                                   \
+}
+
+#define RADIAL_GRADIENT_KERNEL(STARTMODE, ENDMODE, STARTSPREAD, ENDSPREAD) \
+kernel void radial_gradient_##STARTMODE##_##ENDMODE(const device gradient_parameter &parameter [[buffer(0)]],           \
+                                                    const device gradient_stop *stops [[buffer(1)]],                    \
+                                                    device float *out [[buffer(2)]],                                    \
+                                                    uint2 id [[thread_position_in_grid]],                               \
+                                                    uint2 grid [[threads_per_grid]]) {                                  \
+                                                                                                                        \
+    const int idx = grid[0] * id[1] + id[0];                                                                            \
+                                                                                                                        \
+    int numOfStops = parameter.numOfStops;                                                                              \
+    float2 start = parameter.start;                                                                                     \
+    float2 end = parameter.end;                                                                                         \
+    float2 radius = parameter.radius;                                                                                   \
+                                                                                                                        \
+    float2 point = float2(id[0], id[1]);                                                                                \
+                                                                                                                        \
+    float t = radial_shading(point, start, radius[0], end, radius[1], STARTSPREAD, ENDSPREAD);                          \
+    gradient_mapping_##STARTMODE##_##ENDMODE(t, stops, numOfStops, out, idx);                                           \
+}
+
+AXIAL_GRADIENT_KERNEL(none, none)
+AXIAL_GRADIENT_KERNEL(pad, none)
+AXIAL_GRADIENT_KERNEL(reflect, none)
+AXIAL_GRADIENT_KERNEL(repeat, none)
+
+AXIAL_GRADIENT_KERNEL(none, pad)
+AXIAL_GRADIENT_KERNEL(pad, pad)
+AXIAL_GRADIENT_KERNEL(reflect, pad)
+AXIAL_GRADIENT_KERNEL(repeat, pad)
+
+AXIAL_GRADIENT_KERNEL(none, reflect)
+AXIAL_GRADIENT_KERNEL(pad, reflect)
+AXIAL_GRADIENT_KERNEL(reflect, reflect)
+AXIAL_GRADIENT_KERNEL(repeat, reflect)
+
+AXIAL_GRADIENT_KERNEL(none, repeat)
+AXIAL_GRADIENT_KERNEL(pad, repeat)
+AXIAL_GRADIENT_KERNEL(reflect, repeat)
+AXIAL_GRADIENT_KERNEL(repeat, repeat)
+
+RADIAL_GRADIENT_KERNEL(none, none, false, false)
+RADIAL_GRADIENT_KERNEL(pad, none, true, false)
+RADIAL_GRADIENT_KERNEL(reflect, none, true, false)
+RADIAL_GRADIENT_KERNEL(repeat, none, true, false)
+
+RADIAL_GRADIENT_KERNEL(none, pad, false, true)
+RADIAL_GRADIENT_KERNEL(pad, pad, true, true)
+RADIAL_GRADIENT_KERNEL(reflect, pad, true, true)
+RADIAL_GRADIENT_KERNEL(repeat, pad, true, true)
+
+RADIAL_GRADIENT_KERNEL(none, reflect, false, true)
+RADIAL_GRADIENT_KERNEL(pad, reflect, true, true)
+RADIAL_GRADIENT_KERNEL(reflect, reflect, true, true)
+RADIAL_GRADIENT_KERNEL(repeat, reflect, true, true)
+
+RADIAL_GRADIENT_KERNEL(none, repeat, false, true)
+RADIAL_GRADIENT_KERNEL(pad, repeat, true, true)
+RADIAL_GRADIENT_KERNEL(reflect, repeat, true, true)
+RADIAL_GRADIENT_KERNEL(repeat, repeat, true, true)

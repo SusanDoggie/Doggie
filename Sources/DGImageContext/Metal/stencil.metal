@@ -26,6 +26,14 @@
 #include <metal_stdlib>
 using namespace metal;
 
+constant int countOfComponents [[function_constant(0)]];
+
+float cross(float2 a, float2 b);
+float3 Barycentric(float2 p0, float2 p1, float2 p2, float2 q);
+bool inTriangle(float2 p0, float2 p1, float2 p2, float2 position);
+
+void _set_opacity(float opacity, device float *destination, int idx);
+
 struct stencil_parameter {
     
     packed_uint2 offset;
@@ -49,9 +57,13 @@ struct stencil_cubic_struct {
     packed_float3 v0, v1, v2;
 };
 
-float cross(float2 a, float2 b);
-float3 Barycentric(float2 p0, float2 p1, float2 p2, float2 q);
-bool inTriangle(float2 p0, float2 p1, float2 p2, float2 position);
+struct fill_stencil_parameter {
+    
+    packed_uint2 offset;
+    uint width;
+    uint antialias;
+    float color[16];
+};
 
 kernel void stencil_triangle(const device stencil_parameter &parameter [[buffer(0)]],
                              const device stencil_triangle_struct *triangles [[buffer(1)]],
@@ -157,18 +169,6 @@ kernel void stencil_cubic(const device stencil_parameter &parameter [[buffer(0)]
     }
     
 }
-
-struct fill_stencil_parameter {
-    
-    packed_uint2 offset;
-    uint width;
-    uint antialias;
-    float color[16];
-};
-
-constant int countOfComponents [[function_constant(0)]];
-
-void _set_opacity(float opacity, device float *destination, int idx);
 
 kernel void fill_nonZero_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],
                                  const device int16_t *stencil [[buffer(1)]],
