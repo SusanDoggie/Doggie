@@ -38,7 +38,7 @@ struct gradient_stop {
 
 struct gradient_parameter {
     
-    //float3x2 transform;
+    float3x2 transform;
     packed_float2 start;
     packed_float2 end;
     packed_float2 radius;

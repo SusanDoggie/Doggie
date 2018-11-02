@@ -86,8 +86,7 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         self.clip = try device.makeComputePipelineState(function: library.makeFunction(name: "clip", constantValues: constant))
         
         let allCompositingMode: [ColorCompositingMode: String] = [
-            .clear: "clear",
-            .copy: "copy",
+            .source: "copy",
             .sourceOver: "sourceOver",
             .sourceIn: "sourceIn",
             .sourceOut: "sourceOut",
@@ -118,13 +117,7 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         
         var _blending: [MetalRendererBlendMode: MTLComputePipelineState] = [:]
         
-        let _blend_clear = try device.makeComputePipelineState(function: library.makeFunction(name: "blend_clear", constantValues: constant))
-        for (blending, _) in allBlendMode {
-            let key = MetalRendererBlendMode(compositing: .clear, blending: blending)
-            _blending[key] = _blend_clear
-        }
-        
-        for (compositing, compositing_name) in allCompositingMode where compositing != .clear {
+        for (compositing, compositing_name) in allCompositingMode {
             for (blending, blending_name) in allBlendMode {
                 let key = MetalRendererBlendMode(compositing: compositing, blending: blending)
                 _blending[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "blend_\(compositing_name)_\(blending_name)", constantValues: constant))
@@ -271,20 +264,39 @@ extension MetalRenderer.Encoder {
     
     func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
         
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
-        
-        let pipeline = renderer.blending[MetalRendererBlendMode(compositing: compositingMode, blending: blendMode)]!
-        encoder.setComputePipelineState(pipeline)
-        
-        encoder.setBuffer(source, offset: 0, index: 0)
-        encoder.setBuffer(destination, offset: 0, index: 1)
-        
-        let w = pipeline.threadExecutionWidth
-        let h = pipeline.maxTotalThreadsPerThreadgroup / w
-        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
-        
-        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
+        switch (compositingMode, blendMode) {
+        case (.destination, _): return
+        case (.source, .normal):
+            
+            guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+            
+            encoder.copy(from: source, sourceOffset: 0, to: destination, destinationOffset: 0, size: texture_size)
+            encoder.endEncoding()
+            
+        case (.clear, _):
+            
+            guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+            
+            encoder.fill(buffer: destination, range: 0..<texture_size, value: 0)
+            encoder.endEncoding()
+            
+        default:
+            
+            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+            
+            let pipeline = renderer.blending[MetalRendererBlendMode(compositing: compositingMode, blending: blendMode)]!
+            encoder.setComputePipelineState(pipeline)
+            
+            encoder.setBuffer(source, offset: 0, index: 0)
+            encoder.setBuffer(destination, offset: 0, index: 1)
+            
+            let w = pipeline.threadExecutionWidth
+            let h = pipeline.maxTotalThreadsPerThreadgroup / w
+            let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
+            
+            encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+            encoder.endEncoding()
+        }
     }
     
     func shadow(_ source: MTLBuffer, _ destination: MTLBuffer, _ color: [Double], _ offset: Size, _ blur: Double) throws {
@@ -385,7 +397,7 @@ extension MetalRenderer.Encoder {
         let pipeline = renderer.axial_gradient[MetalRendererGradientSpreadMode(start: startSpread, end: endSpread)]!
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([GradientParameter(stops.count, start, 0, end, 0)], length: 32, index: 0)
+        encoder.setBytes([GradientParameter(stops.count, transform, start, 0, end, 0)], length: 56, index: 0)
         encoder.setBytes(stops.map(_GradientStop.init), length: 68 * stops.count, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         
@@ -404,7 +416,7 @@ extension MetalRenderer.Encoder {
         let pipeline = renderer.radial_gradient[MetalRendererGradientSpreadMode(start: startSpread, end: endSpread)]!
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([GradientParameter(stops.count, start, startRadius, end, endRadius)], length: 32, index: 0)
+        encoder.setBytes([GradientParameter(stops.count, transform, start, startRadius, end, endRadius)], length: 56, index: 0)
         encoder.setBytes(stops.map(_GradientStop.init), length: 68 * stops.count, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         
@@ -499,16 +511,20 @@ extension MetalRenderer.Encoder {
     
     private struct GradientParameter {
         
+        var transform: (Float, Float, Float, Float, Float, Float)
         var start: GPPoint
         var end: GPPoint
         var radius: GPSize
         var numOfStops: UInt32
+        var padding: UInt32
         
-        init(_ numOfStops: Int, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double) {
+        init(_ numOfStops: Int, _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double) {
+            self.transform = (Float(transform.a), Float(transform.b), Float(transform.c), Float(transform.d), Float(transform.e), Float(transform.f))
             self.start = GPPoint(start)
             self.end = GPPoint(end)
             self.radius = GPSize(width: Float(startRadius), height: Float(endRadius))
             self.numOfStops = UInt32(numOfStops)
+            self.padding = 0
         }
     }
 }

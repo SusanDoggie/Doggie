@@ -52,13 +52,6 @@ struct MutableTexture {
     MutablePixel operator[](uint2 i) { return MutablePixel(buffer + (i[0] + i[1] * size[0]) * countOfComponents); };
 };
 
-void _blend_clear(MutablePixel destination, Pixel source) {
-    
-    for (int i = 0; i < countOfComponents; ++i) {
-        destination.components[i] = 0;
-    }
-}
-
 #define BLEND_NORMAL(COMPOSITING) \
 void _blend_##COMPOSITING##_normal(MutablePixel destination, Pixel source) {                                            \
                                                                                                                         \
@@ -386,18 +379,6 @@ BLEND(destinationIn, plusLighter)
 BLEND(destinationOut, plusLighter)
 BLEND(destinationAtop, plusLighter)
 BLEND(exclusiveOr, plusLighter)
-
-kernel void blend_clear(const device float *source [[buffer(0)]],
-                        device float *destination [[buffer(1)]],
-                        uint2 id [[thread_position_in_grid]],
-                        uint2 grid [[threads_per_grid]]) {
-    
-    MutableTexture _destination = MutableTexture(destination, grid);
-    Texture _source = Texture(source, grid);
-    
-    _blend_clear(_destination[id], _source[id]);
-    
-}
 
 #define BLEND_NORMAL_KERNEL(COMPOSITING) \
 kernel void blend_##COMPOSITING##_normal(const device float *source [[buffer(0)]],  \
