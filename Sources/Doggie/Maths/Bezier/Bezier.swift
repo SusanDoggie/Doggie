@@ -321,7 +321,7 @@ extension Bezier where Element == Point {
     public var inflection: [Double] {
         switch points.count {
         case 2, 3: return []
-        case 4: return CubicBezier(points[0], points[1], points[2], points[3]).inflection
+        case 4: return Array(CubicBezier(points[0], points[1], points[2], points[3]).inflection)
         default:
             let x = Bezier<Double>(points.map { $0.x }).polynomial.derivative
             let y = Bezier<Double>(points.map { $0.y }).polynomial.derivative

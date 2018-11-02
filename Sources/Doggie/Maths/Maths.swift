@@ -105,29 +105,60 @@ public func isPrime(_ n: UInt) -> Bool {
 
 // MARK: Polynomial
 
+public struct Degree2Roots : Sequence, IteratorProtocol {
+    
+    public var values: (Double?, Double?)
+    
+    @inlinable
+    @inline(__always)
+    public init() {
+        self.values = (nil, nil)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init(_ a: Double) {
+        self.values = (a, nil)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init(_ a: Double, _ b: Double) {
+        self.values = (a, b)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public mutating func next() -> Double? {
+        let first = values.0
+        values = (values.1, nil)
+        return first
+    }
+}
+
 @inlinable
 @inline(__always)
-public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
+public func degree2roots(_ b: Double, _ c: Double) -> Degree2Roots {
     if b.almostZero() {
         if c < 0 {
             let _c = sqrt(-c)
-            return [_c, -_c]
+            return Degree2Roots(_c, -_c)
         } else if c.almostZero() {
-            return [0]
+            return Degree2Roots(0)
         }
-        return []
+        return Degree2Roots()
     }
     if c.almostZero() {
-        return [0, -b]
+        return Degree2Roots(0, -b)
     }
     let del = b * b - 4 * c
     if del.almostZero() {
-        return [-0.5 * b]
+        return Degree2Roots(-0.5 * b)
     } else if del > 0 {
         let sqrt_del = sqrt(del)
-        return [0.5 * (sqrt_del - b), 0.5 * (-sqrt_del - b)]
+        return Degree2Roots(0.5 * (sqrt_del - b), 0.5 * (-sqrt_del - b))
     }
-    return []
+    return Degree2Roots()
 }
 
 @inlinable
@@ -217,7 +248,7 @@ public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double)
 @inline(__always)
 public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero() {
-        let z = degree2roots(b, c)
+        let z = Array(degree2roots(b, c))
         return z.contains(0) ? z : [0] + z
     }
     let b2 = b * b
@@ -240,9 +271,9 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     let c1 = cbrt(0.5 * (de1 + sqrt(de2)))
     let c2 = cbrt(0.5 * (de1 - sqrt(de2)))
     let c3 = c1 + c2
-    var _d2 = degree2roots((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9)
-    _d2.append((-b - c3) / 3)
-    return Array(Set(_d2))
+    var _d2 = Set(degree2roots((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9))
+    _d2.insert((-b - c3) / 3)
+    return Array(_d2)
 }
 
 @inlinable

@@ -203,7 +203,7 @@ extension Polynomial {
         }
         switch degree {
         case 1: return [-coeffs[0] / coeffs[1]]
-        case 2: return degree2roots(coeffs[1] / coeffs[2], coeffs[0] / coeffs[2])
+        case 2: return Array(degree2roots(coeffs[1] / coeffs[2], coeffs[0] / coeffs[2]))
         case 3: return degree3roots(coeffs[2] / coeffs[3], coeffs[1] / coeffs[3], coeffs[0] / coeffs[3])
         case 4: return degree4roots(coeffs[3] / coeffs[4], coeffs[2] / coeffs[4], coeffs[1] / coeffs[4], coeffs[0] / coeffs[4])
         default: return _root(self / coeffs.last!)

@@ -237,7 +237,7 @@ extension CubicBezier where Element == Point {
 extension CubicBezier where Element == Point {
     
     @inlinable
-    public var inflection: [Double] {
+    public var inflection: Degree2Roots {
         let p = (p3 - p0).phase
         let _p1 = (p1 - p0) * SDTransform.rotate(-p)
         let _p2 = (p2 - p0) * SDTransform.rotate(-p)
@@ -250,7 +250,7 @@ extension CubicBezier where Element == Point {
         let y = 18 * (3 * (a - c) - b)
         let z = 18 * (c - a)
         if x.almostZero() {
-            return y.almostZero() ? [] : [-z / y]
+            return y.almostZero() ? Degree2Roots() : Degree2Roots(-z / y)
         }
         return degree2roots(y / x, z / x)
     }
