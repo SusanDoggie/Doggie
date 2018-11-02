@@ -181,7 +181,7 @@ void _blend_##COMPOSITING##_normal(MutablePixel destination, Pixel source) {    
         float s = s_alpha / r_alpha;                                                                                    \
         float d = d_alpha / r_alpha;                                                                                    \
                                                                                                                         \
-        for (int i = 0; i < countOfComponents - 2; ++i) {                                                               \
+        for (int i = 0; i < countOfComponents - 1; ++i) {                                                               \
             float _source = source.components[i];                                                                       \
             float _destination = destination.components[i];                                                             \
             destination.components[i] = _##COMPOSITING(s * _source, s_alpha, d * _destination, d_alpha);                \

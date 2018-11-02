@@ -28,9 +28,9 @@ import Doggie
 struct DGRendererEncoderGradientStop<Model : ColorModelProtocol> {
     
     var offset: Double
-    var color: FloatColorPixel<Model>
+    var color: ColorPixel<Model>
     
-    init(offset: Double, color: FloatColorPixel<Model>) {
+    init(offset: Double, color: ColorPixel<Model>) {
         self.offset = offset
         self.color = color
     }
