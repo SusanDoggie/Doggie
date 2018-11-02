@@ -1,5 +1,5 @@
 //
-//  blend.metal
+//  set_opacity.metal
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
