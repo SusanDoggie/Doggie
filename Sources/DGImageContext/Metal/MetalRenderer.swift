@@ -28,48 +28,6 @@
 import Doggie
 import Metal
 
-struct MetalRendererBlendMode : Hashable {
-    
-    var compositing: ColorCompositingMode
-    var blending: ColorBlendMode
-}
-
-struct MetalRendererGradientSpreadMode : Hashable {
-    
-    var start: GradientSpreadMode
-    var end: GradientSpreadMode
-}
-
-enum DGResamplingAlgorithm {
-    
-    case none
-    case linear
-    case cosine
-    case cubic
-    case hermite
-    case mitchell
-    case lanczos
-    
-    init(_ algorithm: ResamplingAlgorithm) {
-        switch algorithm {
-        case .none: self = .none
-        case .linear: self = .linear
-        case .cosine: self = .cosine
-        case .cubic: self = .cubic
-        case .hermite(_, _): self = .hermite
-        case .mitchell(_, _): self = .mitchell
-        case .lanczos(_): self = .lanczos
-        }
-    }
-}
-
-struct MetalRendererResamplingKey : Hashable {
-    
-    var algorithm: DGResamplingAlgorithm
-    var hWrapping: WrappingMode
-    var vWrapping: WrappingMode
-}
-
 private let MTLCommandQueueCacheLock = SDLock()
 private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
@@ -78,137 +36,15 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     typealias ClipEncoder = MetalRenderer<GrayColorModel>.Encoder
     
     let device: MTLDevice
-    
+    let library: MTLLibrary
     let queue: MTLCommandQueue
     
-    let set_opacity: MTLComputePipelineState
-    
-    let stencil_triangle: MTLComputePipelineState
-    let stencil_quadratic: MTLComputePipelineState
-    let stencil_cubic: MTLComputePipelineState
-    
-    let blending: [MetalRendererBlendMode: MTLComputePipelineState]
-    
-    let fill_nonZero_stencil: MTLComputePipelineState
-    let fill_evenOdd_stencil: MTLComputePipelineState
-    
-    let clip: MTLComputePipelineState
-    
-    let axial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState]
-    let radial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState]
-    
-    let resampling: [MetalRendererResamplingKey: MTLComputePipelineState]
+    let lck = SDLock()
+    var _pipeline: [String: MTLComputePipelineState] = [:]
     
     required init(device: MTLDevice) throws {
-        
         self.device = device
-        
-        let library = try device.makeDefaultLibrary(bundle: Bundle(for: MetalRenderer.self))
-        
-        self.stencil_triangle = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_triangle")!)
-        self.stencil_quadratic = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_quadratic")!)
-        self.stencil_cubic = try device.makeComputePipelineState(function: library.makeFunction(name: "stencil_cubic")!)
-        
-        let constant = MTLFunctionConstantValues()
-        constant.setConstantValue([Int32(Model.numberOfComponents + 1)], type: .int, withName: "countOfComponents")
-        
-        self.set_opacity = try device.makeComputePipelineState(function: library.makeFunction(name: "set_opacity", constantValues: constant))
-        self.fill_nonZero_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_nonZero_stencil", constantValues: constant))
-        self.fill_evenOdd_stencil = try device.makeComputePipelineState(function: library.makeFunction(name: "fill_evenOdd_stencil", constantValues: constant))
-        self.clip = try device.makeComputePipelineState(function: library.makeFunction(name: "clip", constantValues: constant))
-        
-        let allCompositingMode: [ColorCompositingMode: String] = [
-            .source: "copy",
-            .sourceOver: "sourceOver",
-            .sourceIn: "sourceIn",
-            .sourceOut: "sourceOut",
-            .sourceAtop: "sourceAtop",
-            .destinationOver: "destinationOver",
-            .destinationIn: "destinationIn",
-            .destinationOut: "destinationOut",
-            .destinationAtop: "destinationAtop",
-            .xor: "exclusiveOr"
-        ]
-        
-        let allBlendMode: [ColorBlendMode: String] = [
-            .normal: "normal",
-            .multiply: "multiply",
-            .screen: "screen",
-            .overlay: "overlay",
-            .darken: "darken",
-            .lighten: "lighten",
-            .colorDodge: "colorDodge",
-            .colorBurn: "colorBurn",
-            .softLight: "softLight",
-            .hardLight: "hardLight",
-            .difference: "difference",
-            .exclusion: "exclusion",
-            .plusDarker: "plusDarker",
-            .plusLighter: "plusLighter"
-        ]
-        
-        var _blending: [MetalRendererBlendMode: MTLComputePipelineState] = [:]
-        
-        for (compositing, compositing_name) in allCompositingMode {
-            for (blending, blending_name) in allBlendMode {
-                let key = MetalRendererBlendMode(compositing: compositing, blending: blending)
-                _blending[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "blend_\(compositing_name)_\(blending_name)", constantValues: constant))
-            }
-        }
-        
-        self.blending = _blending
-        
-        let allGradientSpreadMode: [GradientSpreadMode: String] = [
-            .none: "none",
-            .pad: "pad",
-            .reflect: "reflect",
-            .repeat: "repeat"
-        ]
-        
-        var _axial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState] = [:]
-        var _radial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState] = [:]
-        
-        for (end, end_name) in allGradientSpreadMode {
-            for (start, start_name) in allGradientSpreadMode {
-                let key = MetalRendererGradientSpreadMode(start: start, end: end)
-                _axial_gradient[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "axial_gradient_\(start_name)_\(end_name)", constantValues: constant))
-                _radial_gradient[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "radial_gradient_\(start_name)_\(end_name)", constantValues: constant))
-            }
-        }
-        
-        self.axial_gradient = _axial_gradient
-        self.radial_gradient = _radial_gradient
-        
-        let allResamplingAlgorithm: [DGResamplingAlgorithm: String] = [
-            .none: "none",
-            .linear: "linear",
-            .cosine: "cosine",
-            .cubic: "cubic",
-            .hermite: "hermite",
-            .mitchell: "mitchell",
-            .lanczos: "lanczos"
-        ]
-        
-        let allWrappingMode: [WrappingMode: String] = [
-            .none: "none",
-            .clamp: "clamp",
-            .repeat: "repeat",
-            .mirror: "mirror"
-        ]
-        
-        var _resampling: [MetalRendererResamplingKey: MTLComputePipelineState] = [:]
-        
-        for (algorithm, algorithm_name) in allResamplingAlgorithm {
-            for (h_wrapping, h_wrapping_name) in allWrappingMode {
-                for (v_wrapping, v_wrapping_name) in allWrappingMode {
-                    let key = MetalRendererResamplingKey(algorithm: algorithm, hWrapping: h_wrapping, vWrapping: v_wrapping)
-                    _resampling[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "\(algorithm_name)_interpolate_\(h_wrapping_name)_\(v_wrapping_name)", constantValues: constant))
-                }
-            }
-        }
-        
-        self.resampling = _resampling
-        
+        self.library = try device.makeDefaultLibrary(bundle: Bundle(for: MetalRenderer.self))
         self.queue = try MetalRenderer.make_queue(device: device)
     }
     
@@ -227,6 +63,24 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         MTLCommandQueueCache[key] = queue
         
         return queue
+    }
+    
+    func request_pipeline(_ name: String) throws -> MTLComputePipelineState {
+        
+        lck.lock()
+        defer { lck.unlock() }
+        
+        if let pipeline = _pipeline[name] {
+            return pipeline
+        }
+        
+        let constant = MTLFunctionConstantValues()
+        constant.setConstantValue([Int32(Model.numberOfComponents + 1)], type: .int, withName: "countOfComponents")
+        
+        let pipeline = try device.makeComputePipelineState(function: library.makeFunction(name: name, constantValues: constant))
+        _pipeline[name] = pipeline
+        
+        return pipeline
     }
     
     func encoder(width: Int, height: Int) throws -> Encoder {
@@ -261,6 +115,8 @@ extension MetalRenderer {
         
         let renderer: MetalRenderer<Model>
         let commandBuffer: MTLCommandBuffer
+        
+        var stencil_buffer: MTLBuffer?
         
         init(width: Int, height: Int, renderer: MetalRenderer<Model>, commandBuffer: MTLCommandBuffer) {
             self.width = width
@@ -311,13 +167,14 @@ extension MetalRenderer.Encoder {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         
-        encoder.setComputePipelineState(renderer.set_opacity)
+        let pipeline = try renderer.request_pipeline("set_opacity")
+        encoder.setComputePipelineState(pipeline)
         
         encoder.setBytes([Float(opacity)], length: 4, index: 0)
         encoder.setBuffer(destination, offset: 0, index: 1)
         
-        let w = renderer.set_opacity.threadExecutionWidth
-        let h = renderer.set_opacity.maxTotalThreadsPerThreadgroup / w
+        let w = pipeline.threadExecutionWidth
+        let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
@@ -346,7 +203,41 @@ extension MetalRenderer.Encoder {
             
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
             
-            let pipeline = renderer.blending[MetalRendererBlendMode(compositing: compositingMode, blending: blendMode)]!
+            let compositing_name: String
+            let blending_name: String
+            
+            switch compositingMode {
+            case .source: compositing_name = "copy"
+            case .sourceOver: compositing_name = "sourceOver"
+            case .sourceIn: compositing_name = "sourceIn"
+            case .sourceOut: compositing_name = "sourceOut"
+            case .sourceAtop: compositing_name = "sourceAtop"
+            case .destinationOver: compositing_name = "destinationOver"
+            case .destinationIn: compositing_name = "destinationIn"
+            case .destinationOut: compositing_name = "destinationOut"
+            case .destinationAtop: compositing_name = "destinationAtop"
+            case .xor: compositing_name = "exclusiveOr"
+            default: compositing_name = ""
+            }
+            
+            switch blendMode {
+            case .normal: blending_name = "normal"
+            case .multiply: blending_name = "multiply"
+            case .screen: blending_name = "screen"
+            case .overlay: blending_name = "overlay"
+            case .darken: blending_name = "darken"
+            case .lighten: blending_name = "lighten"
+            case .colorDodge: blending_name = "colorDodge"
+            case .colorBurn: blending_name = "colorBurn"
+            case .softLight: blending_name = "softLight"
+            case .hardLight: blending_name = "hardLight"
+            case .difference: blending_name = "difference"
+            case .exclusion: blending_name = "exclusion"
+            case .plusDarker: blending_name = "plusDarker"
+            case .plusLighter: blending_name = "plusLighter"
+            }
+            
+            let pipeline = try renderer.request_pipeline("blend_\(compositing_name)_\(blending_name)")
             encoder.setComputePipelineState(pipeline)
             
             encoder.setBuffer(source, offset: 0, index: 0)
@@ -367,7 +258,26 @@ extension MetalRenderer.Encoder {
     
     func draw(_ destination: MTLBuffer, _ shape: Shape, _ color: [Double], _ winding: Shape.WindingRule, _ antialias: Int) throws {
         
-        guard let stencil = device.makeBuffer(length: width * height * antialias * antialias * 2, options: .storageModePrivate) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+        let stencil: MTLBuffer
+        
+        let stencil_size = width * height * antialias * antialias * 2
+        
+        if let stencil_buffer = self.stencil_buffer, stencil_buffer.length >= stencil_size {
+            
+            guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+            
+            encoder.fill(buffer: stencil_buffer, range: 0..<stencil_size, value: 0)
+            encoder.endEncoding()
+            
+            stencil = stencil_buffer
+            
+        } else {
+            
+            guard let _stencil = device.makeBuffer(length: stencil_size, options: .storageModePrivate) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+            
+            self.stencil_buffer = _stencil
+            stencil = _stencil
+        }
         
         var shape = shape
         shape.transform = shape.transform * SDTransform.scale(Double(antialias))
@@ -384,8 +294,8 @@ extension MetalRenderer.Encoder {
         let pipeline: MTLComputePipelineState
         
         switch winding {
-        case .nonZero: pipeline = renderer.fill_nonZero_stencil
-        case .evenOdd: pipeline = renderer.fill_evenOdd_stencil
+        case .nonZero: pipeline = try renderer.request_pipeline("fill_nonZero_stencil")
+        case .evenOdd: pipeline = try renderer.request_pipeline("fill_evenOdd_stencil")
         }
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
@@ -437,9 +347,35 @@ extension MetalRenderer.Encoder {
         
         guard let _source = device.makeBuffer(source.pixels) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
         
-        let pipeline = renderer.resampling[MetalRendererResamplingKey(algorithm: DGResamplingAlgorithm(source.resamplingAlgorithm),
-                                                                      hWrapping: source.horizontalWrappingMode,
-                                                                      vWrapping: source.verticalWrappingMode)]!
+        let algorithm_name: String
+        let h_wrapping_name: String
+        let v_wrapping_name: String
+        
+        switch source.resamplingAlgorithm {
+        case .none: algorithm_name = "none"
+        case .linear: algorithm_name = "linear"
+        case .cosine: algorithm_name = "cosine"
+        case .cubic: algorithm_name = "cubic"
+        case .hermite: algorithm_name = "hermite"
+        case .mitchell: algorithm_name = "mitchell"
+        case .lanczos: algorithm_name = "lanczos"
+        }
+        
+        switch source.horizontalWrappingMode {
+        case .none: h_wrapping_name = "none"
+        case .clamp: h_wrapping_name = "clamp"
+        case .repeat: h_wrapping_name = "repeat"
+        case .mirror: h_wrapping_name = "mirror"
+        }
+        
+        switch source.verticalWrappingMode {
+        case .none: v_wrapping_name = "none"
+        case .clamp: v_wrapping_name = "clamp"
+        case .repeat: v_wrapping_name = "repeat"
+        case .mirror: v_wrapping_name = "mirror"
+        }
+        
+        let pipeline = try renderer.request_pipeline("\(algorithm_name)_interpolate_\(h_wrapping_name)_\(v_wrapping_name)")
         encoder.setComputePipelineState(pipeline)
         
         encoder.setBytes([InterpolateParameter(source, transform, antialias)], length: 48, index: 0)
@@ -458,13 +394,14 @@ extension MetalRenderer.Encoder {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         
-        encoder.setComputePipelineState(renderer.clip)
+        let pipeline = try renderer.request_pipeline("clip")
+        encoder.setComputePipelineState(pipeline)
         
         encoder.setBuffer(clip, offset: 0, index: 0)
         encoder.setBuffer(destination, offset: 0, index: 1)
         
-        let w = renderer.clip.threadExecutionWidth
-        let h = renderer.clip.maxTotalThreadsPerThreadgroup / w
+        let w = pipeline.threadExecutionWidth
+        let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
@@ -475,7 +412,24 @@ extension MetalRenderer.Encoder {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         
-        let pipeline = renderer.axial_gradient[MetalRendererGradientSpreadMode(start: startSpread, end: endSpread)]!
+        let start_name: String
+        let end_name: String
+        
+        switch startSpread {
+        case .none: start_name = "none"
+        case .pad: start_name = "pad"
+        case .reflect: start_name = "reflect"
+        case .repeat: start_name = "repeat"
+        }
+        
+        switch endSpread {
+        case .none: end_name = "none"
+        case .pad: end_name = "pad"
+        case .reflect: end_name = "reflect"
+        case .repeat: end_name = "repeat"
+        }
+        
+        let pipeline = try renderer.request_pipeline("axial_gradient_\(start_name)_\(end_name)")
         encoder.setComputePipelineState(pipeline)
         
         encoder.setBytes([GradientParameter(stops.count, transform, start, 0, end, 0)], length: 56, index: 0)
@@ -494,7 +448,24 @@ extension MetalRenderer.Encoder {
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         
-        let pipeline = renderer.radial_gradient[MetalRendererGradientSpreadMode(start: startSpread, end: endSpread)]!
+        let start_name: String
+        let end_name: String
+        
+        switch startSpread {
+        case .none: start_name = "none"
+        case .pad: start_name = "pad"
+        case .reflect: start_name = "reflect"
+        case .repeat: start_name = "repeat"
+        }
+        
+        switch endSpread {
+        case .none: end_name = "none"
+        case .pad: end_name = "pad"
+        case .reflect: end_name = "reflect"
+        case .repeat: end_name = "repeat"
+        }
+        
+        let pipeline = try renderer.request_pipeline("radial_gradient_\(start_name)_\(end_name)")
         encoder.setComputePipelineState(pipeline)
         
         encoder.setBytes([GradientParameter(stops.count, transform, start, startRadius, end, endRadius)], length: 56, index: 0)
@@ -708,13 +679,15 @@ extension MetalRenderer.Encoder {
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
             guard let buffer = device.makeBuffer(triangle_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
             
-            encoder.setComputePipelineState(renderer.stencil_triangle)
+            let pipeline = try renderer.request_pipeline("stencil_triangle")
+            encoder.setComputePipelineState(pipeline)
+            
             encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(triangle_render_buffer.count)], length: 16, index: 0)
             encoder.setBuffer(buffer, offset: 0, index: 1)
             encoder.setBuffer(output, offset: 0, index: 2)
             
-            let w = renderer.stencil_triangle.threadExecutionWidth
-            let h = renderer.stencil_triangle.maxTotalThreadsPerThreadgroup / w
+            let w = pipeline.threadExecutionWidth
+            let h = pipeline.maxTotalThreadsPerThreadgroup / w
             let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
             
             encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
@@ -726,13 +699,15 @@ extension MetalRenderer.Encoder {
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
             guard let buffer = device.makeBuffer(quadratic_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
             
-            encoder.setComputePipelineState(renderer.stencil_quadratic)
+            let pipeline = try renderer.request_pipeline("stencil_quadratic")
+            encoder.setComputePipelineState(pipeline)
+            
             encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(quadratic_render_buffer.count)], length: 16, index: 0)
             encoder.setBuffer(buffer, offset: 0, index: 1)
             encoder.setBuffer(output, offset: 0, index: 2)
             
-            let w = renderer.stencil_quadratic.threadExecutionWidth
-            let h = renderer.stencil_quadratic.maxTotalThreadsPerThreadgroup / w
+            let w = pipeline.threadExecutionWidth
+            let h = pipeline.maxTotalThreadsPerThreadgroup / w
             let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
             
             encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
@@ -744,13 +719,15 @@ extension MetalRenderer.Encoder {
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
             guard let buffer = device.makeBuffer(cubic_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
             
-            encoder.setComputePipelineState(renderer.stencil_cubic)
+            let pipeline = try renderer.request_pipeline("stencil_cubic")
+            encoder.setComputePipelineState(pipeline)
+            
             encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(cubic_render_buffer.count)], length: 16, index: 0)
             encoder.setBuffer(buffer, offset: 0, index: 1)
             encoder.setBuffer(output, offset: 0, index: 2)
             
-            let w = renderer.stencil_cubic.threadExecutionWidth
-            let h = renderer.stencil_cubic.maxTotalThreadsPerThreadgroup / w
+            let w = pipeline.threadExecutionWidth
+            let h = pipeline.maxTotalThreadsPerThreadgroup / w
             let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
             
             encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
