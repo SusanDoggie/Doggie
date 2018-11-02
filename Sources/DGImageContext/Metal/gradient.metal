@@ -67,6 +67,7 @@ float2 degree2roots(float b, float c) {
         } else if (c == 0) {
             return float2(0, 0);
         }
+        return float2(NAN, NAN);
     }
     if (c == 0) {
         return float2(0, -b);
@@ -103,11 +104,18 @@ float radial_shading(float2 point, float2 start, float start_radius, float2 end,
         
         float2 t2 = degree2roots(b / a, c / a);
         
-        if (t2[0] != NAN && radial_shading_filter(t2[0], r0, r1, start_spread, end_spread)) {
-            return t2[0];
+        if (t2[0] == NAN || t2[1] == NAN) {
+            return NAN;
         }
-        if (t2[1] != NAN && radial_shading_filter(t2[1], r0, r1, start_spread, end_spread)) {
-            return t2[1];
+        
+        float _max = max(t2[0], t2[1]);
+        float _min = min(t2[0], t2[1]);
+        
+        if (_max != NAN && radial_shading_filter(_max, r0, r1, start_spread, end_spread)) {
+            return _max;
+        }
+        if (_min != NAN && radial_shading_filter(_min, r0, r1, start_spread, end_spread)) {
+            return _min;
         }
     }
     

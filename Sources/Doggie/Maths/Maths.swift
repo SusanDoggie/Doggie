@@ -115,6 +115,7 @@ public func degree2roots(_ b: Double, _ c: Double) -> [Double] {
         } else if c.almostZero() {
             return [0]
         }
+        return []
     }
     if c.almostZero() {
         return [0, -b]
