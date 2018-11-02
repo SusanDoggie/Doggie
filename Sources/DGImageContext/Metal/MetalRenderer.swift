@@ -40,6 +40,36 @@ struct MetalRendererGradientSpreadMode : Hashable {
     var end: GradientSpreadMode
 }
 
+enum DGResamplingAlgorithm {
+    
+    case none
+    case linear
+    case cosine
+    case cubic
+    case hermite
+    case mitchell
+    case lanczos
+    
+    init(_ algorithm: ResamplingAlgorithm) {
+        switch algorithm {
+        case .none: self = .none
+        case .linear: self = .linear
+        case .cosine: self = .cosine
+        case .cubic: self = .cubic
+        case .hermite(_, _): self = .hermite
+        case .mitchell(_, _): self = .mitchell
+        case .lanczos(_): self = .lanczos
+        }
+    }
+}
+
+struct MetalRendererResamplingKey : Hashable {
+    
+    var algorithm: DGResamplingAlgorithm
+    var hWrapping: WrappingMode
+    var vWrapping: WrappingMode
+}
+
 private let MTLCommandQueueCacheLock = SDLock()
 private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
@@ -62,10 +92,12 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     let fill_nonZero_stencil: MTLComputePipelineState
     let fill_evenOdd_stencil: MTLComputePipelineState
     
+    let clip: MTLComputePipelineState
+    
     let axial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState]
     let radial_gradient: [MetalRendererGradientSpreadMode: MTLComputePipelineState]
     
-    let clip: MTLComputePipelineState
+    let resampling: [MetalRendererResamplingKey: MTLComputePipelineState]
     
     required init(device: MTLDevice) throws {
         
@@ -146,6 +178,36 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         
         self.axial_gradient = _axial_gradient
         self.radial_gradient = _radial_gradient
+        
+        let allResamplingAlgorithm: [DGResamplingAlgorithm: String] = [
+            .none: "none",
+            .linear: "linear",
+            .cosine: "cosine",
+            .cubic: "cubic",
+            .hermite: "hermite",
+            .mitchell: "mitchell",
+            .lanczos: "lanczos"
+        ]
+        
+        let allWrappingMode: [WrappingMode: String] = [
+            .none: "none",
+            .clamp: "clamp",
+            .repeat: "repeat",
+            .mirror: "mirror"
+        ]
+        
+        var _resampling: [MetalRendererResamplingKey: MTLComputePipelineState] = [:]
+        
+        for (algorithm, algorithm_name) in allResamplingAlgorithm {
+            for (h_wrapping, h_wrapping_name) in allWrappingMode {
+                for (v_wrapping, v_wrapping_name) in allWrappingMode {
+                    let key = MetalRendererResamplingKey(algorithm: algorithm, hWrapping: h_wrapping, vWrapping: v_wrapping)
+                    _resampling[key] = try device.makeComputePipelineState(function: library.makeFunction(name: "\(algorithm_name)_interpolate_\(h_wrapping_name)_\(v_wrapping_name)", constantValues: constant))
+                }
+            }
+        }
+        
+        self.resampling = _resampling
         
         self.queue = try MetalRenderer.make_queue(device: device)
     }
@@ -371,6 +433,24 @@ extension MetalRenderer.Encoder {
     
     func draw(_ source: Texture<FloatColorPixel<Model>>, _ destination: MTLBuffer, _ transform: SDTransform, _ antialias: Int) throws {
         
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        
+        guard let _source = device.makeBuffer(source.pixels) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+        
+        let pipeline = renderer.resampling[MetalRendererResamplingKey(algorithm: DGResamplingAlgorithm(source.resamplingAlgorithm),
+                                                                      hWrapping: source.horizontalWrappingMode,
+                                                                      vWrapping: source.verticalWrappingMode)]!
+        encoder.setComputePipelineState(pipeline)
+        
+        encoder.setBuffer(_source, offset: 0, index: 1)
+        encoder.setBuffer(destination, offset: 0, index: 2)
+        
+        let w = pipeline.threadExecutionWidth
+        let h = pipeline.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
+        
+        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
     }
     
     func clip(_ destination: MTLBuffer, _ clip: MTLBuffer) throws {
@@ -461,6 +541,15 @@ extension MetalRenderer.Encoder {
         }
     }
     
+    private struct GPTransform {
+        
+        var transform: (Float, Float, Float, Float, Float, Float)
+        
+        init(_ transform: SDTransform) {
+            self.transform = (Float(transform.a), Float(transform.d), Float(transform.b), Float(transform.e), Float(transform.c), Float(transform.f))
+        }
+    }
+    
     private struct FillStencilParameter {
         
         var offset_x: UInt32
@@ -511,7 +600,7 @@ extension MetalRenderer.Encoder {
     
     private struct GradientParameter {
         
-        var transform: (Float, Float, Float, Float, Float, Float)
+        var transform: GPTransform
         var start: GPPoint
         var end: GPPoint
         var radius: GPSize
@@ -519,12 +608,41 @@ extension MetalRenderer.Encoder {
         var padding: UInt32
         
         init(_ numOfStops: Int, _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double) {
-            self.transform = (Float(transform.a), Float(transform.d), Float(transform.b), Float(transform.e), Float(transform.c), Float(transform.f))
+            self.transform = GPTransform(transform)
             self.start = GPPoint(start)
             self.end = GPPoint(end)
             self.radius = GPSize(width: Float(startRadius), height: Float(endRadius))
             self.numOfStops = UInt32(numOfStops)
             self.padding = 0
+        }
+    }
+    
+    private struct InterpolateParameter {
+        
+        var transform: GPTransform
+        var source_size: (UInt32, UInt32)
+        var a: (Float, Float)
+        var b: UInt32
+        var antialias: UInt32
+        
+        init(_ source: Texture<FloatColorPixel<Model>>, _ transform: SDTransform, _ antialias: Int) {
+            self.transform = GPTransform(transform)
+            self.source_size = (UInt32(source.width), UInt32(source.height))
+            self.antialias = UInt32(antialias)
+            switch source.resamplingAlgorithm {
+            case let .hermite(s, t):
+                self.a = (Float(s), Float(t))
+                self.b = 0
+            case let .mitchell(s, t):
+                self.a = (Float(s), Float(t))
+                self.b = 0
+            case let .lanczos(s):
+                self.a = (0, 0)
+                self.b = UInt32(s)
+            default:
+                self.a = (0, 0)
+                self.b = 0
+            }
         }
     }
 }
