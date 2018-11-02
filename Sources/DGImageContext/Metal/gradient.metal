@@ -104,7 +104,7 @@ float radial_shading(float2 point, float2 start, float start_radius, float2 end,
         
         float2 t2 = degree2roots(b / a, c / a);
         
-        if (t2[0] == NAN || t2[1] == NAN) {
+        if (t2[0] == NAN) {
             return NAN;
         }
         
@@ -180,7 +180,7 @@ void _pad_start_spread(float t, const device gradient_stop *stops, int numOfStop
 
 void _reflect_start_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
     
-    int i = (int)t;
+    int i = (int)trunc(t);
     float s = t - (float)i;
     
     gradient_set_color((i & 1) == 0 ? s : 1 - s, stops, numOfStops, destination, idx);
@@ -188,7 +188,7 @@ void _reflect_start_spread(float t, const device gradient_stop *stops, int numOf
 
 void _repeat_start_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
     
-    int i = (int)t;
+    int i = (int)trunc(t);
     float s = t - (float)i;
     
     gradient_set_color(s, stops, numOfStops, destination, idx);
@@ -207,7 +207,7 @@ void _pad_end_spread(float t, const device gradient_stop *stops, int numOfStops,
 
 void _reflect_end_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
     
-    int i = (int)t;
+    int i = (int)trunc(t);
     float s = t - (float)i;
     
     gradient_set_color((i & 1) == 0 ? -s : 1 + s, stops, numOfStops, destination, idx);
@@ -215,7 +215,7 @@ void _reflect_end_spread(float t, const device gradient_stop *stops, int numOfSt
 
 void _repeat_end_spread(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
     
-    int i = (int)t;
+    int i = (int)trunc(t);
     float s = t - (float)i;
     
     gradient_set_color(1 + s, stops, numOfStops, destination, idx);

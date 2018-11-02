@@ -68,7 +68,7 @@ extension ImageContext {
                 
             } else if t > 0.5 {
                 
-                let i = Int(t)
+                let i = Int(trunc(t))
                 let s = t - Double(i)
                 
                 switch endSpread {
@@ -80,7 +80,7 @@ extension ImageContext {
                 
             } else {
                 
-                let i = Int(t)
+                let i = Int(trunc(t))
                 let s = t - Double(i)
                 
                 switch startSpread {
