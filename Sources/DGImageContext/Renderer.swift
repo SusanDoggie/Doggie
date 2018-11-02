@@ -312,27 +312,14 @@ extension DGImageContext {
                         
                         let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
                         
-                        if let _clip_encoder = encoder as? Encoder.Renderer.ClipEncoder {
-                            
-                            clip_resource.clip_encoder = _clip_encoder
-                            _clip = try clip.render(encoder: _clip_encoder, resource: clip_resource).0
-                            
-                        } else if let _clip_encoder = resource.clip_encoder {
-                            
-                            clip_resource.clip_encoder = _clip_encoder
-                            _clip = try clip.render(encoder: _clip_encoder, resource: clip_resource).0
-                            
-                        } else {
-                            
-                            let _clip_encoder = try encoder.clip_encoder()
-                            clip_resource.clip_encoder = _clip_encoder
-                            
-                            _clip = try clip.render(encoder: _clip_encoder, resource: clip_resource).0
-                            resource.clip_encoder = _clip_encoder
-                        }
+                        let _clip_encoder = try encoder as? Encoder.Renderer.ClipEncoder ?? resource.clip_encoder ?? encoder.clip_encoder()
+                        clip_resource.clip_encoder = _clip_encoder
                         
-                        resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
+                        _clip = try clip.render(encoder: _clip_encoder, resource: clip_resource).0
+                        
+                        resource.clip_encoder = _clip_encoder
                         resource.clip_cache[ObjectIdentifier(clip)] = _clip
+                        resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
                     }
                     
                     try encoder.clip(_source, _clip)
