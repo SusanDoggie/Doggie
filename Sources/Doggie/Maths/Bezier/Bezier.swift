@@ -336,43 +336,8 @@ extension Bezier where Element == Double {
     public var stationary: [Double] {
         switch points.count {
         case 2: return []
-        case 3:
-            let p0 = points[0]
-            let p1 = points[1]
-            let p2 = points[2]
-            let d = p0 + p2 - 2 * p1
-            if d.almostZero() {
-                return []
-            }
-            return [(p0 - p1) / d]
-        case 4:
-            let p0 = points[0]
-            let p1 = points[1]
-            let p2 = points[2]
-            let p3 = points[3]
-            let _a = 3 * (p3 - p0) + 9 * (p1 - p2)
-            let _b = 6 * (p2 + p0) - 12 * p1
-            let _c = 3 * (p1 - p0)
-            if _a.almostZero() {
-                if _b.almostZero() {
-                    return []
-                }
-                let t = -_c / _b
-                return [t]
-            } else {
-                let delta = _b * _b - 4 * _a * _c
-                let _a2 = 2 * _a
-                let _b2 = -_b / _a2
-                if delta.sign == .plus {
-                    let sqrt_delta = sqrt(delta) / _a2
-                    let t1 = _b2 + sqrt_delta
-                    let t2 = _b2 - sqrt_delta
-                    return [t1, t2]
-                } else if delta.almostZero() {
-                    return [_b2]
-                }
-            }
-            return []
+        case 3: return Array(QuadBezier(points[0], points[1], points[2]).stationary)
+        case 4: return Array(CubicBezier(points[0], points[1], points[2], points[3]).stationary)
         default: return polynomial.derivative.roots
         }
     }

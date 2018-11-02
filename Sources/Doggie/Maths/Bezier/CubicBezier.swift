@@ -259,16 +259,16 @@ extension CubicBezier where Element == Point {
 extension CubicBezier where Element == Double {
     
     @inlinable
-    public var stationary: [Double] {
+    public var stationary: Degree2Roots {
         let _a = 3 * (p3 - p0) + 9 * (p1 - p2)
         let _b = 6 * (p2 + p0) - 12 * p1
         let _c = 3 * (p1 - p0)
         if _a.almostZero() {
             if _b.almostZero() {
-                return []
+                return Degree2Roots()
             }
             let t = -_c / _b
-            return [t]
+            return Degree2Roots(t)
         } else {
             let delta = _b * _b - 4 * _a * _c
             let _a2 = 2 * _a
@@ -277,12 +277,12 @@ extension CubicBezier where Element == Double {
                 let sqrt_delta = sqrt(delta) / _a2
                 let t1 = _b2 + sqrt_delta
                 let t2 = _b2 - sqrt_delta
-                return [t1, t2]
+                return Degree2Roots(t1, t2)
             } else if delta.almostZero() {
-                return [_b2]
+                return Degree2Roots(_b2)
             }
         }
-        return []
+        return Degree2Roots()
     }
 }
 
