@@ -304,11 +304,9 @@ float _mitchell_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source
     int _x = (int)floor(point[0]);                                                                                                                     \
     int _y = (int)floor(point[1]);                                                                                                                     \
                                                                                                                                                        \
-    int a = 5 >> 1;                                                                                                                                    \
-    int b = 1 - 5 & 1;                                                                                                                                 \
-    int min_x = _x - a + b;                                                                                                                            \
+    int min_x = _x - 1;                                                                                                                                \
     int max_x = min_x + 5;                                                                                                                             \
-    int min_y = _y - a + b;                                                                                                                            \
+    int min_y = _y - 1;                                                                                                                                \
     int max_y = min_y + 5;                                                                                                                             \
                                                                                                                                                        \
     for (int y = min_y; y < max_y; ++y) {                                                                                                              \
@@ -320,7 +318,7 @@ float _mitchell_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source
     }                                                                                                                                                  \
     return t == 0 ? 0 : pixel / t;                                                                                                                     \
 }                                                                                                                                                      \
-float _lanczos_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source, float2 point, uint A, int i, uint2 size) {                            \
+float _lanczos_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source, float2 point, uint a, int i, uint2 size) {                            \
                                                                                                                                                        \
     float pixel = 0;                                                                                                                                   \
     float t = 0;                                                                                                                                       \
@@ -328,8 +326,7 @@ float _lanczos_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source,
     int _x = (int)floor(point[0]);                                                                                                                     \
     int _y = (int)floor(point[1]);                                                                                                                     \
                                                                                                                                                        \
-    int kernel_size = A << 1;                                                                                                                          \
-    int a = kernel_size >> 1;                                                                                                                          \
+    int kernel_size = a << 1;                                                                                                                          \
     int b = 1 - kernel_size & 1;                                                                                                                       \
     int min_x = _x - a + b;                                                                                                                            \
     int max_x = min_x + kernel_size;                                                                                                                   \
