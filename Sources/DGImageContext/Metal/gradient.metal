@@ -132,22 +132,9 @@ void _gradient_set_color(const device gradient_stop *stops, int stop_idx, device
     }
 }
 
-void _gradient_set_color2(float t, const device gradient_stop *stops, int stop_idx, device float *destination, int idx) {
+void gradient_set_color(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
     
     int d_index = idx * countOfComponents;
-    gradient_stop lhs = stops[stop_idx];
-    gradient_stop rhs = stops[stop_idx + 1];
-    
-    float s = (t - lhs.offset) / (rhs.offset - lhs.offset);
-    
-    for(int i = 0; i < countOfComponents; ++i) {
-        float lhs_c = lhs.color[i];
-        float rhs_c = rhs.color[i];
-        destination[d_index + i] = lhs_c * (1 - s) + rhs_c * s;
-    }
-}
-
-void gradient_set_color(float t, const device gradient_stop *stops, int numOfStops, device float *destination, int idx) {
     
     if (t <= stops[0].offset) {
         _gradient_set_color(stops, 0, destination, idx);
@@ -159,10 +146,20 @@ void gradient_set_color(float t, const device gradient_stop *stops, int numOfSto
     }
     
     for(int i = 0; i < numOfStops - 1; ++i) {
+        
         gradient_stop lhs = stops[i];
         gradient_stop rhs = stops[i + 1];
+        
         if (lhs.offset != rhs.offset && t >= lhs.offset && t <= rhs.offset) {
-            _gradient_set_color2(t, stops, i, destination, idx);
+            
+            float s = (t - lhs.offset) / (rhs.offset - lhs.offset);
+            
+            for(int i = 0; i < countOfComponents; ++i) {
+                float lhs_c = lhs.color[i];
+                float rhs_c = rhs.color[i];
+                destination[d_index + i] = lhs_c * (1 - s) + rhs_c * s;
+            }
+            
             return;
         }
     }
@@ -253,7 +250,7 @@ kernel void axial_gradient_##STARTMODE##_##ENDMODE(const device gradient_paramet
     float2 start = parameter.start;                                                                                     \
     float2 end = parameter.end;                                                                                         \
                                                                                                                         \
-    float2 point = float2(id[0], id[1]);                                                                                \
+    float2 point = parameter.transform * float3(id[0], id[1], 1);                                                       \
                                                                                                                         \
     float t = axial_shading(point, start, end);                                                                         \
     gradient_mapping_##STARTMODE##_##ENDMODE(t, stops, numOfStops, out, idx);                                           \
@@ -271,7 +268,7 @@ kernel void radial_gradient_##STARTMODE##_##ENDMODE(const device gradient_parame
     float2 end = parameter.end;                                                                                         \
     float2 radius = parameter.radius;                                                                                   \
                                                                                                                         \
-    float2 point = float2(id[0], id[1]);                                                                                \
+    float2 point = parameter.transform * float3(id[0], id[1], 1);                                                       \
                                                                                                                         \
     float t = radial_shading(point, start, radius[0], end, radius[1], STARTSPREAD, ENDSPREAD);                          \
     gradient_mapping_##STARTMODE##_##ENDMODE(t, stops, numOfStops, out, idx);                                           \

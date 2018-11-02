@@ -519,7 +519,7 @@ extension MetalRenderer.Encoder {
         var padding: UInt32
         
         init(_ numOfStops: Int, _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double) {
-            self.transform = (Float(transform.a), Float(transform.b), Float(transform.c), Float(transform.d), Float(transform.e), Float(transform.f))
+            self.transform = (Float(transform.a), Float(transform.d), Float(transform.b), Float(transform.e), Float(transform.c), Float(transform.f))
             self.start = GPPoint(start)
             self.end = GPPoint(end)
             self.radius = GPSize(width: Float(startRadius), height: Float(endRadius))
