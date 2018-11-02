@@ -354,18 +354,21 @@ kernel void none_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate_
     uint2 size = parameter.source_size;                                                                                                                \
     const int idx = grid[0] * id[1] + id[0];                                                                                                           \
                                                                                                                                                        \
-    uint antialias = parameter.antialias;                                                                                                              \
+    int antialias = parameter.antialias;                                                                                                               \
     float _a = 1.0 / (float)antialias;                                                                                                                 \
+    float _a2 = 1.0 / (float)(antialias * antialias);                                                                                                  \
                                                                                                                                                        \
-    for (int y = 0; y < antialias; ++y) {                                                                                                              \
-        for (int x = 0; x < antialias; ++x) {                                                                                                          \
-            float _x = (float)id[0] + (float)x * _a;                                                                                                   \
-            float _y = (float)id[1] + (float)y * _a;                                                                                                   \
-            float2 point = parameter.transform * float3(_x, _y, 1);                                                                                    \
-            for (int i = 0; i < countOfComponents; ++i) {                                                                                              \
-                destination[idx * countOfComponents + i] = _none_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                        \
+    for (int i = 0; i < countOfComponents; ++i) {                                                                                                      \
+        float sum = 0;                                                                                                                                 \
+        for (int y = 0; y < antialias; ++y) {                                                                                                          \
+            for (int x = 0; x < antialias; ++x) {                                                                                                      \
+                float _x = (float)id[0] + (float)x * _a;                                                                                               \
+                float _y = (float)id[1] + (float)y * _a;                                                                                               \
+                float2 point = parameter.transform * float3(_x, _y, 1);                                                                                \
+                sum += _none_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                                                            \
             }                                                                                                                                          \
         }                                                                                                                                              \
+        destination[idx * countOfComponents + i] = sum * _a2;                                                                                          \
     }                                                                                                                                                  \
 }                                                                                                                                                      \
 kernel void linear_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate_parameter &parameter [[buffer(0)]],                                  \
@@ -377,18 +380,21 @@ kernel void linear_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolat
     uint2 size = parameter.source_size;                                                                                                                \
     const int idx = grid[0] * id[1] + id[0];                                                                                                           \
                                                                                                                                                        \
-    uint antialias = parameter.antialias;                                                                                                              \
+    int antialias = parameter.antialias;                                                                                                               \
     float _a = 1.0 / (float)antialias;                                                                                                                 \
+    float _a2 = 1.0 / (float)(antialias * antialias);                                                                                                  \
                                                                                                                                                        \
-    for (int y = 0; y < antialias; ++y) {                                                                                                              \
-        for (int x = 0; x < antialias; ++x) {                                                                                                          \
-            float _x = (float)id[0] + (float)x * _a;                                                                                                   \
-            float _y = (float)id[1] + (float)y * _a;                                                                                                   \
-            float2 point = parameter.transform * float3(_x, _y, 1);                                                                                    \
-            for (int i = 0; i < countOfComponents; ++i) {                                                                                              \
-                destination[idx * countOfComponents + i] = _linear_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                      \
+    for (int i = 0; i < countOfComponents; ++i) {                                                                                                      \
+        float sum = 0;                                                                                                                                 \
+        for (int y = 0; y < antialias; ++y) {                                                                                                          \
+            for (int x = 0; x < antialias; ++x) {                                                                                                      \
+                float _x = (float)id[0] + (float)x * _a;                                                                                               \
+                float _y = (float)id[1] + (float)y * _a;                                                                                               \
+                float2 point = parameter.transform * float3(_x, _y, 1);                                                                                \
+                sum += _linear_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                                                          \
             }                                                                                                                                          \
         }                                                                                                                                              \
+        destination[idx * countOfComponents + i] = sum * _a2;                                                                                          \
     }                                                                                                                                                  \
 }                                                                                                                                                      \
 kernel void cosine_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate_parameter &parameter [[buffer(0)]],                                  \
@@ -400,18 +406,21 @@ kernel void cosine_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolat
     uint2 size = parameter.source_size;                                                                                                                \
     const int idx = grid[0] * id[1] + id[0];                                                                                                           \
                                                                                                                                                        \
-    uint antialias = parameter.antialias;                                                                                                              \
+    int antialias = parameter.antialias;                                                                                                               \
     float _a = 1.0 / (float)antialias;                                                                                                                 \
+    float _a2 = 1.0 / (float)(antialias * antialias);                                                                                                  \
                                                                                                                                                        \
-    for (int y = 0; y < antialias; ++y) {                                                                                                              \
-        for (int x = 0; x < antialias; ++x) {                                                                                                          \
-            float _x = (float)id[0] + (float)x * _a;                                                                                                   \
-            float _y = (float)id[1] + (float)y * _a;                                                                                                   \
-            float2 point = parameter.transform * float3(_x, _y, 1);                                                                                    \
-            for (int i = 0; i < countOfComponents; ++i) {                                                                                              \
-                destination[idx * countOfComponents + i] = _cosine_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                      \
+    for (int i = 0; i < countOfComponents; ++i) {                                                                                                      \
+        float sum = 0;                                                                                                                                 \
+        for (int y = 0; y < antialias; ++y) {                                                                                                          \
+            for (int x = 0; x < antialias; ++x) {                                                                                                      \
+                float _x = (float)id[0] + (float)x * _a;                                                                                               \
+                float _y = (float)id[1] + (float)y * _a;                                                                                               \
+                float2 point = parameter.transform * float3(_x, _y, 1);                                                                                \
+                sum += _cosine_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                                                          \
             }                                                                                                                                          \
         }                                                                                                                                              \
+        destination[idx * countOfComponents + i] = sum * _a2;                                                                                          \
     }                                                                                                                                                  \
 }                                                                                                                                                      \
 kernel void cubic_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate_parameter &parameter [[buffer(0)]],                                   \
@@ -423,18 +432,21 @@ kernel void cubic_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate
     uint2 size = parameter.source_size;                                                                                                                \
     const int idx = grid[0] * id[1] + id[0];                                                                                                           \
                                                                                                                                                        \
-    uint antialias = parameter.antialias;                                                                                                              \
+    int antialias = parameter.antialias;                                                                                                               \
     float _a = 1.0 / (float)antialias;                                                                                                                 \
+    float _a2 = 1.0 / (float)(antialias * antialias);                                                                                                  \
                                                                                                                                                        \
-    for (int y = 0; y < antialias; ++y) {                                                                                                              \
-        for (int x = 0; x < antialias; ++x) {                                                                                                          \
-            float _x = (float)id[0] + (float)x * _a;                                                                                                   \
-            float _y = (float)id[1] + (float)y * _a;                                                                                                   \
-            float2 point = parameter.transform * float3(_x, _y, 1);                                                                                    \
-            for (int i = 0; i < countOfComponents; ++i) {                                                                                              \
-                destination[idx * countOfComponents + i] = _cubic_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                       \
+    for (int i = 0; i < countOfComponents; ++i) {                                                                                                      \
+        float sum = 0;                                                                                                                                 \
+        for (int y = 0; y < antialias; ++y) {                                                                                                          \
+            for (int x = 0; x < antialias; ++x) {                                                                                                      \
+                float _x = (float)id[0] + (float)x * _a;                                                                                               \
+                float _y = (float)id[1] + (float)y * _a;                                                                                               \
+                float2 point = parameter.transform * float3(_x, _y, 1);                                                                                \
+                sum += _cubic_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                                                           \
             }                                                                                                                                          \
         }                                                                                                                                              \
+        destination[idx * countOfComponents + i] = sum * _a2;                                                                                          \
     }                                                                                                                                                  \
 }                                                                                                                                                      \
 kernel void hermite_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate_parameter &parameter [[buffer(0)]],                                 \
@@ -447,18 +459,21 @@ kernel void hermite_interpolate_##HWRAPPING##_##VWRAPPING(const device interpola
     const int idx = grid[0] * id[1] + id[0];                                                                                                           \
                                                                                                                                                        \
     float2 arg = parameter.a;                                                                                                                          \
-    uint antialias = parameter.antialias;                                                                                                              \
+    int antialias = parameter.antialias;                                                                                                               \
     float _a = 1.0 / (float)antialias;                                                                                                                 \
+    float _a2 = 1.0 / (float)(antialias * antialias);                                                                                                  \
                                                                                                                                                        \
-    for (int y = 0; y < antialias; ++y) {                                                                                                              \
-        for (int x = 0; x < antialias; ++x) {                                                                                                          \
-            float _x = (float)id[0] + (float)x * _a;                                                                                                   \
-            float _y = (float)id[1] + (float)y * _a;                                                                                                   \
-            float2 point = parameter.transform * float3(_x, _y, 1);                                                                                    \
-            for (int i = 0; i < countOfComponents; ++i) {                                                                                              \
-                destination[idx * countOfComponents + i] = _hermite_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg[0], arg[1], i, size);     \
+    for (int i = 0; i < countOfComponents; ++i) {                                                                                                      \
+        float sum = 0;                                                                                                                                 \
+        for (int y = 0; y < antialias; ++y) {                                                                                                          \
+            for (int x = 0; x < antialias; ++x) {                                                                                                      \
+                float _x = (float)id[0] + (float)x * _a;                                                                                               \
+                float _y = (float)id[1] + (float)y * _a;                                                                                               \
+                float2 point = parameter.transform * float3(_x, _y, 1);                                                                                \
+                sum += _hermite_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg[0], arg[1], i, size);                                         \
             }                                                                                                                                          \
         }                                                                                                                                              \
+        destination[idx * countOfComponents + i] = sum * _a2;                                                                                          \
     }                                                                                                                                                  \
 }                                                                                                                                                      \
 kernel void mitchell_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate_parameter &parameter [[buffer(0)]],                                \
@@ -471,18 +486,21 @@ kernel void mitchell_interpolate_##HWRAPPING##_##VWRAPPING(const device interpol
     const int idx = grid[0] * id[1] + id[0];                                                                                                           \
                                                                                                                                                        \
     float2 arg = parameter.a;                                                                                                                          \
-    uint antialias = parameter.antialias;                                                                                                              \
+    int antialias = parameter.antialias;                                                                                                               \
     float _a = 1.0 / (float)antialias;                                                                                                                 \
+    float _a2 = 1.0 / (float)(antialias * antialias);                                                                                                  \
                                                                                                                                                        \
-    for (int y = 0; y < antialias; ++y) {                                                                                                              \
-        for (int x = 0; x < antialias; ++x) {                                                                                                          \
-            float _x = (float)id[0] + (float)x * _a;                                                                                                   \
-            float _y = (float)id[1] + (float)y * _a;                                                                                                   \
-            float2 point = parameter.transform * float3(_x, _y, 1);                                                                                    \
-            for (int i = 0; i < countOfComponents; ++i) {                                                                                              \
-                destination[idx * countOfComponents + i] = _mitchell_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg[0], arg[1], i, size);    \
+    for (int i = 0; i < countOfComponents; ++i) {                                                                                                      \
+        float sum = 0;                                                                                                                                 \
+        for (int y = 0; y < antialias; ++y) {                                                                                                          \
+            for (int x = 0; x < antialias; ++x) {                                                                                                      \
+                float _x = (float)id[0] + (float)x * _a;                                                                                               \
+                float _y = (float)id[1] + (float)y * _a;                                                                                               \
+                float2 point = parameter.transform * float3(_x, _y, 1);                                                                                \
+                sum += _mitchell_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg[0], arg[1], i, size);                                        \
             }                                                                                                                                          \
         }                                                                                                                                              \
+        destination[idx * countOfComponents + i] = sum * _a2;                                                                                          \
     }                                                                                                                                                  \
 }                                                                                                                                                      \
 kernel void lanczos_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate_parameter &parameter [[buffer(0)]],                                 \
@@ -495,18 +513,21 @@ kernel void lanczos_interpolate_##HWRAPPING##_##VWRAPPING(const device interpola
     const int idx = grid[0] * id[1] + id[0];                                                                                                           \
                                                                                                                                                        \
     uint arg = parameter.b;                                                                                                                            \
-    uint antialias = parameter.antialias;                                                                                                              \
+    int antialias = parameter.antialias;                                                                                                               \
     float _a = 1.0 / (float)antialias;                                                                                                                 \
+    float _a2 = 1.0 / (float)(antialias * antialias);                                                                                                  \
                                                                                                                                                        \
-    for (int y = 0; y < antialias; ++y) {                                                                                                              \
-        for (int x = 0; x < antialias; ++x) {                                                                                                          \
-            float _x = (float)id[0] + (float)x * _a;                                                                                                   \
-            float _y = (float)id[1] + (float)y * _a;                                                                                                   \
-            float2 point = parameter.transform * float3(_x, _y, 1);                                                                                    \
-            for (int i = 0; i < countOfComponents; ++i) {                                                                                              \
-                destination[idx * countOfComponents + i] = _lanczos_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg, i, size);                \
+    for (int i = 0; i < countOfComponents; ++i) {                                                                                                      \
+        float sum = 0;                                                                                                                                 \
+        for (int y = 0; y < antialias; ++y) {                                                                                                          \
+            for (int x = 0; x < antialias; ++x) {                                                                                                      \
+                float _x = (float)id[0] + (float)x * _a;                                                                                               \
+                float _y = (float)id[1] + (float)y * _a;                                                                                               \
+                float2 point = parameter.transform * float3(_x, _y, 1);                                                                                \
+                sum += _lanczos_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg, i, size);                                                    \
             }                                                                                                                                          \
         }                                                                                                                                              \
+        destination[idx * countOfComponents + i] = sum * _a2;                                                                                          \
     }                                                                                                                                                  \
 }
 
