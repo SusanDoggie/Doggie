@@ -179,15 +179,23 @@ extension ImageContext {
         
         switch stops.count {
         case 0: break
-        case 1: axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { _ in stops[0].1 }
+        case 1:
+            
+            let color = stops[0].1
+            axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { _ in color }
+            
         default:
+            
+            let first = stops.first!
+            let last = stops.last!
+            
             axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { t -> ColorPixel<Pixel.Model> in
                 
-                if t <= stops[0].0 {
-                    return stops[0].1
+                if t <= first.0 {
+                    return first.1
                 }
-                if t >= stops.last!.0 {
-                    return stops.last!.1
+                if t >= last.0 {
+                    return last.1
                 }
                 
                 for (lhs, rhs) in zip(stops, stops.dropFirst()) where lhs.0 != rhs.0 && t >= lhs.0 && t <= rhs.0 {
@@ -196,7 +204,7 @@ extension ImageContext {
                     return lhs.1 * (1 - s) + rhs.1 * s
                 }
                 
-                return stops[0].1
+                return first.1
             }
         }
     }
@@ -214,15 +222,23 @@ extension ImageContext {
         
         switch stops.count {
         case 0: break
-        case 1: radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { _ in stops[0].1 }
+        case 1:
+            
+            let color = stops[0].1
+            radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { _ in color }
+            
         default:
+            
+            let first = stops.first!
+            let last = stops.last!
+            
             radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { t -> ColorPixel<Pixel.Model> in
                 
-                if t <= stops[0].0 {
-                    return stops[0].1
+                if t <= first.0 {
+                    return first.1
                 }
-                if t >= stops.last!.0 {
-                    return stops.last!.1
+                if t >= last.0 {
+                    return last.1
                 }
                 
                 for (lhs, rhs) in zip(stops, stops.dropFirst()) where lhs.0 != rhs.0 && t >= lhs.0 && t <= rhs.0 {
@@ -231,7 +247,7 @@ extension ImageContext {
                     return lhs.1 * (1 - s) + rhs.1 * s
                 }
                 
-                return stops[0].1
+                return first.1
             }
         }
     }
