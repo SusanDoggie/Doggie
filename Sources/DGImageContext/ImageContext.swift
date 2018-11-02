@@ -368,7 +368,7 @@ extension DGImageContext {
             return
         }
         
-        let image = ImageLayer(source: Texture(texture: texture), transform: transform, antialias: shouldAntialias ? antialias : 1)
+        let image = ImageLayer(source: Texture(texture: texture), transform: transform.inverse, antialias: shouldAntialias ? antialias : 1)
         
         self.draw_layer(image)
     }
