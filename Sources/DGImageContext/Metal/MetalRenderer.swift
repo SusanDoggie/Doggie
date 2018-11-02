@@ -442,6 +442,7 @@ extension MetalRenderer.Encoder {
                                                                       vWrapping: source.verticalWrappingMode)]!
         encoder.setComputePipelineState(pipeline)
         
+        encoder.setBytes([InterpolateParameter(source, transform, antialias)], length: 48, index: 0)
         encoder.setBuffer(_source, offset: 0, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         
