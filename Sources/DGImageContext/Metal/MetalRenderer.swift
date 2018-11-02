@@ -151,6 +151,14 @@ extension MetalRenderer.Encoder {
         return buffer
     }
     
+    func clear(_ buffer: Buffer) throws {
+        
+        guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+        
+        encoder.fill(buffer: buffer, range: 0..<texture_size, value: 0)
+        encoder.endEncoding()
+    }
+    
     func copy(_ source: MTLBuffer, _ destination: MTLBuffer) throws {
         
         guard source !== destination else { return }

@@ -81,6 +81,8 @@ protocol DGRendererEncoder {
     
     func make_buffer<T>(_ buffer: MappedBuffer<T>) throws -> Buffer
     
+    func clear(_ buffer: Buffer) throws
+    
     func copy(_ source: Buffer, _ destination: Buffer) throws
     
     func setOpacity(_ destination: Buffer, _ opacity: Double) throws
@@ -171,11 +173,10 @@ extension DGImageContext {
         let encoder = try renderer.encoder(width: width, height: height)
         
         let texture = Texture<FloatColorPixel<Model>>(width: width, height: height, option: .inMemory)
-        var cache: [ObjectIdentifier: Any] = [:]
-        var clip_encoder: Renderer.ClipEncoder?
-        try self._image.render(encoder: encoder, output: encoder.make_buffer(texture.pixels), cache: &cache, clip_encoder: &clip_encoder)
+        let resource = Resource<Renderer.Encoder>()
+        try self._image.render(encoder: encoder, output: encoder.make_buffer(texture.pixels), resource: resource)
         
-        if let clip_encoder = clip_encoder {
+        if let clip_encoder = resource.clip_encoder {
             clip_encoder.commit()
             clip_encoder.waitUntilScheduled()
         }
@@ -189,6 +190,15 @@ extension DGImageContext {
 
 extension DGImageContext {
     
+    class Resource<Encoder: DGRendererEncoder> where Encoder.Renderer.Model == Model {
+        
+        var clip_encoder: Encoder.Renderer.ClipEncoder?
+        var clip_cache: [ObjectIdentifier: Encoder.Renderer.ClipEncoder.Buffer] = [:]
+        
+        var recycle: [Encoder.Buffer] = []
+        
+    }
+
     class Layer {
         
         var is_empty: Bool {
@@ -199,13 +209,19 @@ extension DGImageContext {
             return nil
         }
         
-        func render<Encoder: DGRendererEncoder>(encoder: Encoder, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws -> Encoder.Buffer where Encoder.Renderer.Model == Model {
-            let buffer = try encoder.alloc_texture()
-            try self.render(encoder: encoder, output: buffer, cache: &cache, clip_encoder: &clip_encoder)
+        func request_buffer<Encoder>(encoder: Encoder, resource: Resource<Encoder>) throws -> Encoder.Buffer {
+            guard let buffer = resource.recycle.popLast() else { return try encoder.alloc_texture() }
+            try encoder.clear(buffer)
             return buffer
         }
         
-        func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws where Encoder.Renderer.Model == Model {
+        func render<Encoder>(encoder: Encoder, resource: Resource<Encoder>) throws -> (Encoder.Buffer, Bool) {
+            let buffer = try self.request_buffer(encoder: encoder, resource: resource)
+            try self.render(encoder: encoder, output: buffer, resource: resource)
+            return (buffer, true)
+        }
+        
+        func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
             
         }
     }
@@ -226,11 +242,11 @@ extension DGImageContext {
             return source
         }
         
-        override func render<Encoder: DGRendererEncoder>(encoder: Encoder, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws -> Encoder.Buffer where Encoder.Renderer.Model == Model {
-            return try encoder.make_buffer(source.pixels)
+        override func render<Encoder>(encoder: Encoder, resource: Resource<Encoder>) throws -> (Encoder.Buffer, Bool) {
+            return (try encoder.make_buffer(source.pixels), false)
         }
         
-        override func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws where Encoder.Renderer.Model == Model {
+        override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
             try encoder.copy(encoder.make_buffer(source.pixels), output)
         }
     }
@@ -270,46 +286,70 @@ extension DGImageContext {
             return shadowColor.opacity > 0 && shadowBlur > 0
         }
         
-        override func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws where Encoder.Renderer.Model == Model {
+        override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
             
             if !destination.is_empty {
-                try destination.render(encoder: encoder, output: output, cache: &cache, clip_encoder: &clip_encoder)
+                try destination.render(encoder: encoder, output: output, resource: resource)
             }
             
             if !source.is_empty && opacity != 0 {
                 
-                let _source = try source.render(encoder: encoder, cache: &cache, clip_encoder: &clip_encoder)
+                let (_source, _source_recyclable) = try source.render(encoder: encoder, resource: resource)
                 
                 if opacity != 1 {
                     try encoder.setOpacity(_source, opacity)
                 }
                 
                 if let clip = clip, !clip.is_empty {
+                    
                     let _clip: Encoder.Renderer.ClipEncoder.Buffer
-                    if let cached = cache[ObjectIdentifier(clip)] as? Encoder.Renderer.ClipEncoder.Buffer {
+                    
+                    if let cached = resource.clip_cache[ObjectIdentifier(clip)] {
+                        
                         _clip = cached
+                        
                     } else {
+                        
+                        let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
+                        
                         if let _clip_encoder = encoder as? Encoder.Renderer.ClipEncoder {
-                            _clip = try clip.render(encoder: _clip_encoder, cache: &cache, clip_encoder: &clip_encoder)
-                        } else if let _clip_encoder = clip_encoder {
-                            _clip = try clip.render(encoder: _clip_encoder, cache: &cache, clip_encoder: &clip_encoder)
+                            
+                            clip_resource.clip_encoder = _clip_encoder
+                            _clip = try clip.render(encoder: _clip_encoder, resource: clip_resource).0
+                            
+                        } else if let _clip_encoder = resource.clip_encoder {
+                            
+                            clip_resource.clip_encoder = _clip_encoder
+                            _clip = try clip.render(encoder: _clip_encoder, resource: clip_resource).0
+                            
                         } else {
+                            
                             let _clip_encoder = try encoder.clip_encoder()
-                            _clip = try clip.render(encoder: _clip_encoder, cache: &cache, clip_encoder: &clip_encoder)
-                            clip_encoder = _clip_encoder
+                            clip_resource.clip_encoder = _clip_encoder
+                            
+                            _clip = try clip.render(encoder: _clip_encoder, resource: clip_resource).0
+                            resource.clip_encoder = _clip_encoder
                         }
-                        cache[ObjectIdentifier(clip)] = _clip
+                        
+                        resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
+                        resource.clip_cache[ObjectIdentifier(clip)] = _clip
                     }
+                    
                     try encoder.clip(_source, _clip)
                 }
                 
                 if isShadow {
-                    let _shadow = try encoder.alloc_texture()
+                    let _shadow = try self.request_buffer(encoder: encoder, resource: resource)
                     try encoder.shadow(_source, _shadow, (0..<shadowColor.numberOfComponents).map { shadowColor.component($0) }, shadowOffset, shadowBlur)
                     try encoder.blend(_shadow, output, compositingMode, blendMode)
+                    resource.recycle.append(_shadow)
                 }
                 
                 try encoder.blend(_source, output, compositingMode, blendMode)
+                
+                if _source_recyclable {
+                    resource.recycle.append(_source)
+                }
             }
         }
     }
@@ -332,7 +372,7 @@ extension DGImageContext {
             return false
         }
         
-        override func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws where Encoder.Renderer.Model == Model {
+        override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
             try encoder.draw(output, shape, (0..<color.numberOfComponents).map { color.component($0) }, winding, antialias)
         }
         
@@ -354,7 +394,7 @@ extension DGImageContext {
             return false
         }
         
-        override func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws where Encoder.Renderer.Model == Model {
+        override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
             try encoder.draw(source, output, transform, antialias)
         }
     }
@@ -381,7 +421,7 @@ extension DGImageContext {
             return false
         }
         
-        override func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws where Encoder.Renderer.Model == Model {
+        override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
             try encoder.linearGradient(output, stops, transform, start, end, startSpread, endSpread)
         }
     }
@@ -412,7 +452,7 @@ extension DGImageContext {
             return false
         }
         
-        override func render<Encoder: DGRendererEncoder>(encoder: Encoder, output: Encoder.Buffer, cache: inout [ObjectIdentifier: Any], clip_encoder: inout Encoder.Renderer.ClipEncoder?) throws where Encoder.Renderer.Model == Model {
+        override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
             try encoder.radialGradient(output, stops, transform, start, startRadius, end, endRadius, startSpread, endSpread)
         }
     }
