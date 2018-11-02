@@ -128,7 +128,7 @@ void _gradient_set_color(const device gradient_stop *stops, int stop_idx, device
     gradient_stop stop = stops[stop_idx];
     
     for(int i = 0; i < countOfComponents; ++i) {
-        destination[d_index + 1] = stop.color[i];
+        destination[d_index + i] = stop.color[i];
     }
 }
 
@@ -143,7 +143,7 @@ void _gradient_set_color2(float t, const device gradient_stop *stops, int stop_i
     for(int i = 0; i < countOfComponents; ++i) {
         float lhs_c = lhs.color[i];
         float rhs_c = rhs.color[i];
-        destination[d_index + 1] = lhs_c * (1 - s) + rhs_c * s;
+        destination[d_index + i] = lhs_c * (1 - s) + rhs_c * s;
     }
 }
 
