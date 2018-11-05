@@ -59,8 +59,8 @@ kernel void shadow(const device shadow_parameter &parameter [[buffer(0)]],
     float _shadow = 0;
     float sum = 0;
     
-    for (int j = 0; j < s; ++j) {
-        for (int i = 0; i < s; ++i) {
+    for (int j = -s; j <= s; ++j) {
+        for (int i = -s; i <= s; ++i) {
             
             const float2 point = float2((float)position[0] + (float)i - offset[0], (float)position[1] + (float)j - offset[1]);
             const float d = length_squared(float2(i, j));
