@@ -163,7 +163,7 @@ float _read_source_##HWRAPPING##_##VWRAPPING(const device float *source, int x, 
     Addressing _x = _addressing_##HWRAPPING(x, size[0]);                                                                                               \
     Addressing _y = _addressing_##VWRAPPING(y, size[1]);                                                                                               \
                                                                                                                                                        \
-    int idx = x + y * size[0];                                                                                                                         \
+    int idx = _x.i + _y.i * size[0];                                                                                                                         \
     float pixel = source[idx * countOfComponents + i];                                                                                                 \
                                                                                                                                                        \
     if (_x.flag && _y.flag) {                                                                                                                          \
