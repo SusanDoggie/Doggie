@@ -26,7 +26,7 @@
 #include <metal_stdlib>
 using namespace metal;
 
-void _set_opacity(float opacity, device float *destination, int idx);
+void _set_opacity(const float opacity, device float *destination, const int idx);
 
 kernel void clip(const device float *clip [[buffer(0)]],
                  device float *out [[buffer(1)]],

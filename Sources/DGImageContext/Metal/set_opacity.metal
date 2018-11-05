@@ -28,7 +28,7 @@ using namespace metal;
 
 constant int countOfComponents [[function_constant(0)]];
 
-void _set_opacity(float opacity, device float *destination, int idx) {
+void _set_opacity(const float opacity, device float *destination, const int idx) {
     destination[idx * countOfComponents + countOfComponents - 1] *= opacity;
 }
 

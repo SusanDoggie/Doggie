@@ -35,9 +35,9 @@ struct Pixel {
 
 struct Texture {
     const device float *buffer;
-    uint2 size;
-    Texture(const device float *buffer, uint2 size) : buffer(buffer), size(size) {};
-    Pixel operator[](uint2 i) { return Pixel(buffer + (i[0] + i[1] * size[0]) * countOfComponents); };
+    const uint2 size;
+    Texture(const device float *buffer, const uint2 size) : buffer(buffer), size(size) {};
+    const Pixel operator[](const uint2 i) const { return Pixel(buffer + (i[0] + i[1] * size[0]) * countOfComponents); };
 };
 
 struct MutablePixel {
@@ -47,20 +47,20 @@ struct MutablePixel {
 
 struct MutableTexture {
     device float *buffer;
-    uint2 size;
-    MutableTexture(device float *buffer, uint2 size) : buffer(buffer), size(size) {};
-    MutablePixel operator[](uint2 i) { return MutablePixel(buffer + (i[0] + i[1] * size[0]) * countOfComponents); };
+    const uint2 size;
+    MutableTexture(device float *buffer, const uint2 size) : buffer(buffer), size(size) {};
+    const MutablePixel operator[](const uint2 i) const { return MutablePixel(buffer + (i[0] + i[1] * size[0]) * countOfComponents); };
 };
 
-float _multiply(float destination, float source) {
+const float _multiply(const float destination, const float source) {
     return destination * source;
 }
 
-float _screen(float destination, float source) {
+const float _screen(const float destination, const float source) {
     return destination + source - destination * source;
 }
 
-float _overlay(float destination, float source) {
+const float _overlay(const float destination, const float source) {
     
     if (destination < 0.5) {
         return 2 * destination * source;
@@ -70,35 +70,35 @@ float _overlay(float destination, float source) {
     return 1 - 2 * u * v;
 }
 
-float _darken(float destination, float source) {
+const float _darken(const float destination, const float source) {
     return min(destination, source);
 }
 
-float _lighten(float destination, float source) {
+const float _lighten(const float destination, const float source) {
     return max(destination, source);
 }
 
-float _colorDodge(float destination, float source) {
+const float _colorDodge(const float destination, const float source) {
     return source < 1 ? min(1.0, destination / (1 - source)) : 1;
 }
 
-float _colorBurn(float destination, float source) {
+const float _colorBurn(const float destination, const float source) {
     return source > 0 ? 1 - min(1.0, (1 - destination) / source) : 0;
 }
 
-float _softLight(float destination, float source) {
+const float _softLight(const float destination, const float source) {
     
     float db;
     
     if (destination < 0.25) {
-        float s = 16 * destination - 12;
-        float t = s * destination + 4;
+        const float s = 16 * destination - 12;
+        const float t = s * destination + 4;
         db = t * destination;
     } else {
         db = sqrt(destination);
     }
     
-    float u = 1 - 2 * source;
+    const float u = 1 - 2 * source;
     
     if (source < 0.5) {
         return destination - u * destination * (1 - destination);
@@ -106,80 +106,80 @@ float _softLight(float destination, float source) {
     return destination - u * (db - destination);
 }
 
-float _hardLight(float destination, float source) {
+const float _hardLight(const float destination, const float source) {
     return _overlay(source, destination);
 }
 
-float _difference(float destination, float source) {
+const float _difference(const float destination, const float source) {
     return abs(destination - source);
 }
 
-float _exclusion(float destination, float source) {
+const float _exclusion(const float destination, const float source) {
     return destination + source - 2 * destination * source;
 }
 
-float _plusDarker(float destination, float source) {
+const float _plusDarker(const float destination, const float source) {
     return max(0.0, 1 - ((1 - destination) + (1 - source)));
 }
 
-float _plusLighter(float destination, float source) {
+const float _plusLighter(const float destination, const float source) {
     return min(1.0, destination + source);
 }
 
-float _copy(float source, float source_alpha, float destination, float destination_alpha) {
+const float _copy(const float source, const float source_alpha, const float destination, const float destination_alpha) {
     return source;
 }
 
-float _sourceOver(float source, float source_alpha, float destination, float destination_alpha) {
+const float _sourceOver(const float source, const float source_alpha, const float destination, const float destination_alpha) {
     return source + destination * (1 - source_alpha);
 }
 
-float _sourceIn(float source, float source_alpha, float destination, float destination_alpha) {
+const float _sourceIn(const float source, const float source_alpha, const float destination, const float destination_alpha) {
     return source * destination_alpha;
 }
 
-float _sourceOut(float source, float source_alpha, float destination, float destination_alpha) {
+const float _sourceOut(const float source, const float source_alpha, const float destination, const float destination_alpha) {
     return source * (1 - destination_alpha);
 }
 
-float _sourceAtop(float source, float source_alpha, float destination, float destination_alpha) {
+const float _sourceAtop(const float source, const float source_alpha, const float destination, const float destination_alpha) {
     return source * destination_alpha + destination * (1 - source_alpha);
 }
 
-float _destinationOver(float source, float source_alpha, float destination, float destination_alpha) {
+const float _destinationOver(const float source, const float source_alpha, const float destination, const float destination_alpha) {
     return source * (1 - destination_alpha) + destination;
 }
 
-float _destinationIn(float source, float source_alpha, float destination, float destination_alpha) {
+const float _destinationIn(const float source, const float source_alpha, const float destination, const float destination_alpha) {
     return destination * source_alpha;
 }
 
-float _destinationOut(float source, float source_alpha, float destination, float destination_alpha) {
+const float _destinationOut(const float source, const float source_alpha, const float destination, const float destination_alpha) {
     return destination * (1 - source_alpha);
 }
 
-float _destinationAtop(float source, float source_alpha, float destination, float destination_alpha) {
+const float _destinationAtop(const float source, const float source_alpha, const float destination, const float destination_alpha) {
     return source * (1 - destination_alpha) + destination * source_alpha;
 }
 
-float _exclusiveOr(float source, float source_alpha, float destination, float destination_alpha) {
-    float _s = source * (1 - destination_alpha);
-    float _d = destination * (1 - source_alpha);
+const float _exclusiveOr(const float source, const float source_alpha, const float destination, const float destination_alpha) {
+    const float _s = source * (1 - destination_alpha);
+    const float _d = destination * (1 - source_alpha);
     return _s + _d;
 }
 
 #define BLEND_NORMAL_KERNEL(COMPOSITING) \
 void _blend_##COMPOSITING##_normal(MutablePixel destination, Pixel source) {                                            \
                                                                                                                         \
-    float d_alpha = destination.components[countOfComponents - 1];                                                      \
-    float s_alpha = source.components[countOfComponents - 1];                                                           \
+    const float d_alpha = destination.components[countOfComponents - 1];                                                \
+    const float s_alpha = source.components[countOfComponents - 1];                                                     \
                                                                                                                         \
-    float r_alpha = _##COMPOSITING(s_alpha, s_alpha, d_alpha, d_alpha);                                                 \
+    const float r_alpha = _##COMPOSITING(s_alpha, s_alpha, d_alpha, d_alpha);                                           \
                                                                                                                         \
     if (r_alpha > 0) {                                                                                                  \
                                                                                                                         \
-        float s = s_alpha / r_alpha;                                                                                    \
-        float d = d_alpha / r_alpha;                                                                                    \
+        const float s = s_alpha / r_alpha;                                                                              \
+        const float d = d_alpha / r_alpha;                                                                              \
                                                                                                                         \
         for (int i = 0; i < countOfComponents - 1; ++i) {                                                               \
             float _source = source.components[i];                                                                       \
@@ -200,8 +200,8 @@ kernel void blend_##COMPOSITING##_normal(const device float *source [[buffer(0)]
                                          uint2 id [[thread_position_in_grid]],                                          \
                                          uint2 grid [[threads_per_grid]]) {                                             \
                                                                                                                         \
-    MutableTexture _destination = MutableTexture(destination, grid);                                                    \
-    Texture _source = Texture(source, grid);                                                                            \
+    const MutableTexture _destination = MutableTexture(destination, grid);                                              \
+    const Texture _source = Texture(source, grid);                                                                      \
                                                                                                                         \
     _blend_##COMPOSITING##_normal(_destination[id], _source[id]);                                                       \
                                                                                                                         \
@@ -210,15 +210,15 @@ kernel void blend_##COMPOSITING##_normal(const device float *source [[buffer(0)]
 #define BLEND_KERNEL(COMPOSITING, BLENDING) \
 void _blend_##COMPOSITING##_##BLENDING(MutablePixel destination, Pixel source) {                                        \
                                                                                                                         \
-    float d_alpha = destination.components[countOfComponents - 1];                                                      \
-    float s_alpha = source.components[countOfComponents - 1];                                                           \
+    const float d_alpha = destination.components[countOfComponents - 1];                                                \
+    const float s_alpha = source.components[countOfComponents - 1];                                                     \
                                                                                                                         \
-    float r_alpha = _##COMPOSITING(s_alpha, s_alpha, d_alpha, d_alpha);                                                 \
+    const float r_alpha = _##COMPOSITING(s_alpha, s_alpha, d_alpha, d_alpha);                                           \
                                                                                                                         \
     if (r_alpha > 0) {                                                                                                  \
                                                                                                                         \
-        float s = s_alpha / r_alpha;                                                                                    \
-        float d = d_alpha / r_alpha;                                                                                    \
+        const float s = s_alpha / r_alpha;                                                                              \
+        const float d = d_alpha / r_alpha;                                                                              \
                                                                                                                         \
         for (int i = 0; i < countOfComponents - 2; ++i) {                                                               \
             float _source = source.components[i];                                                                       \
@@ -241,8 +241,8 @@ kernel void blend_##COMPOSITING##_##BLENDING(const device float *source [[buffer
                                              uint2 id [[thread_position_in_grid]],                                      \
                                              uint2 grid [[threads_per_grid]]) {                                         \
                                                                                                                         \
-    MutableTexture _destination = MutableTexture(destination, grid);                                                    \
-    Texture _source = Texture(source, grid);                                                                            \
+    const MutableTexture _destination = MutableTexture(destination, grid);                                              \
+    const Texture _source = Texture(source, grid);                                                                      \
                                                                                                                         \
     _blend_##COMPOSITING##_##BLENDING(_destination[id], _source[id]);                                                   \
                                                                                                                         \

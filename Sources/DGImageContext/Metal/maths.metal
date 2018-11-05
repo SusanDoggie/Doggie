@@ -26,16 +26,16 @@
 #include <metal_stdlib>
 using namespace metal;
 
-float cross(float2 a, float2 b) {
+const float cross(const float2 a, const float2 b) {
     return a[0] * b[1] - a[1] * b[0];
 }
 
-float3 Barycentric(float2 p0, float2 p1, float2 p2, float2 q) {
+const float3 Barycentric(const float2 p0, const float2 p1, const float2 p2, const float2 q) {
     
-    float det = (p1[1] - p2[1]) * (p0[0] - p2[0]) + (p2[0] - p1[0]) * (p0[1] - p2[1]);
+    const float det = (p1[1] - p2[1]) * (p0[0] - p2[0]) + (p2[0] - p1[0]) * (p0[1] - p2[1]);
     
-    float s = ((p1[1] - p2[1]) * (q[0] - p2[0]) + (p2[0] - p1[0]) * (q[1] - p2[1])) / det;
-    float t = ((p2[1] - p0[1]) * (q[0] - p2[0]) + (p0[0] - p2[0]) * (q[1] - p2[1])) / det;
+    const float s = ((p1[1] - p2[1]) * (q[0] - p2[0]) + (p2[0] - p1[0]) * (q[1] - p2[1])) / det;
+    const float t = ((p2[1] - p0[1]) * (q[0] - p2[0]) + (p0[0] - p2[0]) * (q[1] - p2[1])) / det;
     
     return float3(s, t, 1 - s - t);
 }
@@ -52,7 +52,7 @@ void sort(thread float2 *a, thread float2 *b, thread float2 *c) {
     if ((*b)[1] < (*a)[1]) { swap(a, b); }
 }
 
-bool inTriangle(float2 p0, float2 p1, float2 p2, float2 position) {
+const bool inTriangle(const float2 p0, const float2 p1, const float2 p2, const float2 position) {
     
     float2 q0 = p0;
     float2 q1 = p1;
@@ -62,8 +62,8 @@ bool inTriangle(float2 p0, float2 p1, float2 p2, float2 position) {
     
     if (q0[1] <= position[1] && position[1] < q2[1]) {
         
-        float t1 = (position[1] - q0[1]) / (q2[1] - q0[1]);
-        float x1 = q0[0] + t1 * (q2[0] - q0[0]);
+        const float t1 = (position[1] - q0[1]) / (q2[1] - q0[1]);
+        const float x1 = q0[0] + t1 * (q2[0] - q0[0]);
         
         float t2;
         float x2;
@@ -76,8 +76,8 @@ bool inTriangle(float2 p0, float2 p1, float2 p2, float2 position) {
             x2 = q1[0] + t2 * (q2[0] - q1[0]);
         }
         
-        float mid_t = (q1[1] - q0[1]) / (q2[1] - q0[1]);
-        float mid_x = q0[0] + mid_t * (q2[0] - q0[0]);
+        const float mid_t = (q1[1] - q0[1]) / (q2[1] - q0[1]);
+        const float mid_x = q0[0] + mid_t * (q2[0] - q0[0]);
         
         if (mid_x < q1[0]) {
             return x1 <= position[0] && position[0] < x2;

@@ -28,36 +28,36 @@ using namespace metal;
 
 constant int countOfComponents [[function_constant(0)]];
 
-float cross(float2 a, float2 b);
-float3 Barycentric(float2 p0, float2 p1, float2 p2, float2 q);
-bool inTriangle(float2 p0, float2 p1, float2 p2, float2 position);
+const float cross(const float2 a, const float2 b);
+const float3 Barycentric(const float2 p0, const float2 p1, const float2 p2, const float2 q);
+const bool inTriangle(const float2 p0, const float2 p1, const float2 p2, const float2 position);
 
-void _set_opacity(float opacity, device float *destination, int idx);
+void _set_opacity(const float opacity, device float *destination, const int idx);
 
 struct stencil_parameter {
     
-    packed_uint2 offset;
-    uint width;
-    uint count;
+    const packed_uint2 offset;
+    const uint width;
+    const uint count;
 };
 
 struct stencil_triangle_struct {
     
-    packed_float2 p0, p1, p2;
+    const packed_float2 p0, p1, p2;
 };
 
 struct stencil_quadratic_struct {
     
-    packed_float2 p0, p1, p2;
+    const packed_float2 p0, p1, p2;
 };
 
 struct stencil_cubic_struct {
     
-    packed_float2 p0, p1, p2;
-    packed_float3 v0, v1, v2;
+    const packed_float2 p0, p1, p2;
+    const packed_float3 v0, v1, v2;
 };
 
-int stencil_triangle(float2 point, const device stencil_triangle_struct *triangles, int count) {
+const int stencil_triangle(const float2 point, const device stencil_triangle_struct *triangles, const int count) {
     
     int counter = 0;
     
@@ -81,7 +81,7 @@ int stencil_triangle(float2 point, const device stencil_triangle_struct *triangl
     return counter;
 }
 
-int stencil_quadratic(float2 point, const device stencil_quadratic_struct *triangles, int count) {
+const int stencil_quadratic(const float2 point, const device stencil_quadratic_struct *triangles, const int count) {
     
     int counter = 0;
     
@@ -111,7 +111,7 @@ int stencil_quadratic(float2 point, const device stencil_quadratic_struct *trian
     return counter;
 }
 
-int stencil_cubic(float2 point, const device stencil_cubic_struct *triangles, int count) {
+const int stencil_cubic(const float2 point, const device stencil_cubic_struct *triangles, const int count) {
     
     int counter = 0;
     
@@ -149,13 +149,13 @@ int stencil_cubic(float2 point, const device stencil_cubic_struct *triangles, in
 
 struct fill_parameter {
     
-    packed_uint2 offset;
-    uint width;
-    uint antialias;
-    float color[16];
-    uint triangle_count;
-    uint quadratic_count;
-    uint cubic_count;
+    const packed_uint2 offset;
+    const uint width;
+    const uint antialias;
+    const float color[16];
+    const uint triangle_count;
+    const uint quadratic_count;
+    const uint cubic_count;
 };
 
 kernel void fill_nonZero(const device fill_parameter &parameter [[buffer(0)]],
@@ -170,14 +170,14 @@ kernel void fill_nonZero(const device fill_parameter &parameter [[buffer(0)]],
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
     
-    float _a = 1.0 / (float)antialias;
+    const float _a = 1.0 / (float)antialias;
     
     int counter = 0;
     
-    for (int i = 0; i < antialias; ++i) {
-        for (int j = 0; j < antialias; ++j) {
+    for (int j = 0; j < antialias; ++j) {
+        for (int i = 0; i < antialias; ++i) {
             
-            float2 point = float2((float)position[0] + (float)i * _a, (float)position[1] + (float)j * _a);
+            const float2 point = float2((float)position[0] + (float)i * _a, (float)position[1] + (float)j * _a);
             
             int stencil = stencil_triangle(point, triangles, parameter.triangle_count);
             stencil += stencil_quadratic(point, quadratics, parameter.quadratic_count);
@@ -208,14 +208,14 @@ kernel void fill_evenOdd(const device fill_parameter &parameter [[buffer(0)]],
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
     
-    float _a = 1.0 / (float)antialias;
+    const float _a = 1.0 / (float)antialias;
     
     int counter = 0;
     
-    for (int i = 0; i < antialias; ++i) {
-        for (int j = 0; j < antialias; ++j) {
+    for (int j = 0; j < antialias; ++j) {
+        for (int i = 0; i < antialias; ++i) {
             
-            float2 point = float2((float)position[0] + (float)i * _a, (float)position[1] + (float)j * _a);
+            const float2 point = float2((float)position[0] + (float)i * _a, (float)position[1] + (float)j * _a);
             
             int stencil = stencil_triangle(point, triangles, parameter.triangle_count);
             stencil += stencil_quadratic(point, quadratics, parameter.quadratic_count);
