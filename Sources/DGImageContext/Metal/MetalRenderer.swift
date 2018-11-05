@@ -85,7 +85,8 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     
     func encoder(width: Int, height: Int) throws -> Encoder {
         guard let commandBuffer = queue.makeCommandBuffer() else { throw Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
-        return Encoder(width: width, height: height, renderer: self, commandBuffer: commandBuffer)
+        guard let empty_buffer: MTLBuffer = device.makeBuffer(length: 60, options: .storageModePrivate) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+        return Encoder(width: width, height: height, renderer: self, commandBuffer: commandBuffer, empty_buffer: empty_buffer)
     }
 }
 
@@ -116,13 +117,14 @@ extension MetalRenderer {
         let renderer: MetalRenderer<Model>
         let commandBuffer: MTLCommandBuffer
         
-        var stencil_buffer: MTLBuffer?
+        let empty_buffer: MTLBuffer
         
-        init(width: Int, height: Int, renderer: MetalRenderer<Model>, commandBuffer: MTLCommandBuffer) {
+        init(width: Int, height: Int, renderer: MetalRenderer<Model>, commandBuffer: MTLCommandBuffer, empty_buffer: MTLBuffer) {
             self.width = width
             self.height = height
             self.renderer = renderer
             self.commandBuffer = commandBuffer
+            self.empty_buffer = empty_buffer
         }
     }
 }
@@ -266,34 +268,52 @@ extension MetalRenderer.Encoder {
     
     func draw(_ destination: MTLBuffer, _ shape: Shape, _ color: [Double], _ winding: Shape.WindingRule, _ antialias: Int) throws {
         
-        let stencil: MTLBuffer
+        let transform = shape.transform
         
-        let stencil_size = width * height * antialias * antialias * 2
+        var _bound: Rect?
         
-        if let stencil_buffer = self.stencil_buffer, stencil_buffer.length >= stencil_size {
+        var triangle_render_buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint)> = []
+        var quadratic_render_buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint)> = []
+        var cubic_render_buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint, GPVector, GPVector, GPVector)> = []
+        
+        shape.render { op in
             
-            guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
-            
-            encoder.fill(buffer: stencil_buffer, range: 0..<stencil_size, value: 0)
-            encoder.endEncoding()
-            
-            stencil = stencil_buffer
-            
-        } else {
-            
-            guard let _stencil = device.makeBuffer(length: stencil_size, options: .storageModePrivate) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
-            
-            self.stencil_buffer = _stencil
-            stencil = _stencil
+            switch op {
+            case let .triangle(p0, p1, p2):
+                
+                let q0 = p0 * transform
+                let q1 = p1 * transform
+                let q2 = p2 * transform
+                
+                triangle_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
+                
+                _bound = _bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                
+            case let .quadratic(p0, p1, p2):
+                
+                let q0 = p0 * transform
+                let q1 = p1 * transform
+                let q2 = p2 * transform
+                
+                quadratic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
+                
+                _bound = _bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                
+            case let .cubic(p0, p1, p2, v0, v1, v2):
+                
+                let q0 = p0 * transform
+                let q1 = p1 * transform
+                let q2 = p2 * transform
+                
+                cubic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2)))
+                
+                _bound = _bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+            }
         }
         
-        var shape = shape
-        shape.transform = shape.transform * SDTransform.scale(Double(antialias))
+        guard triangle_render_buffer.count != 0 || quadratic_render_buffer.count != 0 || cubic_render_buffer.count != 0 else { return }
         
-        guard var bound = try self.stencil(shape: shape, width: width * antialias, height: height * antialias, output: stencil) else { return }
-        
-        bound /= Double(antialias)
-        
+        let bound = _bound ?? Rect()
         let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
         let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
         let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
@@ -302,8 +322,8 @@ extension MetalRenderer.Encoder {
         let pipeline: MTLComputePipelineState
         
         switch winding {
-        case .nonZero: pipeline = try renderer.request_pipeline("fill_nonZero_stencil")
-        case .evenOdd: pipeline = try renderer.request_pipeline("fill_evenOdd_stencil")
+        case .nonZero: pipeline = try renderer.request_pipeline("fill_nonZero")
+        case .evenOdd: pipeline = try renderer.request_pipeline("fill_evenOdd")
         }
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
@@ -327,6 +347,31 @@ extension MetalRenderer.Encoder {
         let _color14 = 0..<color.count ~= 14 ? Float(color[14]) : 0
         let _color15 = 0..<color.count ~= 15 ? Float(color[15]) : 0
         
+        let _triangle_render_buffer: MTLBuffer
+        let _quadratic_render_buffer: MTLBuffer
+        let _cubic_render_buffer: MTLBuffer
+        
+        if triangle_render_buffer.count == 0 {
+            _triangle_render_buffer = empty_buffer
+        } else {
+            guard let __triangle_render_buffer = device.makeBuffer(triangle_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+            _triangle_render_buffer = __triangle_render_buffer
+        }
+        
+        if quadratic_render_buffer.count == 0 {
+            _quadratic_render_buffer = empty_buffer
+        } else {
+            guard let __quadratic_render_buffer = device.makeBuffer(quadratic_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+            _quadratic_render_buffer = __quadratic_render_buffer
+        }
+        
+        if cubic_render_buffer.count == 0 {
+            _cubic_render_buffer = empty_buffer
+        } else {
+            guard let __cubic_render_buffer = device.makeBuffer(cubic_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+            _cubic_render_buffer = __cubic_render_buffer
+        }
+        
         encoder.setBytes([FillStencilParameter(
             offset_x: UInt32(offset_x),
             offset_y: UInt32(offset_y),
@@ -335,11 +380,15 @@ extension MetalRenderer.Encoder {
             color: (_color0, _color1, _color2, _color3,
                     _color4, _color5, _color6, _color7,
                     _color8, _color9, _color10, _color11,
-                    _color12, _color13, _color14, _color15)
-            )], length: 80, index: 0)
+                    _color12, _color13, _color14, _color15),
+            triangle_count: UInt32(triangle_render_buffer.count),
+            quadratic_count: UInt32(quadratic_render_buffer.count),
+            cubic_count: UInt32(cubic_render_buffer.count))], length: 92, index: 0)
         
-        encoder.setBuffer(stencil, offset: 0, index: 1)
-        encoder.setBuffer(destination, offset: 0, index: 2)
+        encoder.setBuffer(_triangle_render_buffer, offset: 0, index: 1)
+        encoder.setBuffer(_quadratic_render_buffer, offset: 0, index: 2)
+        encoder.setBuffer(_cubic_render_buffer, offset: 0, index: 3)
+        encoder.setBuffer(destination, offset: 0, index: 4)
         
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
@@ -540,6 +589,9 @@ extension MetalRenderer.Encoder {
         Float, Float, Float, Float,
         Float, Float, Float, Float,
         Float, Float, Float, Float)
+        var triangle_count: UInt32
+        var quadratic_count: UInt32
+        var cubic_count: UInt32
     }
     
     private struct _GradientStop {
@@ -624,125 +676,6 @@ extension MetalRenderer.Encoder {
                 self.b = 0
             }
         }
-    }
-}
-
-extension MetalRenderer.Encoder {
-    
-    private func stencil(shape: Shape, width: Int, height: Int, output: MTLBuffer) throws -> Rect? {
-        
-        let transform = shape.transform
-        
-        var bound: Rect?
-        
-        var triangle_render_buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint)> = []
-        var quadratic_render_buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint)> = []
-        var cubic_render_buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint, GPVector, GPVector, GPVector)> = []
-        
-        shape.render { op in
-            
-            switch op {
-            case let .triangle(p0, p1, p2):
-                
-                let q0 = p0 * transform
-                let q1 = p1 * transform
-                let q2 = p2 * transform
-                
-                triangle_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
-                
-                bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                
-            case let .quadratic(p0, p1, p2):
-                
-                let q0 = p0 * transform
-                let q1 = p1 * transform
-                let q2 = p2 * transform
-                
-                quadratic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
-                
-                bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                
-            case let .cubic(p0, p1, p2, v0, v1, v2):
-                
-                let q0 = p0 * transform
-                let q1 = p1 * transform
-                let q2 = p2 * transform
-                
-                cubic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2)))
-                
-                bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-            }
-        }
-        
-        guard triangle_render_buffer.count != 0 || quadratic_render_buffer.count != 0 || cubic_render_buffer.count != 0 else { return nil }
-        
-        let _bound = bound ?? Rect()
-        let offset_x = max(0, min(width - 1, Int(floor(_bound.x))))
-        let offset_y = max(0, min(height - 1, Int(floor(_bound.y))))
-        let _width = min(width - offset_x, Int(ceil(_bound.width + 1)))
-        let _height = min(height - offset_y, Int(ceil(_bound.height + 1)))
-        
-        if triangle_render_buffer.count != 0 {
-            
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
-            guard let buffer = device.makeBuffer(triangle_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
-            
-            let pipeline = try renderer.request_pipeline("stencil_triangle")
-            encoder.setComputePipelineState(pipeline)
-            
-            encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(triangle_render_buffer.count)], length: 16, index: 0)
-            encoder.setBuffer(buffer, offset: 0, index: 1)
-            encoder.setBuffer(output, offset: 0, index: 2)
-            
-            let w = pipeline.threadExecutionWidth
-            let h = pipeline.maxTotalThreadsPerThreadgroup / w
-            let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
-            
-            encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-            encoder.endEncoding()
-        }
-        
-        if quadratic_render_buffer.count != 0 {
-            
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
-            guard let buffer = device.makeBuffer(quadratic_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
-            
-            let pipeline = try renderer.request_pipeline("stencil_quadratic")
-            encoder.setComputePipelineState(pipeline)
-            
-            encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(quadratic_render_buffer.count)], length: 16, index: 0)
-            encoder.setBuffer(buffer, offset: 0, index: 1)
-            encoder.setBuffer(output, offset: 0, index: 2)
-            
-            let w = pipeline.threadExecutionWidth
-            let h = pipeline.maxTotalThreadsPerThreadgroup / w
-            let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
-            
-            encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-            encoder.endEncoding()
-        }
-        
-        if cubic_render_buffer.count != 0 {
-            
-            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
-            guard let buffer = device.makeBuffer(cubic_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
-            
-            let pipeline = try renderer.request_pipeline("stencil_cubic")
-            encoder.setComputePipelineState(pipeline)
-            
-            encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(cubic_render_buffer.count)], length: 16, index: 0)
-            encoder.setBuffer(buffer, offset: 0, index: 1)
-            encoder.setBuffer(output, offset: 0, index: 2)
-            
-            let w = pipeline.threadExecutionWidth
-            let h = pipeline.maxTotalThreadsPerThreadgroup / w
-            let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
-            
-            encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-            encoder.endEncoding()
-        }
-        
-        return _bound
     }
 }
 
