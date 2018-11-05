@@ -312,8 +312,7 @@ extension DGImageContext {
                         
                         let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
                         
-                        let _clip_encoder = try encoder as? Encoder.Renderer.ClipEncoder ?? resource.clip_encoder ?? encoder.clip_encoder()
-                        clip_resource.clip_encoder = _clip_encoder
+                        let _clip_encoder = try encoder as? Encoder.Renderer.ClipEncoder ?? encoder.clip_encoder()
                         
                         _clip = try clip.render(encoder: _clip_encoder, resource: clip_resource).0
                         
