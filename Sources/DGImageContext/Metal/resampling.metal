@@ -310,7 +310,7 @@ float _mitchell_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source
     int max_y = min_y + 5;                                                                                                                             \
                                                                                                                                                        \
     for (int y = min_y; y < max_y; ++y) {                                                                                                              \
-        for (int x = min_x; y < max_x; ++x) {                                                                                                          \
+        for (int x = min_x; x < max_x; ++x) {                                                                                                          \
             float k = _mitchell_kernel(distance(point, float2(x, y)), B, C);                                                                           \
             pixel += _read_source_##HWRAPPING##_##VWRAPPING(source, x, y, i, size) * k;                                                                \
             t += k;                                                                                                                                    \
@@ -334,7 +334,7 @@ float _lanczos_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source,
     int max_y = min_y + kernel_size;                                                                                                                   \
                                                                                                                                                        \
     for (int y = min_y; y < max_y; ++y) {                                                                                                              \
-        for (int x = min_x; y < max_x; ++x) {                                                                                                          \
+        for (int x = min_x; x < max_x; ++x) {                                                                                                          \
             float k = _lanczos_kernel(distance(point, float2(x, y)), a);                                                                               \
             pixel += _read_source_##HWRAPPING##_##VWRAPPING(source, x, y, i, size) * k;                                                                \
             t += k;                                                                                                                                    \
