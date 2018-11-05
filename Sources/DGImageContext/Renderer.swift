@@ -176,11 +176,6 @@ extension DGImageContext {
         let resource = Resource<Renderer.Encoder>()
         try self._image.render(encoder: encoder, output: encoder.make_buffer(texture.pixels), resource: resource)
         
-        if let clip_encoder = resource.clip_encoder {
-            clip_encoder.commit()
-            clip_encoder.waitUntilScheduled()
-        }
-        
         encoder.commit()
         encoder.waitUntilCompleted()
         
@@ -192,11 +187,8 @@ extension DGImageContext {
     
     class Resource<Encoder: DGRendererEncoder> where Encoder.Renderer.Model == Model {
         
-        var clip_encoder: Encoder.Renderer.ClipEncoder?
         var clip_cache: [ObjectIdentifier: Encoder.Renderer.ClipEncoder.Buffer] = [:]
-        
         var recycle: [Encoder.Buffer] = []
-        
     }
 
     class Layer {
@@ -308,14 +300,25 @@ extension DGImageContext {
                         
                         _clip = cached
                         
+                    } else if let clip_encoder = encoder as? Encoder.Renderer.ClipEncoder {
+                        
+                        let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
+                        
+                        _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0
+                        
+                        resource.clip_cache[ObjectIdentifier(clip)] = _clip
+                        resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
+                        
                     } else {
                         
                         let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
-                        let _clip_encoder = try encoder as? Encoder.Renderer.ClipEncoder ?? encoder.clip_encoder()
+                        let clip_encoder = try encoder.clip_encoder()
                         
-                        _clip = try clip.render(encoder: _clip_encoder, resource: clip_resource).0
+                        _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0
                         
-                        resource.clip_encoder = _clip_encoder
+                        clip_encoder.commit()
+                        clip_encoder.waitUntilScheduled()
+                        
                         resource.clip_cache[ObjectIdentifier(clip)] = _clip
                         resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
                     }
