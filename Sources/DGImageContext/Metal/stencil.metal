@@ -32,8 +32,6 @@ const float cross(const float2 a, const float2 b);
 const float3 Barycentric(const float2 p0, const float2 p1, const float2 p2, const float2 q);
 const bool inTriangle(const float2 p0, const float2 p1, const float2 p2, const float2 position);
 
-void _set_opacity(const float opacity, device float *destination, const int idx);
-
 struct stencil_parameter {
     
     const packed_uint2 offset;
@@ -57,9 +55,23 @@ struct stencil_cubic_struct {
     const packed_float3 v0, v1, v2;
 };
 
-const int stencil_triangle(const float2 point, const device stencil_triangle_struct *triangles, const int count) {
+struct fill_stencil_parameter {
     
-    int counter = 0;
+    const packed_uint2 offset;
+    const uint width;
+    const uint antialias;
+    const float color[16];
+};
+
+kernel void stencil_triangle(const device stencil_parameter &parameter [[buffer(0)]],
+                             const device stencil_triangle_struct *triangles [[buffer(1)]],
+                             device int16_t *out [[buffer(2)]],
+                             uint2 id [[thread_position_in_grid]]) {
+    
+    const int width = parameter.width;
+    const int count = parameter.count;
+    const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
+    const int idx = width * position[1] + position[0];
     
     for (int i = 0; i < count; ++i) {
         
@@ -69,21 +81,26 @@ const int stencil_triangle(const float2 point, const device stencil_triangle_str
         const float2 p1 = triangle.p1;
         const float2 p2 = triangle.p2;
         
-        if (inTriangle(p0, p1, p2, point)) {
+        if (inTriangle(p0, p1, p2, (float2)position)) {
             if (signbit(cross(p1 - p0, p2 - p0))) {
-                --counter;
+                --out[idx];
             } else {
-                ++counter;
+                ++out[idx];
             }
         }
     }
     
-    return counter;
 }
 
-const int stencil_quadratic(const float2 point, const device stencil_quadratic_struct *triangles, const int count) {
+kernel void stencil_quadratic(const device stencil_parameter &parameter [[buffer(0)]],
+                              const device stencil_quadratic_struct *triangles [[buffer(1)]],
+                              device int16_t *out [[buffer(2)]],
+                              uint2 id [[thread_position_in_grid]]) {
     
-    int counter = 0;
+    const int width = parameter.width;
+    const int count = parameter.count;
+    const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
+    const int idx = width * position[1] + position[0];
     
     for (int i = 0; i < count; ++i) {
         
@@ -93,27 +110,32 @@ const int stencil_quadratic(const float2 point, const device stencil_quadratic_s
         const float2 p1 = triangle.p1;
         const float2 p2 = triangle.p2;
         
-        if (inTriangle(p0, p1, p2, point)) {
+        if (inTriangle(p0, p1, p2, (float2)position)) {
             
-            const float3 p = Barycentric(p0, p1, p2, point);
+            const float3 p = Barycentric(p0, p1, p2, (float2)position);
             const float s = 0.5 * p[1] + p[2];
             
             if (s * s < p[2]) {
                 if (signbit(cross(p1 - p0, p2 - p0))) {
-                    --counter;
+                    --out[idx];
                 } else {
-                    ++counter;
+                    ++out[idx];
                 }
             }
         }
     }
     
-    return counter;
 }
 
-const int stencil_cubic(const float2 point, const device stencil_cubic_struct *triangles, const int count) {
+kernel void stencil_cubic(const device stencil_parameter &parameter [[buffer(0)]],
+                          const device stencil_cubic_struct *triangles [[buffer(1)]],
+                          device int16_t *out [[buffer(2)]],
+                          uint2 id [[thread_position_in_grid]]) {
     
-    int counter = 0;
+    const int width = parameter.width;
+    const int count = parameter.count;
+    const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
+    const int idx = width * position[1] + position[0];
     
     for (int i = 0; i < count; ++i) {
         
@@ -126,9 +148,9 @@ const int stencil_cubic(const float2 point, const device stencil_cubic_struct *t
         const float3 v1 = triangle.v1;
         const float3 v2 = triangle.v2;
         
-        if (inTriangle(p0, p1, p2, point)) {
+        if (inTriangle(p0, p1, p2, (float2)position)) {
             
-            const float3 p = Barycentric(p0, p1, p2, point);
+            const float3 p = Barycentric(p0, p1, p2, (float2)position);
             const float3 u0 = p[0] * v0;
             const float3 u1 = p[1] * v1;
             const float3 u2 = p[2] * v2;
@@ -136,34 +158,20 @@ const int stencil_cubic(const float2 point, const device stencil_cubic_struct *t
             
             if (v[0] * v[0] * v[0] < v[1] * v[2]) {
                 if (signbit(cross(p1 - p0, p2 - p0))) {
-                    --counter;
+                    --out[idx];
                 } else {
-                    ++counter;
+                    ++out[idx];
                 }
             }
         }
     }
     
-    return counter;
 }
 
-struct fill_parameter {
-    
-    const packed_uint2 offset;
-    const uint width;
-    const uint antialias;
-    const float color[16];
-    const uint triangle_count;
-    const uint quadratic_count;
-    const uint cubic_count;
-};
-
-kernel void fill_nonZero(const device fill_parameter &parameter [[buffer(0)]],
-                         const device stencil_triangle_struct *triangles [[buffer(1)]],
-                         const device stencil_quadratic_struct *quadratics [[buffer(2)]],
-                         const device stencil_cubic_struct *cubics [[buffer(3)]],
-                         device float *out [[buffer(4)]],
-                         uint2 id [[thread_position_in_grid]]) {
+kernel void fill_nonZero_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],
+                                 const device int16_t *stencil [[buffer(1)]],
+                                 device float *out [[buffer(2)]],
+                                 uint2 id [[thread_position_in_grid]]) {
     
     const int width = parameter.width;
     const int antialias = parameter.antialias;
@@ -171,20 +179,17 @@ kernel void fill_nonZero(const device fill_parameter &parameter [[buffer(0)]],
     const int idx = width * position[1] + position[0];
     const int opacity_idx = countOfComponents - 1;
     
-    const float _a = 1.0 / (float)antialias;
+    const int stencil_width = width * antialias;
+    const int2 stencil_position = position * antialias;
     
     int counter = 0;
     
-    for (int j = 0; j < antialias; ++j) {
-        for (int i = 0; i < antialias; ++i) {
+    for (int i = 0; i < antialias; ++i) {
+        for (int j = 0; j < antialias; ++j) {
             
-            const float2 point = float2((float)position[0] + (float)i * _a, (float)position[1] + (float)j * _a);
+            int stencil_index = stencil_width * (stencil_position[1] + i) + (stencil_position[0] + j);
             
-            int stencil = stencil_triangle(point, triangles, parameter.triangle_count);
-            stencil += stencil_quadratic(point, quadratics, parameter.quadratic_count);
-            stencil += stencil_cubic(point, cubics, parameter.cubic_count);
-            
-            if (stencil != 0) {
+            if (stencil[stencil_index] != 0) {
                 counter += 1;
             }
         }
@@ -197,12 +202,10 @@ kernel void fill_nonZero(const device fill_parameter &parameter [[buffer(0)]],
     out[idx * countOfComponents + opacity_idx] = parameter.color[opacity_idx] * (float)counter / (float)(antialias * antialias);
 }
 
-kernel void fill_evenOdd(const device fill_parameter &parameter [[buffer(0)]],
-                         const device stencil_triangle_struct *triangles [[buffer(1)]],
-                         const device stencil_quadratic_struct *quadratics [[buffer(2)]],
-                         const device stencil_cubic_struct *cubics [[buffer(3)]],
-                         device float *out [[buffer(4)]],
-                         uint2 id [[thread_position_in_grid]]) {
+kernel void fill_evenOdd_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],
+                                 const device int16_t *stencil [[buffer(1)]],
+                                 device float *out [[buffer(2)]],
+                                 uint2 id [[thread_position_in_grid]]) {
     
     const int width = parameter.width;
     const int antialias = parameter.antialias;
@@ -210,20 +213,17 @@ kernel void fill_evenOdd(const device fill_parameter &parameter [[buffer(0)]],
     const int idx = width * position[1] + position[0];
     const int opacity_idx = countOfComponents - 1;
     
-    const float _a = 1.0 / (float)antialias;
+    const int stencil_width = width * antialias;
+    const int2 stencil_position = position * antialias;
     
     int counter = 0;
     
-    for (int j = 0; j < antialias; ++j) {
-        for (int i = 0; i < antialias; ++i) {
+    for (int i = 0; i < antialias; ++i) {
+        for (int j = 0; j < antialias; ++j) {
             
-            const float2 point = float2((float)position[0] + (float)i * _a, (float)position[1] + (float)j * _a);
+            int stencil_index = stencil_width * (stencil_position[1] + i) + (stencil_position[0] + j);
             
-            int stencil = stencil_triangle(point, triangles, parameter.triangle_count);
-            stencil += stencil_quadratic(point, quadratics, parameter.quadratic_count);
-            stencil += stencil_cubic(point, cubics, parameter.cubic_count);
-            
-            if ((stencil & 1) != 0) {
+            if ((stencil[stencil_index] & 1) != 0) {
                 counter += 1;
             }
         }
