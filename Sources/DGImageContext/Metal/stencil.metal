@@ -169,6 +169,7 @@ kernel void fill_nonZero(const device fill_parameter &parameter [[buffer(0)]],
     const int antialias = parameter.antialias;
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
+    const int opacity_idx = countOfComponents - 1;
     
     const float _a = 1.0 / (float)antialias;
     
@@ -189,11 +190,11 @@ kernel void fill_nonZero(const device fill_parameter &parameter [[buffer(0)]],
         }
     }
     
-    for (int i = 0; i < countOfComponents; ++i) {
+    for (int i = 0; i < opacity_idx; ++i) {
         out[idx * countOfComponents + i] = parameter.color[i];
     }
     
-    _set_opacity((float)counter / (float)(antialias * antialias), out, idx);
+    out[idx * countOfComponents + opacity_idx] = parameter.color[opacity_idx] * (float)counter / (float)(antialias * antialias);
 }
 
 kernel void fill_evenOdd(const device fill_parameter &parameter [[buffer(0)]],
@@ -207,6 +208,7 @@ kernel void fill_evenOdd(const device fill_parameter &parameter [[buffer(0)]],
     const int antialias = parameter.antialias;
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
+    const int opacity_idx = countOfComponents - 1;
     
     const float _a = 1.0 / (float)antialias;
     
@@ -227,9 +229,9 @@ kernel void fill_evenOdd(const device fill_parameter &parameter [[buffer(0)]],
         }
     }
     
-    for (int i = 0; i < countOfComponents; ++i) {
+    for (int i = 0; i < opacity_idx; ++i) {
         out[idx * countOfComponents + i] = parameter.color[i];
     }
     
-    _set_opacity((float)counter / (float)(antialias * antialias), out, idx);
+    out[idx * countOfComponents + opacity_idx] = parameter.color[opacity_idx] * (float)counter / (float)(antialias * antialias);
 }

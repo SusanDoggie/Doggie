@@ -88,6 +88,7 @@
 		0A3FD862210079BC006D4737 /* CGContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3FD861210079BC006D4737 /* CGContext.swift */; };
 		0A404BE2218BE24F00F7F1AD /* texture.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A404BE1218BE24F00F7F1AD /* texture.metal */; };
 		0A404BE6218C46AF00F7F1AD /* resampling.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A404BE5218C46AF00F7F1AD /* resampling.metal */; };
+		0A459AAA219014180015CDCD /* shadow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A459AA9219014180015CDCD /* shadow.metal */; };
 		0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */; };
 		0A53E4631E35AEF80060FB83 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44F1E35AEF80060FB83 /* Date.swift */; };
 		0A53E4651E35AEF80060FB83 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */; };
@@ -360,6 +361,7 @@
 		0A3FD861210079BC006D4737 /* CGContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGContext.swift; sourceTree = "<group>"; };
 		0A404BE1218BE24F00F7F1AD /* texture.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = texture.metal; sourceTree = "<group>"; };
 		0A404BE5218C46AF00F7F1AD /* resampling.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = resampling.metal; sourceTree = "<group>"; };
+		0A459AA9219014180015CDCD /* shadow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shadow.metal; sourceTree = "<group>"; };
 		0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0A53E44F1E35AEF80060FB83 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Date.swift; sourceTree = "<group>"; };
 		0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FloatingPoint.swift; sourceTree = "<group>"; };
@@ -816,6 +818,7 @@
 				0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */,
 				0A29B2F52189A7600046FFB4 /* maths.metal */,
 				0A404BE1218BE24F00F7F1AD /* texture.metal */,
+				0A459AA9219014180015CDCD /* shadow.metal */,
 				0A404BE5218C46AF00F7F1AD /* resampling.metal */,
 				0A29B1D92189985D0046FFB4 /* stencil.metal */,
 				0A29B2F12189A4210046FFB4 /* set_opacity.metal */,
@@ -1603,6 +1606,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A29B20C218998710046FFB4 /* Renderer.swift in Sources */,
+				0A459AAA219014180015CDCD /* shadow.metal in Sources */,
 				0A13DB34218AE99200BD05F8 /* clip.metal in Sources */,
 				0A29B2F22189A4210046FFB4 /* set_opacity.metal in Sources */,
 				0A29B237218998710046FFB4 /* stencil.metal in Sources */,

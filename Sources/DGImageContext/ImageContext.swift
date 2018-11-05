@@ -330,7 +330,6 @@ extension DGImageContext {
             } else {
                 
                 self.next = nil
-                
                 self.draw_layer(next._image)
             }
         }
@@ -340,6 +339,11 @@ extension DGImageContext {
 extension DGImageContext {
     
     public func draw(shape: Shape, winding: Shape.WindingRule, color: Model, opacity: Double = 1) {
+        
+        if let next = self.next {
+            next.draw(shape: shape, winding: winding, color: color, opacity: opacity)
+            return
+        }
         
         var shape = shape
         shape.transform *= self.transform
@@ -361,6 +365,11 @@ extension DGImageContext {
 extension DGImageContext {
     
     public func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Model {
+        
+        if let next = self.next {
+            next.draw(texture: texture, transform: transform)
+            return
+        }
         
         let transform = transform * self.transform
         
@@ -424,6 +433,11 @@ extension DGImageContext {
     
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
         
+        if let next = self.next {
+            next.drawLinearGradient(stops: stops, start: start, end: end, startSpread: startSpread, endSpread: endSpread)
+            return
+        }
+        
         guard stops.count != 0 && !self.transform.determinant.almostZero() else { return }
         
         let colorSpace = self.colorSpace
@@ -436,6 +450,11 @@ extension DGImageContext {
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
+        
+        if let next = self.next {
+            next.drawRadialGradient(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
+            return
+        }
         
         guard stops.count != 0 && !self.transform.determinant.almostZero() else { return }
         

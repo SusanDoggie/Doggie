@@ -264,6 +264,44 @@ extension MetalRenderer.Encoder {
     
     func shadow(_ source: MTLBuffer, _ destination: MTLBuffer, _ color: [Double], _ offset: Size, _ blur: Double) throws {
         
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        
+        let pipeline = try renderer.request_pipeline("shadow")
+        encoder.setComputePipelineState(pipeline)
+        
+        let _color0 = 0..<color.count ~= 0 ? Float(color[0]) : 0
+        let _color1 = 0..<color.count ~= 1 ? Float(color[1]) : 0
+        let _color2 = 0..<color.count ~= 2 ? Float(color[2]) : 0
+        let _color3 = 0..<color.count ~= 3 ? Float(color[3]) : 0
+        let _color4 = 0..<color.count ~= 4 ? Float(color[4]) : 0
+        let _color5 = 0..<color.count ~= 5 ? Float(color[5]) : 0
+        let _color6 = 0..<color.count ~= 6 ? Float(color[6]) : 0
+        let _color7 = 0..<color.count ~= 7 ? Float(color[7]) : 0
+        let _color8 = 0..<color.count ~= 8 ? Float(color[8]) : 0
+        let _color9 = 0..<color.count ~= 9 ? Float(color[9]) : 0
+        let _color10 = 0..<color.count ~= 10 ? Float(color[10]) : 0
+        let _color11 = 0..<color.count ~= 11 ? Float(color[11]) : 0
+        let _color12 = 0..<color.count ~= 12 ? Float(color[12]) : 0
+        let _color13 = 0..<color.count ~= 13 ? Float(color[13]) : 0
+        let _color14 = 0..<color.count ~= 14 ? Float(color[14]) : 0
+        let _color15 = 0..<color.count ~= 15 ? Float(color[15]) : 0
+        
+        encoder.setBytes([ShadowParameter(
+            offset: GPSize(offset),
+            blur: Float(blur),
+            color: (_color0, _color1, _color2, _color3,
+                    _color4, _color5, _color6, _color7,
+                    _color8, _color9, _color10, _color11,
+                    _color12, _color13, _color14, _color15))], length: 76, index: 0)
+        encoder.setBuffer(source, offset: 0, index: 1)
+        encoder.setBuffer(destination, offset: 0, index: 2)
+        
+        let w = pipeline.threadExecutionWidth
+        let h = pipeline.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
+        
+        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
     }
     
     func draw(_ destination: MTLBuffer, _ shape: Shape, _ color: [Double], _ winding: Shape.WindingRule, _ antialias: Int) throws {
@@ -330,23 +368,6 @@ extension MetalRenderer.Encoder {
         
         encoder.setComputePipelineState(pipeline)
         
-        let _color0 = 0..<color.count ~= 0 ? Float(color[0]) : 0
-        let _color1 = 0..<color.count ~= 1 ? Float(color[1]) : 0
-        let _color2 = 0..<color.count ~= 2 ? Float(color[2]) : 0
-        let _color3 = 0..<color.count ~= 3 ? Float(color[3]) : 0
-        let _color4 = 0..<color.count ~= 4 ? Float(color[4]) : 0
-        let _color5 = 0..<color.count ~= 5 ? Float(color[5]) : 0
-        let _color6 = 0..<color.count ~= 6 ? Float(color[6]) : 0
-        let _color7 = 0..<color.count ~= 7 ? Float(color[7]) : 0
-        let _color8 = 0..<color.count ~= 8 ? Float(color[8]) : 0
-        let _color9 = 0..<color.count ~= 9 ? Float(color[9]) : 0
-        let _color10 = 0..<color.count ~= 10 ? Float(color[10]) : 0
-        let _color11 = 0..<color.count ~= 11 ? Float(color[11]) : 0
-        let _color12 = 0..<color.count ~= 12 ? Float(color[12]) : 0
-        let _color13 = 0..<color.count ~= 13 ? Float(color[13]) : 0
-        let _color14 = 0..<color.count ~= 14 ? Float(color[14]) : 0
-        let _color15 = 0..<color.count ~= 15 ? Float(color[15]) : 0
-        
         let _triangle_render_buffer: MTLBuffer
         let _quadratic_render_buffer: MTLBuffer
         let _cubic_render_buffer: MTLBuffer
@@ -371,6 +392,23 @@ extension MetalRenderer.Encoder {
             guard let __cubic_render_buffer = device.makeBuffer(cubic_render_buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
             _cubic_render_buffer = __cubic_render_buffer
         }
+        
+        let _color0 = 0..<color.count ~= 0 ? Float(color[0]) : 0
+        let _color1 = 0..<color.count ~= 1 ? Float(color[1]) : 0
+        let _color2 = 0..<color.count ~= 2 ? Float(color[2]) : 0
+        let _color3 = 0..<color.count ~= 3 ? Float(color[3]) : 0
+        let _color4 = 0..<color.count ~= 4 ? Float(color[4]) : 0
+        let _color5 = 0..<color.count ~= 5 ? Float(color[5]) : 0
+        let _color6 = 0..<color.count ~= 6 ? Float(color[6]) : 0
+        let _color7 = 0..<color.count ~= 7 ? Float(color[7]) : 0
+        let _color8 = 0..<color.count ~= 8 ? Float(color[8]) : 0
+        let _color9 = 0..<color.count ~= 9 ? Float(color[9]) : 0
+        let _color10 = 0..<color.count ~= 10 ? Float(color[10]) : 0
+        let _color11 = 0..<color.count ~= 11 ? Float(color[11]) : 0
+        let _color12 = 0..<color.count ~= 12 ? Float(color[12]) : 0
+        let _color13 = 0..<color.count ~= 13 ? Float(color[13]) : 0
+        let _color14 = 0..<color.count ~= 14 ? Float(color[14]) : 0
+        let _color15 = 0..<color.count ~= 15 ? Float(color[15]) : 0
         
         encoder.setBytes([FillStencilParameter(
             offset_x: UInt32(offset_x),
@@ -555,6 +593,16 @@ extension MetalRenderer.Encoder {
         
         var width: Float
         var height: Float
+        
+        init(width: Float, height: Float) {
+            self.width = width
+            self.height = height
+        }
+        
+        init(_ size: Size) {
+            self.width = Float(size.width)
+            self.height = Float(size.height)
+        }
     }
     
     private struct GPVector {
@@ -577,6 +625,16 @@ extension MetalRenderer.Encoder {
         init(_ transform: SDTransform) {
             self.transform = (Float(transform.a), Float(transform.d), Float(transform.b), Float(transform.e), Float(transform.c), Float(transform.f))
         }
+    }
+    
+    private struct ShadowParameter {
+        
+        var offset: GPSize
+        var blur: Float
+        var color: (Float, Float, Float, Float,
+        Float, Float, Float, Float,
+        Float, Float, Float, Float,
+        Float, Float, Float, Float)
     }
     
     private struct FillStencilParameter {
