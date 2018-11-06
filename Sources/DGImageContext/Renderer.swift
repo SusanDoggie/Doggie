@@ -71,8 +71,6 @@ protocol DGRendererEncoder {
     
     func commit()
     
-    func waitUntilScheduled()
-    
     func waitUntilCompleted()
     
     func clip_encoder() throws -> Renderer.ClipEncoder
@@ -174,12 +172,20 @@ extension DGImageContext {
         
         let texture = Texture<FloatColorPixel<Model>>(width: width, height: height, option: .inMemory)
         let resource = Resource<Renderer.Encoder>()
-        try self._image.render(encoder: encoder, output: encoder.make_buffer(texture.pixels), resource: resource)
         
-        encoder.commit()
-        encoder.waitUntilCompleted()
-        
-        self._image = TextureLayer(texture)
+        do {
+            
+            try self._image.render(encoder: encoder, output: encoder.make_buffer(texture.pixels), resource: resource)
+            
+            encoder.commit()
+            encoder.waitUntilCompleted()
+            
+            self._image = TextureLayer(texture)
+            
+        } catch let error {
+            encoder.commit()
+            throw error
+        }
     }
 }
 
@@ -317,7 +323,6 @@ extension DGImageContext {
                         _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0
                         
                         clip_encoder.commit()
-                        clip_encoder.waitUntilScheduled()
                         
                         resource.clip_cache[ObjectIdentifier(clip)] = _clip
                         resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }

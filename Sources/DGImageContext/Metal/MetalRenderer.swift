@@ -32,7 +32,7 @@ private let MTLCommandQueueCacheLock = SDLock()
 private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
 private let command_encoder_limit = 16
-private let stencil_buffer_limit = 256
+private let stencil_buffer_limit = 32
 
 class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     
@@ -120,6 +120,7 @@ extension MetalRenderer {
         var commandBuffer: MTLCommandBuffer
         
         var command_counter = 0
+        var committed = false
         
         var stencil_buffer: MTLBuffer?
         
@@ -138,11 +139,13 @@ extension MetalRenderer.Encoder {
         
         if command_counter >= command_encoder_limit {
             commandBuffer.commit()
-            commandBuffer.waitUntilScheduled()
+            commandBuffer.waitUntilCompleted()
             guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
             self.commandBuffer = _commandBuffer
             command_counter = 0
         }
+        
+        command_counter += 1
         
         guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
         return encoder
@@ -152,11 +155,13 @@ extension MetalRenderer.Encoder {
         
         if command_counter >= command_encoder_limit {
             commandBuffer.commit()
-            commandBuffer.waitUntilScheduled()
+            commandBuffer.waitUntilCompleted()
             guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
             self.commandBuffer = _commandBuffer
             command_counter = 0
         }
+        
+        command_counter += 1
         
         guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         return encoder
@@ -167,10 +172,6 @@ extension MetalRenderer.Encoder {
     
     func commit() {
         commandBuffer.commit()
-    }
-    
-    func waitUntilScheduled() {
-        commandBuffer.waitUntilScheduled()
     }
     
     func waitUntilCompleted() {
