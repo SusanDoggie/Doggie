@@ -31,8 +31,8 @@ import Metal
 private let MTLCommandQueueCacheLock = SDLock()
 private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
-private let command_encoder_limit = 16
-private let stencil_buffer_limit = 32
+private let command_encoder_limit = 8
+private let stencil_buffer_limit = 8
 
 class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     
@@ -819,47 +819,50 @@ extension MetalRenderer.Encoder {
         
         try shape.render { op in
             
-            switch op {
-            case let .triangle(p0, p1, p2):
+            try autoreleasepool {
                 
-                let q0 = p0 * transform
-                let q1 = p1 * transform
-                let q2 = p2 * transform
-                
-                triangle_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
-                triangle_bound = triangle_bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                
-                if triangle_render_buffer.count >= stencil_buffer_limit {
-                    try render_triangle(width: width, height: height, bound: triangle_bound ?? Rect(), buffer: triangle_render_buffer, output: output)
-                    triangle_render_buffer = []
-                }
-                
-            case let .quadratic(p0, p1, p2):
-                
-                let q0 = p0 * transform
-                let q1 = p1 * transform
-                let q2 = p2 * transform
-                
-                quadratic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
-                quadratic_bound = quadratic_bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                
-                if quadratic_render_buffer.count >= stencil_buffer_limit {
-                    try render_quadratic(width: width, height: height, bound: quadratic_bound ?? Rect(), buffer: quadratic_render_buffer, output: output)
-                    quadratic_render_buffer = []
-                }
-                
-            case let .cubic(p0, p1, p2, v0, v1, v2):
-                
-                let q0 = p0 * transform
-                let q1 = p1 * transform
-                let q2 = p2 * transform
-                
-                cubic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2)))
-                cubic_bound = cubic_bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                
-                if cubic_render_buffer.count >= stencil_buffer_limit {
-                    try render_cubic(width: width, height: height, bound: cubic_bound ?? Rect(), buffer: cubic_render_buffer, output: output)
-                    cubic_render_buffer = []
+                switch op {
+                case let .triangle(p0, p1, p2):
+                    
+                    let q0 = p0 * transform
+                    let q1 = p1 * transform
+                    let q2 = p2 * transform
+                    
+                    triangle_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
+                    triangle_bound = triangle_bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                    
+                    if triangle_render_buffer.count >= stencil_buffer_limit {
+                        try render_triangle(width: width, height: height, bound: triangle_bound ?? Rect(), buffer: triangle_render_buffer, output: output)
+                        triangle_render_buffer = []
+                    }
+                    
+                case let .quadratic(p0, p1, p2):
+                    
+                    let q0 = p0 * transform
+                    let q1 = p1 * transform
+                    let q2 = p2 * transform
+                    
+                    quadratic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
+                    quadratic_bound = quadratic_bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                    
+                    if quadratic_render_buffer.count >= stencil_buffer_limit {
+                        try render_quadratic(width: width, height: height, bound: quadratic_bound ?? Rect(), buffer: quadratic_render_buffer, output: output)
+                        quadratic_render_buffer = []
+                    }
+                    
+                case let .cubic(p0, p1, p2, v0, v1, v2):
+                    
+                    let q0 = p0 * transform
+                    let q1 = p1 * transform
+                    let q2 = p2 * transform
+                    
+                    cubic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2)))
+                    cubic_bound = cubic_bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                    
+                    if cubic_render_buffer.count >= stencil_buffer_limit {
+                        try render_cubic(width: width, height: height, bound: cubic_bound ?? Rect(), buffer: cubic_render_buffer, output: output)
+                        cubic_render_buffer = []
+                    }
                 }
             }
         }
