@@ -739,7 +739,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("stencil_triangle")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 16, index: 0)
+        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 12, index: 0)
         encoder.setBuffer(_buffer, offset: 0, index: 1)
         encoder.setBuffer(output, offset: 0, index: 2)
         
@@ -766,7 +766,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("stencil_quadratic")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 16, index: 0)
+        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 12, index: 0)
         encoder.setBuffer(_buffer, offset: 0, index: 1)
         encoder.setBuffer(output, offset: 0, index: 2)
         
@@ -793,7 +793,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("stencil_cubic")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 16, index: 0)
+        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 12, index: 0)
         encoder.setBuffer(_buffer, offset: 0, index: 1)
         encoder.setBuffer(output, offset: 0, index: 2)
         
