@@ -36,7 +36,6 @@ struct stencil_parameter {
     
     const packed_uint2 offset;
     const uint width;
-    const uint count;
 };
 
 struct stencil_triangle_struct {
@@ -66,22 +65,48 @@ struct fill_stencil_parameter {
 kernel void stencil_triangle(const device stencil_parameter &parameter [[buffer(0)]],
                              const device stencil_triangle_struct *triangles [[buffer(1)]],
                              device int16_t *out [[buffer(2)]],
-                             uint2 id [[thread_position_in_grid]]) {
+                             uint3 id [[thread_position_in_grid]]) {
     
     const int width = parameter.width;
-    const int count = parameter.count;
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
     
-    for (int i = 0; i < count; ++i) {
+    const stencil_triangle_struct triangle = triangles[id[2]];
+    
+    const float2 p0 = triangle.p0;
+    const float2 p1 = triangle.p1;
+    const float2 p2 = triangle.p2;
+    
+    if (inTriangle(p0, p1, p2, (float2)position)) {
+        if (signbit(cross(p1 - p0, p2 - p0))) {
+            --out[idx];
+        } else {
+            ++out[idx];
+        }
+    }
+}
+
+kernel void stencil_quadratic(const device stencil_parameter &parameter [[buffer(0)]],
+                              const device stencil_quadratic_struct *triangles [[buffer(1)]],
+                              device int16_t *out [[buffer(2)]],
+                              uint3 id [[thread_position_in_grid]]) {
+    
+    const int width = parameter.width;
+    const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
+    const int idx = width * position[1] + position[0];
+    
+    const stencil_quadratic_struct triangle = triangles[id[2]];
+    
+    const float2 p0 = triangle.p0;
+    const float2 p1 = triangle.p1;
+    const float2 p2 = triangle.p2;
+    
+    if (inTriangle(p0, p1, p2, (float2)position)) {
         
-        const stencil_triangle_struct triangle = triangles[i];
+        const float3 p = Barycentric(p0, p1, p2, (float2)position);
+        const float s = 0.5 * p[1] + p[2];
         
-        const float2 p0 = triangle.p0;
-        const float2 p1 = triangle.p1;
-        const float2 p2 = triangle.p2;
-        
-        if (inTriangle(p0, p1, p2, (float2)position)) {
+        if (s * s < p[2]) {
             if (signbit(cross(p1 - p0, p2 - p0))) {
                 --out[idx];
             } else {
@@ -89,83 +114,42 @@ kernel void stencil_triangle(const device stencil_parameter &parameter [[buffer(
             }
         }
     }
-    
-}
-
-kernel void stencil_quadratic(const device stencil_parameter &parameter [[buffer(0)]],
-                              const device stencil_quadratic_struct *triangles [[buffer(1)]],
-                              device int16_t *out [[buffer(2)]],
-                              uint2 id [[thread_position_in_grid]]) {
-    
-    const int width = parameter.width;
-    const int count = parameter.count;
-    const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
-    const int idx = width * position[1] + position[0];
-    
-    for (int i = 0; i < count; ++i) {
-        
-        const stencil_quadratic_struct triangle = triangles[i];
-        
-        const float2 p0 = triangle.p0;
-        const float2 p1 = triangle.p1;
-        const float2 p2 = triangle.p2;
-        
-        if (inTriangle(p0, p1, p2, (float2)position)) {
-            
-            const float3 p = Barycentric(p0, p1, p2, (float2)position);
-            const float s = 0.5 * p[1] + p[2];
-            
-            if (s * s < p[2]) {
-                if (signbit(cross(p1 - p0, p2 - p0))) {
-                    --out[idx];
-                } else {
-                    ++out[idx];
-                }
-            }
-        }
-    }
-    
 }
 
 kernel void stencil_cubic(const device stencil_parameter &parameter [[buffer(0)]],
                           const device stencil_cubic_struct *triangles [[buffer(1)]],
                           device int16_t *out [[buffer(2)]],
-                          uint2 id [[thread_position_in_grid]]) {
+                          uint3 id [[thread_position_in_grid]]) {
     
     const int width = parameter.width;
-    const int count = parameter.count;
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
     
-    for (int i = 0; i < count; ++i) {
+    const stencil_cubic_struct triangle = triangles[id[2]];
+    
+    const float2 p0 = triangle.p0;
+    const float2 p1 = triangle.p1;
+    const float2 p2 = triangle.p2;
+    const float3 v0 = triangle.v0;
+    const float3 v1 = triangle.v1;
+    const float3 v2 = triangle.v2;
+    
+    if (inTriangle(p0, p1, p2, (float2)position)) {
         
-        const stencil_cubic_struct triangle = triangles[i];
+        const float3 p = Barycentric(p0, p1, p2, (float2)position);
+        const float3 u0 = p[0] * v0;
+        const float3 u1 = p[1] * v1;
+        const float3 u2 = p[2] * v2;
+        const float3 v = u0 + u1 + u2;
         
-        const float2 p0 = triangle.p0;
-        const float2 p1 = triangle.p1;
-        const float2 p2 = triangle.p2;
-        const float3 v0 = triangle.v0;
-        const float3 v1 = triangle.v1;
-        const float3 v2 = triangle.v2;
-        
-        if (inTriangle(p0, p1, p2, (float2)position)) {
-            
-            const float3 p = Barycentric(p0, p1, p2, (float2)position);
-            const float3 u0 = p[0] * v0;
-            const float3 u1 = p[1] * v1;
-            const float3 u2 = p[2] * v2;
-            const float3 v = u0 + u1 + u2;
-            
-            if (v[0] * v[0] * v[0] < v[1] * v[2]) {
-                if (signbit(cross(p1 - p0, p2 - p0))) {
-                    --out[idx];
-                } else {
-                    ++out[idx];
-                }
+        if (v[0] * v[0] * v[0] < v[1] * v[2]) {
+            if (signbit(cross(p1 - p0, p2 - p0))) {
+                --out[idx];
+            } else {
+                ++out[idx];
             }
         }
     }
-    
 }
 
 kernel void fill_nonZero_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],

@@ -31,8 +31,8 @@ import Metal
 private let MTLCommandQueueCacheLock = SDLock()
 private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
-private let command_encoder_limit = 8
-private let stencil_buffer_limit = 8
+private let command_encoder_limit = 4
+private let stencil_buffer_limit = 4
 
 class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     
@@ -739,7 +739,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("stencil_triangle")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(buffer.count)], length: 16, index: 0)
+        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 16, index: 0)
         encoder.setBuffer(_buffer, offset: 0, index: 1)
         encoder.setBuffer(output, offset: 0, index: 2)
         
@@ -747,7 +747,7 @@ extension MetalRenderer.Encoder {
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
         
-        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: buffer.count), threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
     }
     
@@ -766,7 +766,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("stencil_quadratic")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(buffer.count)], length: 16, index: 0)
+        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 16, index: 0)
         encoder.setBuffer(_buffer, offset: 0, index: 1)
         encoder.setBuffer(output, offset: 0, index: 2)
         
@@ -774,7 +774,7 @@ extension MetalRenderer.Encoder {
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
         
-        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: buffer.count), threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
     }
     
@@ -793,7 +793,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("stencil_cubic")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width), UInt32(buffer.count)], length: 16, index: 0)
+        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 16, index: 0)
         encoder.setBuffer(_buffer, offset: 0, index: 1)
         encoder.setBuffer(output, offset: 0, index: 2)
         
@@ -801,7 +801,7 @@ extension MetalRenderer.Encoder {
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
         
-        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: buffer.count), threadsPerThreadgroup: threadsPerThreadgroup)
         encoder.endEncoding()
     }
     
