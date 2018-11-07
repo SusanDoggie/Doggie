@@ -2,7 +2,7 @@
 import Cocoa
 import Doggie
 
-public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
+public func circle(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     

@@ -4,19 +4,16 @@
         <page name='Benchmark'/>
         <page name='Doggie'/>
         <page name='Font'/>
-        <page name='Blending'/>
-        <page name='Clip'/>
-        <page name='Circle'/>
         <page name='Color'/>
-        <page name='CoonsPatchView'/>
-        <page name='Drum'/>
         <page name='Region'/>
-        <page name='Resampling'/>
         <page name='ShapeTweening'/>
+        <page name='Graphic'/>
+        <page name='Blending'/>
+        <page name='Resampling'/>
         <page name='Simplex Noise'/>
-        <page name='Stroke'/>
-        <page name='TensorPatchView'/>
         <page name='3D'/>
-        <page name='Gradient'/>
+        <page name='Stroke'/>
+        <page name='CoonsPatchView'/>
+        <page name='TensorPatchView'/>
     </pages>
 </playground>

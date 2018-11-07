@@ -3,6 +3,12 @@
 import Cocoa
 import Doggie
 
+circle(width: 500, height: 500)
+
+clip(width: 500, height: 500)
+
+drum(width: 500, height: 500)
+
 linearGradient(width: 500, height: 500)
 
 radialGradient(width: 500, height: 500)
