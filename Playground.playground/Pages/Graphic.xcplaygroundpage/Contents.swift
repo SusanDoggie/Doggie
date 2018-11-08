@@ -14,3 +14,13 @@ linearGradient(width: 500, height: 500)
 radialGradient(width: 500, height: 500)
 
 meshGradient(width: 500, height: 500)
+
+orthographicProject(width: 500, height: 500)
+
+perspectiveProject(width: 500, height: 500)
+
+texturedCube(width: 500, height: 500)
+
+tessellation(width: 500, height: 500)
+
+tessellation2(width: 500, height: 500)
