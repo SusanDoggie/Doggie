@@ -320,12 +320,19 @@ extension DGImageContext {
                         let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
                         let clip_encoder = try encoder.clip_encoder()
                         
-                        _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0
-                        
-                        clip_encoder.commit()
-                        
-                        resource.clip_cache[ObjectIdentifier(clip)] = _clip
-                        resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
+                        do {
+                            
+                            _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0
+                            
+                            clip_encoder.commit()
+                            
+                            resource.clip_cache[ObjectIdentifier(clip)] = _clip
+                            resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
+                            
+                        } catch let error {
+                            clip_encoder.commit()
+                            throw error
+                        }
                     }
                     
                     try encoder.clip(_source, _clip)
