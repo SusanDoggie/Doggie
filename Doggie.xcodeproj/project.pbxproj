@@ -346,7 +346,7 @@
 		0A29B1D92189985D0046FFB4 /* stencil.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = stencil.metal; sourceTree = "<group>"; };
 		0A29B1DA2189985D0046FFB4 /* ImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageContext.swift; sourceTree = "<group>"; };
 		0A29B1DB2189985D0046FFB4 /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		0A29B2DA218998710046FFB4 /* DGImageContext.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DGImageContext.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A29B2DA218998710046FFB4 /* DoggieGP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DoggieGP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A29B2F12189A4210046FFB4 /* set_opacity.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = set_opacity.metal; sourceTree = "<group>"; };
 		0A29B2F52189A7600046FFB4 /* maths.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = maths.metal; sourceTree = "<group>"; };
 		0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalRenderer.swift; sourceTree = "<group>"; };
@@ -693,7 +693,7 @@
 			isa = PBXGroup;
 			children = (
 				0858DA401C0550B7007FA426 /* Doggie */,
-				0A29B1D82189985D0046FFB4 /* DGImageContext */,
+				0A29B1D82189985D0046FFB4 /* DoggieGP */,
 				08AF77AE1A3A10510042491F /* Tests */,
 				087FE5971A372D5B005A2E9E /* Products */,
 			);
@@ -704,7 +704,7 @@
 			children = (
 				087FE5B51A372D97005A2E9E /* Doggie.framework */,
 				087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */,
-				0A29B2DA218998710046FFB4 /* DGImageContext.framework */,
+				0A29B2DA218998710046FFB4 /* DoggieGP.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -804,15 +804,15 @@
 			path = SDObject;
 			sourceTree = "<group>";
 		};
-		0A29B1D82189985D0046FFB4 /* DGImageContext */ = {
+		0A29B1D82189985D0046FFB4 /* DoggieGP */ = {
 			isa = PBXGroup;
 			children = (
 				0A29B2F02189A3FB0046FFB4 /* Metal */,
 				0A29B1DA2189985D0046FFB4 /* ImageContext.swift */,
 				0A29B1DB2189985D0046FFB4 /* Renderer.swift */,
 			);
-			name = DGImageContext;
-			path = Sources/DGImageContext;
+			name = DoggieGP;
+			path = Sources/DoggieGP;
 			sourceTree = "<group>";
 		};
 		0A29B2F02189A3FB0046FFB4 /* Metal */ = {
@@ -1261,9 +1261,9 @@
 			productReference = 087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		0A29B1DF218998710046FFB4 /* DGImageContext */ = {
+		0A29B1DF218998710046FFB4 /* DoggieGP */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0A29B2D7218998710046FFB4 /* Build configuration list for PBXNativeTarget "DGImageContext" */;
+			buildConfigurationList = 0A29B2D7218998710046FFB4 /* Build configuration list for PBXNativeTarget "DoggieGP" */;
 			buildPhases = (
 				0A29B1E0218998710046FFB4 /* Sources */,
 				0A29B2D2218998710046FFB4 /* Frameworks */,
@@ -1274,9 +1274,9 @@
 			);
 			dependencies = (
 			);
-			name = DGImageContext;
+			name = DoggieGP;
 			productName = Doggie_Mac;
-			productReference = 0A29B2DA218998710046FFB4 /* DGImageContext.framework */;
+			productReference = 0A29B2DA218998710046FFB4 /* DoggieGP.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -1315,8 +1315,8 @@
 			projectRoot = "";
 			targets = (
 				087FE5B41A372D97005A2E9E /* Doggie */,
+				0A29B1DF218998710046FFB4 /* DoggieGP */,
 				087FE5BE1A372D97005A2E9E /* DoggieTests */,
-				0A29B1DF218998710046FFB4 /* DGImageContext */,
 			);
 		};
 /* End PBXProject section */
@@ -1922,7 +1922,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0A29B2D7218998710046FFB4 /* Build configuration list for PBXNativeTarget "DGImageContext" */ = {
+		0A29B2D7218998710046FFB4 /* Build configuration list for PBXNativeTarget "DoggieGP" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A29B2D8218998710046FFB4 /* Debug */,
