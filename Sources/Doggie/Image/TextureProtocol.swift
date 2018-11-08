@@ -60,10 +60,6 @@ public protocol TextureProtocol: RawPixelProtocol {
     
     var verticalWrappingMode: WrappingMode { get set }
     
-    var fileBacked: Bool { get set }
-    
-    func setMemoryAdvise(_ advise: MemoryAdvise)
-    
     func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P>
     
     func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> StencilTexture<P>

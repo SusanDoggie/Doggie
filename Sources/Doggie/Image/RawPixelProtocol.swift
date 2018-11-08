@@ -33,6 +33,14 @@ public protocol RawPixelProtocol {
     
     var pixels: MappedBuffer<RawPixel> { get }
     
+    var fileBacked: Bool { get set }
+    
+    func setMemoryAdvise(_ advise: MemoryAdvise)
+    
+    func memoryLock()
+    
+    func memoryUnlock()
+    
     mutating func setOrientation(_ orientation: ImageOrientation)
     
     func transposed() -> Self

@@ -51,6 +51,10 @@ public protocol ImageProtocol {
     
     func setMemoryAdvise(_ advise: MemoryAdvise)
     
+    func memoryLock()
+    
+    func memoryUnlock()
+    
     mutating func setOrientation(_ orientation: ImageOrientation)
     
     func linearTone() -> Self

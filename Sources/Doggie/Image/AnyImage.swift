@@ -42,6 +42,10 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     func setMemoryAdvise(_ advise: MemoryAdvise)
     
+    func memoryLock()
+    
+    func memoryUnlock()
+    
     func color(x: Int, y: Int) -> AnyColor
     
     mutating func setColor<C: ColorProtocol>(x: Int, y: Int, color: C)
@@ -219,6 +223,16 @@ extension AnyImage {
     @inlinable
     public func setMemoryAdvise(_ advise: MemoryAdvise) {
         return _base.setMemoryAdvise(advise)
+    }
+    
+    @inlinable
+    public func memoryLock() {
+        _base.memoryLock()
+    }
+    
+    @inlinable
+    public func memoryUnlock() {
+        _base.memoryUnlock()
     }
     
     @inlinable

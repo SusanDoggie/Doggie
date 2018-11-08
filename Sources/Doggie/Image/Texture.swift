@@ -115,6 +115,16 @@ extension Texture {
     public func setMemoryAdvise(_ advise: MemoryAdvise) {
         pixels.setMemoryAdvise(advise)
     }
+    
+    @inlinable
+    public func memoryLock() {
+        pixels.memoryLock()
+    }
+    
+    @inlinable
+    public func memoryUnlock() {
+        pixels.memoryUnlock()
+    }
 }
 
 extension Texture {
