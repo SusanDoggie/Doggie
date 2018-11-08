@@ -52,18 +52,20 @@ extension ImageContext {
                 let __transform = SDTransform.scale(1 / Double(antialias)) * _transform
                 let div = 1 / Double(antialias * antialias)
                 
-                for y in stride(from: 0, to: height * antialias, by: antialias) {
-                    for x in stride(from: 0, to: width * antialias, by: antialias) {
-                        blender.draw { () -> ColorPixel<Pixel.Model> in
-                            var pixel: T = 0
-                            for j in 0..<antialias {
-                                for i in 0..<antialias {
-                                    pixel += stencil.pixel(Point(x: x + i, y: y + j) * __transform)
+                stencil.withUnsafeStencilTexture { stencil in
+                    for y in stride(from: 0, to: height * antialias, by: antialias) {
+                        for x in stride(from: 0, to: width * antialias, by: antialias) {
+                            blender.draw { () -> ColorPixel<Pixel.Model> in
+                                var pixel: T = 0
+                                for j in 0..<antialias {
+                                    for i in 0..<antialias {
+                                        pixel += stencil.pixel(Point(x: x + i, y: y + j) * __transform)
+                                    }
                                 }
+                                return ColorPixel(color: color, opacity: Double(pixel) * div)
                             }
-                            return ColorPixel(color: color, opacity: Double(pixel) * div)
+                            blender += 1
                         }
-                        blender += 1
                     }
                 }
                 
@@ -71,10 +73,12 @@ extension ImageContext {
                 
                 var blender = blender
                 
-                for y in 0..<height {
-                    for x in 0..<width {
-                        blender.draw { ColorPixel(color: color, opacity: Double(stencil.pixel(Point(x: x, y: y) * _transform))) }
-                        blender += 1
+                stencil.withUnsafeStencilTexture { stencil in
+                    for y in 0..<height {
+                        for x in 0..<width {
+                            blender.draw { ColorPixel(color: color, opacity: Double(stencil.pixel(Point(x: x, y: y) * _transform))) }
+                            blender += 1
+                        }
                     }
                 }
             }
@@ -108,18 +112,20 @@ extension ImageContext {
                 let __transform = SDTransform.scale(1 / Double(antialias)) * _transform
                 let div = 1 / Double(antialias * antialias)
                 
-                for y in stride(from: 0, to: height * antialias, by: antialias) {
-                    for x in stride(from: 0, to: width * antialias, by: antialias) {
-                        blender.draw { () -> ColorPixel<Pixel.Model> in
-                            var pixel = ColorPixel<Pixel.Model>()
-                            for j in 0..<antialias {
-                                for i in 0..<antialias {
-                                    pixel += texture.pixel(Point(x: x + i, y: y + j) * __transform)
+                texture.withUnsafeTexture { texture in
+                    for y in stride(from: 0, to: height * antialias, by: antialias) {
+                        for x in stride(from: 0, to: width * antialias, by: antialias) {
+                            blender.draw { () -> ColorPixel<Pixel.Model> in
+                                var pixel = ColorPixel<Pixel.Model>()
+                                for j in 0..<antialias {
+                                    for i in 0..<antialias {
+                                        pixel += texture.pixel(Point(x: x + i, y: y + j) * __transform)
+                                    }
                                 }
+                                return pixel * div
                             }
-                            return pixel * div
+                            blender += 1
                         }
-                        blender += 1
                     }
                 }
                 
@@ -127,14 +133,152 @@ extension ImageContext {
                 
                 var blender = blender
                 
-                for y in 0..<height {
-                    for x in 0..<width {
-                        blender.draw { texture.pixel(Point(x: x, y: y) * _transform) }
-                        blender += 1
+                texture.withUnsafeTexture { texture in
+                    for y in 0..<height {
+                        for x in 0..<width {
+                            blender.draw { texture.pixel(Point(x: x, y: y) * _transform) }
+                            blender += 1
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+extension StencilTexture {
+    
+    @inlinable
+    @inline(__always)
+    func withUnsafeStencilTexture<R>(_ body: (_UnsafeStencilTexture<T>) throws -> R) rethrows -> R {
+        
+        let width = self.width
+        let height = self.height
+        let resamplingAlgorithm = self.resamplingAlgorithm
+        let horizontalWrappingMode = self.horizontalWrappingMode
+        let verticalWrappingMode = self.verticalWrappingMode
+        
+        return try withUnsafeBufferPointer { try body(_UnsafeStencilTexture($0, width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, horizontalWrappingMode: horizontalWrappingMode, verticalWrappingMode: verticalWrappingMode)) }
+    }
+}
+
+extension Texture {
+    
+    @inlinable
+    @inline(__always)
+    func withUnsafeTexture<R>(_ body: (_UnsafeTexture<Texture>) throws -> R) rethrows -> R {
+        
+        let width = self.width
+        let height = self.height
+        let resamplingAlgorithm = self.resamplingAlgorithm
+        let horizontalWrappingMode = self.horizontalWrappingMode
+        let verticalWrappingMode = self.verticalWrappingMode
+        
+        return try withUnsafeBufferPointer { try body(_UnsafeTexture($0, width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, horizontalWrappingMode: horizontalWrappingMode, verticalWrappingMode: verticalWrappingMode)) }
+    }
+}
+
+@usableFromInline
+struct _UnsafeStencilTexture<T: BinaryFloatingPoint> : _ResamplingImplement where T: ScalarProtocol, T.Scalar: FloatingMathProtocol {
+    
+    @usableFromInline
+    typealias RawPixel = T
+    
+    @usableFromInline
+    typealias Pixel = T
+    
+    @usableFromInline
+    let pixels: UnsafeBufferPointer<RawPixel>
+    
+    @usableFromInline
+    let width: Int
+    
+    @usableFromInline
+    let height: Int
+    
+    @usableFromInline
+    let resamplingAlgorithm: ResamplingAlgorithm
+    
+    @usableFromInline
+    let horizontalWrappingMode: WrappingMode
+    
+    @usableFromInline
+    let verticalWrappingMode: WrappingMode
+    
+    @inlinable
+    @inline(__always)
+    init(_ pixels: UnsafeBufferPointer<T>, width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, horizontalWrappingMode: WrappingMode, verticalWrappingMode: WrappingMode) {
+        self.pixels = pixels
+        self.width = width
+        self.height = height
+        self.resamplingAlgorithm = resamplingAlgorithm
+        self.horizontalWrappingMode = horizontalWrappingMode
+        self.verticalWrappingMode = verticalWrappingMode
+    }
+    
+    @inlinable
+    @inline(__always)
+    func read_source(_ x: Int, _ y: Int) -> T {
+        
+        guard width != 0 && height != 0 else { return 0 }
+        
+        let (x_flag, _x) = horizontalWrappingMode.addressing(x, width)
+        let (y_flag, _y) = verticalWrappingMode.addressing(y, height)
+        
+        let pixel = pixels[_y * width + _x]
+        return x_flag && y_flag ? pixel : 0
+    }
+}
+
+@usableFromInline
+struct _UnsafeTexture<Base: _TextureProtocolImplement> : _ResamplingImplement where Base.RawPixel: ColorPixelProtocol, Base.Pixel == ColorPixel<Base.RawPixel.Model> {
+    
+    @usableFromInline
+    typealias RawPixel = Base.RawPixel
+    
+    @usableFromInline
+    typealias Pixel = Base.Pixel
+    
+    @usableFromInline
+    let pixels: UnsafeBufferPointer<RawPixel>
+    
+    @usableFromInline
+    let width: Int
+    
+    @usableFromInline
+    let height: Int
+    
+    @usableFromInline
+    let resamplingAlgorithm: ResamplingAlgorithm
+    
+    @usableFromInline
+    let horizontalWrappingMode: WrappingMode
+    
+    @usableFromInline
+    let verticalWrappingMode: WrappingMode
+    
+    @inlinable
+    @inline(__always)
+    init(_ pixels: UnsafeBufferPointer<RawPixel>, width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, horizontalWrappingMode: WrappingMode, verticalWrappingMode: WrappingMode) {
+        self.pixels = pixels
+        self.width = width
+        self.height = height
+        self.resamplingAlgorithm = resamplingAlgorithm
+        self.horizontalWrappingMode = horizontalWrappingMode
+        self.verticalWrappingMode = verticalWrappingMode
+    }
+    
+    @inlinable
+    @inline(__always)
+    func read_source(_ x: Int, _ y: Int) -> ColorPixel<RawPixel.Model> {
+        
+        guard width != 0 && height != 0 else { return ColorPixel() }
+        
+        let (x_flag, _x) = horizontalWrappingMode.addressing(x, width)
+        let (y_flag, _y) = verticalWrappingMode.addressing(y, height)
+        
+        let pixel = pixels[_y * width + _x]
+        return x_flag && y_flag ? ColorPixel(pixel) : ColorPixel(color: pixel.color, opacity: 0)
     }
 }
 

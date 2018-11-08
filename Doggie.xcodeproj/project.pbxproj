@@ -49,6 +49,7 @@
 		0A0697591E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
 		0A06975C1E4D66A3005CF664 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975A1E4D66A3005CF664 /* Filter.swift */; };
 		0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975D1E4D6732005CF664 /* NSImage.swift */; };
+		0A0F72132193F39C00BCC39B /* Resampling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0F72122193F39C00BCC39B /* Resampling.swift */; };
 		0A1158471EF4E04700EFE3E3 /* iccTagData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1158451EF4E04700EFE3E3 /* iccTagData.swift */; };
 		0A11968C212A74DD00B2D4DB /* Metal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A11968B212A74DD00B2D4DB /* Metal.swift */; };
 		0A13DB34218AE99200BD05F8 /* clip.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A13DB33218AE99200BD05F8 /* clip.metal */; };
@@ -323,6 +324,7 @@
 		0A0697571E4D6659005CF664 /* Graphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Graphic.swift; sourceTree = "<group>"; };
 		0A06975A1E4D66A3005CF664 /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Filter.swift; sourceTree = "<group>"; };
 		0A06975D1E4D6732005CF664 /* NSImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = NSImage.swift; sourceTree = "<group>"; };
+		0A0F72122193F39C00BCC39B /* Resampling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resampling.swift; sourceTree = "<group>"; };
 		0A1158451EF4E04700EFE3E3 /* iccTagData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccTagData.swift; sourceTree = "<group>"; };
 		0A11968B212A74DD00B2D4DB /* Metal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metal.swift; sourceTree = "<group>"; };
 		0A13DB33218AE99200BD05F8 /* clip.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = clip.metal; sourceTree = "<group>"; };
@@ -612,6 +614,7 @@
 				0A5DEDD61F7B60D600A45B4B /* Resolution.swift */,
 				0AB23E441F22E4980033462E /* RawBitmap.swift */,
 				0A8ABC1320E48BA600A2634A /* TextureProtocol.swift */,
+				0A0F72122193F39C00BCC39B /* Resampling.swift */,
 				0AB380F220A5374A00A8CBD7 /* Texture.swift */,
 				0A8ABC0F20E4852B00A2634A /* StencilTexture.swift */,
 			);
@@ -1530,6 +1533,7 @@
 				086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */,
 				08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */,
 				0A792CA01FDA9742003C0290 /* FileManager.swift in Sources */,
+				0A0F72132193F39C00BCC39B /* Resampling.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */,
 				0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */,

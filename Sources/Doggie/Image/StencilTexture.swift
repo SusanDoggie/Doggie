@@ -153,6 +153,10 @@ extension StencilTexture {
 
 extension StencilTexture: _TextureProtocolImplement {
     
+}
+
+extension StencilTexture: _ResamplingImplement {
+    
     @inlinable
     @inline(__always)
     func read_source(_ x: Int, _ y: Int) -> T {

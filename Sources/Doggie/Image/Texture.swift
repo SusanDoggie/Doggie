@@ -218,6 +218,10 @@ extension Texture {
 
 extension Texture: _TextureProtocolImplement {
     
+}
+
+extension Texture: _ResamplingImplement {
+    
     @inlinable
     @inline(__always)
     func read_source(_ x: Int, _ y: Int) -> ColorPixel<RawPixel.Model> {
