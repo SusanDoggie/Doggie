@@ -28,12 +28,19 @@
 import Doggie
 import Metal
 
+@available(OSX 10.13, iOS 11.0, *)
 private let MTLCommandQueueCacheLock = SDLock()
+
+@available(OSX 10.13, iOS 11.0, *)
 private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
+@available(OSX 10.13, iOS 11.0, *)
 private let command_encoder_limit = 4
+
+@available(OSX 10.13, iOS 11.0, *)
 private let stencil_buffer_limit = 4
 
+@available(OSX 10.13, iOS 11.0, *)
 class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     
     typealias ClipEncoder = MetalRenderer<GrayColorModel>.Encoder
@@ -92,6 +99,7 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     }
 }
 
+@available(OSX 10.13, iOS 11.0, *)
 extension DGImageContext {
     
     public func render() throws {
@@ -104,6 +112,7 @@ extension DGImageContext {
     }
 }
 
+@available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer {
     
     struct Error: Swift.Error, CustomStringConvertible {
@@ -133,6 +142,7 @@ extension MetalRenderer {
     }
 }
 
+@available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
     
     private func makeBlitCommandEncoder() throws -> MTLBlitCommandEncoder {
@@ -168,6 +178,7 @@ extension MetalRenderer.Encoder {
     }
 }
 
+@available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
     
     func commit() {
@@ -564,6 +575,7 @@ extension MetalRenderer.Encoder {
     }
 }
 
+@available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
     
     private struct GPPoint {
@@ -722,6 +734,7 @@ extension MetalRenderer.Encoder {
     }
 }
 
+@available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
     
     private func render_triangle(width: Int, height: Int, bound: Rect, buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint)>, output: MTLBuffer) throws {

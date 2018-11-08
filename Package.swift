@@ -30,10 +30,12 @@ let package = Package(
     name: "Doggie",
     products: [
         .library(name: "Doggie", targets: ["Doggie"]),
+        .library(name: "DGImageContext", targets: ["DGImageContext"]),
         ],
     targets: [
-        .target(name: "Doggie", dependencies: ["doggie_c"]),
         .target(name: "doggie_c", dependencies: []),
+        .target(name: "Doggie", dependencies: ["doggie_c"]),
+        .target(name: "DGImageContext", dependencies: ["Doggie"]),
         .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
         ]
 )
