@@ -298,6 +298,19 @@ extension Bezier where Element == Point {
     }
 }
 
+extension Bezier where Element : Tensor {
+    
+    @inlinable
+    public func closest(_ point: Element) -> [Double] {
+        var dot: Polynomial = []
+        for i in 0..<Element.numberOfComponents {
+            let p = Bezier<Double>(points.map { $0[i] }).polynomial - point[i]
+            dot += p * p
+        }
+        return dot.derivative.roots.sorted(by: { dot.eval($0) })
+    }
+}
+
 extension Bezier where Element == Point {
     
     @inlinable
