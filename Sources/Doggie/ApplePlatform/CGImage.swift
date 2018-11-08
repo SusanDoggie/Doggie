@@ -170,7 +170,7 @@ extension Image : CGImageConvertibleProtocol {
 
 extension AnyImage {
     
-    public init?(cgImage: CGImage, option: MappedBufferOption = .default) {
+    public init?(cgImage: CGImage, fileBacked: Bool = false) {
         
         guard let colorSpace = cgImage.colorSpace.flatMap(AnyColorSpace.init) else { return nil }
         
@@ -249,7 +249,7 @@ extension AnyImage {
         
         let bitmap = RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: cgImage.bytesPerRow << 3, startsRow: 0, endianness: pixel_endian, channels: channels, data: data)
         
-        self.init(width: cgImage.width, height: cgImage.height, colorSpace: colorSpace, bitmaps: [bitmap], premultiplied: premultiplied, option: option)
+        self.init(width: cgImage.width, height: cgImage.height, colorSpace: colorSpace, bitmaps: [bitmap], premultiplied: premultiplied, fileBacked: fileBacked)
     }
     
     public var cgImage: CGImage? {

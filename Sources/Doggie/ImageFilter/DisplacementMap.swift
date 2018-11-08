@@ -36,9 +36,9 @@ public func DisplacementMap<S, T>(_ texture: Texture<S>, _ displacement: Texture
     let width = displacement.width
     let height = displacement.height
     let resamplingAlgorithm = texture.resamplingAlgorithm
-    let option = texture.option
+    let fileBacked = texture.fileBacked
     
-    var result = Texture<S>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, option: option)
+    var result = Texture<S>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, fileBacked: fileBacked)
     
     result.withUnsafeMutableBufferPointer {
         

@@ -128,7 +128,7 @@ extension ImageContext {
         
         if self.isShadow {
             
-            var layer = Texture<Pixel>(width: width, height: height, option: image.option)
+            var layer = Texture<Pixel>(width: width, height: height, fileBacked: image.fileBacked)
             
             layer.withUnsafeMutableBufferPointer { _layer in
                 

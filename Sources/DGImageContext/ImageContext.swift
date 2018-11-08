@@ -139,7 +139,7 @@ extension DGImageContext {
         } else if value == 0 {
             current.clip = DGImageContext<GrayColorModel>.Layer()
         } else {
-            let _clip = Texture(width: width, height: height, pixel: FloatColorPixel(white: value), option: .inMemory)
+            let _clip = Texture(width: width, height: height, pixel: FloatColorPixel(white: value), fileBacked: false)
             current.clip = DGImageContext<GrayColorModel>.TextureLayer(_clip)
         }
     }

@@ -92,9 +92,9 @@ extension RawBitmap {
 
 extension Image {
     
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption = .default) {
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool = false) {
         
-        self.init(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
+        self.init(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
         
         let numberOfComponents = colorSpace.numberOfComponents
         
@@ -265,8 +265,8 @@ extension Image {
 extension AnyImage {
     
     @inlinable
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption = .default) {
-        self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, option: option))
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool = false) {
+        self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked))
     }
 }
 

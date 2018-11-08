@@ -27,7 +27,7 @@ struct PNGEncoder : ImageRepEncoder {
     
     private static func encode(_ chunks: PNGChunk ... ) -> MappedBuffer<UInt8> {
         
-        var result = MappedBuffer<UInt8>(option: .fileBacked)
+        var result = MappedBuffer<UInt8>(fileBacked: true)
         
         result.encode(0x89 as UInt8)
         result.encode(0x50 as UInt8)
@@ -108,7 +108,7 @@ struct PNGEncoder : ImageRepEncoder {
         
         guard let deflate = try? Deflate(windowBits: 15) else { return nil }
         
-        var compressed = MappedBuffer<UInt8>(capacity: height * width * Int(bitsPerPixel >> 3), option: .fileBacked)
+        var compressed = MappedBuffer<UInt8>(capacity: height * width * Int(bitsPerPixel >> 3), fileBacked: true)
         
         do {
             

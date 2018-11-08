@@ -23,18 +23,13 @@
 //  THE SOFTWARE.
 //
 
-public enum MappedBufferOption {
+public enum MemoryAdvise {
     
-    case inMemory
-    case fileBacked
-}
-
-extension MappedBufferOption {
-    
-    @inlinable
-    public static var `default` : MappedBufferOption {
-        return .inMemory
-    }
+    case normal
+    case random
+    case sequential
+    case willNeed
+    case dontNeed
 }
 
 public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
@@ -55,25 +50,25 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     @inlinable
     @inline(__always)
     public init() {
-        self.base = Base(capacity: 0, option: .default)
+        self.base = Base(capacity: 0, fileBacked: false)
     }
     
     @inlinable
     @inline(__always)
-    public init(option: MappedBufferOption) {
-        self.base = Base(capacity: 0, option: option)
+    public init(fileBacked: Bool) {
+        self.base = Base(capacity: 0, fileBacked: fileBacked)
     }
     
     @inlinable
     @inline(__always)
-    public init(capacity: Int, option: MappedBufferOption = .default) {
-        self.base = Base(capacity: capacity, option: option)
+    public init(capacity: Int, fileBacked: Bool = false) {
+        self.base = Base(capacity: capacity, fileBacked: fileBacked)
     }
     
     @inlinable
     @inline(__always)
-    public init(repeating repeatedValue: Element, count: Int, option: MappedBufferOption = .default) {
-        self.base = Base(capacity: count, option: option)
+    public init(repeating repeatedValue: Element, count: Int, fileBacked: Bool = false) {
+        self.base = Base(capacity: count, fileBacked: fileBacked)
         self.base.count = count
         
         guard Swift.withUnsafeBytes(of: repeatedValue, { $0.contains { $0 != 0 } }) else { return }
@@ -83,25 +78,25 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     @inlinable
     @inline(__always)
     public init(arrayLiteral elements: Element ...) {
-        self.base = Base(capacity: elements.count, option: .default)
+        self.base = Base(capacity: elements.count, fileBacked: false)
         self.base.count = elements.count
         self.base.address.initialize(from: elements, count: elements.count)
     }
     
     @inlinable
     @inline(__always)
-    public init<S : Sequence>(_ elements: S, option: MappedBufferOption = .default) where S.Element == Element {
+    public init<S : Sequence>(_ elements: S, fileBacked: Bool = false) where S.Element == Element {
         if let elements = elements as? MappedBuffer {
-            if elements.option == option {
+            if elements.fileBacked == fileBacked {
                 self = elements
             } else {
                 let _base = elements.base
-                self.base = Base(capacity: _base.capacity, option: option)
+                self.base = Base(capacity: _base.capacity, fileBacked: fileBacked)
                 self.base.count = _base.count
                 self.base.address.initialize(from: _base.address, count: _base.count)
             }
         } else {
-            self.base = Base(capacity: elements.underestimatedCount, option: option)
+            self.base = Base(capacity: elements.underestimatedCount, fileBacked: fileBacked)
             self.append(contentsOf: elements)
         }
     }
@@ -110,16 +105,24 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
 extension MappedBuffer {
     
     @inlinable
-    public var option: MappedBufferOption {
+    public var fileBacked: Bool {
         get {
-            return base.fd == -1 ? .inMemory : .fileBacked
+            return base.fileBacked
         }
         set {
-            if self.option != newValue {
-                self = MappedBuffer(self, option: newValue)
+            if self.fileBacked != newValue {
+                self = MappedBuffer(self, fileBacked: newValue)
             }
         }
     }
+    
+    @inlinable
+    public func setMemoryAdvise(_ advise: MemoryAdvise) {
+        base.set_memory_advise(advise)
+    }
+}
+
+extension MappedBuffer {
     
     @inlinable
     public var capacity: Int {
@@ -183,7 +186,7 @@ extension MappedBuffer {
             return
         }
         
-        let new_base = Base(capacity: base.capacity, option: self.option)
+        let new_base = Base(capacity: base.capacity, fileBacked: self.fileBacked)
         
         new_base.count = base.count
         new_base.address.initialize(from: base.address, count: base.count)
@@ -228,7 +231,7 @@ extension MappedBuffer : RangeReplaceableCollection {
                 base.extend_capacity(capacity: new_count)
             }
         } else {
-            let new_base = Base(capacity: Swift.max(base.capacity, new_count), option: self.option)
+            let new_base = Base(capacity: Swift.max(base.capacity, new_count), fileBacked: self.fileBacked)
             new_base.address.initialize(from: base.address, count: old_count)
             
             self.base = new_base
@@ -252,7 +255,7 @@ extension MappedBuffer : RangeReplaceableCollection {
                 base.extend_capacity(capacity: underestimatedCount)
             }
         } else {
-            let new_base = Base(capacity: Swift.max(base.capacity, underestimatedCount), option: self.option)
+            let new_base = Base(capacity: Swift.max(base.capacity, underestimatedCount), fileBacked: self.fileBacked)
             new_base.address.initialize(from: base.address, count: old_count)
             
             self.base = new_base
@@ -279,7 +282,7 @@ extension MappedBuffer : RangeReplaceableCollection {
             
         } else {
             
-            let new_base = Base(capacity: minimumCapacity, option: self.option)
+            let new_base = Base(capacity: minimumCapacity, fileBacked: self.fileBacked)
             
             new_base.count = base.count
             new_base.address.initialize(from: base.address, count: base.count)
@@ -303,11 +306,11 @@ extension MappedBuffer : RangeReplaceableCollection {
                 
             } else {
                 
-                self.base = Base(capacity: base.capacity, option: option)
+                self.base = Base(capacity: base.capacity, fileBacked: fileBacked)
             }
         } else {
             
-            self.base = Base(capacity: 0, option: option)
+            self.base = Base(capacity: 0, fileBacked: fileBacked)
         }
     }
     
@@ -350,7 +353,7 @@ extension MappedBuffer : RangeReplaceableCollection {
             
         } else {
             
-            let new_base = Base(capacity: Swift.max(base.capacity, new_count), option: self.option)
+            let new_base = Base(capacity: Swift.max(base.capacity, new_count), fileBacked: self.fileBacked)
             
             new_base.count = new_count
             
@@ -497,7 +500,7 @@ extension MappedBuffer {
     @inline(__always)
     public func map<T>(_ transform: (Element) throws -> T) rethrows -> MappedBuffer<T> {
         
-        let new_base = MappedBuffer<T>.Base(capacity: count, option: self.option)
+        let new_base = MappedBuffer<T>.Base(capacity: count, fileBacked: self.fileBacked)
         new_base.count = 0
         
         try self.withUnsafeBufferPointer {
@@ -516,7 +519,7 @@ extension MappedBuffer {
     @inline(__always)
     public func filter(_ isIncluded: (Element) throws -> Bool) rethrows -> MappedBuffer {
         
-        var result = MappedBuffer(option: self.option)
+        var result = MappedBuffer(fileBacked: self.fileBacked)
         
         try self.withUnsafeBufferPointer {
             for element in $0 where try isIncluded(element) {
@@ -531,7 +534,7 @@ extension MappedBuffer {
     @inline(__always)
     public func flatMap<SegmentOfResult : Sequence>(_ transform: (Element) throws -> SegmentOfResult) rethrows -> MappedBuffer<SegmentOfResult.Element> {
         
-        var result = MappedBuffer<SegmentOfResult.Element>(option: self.option)
+        var result = MappedBuffer<SegmentOfResult.Element>(fileBacked: self.fileBacked)
         
         try self.withUnsafeBufferPointer {
             for element in $0 {
@@ -546,7 +549,7 @@ extension MappedBuffer {
     @inline(__always)
     public func compactMap<ElementOfResult>(_ transform: (Element) throws -> ElementOfResult?) rethrows -> MappedBuffer<ElementOfResult> {
         
-        var result = MappedBuffer<ElementOfResult>(option: self.option)
+        var result = MappedBuffer<ElementOfResult>(fileBacked: self.fileBacked)
         
         try self.withUnsafeBufferPointer {
             for element in $0 {
@@ -604,25 +607,19 @@ extension MappedBuffer {
         }
         
         @usableFromInline
-        init(capacity: Int, option: MappedBufferOption) {
+        var fileBacked: Bool {
+            return fd != -1
+        }
+        
+        @usableFromInline
+        init(capacity: Int, fileBacked: Bool) {
             
             let mapped_size = (Swift.max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
             let capacity = mapped_size / MemoryLayout<Element>.stride
             
             self.mapped_size = mapped_size
             
-            switch option {
-            case .inMemory:
-                
-                self.fd = -1
-                self.path = ""
-                
-                let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)
-                guard _address != MAP_FAILED else { fatalError(String(cString: strerror(errno))) }
-                
-                self.address = _address!.bindMemory(to: Element.self, capacity: capacity)
-                
-            case .fileBacked:
+            if fileBacked {
                 
                 var fd: Int32 = 0
                 var path = ""
@@ -645,6 +642,16 @@ extension MappedBuffer {
                 guard _address != MAP_FAILED else { fatalError(String(cString: strerror(errno))) }
                 
                 self.address = _address!.bindMemory(to: Element.self, capacity: capacity)
+                
+            } else {
+                
+                self.fd = -1
+                self.path = ""
+                
+                let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)
+                guard _address != MAP_FAILED else { fatalError(String(cString: strerror(errno))) }
+                
+                self.address = _address!.bindMemory(to: Element.self, capacity: capacity)
             }
         }
         
@@ -656,7 +663,7 @@ extension MappedBuffer {
             
             munmap(address, mapped_size)
             
-            if fd != -1 {
+            if fileBacked {
                 ftruncate(fd, 0)
                 flock(fd, LOCK_UN)
                 close(fd)
@@ -674,11 +681,24 @@ extension MappedBuffer {
             let new_mapped_size = (Swift.max(capacity, 1) * MemoryLayout<Element>.stride).align(Int(getpagesize()))
             let new_capacity = new_mapped_size / MemoryLayout<Element>.stride
             
-            if fd == -1 {
+            if fileBacked {
+                
+                munmap(old_address, old_mapped_size)
+                
+                self.mapped_size = new_mapped_size
+                
+                guard ftruncate(self.fd, off_t(new_mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
+                
+                let _address = mmap(nil, new_mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)
+                guard _address != MAP_FAILED else { fatalError(String(cString: strerror(errno))) }
+                
+                self.address = _address!.bindMemory(to: Element.self, capacity: new_capacity)
+                
+            } else {
                 
                 let _extended_size = new_mapped_size - old_mapped_size
                 let _tail = UnsafeMutableRawPointer(old_address) + old_mapped_size
-
+                
                 let _extended = mmap(_tail, _extended_size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0)
                 
                 if _extended != MAP_FAILED {
@@ -701,19 +721,17 @@ extension MappedBuffer {
                 
                 self.mapped_size = new_mapped_size
                 self.address = new_buffer
-                
-            } else {
-                
-                munmap(old_address, old_mapped_size)
-                
-                self.mapped_size = new_mapped_size
-                
-                guard ftruncate(self.fd, off_t(new_mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
-                
-                let _address = mmap(nil, new_mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)
-                guard _address != MAP_FAILED else { fatalError(String(cString: strerror(errno))) }
-                
-                self.address = _address!.bindMemory(to: Element.self, capacity: new_capacity)
+            }
+        }
+        
+        @usableFromInline
+        func set_memory_advise(_ advise: MemoryAdvise) {
+            switch advise {
+            case .normal: guard posix_madvise(address, mapped_size, POSIX_MADV_NORMAL) == 0 else { fatalError(String(cString: strerror(errno))) }
+            case .random: guard posix_madvise(address, mapped_size, POSIX_MADV_SEQUENTIAL) == 0 else { fatalError(String(cString: strerror(errno))) }
+            case .sequential: guard posix_madvise(address, mapped_size, POSIX_MADV_RANDOM) == 0 else { fatalError(String(cString: strerror(errno))) }
+            case .willNeed: guard posix_madvise(address, mapped_size, POSIX_MADV_WILLNEED) == 0 else { fatalError(String(cString: strerror(errno))) }
+            case .dontNeed: guard posix_madvise(address, mapped_size, POSIX_MADV_DONTNEED) == 0 else { fatalError(String(cString: strerror(errno))) }
             }
         }
     }

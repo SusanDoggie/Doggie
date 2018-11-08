@@ -57,14 +57,14 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
     
     @inlinable
     @inline(__always)
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), fileBacked: Bool = false) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
         self.resolution = resolution
         self.colorSpace = colorSpace
-        self.pixels = MappedBuffer(repeating: pixel, count: width * height, option: option)
+        self.pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
     }
     
     @inlinable
@@ -234,13 +234,18 @@ extension Image : CustomStringConvertible {
 extension Image {
     
     @inlinable
-    public var option: MappedBufferOption {
+    public var fileBacked: Bool {
         get {
-            return pixels.option
+            return pixels.fileBacked
         }
         set {
-            pixels.option = newValue
+            pixels.fileBacked = newValue
         }
+    }
+    
+    @inlinable
+    public func setMemoryAdvise(_ advise: MemoryAdvise) {
+        pixels.setMemoryAdvise(advise)
     }
 }
 

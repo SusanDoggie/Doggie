@@ -80,7 +80,7 @@ struct BMPDecoder : ImageRepDecoder {
         return .bmp
     }
     
-    func image(option: MappedBufferOption) -> AnyImage {
+    func image(fileBacked: Bool) -> AnyImage {
         
         let pixels = data.dropFirst(Int(header.offset))
         
@@ -90,7 +90,7 @@ struct BMPDecoder : ImageRepDecoder {
         let height = abs(header.height)
         let resolution = header.resolution
         
-        guard width > 0 && height > 0 else { return AnyImage(Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)) }
+        guard width > 0 && height > 0 else { return AnyImage(Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)) }
         
         func UncompressedPixelReader<Pixel : FixedWidthInteger>(_ rMask: Pixel, _ gMask: Pixel, _ bMask: Pixel, _ aMask: Pixel) -> Image<ColorPixel<RGBColorModel>> {
             
@@ -117,7 +117,7 @@ struct BMPDecoder : ImageRepDecoder {
             let bMax = bMask >> bOffset
             let aMax = aMask >> aOffset
             
-            var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
+            var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
             
             guard (rMax + 1).isPower2 else { return image }
             guard (gMax + 1).isPower2 else { return image }
@@ -196,7 +196,7 @@ struct BMPDecoder : ImageRepDecoder {
             
         case 24:
             
-            var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
+            var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
             
             pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                 
@@ -283,7 +283,7 @@ struct BMPDecoder : ImageRepDecoder {
                 
                 let bitWidth = UInt8(header.bitsPerPixel)
                 
-                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
+                var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                 
                 palette.withUnsafeBufferPointer { palette in
                     
@@ -341,7 +341,7 @@ struct BMPDecoder : ImageRepDecoder {
                     
                     let bitWidth = UInt8(header.bitsPerPixel)
                     
-                    var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
+                    var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
                     palette.withUnsafeBufferPointer { palette in
                         

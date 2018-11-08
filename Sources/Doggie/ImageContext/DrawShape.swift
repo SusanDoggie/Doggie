@@ -53,7 +53,7 @@ extension ImageContext {
                 
                 if isShadow {
                     
-                    var buf = MappedBuffer<Float>(repeating: 0, count: width * height, option: image.option)
+                    var buf = MappedBuffer<Float>(repeating: 0, count: width * height, fileBacked: image.fileBacked)
                     
                     buf.withUnsafeMutableBufferPointer {
                         

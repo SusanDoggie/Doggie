@@ -35,7 +35,7 @@ public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ 
     
     let width = texture.width
     let height = texture.height
-    let option = texture.option
+    let fileBacked = texture.fileBacked
     
     var result = texture
     

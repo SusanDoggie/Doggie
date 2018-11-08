@@ -38,7 +38,9 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     var visibleRect: Rect { get }
     
-    var option: MappedBufferOption { get set }
+    var fileBacked: Bool { get set }
+    
+    func setMemoryAdvise(_ advise: MemoryAdvise)
     
     func color(x: Int, y: Int) -> AnyColor
     
@@ -137,13 +139,13 @@ extension AnyImage {
     }
     
     @inlinable
-    public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), option: MappedBufferOption = .default) {
-        self._base = Image<Pixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixel: pixel, option: option)
+    public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), fileBacked: Bool = false) {
+        self._base = Image<Pixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixel: pixel, fileBacked: fileBacked)
     }
     
     @inlinable
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, option: MappedBufferOption = .default) {
-        self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, option: option))
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, fileBacked: Bool = false) {
+        self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, fileBacked: fileBacked))
     }
 }
 
@@ -205,13 +207,18 @@ extension AnyImage {
     }
     
     @inlinable
-    public var option: MappedBufferOption {
+    public var fileBacked: Bool {
         get {
-            return _base.option
+            return _base.fileBacked
         }
         set {
-            _base.option = newValue
+            _base.fileBacked = newValue
         }
+    }
+    
+    @inlinable
+    public func setMemoryAdvise(_ advise: MemoryAdvise) {
+        return _base.setMemoryAdvise(advise)
     }
     
     @inlinable

@@ -48,13 +48,13 @@ protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
     
     func _create_color<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
-    func _create_image(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol
+    func _create_image(width: Int, height: Int, resolution: Resolution, fileBacked: Bool) -> AnyImageBaseProtocol
     
     func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> AnyImageBaseProtocol
     
     func _create_image(image: AnyImage, intent: RenderingIntent) -> AnyImageBaseProtocol
     
-    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol
+    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol
     
     func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
 }
@@ -80,8 +80,8 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func _create_image(width: Int, height: Int, resolution: Resolution, option: MappedBufferOption) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, option: option)
+    func _create_image(width: Int, height: Int, resolution: Resolution, fileBacked: Bool) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
     }
     
     @inlinable
@@ -90,8 +90,8 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, option: MappedBufferOption) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, bitmaps: bitmaps, premultiplied: premultiplied, option: option)
+    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol {
+        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked)
     }
     
     @inlinable

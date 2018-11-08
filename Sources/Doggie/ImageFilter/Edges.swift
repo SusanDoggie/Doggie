@@ -36,11 +36,11 @@ public func Edges<S, T>(_ texture: Texture<S>, _ intensity: Double) -> Texture<T
     let width = texture.width
     let height = texture.height
     let resamplingAlgorithm = texture.resamplingAlgorithm
-    let option = texture.option
+    let fileBacked = texture.fileBacked
     
     let _intensity = 1 / intensity
     
-    var result = Texture<T>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, option: option)
+    var result = Texture<T>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, fileBacked: fileBacked)
     
     guard width > 0 && height > 0 else { return result }
     

@@ -47,7 +47,9 @@ public protocol ImageProtocol {
     
     var visibleRect: Rect { get }
     
-    var option: MappedBufferOption { get set }
+    var fileBacked: Bool { get set }
+    
+    func setMemoryAdvise(_ advise: MemoryAdvise)
     
     mutating func setOrientation(_ orientation: ImageOrientation)
     

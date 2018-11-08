@@ -55,8 +55,8 @@ func _TextureConvolution<Pixel, T: BinaryFloatingPoint>(_ texture: Texture<Pixel
     let length1 = Radix2CircularConvolveLength(width, horizontal_filter.count)
     let length2 = Radix2CircularConvolveLength(height, vertical_filter.count)
     
-    var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, option: texture.option)
-    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: n_width * length2, option: texture.option)
+    var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, fileBacked: texture.fileBacked)
+    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: n_width * length2, fileBacked: texture.fileBacked)
     
     buffer.withUnsafeMutableBufferPointer {
         
@@ -120,8 +120,8 @@ func _TextureConvolutionHorizontal<Pixel, T: BinaryFloatingPoint>(_ texture: Tex
     
     let length = Radix2CircularConvolveLength(width, filter.count)
     
-    var buffer = MappedBuffer<T>(repeating: 0, count: length + length * height, option: texture.option)
-    var result = Texture<Pixel>(width: n_width, height: height, resamplingAlgorithm: texture.resamplingAlgorithm, option: texture.option)
+    var buffer = MappedBuffer<T>(repeating: 0, count: length + length * height, fileBacked: texture.fileBacked)
+    var result = Texture<Pixel>(width: n_width, height: height, resamplingAlgorithm: texture.resamplingAlgorithm, fileBacked: texture.fileBacked)
     
     buffer.withUnsafeMutableBufferPointer {
         
@@ -185,8 +185,8 @@ func _TextureConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ texture: Textu
     
     let length = Radix2CircularConvolveLength(height, filter.count)
     
-    var buffer = MappedBuffer<T>(repeating: 0, count: length, option: texture.option)
-    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: width * length, option: texture.option)
+    var buffer = MappedBuffer<T>(repeating: 0, count: length, fileBacked: texture.fileBacked)
+    var result = MappedBuffer<Pixel>(repeating: Pixel(), count: width * length, fileBacked: texture.fileBacked)
     
     buffer.withUnsafeMutableBufferPointer {
         

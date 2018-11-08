@@ -37,7 +37,7 @@ protocol ImageRepBase {
     
     func page(_ index: Int) -> ImageRepBase
     
-    func image(option: MappedBufferOption) -> AnyImage
+    func image(fileBacked: Bool) -> AnyImage
 }
 
 extension ImageRepBase {
@@ -70,12 +70,12 @@ extension ImageRep {
         
         let lck = SDLock()
         
-        var images: [MappedBufferOption: AnyImage]
+        var image: AnyImage?
         var pages: [Int: ImageRep]
         
         @usableFromInline
         init() {
-            self.images = [:]
+            self.image = nil
             self.pages = [:]
         }
     }
@@ -124,9 +124,9 @@ extension ImageRep {
 
 extension AnyImage : ImageRepBase {
     
-    func image(option: MappedBufferOption) -> AnyImage {
+    func image(fileBacked: Bool) -> AnyImage {
         var copy = self
-        copy.option = option
+        copy.fileBacked = fileBacked
         return copy
     }
 }
@@ -146,12 +146,12 @@ extension ImageRep {
         }
     }
     
-    fileprivate func image(option: MappedBufferOption) -> AnyImage {
+    fileprivate func image(fileBacked: Bool) -> AnyImage {
         return cache.lck.synchronized {
-            if cache.images[option] == nil {
-                cache.images[option] = base.image(option: option)
+            if cache.image == nil {
+                cache.image = base.image(fileBacked: true)
             }
-            return cache.images[option]!
+            return cache.image!.image(fileBacked: fileBacked)
         }
     }
 }
@@ -209,7 +209,7 @@ extension ImageRep {
     
     public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
         
-        let image = base as? AnyImage ?? self.image(option: .fileBacked)
+        let image = base as? AnyImage ?? self.image(fileBacked: true)
         guard image.width > 0 && image.height > 0 else { return nil }
         
         let Encoder: ImageRepEncoder.Type
@@ -236,12 +236,12 @@ extension ImageRep : CustomStringConvertible {
 
 extension AnyImage {
     
-    public init(imageRep: ImageRep, option: MappedBufferOption = .default) {
-        self = imageRep.image(option: option)
+    public init(imageRep: ImageRep, fileBacked: Bool = false) {
+        self = imageRep.image(fileBacked: fileBacked)
     }
     
-    public init(data: Data, option: MappedBufferOption = .default) throws {
-        self = try ImageRep(data: data).image(option: option)
+    public init(data: Data, fileBacked: Bool = false) throws {
+        self = try ImageRep(data: data).image(fileBacked: fileBacked)
     }
 }
 

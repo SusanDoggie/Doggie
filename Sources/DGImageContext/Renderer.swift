@@ -170,7 +170,7 @@ extension DGImageContext {
         let renderer = try DGImageContext.make_renderer(device, Renderer.self)
         let encoder = try renderer.encoder(width: width, height: height)
         
-        let texture = Texture<FloatColorPixel<Model>>(width: width, height: height, option: .inMemory)
+        let texture = Texture<FloatColorPixel<Model>>(width: width, height: height, fileBacked: false)
         let resource = Resource<Renderer.Encoder>()
         
         do {

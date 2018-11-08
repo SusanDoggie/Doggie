@@ -176,7 +176,7 @@ struct JPEGDecoder : ImageRepDecoder {
         }
     }
     
-    func image(option: MappedBufferOption) -> AnyImage {
+    func image(fileBacked: Bool) -> AnyImage {
         
         let differential = self.differential
         let encoding = self.encoding
@@ -191,7 +191,7 @@ struct JPEGDecoder : ImageRepDecoder {
         let width = Int(frame.SOF.samplesPerLine)
         let height = Int(frame.SOF.lines)
         
-        let pixels = MappedBuffer<YCbCrColorPixel>(repeating: YCbCrColorPixel(), count: width * height, option: option)
+        let pixels = MappedBuffer<YCbCrColorPixel>(repeating: YCbCrColorPixel(), count: width * height, fileBacked: fileBacked)
         
         for scan in frame.scan {
             

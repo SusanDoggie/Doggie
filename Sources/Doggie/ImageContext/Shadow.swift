@@ -125,7 +125,7 @@ extension StencilTexture {
         
         let width = self.width
         let height = self.height
-        let option = self.option
+        let fileBacked = self.fileBacked
         let resamplingAlgorithm = self.resamplingAlgorithm
         
         let n_width = width + filter.count - 1
@@ -135,8 +135,8 @@ extension StencilTexture {
         let length1 = Radix2CircularConvolveLength(width, filter.count)
         let length2 = Radix2CircularConvolveLength(height, filter.count)
         
-        var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, option: option)
-        var result = StencilTexture<T>(width: n_width, height: length2, resamplingAlgorithm: resamplingAlgorithm, option: option)
+        var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, fileBacked: fileBacked)
+        var result = StencilTexture<T>(width: n_width, height: length2, resamplingAlgorithm: resamplingAlgorithm, fileBacked: fileBacked)
         
         buffer.withUnsafeMutableBufferPointer {
             

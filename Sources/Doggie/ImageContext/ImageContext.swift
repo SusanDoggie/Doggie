@@ -95,8 +95,8 @@ public class ImageContext<Pixel: ColorPixelProtocol> : TypedDrawableContext {
         self.image = image
     }
     
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, option: MappedBufferOption = .default) {
-        self.image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, option: option)
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, fileBacked: Bool = false) {
+        self.image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
     }
 }
 
@@ -104,7 +104,7 @@ extension ImageContext {
     
     @usableFromInline
     convenience init<P>(copyStates context: ImageContext<P>, colorSpace: ColorSpace<Pixel.Model>) {
-        self.init(width: context.width, height: context.height, resolution: context.resolution, colorSpace: colorSpace, option: context.image.option)
+        self.init(width: context.width, height: context.height, resolution: context.resolution, colorSpace: colorSpace, fileBacked: context.image.fileBacked)
         self.styles = context.styles
         self.styles.opacity = 1
         self.styles.shadowColor = ImageContextStyles.defaultShadowColor
@@ -144,7 +144,7 @@ extension ImageContext {
         let current = self.current
         
         if current.clip == nil {
-            current.clip = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
+            current.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
         return try current.clip!.withUnsafeMutableBufferPointer(body)
@@ -155,7 +155,7 @@ extension ImageContext {
         let current = self.current
         
         if current.clip == nil {
-            current.clip = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
+            current.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
         return try current.clip!.withUnsafeBufferPointer(body)
@@ -176,7 +176,7 @@ extension ImageContext {
             
         } else if current.clip == nil || value == 0 {
             
-            current.clip = MappedBuffer(repeating: value, count: image.width * image.height, option: image.option)
+            current.clip = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
             
         } else {
             
@@ -352,7 +352,7 @@ extension ImageContext {
         let current = self.current
         
         if current.depth == nil {
-            current.depth = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
+            current.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
         return try current.depth!.withUnsafeMutableBufferPointer(body)
@@ -363,7 +363,7 @@ extension ImageContext {
         let current = self.current
         
         if current.depth == nil {
-            current.depth = MappedBuffer(repeating: 1, count: image.width * image.height, option: image.option)
+            current.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
         return try current.depth!.withUnsafeBufferPointer(body)
@@ -400,7 +400,7 @@ extension ImageContext {
             
         } else if current.depth == nil || value == 0 {
             
-            current.depth = MappedBuffer(repeating: value, count: image.width * image.height, option: image.option)
+            current.depth = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
             
         } else {
             

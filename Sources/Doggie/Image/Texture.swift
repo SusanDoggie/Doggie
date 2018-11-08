@@ -52,12 +52,12 @@ public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
     
     @inlinable
     @inline(__always)
-    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: RawPixel = RawPixel(), option: MappedBufferOption = .default) {
+    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: RawPixel = RawPixel(), fileBacked: Bool = false) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
-        self.pixels = MappedBuffer(repeating: pixel, count: width * height, option: option)
+        self.pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
         self.resamplingAlgorithm = resamplingAlgorithm
     }
     
@@ -102,13 +102,18 @@ extension Texture : CustomStringConvertible {
 extension Texture {
     
     @inlinable
-    public var option: MappedBufferOption {
+    public var fileBacked: Bool {
         get {
-            return pixels.option
+            return pixels.fileBacked
         }
         set {
-            pixels.option = newValue
+            pixels.fileBacked = newValue
         }
+    }
+    
+    @inlinable
+    public func setMemoryAdvise(_ advise: MemoryAdvise) {
+        pixels.setMemoryAdvise(advise)
     }
 }
 

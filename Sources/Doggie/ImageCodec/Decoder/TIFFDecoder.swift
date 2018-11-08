@@ -122,8 +122,8 @@ struct TIFFDecoder : ImageRepDecoder {
         guard pages.count > 0 else { throw ImageRep.Error.InvalidFormat("Image data not found.") }
     }
     
-    func image(option: MappedBufferOption) -> AnyImage {
-        return defaultPage.image(option: option)
+    func image(fileBacked: Bool) -> AnyImage {
+        return defaultPage.image(fileBacked: fileBacked)
     }
     
     var numberOfPages: Int {
@@ -448,7 +448,7 @@ struct TIFFPage : ImageRepBase {
         }
     }
     
-    func image(option: MappedBufferOption) -> AnyImage {
+    func image(fileBacked: Bool) -> AnyImage {
         
         let colorSpace = self.colorSpace
         
@@ -456,7 +456,7 @@ struct TIFFPage : ImageRepBase {
         case 1:
             if photometric == 3 {
                 
-                var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: colorSpace.base as! ColorSpace<RGBColorModel>, option: option)
+                var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: colorSpace.base as! ColorSpace<RGBColorModel>, fileBacked: fileBacked)
                 
                 image.withUnsafeMutableBufferPointer { uncompressedPalettePixelReader($0.baseAddress) }
                 
@@ -508,7 +508,7 @@ struct TIFFPage : ImageRepBase {
                         bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), startsRow: i * rowsPerStrip, endianness: .big, channels: channels, data: data))
                     }
                     
-                    image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), option: option)
+                    image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
                     
                 case 2:
                     
@@ -534,7 +534,7 @@ struct TIFFPage : ImageRepBase {
                         }
                     }
                     
-                    image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), option: option)
+                    image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
                     
                 default: fatalError()
                 }
@@ -556,7 +556,7 @@ struct TIFFPage : ImageRepBase {
         default: fatalError()
         }
         
-        return AnyImage(width: 0, height: 0, colorSpace: colorSpace, option: option)
+        return AnyImage(width: 0, height: 0, colorSpace: colorSpace, fileBacked: fileBacked)
     }
     
     func uncompressedPalettePixelReader(_ pixel: UnsafeMutablePointer<ARGB64ColorPixel>?) {

@@ -37,7 +37,7 @@ extension Image : TIFFRawRepresentable {
         
         let count = self.width * self.height
         
-        var data = MappedBuffer<UInt8>(capacity: count * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        var data = MappedBuffer<UInt8>(capacity: count * samplesPerPixel * bytesPerSample, fileBacked: true)
         
         self.withUnsafeBufferPointer {
             
@@ -74,7 +74,7 @@ struct TIFFEncoder : ImageRepEncoder {
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
         
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
         
         image.withUnsafeBufferPointer {
             
@@ -107,7 +107,7 @@ struct TIFFEncoder : ImageRepEncoder {
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
         
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
         
         image.withUnsafeBufferPointer {
             
@@ -140,7 +140,7 @@ struct TIFFEncoder : ImageRepEncoder {
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
         
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
         
         image.withUnsafeBufferPointer {
             
@@ -173,7 +173,7 @@ struct TIFFEncoder : ImageRepEncoder {
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 2
         
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
         
         image.withUnsafeBufferPointer {
             
@@ -206,7 +206,7 @@ struct TIFFEncoder : ImageRepEncoder {
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
         
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
         
         image.withUnsafeBufferPointer {
             
@@ -239,7 +239,7 @@ struct TIFFEncoder : ImageRepEncoder {
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 2
         
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
         
         image.withUnsafeBufferPointer {
             
@@ -272,7 +272,7 @@ struct TIFFEncoder : ImageRepEncoder {
         let samplesPerPixel = isOpaque ? 1 : 2
         let bytesPerSample = 1
         
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
         
         image.withUnsafeBufferPointer {
             
@@ -301,7 +301,7 @@ struct TIFFEncoder : ImageRepEncoder {
         let samplesPerPixel = isOpaque ? 1 : 2
         let bytesPerSample = 2
         
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, option: .fileBacked)
+        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
         
         image.withUnsafeBufferPointer {
             
@@ -358,7 +358,7 @@ struct TIFFEncoder : ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         
-        var data = MappedBuffer<UInt8>(option: .fileBacked)
+        var data = MappedBuffer<UInt8>(fileBacked: true)
         data.encode(TIFFHeader(endianness: .BIG, version: 42, IFD: 8))
         
         let isOpaque = image.isOpaque
@@ -471,7 +471,7 @@ struct TIFFEncoder : ImageRepEncoder {
         
         let offset = data.count + 64
         
-        var _data = MappedBuffer<UInt8>(option: .fileBacked)
+        var _data = MappedBuffer<UInt8>(fileBacked: true)
         
         do {
             
