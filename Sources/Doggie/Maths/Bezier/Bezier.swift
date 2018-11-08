@@ -66,6 +66,10 @@ extension Bezier : CustomStringConvertible {
     }
 }
 
+extension Bezier : Hashable where Element : Hashable {
+    
+}
+
 extension Bezier: Decodable where Element : Decodable {
     
     @inlinable

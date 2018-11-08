@@ -59,6 +59,10 @@ extension Bezier {
     }
 }
 
+extension CubicBezier : Hashable where Element : Hashable {
+    
+}
+
 extension CubicBezier: Decodable where Element : Decodable {
     
     @inlinable

@@ -100,6 +100,10 @@ public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where
     }
 }
 
+extension CubicBezierPatch : Hashable where Element : Hashable {
+    
+}
+
 extension CubicBezierPatch {
     
     @inlinable

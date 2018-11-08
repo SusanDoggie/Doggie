@@ -53,6 +53,10 @@ extension Bezier {
     }
 }
 
+extension LineSegment : Hashable where Element : Hashable {
+    
+}
+
 extension LineSegment: Decodable where Element : Decodable {
     
     @inlinable

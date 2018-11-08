@@ -55,6 +55,10 @@ public struct CubicBezierTriangularPatch<Element : ScalarMultiplicative> : Equat
     }
 }
 
+extension CubicBezierTriangularPatch : Hashable where Element : Hashable {
+    
+}
+
 extension CubicBezierTriangularPatch {
     
     @inlinable
