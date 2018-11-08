@@ -120,6 +120,16 @@ extension MappedBuffer {
     public func setMemoryAdvise(_ advise: MemoryAdvise) {
         base.set_memory_advise(advise)
     }
+    
+    @inlinable
+    public func memoryLock() {
+        base.memory_lock()
+    }
+    
+    @inlinable
+    public func memoryUnlock() {
+        base.memory_unlock()
+    }
 }
 
 extension MappedBuffer {
@@ -727,12 +737,22 @@ extension MappedBuffer {
         @usableFromInline
         func set_memory_advise(_ advise: MemoryAdvise) {
             switch advise {
-            case .normal: guard posix_madvise(address, mapped_size, POSIX_MADV_NORMAL) == 0 else { fatalError(String(cString: strerror(errno))) }
-            case .random: guard posix_madvise(address, mapped_size, POSIX_MADV_SEQUENTIAL) == 0 else { fatalError(String(cString: strerror(errno))) }
-            case .sequential: guard posix_madvise(address, mapped_size, POSIX_MADV_RANDOM) == 0 else { fatalError(String(cString: strerror(errno))) }
-            case .willNeed: guard posix_madvise(address, mapped_size, POSIX_MADV_WILLNEED) == 0 else { fatalError(String(cString: strerror(errno))) }
-            case .dontNeed: guard posix_madvise(address, mapped_size, POSIX_MADV_DONTNEED) == 0 else { fatalError(String(cString: strerror(errno))) }
+            case .normal: posix_madvise(address, mapped_size, POSIX_MADV_NORMAL)
+            case .random: posix_madvise(address, mapped_size, POSIX_MADV_SEQUENTIAL)
+            case .sequential: posix_madvise(address, mapped_size, POSIX_MADV_RANDOM)
+            case .willNeed: posix_madvise(address, mapped_size, POSIX_MADV_WILLNEED)
+            case .dontNeed: posix_madvise(address, mapped_size, POSIX_MADV_DONTNEED)
             }
+        }
+        
+        @usableFromInline
+        func memory_lock() {
+            mlock(address, mapped_size)
+        }
+        
+        @usableFromInline
+        func memory_unlock() {
+            munlock(address, mapped_size)
         }
     }
 }
