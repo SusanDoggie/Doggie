@@ -284,46 +284,39 @@ extension Shape.RenderOperation {
         switch self {
         case let .triangle(p0, p1, p2):
             
-            if inTriangle(p0, p1, p2, position) {
-                
-                let d = cross(p1 - p0, p2 - p0)
-                
-                return d.sign == .plus ? 1 : -1
-            }
+            guard inTriangle(p0, p1, p2, position) else { return 0 }
+            
+            let d = cross(p1 - p0, p2 - p0)
+            
+            return d.sign == .plus ? 1 : -1
             
         case let .quadratic(p0, p1, p2):
             
-            if inTriangle(p0, p1, p2, position), let p = Barycentric(p0, p1, p2, position) {
-                
-                let s = 0.5 * p.y + p.z
-                
-                if s * s < p.z {
-                    
-                    let d = cross(p1 - p0, p2 - p0)
-                    
-                    return d.sign == .plus ? 1 : -1
-                }
-            }
+            guard inTriangle(p0, p1, p2, position), let p = Barycentric(p0, p1, p2, position) else { return 0 }
+            
+            let s = 0.5 * p.y + p.z
+            
+            guard s * s < p.z else { return 0 }
+            
+            let d = cross(p1 - p0, p2 - p0)
+            
+            return d.sign == .plus ? 1 : -1
             
         case let .cubic(p0, p1, p2, v0, v1, v2):
             
-            if inTriangle(p0, p1, p2, position), let p = Barycentric(p0, p1, p2, position) {
-                
-                let u0 = p.x * v0
-                let u1 = p.y * v1
-                let u2 = p.z * v2
-                let v = u0 + u1 + u2
-                
-                if v.x * v.x * v.x < v.y * v.z {
-                    
-                    let d = cross(p1 - p0, p2 - p0)
-                    
-                    return d.sign == .plus ? 1 : -1
-                }
-            }
+            guard inTriangle(p0, p1, p2, position), let p = Barycentric(p0, p1, p2, position) else { return 0 }
+            
+            let u0 = p.x * v0
+            let u1 = p.y * v1
+            let u2 = p.z * v2
+            let v = u0 + u1 + u2
+            
+            guard v.x * v.x * v.x < v.y * v.z else { return 0 }
+            
+            let d = cross(p1 - p0, p2 - p0)
+            
+            return d.sign == .plus ? 1 : -1
         }
-        
-        return 0
     }
 }
 
