@@ -27,6 +27,39 @@
 
 import Metal
 
+@available(OSX 10.11, iOS 8.3, tvOS 9.0, *)
+extension MTLComputeCommandEncoder {
+    
+    public func setBuffer(_ buffer: Data, index: Int) {
+        let count = buffer.count
+        buffer.withUnsafeBytes { (ptr: UnsafePointer<Int8>) in self.setBytes(ptr, length: count, index: index) }
+    }
+    
+    public func setBuffer<T>(_ buffer: [T], index: Int) {
+        buffer.withUnsafeBytes { self.setBytes($0.baseAddress!, length: $0.count, index: index) }
+    }
+    
+    public func setBuffer<T>(_ buffer: ArraySlice<T>, index: Int) {
+        buffer.withUnsafeBytes { self.setBytes($0.baseAddress!, length: $0.count, index: index) }
+    }
+    
+    public func setValue<T>(_ value: T, index: Int) {
+        withUnsafeBytes(of: value) { self.setBytes($0.baseAddress!, length: $0.count, index: index) }
+    }
+    
+    public func setValues<T>(_ value: T ..., index: Int) {
+        value.withUnsafeBytes { self.setBytes($0.baseAddress!, length: $0.count, index: index) }
+    }
+}
+
+@available(OSX 10.11, iOS 8.0, tvOS 9.0, *)
+extension MTLComputeCommandEncoder {
+    
+    public func setBuffer<T>(_ buffer: MappedBuffer<T>, offset: Int, index: Int) {
+        self.setBuffer(self.device.makeBuffer(buffer), offset: offset, index: index)
+    }
+}
+
 @available(OSX 10.11, iOS 8.0, tvOS 9.0, *)
 extension MTLDevice {
     
