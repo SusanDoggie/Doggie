@@ -35,7 +35,7 @@ private let MTLCommandQueueCacheLock = SDLock()
 private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
 @available(OSX 10.13, iOS 11.0, *)
-private let command_encoder_limit = 32
+private let command_encoder_limit = 256
 
 @available(OSX 10.13, iOS 11.0, *)
 class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
