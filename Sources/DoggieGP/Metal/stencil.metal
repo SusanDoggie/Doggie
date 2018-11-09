@@ -43,11 +43,6 @@ struct stencil_triangle_struct {
     const packed_float2 p0, p1, p2;
 };
 
-struct stencil_quadratic_struct {
-    
-    const packed_float2 p0, p1, p2;
-};
-
 struct stencil_cubic_struct {
     
     const packed_float2 p0, p1, p2;
@@ -87,7 +82,7 @@ kernel void stencil_triangle(const device stencil_parameter &parameter [[buffer(
 }
 
 kernel void stencil_quadratic(const device stencil_parameter &parameter [[buffer(0)]],
-                              const device stencil_quadratic_struct *triangles [[buffer(1)]],
+                              const device stencil_triangle_struct *triangles [[buffer(1)]],
                               device int16_t *out [[buffer(2)]],
                               uint3 id [[thread_position_in_grid]]) {
     
@@ -95,7 +90,7 @@ kernel void stencil_quadratic(const device stencil_parameter &parameter [[buffer
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
     
-    const stencil_quadratic_struct triangle = triangles[id[2]];
+    const stencil_triangle_struct triangle = triangles[id[2]];
     
     const float2 p0 = triangle.p0;
     const float2 p1 = triangle.p1;
