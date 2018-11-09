@@ -67,12 +67,12 @@ kernel void stencil_triangle(const device stencil_triangle_parameter &parameter 
     const float2 p1 = parameter.p1;
     const float2 p2 = parameter.p2;
     
-    if (inTriangle(p0, p1, p2, (float2)position)) {
-        if (signbit(cross(p1 - p0, p2 - p0))) {
-            --out[idx];
-        } else {
-            ++out[idx];
-        }
+    if (!inTriangle(p0, p1, p2, (float2)position)) { return; }
+    
+    if (signbit(cross(p1 - p0, p2 - p0))) {
+        --out[idx];
+    } else {
+        ++out[idx];
     }
 }
 
@@ -88,18 +88,17 @@ kernel void stencil_quadratic(const device stencil_triangle_parameter &parameter
     const float2 p1 = parameter.p1;
     const float2 p2 = parameter.p2;
     
-    if (inTriangle(p0, p1, p2, (float2)position)) {
-        
-        const float3 p = Barycentric(p0, p1, p2, (float2)position);
-        const float s = 0.5 * p[1] + p[2];
-        
-        if (s * s < p[2]) {
-            if (signbit(cross(p1 - p0, p2 - p0))) {
-                --out[idx];
-            } else {
-                ++out[idx];
-            }
-        }
+    if (!inTriangle(p0, p1, p2, (float2)position)) { return; }
+    
+    const float3 p = Barycentric(p0, p1, p2, (float2)position);
+    const float s = 0.5 * p[1] + p[2];
+    
+    if (!(s * s < p[2])) { return; }
+    
+    if (signbit(cross(p1 - p0, p2 - p0))) {
+        --out[idx];
+    } else {
+        ++out[idx];
     }
 }
 
@@ -114,25 +113,25 @@ kernel void stencil_cubic(const device stencil_cubic_parameter &parameter [[buff
     const float2 p0 = parameter.p0;
     const float2 p1 = parameter.p1;
     const float2 p2 = parameter.p2;
+    
+    if (!inTriangle(p0, p1, p2, (float2)position)) { return; }
+    
     const float3 v0 = parameter.v0;
     const float3 v1 = parameter.v1;
     const float3 v2 = parameter.v2;
     
-    if (inTriangle(p0, p1, p2, (float2)position)) {
-        
-        const float3 p = Barycentric(p0, p1, p2, (float2)position);
-        const float3 u0 = p[0] * v0;
-        const float3 u1 = p[1] * v1;
-        const float3 u2 = p[2] * v2;
-        const float3 v = u0 + u1 + u2;
-        
-        if (v[0] * v[0] * v[0] < v[1] * v[2]) {
-            if (signbit(cross(p1 - p0, p2 - p0))) {
-                --out[idx];
-            } else {
-                ++out[idx];
-            }
-        }
+    const float3 p = Barycentric(p0, p1, p2, (float2)position);
+    const float3 u0 = p[0] * v0;
+    const float3 u1 = p[1] * v1;
+    const float3 u2 = p[2] * v2;
+    const float3 v = u0 + u1 + u2;
+    
+    if (!(v[0] * v[0] * v[0] < v[1] * v[2])) { return; }
+    
+    if (signbit(cross(p1 - p0, p2 - p0))) {
+        --out[idx];
+    } else {
+        ++out[idx];
     }
 }
 

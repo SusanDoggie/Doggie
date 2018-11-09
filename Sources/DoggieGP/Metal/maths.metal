@@ -60,31 +60,28 @@ const bool inTriangle(const float2 p0, const float2 p1, const float2 p2, const f
     
     sort(&q0, &q1, &q2);
     
-    if (q0[1] <= position[1] && position[1] < q2[1]) {
-        
-        const float t1 = (position[1] - q0[1]) / (q2[1] - q0[1]);
-        const float x1 = q0[0] + t1 * (q2[0] - q0[0]);
-        
-        float t2;
-        float x2;
-        
-        if (position[1] < q1[1]) {
-            t2 = (position[1] - q0[1]) / (q1[1] - q0[1]);
-            x2 = q0[0] + t2 * (q1[0] - q0[0]);
-        } else {
-            t2 = (position[1] - q1[1]) / (q2[1] - q1[1]);
-            x2 = q1[0] + t2 * (q2[0] - q1[0]);
-        }
-        
-        const float mid_t = (q1[1] - q0[1]) / (q2[1] - q0[1]);
-        const float mid_x = q0[0] + mid_t * (q2[0] - q0[0]);
-        
-        if (mid_x < q1[0]) {
-            return x1 <= position[0] && position[0] < x2;
-        } else {
-            return x2 <= position[0] && position[0] < x1;
-        }
+    if (!(q0[1] <= position[1] && position[1] < q2[1])) { return false; }
+    
+    const float t1 = (position[1] - q0[1]) / (q2[1] - q0[1]);
+    const float x1 = q0[0] + t1 * (q2[0] - q0[0]);
+    
+    float t2;
+    float x2;
+    
+    if (position[1] < q1[1]) {
+        t2 = (position[1] - q0[1]) / (q1[1] - q0[1]);
+        x2 = q0[0] + t2 * (q1[0] - q0[0]);
+    } else {
+        t2 = (position[1] - q1[1]) / (q2[1] - q1[1]);
+        x2 = q1[0] + t2 * (q2[0] - q1[0]);
     }
     
-    return false;
+    const float mid_t = (q1[1] - q0[1]) / (q2[1] - q0[1]);
+    const float mid_x = q0[0] + mid_t * (q2[0] - q0[0]);
+    
+    if (mid_x < q1[0]) {
+        return x1 <= position[0] && position[0] < x2;
+    } else {
+        return x2 <= position[0] && position[0] < x1;
+    }
 }
