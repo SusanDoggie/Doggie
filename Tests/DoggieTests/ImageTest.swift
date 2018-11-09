@@ -43,6 +43,68 @@ class ImageTest: XCTestCase {
         return context.image
     }()
     
+    let shape = try! Shape(code: "M184.529,100c0-100-236.601,36.601-150,86.601c86.599,50,86.599-223.2,0-173.2C-52.071,63.399,184.529,200,184.529,100z")
+    
+    let mask = try! Shape(code: "M100.844,122.045c1.51-14.455,1.509-29.617-0.001-44.09c17.241-7.306,33.295-11.16,46.526-11.16c28.647,0,34.66,18.057,34.66,33.205c0,11.428-3.231,20.032-9.604,25.573c-5.826,5.064-14.252,7.632-25.048,7.632c-0.002,0-0.005,0-0.007,0C134.13,133.204,118.076,129.349,100.844,122.045z M57.276,96.89c11.771-8.541,24.9-16.122,38.18-22.044C91.51,43.038,78.813,9.759,54.625,9.759c-5.832,0-12.172,1.954-18.846,5.807c-11.233,6.485-17.211,14.737-17.766,24.525C17.084,56.461,31.729,77.609,57.276,96.89z M35.779,184.436c6.673,3.853,13.014,5.807,18.846,5.807c24.184,0,36.883-33.279,40.832-65.088c-13.283-5.925-26.413-13.506-38.181-22.045c-25.547,19.281-40.192,40.43-39.263,56.801C18.568,169.699,24.546,177.95,35.779,184.436z M61.514,100c10.717,7.645,22.534,14.467,34.517,19.929c1.261-13.099,1.261-26.743-0.001-39.857C84.05,85.531,72.234,92.354,61.514,100z")
+    
+    func testDrawing() {
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
+        
+        context.draw(rect: Rect(x: 0, y: 0, width: 500, height: 500), color: .black)
+        
+        context.setClip(shape: mask, winding: .nonZero)
+        
+        context.beginTransparencyLayer()
+        
+        context.draw(rect: Rect(x: 0, y: 0, width: 500, height: 500), color: .white)
+        context.draw(shape: shape, winding: .nonZero, color: .black)
+        
+        context.endTransparencyLayer()
+        
+        XCTAssertTrue(context.image.pixels.allSatisfy { $0.color == .black })
+    }
+    
+    func testShapeRegionNonZero() {
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
+        
+        context.draw(rect: Rect(x: 0, y: 0, width: 500, height: 500), color: .black)
+        
+        context.setClip(shape: mask, winding: .nonZero)
+        
+        context.beginTransparencyLayer()
+        
+        context.draw(rect: Rect(x: 0, y: 0, width: 500, height: 500), color: .white)
+        
+        let region = ShapeRegion(shape, winding: .nonZero)
+        context.draw(shape: region.shape, winding: .nonZero, color: .black)
+        
+        context.endTransparencyLayer()
+        
+        XCTAssertTrue(context.image.pixels.allSatisfy { $0.color == .black })
+    }
+    
+    func testShapeRegionEvenOdd() {
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
+        
+        context.draw(rect: Rect(x: 0, y: 0, width: 500, height: 500), color: .black)
+        
+        context.setClip(shape: mask, winding: .nonZero)
+        
+        context.beginTransparencyLayer()
+        
+        context.draw(rect: Rect(x: 0, y: 0, width: 500, height: 500), color: .white)
+        
+        let region = ShapeRegion(shape, winding: .nonZero)
+        context.draw(shape: region.shape, winding: .evenOdd, color: .black)
+        
+        context.endTransparencyLayer()
+        
+        XCTAssertTrue(context.image.pixels.allSatisfy { $0.color == .black })
+    }
+    
     func testClipPerformance() {
         
         self.measure() {

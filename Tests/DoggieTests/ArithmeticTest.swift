@@ -28,8 +28,6 @@ import XCTest
 
 class ArithmeticTest: XCTestCase {
 
-    let accuracy = 0.00000001
-    
     func _testTensorOperation_1<T: Tensor>(_: T.Type, _ operation: (T, T) -> T, _ check: (Double, Double) -> Double) where T.Scalar == Double {
         
         var a = T()
@@ -43,7 +41,7 @@ class ArithmeticTest: XCTestCase {
         let result = operation(a, b)
         
         for i in 0..<T.numberOfComponents {
-            XCTAssertEqual(check(a[i], b[i]), result[i], accuracy: accuracy)
+            XCTAssertEqual(check(a[i], b[i]), result[i])
         }
     }
     
@@ -59,7 +57,7 @@ class ArithmeticTest: XCTestCase {
         let result = operation(a, b)
         
         for i in 0..<T.numberOfComponents {
-            XCTAssertEqual(check(a, b[i]), result[i], accuracy: accuracy)
+            XCTAssertEqual(check(a, b[i]), result[i])
         }
     }
     
@@ -75,7 +73,7 @@ class ArithmeticTest: XCTestCase {
         let result = operation(a, b)
         
         for i in 0..<T.numberOfComponents {
-            XCTAssertEqual(check(a[i], b), result[i], accuracy: accuracy)
+            XCTAssertEqual(check(a[i], b), result[i])
         }
     }
     
@@ -137,7 +135,7 @@ class ArithmeticTest: XCTestCase {
         let result = operation(a, b)
         
         for i in 0..<T.numberOfComponents {
-            XCTAssertEqual(check(a[i], b[i]), result[i], accuracy: Float(accuracy))
+            XCTAssertEqual(check(a[i], b[i]), result[i])
         }
     }
     
@@ -153,7 +151,7 @@ class ArithmeticTest: XCTestCase {
         let result = operation(a, b)
         
         for i in 0..<T.numberOfComponents {
-            XCTAssertEqual(check(a, b[i]), result[i], accuracy: Float(accuracy))
+            XCTAssertEqual(check(a, b[i]), result[i])
         }
     }
     
@@ -169,7 +167,7 @@ class ArithmeticTest: XCTestCase {
         let result = operation(a, b)
         
         for i in 0..<T.numberOfComponents {
-            XCTAssertEqual(check(a[i], b), result[i], accuracy: Float(accuracy))
+            XCTAssertEqual(check(a[i], b), result[i])
         }
     }
     

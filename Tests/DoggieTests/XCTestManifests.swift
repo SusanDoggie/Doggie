@@ -64,6 +64,7 @@ extension ImageTest {
     static let __allTests = [
         ("testClipPerformance", testClipPerformance),
         ("testColorSpaceConversionPerformance", testColorSpaceConversionPerformance),
+        ("testDrawing", testDrawing),
         ("testLinearGradientPerformance", testLinearGradientPerformance),
         ("testRadialGradientPerformance", testRadialGradientPerformance),
         ("testResamplingCosineAntialiasPerformance", testResamplingCosineAntialiasPerformance),
@@ -80,6 +81,8 @@ extension ImageTest {
         ("testResamplingMitchellPerformance", testResamplingMitchellPerformance),
         ("testResamplingNoneAntialiasPerformance", testResamplingNoneAntialiasPerformance),
         ("testResamplingNonePerformance", testResamplingNonePerformance),
+        ("testShapeRegionEvenOdd", testShapeRegionEvenOdd),
+        ("testShapeRegionNonZero", testShapeRegionNonZero),
     ]
 }
 
