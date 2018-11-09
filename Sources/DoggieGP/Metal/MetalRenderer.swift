@@ -126,10 +126,10 @@ extension MetalRenderer {
         let height: Int
         
         let renderer: MetalRenderer<Model>
-        var commandBuffer: MTLCommandBuffer
+        var commandBuffer: MTLCommandBuffer?
+        var commandEncoder: MTLCommandEncoder?
         
         var command_counter = 0
-        var committed = false
         
         var stencil_buffer: MTLBuffer?
         
@@ -138,6 +138,10 @@ extension MetalRenderer {
             self.height = height
             self.renderer = renderer
             self.commandBuffer = commandBuffer
+        }
+        
+        deinit {
+            self.commit(waitUntilCompleted: false)
         }
     }
 }
@@ -148,8 +152,7 @@ extension MetalRenderer.Encoder {
     private func makeBlitCommandEncoder() throws -> MTLBlitCommandEncoder {
         
         if command_counter >= command_encoder_limit {
-            commandBuffer.commit()
-            commandBuffer.waitUntilCompleted()
+            self.commit(waitUntilCompleted: true)
             guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
             self.commandBuffer = _commandBuffer
             command_counter = 0
@@ -157,15 +160,22 @@ extension MetalRenderer.Encoder {
         
         command_counter += 1
         
-        guard let encoder = commandBuffer.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+        if let encoder = self.commandEncoder as? MTLBlitCommandEncoder {
+            return encoder
+        } else {
+            commandEncoder?.endEncoding()
+            commandEncoder = nil
+        }
+        
+        guard let encoder = commandBuffer!.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+        self.commandEncoder = encoder
         return encoder
     }
     
     private func makeComputeCommandEncoder() throws -> MTLComputeCommandEncoder {
         
         if command_counter >= command_encoder_limit {
-            commandBuffer.commit()
-            commandBuffer.waitUntilCompleted()
+            self.commit(waitUntilCompleted: true)
             guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
             self.commandBuffer = _commandBuffer
             command_counter = 0
@@ -173,7 +183,15 @@ extension MetalRenderer.Encoder {
         
         command_counter += 1
         
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        if let encoder = self.commandEncoder as? MTLComputeCommandEncoder {
+            return encoder
+        } else {
+            commandEncoder?.endEncoding()
+            commandEncoder = nil
+        }
+        
+        guard let encoder = commandBuffer!.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        self.commandEncoder = encoder
         return encoder
     }
 }
@@ -181,12 +199,14 @@ extension MetalRenderer.Encoder {
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
     
-    func commit() {
-        commandBuffer.commit()
-    }
-    
-    func waitUntilCompleted() {
-        commandBuffer.waitUntilCompleted()
+    func commit(waitUntilCompleted: Bool) {
+        commandEncoder?.endEncoding()
+        commandBuffer?.commit()
+        if waitUntilCompleted {
+            commandBuffer?.waitUntilCompleted()
+        }
+        commandEncoder = nil
+        commandBuffer = nil
     }
     
     func alloc_texture() throws -> MTLBuffer {
@@ -200,21 +220,12 @@ extension MetalRenderer.Encoder {
     }
     
     func clear(_ buffer: Buffer) throws {
-        
-        let encoder = try self.makeBlitCommandEncoder()
-        
-        encoder.fill(buffer: buffer, range: 0..<texture_size, value: 0)
-        encoder.endEncoding()
+        try self.makeBlitCommandEncoder().fill(buffer: buffer, range: 0..<texture_size, value: 0)
     }
     
     func copy(_ source: MTLBuffer, _ destination: MTLBuffer) throws {
-        
         guard source !== destination else { return }
-        
-        let encoder = try self.makeBlitCommandEncoder()
-        
-        encoder.copy(from: source, sourceOffset: 0, to: destination, destinationOffset: 0, size: texture_size)
-        encoder.endEncoding()
+        try self.makeBlitCommandEncoder().copy(from: source, sourceOffset: 0, to: destination, destinationOffset: 0, size: texture_size)
     }
     
     func setOpacity(_ destination: MTLBuffer, _ opacity: Double) throws {
@@ -234,27 +245,14 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
     
     func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
         
         switch (compositingMode, blendMode) {
         case (.destination, _): return
-        case (.source, .normal):
-            
-            let encoder = try self.makeBlitCommandEncoder()
-            
-            encoder.copy(from: source, sourceOffset: 0, to: destination, destinationOffset: 0, size: texture_size)
-            encoder.endEncoding()
-            
-        case (.clear, _):
-            
-            let encoder = try self.makeBlitCommandEncoder()
-            
-            encoder.fill(buffer: destination, range: 0..<texture_size, value: 0)
-            encoder.endEncoding()
-            
+        case (.source, .normal): try self.copy(source, destination)
+        case (.clear, _): try self.clear(destination)
         default:
             
             let encoder = try self.makeComputeCommandEncoder()
@@ -304,7 +302,6 @@ extension MetalRenderer.Encoder {
             let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
             
             encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-            encoder.endEncoding()
         }
     }
     
@@ -347,7 +344,6 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
     
     func draw(_ destination: MTLBuffer, _ shape: Shape, _ color: [Double], _ winding: Shape.WindingRule, _ antialias: Int) throws {
@@ -361,8 +357,6 @@ extension MetalRenderer.Encoder {
             let encoder = try self.makeBlitCommandEncoder()
             
             encoder.fill(buffer: stencil_buffer, range: 0..<stencil_size, value: 0)
-            encoder.endEncoding()
-            
             stencil = stencil_buffer
             
         } else {
@@ -432,7 +426,6 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
     
     func draw(_ source: Texture<FloatColorPixel<Model>>, _ destination: MTLBuffer, _ transform: SDTransform, _ antialias: Int) throws {
@@ -481,7 +474,6 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
     
     func clip(_ destination: MTLBuffer, _ clip: MTLBuffer) throws {
@@ -499,7 +491,6 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
     
     func linearGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
@@ -535,7 +526,6 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
     
     func radialGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
@@ -571,7 +561,6 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
 }
 
@@ -761,7 +750,6 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: buffer.count), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
     
     private func render_quadratic(width: Int, height: Int, bound: Rect, buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint)>, output: MTLBuffer) throws {
@@ -788,7 +776,6 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: buffer.count), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
     
     private func render_cubic(width: Int, height: Int, bound: Rect, buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint, GPVector, GPVector, GPVector)>, output: MTLBuffer) throws {
@@ -815,7 +802,6 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: buffer.count), threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
     }
     
     private func stencil(shape: Shape, width: Int, height: Int, output: MTLBuffer) throws -> Rect? {

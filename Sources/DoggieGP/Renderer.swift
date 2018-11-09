@@ -69,9 +69,7 @@ protocol DGRendererEncoder {
     
     var texture_size: Int { get }
     
-    func commit()
-    
-    func waitUntilCompleted()
+    func commit(waitUntilCompleted: Bool)
     
     func clip_encoder() throws -> Renderer.ClipEncoder
     
@@ -173,19 +171,11 @@ extension DGImageContext {
         let texture = Texture<FloatColorPixel<Model>>(width: width, height: height, fileBacked: false)
         let resource = Resource<Renderer.Encoder>()
         
-        do {
-            
-            try self._image.render(encoder: encoder, output: encoder.make_buffer(texture.pixels), resource: resource)
-            
-            encoder.commit()
-            encoder.waitUntilCompleted()
-            
-            self._image = TextureLayer(texture)
-            
-        } catch let error {
-            encoder.commit()
-            throw error
-        }
+        try self._image.render(encoder: encoder, output: encoder.make_buffer(texture.pixels), resource: resource)
+        
+        encoder.commit(waitUntilCompleted: true)
+        
+        self._image = TextureLayer(texture)
     }
 }
 
@@ -309,30 +299,25 @@ extension DGImageContext {
                     } else if let clip_encoder = encoder as? Encoder.Renderer.ClipEncoder {
                         
                         let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
+                        clip_resource.recycle = resource.recycle as? [Encoder.Renderer.ClipEncoder.Buffer] ?? []
                         
                         _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0
                         
                         resource.clip_cache[ObjectIdentifier(clip)] = _clip
                         resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
+                        resource.recycle = clip_resource.recycle as? [Encoder.Buffer] ?? resource.recycle
                         
                     } else {
                         
                         let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
                         let clip_encoder = try encoder.clip_encoder()
                         
-                        do {
-                            
-                            _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0
-                            
-                            clip_encoder.commit()
-                            
-                            resource.clip_cache[ObjectIdentifier(clip)] = _clip
-                            resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
-                            
-                        } catch let error {
-                            clip_encoder.commit()
-                            throw error
-                        }
+                        _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0
+                        
+                        clip_encoder.commit(waitUntilCompleted: false)
+                        
+                        resource.clip_cache[ObjectIdentifier(clip)] = _clip
+                        resource.clip_cache.merge(clip_resource.clip_cache) { (lhs, _) in lhs }
                     }
                     
                     try encoder.clip(_source, _clip)
