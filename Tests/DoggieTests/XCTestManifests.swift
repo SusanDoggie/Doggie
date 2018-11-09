@@ -1,5 +1,13 @@
 import XCTest
 
+extension ArithmeticTest {
+    static let __allTests = [
+        ("testColorOperation", testColorOperation),
+        ("testFloatComponentsOperation", testFloatComponentsOperation),
+        ("testTensorOperation", testTensorOperation),
+    ]
+}
+
 extension AtomicTest {
     static let __allTests = [
         ("testAtomicA", testAtomicA),
@@ -54,7 +62,10 @@ extension FourierTest {
 
 extension ImageTest {
     static let __allTests = [
+        ("testClipPerformance", testClipPerformance),
         ("testColorSpaceConversionPerformance", testColorSpaceConversionPerformance),
+        ("testLinearGradientPerformance", testLinearGradientPerformance),
+        ("testRadialGradientPerformance", testRadialGradientPerformance),
         ("testResamplingCosineAntialiasPerformance", testResamplingCosineAntialiasPerformance),
         ("testResamplingCosinePerformance", testResamplingCosinePerformance),
         ("testResamplingCubicAntialiasPerformance", testResamplingCubicAntialiasPerformance),
@@ -90,6 +101,7 @@ extension XMLTest {
 #if !os(macOS)
 public func __allTests() -> [XCTestCaseEntry] {
     return [
+        testCase(ArithmeticTest.__allTests),
         testCase(AtomicTest.__allTests),
         testCase(CompressionTest.__allTests),
         testCase(FourierTest.__allTests),

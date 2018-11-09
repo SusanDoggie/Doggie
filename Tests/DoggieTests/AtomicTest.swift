@@ -28,16 +28,6 @@ import XCTest
 
 class AtomicTest: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        
-    }
-    
-    override func tearDown() {
-        
-        super.tearDown()
-    }
-    
     func testAtomicA() {
         
         let queue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)

@@ -30,16 +30,6 @@ class CompressionTest: XCTestCase {
     
     let sample = ColorSpace.adobeRGB.iccData!
     
-    override func setUp() {
-        super.setUp()
-        
-    }
-    
-    override func tearDown() {
-        
-        super.tearDown()
-    }
-    
     func testZlib() {
         
         do {

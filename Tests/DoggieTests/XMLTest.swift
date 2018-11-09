@@ -28,16 +28,6 @@ import XCTest
 
 class XMLTest: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        
-    }
-    
-    override func tearDown() {
-        
-        super.tearDown()
-    }
-    
     func testXMLA() {
         
         let xmlString = """

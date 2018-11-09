@@ -28,16 +28,6 @@ import XCTest
 
 class PolynomialTest: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        
-    }
-    
-    override func tearDown() {
-        
-        super.tearDown()
-    }
-    
     func testPolynomialMulPerformance() {
         
         var a: Polynomial = []

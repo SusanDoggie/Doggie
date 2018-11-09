@@ -30,16 +30,6 @@ class FourierTest: XCTestCase {
     
     let accuracy = 0.00000001
     
-    override func setUp() {
-        super.setUp()
-        
-    }
-    
-    override func tearDown() {
-        
-        super.tearDown()
-    }
-    
     func testRadix2CooleyTukeyA() {
         
         for i in 0...10 {
