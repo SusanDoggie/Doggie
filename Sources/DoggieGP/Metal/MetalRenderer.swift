@@ -716,48 +716,45 @@ extension MetalRenderer.Encoder {
         
         try shape.render { op in
             
-            try autoreleasepool {
+            switch op {
+            case let .triangle(p0, p1, p2):
                 
-                switch op {
-                case let .triangle(p0, p1, p2):
-                    
-                    let q0 = p0 * transform
-                    let q1 = p1 * transform
-                    let q2 = p2 * transform
-                    
-                    let _bound = Rect.bound([q0, q1, q2])
-                    bound = bound?.union(_bound) ?? _bound
-                    
-                    let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
-                    
-                    try render_stencil(width: width, height: height, pipeline: "stencil_triangle", bound: _bound, triangle: triangle, output: output)
-                    
-                case let .quadratic(p0, p1, p2):
-                    
-                    let q0 = p0 * transform
-                    let q1 = p1 * transform
-                    let q2 = p2 * transform
-                    
-                    let _bound = Rect.bound([q0, q1, q2])
-                    bound = bound?.union(_bound) ?? _bound
-                    
-                    let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
-                    
-                    try render_stencil(width: width, height: height, pipeline: "stencil_quadratic", bound: _bound, triangle: triangle, output: output)
-                    
-                case let .cubic(p0, p1, p2, v0, v1, v2):
-                    
-                    let q0 = p0 * transform
-                    let q1 = p1 * transform
-                    let q2 = p2 * transform
-                    
-                    let _bound = Rect.bound([q0, q1, q2])
-                    bound = bound?.union(_bound) ?? _bound
-                    
-                    let triangle = CubicTriangle(GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2))
-                    
-                    try render_stencil(width: width, height: height, pipeline: "stencil_cubic", bound: _bound, triangle: triangle, output: output)
-                }
+                let q0 = p0 * transform
+                let q1 = p1 * transform
+                let q2 = p2 * transform
+                
+                let _bound = Rect.bound([q0, q1, q2])
+                bound = bound?.union(_bound) ?? _bound
+                
+                let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
+                
+                try render_stencil(width: width, height: height, pipeline: "stencil_triangle", bound: _bound, triangle: triangle, output: output)
+                
+            case let .quadratic(p0, p1, p2):
+                
+                let q0 = p0 * transform
+                let q1 = p1 * transform
+                let q2 = p2 * transform
+                
+                let _bound = Rect.bound([q0, q1, q2])
+                bound = bound?.union(_bound) ?? _bound
+                
+                let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
+                
+                try render_stencil(width: width, height: height, pipeline: "stencil_quadratic", bound: _bound, triangle: triangle, output: output)
+                
+            case let .cubic(p0, p1, p2, v0, v1, v2):
+                
+                let q0 = p0 * transform
+                let q1 = p1 * transform
+                let q2 = p2 * transform
+                
+                let _bound = Rect.bound([q0, q1, q2])
+                bound = bound?.union(_bound) ?? _bound
+                
+                let triangle = CubicTriangle(GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2))
+                
+                try render_stencil(width: width, height: height, pipeline: "stencil_cubic", bound: _bound, triangle: triangle, output: output)
             }
         }
         
