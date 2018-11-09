@@ -305,37 +305,14 @@ extension MetalRenderer.Encoder {
         }
     }
     
-    func shadow(_ source: MTLBuffer, _ destination: MTLBuffer, _ color: [Double], _ offset: Size, _ blur: Double) throws {
+    func shadow(_ source: MTLBuffer, _ destination: MTLBuffer, _ color: FloatColorPixel<Model>, _ offset: Size, _ blur: Double) throws {
         
         let encoder = try self.makeComputeCommandEncoder()
         
         let pipeline = try renderer.request_pipeline("shadow")
         encoder.setComputePipelineState(pipeline)
         
-        let _color0 = 0..<color.count ~= 0 ? Float(color[0]) : 0
-        let _color1 = 0..<color.count ~= 1 ? Float(color[1]) : 0
-        let _color2 = 0..<color.count ~= 2 ? Float(color[2]) : 0
-        let _color3 = 0..<color.count ~= 3 ? Float(color[3]) : 0
-        let _color4 = 0..<color.count ~= 4 ? Float(color[4]) : 0
-        let _color5 = 0..<color.count ~= 5 ? Float(color[5]) : 0
-        let _color6 = 0..<color.count ~= 6 ? Float(color[6]) : 0
-        let _color7 = 0..<color.count ~= 7 ? Float(color[7]) : 0
-        let _color8 = 0..<color.count ~= 8 ? Float(color[8]) : 0
-        let _color9 = 0..<color.count ~= 9 ? Float(color[9]) : 0
-        let _color10 = 0..<color.count ~= 10 ? Float(color[10]) : 0
-        let _color11 = 0..<color.count ~= 11 ? Float(color[11]) : 0
-        let _color12 = 0..<color.count ~= 12 ? Float(color[12]) : 0
-        let _color13 = 0..<color.count ~= 13 ? Float(color[13]) : 0
-        let _color14 = 0..<color.count ~= 14 ? Float(color[14]) : 0
-        let _color15 = 0..<color.count ~= 15 ? Float(color[15]) : 0
-        
-        encoder.setBytes([ShadowParameter(
-            offset: GPSize(offset),
-            blur: Float(blur),
-            color: (_color0, _color1, _color2, _color3,
-                    _color4, _color5, _color6, _color7,
-                    _color8, _color9, _color10, _color11,
-                    _color12, _color13, _color14, _color15))], length: 76, index: 0)
+        encoder.setBytes([ShadowParameter(offset: GPSize(offset), blur: Float(blur), color: GPColor(color))], length: 76, index: 0)
         encoder.setBuffer(source, offset: 0, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         
@@ -346,7 +323,7 @@ extension MetalRenderer.Encoder {
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
-    func draw(_ destination: MTLBuffer, _ shape: Shape, _ color: [Double], _ winding: Shape.WindingRule, _ antialias: Int) throws {
+    func draw(_ destination: MTLBuffer, _ shape: Shape, _ color: FloatColorPixel<Model>, _ winding: Shape.WindingRule, _ antialias: Int) throws {
         
         let stencil: MTLBuffer
         
@@ -390,34 +367,7 @@ extension MetalRenderer.Encoder {
         
         encoder.setComputePipelineState(pipeline)
         
-        let _color0 = 0..<color.count ~= 0 ? Float(color[0]) : 0
-        let _color1 = 0..<color.count ~= 1 ? Float(color[1]) : 0
-        let _color2 = 0..<color.count ~= 2 ? Float(color[2]) : 0
-        let _color3 = 0..<color.count ~= 3 ? Float(color[3]) : 0
-        let _color4 = 0..<color.count ~= 4 ? Float(color[4]) : 0
-        let _color5 = 0..<color.count ~= 5 ? Float(color[5]) : 0
-        let _color6 = 0..<color.count ~= 6 ? Float(color[6]) : 0
-        let _color7 = 0..<color.count ~= 7 ? Float(color[7]) : 0
-        let _color8 = 0..<color.count ~= 8 ? Float(color[8]) : 0
-        let _color9 = 0..<color.count ~= 9 ? Float(color[9]) : 0
-        let _color10 = 0..<color.count ~= 10 ? Float(color[10]) : 0
-        let _color11 = 0..<color.count ~= 11 ? Float(color[11]) : 0
-        let _color12 = 0..<color.count ~= 12 ? Float(color[12]) : 0
-        let _color13 = 0..<color.count ~= 13 ? Float(color[13]) : 0
-        let _color14 = 0..<color.count ~= 14 ? Float(color[14]) : 0
-        let _color15 = 0..<color.count ~= 15 ? Float(color[15]) : 0
-        
-        encoder.setBytes([FillStencilParameter(
-            offset_x: UInt32(offset_x),
-            offset_y: UInt32(offset_y),
-            width: UInt32(width),
-            antialias: UInt32(antialias),
-            color: (_color0, _color1, _color2, _color3,
-                    _color4, _color5, _color6, _color7,
-                    _color8, _color9, _color10, _color11,
-                    _color12, _color13, _color14, _color15)
-            )], length: 80, index: 0)
-        
+        encoder.setBytes([FillStencilParameter(offset_x: UInt32(offset_x), offset_y: UInt32(offset_y), width: UInt32(width), antialias: UInt32(antialias), color: GPColor(color))], length: 80, index: 0)
         encoder.setBuffer(stencil, offset: 0, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         
@@ -616,14 +566,44 @@ extension MetalRenderer.Encoder {
         }
     }
     
-    private struct ShadowParameter {
+    private struct GPColor {
         
-        var offset: GPSize
-        var blur: Float
         var color: (Float, Float, Float, Float,
         Float, Float, Float, Float,
         Float, Float, Float, Float,
         Float, Float, Float, Float)
+        
+        init<Pixel: ColorPixelProtocol>(_ color: Pixel) {
+            
+            let _color0 = 0..<Pixel.numberOfComponents ~= 0 ? Float(color.component(0)) : 0
+            let _color1 = 0..<Pixel.numberOfComponents ~= 1 ? Float(color.component(1)) : 0
+            let _color2 = 0..<Pixel.numberOfComponents ~= 2 ? Float(color.component(2)) : 0
+            let _color3 = 0..<Pixel.numberOfComponents ~= 3 ? Float(color.component(3)) : 0
+            let _color4 = 0..<Pixel.numberOfComponents ~= 4 ? Float(color.component(4)) : 0
+            let _color5 = 0..<Pixel.numberOfComponents ~= 5 ? Float(color.component(5)) : 0
+            let _color6 = 0..<Pixel.numberOfComponents ~= 6 ? Float(color.component(6)) : 0
+            let _color7 = 0..<Pixel.numberOfComponents ~= 7 ? Float(color.component(7)) : 0
+            let _color8 = 0..<Pixel.numberOfComponents ~= 8 ? Float(color.component(8)) : 0
+            let _color9 = 0..<Pixel.numberOfComponents ~= 9 ? Float(color.component(9)) : 0
+            let _color10 = 0..<Pixel.numberOfComponents ~= 10 ? Float(color.component(10)) : 0
+            let _color11 = 0..<Pixel.numberOfComponents ~= 11 ? Float(color.component(11)) : 0
+            let _color12 = 0..<Pixel.numberOfComponents ~= 12 ? Float(color.component(12)) : 0
+            let _color13 = 0..<Pixel.numberOfComponents ~= 13 ? Float(color.component(13)) : 0
+            let _color14 = 0..<Pixel.numberOfComponents ~= 14 ? Float(color.component(14)) : 0
+            let _color15 = 0..<Pixel.numberOfComponents ~= 15 ? Float(color.component(15)) : 0
+            
+            self.color = (_color0, _color1, _color2, _color3,
+                          _color4, _color5, _color6, _color7,
+                          _color8, _color9, _color10, _color11,
+                          _color12, _color13, _color14, _color15)
+        }
+    }
+    
+    private struct ShadowParameter {
+        
+        var offset: GPSize
+        var blur: Float
+        var color: GPColor
     }
     
     private struct FillStencilParameter {
@@ -632,45 +612,17 @@ extension MetalRenderer.Encoder {
         var offset_y: UInt32
         var width: UInt32
         var antialias: UInt32
-        var color: (Float, Float, Float, Float,
-        Float, Float, Float, Float,
-        Float, Float, Float, Float,
-        Float, Float, Float, Float)
+        var color: GPColor
     }
     
     private struct _GradientStop {
         
         var offset: Float
-        var color: (Float, Float, Float, Float,
-        Float, Float, Float, Float,
-        Float, Float, Float, Float,
-        Float, Float, Float, Float)
+        var color: GPColor
         
         init(_ stop: DGRendererEncoderGradientStop<Model>) {
-            
-            let _color0 = 0...Model.numberOfComponents ~= 0 ? Float(stop.color.component(0)) : 0
-            let _color1 = 0...Model.numberOfComponents ~= 1 ? Float(stop.color.component(1)) : 0
-            let _color2 = 0...Model.numberOfComponents ~= 2 ? Float(stop.color.component(2)) : 0
-            let _color3 = 0...Model.numberOfComponents ~= 3 ? Float(stop.color.component(3)) : 0
-            let _color4 = 0...Model.numberOfComponents ~= 4 ? Float(stop.color.component(4)) : 0
-            let _color5 = 0...Model.numberOfComponents ~= 5 ? Float(stop.color.component(5)) : 0
-            let _color6 = 0...Model.numberOfComponents ~= 6 ? Float(stop.color.component(6)) : 0
-            let _color7 = 0...Model.numberOfComponents ~= 7 ? Float(stop.color.component(7)) : 0
-            let _color8 = 0...Model.numberOfComponents ~= 8 ? Float(stop.color.component(8)) : 0
-            let _color9 = 0...Model.numberOfComponents ~= 9 ? Float(stop.color.component(9)) : 0
-            let _color10 = 0...Model.numberOfComponents ~= 10 ? Float(stop.color.component(10)) : 0
-            let _color11 = 0...Model.numberOfComponents ~= 11 ? Float(stop.color.component(11)) : 0
-            let _color12 = 0...Model.numberOfComponents ~= 12 ? Float(stop.color.component(12)) : 0
-            let _color13 = 0...Model.numberOfComponents ~= 13 ? Float(stop.color.component(13)) : 0
-            let _color14 = 0...Model.numberOfComponents ~= 14 ? Float(stop.color.component(14)) : 0
-            let _color15 = 0...Model.numberOfComponents ~= 15 ? Float(stop.color.component(15)) : 0
-            
             self.offset = Float(stop.offset)
-            self.color = (_color0, _color1, _color2, _color3,
-                          _color4, _color5, _color6, _color7,
-                          _color8, _color9, _color10, _color11,
-                          _color12, _color13, _color14, _color15)
-            
+            self.color = GPColor(stop.color)
         }
     }
     

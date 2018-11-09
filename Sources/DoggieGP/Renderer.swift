@@ -85,9 +85,9 @@ protocol DGRendererEncoder {
     
     func blend(_ source: Buffer, _ destination: Buffer, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws
     
-    func shadow(_ source: Buffer, _ destination: Buffer, _ color: [Double], _ offset: Size, _ blur: Double) throws
+    func shadow(_ source: Buffer, _ destination: Buffer, _ color: FloatColorPixel<Renderer.Model>, _ offset: Size, _ blur: Double) throws
     
-    func draw(_ destination: Buffer, _ shape: Shape, _ color: [Double], _ winding: Shape.WindingRule, _ antialias: Int) throws
+    func draw(_ destination: Buffer, _ shape: Shape, _ color: FloatColorPixel<Renderer.Model>, _ winding: Shape.WindingRule, _ antialias: Int) throws
     
     func draw(_ source: Texture<FloatColorPixel<Renderer.Model>>, _ destination: Buffer, _ transform: SDTransform, _ antialias: Int) throws
     
@@ -325,7 +325,7 @@ extension DGImageContext {
                 
                 if isShadow {
                     let _shadow = try self.request_buffer(encoder: encoder, resource: resource)
-                    try encoder.shadow(_source, _shadow, (0..<shadowColor.numberOfComponents).map { shadowColor.component($0) }, shadowOffset, shadowBlur)
+                    try encoder.shadow(_source, _shadow, shadowColor, shadowOffset, shadowBlur)
                     try encoder.blend(_shadow, output, compositingMode, blendMode)
                     resource.recycle.append(_shadow)
                 }
@@ -358,7 +358,7 @@ extension DGImageContext {
         }
         
         override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
-            try encoder.draw(output, shape, (0..<color.numberOfComponents).map { color.component($0) }, winding, antialias)
+            try encoder.draw(output, shape, color, winding, antialias)
         }
         
     }
