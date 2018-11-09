@@ -152,7 +152,6 @@ extension MetalRenderer.Encoder {
             self.commit(waitUntilCompleted: true)
             guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
             self.commandBuffer = _commandBuffer
-            command_counter = 0
         }
         
         command_counter += 1
@@ -175,7 +174,6 @@ extension MetalRenderer.Encoder {
             self.commit(waitUntilCompleted: true)
             guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
             self.commandBuffer = _commandBuffer
-            command_counter = 0
         }
         
         command_counter += 1
@@ -204,6 +202,7 @@ extension MetalRenderer.Encoder {
         }
         commandEncoder = nil
         commandBuffer = nil
+        command_counter = 0
     }
     
     func alloc_texture() throws -> MTLBuffer {
