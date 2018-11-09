@@ -440,7 +440,7 @@ extension MetalRenderer.Encoder {
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
-    func linearGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
+    private func draw_gradient(_ destination: MTLBuffer, _ type: String, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
         
         let encoder = try self.makeComputeCommandEncoder()
         
@@ -461,42 +461,7 @@ extension MetalRenderer.Encoder {
         case .repeat: end_name = "repeat"
         }
         
-        let pipeline = try renderer.request_pipeline("axial_gradient_\(start_name)_\(end_name)")
-        encoder.setComputePipelineState(pipeline)
-        
-        encoder.setValue(GradientParameter(stops.count, transform, start, 0, end, 0), index: 0)
-        encoder.setBuffer(stops.map(_GradientStop.init), index: 1)
-        encoder.setBuffer(destination, offset: 0, index: 2)
-        
-        let w = pipeline.threadExecutionWidth
-        let h = pipeline.maxTotalThreadsPerThreadgroup / w
-        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
-        
-        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
-    }
-    
-    func radialGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
-        
-        let encoder = try self.makeComputeCommandEncoder()
-        
-        let start_name: String
-        let end_name: String
-        
-        switch startSpread {
-        case .none: start_name = "none"
-        case .pad: start_name = "pad"
-        case .reflect: start_name = "reflect"
-        case .repeat: start_name = "repeat"
-        }
-        
-        switch endSpread {
-        case .none: end_name = "none"
-        case .pad: end_name = "pad"
-        case .reflect: end_name = "reflect"
-        case .repeat: end_name = "repeat"
-        }
-        
-        let pipeline = try renderer.request_pipeline("radial_gradient_\(start_name)_\(end_name)")
+        let pipeline = try renderer.request_pipeline("\(type)_gradient_\(start_name)_\(end_name)")
         encoder.setComputePipelineState(pipeline)
         
         encoder.setValue(GradientParameter(stops.count, transform, start, startRadius, end, endRadius), index: 0)
@@ -508,6 +473,14 @@ extension MetalRenderer.Encoder {
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
         
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+    }
+    
+    func linearGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
+        try draw_gradient(destination, "axial", stops, transform, start, 0, end, 0, startSpread, endSpread)
+    }
+    
+    func radialGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
+        try draw_gradient(destination, "radial", stops, transform, start, startRadius, end, endRadius, startSpread, endSpread)
     }
 }
 
