@@ -723,6 +723,9 @@ extension MetalRenderer.Encoder {
                 let q1 = p1 * transform
                 let q2 = p2 * transform
                 
+                let det = (q1.y - q2.y) * (q0.x - q2.x) + (q2.x - q1.x) * (q0.y - q2.y)
+                guard !det.almostZero() else { return }
+                
                 let _bound = Rect.bound([q0, q1, q2])
                 bound = bound?.union(_bound) ?? _bound
                 
@@ -736,6 +739,9 @@ extension MetalRenderer.Encoder {
                 let q1 = p1 * transform
                 let q2 = p2 * transform
                 
+                let det = (q1.y - q2.y) * (q0.x - q2.x) + (q2.x - q1.x) * (q0.y - q2.y)
+                guard !det.almostZero() else { return }
+                
                 let _bound = Rect.bound([q0, q1, q2])
                 bound = bound?.union(_bound) ?? _bound
                 
@@ -748,6 +754,9 @@ extension MetalRenderer.Encoder {
                 let q0 = p0 * transform
                 let q1 = p1 * transform
                 let q2 = p2 * transform
+                
+                let det = (q1.y - q2.y) * (q0.x - q2.x) + (q2.x - q1.x) * (q0.y - q2.y)
+                guard !det.almostZero() else { return }
                 
                 let _bound = Rect.bound([q0, q1, q2])
                 bound = bound?.union(_bound) ?? _bound
