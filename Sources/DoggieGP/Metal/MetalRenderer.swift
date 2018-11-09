@@ -237,7 +237,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("set_opacity")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([Float(opacity)], length: 4, index: 0)
+        withUnsafeBytes(of: Float(opacity)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0) }
         encoder.setBuffer(destination, offset: 0, index: 1)
         
         let w = pipeline.threadExecutionWidth
@@ -312,8 +312,8 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("shadow")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([ShadowParameter(offset: GPSize(offset), blur: Float(blur), color: GPColor(color))], length: 76, index: 0)
-        encoder.setBuffer(source, offset: 0, index: 1)
+        withUnsafeBytes(of: ShadowParameter(offset: GPSize(offset), blur: Float(blur), color: GPColor(color))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0)
+        encoder.setBuffer(source, offset: 0, index: 1) }
         encoder.setBuffer(destination, offset: 0, index: 2)
         
         let w = pipeline.threadExecutionWidth
@@ -367,7 +367,8 @@ extension MetalRenderer.Encoder {
         
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([FillStencilParameter(offset_x: UInt32(offset_x), offset_y: UInt32(offset_y), width: UInt32(width), antialias: UInt32(antialias), color: GPColor(color))], length: 80, index: 0)
+        let parameter = FillStencilParameter(offset_x: UInt32(offset_x), offset_y: UInt32(offset_y), width: UInt32(width), antialias: UInt32(antialias), color: GPColor(color))
+        withUnsafeBytes(of: parameter) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0) }
         encoder.setBuffer(stencil, offset: 0, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         
@@ -415,7 +416,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("\(algorithm_name)_interpolate_\(h_wrapping_name)_\(v_wrapping_name)")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([InterpolateParameter(source, transform, antialias)], length: 48, index: 0)
+        withUnsafeBytes(of: InterpolateParameter(source, transform, antialias)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0) }
         encoder.setBuffer(_source, offset: 0, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         
@@ -467,8 +468,8 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("axial_gradient_\(start_name)_\(end_name)")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([GradientParameter(stops.count, transform, start, 0, end, 0)], length: 56, index: 0)
-        encoder.setBytes(stops.map(_GradientStop.init), length: 68 * stops.count, index: 1)
+        withUnsafeBytes(of: GradientParameter(stops.count, transform, start, 0, end, 0)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0) }
+        stops.map(_GradientStop.init).withUnsafeBytes { encoder.setBytes($0.baseAddress!, length: $0.count, index: 1) }
         encoder.setBuffer(destination, offset: 0, index: 2)
         
         let w = pipeline.threadExecutionWidth
@@ -502,8 +503,8 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("radial_gradient_\(start_name)_\(end_name)")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([GradientParameter(stops.count, transform, start, startRadius, end, endRadius)], length: 56, index: 0)
-        encoder.setBytes(stops.map(_GradientStop.init), length: 68 * stops.count, index: 1)
+        withUnsafeBytes(of: GradientParameter(stops.count, transform, start, startRadius, end, endRadius)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0) }
+        stops.map(_GradientStop.init).withUnsafeBytes { encoder.setBytes($0.baseAddress!, length: $0.count, index: 1) }
         encoder.setBuffer(destination, offset: 0, index: 2)
         
         let w = pipeline.threadExecutionWidth
@@ -693,7 +694,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("stencil_triangle")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 12, index: 0)
+        withUnsafeBytes(of: (UInt32(offset_x), UInt32(offset_y), UInt32(width))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0) }
         encoder.setBuffer(_buffer, offset: 0, index: 1)
         encoder.setBuffer(output, offset: 0, index: 2)
         
@@ -719,7 +720,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("stencil_quadratic")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 12, index: 0)
+        withUnsafeBytes(of: (UInt32(offset_x), UInt32(offset_y), UInt32(width))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0) }
         encoder.setBuffer(_buffer, offset: 0, index: 1)
         encoder.setBuffer(output, offset: 0, index: 2)
         
@@ -745,7 +746,7 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline("stencil_cubic")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBytes([UInt32(offset_x), UInt32(offset_y), UInt32(width)], length: 12, index: 0)
+        withUnsafeBytes(of: (UInt32(offset_x), UInt32(offset_y), UInt32(width))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0) }
         encoder.setBuffer(_buffer, offset: 0, index: 1)
         encoder.setBuffer(output, offset: 0, index: 2)
         
