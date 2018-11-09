@@ -38,9 +38,6 @@ private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 private let command_encoder_limit = 32
 
 @available(OSX 10.13, iOS 11.0, *)
-private let stencil_buffer_limit = 16
-
-@available(OSX 10.13, iOS 11.0, *)
 class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     
     typealias ClipEncoder = MetalRenderer<GrayColorModel>.Encoder
@@ -678,9 +675,39 @@ extension MetalRenderer.Encoder {
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
     
-    private func render_stencil<T>(width: Int, height: Int, pipeline: String, bound: Rect?, buffer: MappedBuffer<T>, output: MTLBuffer) throws {
+    private struct Triangle {
         
-        guard let bound = bound, buffer.count != 0 else { return }
+        var p0: GPPoint
+        var p1: GPPoint
+        var p2: GPPoint
+        
+        init(_ p0: GPPoint, _ p1: GPPoint, _ p2: GPPoint) {
+            self.p0 = p0
+            self.p1 = p1
+            self.p2 = p2
+        }
+    }
+    
+    private struct CubicTriangle {
+        
+        var p0: GPPoint
+        var p1: GPPoint
+        var p2: GPPoint
+        var v0: GPVector
+        var v1: GPVector
+        var v2: GPVector
+        
+        init(_ p0: GPPoint, _ p1: GPPoint, _ p2: GPPoint, _ v0: GPVector, _ v1: GPVector, _ v2: GPVector) {
+            self.p0 = p0
+            self.p1 = p1
+            self.p2 = p2
+            self.v0 = v0
+            self.v1 = v1
+            self.v2 = v2
+        }
+    }
+    
+    private func render_stencil<T>(width: Int, height: Int, pipeline: String, bound: Rect, triangle: T, output: MTLBuffer) throws {
         
         let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
         let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
@@ -688,34 +715,25 @@ extension MetalRenderer.Encoder {
         let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
         
         let encoder = try self.makeComputeCommandEncoder()
-        guard let _buffer = device.makeBuffer(buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
         
         let pipeline = try renderer.request_pipeline(pipeline)
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setValues(UInt32(offset_x), UInt32(offset_y), UInt32(width), index: 0)
-        encoder.setBuffer(_buffer, offset: 0, index: 1)
-        encoder.setBuffer(output, offset: 0, index: 2)
+        encoder.setValue((UInt32(offset_x), UInt32(offset_y), UInt32(width), triangle), index: 0)
+        encoder.setBuffer(output, offset: 0, index: 1)
         
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
         
-        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: buffer.count), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
     private func stencil(shape: Shape, width: Int, height: Int, output: MTLBuffer) throws -> Rect? {
         
         let transform = shape.transform
         
-        var triangle_bound: Rect?
-        var quadratic_bound: Rect?
-        var cubic_bound: Rect?
-        var _bound: Rect?
-        
-        var triangle_render_buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint)> = []
-        var quadratic_render_buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint)> = []
-        var cubic_render_buffer: MappedBuffer<(GPPoint, GPPoint, GPPoint, GPVector, GPVector, GPVector)> = []
+        var bound: Rect?
         
         try shape.render { op in
             
@@ -728,17 +746,12 @@ extension MetalRenderer.Encoder {
                     let q1 = p1 * transform
                     let q2 = p2 * transform
                     
-                    triangle_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
+                    let _bound = Rect.bound([q0, q1, q2])
+                    bound = bound?.union(_bound) ?? _bound
                     
-                    let __bound = Rect.bound([q0, q1, q2])
-                    triangle_bound = triangle_bound?.union(__bound) ?? __bound
-                    _bound = _bound?.union(__bound) ?? __bound
+                    let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
                     
-                    if triangle_render_buffer.count >= stencil_buffer_limit {
-                        try render_stencil(width: width, height: height, pipeline: "stencil_triangle", bound: triangle_bound, buffer: triangle_render_buffer, output: output)
-                        triangle_bound = nil
-                        triangle_render_buffer = []
-                    }
+                    try render_stencil(width: width, height: height, pipeline: "stencil_triangle", bound: _bound, triangle: triangle, output: output)
                     
                 case let .quadratic(p0, p1, p2):
                     
@@ -746,17 +759,12 @@ extension MetalRenderer.Encoder {
                     let q1 = p1 * transform
                     let q2 = p2 * transform
                     
-                    quadratic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2)))
+                    let _bound = Rect.bound([q0, q1, q2])
+                    bound = bound?.union(_bound) ?? _bound
                     
-                    let __bound = Rect.bound([q0, q1, q2])
-                    quadratic_bound = quadratic_bound?.union(__bound) ?? __bound
-                    _bound = _bound?.union(__bound) ?? __bound
+                    let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
                     
-                    if quadratic_render_buffer.count >= stencil_buffer_limit {
-                        try render_stencil(width: width, height: height, pipeline: "stencil_quadratic", bound: quadratic_bound, buffer: quadratic_render_buffer, output: output)
-                        quadratic_bound = nil
-                        quadratic_render_buffer = []
-                    }
+                    try render_stencil(width: width, height: height, pipeline: "stencil_quadratic", bound: _bound, triangle: triangle, output: output)
                     
                 case let .cubic(p0, p1, p2, v0, v1, v2):
                     
@@ -764,26 +772,17 @@ extension MetalRenderer.Encoder {
                     let q1 = p1 * transform
                     let q2 = p2 * transform
                     
-                    cubic_render_buffer.append((GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2)))
+                    let _bound = Rect.bound([q0, q1, q2])
+                    bound = bound?.union(_bound) ?? _bound
                     
-                    let __bound = Rect.bound([q0, q1, q2])
-                    cubic_bound = cubic_bound?.union(__bound) ?? __bound
-                    _bound = _bound?.union(__bound) ?? __bound
+                    let triangle = CubicTriangle(GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2))
                     
-                    if cubic_render_buffer.count >= stencil_buffer_limit {
-                        try render_stencil(width: width, height: height, pipeline: "stencil_cubic", bound: cubic_bound, buffer: cubic_render_buffer, output: output)
-                        cubic_bound = nil
-                        cubic_render_buffer = []
-                    }
+                    try render_stencil(width: width, height: height, pipeline: "stencil_cubic", bound: _bound, triangle: triangle, output: output)
                 }
             }
         }
         
-        try render_stencil(width: width, height: height, pipeline: "stencil_triangle", bound: triangle_bound, buffer: triangle_render_buffer, output: output)
-        try render_stencil(width: width, height: height, pipeline: "stencil_quadratic", bound: quadratic_bound, buffer: quadratic_render_buffer, output: output)
-        try render_stencil(width: width, height: height, pipeline: "stencil_cubic", bound: cubic_bound, buffer: cubic_render_buffer, output: output)
-        
-        return _bound
+        return bound
     }
 }
 

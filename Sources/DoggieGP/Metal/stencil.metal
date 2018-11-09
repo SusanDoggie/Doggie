@@ -32,19 +32,17 @@ const float cross(const float2 a, const float2 b);
 const float3 Barycentric(const float2 p0, const float2 p1, const float2 p2, const float2 q);
 const bool inTriangle(const float2 p0, const float2 p1, const float2 p2, const float2 position);
 
-struct stencil_parameter {
+struct stencil_triangle_parameter {
     
     const packed_uint2 offset;
     const uint width;
-};
-
-struct stencil_triangle_struct {
-    
     const packed_float2 p0, p1, p2;
 };
 
-struct stencil_cubic_struct {
+struct stencil_cubic_parameter {
     
+    const packed_uint2 offset;
+    const uint width;
     const packed_float2 p0, p1, p2;
     const packed_float3 v0, v1, v2;
 };
@@ -57,20 +55,17 @@ struct fill_stencil_parameter {
     const float color[16];
 };
 
-kernel void stencil_triangle(const device stencil_parameter &parameter [[buffer(0)]],
-                             const device stencil_triangle_struct *triangles [[buffer(1)]],
-                             device int16_t *out [[buffer(2)]],
-                             uint3 id [[thread_position_in_grid]]) {
+kernel void stencil_triangle(const device stencil_triangle_parameter &parameter [[buffer(0)]],
+                             device int16_t *out [[buffer(1)]],
+                             uint2 id [[thread_position_in_grid]]) {
     
     const int width = parameter.width;
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
     
-    const stencil_triangle_struct triangle = triangles[id[2]];
-    
-    const float2 p0 = triangle.p0;
-    const float2 p1 = triangle.p1;
-    const float2 p2 = triangle.p2;
+    const float2 p0 = parameter.p0;
+    const float2 p1 = parameter.p1;
+    const float2 p2 = parameter.p2;
     
     if (inTriangle(p0, p1, p2, (float2)position)) {
         if (signbit(cross(p1 - p0, p2 - p0))) {
@@ -81,20 +76,17 @@ kernel void stencil_triangle(const device stencil_parameter &parameter [[buffer(
     }
 }
 
-kernel void stencil_quadratic(const device stencil_parameter &parameter [[buffer(0)]],
-                              const device stencil_triangle_struct *triangles [[buffer(1)]],
-                              device int16_t *out [[buffer(2)]],
-                              uint3 id [[thread_position_in_grid]]) {
+kernel void stencil_quadratic(const device stencil_triangle_parameter &parameter [[buffer(0)]],
+                              device int16_t *out [[buffer(1)]],
+                              uint2 id [[thread_position_in_grid]]) {
     
     const int width = parameter.width;
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
     
-    const stencil_triangle_struct triangle = triangles[id[2]];
-    
-    const float2 p0 = triangle.p0;
-    const float2 p1 = triangle.p1;
-    const float2 p2 = triangle.p2;
+    const float2 p0 = parameter.p0;
+    const float2 p1 = parameter.p1;
+    const float2 p2 = parameter.p2;
     
     if (inTriangle(p0, p1, p2, (float2)position)) {
         
@@ -111,23 +103,20 @@ kernel void stencil_quadratic(const device stencil_parameter &parameter [[buffer
     }
 }
 
-kernel void stencil_cubic(const device stencil_parameter &parameter [[buffer(0)]],
-                          const device stencil_cubic_struct *triangles [[buffer(1)]],
-                          device int16_t *out [[buffer(2)]],
-                          uint3 id [[thread_position_in_grid]]) {
+kernel void stencil_cubic(const device stencil_cubic_parameter &parameter [[buffer(0)]],
+                          device int16_t *out [[buffer(1)]],
+                          uint2 id [[thread_position_in_grid]]) {
     
     const int width = parameter.width;
     const int2 position = int2(id[0] + parameter.offset[0], id[1] + parameter.offset[1]);
     const int idx = width * position[1] + position[0];
     
-    const stencil_cubic_struct triangle = triangles[id[2]];
-    
-    const float2 p0 = triangle.p0;
-    const float2 p1 = triangle.p1;
-    const float2 p2 = triangle.p2;
-    const float3 v0 = triangle.v0;
-    const float3 v1 = triangle.v1;
-    const float3 v2 = triangle.v2;
+    const float2 p0 = parameter.p0;
+    const float2 p1 = parameter.p1;
+    const float2 p2 = parameter.p2;
+    const float3 v0 = parameter.v0;
+    const float3 v1 = parameter.v1;
+    const float3 v2 = parameter.v2;
     
     if (inTriangle(p0, p1, p2, (float2)position)) {
         
