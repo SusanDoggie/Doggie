@@ -182,8 +182,8 @@ void _blend_##COMPOSITING##_normal(MutablePixel destination, Pixel source) {    
         const float d = d_alpha / r_alpha;                                                                              \
                                                                                                                         \
         for (int i = 0; i < countOfComponents - 1; ++i) {                                                               \
-            float _source = source.components[i];                                                                       \
-            float _destination = destination.components[i];                                                             \
+            const float _source = source.components[i];                                                                 \
+            const float _destination = destination.components[i];                                                       \
             destination.components[i] = _##COMPOSITING(s * _source, s_alpha, d * _destination, d_alpha);                \
         }                                                                                                               \
                                                                                                                         \
@@ -221,10 +221,9 @@ void _blend_##COMPOSITING##_##BLENDING(MutablePixel destination, Pixel source) {
         const float d = d_alpha / r_alpha;                                                                              \
                                                                                                                         \
         for (int i = 0; i < countOfComponents - 1; ++i) {                                                               \
-            float _source = source.components[i];                                                                       \
-            float _destination = destination.components[i];                                                             \
-            float _blended = _##BLENDING(_destination, _source);                                                        \
-            _blended = (1 - d_alpha) * _source + d_alpha * _blended;                                                    \
+            const float _source = source.components[i];                                                                 \
+            const float _destination = destination.components[i];                                                       \
+            const float _blended = (1 - d_alpha) * _source + d_alpha * _##BLENDING(_destination, _source);              \
             destination.components[i] = _##COMPOSITING(s * _blended, s_alpha, d * _destination, d_alpha);               \
         }                                                                                                               \
                                                                                                                         \
