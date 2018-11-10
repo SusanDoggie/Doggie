@@ -220,7 +220,7 @@ void _blend_##COMPOSITING##_##BLENDING(MutablePixel destination, Pixel source) {
         const float s = s_alpha / r_alpha;                                                                              \
         const float d = d_alpha / r_alpha;                                                                              \
                                                                                                                         \
-        for (int i = 0; i < countOfComponents - 2; ++i) {                                                               \
+        for (int i = 0; i < countOfComponents - 1; ++i) {                                                               \
             float _source = source.components[i];                                                                       \
             float _destination = destination.components[i];                                                             \
             float _blended = _##BLENDING(_destination, _source);                                                        \
