@@ -717,7 +717,7 @@ extension MetalRenderer.Encoder {
         guard y_range.count != 0 else { return nil }
         
         let x0 = scan(q0, q2, q1.y)
-        let x_range = intRange(min(x0, q1.x), max(x0, q1.x), 0..<width)
+        let x_range = intRange(0, max(x0, q1.x) - min(x0, q1.x), 0..<width)
         
         return (x_range.count + 1, y_range)
     }
