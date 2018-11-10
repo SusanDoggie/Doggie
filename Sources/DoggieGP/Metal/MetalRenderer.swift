@@ -258,8 +258,6 @@ extension MetalRenderer.Encoder {
         case (.clear, _): try self.clear(destination)
         default:
             
-            let encoder = try self.makeComputeCommandEncoder()
-            
             let compositing_name: String
             let blending_name: String
             
@@ -293,6 +291,8 @@ extension MetalRenderer.Encoder {
             case .plusDarker: blending_name = "plusDarker"
             case .plusLighter: blending_name = "plusLighter"
             }
+            
+            let encoder = try self.makeComputeCommandEncoder()
             
             let pipeline = try renderer.request_pipeline("blend_\(compositing_name)_\(blending_name)")
             encoder.setComputePipelineState(pipeline)
@@ -357,15 +357,16 @@ extension MetalRenderer.Encoder {
         let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
         let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
         
-        let pipeline: MTLComputePipelineState
+        let winding_name: String
         
         switch winding {
-        case .nonZero: pipeline = try renderer.request_pipeline("fill_nonZero_stencil")
-        case .evenOdd: pipeline = try renderer.request_pipeline("fill_evenOdd_stencil")
+        case .nonZero: winding_name = "nonZero"
+        case .evenOdd: winding_name = "evenOdd"
         }
         
         let encoder = try self.makeComputeCommandEncoder()
         
+        let pipeline = try renderer.request_pipeline("fill_\(winding_name)_stencil")
         encoder.setComputePipelineState(pipeline)
         
         encoder.setValue(FillStencilParameter(offset_x: UInt32(offset_x), offset_y: UInt32(offset_y), width: UInt32(width), antialias: UInt32(antialias), color: GPColor(color)), index: 0)
@@ -380,8 +381,6 @@ extension MetalRenderer.Encoder {
     }
     
     func draw(_ source: Texture<FloatColorPixel<Model>>, _ destination: MTLBuffer, _ transform: SDTransform, _ antialias: Int) throws {
-        
-        let encoder = try self.makeComputeCommandEncoder()
         
         guard let _source = device.makeBuffer(source.pixels) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
         
@@ -412,6 +411,8 @@ extension MetalRenderer.Encoder {
         case .repeat: v_wrapping_name = "repeat"
         case .mirror: v_wrapping_name = "mirror"
         }
+        
+        let encoder = try self.makeComputeCommandEncoder()
         
         let pipeline = try renderer.request_pipeline("\(algorithm_name)_interpolate_\(h_wrapping_name)_\(v_wrapping_name)")
         encoder.setComputePipelineState(pipeline)
@@ -446,8 +447,6 @@ extension MetalRenderer.Encoder {
     
     private func draw_gradient(_ destination: MTLBuffer, _ type: String, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
         
-        let encoder = try self.makeComputeCommandEncoder()
-        
         let start_name: String
         let end_name: String
         
@@ -464,6 +463,8 @@ extension MetalRenderer.Encoder {
         case .reflect: end_name = "reflect"
         case .repeat: end_name = "repeat"
         }
+        
+        let encoder = try self.makeComputeCommandEncoder()
         
         let pipeline = try renderer.request_pipeline("\(type)_gradient_\(start_name)_\(end_name)")
         encoder.setComputePipelineState(pipeline)

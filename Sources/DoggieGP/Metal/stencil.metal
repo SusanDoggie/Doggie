@@ -42,7 +42,7 @@ struct stencil_cubic_parameter {
 };
 
 void swap(thread float2 *a, thread float2 *b) {
-    float2 temp = *a;
+    const float2 temp = *a;
     *a = *b;
     *b = temp;
 }

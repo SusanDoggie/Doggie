@@ -36,70 +36,49 @@ struct fill_stencil_parameter {
     const float color[16];
 };
 
-kernel void fill_nonZero_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],
-                                 const device int16_t *stencil [[buffer(1)]],
-                                 device float *destination [[buffer(2)]],
-                                 uint2 id [[thread_position_in_grid]]) {
-    
-    const int width = parameter.width;
-    const int antialias = parameter.antialias;
-    const int2 position = int2(id.x + parameter.offset[0], id.y + parameter.offset[1]);
-    const int idx = width * position.y + position.x;
-    const int opacity_idx = countOfComponents - 1;
-    
-    const int stencil_width = width * antialias;
-    const int2 stencil_position = position * antialias;
-    
-    int counter = 0;
-    
-    for (int i = 0; i < antialias; ++i) {
-        for (int j = 0; j < antialias; ++j) {
-            
-            int stencil_index = stencil_width * (stencil_position.y + i) + (stencil_position.x + j);
-            
-            if (stencil[stencil_index] != 0) {
-                counter += 1;
-            }
-        }
-    }
-    
-    for (int i = 0; i < opacity_idx; ++i) {
-        destination[idx * countOfComponents + i] = parameter.color[i];
-    }
-    
-    destination[idx * countOfComponents + opacity_idx] = parameter.color[opacity_idx] * (float)counter / (float)(antialias * antialias);
+const bool winding_nonZero(const int16_t winding) {
+    return winding != 0;
 }
 
-kernel void fill_evenOdd_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],
-                                 const device int16_t *stencil [[buffer(1)]],
-                                 device float *destination [[buffer(2)]],
-                                 uint2 id [[thread_position_in_grid]]) {
-    
-    const int width = parameter.width;
-    const int antialias = parameter.antialias;
-    const int2 position = int2(id.x + parameter.offset[0], id.y + parameter.offset[1]);
-    const int idx = width * position.y + position.x;
-    const int opacity_idx = countOfComponents - 1;
-    
-    const int stencil_width = width * antialias;
-    const int2 stencil_position = position * antialias;
-    
-    int counter = 0;
-    
-    for (int i = 0; i < antialias; ++i) {
-        for (int j = 0; j < antialias; ++j) {
-            
-            int stencil_index = stencil_width * (stencil_position.y + i) + (stencil_position.x + j);
-            
-            if ((stencil[stencil_index] & 1) != 0) {
-                counter += 1;
-            }
-        }
-    }
-    
-    for (int i = 0; i < opacity_idx; ++i) {
-        destination[idx * countOfComponents + i] = parameter.color[i];
-    }
-    
-    destination[idx * countOfComponents + opacity_idx] = parameter.color[opacity_idx] * (float)counter / (float)(antialias * antialias);
+const bool winding_evenOdd(const int16_t winding) {
+    return (winding & 1) != 0;
 }
+
+#define FILLSTENCILKERNEL(WINDING)                                                                                                          \
+kernel void fill_##WINDING##_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],                                          \
+                                     const device int16_t *stencil [[buffer(1)]],                                                           \
+                                     device float *destination [[buffer(2)]],                                                               \
+                                     uint2 id [[thread_position_in_grid]]) {                                                                \
+                                                                                                                                            \
+    const int width = parameter.width;                                                                                                      \
+    const int antialias = parameter.antialias;                                                                                              \
+    const int2 position = int2(id.x + parameter.offset[0], id.y + parameter.offset[1]);                                                     \
+    const int idx = width * position.y + position.x;                                                                                        \
+    const int opacity_idx = countOfComponents - 1;                                                                                          \
+                                                                                                                                            \
+    const int stencil_width = width * antialias;                                                                                            \
+    const int2 stencil_position = position * antialias;                                                                                     \
+                                                                                                                                            \
+    int counter = 0;                                                                                                                        \
+                                                                                                                                            \
+    for (int i = 0; i < antialias; ++i) {                                                                                                   \
+                                                                                                                                            \
+        const int _y = stencil_position.y + i;                                                                                              \
+        const int offset = stencil_width * _y + stencil_position.x;                                                                         \
+                                                                                                                                            \
+        for (int j = 0; j < antialias; ++j) {                                                                                               \
+            if (winding_##WINDING(stencil[offset + j])) {                                                                                   \
+                counter += 1;                                                                                                               \
+            }                                                                                                                               \
+        }                                                                                                                                   \
+    }                                                                                                                                       \
+                                                                                                                                            \
+    for (int i = 0; i < opacity_idx; ++i) {                                                                                                 \
+        destination[idx * countOfComponents + i] = parameter.color[i];                                                                      \
+    }                                                                                                                                       \
+                                                                                                                                            \
+    destination[idx * countOfComponents + opacity_idx] = parameter.color[opacity_idx] * (float)counter / (float)(antialias * antialias);    \
+}
+
+FILLSTENCILKERNEL(nonZero)
+FILLSTENCILKERNEL(evenOdd)
