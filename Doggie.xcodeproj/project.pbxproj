@@ -49,6 +49,7 @@
 		0A0697591E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
 		0A06975C1E4D66A3005CF664 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975A1E4D66A3005CF664 /* Filter.swift */; };
 		0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975D1E4D6732005CF664 /* NSImage.swift */; };
+		0A098F2521967002003F3CE4 /* fill_stencil.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A098F2421967002003F3CE4 /* fill_stencil.metal */; };
 		0A0F72132193F39C00BCC39B /* Resampling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0F72122193F39C00BCC39B /* Resampling.swift */; };
 		0A1158471EF4E04700EFE3E3 /* iccTagData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1158451EF4E04700EFE3E3 /* iccTagData.swift */; };
 		0A11968C212A74DD00B2D4DB /* Metal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A11968B212A74DD00B2D4DB /* Metal.swift */; };
@@ -74,7 +75,6 @@
 		0A29B266218998710046FFB4 /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DA2189985D0046FFB4 /* ImageContext.swift */; };
 		0A29B2DD218999020046FFB4 /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; };
 		0A29B2F22189A4210046FFB4 /* set_opacity.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F12189A4210046FFB4 /* set_opacity.metal */; };
-		0A29B2F62189A7600046FFB4 /* maths.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F52189A7600046FFB4 /* maths.metal */; };
 		0A29B2F82189A9A10046FFB4 /* MetalRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */; };
 		0A2DFE1D217D65CF00E6EEA4 /* SFNTFEAT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */; };
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
@@ -325,6 +325,7 @@
 		0A0697571E4D6659005CF664 /* Graphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Graphic.swift; sourceTree = "<group>"; };
 		0A06975A1E4D66A3005CF664 /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Filter.swift; sourceTree = "<group>"; };
 		0A06975D1E4D6732005CF664 /* NSImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = NSImage.swift; sourceTree = "<group>"; };
+		0A098F2421967002003F3CE4 /* fill_stencil.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = fill_stencil.metal; sourceTree = "<group>"; };
 		0A0F72122193F39C00BCC39B /* Resampling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resampling.swift; sourceTree = "<group>"; };
 		0A1158451EF4E04700EFE3E3 /* iccTagData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccTagData.swift; sourceTree = "<group>"; };
 		0A11968B212A74DD00B2D4DB /* Metal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metal.swift; sourceTree = "<group>"; };
@@ -349,7 +350,6 @@
 		0A29B1DB2189985D0046FFB4 /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		0A29B2DA218998710046FFB4 /* DoggieGP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DoggieGP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A29B2F12189A4210046FFB4 /* set_opacity.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = set_opacity.metal; sourceTree = "<group>"; };
-		0A29B2F52189A7600046FFB4 /* maths.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = maths.metal; sourceTree = "<group>"; };
 		0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalRenderer.swift; sourceTree = "<group>"; };
 		0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTFEAT.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Tensor.swift; sourceTree = "<group>"; };
@@ -822,11 +822,11 @@
 			isa = PBXGroup;
 			children = (
 				0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */,
-				0A29B2F52189A7600046FFB4 /* maths.metal */,
 				0A404BE1218BE24F00F7F1AD /* texture.metal */,
 				0A459AA9219014180015CDCD /* shadow.metal */,
 				0A404BE5218C46AF00F7F1AD /* resampling.metal */,
 				0A29B1D92189985D0046FFB4 /* stencil.metal */,
+				0A098F2421967002003F3CE4 /* fill_stencil.metal */,
 				0A29B2F12189A4210046FFB4 /* set_opacity.metal */,
 				0A13DB33218AE99200BD05F8 /* clip.metal */,
 				0A13DB35218AF88200BD05F8 /* gradient.metal */,
@@ -1619,9 +1619,9 @@
 				0A29B2F22189A4210046FFB4 /* set_opacity.metal in Sources */,
 				0A29B237218998710046FFB4 /* stencil.metal in Sources */,
 				0A29B2F82189A9A10046FFB4 /* MetalRenderer.swift in Sources */,
+				0A098F2521967002003F3CE4 /* fill_stencil.metal in Sources */,
 				0A13DB36218AF88200BD05F8 /* gradient.metal in Sources */,
 				0A29B266218998710046FFB4 /* ImageContext.swift in Sources */,
-				0A29B2F62189A7600046FFB4 /* maths.metal in Sources */,
 				0A404BE2218BE24F00F7F1AD /* texture.metal in Sources */,
 				0A404BE6218C46AF00F7F1AD /* resampling.metal in Sources */,
 			);

@@ -35,7 +35,7 @@ private let MTLCommandQueueCacheLock = SDLock()
 private var MTLCommandQueueCache: [NSObject: MTLCommandQueue] = [:]
 
 @available(OSX 10.13, iOS 11.0, *)
-private let command_encoder_limit = 256
+private let command_encoder_limit = 512
 
 @available(OSX 10.13, iOS 11.0, *)
 class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
@@ -334,9 +334,7 @@ extension MetalRenderer.Encoder {
         
         if let stencil_buffer = self.stencil_buffer, stencil_buffer.length >= stencil_size {
             
-            let encoder = try self.makeBlitCommandEncoder()
-            
-            encoder.fill(buffer: stencil_buffer, range: 0..<stencil_size, value: 0)
+            try self.makeBlitCommandEncoder().fill(buffer: stencil_buffer, range: 0..<stencil_size, value: 0)
             stencil = stencil_buffer
             
         } else {
@@ -686,26 +684,59 @@ extension MetalRenderer.Encoder {
         }
     }
     
-    private func render_stencil<T>(width: Int, height: Int, pipeline: String, bound: Rect, triangle: T, output: MTLBuffer) throws {
+    private func scan(_ p0: GPPoint, _ p1: GPPoint, _ y: Float) -> Float {
+        let d = p1.y - p0.y
+        let _d = 1 / d
+        let q = (p1.x - p0.x) * _d
+        let r = (p0.x * p1.y - p1.x * p0.y) * _d
+        return q * y + r
+    }
+    
+    private func intRange(_ min: Float, _ max: Float, _ bound: Range<Int>) -> Range<Int> {
         
-        let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
-        let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
-        let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
-        let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+        let _min = min.rounded(.up)
+        let _max = max.rounded(.down)
+        
+        let __min = Int(_min)
+        let __max = Int(_max)
+        
+        guard __min <= __max else { return (__min..<__min).clamped(to: bound) }
+        
+        return _max == max ? (__min..<__max).clamped(to: bound) : Range(__min...__max).clamped(to: bound)
+    }
+    
+    private func rasterize_bound(width: Int, height: Int, triangle: Triangle) throws -> (Int, Range<Int>)? {
+        
+        var q0 = triangle.p0
+        var q1 = triangle.p1
+        var q2 = triangle.p2
+        
+        sort(&q0, &q1, &q2) { $0.y < $1.y }
+        
+        let y_range = intRange(q0.y, q2.y, 0..<height)
+        guard y_range.count != 0 else { return nil }
+        
+        let x0 = scan(q0, q2, q1.y)
+        let x_range = intRange(min(x0, q1.x), max(x0, q1.x), 0..<width)
+        
+        return (x_range.count + 1, y_range)
+    }
+    
+    private func render_stencil<T>(width: Int, pipeline: String, x_length: Int, y_range: Range<Int>, triangle: T, output: MTLBuffer) throws {
         
         let encoder = try self.makeComputeCommandEncoder()
         
         let pipeline = try renderer.request_pipeline(pipeline)
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setValue((UInt32(offset_x), UInt32(offset_y), UInt32(width), triangle), index: 0)
+        encoder.setValue((UInt32(y_range.lowerBound), UInt32(width), triangle), index: 0)
         encoder.setBuffer(output, offset: 0, index: 1)
         
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
-        let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
+        let threadsPerThreadgroup = MTLSize(width: min(w, x_length), height: min(h, y_range.count), depth: 1)
         
-        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.dispatchThreads(MTLSize(width: x_length, height: y_range.count, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
     private func stencil(shape: Shape, width: Int, height: Int, output: MTLBuffer) throws -> Rect? {
@@ -723,15 +754,13 @@ extension MetalRenderer.Encoder {
                 let q1 = p1 * transform
                 let q2 = p2 * transform
                 
-                let det = (q1.y - q2.y) * (q0.x - q2.x) + (q2.x - q1.x) * (q0.y - q2.y)
-                guard !det.almostZero() else { return }
-                
-                let _bound = Rect.bound([q0, q1, q2])
-                bound = bound?.union(_bound) ?? _bound
+                bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
                 
                 let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
                 
-                try render_stencil(width: width, height: height, pipeline: "stencil_triangle", bound: _bound, triangle: triangle, output: output)
+                guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: triangle) else { return }
+                
+                try render_stencil(width: width, pipeline: "stencil_triangle", x_length: x_length, y_range: y_range, triangle: triangle, output: output)
                 
             case let .quadratic(p0, p1, p2):
                 
@@ -739,15 +768,13 @@ extension MetalRenderer.Encoder {
                 let q1 = p1 * transform
                 let q2 = p2 * transform
                 
-                let det = (q1.y - q2.y) * (q0.x - q2.x) + (q2.x - q1.x) * (q0.y - q2.y)
-                guard !det.almostZero() else { return }
-                
-                let _bound = Rect.bound([q0, q1, q2])
-                bound = bound?.union(_bound) ?? _bound
+                bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
                 
                 let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
                 
-                try render_stencil(width: width, height: height, pipeline: "stencil_quadratic", bound: _bound, triangle: triangle, output: output)
+                guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: triangle) else { return }
+                
+                try render_stencil(width: width, pipeline: "stencil_quadratic", x_length: x_length, y_range: y_range, triangle: triangle, output: output)
                 
             case let .cubic(p0, p1, p2, v0, v1, v2):
                 
@@ -755,15 +782,12 @@ extension MetalRenderer.Encoder {
                 let q1 = p1 * transform
                 let q2 = p2 * transform
                 
-                let det = (q1.y - q2.y) * (q0.x - q2.x) + (q2.x - q1.x) * (q0.y - q2.y)
-                guard !det.almostZero() else { return }
+                bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
                 
-                let _bound = Rect.bound([q0, q1, q2])
-                bound = bound?.union(_bound) ?? _bound
+                guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))) else { return }
                 
                 let triangle = CubicTriangle(GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2))
-                
-                try render_stencil(width: width, height: height, pipeline: "stencil_cubic", bound: _bound, triangle: triangle, output: output)
+                try render_stencil(width: width, pipeline: "stencil_cubic", x_length: x_length, y_range: y_range, triangle: triangle, output: output)
             }
         }
         

@@ -41,13 +41,13 @@ const float _linear_interpolate_none_none(const device float *source, const floa
 
 kernel void shadow(const device shadow_parameter &parameter [[buffer(0)]],
                    const device float *source [[buffer(1)]],
-                   device float *out [[buffer(2)]],
+                   device float *destination [[buffer(2)]],
                    uint2 id [[thread_position_in_grid]],
                    uint2 grid [[threads_per_grid]]) {
     
     const uint2 size = grid;
     const int2 position = (int2)id;
-    const int idx = grid[0] * id[1] + id[0];
+    const int idx = grid.x * id.y + id.x;
     
     const float2 offset = parameter.offset;
     const float blur = 0.5 * parameter.blur;
@@ -62,7 +62,7 @@ kernel void shadow(const device shadow_parameter &parameter [[buffer(0)]],
     for (int j = -s; j <= s; ++j) {
         for (int i = -s; i <= s; ++i) {
             
-            const float2 point = float2((float)position[0] + (float)i - offset[0], (float)position[1] + (float)j - offset[1]);
+            const float2 point = float2((float)position.x + (float)i - offset.x, (float)position.y + (float)j - offset.y);
             const float d = length_squared(float2(i, j));
             const float k = exp(-d / _blur) / (M_PI * _blur);
             
@@ -72,8 +72,8 @@ kernel void shadow(const device shadow_parameter &parameter [[buffer(0)]],
     }
     
     for (int i = 0; i < opacity_idx; ++i) {
-        out[idx * countOfComponents + i] = parameter.color[i];
+        destination[idx * countOfComponents + i] = parameter.color[i];
     }
     
-    out[idx * countOfComponents + opacity_idx] = parameter.color[opacity_idx] * _shadow / sum;
+    destination[idx * countOfComponents + opacity_idx] = parameter.color[opacity_idx] * _shadow / sum;
 }

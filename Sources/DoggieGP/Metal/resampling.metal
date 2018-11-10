@@ -160,10 +160,10 @@ const Addressing _addressing_mirror(const int x, const int upperbound) {
 #define INTERPOLATE(HWRAPPING, VWRAPPING)                                                                                                                                   \
 const float _read_source_##HWRAPPING##_##VWRAPPING(const device float *source, const int x, const int y, const int i, const uint2 size) {                                   \
                                                                                                                                                                             \
-    const Addressing _x = _addressing_##HWRAPPING(x, size[0]);                                                                                                              \
-    const Addressing _y = _addressing_##VWRAPPING(y, size[1]);                                                                                                              \
+    const Addressing _x = _addressing_##HWRAPPING(x, size.x);                                                                                                               \
+    const Addressing _y = _addressing_##VWRAPPING(y, size.y);                                                                                                               \
                                                                                                                                                                             \
-    const int idx = _x.i + _y.i * size[0];                                                                                                                                  \
+    const int idx = _x.i + _y.i * size.x;                                                                                                                                   \
     const float pixel = source[idx * countOfComponents + i];                                                                                                                \
                                                                                                                                                                             \
     if (_x.flag && _y.flag) {                                                                                                                                               \
@@ -176,14 +176,14 @@ const float _read_source_##HWRAPPING##_##VWRAPPING(const device float *source, c
 }                                                                                                                                                                           \
 const float _none_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source, const float2 point, const int i, const uint2 size) {                                    \
                                                                                                                                                                             \
-    return _read_source_##HWRAPPING##_##VWRAPPING(source, (float)floor(point[0]), (float)floor(point[1]), i, size);                                                         \
+    return _read_source_##HWRAPPING##_##VWRAPPING(source, (float)floor(point.x), (float)floor(point.y), i, size);                                                           \
 }                                                                                                                                                                           \
 const float _linear_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source, const float2 point, const int i, const uint2 size) {                                  \
                                                                                                                                                                             \
-    const float _i = floor(point[0]);                                                                                                                                       \
-    const float _j = floor(point[1]);                                                                                                                                       \
-    const float _tx = point[0] - _i;                                                                                                                                        \
-    const float _ty = point[1] - _j;                                                                                                                                        \
+    const float _i = floor(point.x);                                                                                                                                        \
+    const float _j = floor(point.y);                                                                                                                                        \
+    const float _tx = point.x - _i;                                                                                                                                         \
+    const float _ty = point.y - _j;                                                                                                                                         \
                                                                                                                                                                             \
     const int _x1 = (int)_i;                                                                                                                                                \
     const int _y1 = (int)_j;                                                                                                                                                \
@@ -199,10 +199,10 @@ const float _linear_interpolate_##HWRAPPING##_##VWRAPPING(const device float *so
 }                                                                                                                                                                           \
 const float _cosine_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source, const float2 point, const int i, const uint2 size) {                                  \
                                                                                                                                                                             \
-    const float _i = floor(point[0]);                                                                                                                                       \
-    const float _j = floor(point[1]);                                                                                                                                       \
-    const float _tx = point[0] - _i;                                                                                                                                        \
-    const float _ty = point[1] - _j;                                                                                                                                        \
+    const float _i = floor(point.x);                                                                                                                                        \
+    const float _j = floor(point.y);                                                                                                                                        \
+    const float _tx = point.x - _i;                                                                                                                                         \
+    const float _ty = point.y - _j;                                                                                                                                         \
                                                                                                                                                                             \
     const int _x1 = (int)_i;                                                                                                                                                \
     const int _y1 = (int)_j;                                                                                                                                                \
@@ -218,10 +218,10 @@ const float _cosine_interpolate_##HWRAPPING##_##VWRAPPING(const device float *so
 }                                                                                                                                                                           \
 const float _cubic_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source, const float2 point, const int i, const uint2 size) {                                   \
                                                                                                                                                                             \
-    const float _i = floor(point[0]);                                                                                                                                       \
-    const float _j = floor(point[1]);                                                                                                                                       \
-    const float _tx = point[0] - _i;                                                                                                                                        \
-    const float _ty = point[1] - _j;                                                                                                                                        \
+    const float _i = floor(point.x);                                                                                                                                        \
+    const float _j = floor(point.y);                                                                                                                                        \
+    const float _tx = point.x - _i;                                                                                                                                         \
+    const float _ty = point.y - _j;                                                                                                                                         \
                                                                                                                                                                             \
     const int _x2 = (int)_i;                                                                                                                                                \
     const int _y2 = (int)_j;                                                                                                                                                \
@@ -258,10 +258,10 @@ const float _cubic_interpolate_##HWRAPPING##_##VWRAPPING(const device float *sou
 }                                                                                                                                                                           \
 const float _hermite_interpolate_##HWRAPPING##_##VWRAPPING(const device float *source, const float2 point, const float s, const float e, const int i, const uint2 size) {   \
                                                                                                                                                                             \
-    const float _i = floor(point[0]);                                                                                                                                       \
-    const float _j = floor(point[1]);                                                                                                                                       \
-    const float _tx = point[0] - _i;                                                                                                                                        \
-    const float _ty = point[1] - _j;                                                                                                                                        \
+    const float _i = floor(point.x);                                                                                                                                        \
+    const float _j = floor(point.y);                                                                                                                                        \
+    const float _tx = point.x - _i;                                                                                                                                         \
+    const float _ty = point.y - _j;                                                                                                                                         \
                                                                                                                                                                             \
     const int _x2 = (int)_i;                                                                                                                                                \
     const int _y2 = (int)_j;                                                                                                                                                \
@@ -301,8 +301,8 @@ const float _mitchell_interpolate_##HWRAPPING##_##VWRAPPING(const device float *
     float pixel = 0;                                                                                                                                                        \
     float t = 0;                                                                                                                                                            \
                                                                                                                                                                             \
-    const int _x = (int)floor(point[0]);                                                                                                                                    \
-    const int _y = (int)floor(point[1]);                                                                                                                                    \
+    const int _x = (int)floor(point.x);                                                                                                                                     \
+    const int _y = (int)floor(point.y);                                                                                                                                     \
                                                                                                                                                                             \
     const int min_x = _x - 1;                                                                                                                                               \
     const int max_x = min_x + 5;                                                                                                                                            \
@@ -323,8 +323,8 @@ const float _lanczos_interpolate_##HWRAPPING##_##VWRAPPING(const device float *s
     float pixel = 0;                                                                                                                                                        \
     float t = 0;                                                                                                                                                            \
                                                                                                                                                                             \
-    const int _x = (int)floor(point[0]);                                                                                                                                    \
-    const int _y = (int)floor(point[1]);                                                                                                                                    \
+    const int _x = (int)floor(point.x);                                                                                                                                     \
+    const int _y = (int)floor(point.y);                                                                                                                                     \
                                                                                                                                                                             \
     const int kernel_size = a << 1;                                                                                                                                         \
     const int b = 1 - kernel_size & 1;                                                                                                                                      \
@@ -349,7 +349,7 @@ kernel void none_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate_
                                                        uint2 grid [[threads_per_grid]]) {                                                                                   \
                                                                                                                                                                             \
     const uint2 size = parameter.source_size;                                                                                                                               \
-    const int idx = grid[0] * id[1] + id[0];                                                                                                                                \
+    const int idx = grid.x * id.y + id.x;                                                                                                                                   \
                                                                                                                                                                             \
     const int antialias = parameter.antialias;                                                                                                                              \
     const float _a = 1.0 / (float)antialias;                                                                                                                                \
@@ -359,8 +359,8 @@ kernel void none_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate_
         float sum = 0;                                                                                                                                                      \
         for (int y = 0; y < antialias; ++y) {                                                                                                                               \
             for (int x = 0; x < antialias; ++x) {                                                                                                                           \
-                const float _x = (float)id[0] + (float)x * _a;                                                                                                              \
-                const float _y = (float)id[1] + (float)y * _a;                                                                                                              \
+                const float _x = (float)id.x + (float)x * _a;                                                                                                               \
+                const float _y = (float)id.y + (float)y * _a;                                                                                                               \
                 const float2 point = parameter.transform * float3(_x, _y, 1);                                                                                               \
                 sum += _none_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                                                                                 \
             }                                                                                                                                                               \
@@ -375,7 +375,7 @@ kernel void linear_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolat
                                                          uint2 grid [[threads_per_grid]]) {                                                                                 \
                                                                                                                                                                             \
     const uint2 size = parameter.source_size;                                                                                                                               \
-    const int idx = grid[0] * id[1] + id[0];                                                                                                                                \
+    const int idx = grid.x * id.y + id.x;                                                                                                                                   \
                                                                                                                                                                             \
     const int antialias = parameter.antialias;                                                                                                                              \
     const float _a = 1.0 / (float)antialias;                                                                                                                                \
@@ -385,8 +385,8 @@ kernel void linear_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolat
         float sum = 0;                                                                                                                                                      \
         for (int y = 0; y < antialias; ++y) {                                                                                                                               \
             for (int x = 0; x < antialias; ++x) {                                                                                                                           \
-                const float _x = (float)id[0] + (float)x * _a;                                                                                                              \
-                const float _y = (float)id[1] + (float)y * _a;                                                                                                              \
+                const float _x = (float)id.x + (float)x * _a;                                                                                                               \
+                const float _y = (float)id.y + (float)y * _a;                                                                                                               \
                 const float2 point = parameter.transform * float3(_x, _y, 1);                                                                                               \
                 sum += _linear_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                                                                               \
             }                                                                                                                                                               \
@@ -401,7 +401,7 @@ kernel void cosine_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolat
                                                          uint2 grid [[threads_per_grid]]) {                                                                                 \
                                                                                                                                                                             \
     const uint2 size = parameter.source_size;                                                                                                                               \
-    const int idx = grid[0] * id[1] + id[0];                                                                                                                                \
+    const int idx = grid.x * id.y + id.x;                                                                                                                                   \
                                                                                                                                                                             \
     const int antialias = parameter.antialias;                                                                                                                              \
     const float _a = 1.0 / (float)antialias;                                                                                                                                \
@@ -411,8 +411,8 @@ kernel void cosine_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolat
         float sum = 0;                                                                                                                                                      \
         for (int y = 0; y < antialias; ++y) {                                                                                                                               \
             for (int x = 0; x < antialias; ++x) {                                                                                                                           \
-                const float _x = (float)id[0] + (float)x * _a;                                                                                                              \
-                const float _y = (float)id[1] + (float)y * _a;                                                                                                              \
+                const float _x = (float)id.x + (float)x * _a;                                                                                                               \
+                const float _y = (float)id.y + (float)y * _a;                                                                                                               \
                 const float2 point = parameter.transform * float3(_x, _y, 1);                                                                                               \
                 sum += _cosine_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                                                                               \
             }                                                                                                                                                               \
@@ -427,7 +427,7 @@ kernel void cubic_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate
                                                         uint2 grid [[threads_per_grid]]) {                                                                                  \
                                                                                                                                                                             \
     const uint2 size = parameter.source_size;                                                                                                                               \
-    const int idx = grid[0] * id[1] + id[0];                                                                                                                                \
+    const int idx = grid.x * id.y + id.x;                                                                                                                                   \
                                                                                                                                                                             \
     const int antialias = parameter.antialias;                                                                                                                              \
     const float _a = 1.0 / (float)antialias;                                                                                                                                \
@@ -437,8 +437,8 @@ kernel void cubic_interpolate_##HWRAPPING##_##VWRAPPING(const device interpolate
         float sum = 0;                                                                                                                                                      \
         for (int y = 0; y < antialias; ++y) {                                                                                                                               \
             for (int x = 0; x < antialias; ++x) {                                                                                                                           \
-                const float _x = (float)id[0] + (float)x * _a;                                                                                                              \
-                const float _y = (float)id[1] + (float)y * _a;                                                                                                              \
+                const float _x = (float)id.x + (float)x * _a;                                                                                                               \
+                const float _y = (float)id.y + (float)y * _a;                                                                                                               \
                 const float2 point = parameter.transform * float3(_x, _y, 1);                                                                                               \
                 sum += _cubic_interpolate_##HWRAPPING##_##VWRAPPING(source, point, i, size);                                                                                \
             }                                                                                                                                                               \
@@ -453,7 +453,7 @@ kernel void hermite_interpolate_##HWRAPPING##_##VWRAPPING(const device interpola
                                                           uint2 grid [[threads_per_grid]]) {                                                                                \
                                                                                                                                                                             \
     const uint2 size = parameter.source_size;                                                                                                                               \
-    const int idx = grid[0] * id[1] + id[0];                                                                                                                                \
+    const int idx = grid.x * id.y + id.x;                                                                                                                                   \
                                                                                                                                                                             \
     const float2 arg = parameter.a;                                                                                                                                         \
     const int antialias = parameter.antialias;                                                                                                                              \
@@ -464,10 +464,10 @@ kernel void hermite_interpolate_##HWRAPPING##_##VWRAPPING(const device interpola
         float sum = 0;                                                                                                                                                      \
         for (int y = 0; y < antialias; ++y) {                                                                                                                               \
             for (int x = 0; x < antialias; ++x) {                                                                                                                           \
-                const float _x = (float)id[0] + (float)x * _a;                                                                                                              \
-                const float _y = (float)id[1] + (float)y * _a;                                                                                                              \
+                const float _x = (float)id.x + (float)x * _a;                                                                                                               \
+                const float _y = (float)id.y + (float)y * _a;                                                                                                               \
                 const float2 point = parameter.transform * float3(_x, _y, 1);                                                                                               \
-                sum += _hermite_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg[0], arg[1], i, size);                                                              \
+                sum += _hermite_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg.x, arg.y, i, size);                                                                \
             }                                                                                                                                                               \
         }                                                                                                                                                                   \
         destination[idx * countOfComponents + i] = sum * _a2;                                                                                                               \
@@ -480,7 +480,7 @@ kernel void mitchell_interpolate_##HWRAPPING##_##VWRAPPING(const device interpol
                                                            uint2 grid [[threads_per_grid]]) {                                                                               \
                                                                                                                                                                             \
     const uint2 size = parameter.source_size;                                                                                                                               \
-    const int idx = grid[0] * id[1] + id[0];                                                                                                                                \
+    const int idx = grid.x * id.y + id.x;                                                                                                                                   \
                                                                                                                                                                             \
     const float2 arg = parameter.a;                                                                                                                                         \
     const int antialias = parameter.antialias;                                                                                                                              \
@@ -491,10 +491,10 @@ kernel void mitchell_interpolate_##HWRAPPING##_##VWRAPPING(const device interpol
         float sum = 0;                                                                                                                                                      \
         for (int y = 0; y < antialias; ++y) {                                                                                                                               \
             for (int x = 0; x < antialias; ++x) {                                                                                                                           \
-                const float _x = (float)id[0] + (float)x * _a;                                                                                                              \
-                const float _y = (float)id[1] + (float)y * _a;                                                                                                              \
+                const float _x = (float)id.x + (float)x * _a;                                                                                                               \
+                const float _y = (float)id.y + (float)y * _a;                                                                                                               \
                 const float2 point = parameter.transform * float3(_x, _y, 1);                                                                                               \
-                sum += _mitchell_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg[0], arg[1], i, size);                                                             \
+                sum += _mitchell_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg.x, arg.y, i, size);                                                               \
             }                                                                                                                                                               \
         }                                                                                                                                                                   \
         destination[idx * countOfComponents + i] = sum * _a2;                                                                                                               \
@@ -507,7 +507,7 @@ kernel void lanczos_interpolate_##HWRAPPING##_##VWRAPPING(const device interpola
                                                           uint2 grid [[threads_per_grid]]) {                                                                                \
                                                                                                                                                                             \
     const uint2 size = parameter.source_size;                                                                                                                               \
-    const int idx = grid[0] * id[1] + id[0];                                                                                                                                \
+    const int idx = grid.x * id.y + id.x;                                                                                                                                   \
                                                                                                                                                                             \
     const uint arg = parameter.b;                                                                                                                                           \
     const int antialias = parameter.antialias;                                                                                                                              \
@@ -518,8 +518,8 @@ kernel void lanczos_interpolate_##HWRAPPING##_##VWRAPPING(const device interpola
         float sum = 0;                                                                                                                                                      \
         for (int y = 0; y < antialias; ++y) {                                                                                                                               \
             for (int x = 0; x < antialias; ++x) {                                                                                                                           \
-                const float _x = (float)id[0] + (float)x * _a;                                                                                                              \
-                const float _y = (float)id[1] + (float)y * _a;                                                                                                              \
+                const float _x = (float)id.x + (float)x * _a;                                                                                                               \
+                const float _y = (float)id.y + (float)y * _a;                                                                                                               \
                 const float2 point = parameter.transform * float3(_x, _y, 1);                                                                                               \
                 sum += _lanczos_interpolate_##HWRAPPING##_##VWRAPPING(source, point, arg, i, size);                                                                         \
             }                                                                                                                                                               \

@@ -37,7 +37,7 @@ struct Texture {
     const device float *buffer;
     const uint2 size;
     Texture(const device float *buffer, const uint2 size) : buffer(buffer), size(size) {};
-    const Pixel operator[](const uint2 i) const { return Pixel(buffer + (i[0] + i[1] * size[0]) * countOfComponents); };
+    const Pixel operator[](const uint2 i) const { return Pixel(buffer + (i.x + i.y * size.x) * countOfComponents); };
 };
 
 struct MutablePixel {
@@ -49,7 +49,7 @@ struct MutableTexture {
     device float *buffer;
     const uint2 size;
     MutableTexture(device float *buffer, const uint2 size) : buffer(buffer), size(size) {};
-    const MutablePixel operator[](const uint2 i) const { return MutablePixel(buffer + (i[0] + i[1] * size[0]) * countOfComponents); };
+    const MutablePixel operator[](const uint2 i) const { return MutablePixel(buffer + (i.x + i.y * size.x) * countOfComponents); };
 };
 
 const float _multiply(const float destination, const float source) {

@@ -29,12 +29,12 @@ using namespace metal;
 void _set_opacity(const float opacity, device float *destination, const int idx);
 
 kernel void clip(const device float *clip [[buffer(0)]],
-                 device float *out [[buffer(1)]],
+                 device float *destination [[buffer(1)]],
                  uint2 id [[thread_position_in_grid]],
                  uint2 grid [[threads_per_grid]]) {
     
-    const int idx = grid[0] * id[1] + id[0];
+    const int idx = grid.x * id.y + id.x;
     const int clip_idx = idx << 1;
     const float opacity = clip[clip_idx] * clip[clip_idx + 1];
-    _set_opacity(opacity, out, idx);
+    _set_opacity(opacity, destination, idx);
 }

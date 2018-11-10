@@ -49,8 +49,8 @@ const float axial_shading(const float2 point, const float2 start, const float2 e
     
     const float2 a = start - point;
     const float2 b = end - start;
-    const float u = b[0] * a[0] + b[1] * a[1];
-    const float v = b[0] * b[0] + b[1] * b[1];
+    const float u = b.x * a.x + b.y * a.y;
+    const float v = b.x * b.x + b.y * b.y;
     
     return -u / v;
 }
@@ -89,9 +89,9 @@ const float radial_shading(const float2 point, const float2 start, const float s
     const float r0 = start_radius;
     const float r1 = end_radius - start_radius;
     
-    const float a = p1[0] * p1[0] + p1[1] * p1[1] - r1 * r1;
-    const float b = 2 * (p0[0] * p1[0] + p0[1] * p1[1] - r0 * r1);
-    const float c = p0[0] * p0[0] + p0[1] * p0[1] - r0 * r0;
+    const float a = p1.x * p1.x + p1.y * p1.y - r1 * r1;
+    const float b = 2 * (p0.x * p1.x + p0.y * p1.y - r0 * r1);
+    const float c = p0.x * p0.x + p0.y * p0.y - r0 * r0;
     
     if (a == 0) {
         if (b != 0) {
@@ -104,12 +104,12 @@ const float radial_shading(const float2 point, const float2 start, const float s
         
         const float2 t2 = degree2roots(b / a, c / a);
         
-        if (t2[0] == NAN) {
+        if (t2.x == NAN) {
             return NAN;
         }
         
-        const float _max = max(t2[0], t2[1]);
-        const float _min = min(t2[0], t2[1]);
+        const float _max = max(t2.x, t2.y);
+        const float _min = min(t2.x, t2.y);
         
         if (_max != NAN && radial_shading_filter(_max, r0, r1, start_spread, end_spread)) {
             return _max;
@@ -240,38 +240,38 @@ void gradient_mapping_##STARTMODE##_##ENDMODE(const float t,                    
 }                                                                                                                       \
 kernel void axial_gradient_##STARTMODE##_##ENDMODE(const device gradient_parameter &parameter [[buffer(0)]],            \
                                                    const device gradient_stop *stops [[buffer(1)]],                     \
-                                                   device float *out [[buffer(2)]],                                     \
+                                                   device float *destination [[buffer(2)]],                             \
                                                    uint2 id [[thread_position_in_grid]],                                \
                                                    uint2 grid [[threads_per_grid]]) {                                   \
                                                                                                                         \
-    const int idx = grid[0] * id[1] + id[0];                                                                            \
+    const int idx = grid.x * id.y + id.x;                                                                               \
                                                                                                                         \
     const int numOfStops = parameter.numOfStops;                                                                        \
     const float2 start = parameter.start;                                                                               \
     const float2 end = parameter.end;                                                                                   \
                                                                                                                         \
-    const float2 point = parameter.transform * float3(id[0], id[1], 1);                                                 \
+    const float2 point = parameter.transform * float3(id.x, id.y, 1);                                                   \
                                                                                                                         \
     const float t = axial_shading(point, start, end);                                                                   \
-    gradient_mapping_##STARTMODE##_##ENDMODE(t, stops, numOfStops, out, idx);                                           \
+    gradient_mapping_##STARTMODE##_##ENDMODE(t, stops, numOfStops, destination, idx);                                   \
 }                                                                                                                       \
 kernel void radial_gradient_##STARTMODE##_##ENDMODE(const device gradient_parameter &parameter [[buffer(0)]],           \
                                                     const device gradient_stop *stops [[buffer(1)]],                    \
-                                                    device float *out [[buffer(2)]],                                    \
+                                                    device float *destination [[buffer(2)]],                            \
                                                     uint2 id [[thread_position_in_grid]],                               \
                                                     uint2 grid [[threads_per_grid]]) {                                  \
                                                                                                                         \
-    const int idx = grid[0] * id[1] + id[0];                                                                            \
+    const int idx = grid.x * id.y + id.x;                                                                               \
                                                                                                                         \
     const int numOfStops = parameter.numOfStops;                                                                        \
     const float2 start = parameter.start;                                                                               \
     const float2 end = parameter.end;                                                                                   \
     const float2 radius = parameter.radius;                                                                             \
                                                                                                                         \
-    const float2 point = parameter.transform * float3(id[0], id[1], 1);                                                 \
+    const float2 point = parameter.transform * float3(id.x, id.y, 1);                                                   \
                                                                                                                         \
-    const float t = radial_shading(point, start, radius[0], end, radius[1], STARTSPREAD, ENDSPREAD);                    \
-    gradient_mapping_##STARTMODE##_##ENDMODE(t, stops, numOfStops, out, idx);                                           \
+    const float t = radial_shading(point, start, radius.x, end, radius.y, STARTSPREAD, ENDSPREAD);                      \
+    gradient_mapping_##STARTMODE##_##ENDMODE(t, stops, numOfStops, destination, idx);                                   \
 }
 
 GRADIENTKERNEL(none, none, false, false)
