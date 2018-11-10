@@ -718,8 +718,9 @@ extension MetalRenderer.Encoder {
         
         let x0 = scan(q0, q2, q1.y)
         let x_range = intRange(0, max(x0, q1.x) - min(x0, q1.x), 0..<width)
+        guard x_range.count != 0 else { return nil }
         
-        return (x_range.count + 1, y_range)
+        return (x_range.count, y_range)
     }
     
     private func render_stencil<T>(width: Int, pipeline: String, x_length: Int, y_range: Range<Int>, triangle: T, output: MTLBuffer) throws {
