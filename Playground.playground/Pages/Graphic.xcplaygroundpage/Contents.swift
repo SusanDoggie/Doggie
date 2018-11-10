@@ -24,3 +24,13 @@ texturedCube(width: 500, height: 500)
 tessellation(width: 500, height: 500)
 
 tessellation2(width: 500, height: 500)
+
+try circle_gp(width: 500, height: 500)
+
+try clip_gp(width: 500, height: 500)
+
+try drum_gp(width: 500, height: 500)
+
+try linearGradient_gp(width: 500, height: 500)
+
+try radialGradient_gp(width: 500, height: 500)
