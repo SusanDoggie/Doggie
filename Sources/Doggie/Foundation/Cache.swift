@@ -128,7 +128,7 @@ extension Cache {
             return base.lck.synchronized { base.table.values }
         }
         set {
-            if _fastPath(isKnownUniquelyReferenced(&base)) {
+            if isKnownUniquelyReferenced(&base) {
                 base.lck.synchronized { base.table.values = newValue }
             } else {
                 var table = base.lck.synchronized { base.table }
@@ -143,7 +143,7 @@ extension Cache {
     
     @inlinable
     public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
-        if _fastPath(isKnownUniquelyReferenced(&base)) {
+        if isKnownUniquelyReferenced(&base) {
             base.lck.synchronized { base.table.removeAll(keepingCapacity: keepCapacity) }
         } else {
             if keepCapacity {
@@ -162,7 +162,7 @@ extension Cache {
             return base.lck.synchronized { base.table[key] as? Value }
         }
         set {
-            if _fastPath(isKnownUniquelyReferenced(&base)) {
+            if isKnownUniquelyReferenced(&base) {
                 base.lck.synchronized { base.table[key] = newValue }
             } else {
                 var table = base.lck.synchronized { base.table }

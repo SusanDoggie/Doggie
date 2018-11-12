@@ -110,7 +110,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
             return components[position]
         }
         set {
-            cache = Cache()
+            self.resetCache()
             components[position] = newValue
         }
     }
@@ -168,6 +168,21 @@ extension Shape {
     @inlinable
     public mutating func makeContiguousBuffer() {
         self.components.makeContiguousBuffer()
+    }
+}
+
+extension Shape {
+    
+    @usableFromInline
+    mutating func resetCache() {
+        if isKnownUniquelyReferenced(&cache) {
+            cache.originalBoundary = nil
+            cache.originalArea = nil
+            cache.identity = nil
+            cache.table = [:]
+        } else {
+            cache = Cache()
+        }
     }
 }
 
@@ -310,8 +325,8 @@ extension Shape.Component {
     @usableFromInline
     struct Cache {
         
-        let index: Int
-        let list: CacheArray
+        var index: Int
+        var list: CacheArray
         
         @usableFromInline
         init() {
@@ -336,6 +351,15 @@ extension Shape.Component {
     var cacheId: CacheIdentifier {
         let cache = self.cache
         return CacheIdentifier(index: cache.index, list: ObjectIdentifier(cache.list))
+    }
+    
+    @usableFromInline
+    mutating func resetCache() {
+        if isKnownUniquelyReferenced(&cache.list) {
+            cache.list.storage[cache.index] = CacheArray.Element()
+        } else {
+            cache = Cache()
+        }
     }
 }
 
@@ -561,7 +585,7 @@ extension Shape.Component : RandomAccessCollection, MutableCollection {
             return segments[position + segments.startIndex]
         }
         set {
-            cache = Cache()
+            self.resetCache()
             segments[position + segments.startIndex] = newValue
         }
     }
@@ -599,13 +623,13 @@ extension Shape.Component : RangeReplaceableCollection {
     
     @inlinable
     public mutating func append(_ newElement: Shape.Segment) {
-        cache = Cache()
+        self.resetCache()
         segments.append(newElement)
     }
     
     @inlinable
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Shape.Segment {
-        cache = Cache()
+        self.resetCache()
         segments.append(contentsOf: newElements)
     }
     
@@ -616,7 +640,7 @@ extension Shape.Component : RangeReplaceableCollection {
     
     @inlinable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Shape.Segment {
-        cache = Cache()
+        self.resetCache()
         segments.replaceSubrange(subRange, with: newElements)
     }
 }
@@ -736,13 +760,13 @@ extension Shape : RangeReplaceableCollection {
     
     @inlinable
     public mutating func append(_ newElement: Component) {
-        cache = Cache()
+        self.resetCache()
         components.append(newElement)
     }
     
     @inlinable
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Component {
-        cache = Cache()
+        self.resetCache()
         components.append(contentsOf: newElements)
     }
     
@@ -753,7 +777,7 @@ extension Shape : RangeReplaceableCollection {
     
     @inlinable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Component {
-        cache = Cache()
+        self.resetCache()
         components.replaceSubrange(subRange, with: newElements)
     }
 }

@@ -192,7 +192,7 @@ extension MappedBuffer {
     @inline(__always)
     mutating func make_unique_if_need() {
         
-        if _fastPath(isKnownUniquelyReferenced(&base)) {
+        if isKnownUniquelyReferenced(&base) {
             return
         }
         
@@ -236,7 +236,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         let old_count = base.count
         let new_count = old_count + 1
         
-        if _fastPath(isKnownUniquelyReferenced(&base)) {
+        if isKnownUniquelyReferenced(&base) {
             if base.capacity < new_count {
                 base.extend_capacity(capacity: new_count)
             }
@@ -260,7 +260,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         let old_count = base.count
         let underestimatedCount = old_count + newElements.underestimatedCount
         
-        if _fastPath(isKnownUniquelyReferenced(&base)) {
+        if isKnownUniquelyReferenced(&base) {
             if base.capacity < underestimatedCount {
                 base.extend_capacity(capacity: underestimatedCount)
             }
@@ -286,7 +286,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         
         guard base.capacity < minimumCapacity else { return }
         
-        if _fastPath(isKnownUniquelyReferenced(&base)) {
+        if isKnownUniquelyReferenced(&base) {
             
             base.extend_capacity(capacity: minimumCapacity)
             
@@ -309,7 +309,7 @@ extension MappedBuffer : RangeReplaceableCollection {
             
             guard base.count != 0 else { return }
             
-            if _fastPath(isKnownUniquelyReferenced(&base)) {
+            if isKnownUniquelyReferenced(&base) {
                 
                 base.address.deinitialize(count: base.count)
                 base.count = 0
@@ -334,7 +334,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         let newElements_count = newElements.count
         let new_count = base.count - subRange.count + newElements_count
         
-        if _fastPath(isKnownUniquelyReferenced(&base)) {
+        if isKnownUniquelyReferenced(&base) {
             
             if base.capacity < new_count {
                 base.extend_capacity(capacity: new_count)
