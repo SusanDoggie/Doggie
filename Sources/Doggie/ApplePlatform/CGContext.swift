@@ -89,6 +89,10 @@ extension CGContext {
         self.concatenate(CGAffineTransform(transform))
     }
     
+    public func drawClip(colorSpace: CGColorSpace = CGColorSpaceCreateDeviceGray(), body: (CGContext) throws -> Void) rethrows {
+        try CGContextClipToDrawing(self, colorSpace: colorSpace, command: body)
+    }
+    
     public func draw(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<AnyColor>, colorSpace: AnyColorSpace) {
         
         self.beginTransparencyLayer()
@@ -178,21 +182,19 @@ public func CGPatternCreate(_ bounds: CGRect, _ matrix: CGAffineTransform, _ xSt
     return CGPattern(info: UnsafeMutableRawPointer(bitPattern: id), bounds: bounds, matrix: matrix, xStep: xStep, yStep: yStep, tiling: tiling, isColored: isColored, callbacks: callbackContainer.callbacks_struct)
 }
 
-public func CGContextClipToDrawing(_ context : CGContext, colorSpace space: CGColorSpace = CGColorSpaceCreateDeviceGray(), fillBackground: CGFloat = 0, command: (CGContext) -> Void) {
+public func CGContextClipToDrawing(_ context : CGContext, colorSpace space: CGColorSpace = CGColorSpaceCreateDeviceGray(), command: (CGContext) throws -> Void) rethrows {
     
     let width = context.width
     let height = context.height
+    let transform = context.ctm
     
     guard let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: space, bitmapInfo: 0) else { return }
     
-    maskContext.setFillColor(gray: fillBackground, alpha: 1)
+    maskContext.setFillColor(gray: 0, alpha: 1)
     maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
-    maskContext.setFillColor(gray: 1, alpha: 1)
-    
-    let transform = context.ctm
     maskContext.concatenate(transform)
     
-    command(maskContext)
+    try command(maskContext)
     
     guard let alphaMask = maskContext.makeImage()?.copy(colorSpace: CGColorSpaceCreateDeviceGray()) else { return }
     
