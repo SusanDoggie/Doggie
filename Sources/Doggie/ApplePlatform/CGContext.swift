@@ -178,23 +178,27 @@ public func CGPatternCreate(_ bounds: CGRect, _ matrix: CGAffineTransform, _ xSt
     return CGPattern(info: UnsafeMutableRawPointer(bitPattern: id), bounds: bounds, matrix: matrix, xStep: xStep, yStep: yStep, tiling: tiling, isColored: isColored, callbacks: callbackContainer.callbacks_struct)
 }
 
-public func CGContextClipToDrawing(_ context : CGContext, fillBackground: CGFloat = 0, command: (CGContext) -> Void) {
+public func CGContextClipToDrawing(_ context : CGContext, colorSpace space: CGColorSpace = CGColorSpaceCreateDeviceGray(), fillBackground: CGFloat = 0, command: (CGContext) -> Void) {
     
     let width = context.width
     let height = context.height
     
-    if let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: CGColorSpaceCreateDeviceGray(), bitmapInfo: 0) {
-        maskContext.setFillColor(gray: fillBackground, alpha: 1)
-        maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        maskContext.setFillColor(gray: 1, alpha: 1)
-        let transform = context.ctm
-        maskContext.concatenate(transform)
-        command(maskContext)
-        let alphaMask = maskContext.makeImage()
-        context.concatenate(transform.inverted())
-        context.clip(to: CGRect(x: 0, y: 0, width: width, height: height), mask: alphaMask!)
-        context.concatenate(transform)
-    }
+    guard let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: space, bitmapInfo: 0) else { return }
+    
+    maskContext.setFillColor(gray: fillBackground, alpha: 1)
+    maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
+    maskContext.setFillColor(gray: 1, alpha: 1)
+    
+    let transform = context.ctm
+    maskContext.concatenate(transform)
+    
+    command(maskContext)
+    
+    guard let alphaMask = maskContext.makeImage()?.copy(colorSpace: CGColorSpaceCreateDeviceGray()) else { return }
+    
+    context.concatenate(transform.inverted())
+    context.clip(to: CGRect(x: 0, y: 0, width: width, height: height), mask: alphaMask)
+    context.concatenate(transform)
 }
 
 #endif
