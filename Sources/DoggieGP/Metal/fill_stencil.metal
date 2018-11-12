@@ -44,7 +44,7 @@ const bool winding_evenOdd(const int16_t winding) {
     return (winding & 1) != 0;
 }
 
-#define FILLSTENCILKERNEL(WINDING)                                                                                                          \
+#define FILL_STENCIL_KERNEL(WINDING)                                                                                                        \
 kernel void fill_##WINDING##_stencil(const device fill_stencil_parameter &parameter [[buffer(0)]],                                          \
                                      const device int16_t *stencil [[buffer(1)]],                                                           \
                                      device float *destination [[buffer(2)]],                                                               \
@@ -80,5 +80,5 @@ kernel void fill_##WINDING##_stencil(const device fill_stencil_parameter &parame
     destination[idx * countOfComponents + opacity_idx] = parameter.color[opacity_idx] * (float)counter / (float)(antialias * antialias);    \
 }
 
-FILLSTENCILKERNEL(nonZero)
-FILLSTENCILKERNEL(evenOdd)
+FILL_STENCIL_KERNEL(nonZero)
+FILL_STENCIL_KERNEL(evenOdd)

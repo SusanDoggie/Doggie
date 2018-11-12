@@ -221,7 +221,7 @@ void _repeat_end_spread(const float t, const device gradient_stop *stops, const 
     gradient_set_color(s, stops, numOfStops, destination, idx);
 }
 
-#define GRADIENTKERNEL(STARTMODE, ENDMODE, STARTSPREAD, ENDSPREAD)                                                      \
+#define GRADIENT_KERNEL(STARTMODE, ENDMODE, STARTSPREAD, ENDSPREAD)                                                     \
 void gradient_mapping_##STARTMODE##_##ENDMODE(const float t,                                                            \
                                               const device gradient_stop *stops,                                        \
                                               const int numOfStops,                                                     \
@@ -274,22 +274,22 @@ kernel void radial_gradient_##STARTMODE##_##ENDMODE(const device gradient_parame
     gradient_mapping_##STARTMODE##_##ENDMODE(t, stops, numOfStops, destination, idx);                                   \
 }
 
-GRADIENTKERNEL(none, none, false, false)
-GRADIENTKERNEL(pad, none, true, false)
-GRADIENTKERNEL(reflect, none, true, false)
-GRADIENTKERNEL(repeat, none, true, false)
+GRADIENT_KERNEL(none, none, false, false)
+GRADIENT_KERNEL(pad, none, true, false)
+GRADIENT_KERNEL(reflect, none, true, false)
+GRADIENT_KERNEL(repeat, none, true, false)
 
-GRADIENTKERNEL(none, pad, false, true)
-GRADIENTKERNEL(pad, pad, true, true)
-GRADIENTKERNEL(reflect, pad, true, true)
-GRADIENTKERNEL(repeat, pad, true, true)
+GRADIENT_KERNEL(none, pad, false, true)
+GRADIENT_KERNEL(pad, pad, true, true)
+GRADIENT_KERNEL(reflect, pad, true, true)
+GRADIENT_KERNEL(repeat, pad, true, true)
 
-GRADIENTKERNEL(none, reflect, false, true)
-GRADIENTKERNEL(pad, reflect, true, true)
-GRADIENTKERNEL(reflect, reflect, true, true)
-GRADIENTKERNEL(repeat, reflect, true, true)
+GRADIENT_KERNEL(none, reflect, false, true)
+GRADIENT_KERNEL(pad, reflect, true, true)
+GRADIENT_KERNEL(reflect, reflect, true, true)
+GRADIENT_KERNEL(repeat, reflect, true, true)
 
-GRADIENTKERNEL(none, repeat, false, true)
-GRADIENTKERNEL(pad, repeat, true, true)
-GRADIENTKERNEL(reflect, repeat, true, true)
-GRADIENTKERNEL(repeat, repeat, true, true)
+GRADIENT_KERNEL(none, repeat, false, true)
+GRADIENT_KERNEL(pad, repeat, true, true)
+GRADIENT_KERNEL(reflect, repeat, true, true)
+GRADIENT_KERNEL(repeat, repeat, true, true)
