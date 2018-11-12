@@ -57,9 +57,13 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        blender.draw { () -> ColorPixel<Pixel.Model> in
+                        blender.draw { () -> ColorPixel<Pixel.Model>? in
+                            
+                            let _shadow = shadow_layer.pixel(Point(x: x, y: y) + _offset)
+                            guard _shadow > 0 else { return nil }
+                            
                             var shadowColor = shadowColor
-                            shadowColor.opacity *= Double(shadow_layer.pixel(Point(x: x, y: y) + _offset))
+                            shadowColor.opacity *= Double(_shadow)
                             return shadowColor
                         }
                         blender.draw { () -> ColorPixel<Pixel.Model> in
@@ -102,9 +106,13 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        blender.draw { () -> ColorPixel<Pixel.Model> in
+                        blender.draw { () -> ColorPixel<Pixel.Model>? in
+                            
+                            let _shadow = shadow_layer.pixel(Point(x: x, y: y) + _offset)
+                            guard _shadow > 0 else { return nil }
+                            
                             var shadowColor = shadowColor
-                            shadowColor.opacity *= Double(shadow_layer.pixel(Point(x: x, y: y) + _offset))
+                            shadowColor.opacity *= Double(_shadow)
                             return shadowColor
                         }
                         blender.draw { source.pointee }

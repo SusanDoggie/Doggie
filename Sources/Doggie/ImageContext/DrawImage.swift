@@ -57,9 +57,9 @@ extension ImageContext {
                         for x in stride(from: 0, to: width * antialias, by: antialias) {
                             blender.draw { () -> ColorPixel<Pixel.Model> in
                                 var pixel: T = 0
-                                for j in 0..<antialias {
-                                    for i in 0..<antialias {
-                                        pixel += stencil.pixel(Point(x: x + i, y: y + j) * __transform)
+                                for _y in y..<y + antialias {
+                                    for _x in x..<x + antialias {
+                                        pixel += stencil.pixel(Point(x: _x, y: _y) * __transform)
                                     }
                                 }
                                 return ColorPixel(color: color, opacity: Double(pixel) * div)
@@ -117,9 +117,9 @@ extension ImageContext {
                         for x in stride(from: 0, to: width * antialias, by: antialias) {
                             blender.draw { () -> ColorPixel<Pixel.Model> in
                                 var pixel = ColorPixel<Pixel.Model>()
-                                for j in 0..<antialias {
-                                    for i in 0..<antialias {
-                                        pixel += texture.pixel(Point(x: x + i, y: y + j) * __transform)
+                                for _y in y..<y + antialias {
+                                    for _x in x..<x + antialias {
+                                        pixel += texture.pixel(Point(x: _x, y: _y) * __transform)
                                     }
                                 }
                                 return pixel * div
