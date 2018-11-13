@@ -233,8 +233,6 @@ extension MetalRenderer.Encoder {
     
     func setOpacity(_ destination: MTLBuffer, _ opacity: Double) throws {
         
-        guard opacity != 1 else { return }
-        
         let encoder = try self.makeComputeCommandEncoder()
         
         let pipeline = try renderer.request_pipeline("set_opacity")
@@ -252,64 +250,57 @@ extension MetalRenderer.Encoder {
     
     func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ stencil: MTLBuffer?, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
         
-        switch (compositingMode, blendMode, stencil) {
-        case (.destination, _, _): return
-        case (.source, .normal, nil): try self.copy(source, destination)
-        case (.clear, _, nil): try self.clear(destination)
-        default:
-            
-            let compositing_name: String
-            let blending_name: String
-            
-            switch compositingMode {
-            case .clear: compositing_name = "clear"
-            case .source: compositing_name = "copy"
-            case .sourceOver: compositing_name = "sourceOver"
-            case .sourceIn: compositing_name = "sourceIn"
-            case .sourceOut: compositing_name = "sourceOut"
-            case .sourceAtop: compositing_name = "sourceAtop"
-            case .destinationOver: compositing_name = "destinationOver"
-            case .destinationIn: compositing_name = "destinationIn"
-            case .destinationOut: compositing_name = "destinationOut"
-            case .destinationAtop: compositing_name = "destinationAtop"
-            case .xor: compositing_name = "exclusiveOr"
-            default: compositing_name = ""
-            }
-            
-            switch blendMode {
-            case .normal: blending_name = "normal"
-            case .multiply: blending_name = "multiply"
-            case .screen: blending_name = "screen"
-            case .overlay: blending_name = "overlay"
-            case .darken: blending_name = "darken"
-            case .lighten: blending_name = "lighten"
-            case .colorDodge: blending_name = "colorDodge"
-            case .colorBurn: blending_name = "colorBurn"
-            case .softLight: blending_name = "softLight"
-            case .hardLight: blending_name = "hardLight"
-            case .difference: blending_name = "difference"
-            case .exclusion: blending_name = "exclusion"
-            case .plusDarker: blending_name = "plusDarker"
-            case .plusLighter: blending_name = "plusLighter"
-            }
-            
-            let encoder = try self.makeComputeCommandEncoder()
-            
-            let pipeline = try renderer.request_pipeline(stencil == nil ? "blend_\(compositing_name)_\(blending_name)" : "blend_\(compositing_name)_\(blending_name)_clip")
-            encoder.setComputePipelineState(pipeline)
-            
-            encoder.setBuffer(source, offset: 0, index: 0)
-            encoder.setBuffer(destination, offset: 0, index: 1)
-            if let stencil = stencil {
-                encoder.setBuffer(stencil, offset: 0, index: 2)
-            }
-            
-            let w = pipeline.threadExecutionWidth
-            let h = pipeline.maxTotalThreadsPerThreadgroup / w
-            let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
-            
-            encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        let compositing_name: String
+        let blending_name: String
+        
+        switch compositingMode {
+        case .clear: compositing_name = "clear"
+        case .source: compositing_name = "copy"
+        case .sourceOver: compositing_name = "sourceOver"
+        case .sourceIn: compositing_name = "sourceIn"
+        case .sourceOut: compositing_name = "sourceOut"
+        case .sourceAtop: compositing_name = "sourceAtop"
+        case .destinationOver: compositing_name = "destinationOver"
+        case .destinationIn: compositing_name = "destinationIn"
+        case .destinationOut: compositing_name = "destinationOut"
+        case .destinationAtop: compositing_name = "destinationAtop"
+        case .xor: compositing_name = "exclusiveOr"
+        default: compositing_name = ""
         }
+        
+        switch blendMode {
+        case .normal: blending_name = "normal"
+        case .multiply: blending_name = "multiply"
+        case .screen: blending_name = "screen"
+        case .overlay: blending_name = "overlay"
+        case .darken: blending_name = "darken"
+        case .lighten: blending_name = "lighten"
+        case .colorDodge: blending_name = "colorDodge"
+        case .colorBurn: blending_name = "colorBurn"
+        case .softLight: blending_name = "softLight"
+        case .hardLight: blending_name = "hardLight"
+        case .difference: blending_name = "difference"
+        case .exclusion: blending_name = "exclusion"
+        case .plusDarker: blending_name = "plusDarker"
+        case .plusLighter: blending_name = "plusLighter"
+        }
+        
+        let encoder = try self.makeComputeCommandEncoder()
+        
+        let pipeline = try renderer.request_pipeline(stencil == nil ? "blend_\(compositing_name)_\(blending_name)" : "blend_\(compositing_name)_\(blending_name)_clip")
+        encoder.setComputePipelineState(pipeline)
+        
+        encoder.setBuffer(source, offset: 0, index: 0)
+        encoder.setBuffer(destination, offset: 0, index: 1)
+        if let stencil = stencil {
+            encoder.setBuffer(stencil, offset: 0, index: 2)
+        }
+        
+        let w = pipeline.threadExecutionWidth
+        let h = pipeline.maxTotalThreadsPerThreadgroup / w
+        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
+        
+        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
     func shadow(_ source: MTLBuffer, _ destination: MTLBuffer, _ color: FloatColorPixel<Model>, _ offset: Size, _ blur: Double) throws {

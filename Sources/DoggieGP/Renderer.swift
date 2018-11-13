@@ -285,6 +285,14 @@ extension DGImageContext {
             return shadowColor.opacity > 0 && shadowBlur > 0
         }
         
+        func blend<Encoder: DGRendererEncoder>(encoder: Encoder, source: Encoder.Buffer, output: Encoder.Buffer, stencil: Encoder.Buffer?) throws where Model == Encoder.Renderer.Model {
+            switch (compositingMode, blendMode, stencil) {
+            case (.destination, _, _): return
+            case (.source, .normal, nil): try encoder.copy(source, output)
+            case (.clear, _, nil): try encoder.clear(output)
+            default: try encoder.blend(source, output, stencil, compositingMode, blendMode)
+            }
+        }
         override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
             
             if !destination.is_empty {
@@ -340,11 +348,11 @@ extension DGImageContext {
                 if isShadow {
                     let _shadow = try self.request_buffer(encoder: encoder, resource: resource)
                     try encoder.shadow(_source, _shadow, shadowColor, shadowOffset, shadowBlur)
-                    try encoder.blend(_shadow, output, _shadow, compositingMode, blendMode)
+                    try self.blend(encoder: encoder, source: _shadow, output: output, stencil: _shadow)
                     resource.recycle.append(_shadow)
                 }
                 
-                try encoder.blend(_source, output, _stencil, compositingMode, blendMode)
+                try self.blend(encoder: encoder, source: _source, output: output, stencil: _stencil)
                 
                 if _source_recyclable {
                     resource.recycle.append(_source)
