@@ -255,7 +255,7 @@ extension MetalRenderer.Encoder {
         
         switch compositingMode {
         case .clear: compositing_name = "clear"
-        case .source: compositing_name = "copy"
+        case .copy: compositing_name = "copy"
         case .sourceOver: compositing_name = "sourceOver"
         case .sourceIn: compositing_name = "sourceIn"
         case .sourceOut: compositing_name = "sourceOut"
@@ -265,7 +265,6 @@ extension MetalRenderer.Encoder {
         case .destinationOut: compositing_name = "destinationOut"
         case .destinationAtop: compositing_name = "destinationAtop"
         case .xor: compositing_name = "exclusiveOr"
-        default: return
         }
         
         switch blendMode {

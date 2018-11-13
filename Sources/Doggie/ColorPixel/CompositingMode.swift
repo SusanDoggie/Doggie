@@ -27,9 +27,7 @@ public enum ColorCompositingMode {
     
     case clear /* R = 0 */
     
-    case source /* R = S */
-    
-    case destination /* R = D */
+    case copy /* R = S */
     
     case sourceOver /* R = S + D * (1 - Sa) */
     
@@ -57,11 +55,6 @@ extension ColorCompositingMode {
     public static var `default` : ColorCompositingMode {
         return .sourceOver
     }
-    
-    @inlinable
-    public static var copy : ColorCompositingMode {
-        return .source
-    }
 }
 
 extension ColorCompositingMode {
@@ -72,8 +65,7 @@ extension ColorCompositingMode {
         
         switch self {
         case .clear: return T()
-        case .source: return source
-        case .destination: return destination
+        case .copy: return source
         case .sourceOver: return source + destination * (1 - source_alpha)
         case .sourceIn: return source * destination_alpha
         case .sourceOut: return source * (1 - destination_alpha)
@@ -98,7 +90,6 @@ extension ColorPixelProtocol {
         
         switch compositingMode {
         case .clear: return Self()
-        case .destination: return self
         default:
             
             let d_alpha = self.opacity
@@ -123,8 +114,7 @@ extension ColorPixelProtocol {
         
         switch (compositingMode, blendMode) {
         case (.clear, _): return Self()
-        case (.destination, _): return self
-        case (.source, .normal): return Self(source)
+        case (.copy, .normal): return Self(source)
         default:
             
             let d_alpha = self.opacity
@@ -164,7 +154,6 @@ extension FloatColorPixel {
         
         switch compositingMode {
         case .clear: return FloatColorPixel()
-        case .destination: return self
         default:
             
             let source = FloatColorPixel(source)
@@ -191,8 +180,7 @@ extension FloatColorPixel {
         
         switch (compositingMode, blendMode) {
         case (.clear, _): return FloatColorPixel()
-        case (.destination, _): return self
-        case (.source, .normal): return FloatColorPixel(source)
+        case (.copy, .normal): return FloatColorPixel(source)
         default:
             
             let source = FloatColorPixel(source)

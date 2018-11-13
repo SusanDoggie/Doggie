@@ -285,14 +285,14 @@ extension DGImageContext {
             return shadowColor.opacity > 0 && shadowBlur > 0
         }
         
-        func blend<Encoder: DGRendererEncoder>(encoder: Encoder, source: Encoder.Buffer, output: Encoder.Buffer, stencil: Encoder.Buffer?) throws where Model == Encoder.Renderer.Model {
+        private func blend<Encoder: DGRendererEncoder>(encoder: Encoder, source: Encoder.Buffer, output: Encoder.Buffer, stencil: Encoder.Buffer?) throws where Model == Encoder.Renderer.Model {
             switch (compositingMode, blendMode, stencil) {
-            case (.destination, _, _): return
-            case (.source, .normal, nil): try encoder.copy(source, output)
+            case (.copy, .normal, nil): try encoder.copy(source, output)
             case (.clear, _, nil): try encoder.clear(output)
             default: try encoder.blend(source, output, stencil, compositingMode, blendMode)
             }
         }
+        
         override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
             
             if !destination.is_empty {
