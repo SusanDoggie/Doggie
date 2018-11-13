@@ -155,26 +155,19 @@ extension MetalRenderer.Encoder {
     
     private func check_limit() throws {
         
-        if let commandEncoder = self.commandEncoder {
-            
-            guard command_counter >= command_encoder_limit else { return }
-            
-            commandEncoder.endEncoding()
-            commandBuffer?.commit()
-            commandBuffer?.waitUntilScheduled()
-            
-            self.commandEncoder = nil
-            commandBuffer = nil
-            command_counter = 0
-            
-            guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
-            self.commandBuffer = _commandBuffer
-            
-        } else {
-            
-            guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
-            self.commandBuffer = _commandBuffer
-        }
+        guard self.commandEncoder == nil || command_counter >= command_encoder_limit else { return }
+        
+        commandEncoder?.endEncoding()
+        commandBuffer?.commit()
+        commandBuffer?.waitUntilScheduled()
+        
+        commandEncoder = nil
+        commandBuffer = nil
+        command_counter = 0
+        
+        guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
+        self.commandBuffer = _commandBuffer
+        
     }
     
     private func makeBlitCommandEncoder() throws -> MTLBlitCommandEncoder {
