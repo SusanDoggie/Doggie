@@ -69,6 +69,8 @@ protocol DGRendererEncoder {
     
     var texture_size: Int { get }
     
+    func prepare() -> Bool
+    
     func commit(waitUntilCompleted: Bool)
     
     func clip_encoder() throws -> Renderer.ClipEncoder
@@ -157,6 +159,16 @@ extension DGImageContext {
         DGImageContextCache[key] = renderer
         
         return renderer
+    }
+    
+    func prepare<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) -> Bool where Renderer.Model == Model {
+        
+        guard width != 0 && height != 0 else { return true }
+        
+        guard let renderer = try? DGImageContext.make_renderer(device, Renderer.self) else { return false }
+        guard let encoder = try? renderer.encoder(width: width, height: height) else { return false }
+        
+        return encoder.prepare()
     }
     
     func render<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws where Renderer.Model == Model {

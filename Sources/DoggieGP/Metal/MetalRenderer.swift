@@ -99,9 +99,18 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
 @available(OSX 10.13, iOS 11.0, *)
 extension DGImageContext {
     
+    public func prepare() -> Bool {
+        guard let device = MTLCreateSystemDefaultDevice() else { return false }
+        return self.prepare(device: device)
+    }
+    
+    public func prepare(device: MTLDevice) -> Bool {
+        return autoreleasepool { self.prepare(device, MetalRenderer.self) }
+    }
+    
     public func render() throws {
         guard let device = MTLCreateSystemDefaultDevice() else { throw MetalRenderer<Model>.Error(description: "MTLCreateSystemDefaultDevice failed.") }
-        try render(device: device)
+        try self.render(device: device)
     }
     
     public func render(device: MTLDevice) throws {
@@ -200,6 +209,111 @@ extension MetalRenderer.Encoder {
 
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
+    
+    func prepare() -> Bool {
+        
+        var pipelines = [
+            "set_opacity",
+            "shadow",
+            "clip",
+            ]
+        
+        let winding = [
+            "nonZero",
+            "evenOdd",
+            ]
+        
+        pipelines.append(contentsOf: winding.map { "fill_\($0)_stencil" })
+        pipelines.append(contentsOf: winding.map { "fill_\($0)_stencil2" })
+        
+        let compositing_mode = [
+            "copy",
+            "sourceOver",
+            "sourceIn",
+            "sourceOut",
+            "sourceAtop",
+            "destinationOver",
+            "destinationIn",
+            "destinationOut",
+            "destinationAtop",
+            "exclusiveOr",
+            ]
+        
+        let blend_mode = [
+            "normal",
+            "multiply",
+            "screen",
+            "overlay",
+            "darken",
+            "lighten",
+            "colorDodge",
+            "colorBurn",
+            "softLight",
+            "hardLight",
+            "difference",
+            "exclusion",
+            "plusDarker",
+            "plusLighter",
+            ]
+        
+        for blending_name in blend_mode {
+            pipelines.append("blend_clear_\(blending_name)_clip")
+        }
+        
+        for compositing_name in compositing_mode {
+            for blending_name in blend_mode {
+                if compositing_name != "copy" || blending_name != "normal" {
+                    pipelines.append("blend_\(compositing_name)_\(blending_name)")
+                }
+                pipelines.append("blend_\(compositing_name)_\(blending_name)_clip")
+            }
+        }
+        
+        let resampling = [
+            "none",
+            "linear",
+            "cosine",
+            "cubic",
+            "hermite",
+            "mitchell",
+            "lanczos",
+            ]
+        
+        let wrapping = [
+            "none",
+            "clamp",
+            "repeat",
+            "mirror",
+            ]
+        
+        for algorithm_name in resampling {
+            for h_wrapping_name in wrapping {
+                for v_wrapping_name in wrapping {
+                    pipelines.append("\(algorithm_name)_interpolate_\(h_wrapping_name)_\(v_wrapping_name)")
+                }
+            }
+        }
+        
+        let gradient_spread = [
+            "none",
+            "pad",
+            "reflect",
+            "repeat",
+            ]
+        
+        for start_name in gradient_spread {
+            for end_name in gradient_spread {
+                pipelines.append("axial_gradient_\(start_name)_\(end_name)")
+                pipelines.append("radial_gradient_\(start_name)_\(end_name)")
+            }
+        }
+        
+        for pipeline in pipelines {
+            guard (try? renderer.request_pipeline(pipeline)) != nil else { return false }
+        }
+        
+        return true
+    }
     
     func commit(waitUntilCompleted: Bool) {
         commandEncoder?.endEncoding()
