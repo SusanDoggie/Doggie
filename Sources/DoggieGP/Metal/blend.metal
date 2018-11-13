@@ -144,6 +144,45 @@ const float _exclusiveOr(const float source, const float source_alpha, const flo
     return _s + _d;
 }
 
+void _blend_copy_normal(device float *destination, const device float *source, const int idx) {
+    for (int i = 0; i < countOfComponents; ++i) {
+        destination[idx + i] = source[idx + i];
+    }
+}
+kernel void blend_copy_normal_clip(const device float *source [[buffer(0)]],
+                                     device float *destination [[buffer(1)]],
+                                     const device float *clip [[buffer(2)]],
+                                     uint2 id [[thread_position_in_grid]],
+                                     uint2 grid [[threads_per_grid]]) {
+    
+    const int idx = id.x + id.y * grid.x;
+    const int _idx = idx * countOfComponents;
+    
+    if (!(clip[_idx + countOfComponents - 1] > 0)) { return; }
+    
+    _blend_copy_normal(destination, source, _idx);
+}
+
+#define BLEND_CLEAR_CLIP_KERNEL(BLENDING)                                                                               \
+void _blend_clear_##BLENDING(device float *destination, const device float *source, const int idx) {                    \
+    for (int i = 0; i < countOfComponents; ++i) {                                                                       \
+        destination[idx + i] = 0;                                                                                       \
+    }                                                                                                                   \
+}                                                                                                                       \
+kernel void blend_clear_##BLENDING##_clip(const device float *source [[buffer(0)]],                                     \
+                                          device float *destination [[buffer(1)]],                                      \
+                                          const device float *clip [[buffer(2)]],                                       \
+                                          uint2 id [[thread_position_in_grid]],                                         \
+                                          uint2 grid [[threads_per_grid]]) {                                            \
+                                                                                                                        \
+    const int idx = id.x + id.y * grid.x;                                                                               \
+    const int _idx = idx * countOfComponents;                                                                           \
+                                                                                                                        \
+    if (!(clip[_idx + countOfComponents - 1] > 0)) { return; }                                                          \
+                                                                                                                        \
+    _blend_clear_##BLENDING(destination, source, _idx);                                                                 \
+}
+
 #define BLEND_NORMAL_KERNEL(COMPOSITING)                                                                                \
 void _blend_##COMPOSITING##_normal(device float *destination, const device float *source, const int idx) {              \
                                                                                                                         \
@@ -178,6 +217,19 @@ kernel void blend_##COMPOSITING##_normal(const device float *source [[buffer(0)]
                                                                                                                         \
     const int idx = id.x + id.y * grid.x;                                                                               \
     _blend_##COMPOSITING##_normal(destination, source, idx * countOfComponents);                                        \
+}                                                                                                                       \
+kernel void blend_##COMPOSITING##_normal_clip(const device float *source [[buffer(0)]],                                 \
+                                              device float *destination [[buffer(1)]],                                  \
+                                              const device float *clip [[buffer(2)]],                                   \
+                                              uint2 id [[thread_position_in_grid]],                                     \
+                                              uint2 grid [[threads_per_grid]]) {                                        \
+                                                                                                                        \
+    const int idx = id.x + id.y * grid.x;                                                                               \
+    const int _idx = idx * countOfComponents;                                                                           \
+                                                                                                                        \
+    if (!(clip[_idx + countOfComponents - 1] > 0)) { return; }                                                          \
+                                                                                                                        \
+    _blend_##COMPOSITING##_normal(destination, source, _idx);                                                           \
 }
 
 #define BLEND_KERNEL(COMPOSITING, BLENDING)                                                                             \
@@ -215,7 +267,35 @@ kernel void blend_##COMPOSITING##_##BLENDING(const device float *source [[buffer
                                                                                                                         \
     const int idx = id.x + id.y * grid.x;                                                                               \
     _blend_##COMPOSITING##_##BLENDING(destination, source, idx * countOfComponents);                                    \
+}                                                                                                                       \
+kernel void blend_##COMPOSITING##_##BLENDING##_clip(const device float *source [[buffer(0)]],                           \
+                                                    device float *destination [[buffer(1)]],                            \
+                                                    const device float *clip [[buffer(2)]],                             \
+                                                    uint2 id [[thread_position_in_grid]],                               \
+                                                    uint2 grid [[threads_per_grid]]) {                                  \
+                                                                                                                        \
+    const int idx = id.x + id.y * grid.x;                                                                               \
+    const int _idx = idx * countOfComponents;                                                                           \
+                                                                                                                        \
+    if (!(clip[_idx + countOfComponents - 1] > 0)) { return; }                                                          \
+                                                                                                                        \
+    _blend_##COMPOSITING##_##BLENDING(destination, source, _idx);                                                       \
 }
+
+BLEND_CLEAR_CLIP_KERNEL(normal)
+BLEND_CLEAR_CLIP_KERNEL(multiply)
+BLEND_CLEAR_CLIP_KERNEL(screen)
+BLEND_CLEAR_CLIP_KERNEL(overlay)
+BLEND_CLEAR_CLIP_KERNEL(darken)
+BLEND_CLEAR_CLIP_KERNEL(lighten)
+BLEND_CLEAR_CLIP_KERNEL(colorDodge)
+BLEND_CLEAR_CLIP_KERNEL(colorBurn)
+BLEND_CLEAR_CLIP_KERNEL(softLight)
+BLEND_CLEAR_CLIP_KERNEL(hardLight)
+BLEND_CLEAR_CLIP_KERNEL(difference)
+BLEND_CLEAR_CLIP_KERNEL(exclusion)
+BLEND_CLEAR_CLIP_KERNEL(plusDarker)
+BLEND_CLEAR_CLIP_KERNEL(plusLighter)
 
 BLEND_NORMAL_KERNEL(sourceOver)
 BLEND_NORMAL_KERNEL(sourceIn)

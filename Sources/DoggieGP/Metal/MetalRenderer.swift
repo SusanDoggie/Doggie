@@ -250,18 +250,19 @@ extension MetalRenderer.Encoder {
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
-    func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
+    func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ stencil: MTLBuffer?, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
         
-        switch (compositingMode, blendMode) {
-        case (.destination, _): return
-        case (.source, .normal): try self.copy(source, destination)
-        case (.clear, _): try self.clear(destination)
+        switch (compositingMode, blendMode, stencil) {
+        case (.destination, _, _): return
+        case (.source, .normal, nil): try self.copy(source, destination)
+        case (.clear, _, nil): try self.clear(destination)
         default:
             
             let compositing_name: String
             let blending_name: String
             
             switch compositingMode {
+            case .clear: compositing_name = "clear"
             case .source: compositing_name = "copy"
             case .sourceOver: compositing_name = "sourceOver"
             case .sourceIn: compositing_name = "sourceIn"
@@ -294,11 +295,14 @@ extension MetalRenderer.Encoder {
             
             let encoder = try self.makeComputeCommandEncoder()
             
-            let pipeline = try renderer.request_pipeline("blend_\(compositing_name)_\(blending_name)")
+            let pipeline = try renderer.request_pipeline(stencil == nil ? "blend_\(compositing_name)_\(blending_name)" : "blend_\(compositing_name)_\(blending_name)_clip")
             encoder.setComputePipelineState(pipeline)
             
             encoder.setBuffer(source, offset: 0, index: 0)
             encoder.setBuffer(destination, offset: 0, index: 1)
+            if let stencil = stencil {
+                encoder.setBuffer(stencil, offset: 0, index: 2)
+            }
             
             let w = pipeline.threadExecutionWidth
             let h = pipeline.maxTotalThreadsPerThreadgroup / w
@@ -326,7 +330,7 @@ extension MetalRenderer.Encoder {
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
-    func draw(_ destination: MTLBuffer, _ shape: Shape, _ color: FloatColorPixel<Model>, _ winding: Shape.WindingRule, _ antialias: Int) throws {
+    func draw(_ destination: MTLBuffer, _ _stencil: MTLBuffer?, _ shape: Shape, _ color: FloatColorPixel<Model>, _ winding: Shape.WindingRule, _ antialias: Int) throws {
         
         let stencil: MTLBuffer
         
@@ -366,12 +370,15 @@ extension MetalRenderer.Encoder {
         
         let encoder = try self.makeComputeCommandEncoder()
         
-        let pipeline = try renderer.request_pipeline("fill_\(winding_name)_stencil")
+        let pipeline = try renderer.request_pipeline(_stencil == nil ? "fill_\(winding_name)_stencil" : "fill_\(winding_name)_stencil2")
         encoder.setComputePipelineState(pipeline)
         
         encoder.setValue(FillStencilParameter(offset_x: UInt32(offset_x), offset_y: UInt32(offset_y), width: UInt32(width), antialias: UInt32(antialias), color: GPColor(color)), index: 0)
         encoder.setBuffer(stencil, offset: 0, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
+        if let _stencil = _stencil {
+            encoder.setBuffer(_stencil, offset: 0, index: 3)
+        }
         
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w

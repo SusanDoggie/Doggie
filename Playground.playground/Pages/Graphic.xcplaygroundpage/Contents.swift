@@ -5,6 +5,8 @@ import Doggie
 
 circle(width: 500, height: 500)
 
+shadow(width: 500, height: 500)
+
 clip(width: 500, height: 500)
 
 drum(width: 500, height: 500)
@@ -26,6 +28,8 @@ tessellation(width: 500, height: 500)
 tessellation2(width: 500, height: 500)
 
 try circle_gp(width: 500, height: 500)
+
+try shadow_gp(width: 500, height: 500)
 
 try clip_gp(width: 500, height: 500)
 
