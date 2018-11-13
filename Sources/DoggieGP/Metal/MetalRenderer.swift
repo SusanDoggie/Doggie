@@ -265,7 +265,7 @@ extension MetalRenderer.Encoder {
         case .destinationOut: compositing_name = "destinationOut"
         case .destinationAtop: compositing_name = "destinationAtop"
         case .xor: compositing_name = "exclusiveOr"
-        default: compositing_name = ""
+        default: return
         }
         
         switch blendMode {
