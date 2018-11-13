@@ -91,8 +91,7 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     }
     
     func encoder(width: Int, height: Int) throws -> Encoder {
-        guard let commandBuffer = queue.makeCommandBuffer() else { throw Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
-        return Encoder(width: width, height: height, renderer: self, commandBuffer: commandBuffer)
+        return Encoder(width: width, height: height, renderer: self)
     }
 }
 
@@ -139,11 +138,10 @@ extension MetalRenderer {
         
         var stencil_buffer: MTLBuffer?
         
-        init(width: Int, height: Int, renderer: MetalRenderer<Model>, commandBuffer: MTLCommandBuffer) {
+        init(width: Int, height: Int, renderer: MetalRenderer<Model>) {
             self.width = width
             self.height = height
             self.renderer = renderer
-            self.commandBuffer = commandBuffer
         }
         
         deinit {
@@ -157,17 +155,26 @@ extension MetalRenderer.Encoder {
     
     private func check_limit() throws {
         
-        guard command_counter >= command_encoder_limit else { return }
-        
-        commandEncoder?.endEncoding()
-        commandBuffer?.commit()
-        commandBuffer?.waitUntilScheduled()
-        commandEncoder = nil
-        commandBuffer = nil
-        command_counter = 0
-        
-        guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
-        self.commandBuffer = _commandBuffer
+        if let commandEncoder = self.commandEncoder {
+            
+            guard command_counter >= command_encoder_limit else { return }
+            
+            commandEncoder.endEncoding()
+            commandBuffer?.commit()
+            commandBuffer?.waitUntilScheduled()
+            
+            self.commandEncoder = nil
+            commandBuffer = nil
+            command_counter = 0
+            
+            guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
+            self.commandBuffer = _commandBuffer
+            
+        } else {
+            
+            guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
+            self.commandBuffer = _commandBuffer
+        }
     }
     
     private func makeBlitCommandEncoder() throws -> MTLBlitCommandEncoder {
