@@ -348,6 +348,9 @@ extension DGImageContext {
                 
                 if _source_recyclable {
                     resource.recycle.append(_source)
+                    if let _stencil = _stencil {
+                        resource.recycle.append(_stencil)
+                    }
                 }
             }
         }
