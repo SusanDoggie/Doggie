@@ -193,6 +193,12 @@ extension LineSegment where Element: Tensor {
     public func length(_ t: Double) -> Double {
         return p0.distance(to: eval(t))
     }
+    
+    @inlinable
+    @inline(__always)
+    public func inverseLength(_ length: Double) -> Double {
+        return length / p0.distance(to: p1)
+    }
 }
 
 extension LineSegment where Element == Point {
