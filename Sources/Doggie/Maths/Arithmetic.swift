@@ -69,14 +69,27 @@ public protocol Multiplicative : Equatable {
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol Homomorphism {
+public protocol MapReduce {
     
     associatedtype Element
     
     func map(_ transform: (Element) -> Element) -> Self
+    
+    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result
+    
+    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result
 }
 
-extension Homomorphism where Self : Additive, Element : Additive {
+extension MapReduce {
+    
+    @inlinable
+    @inline(__always)
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result {
+        return self.reduce(into: initialResult) { $0 = nextPartialResult($0, $1) }
+    }
+}
+
+extension MapReduce where Self : Additive, Element : Additive {
     
     @inlinable
     @inline(__always)
@@ -90,7 +103,7 @@ extension Homomorphism where Self : Additive, Element : Additive {
     }
 }
 
-extension Homomorphism where Self : ScalarMultiplicative, Element : ScalarMultiplicative, Self.Scalar == Element.Scalar {
+extension MapReduce where Self : ScalarMultiplicative, Element : ScalarMultiplicative, Self.Scalar == Element.Scalar {
     
     @inlinable
     @inline(__always)

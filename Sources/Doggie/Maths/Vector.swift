@@ -58,7 +58,7 @@ extension Vector {
     @_transparent
     public var magnitude: Double {
         get {
-            return sqrt(x * x + y * y + z * z)
+            return hypot(hypot(x, y), z)
         }
         set {
             let m = self.magnitude

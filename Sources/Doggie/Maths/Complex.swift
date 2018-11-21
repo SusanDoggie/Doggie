@@ -72,7 +72,7 @@ extension Complex {
     @_transparent
     public var magnitude: Double {
         get {
-            return sqrt(real * real + imag * imag)
+            return hypot(real, imag)
         }
         set {
             self = Complex(magnitude: newValue, phase: phase)

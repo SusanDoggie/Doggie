@@ -117,7 +117,7 @@ extension LuvColorModel {
     @_transparent
     public var chroma: Double {
         get {
-            return sqrt(u * u + v * v)
+            return hypot(u, v)
         }
         set {
             self = LuvColorModel(lightness: lightness, chroma: newValue, hue: hue)

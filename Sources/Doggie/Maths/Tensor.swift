@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol Tensor : ScalarMultiplicative, Homomorphism, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
+public protocol Tensor : ScalarMultiplicative, MapReduce, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
     
     static var numberOfComponents: Int { get }
     
@@ -34,10 +34,6 @@ public protocol Tensor : ScalarMultiplicative, Homomorphism, RandomAccessCollect
     func distance(to: Self) -> Scalar
     
     func combined(_ other: Self, _ transform: (Scalar, Scalar) -> Scalar) -> Self
-    
-    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Scalar) -> Result) -> Result
-    
-    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result
 }
 
 extension Tensor {
@@ -63,24 +59,15 @@ extension Tensor {
     }
 }
 
-extension Tensor {
-    
-    @inlinable
-    @inline(__always)
-    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Scalar) -> Result) -> Result {
-        return self.reduce(into: initialResult) { $0 = nextPartialResult($0, $1) }
-    }
-}
-
 extension Tensor where Scalar : FloatingPoint {
     
     @_transparent
     public var magnitude: Scalar {
         get {
-            return abs(self)
+            return self.reduce(0) { $0 + $1 * $1 }.squareRoot()
         }
         set {
-            let m = abs(self)
+            let m = self.magnitude
             let scale = m == 0 ? 0 : newValue / m
             self *= scale
         }
@@ -88,21 +75,21 @@ extension Tensor where Scalar : FloatingPoint {
     
     @_transparent
     public var unit: Self {
-        let m = abs(self)
+        let m = self.magnitude
         return m == 0 ? Self() : self / m
     }
     
     @inlinable
     @inline(__always)
     public func distance(to: Self) -> Scalar {
-        return abs(to - self)
+        return (to - self).magnitude
     }
 }
 
 @inlinable
 @inline(__always)
 public func abs<T : Tensor>(_ x: T) -> T.Scalar where T.Scalar : FloatingPoint {
-    return x.reduce(0) { $0 + $1 * $1 }.squareRoot()
+    return x.magnitude
 }
 
 @inlinable

@@ -23,17 +23,13 @@
 //  THE SOFTWARE.
 //
 
-public protocol BezierProtocol : ScalarMultiplicative, Homomorphism, RandomAccessCollection, MutableCollection where Element : ScalarMultiplicative, Scalar == Element.Scalar {
+public protocol BezierProtocol : ScalarMultiplicative, MapReduce, RandomAccessCollection, MutableCollection where Element : ScalarMultiplicative, Scalar == Element.Scalar {
     
     var degree: Int { get }
     
     func split(_ t: Scalar) -> (Self, Self)
     
     func eval(_ t: Scalar) -> Element
-    
-    func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result
-    
-    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result
 }
 
 extension BezierProtocol {

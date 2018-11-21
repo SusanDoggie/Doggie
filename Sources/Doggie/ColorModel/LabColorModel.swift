@@ -118,7 +118,7 @@ extension LabColorModel {
     @_transparent
     public var chroma: Double {
         get {
-            return sqrt(a * a + b * b)
+            return hypot(a, b)
         }
         set {
             self = LabColorModel(lightness: lightness, chroma: newValue, hue: hue)
