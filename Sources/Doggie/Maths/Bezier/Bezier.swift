@@ -33,7 +33,7 @@ public struct Bezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol
     
     @inlinable
     public init() {
-        self.init(Element(), Element())
+        self.init(.zero, .zero)
     }
     
     @inlinable
@@ -45,7 +45,7 @@ public struct Bezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol
     public init<S : Sequence>(_ s: S) where S.Element == Element {
         self.points = Array(s)
         while points.count < 2 {
-            points.append(points.first ?? Element())
+            points.append(points.first ?? .zero)
         }
     }
 }

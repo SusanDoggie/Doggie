@@ -60,6 +60,14 @@ public protocol ColorPixelProtocol : Hashable {
     func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self where C.Model == Model
 }
 
+extension ColorPixelProtocol where Self : ScalarMultiplicative {
+    
+    @_transparent
+    public static var zero: Self {
+        return Self()
+    }
+}
+
 extension ColorPixelProtocol {
     
     @inlinable

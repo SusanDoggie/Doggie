@@ -34,9 +34,9 @@ public struct QuadBezier<Element : ScalarMultiplicative> : Equatable, BezierProt
     @inlinable
     @inline(__always)
     public init() {
-        self.p0 = Element()
-        self.p1 = Element()
-        self.p2 = Element()
+        self.p0 = .zero
+        self.p1 = .zero
+        self.p2 = .zero
     }
     
     @inlinable

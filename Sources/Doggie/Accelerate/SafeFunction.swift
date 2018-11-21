@@ -97,7 +97,7 @@ public func mulmod<T: UnsignedInteger & FixedWidthInteger>(_ lhs: [T], _ rhs: [T
 
 @inlinable
 @inline(__always)
-public func add<T: Additive>(_ lhs: [T], _ rhs: [T]) -> [T] {
+public func add<T: AdditiveArithmetic>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Add(lhs.count, lhs, 1, rhs, 1, &result, 1)
@@ -106,7 +106,7 @@ public func add<T: Additive>(_ lhs: [T], _ rhs: [T]) -> [T] {
 
 @inlinable
 @inline(__always)
-public func sub<T: Additive>(_ lhs: [T], _ rhs: [T]) -> [T] {
+public func sub<T: AdditiveArithmetic>(_ lhs: [T], _ rhs: [T]) -> [T] {
     var result = lhs
     assert(lhs.count == rhs.count, "mismatch count of inputs.")
     Sub(lhs.count, lhs, 1, rhs, 1, &result, 1)
@@ -151,7 +151,7 @@ public func mod<T: FloatingPoint>(_ lhs: [T], _ rhs: [T]) -> [T] {
 
 @inlinable
 @inline(__always)
-public func mulAdd<T: Multiplicative & Additive>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
+public func mulAdd<T: Multiplicative & AdditiveArithmetic>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulAdd(a.count, a, 1, b, 1, c, 1, &result, 1)
@@ -160,7 +160,7 @@ public func mulAdd<T: Multiplicative & Additive>(_ a: [T], _ b: [T], _ c: [T]) -
 
 @inlinable
 @inline(__always)
-public func mulSub<T: Multiplicative & Additive>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
+public func mulSub<T: Multiplicative & AdditiveArithmetic>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     MulSub(a.count, a, 1, b, 1, c, 1, &result, 1)
@@ -169,7 +169,7 @@ public func mulSub<T: Multiplicative & Additive>(_ a: [T], _ b: [T], _ c: [T]) -
 
 @inlinable
 @inline(__always)
-public func subMul<T: Multiplicative & Additive>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
+public func subMul<T: Multiplicative & AdditiveArithmetic>(_ a: [T], _ b: [T], _ c: [T]) -> [T] {
     var result = a
     assert(a.count == b.count && a.count == c.count, "mismatch count of inputs.")
     SubMul(a.count, a, 1, b, 1, c, 1, &result, 1)
@@ -203,7 +203,7 @@ public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
 
 @inlinable
 @inline(__always)
-public func MatrixElimination<T: FloatingPoint & Multiplicative & Additive>(_ row: Int, _ matrix: inout [T]) -> Bool {
+public func MatrixElimination<T: FloatingPoint & Multiplicative & AdditiveArithmetic>(_ row: Int, _ matrix: inout [T]) -> Bool {
     let column = matrix.count / row
     assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
     assert(column > row, "count of column of matrix is less than or equal to row.")

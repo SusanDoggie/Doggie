@@ -33,8 +33,8 @@ public struct LineSegment<Element : ScalarMultiplicative> : Equatable, BezierPro
     @inlinable
     @inline(__always)
     public init() {
-        self.p0 = Element()
-        self.p1 = Element()
+        self.p0 = .zero
+        self.p1 = .zero
     }
     
     @inlinable

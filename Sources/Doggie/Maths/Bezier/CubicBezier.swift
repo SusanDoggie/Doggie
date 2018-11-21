@@ -35,10 +35,10 @@ public struct CubicBezier<Element : ScalarMultiplicative> : Equatable, BezierPro
     @inlinable
     @inline(__always)
     public init() {
-        self.p0 = Element()
-        self.p1 = Element()
-        self.p2 = Element()
-        self.p3 = Element()
+        self.p0 = .zero
+        self.p1 = .zero
+        self.p2 = .zero
+        self.p3 = .zero
     }
     
     @inlinable

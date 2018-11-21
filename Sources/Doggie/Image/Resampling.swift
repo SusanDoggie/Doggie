@@ -157,7 +157,7 @@ extension _ResamplingImplement {
     @inline(__always)
     func convolve(point: Point, kernel_size: Int, kernel: (Pixel.Scalar) -> Pixel.Scalar) -> Pixel {
         
-        var pixel = Pixel()
+        var pixel = Pixel.zero
         var t: Pixel.Scalar = 0
         
         let _x = Int(floor(point.x))
@@ -177,7 +177,7 @@ extension _ResamplingImplement {
                 t += k
             }
         }
-        return t == 0 ? Pixel() : pixel / t
+        return t == 0 ? .zero : pixel / t
     }
     
     @inlinable

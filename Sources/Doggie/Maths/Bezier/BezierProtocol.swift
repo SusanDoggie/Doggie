@@ -23,13 +23,23 @@
 //  THE SOFTWARE.
 //
 
-public protocol BezierProtocol : ScalarMultiplicative, MapReduce, RandomAccessCollection, MutableCollection where Element : ScalarMultiplicative, Scalar == Element.Scalar {
+public protocol BezierProtocol : ScalarMultiplicative, MapReduceArithmetic, RandomAccessCollection, MutableCollection where Element : ScalarMultiplicative, Scalar == Element.Scalar {
+    
+    init()
     
     var degree: Int { get }
     
     func split(_ t: Scalar) -> (Self, Self)
     
     func eval(_ t: Scalar) -> Element
+}
+
+extension BezierProtocol {
+    
+    @_transparent
+    public static var zero: Self {
+        return Self()
+    }
 }
 
 extension BezierProtocol {
@@ -56,56 +66,5 @@ extension BezierProtocol {
         }
         result.append(remain)
         return result
-    }
-}
-
-extension BezierProtocol {
-    
-    @inlinable
-    @inline(__always)
-    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result {
-        return self.reduce(into: initialResult) { $0 = nextPartialResult($0, $1) }
-    }
-}
-
-extension BezierProtocol {
-    
-    @inlinable
-    @inline(__always)
-    public static func += (lhs: inout Self, rhs: Self) {
-        lhs = lhs + rhs
-    }
-    @inlinable
-    @inline(__always)
-    public static func -= (lhs: inout Self, rhs: Self) {
-        lhs = lhs - rhs
-    }
-}
-
-extension BezierProtocol where Element == Point {
-    
-    @inlinable
-    @inline(__always)
-    public static func * (lhs: Self, rhs: SDTransform) -> Self {
-        return lhs.map { $0 * rhs }
-    }
-    @inlinable
-    @inline(__always)
-    public static func *= (lhs: inout Self, rhs: SDTransform) {
-        lhs = lhs * rhs
-    }
-}
-
-extension BezierProtocol where Element == Vector {
-    
-    @inlinable
-    @inline(__always)
-    public static func * (lhs: Self, rhs: Matrix) -> Self {
-        return lhs.map { $0 * rhs }
-    }
-    @inlinable
-    @inline(__always)
-    public static func *= (lhs: inout Self, rhs: Matrix) {
-        lhs = lhs * rhs
     }
 }

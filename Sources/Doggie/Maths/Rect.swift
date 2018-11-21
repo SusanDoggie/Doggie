@@ -107,6 +107,10 @@ extension Size : ScalarMultiplicative {
     
     public typealias Scalar = Double
     
+    @_transparent
+    public static var zero: Size {
+        return Size()
+    }
 }
 
 @inlinable

@@ -64,7 +64,7 @@ extension ColorCompositingMode {
     func mix<T : ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
         
         switch self {
-        case .clear: return T()
+        case .clear: return .zero
         case .copy: return source
         case .sourceOver: return source + destination * (1 - source_alpha)
         case .sourceIn: return source * destination_alpha

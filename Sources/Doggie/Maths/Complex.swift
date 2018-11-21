@@ -145,6 +145,10 @@ extension Complex : Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Double
     
+    @_transparent
+    public static var zero: Complex {
+        return Complex()
+    }
 }
 
 @inlinable

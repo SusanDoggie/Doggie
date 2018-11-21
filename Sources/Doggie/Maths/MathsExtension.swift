@@ -23,23 +23,23 @@
 //  THE SOFTWARE.
 //
 
-extension Int8 : Additive, Multiplicative {
+extension Int8 : AdditiveArithmetic, Multiplicative {
     
 }
 
-extension Int16 : Additive, Multiplicative {
+extension Int16 : AdditiveArithmetic, Multiplicative {
     
 }
 
-extension Int32 : Additive, Multiplicative {
+extension Int32 : AdditiveArithmetic, Multiplicative {
     
 }
 
-extension Int64 : Additive, Multiplicative {
+extension Int64 : AdditiveArithmetic, Multiplicative {
     
 }
 
-extension Int : Additive, Multiplicative {
+extension Int : AdditiveArithmetic, Multiplicative {
     
 }
 

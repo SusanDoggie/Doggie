@@ -23,7 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public protocol Tensor : ScalarMultiplicative, MapReduce, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
+public protocol Tensor : ScalarMultiplicative, MapReduceArithmetic, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
+    
+    init()
     
     static var numberOfComponents: Int { get }
     
@@ -34,6 +36,14 @@ public protocol Tensor : ScalarMultiplicative, MapReduce, RandomAccessCollection
     func distance(to: Self) -> Scalar
     
     func combined(_ other: Self, _ transform: (Scalar, Scalar) -> Scalar) -> Self
+}
+
+extension Tensor {
+    
+    @_transparent
+    public static var zero: Self {
+        return Self()
+    }
 }
 
 extension Tensor {
@@ -109,15 +119,5 @@ extension Tensor {
     @inline(__always)
     public static func - (lhs: Self, rhs: Self) -> Self {
         return lhs.combined(rhs) { $0 - $1 }
-    }
-    @inlinable
-    @inline(__always)
-    public static func += (lhs: inout Self, rhs: Self) {
-        lhs = lhs + rhs
-    }
-    @inlinable
-    @inline(__always)
-    public static func -= (lhs: inout Self, rhs: Self) {
-        lhs = lhs - rhs
     }
 }

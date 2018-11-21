@@ -102,7 +102,7 @@ public func MulMod<T: UnsignedInteger & FixedWidthInteger>(_ count: Int, _ left:
 /// - remark: `output[n] = left[n] + right[n], 0 <= n < count`
 @inlinable
 @inline(__always)
-public func Add<T: Additive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func Add<T: AdditiveArithmetic>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -128,7 +128,7 @@ public func Add<T: Additive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stri
 /// - remark: `output[n] = left[n] - right[n], 0 <= n < count`
 @inlinable
 @inline(__always)
-public func Sub<T: Additive>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func Sub<T: AdditiveArithmetic>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var left = left
     var right = right
@@ -246,7 +246,7 @@ public func Mod<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
 }
 @inlinable
 @inline(__always)
-public func MulAdd<T: Multiplicative & Additive>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func MulAdd<T: Multiplicative & AdditiveArithmetic>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
     var b = b
@@ -263,7 +263,7 @@ public func MulAdd<T: Multiplicative & Additive>(_ count: Int, _ a: UnsafePointe
 }
 @inlinable
 @inline(__always)
-public func MulSub<T: Multiplicative & Additive>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func MulSub<T: Multiplicative & AdditiveArithmetic>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
     var b = b
@@ -280,7 +280,7 @@ public func MulSub<T: Multiplicative & Additive>(_ count: Int, _ a: UnsafePointe
 }
 @inlinable
 @inline(__always)
-public func SubMul<T: Multiplicative & Additive>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func SubMul<T: Multiplicative & AdditiveArithmetic>(_ count: Int, _ a: UnsafePointer<T>, _ a_stride: Int, _ b: UnsafePointer<T>, _ b_stride: Int, _ c: UnsafePointer<T>, _ c_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var a = a
     var b = b
@@ -1013,7 +1013,7 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
 
 @inlinable
 @inline(__always)
-public func MatrixElimination<T: FloatingPoint & Multiplicative & Additive>(_ row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
+public func MatrixElimination<T: FloatingPoint & Multiplicative & AdditiveArithmetic>(_ row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column
     let endptr = matrix + row_offset * row

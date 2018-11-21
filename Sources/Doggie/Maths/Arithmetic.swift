@@ -23,7 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public protocol Additive : Equatable {
+public protocol AdditiveArithmetic : Equatable {
+    
+    static var zero: Self { get }
     
     static func + (lhs: Self, rhs: Self) -> Self
     
@@ -38,6 +40,14 @@ public protocol Additive : Equatable {
     static prefix func - (x: Self) -> Self
 }
 
+extension AdditiveArithmetic where Self: ExpressibleByIntegerLiteral {
+    
+    @_transparent
+    public static var zero: Self {
+        return 0
+    }
+}
+
 public protocol ScalarProtocol: SignedNumeric, Strideable, ExpressibleByFloatLiteral, Multiplicative, ScalarMultiplicative where Scalar == Self {
     
     static func * (lhs: Self, rhs: Self) -> Self
@@ -45,11 +55,9 @@ public protocol ScalarProtocol: SignedNumeric, Strideable, ExpressibleByFloatLit
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol ScalarMultiplicative : Additive {
+public protocol ScalarMultiplicative : AdditiveArithmetic {
     
     associatedtype Scalar : ScalarProtocol
-    
-    init()
     
     static func * (lhs: Scalar, rhs: Self) -> Self
     
@@ -69,7 +77,7 @@ public protocol Multiplicative : Equatable {
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol MapReduce {
+public protocol MapReduceArithmetic {
     
     associatedtype Element
     
@@ -80,7 +88,7 @@ public protocol MapReduce {
     func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result
 }
 
-extension MapReduce {
+extension MapReduceArithmetic {
     
     @inlinable
     @inline(__always)
@@ -89,21 +97,64 @@ extension MapReduce {
     }
 }
 
-extension MapReduce where Self : Additive, Element : Additive {
+extension MapReduceArithmetic where Element == Point {
+    
+    @inlinable
+    @inline(__always)
+    public static func * (lhs: Self, rhs: SDTransform) -> Self {
+        return lhs.map { $0 * rhs }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func *= (lhs: inout Self, rhs: SDTransform) {
+        lhs = lhs * rhs
+    }
+}
+
+extension MapReduceArithmetic where Element == Vector {
+    
+    @inlinable
+    @inline(__always)
+    public static func * (lhs: Self, rhs: Matrix) -> Self {
+        return lhs.map { $0 * rhs }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func *= (lhs: inout Self, rhs: Matrix) {
+        lhs = lhs * rhs
+    }
+}
+
+extension MapReduceArithmetic where Self : AdditiveArithmetic, Element : AdditiveArithmetic {
     
     @inlinable
     @inline(__always)
     public static prefix func + (val: Self) -> Self {
         return val
     }
+    
     @inlinable
     @inline(__always)
     public static prefix func - (val: Self) -> Self {
         return val.map { -$0 }
     }
+    
+    @inlinable
+    @inline(__always)
+    public static func += (lhs: inout Self, rhs: Self) {
+        lhs = lhs + rhs
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func -= (lhs: inout Self, rhs: Self) {
+        lhs = lhs - rhs
+    }
 }
 
-extension MapReduce where Self : ScalarMultiplicative, Element : ScalarMultiplicative, Self.Scalar == Element.Scalar {
+extension MapReduceArithmetic where Self : ScalarMultiplicative, Element : ScalarMultiplicative, Self.Scalar == Element.Scalar {
     
     @inlinable
     @inline(__always)
