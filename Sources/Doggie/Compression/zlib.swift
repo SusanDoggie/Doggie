@@ -211,7 +211,9 @@ extension Inflate {
     
     public func process(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
-        stream.next_in = UnsafeMutablePointer<Bytef>(mutating: source.baseAddress)
+        guard let _source = source.baseAddress, source.count != 0 else { return }
+        
+        stream.next_in = UnsafeMutablePointer<Bytef>(mutating: _source)
         stream.avail_in = uInt(source.count)
         
         try _process(Z_NO_FLUSH, callback)
