@@ -283,7 +283,7 @@ struct PNGDecoder : ImageRepDecoder {
                 
                 do {
                     
-                    try decompressor.process_final(data) { decoder.decode($0) { result.append(contentsOf: $0) } }
+                    try decompressor.final(data) { decoder.decode($0) { result.append(contentsOf: $0) } }
                     decoder.final { result.append(contentsOf: $0) }
                     
                 } catch {
@@ -411,7 +411,7 @@ struct PNGDecoder : ImageRepDecoder {
                         
                         var pass: Int?
                         
-                        try decompressor.process_final(data) { data in
+                        try decompressor.final(data) { data in
                             
                             interlace_state.scan(data) { state, data in
                                 
