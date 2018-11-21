@@ -23,18 +23,20 @@
 //  THE SOFTWARE.
 //
 
-public class Deflate : CompressionCodec {
-    
-    private var stream: z_stream
+public class Deflate : _Z_STREAM {
     
     public init(level: Level = .default, windowBits: Int32 = MAX_WBITS, memLevel: Int32 = MAX_MEM_LEVEL, strategy: Strategy = .default) throws {
-        self.stream = z_stream()
+        try super.init()
         let status = deflateInit2_(&stream, level.rawValue, Z_DEFLATED, windowBits, memLevel, strategy.rawValue, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
         guard status == Z_OK else { throw Error(code: status, msg: stream.msg) }
     }
     
     deinit {
         deflateEnd(&stream)
+    }
+    
+    fileprivate override func _z_stream_process(_ flush: Int32) -> Int32 {
+        return deflate(&stream, flush)
     }
 }
 
@@ -47,6 +49,20 @@ extension Deflate {
         case huffmanOnly
         case rle
         case fixed
+    }
+    
+    public struct Level: RawRepresentable {
+        
+        public var rawValue: Int32
+        
+        public init(rawValue: Int32) {
+            self.rawValue = rawValue
+        }
+        
+        public static var `default` = Level(rawValue: Z_DEFAULT_COMPRESSION)
+        public static var speed = Level(rawValue: Z_BEST_SPEED)
+        public static var compact = Level(rawValue: Z_BEST_COMPRESSION)
+        public static var noCompression = Level(rawValue: Z_NO_COMPRESSION)
     }
 }
 
@@ -63,93 +79,10 @@ extension Deflate.Strategy {
     }
 }
 
-extension Deflate {
+public class Inflate : _Z_STREAM {
     
-    public struct Level: RawRepresentable {
-        
-        public var rawValue: Int32
-        
-        public init(rawValue: Int32) {
-            self.rawValue = rawValue
-        }
-        
-        public static var `default` = Level(rawValue: Z_DEFAULT_COMPRESSION)
-        public static var speed = Level(rawValue: Z_BEST_SPEED)
-        public static var compact = Level(rawValue: Z_BEST_COMPRESSION)
-        public static var noCompression = Level(rawValue: Z_NO_COMPRESSION)
-    }
-    
-    public enum Error: Swift.Error {
-        
-        case stream(message: String)
-        case data(message: String)
-        case memory(message: String)
-        case buffer(message: String)
-        case version(message: String)
-        case unknown(message: String, code: Int)
-        
-        fileprivate init(code: Int32, msg: UnsafePointer<CChar>?) {
-            
-            let message: String = msg.flatMap { String(validatingUTF8: $0) } ?? "Unknown error."
-            
-            switch code {
-            case Z_STREAM_ERROR: self = .stream(message: message)
-            case Z_DATA_ERROR: self = .data(message: message)
-            case Z_MEM_ERROR: self = .memory(message: message)
-            case Z_BUF_ERROR: self = .buffer(message: message)
-            case Z_VERSION_ERROR: self = .version(message: message)
-            default: self = .unknown(message: message, code: Int(code))
-            }
-        }
-    }
-}
-
-extension Deflate {
-    
-    private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
-        
-        var buffer = [UInt8](repeating: 0, count: 4096)
-        
-        try buffer.withUnsafeMutableBufferPointer { buf in
-            
-            repeat {
-                
-                stream.next_out = buf.baseAddress
-                stream.avail_out = 4096
-                
-                let status = deflate(&stream, flag)
-                
-                guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
-                
-                callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - Int(stream.avail_out))))
-                
-            } while stream.avail_in != 0 || stream.avail_out == 0
-        }
-    }
-    
-    public func process(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
-        
-        stream.next_in = UnsafeMutablePointer<Bytef>(mutating: source.baseAddress)
-        stream.avail_in = uInt(source.count)
-        
-        try _process(Z_NO_FLUSH, callback)
-    }
-    
-    public func final(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
-        
-        stream.next_in = nil
-        stream.avail_in = 0
-        
-        try _process(Z_FINISH, callback)
-    }
-}
-
-public class Inflate : CompressionCodec {
-    
-    private var stream: z_stream
-    
-    public init() throws {
-        self.stream = z_stream()
+    public override init() throws {
+        try super.init()
         let status = inflateInit2_(&stream, MAX_WBITS + 32 as Int32, ZLIB_VERSION, Int32(MemoryLayout<z_stream>.size))
         guard status == Z_OK else { throw Error(code: status, msg: stream.msg) }
     }
@@ -157,9 +90,26 @@ public class Inflate : CompressionCodec {
     deinit {
         inflateEnd(&stream)
     }
+    
+    fileprivate override func _z_stream_process(_ flush: Int32) -> Int32 {
+        return inflate(&stream, flush)
+    }
 }
 
-extension Inflate {
+public class _Z_STREAM : CompressionCodec {
+    
+    fileprivate var stream: z_stream
+    
+    fileprivate init() throws {
+        self.stream = z_stream()
+    }
+    
+    fileprivate func _z_stream_process(_ flush: Int32) -> Int32 {
+        return Z_BUF_ERROR
+    }
+}
+
+extension _Z_STREAM {
     
     public enum Error: Swift.Error {
         
@@ -186,7 +136,7 @@ extension Inflate {
     }
 }
 
-extension Inflate {
+extension _Z_STREAM {
     
     private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
@@ -199,7 +149,7 @@ extension Inflate {
                 stream.next_out = buf.baseAddress
                 stream.avail_out = 4096
                 
-                let status = inflate(&stream, flag)
+                let status = _z_stream_process(flag)
                 
                 guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
@@ -227,4 +177,3 @@ extension Inflate {
         try _process(Z_FINISH, callback)
     }
 }
-
