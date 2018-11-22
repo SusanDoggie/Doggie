@@ -41,6 +41,10 @@ public protocol DrawableContext : AnyObject {
     
     var resamplingAlgorithm: ResamplingAlgorithm { get set }
     
+    var renderingIntent: RenderingIntent { get set }
+    
+    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
+    
     func saveGraphicState()
     
     func restoreGraphicState()
@@ -56,6 +60,8 @@ public protocol DrawableContext : AnyObject {
     func setClip(shape: Shape, winding: Shape.WindingRule)
     
     func setClip<Image: ImageProtocol>(image: Image, transform: SDTransform)
+    
+    func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel
     
     func draw<Image: ImageProtocol>(image: Image, transform: SDTransform)
     
@@ -77,12 +83,6 @@ public protocol TypedDrawableContext: DrawableContext {
     associatedtype Model: ColorModelProtocol
     
     var colorSpace: ColorSpace<Model> { get }
-    
-    var renderingIntent: RenderingIntent { get set }
-    
-    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
-    
-    func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel
     
     func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Model
     
