@@ -23,11 +23,14 @@
 //  THE SOFTWARE.
 //
 
+@usableFromInline
+let _D65 = Point(x: 0.31271, y: 0.32902)
+
 extension ColorSpace where Model == XYZColorModel {
     
     @inlinable
     public static var `default`: ColorSpace {
-        return .cieXYZ(white: Point(x: 0.3127, y: 0.3290))
+        return .cieXYZ(white: _D65)
     }
 }
 
@@ -35,7 +38,7 @@ extension ColorSpace where Model == YxyColorModel {
     
     @inlinable
     public static var `default`: ColorSpace {
-        return .cieYxy(white: Point(x: 0.3127, y: 0.3290))
+        return .cieYxy(white: _D65)
     }
 }
 
@@ -43,7 +46,7 @@ extension ColorSpace where Model == LabColorModel {
     
     @inlinable
     public static var `default`: ColorSpace {
-        return .cieLab(white: Point(x: 0.3127, y: 0.3290))
+        return .cieLab(white: _D65)
     }
 }
 
@@ -51,7 +54,7 @@ extension ColorSpace where Model == LuvColorModel {
     
     @inlinable
     public static var `default`: ColorSpace {
-        return .cieLuv(white: Point(x: 0.3127, y: 0.3290))
+        return .cieLuv(white: _D65)
     }
 }
 
