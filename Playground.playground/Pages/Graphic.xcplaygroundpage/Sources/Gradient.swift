@@ -31,6 +31,33 @@ public func radialGradient(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     return context.image
 }
 
+public func linearGradient2(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
+    
+    let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    
+    let gradient = Gradient(type: .linear, start: Point(x: 1.0 / 6.0, y: 1.0 / 6.0), end: Point(x: 5.0 / 6.0, y: 5.0 / 6.0), stops: [
+        GradientStop(offset: 0, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 1, green: 0, blue: 0))),
+        GradientStop(offset: 1, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 0, green: 0, blue: 1)))
+        ])
+    
+    context.draw(shape: Shape(ellipseIn: Rect(x: 20, y: 20, width: width - 40, height: height - 40)), winding: .nonZero, gradient: gradient)
+    
+    return context.image
+}
+
+public func radialGradient2(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
+    
+    let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    
+    let gradient = Gradient(type: .radial, start: Point(x: 1.0 / 3.0, y: 0.5), end: Point(x: 0.5, y: 0.5), stops: [
+        GradientStop(offset: 0, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 1, green: 0, blue: 0))),
+        GradientStop(offset: 1, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 0, green: 0, blue: 1)))
+        ])
+    
+    context.draw(shape: Shape(ellipseIn: Rect(x: 20, y: 20, width: width - 40, height: height - 40)), winding: .nonZero, gradient: gradient)
+    
+    return context.image
+}
 
 public func meshGradient(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
@@ -78,6 +105,38 @@ public func radialGradient_gp(width: Int, height: Int) throws -> Image<FloatColo
     let stop2 = GradientStop(offset: 1, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 0, green: 0, blue: 1)))
     
     context.drawRadialGradient(stops: [stop1, stop2], start: Point(x: 100, y: 150), startRadius: 0, end: Point(x: 150, y: 150), endRadius: 100, startSpread: .pad, endSpread: .pad)
+    
+    try context.render()
+    
+    return context.image
+}
+
+public func linearGradient2_gp(width: Int, height: Int) throws -> Image<FloatColorPixel<RGBColorModel>> {
+    
+    let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    
+    let gradient = Gradient(type: .linear, start: Point(x: 1.0 / 6.0, y: 1.0 / 6.0), end: Point(x: 5.0 / 6.0, y: 5.0 / 6.0), stops: [
+        GradientStop(offset: 0, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 1, green: 0, blue: 0))),
+        GradientStop(offset: 1, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 0, green: 0, blue: 1)))
+        ])
+    
+    context.draw(shape: Shape(ellipseIn: Rect(x: 20, y: 20, width: width - 40, height: height - 40)), winding: .nonZero, gradient: gradient)
+    
+    try context.render()
+    
+    return context.image
+}
+
+public func radialGradient2_gp(width: Int, height: Int) throws -> Image<FloatColorPixel<RGBColorModel>> {
+    
+    let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    
+    let gradient = Gradient(type: .radial, start: Point(x: 1.0 / 3.0, y: 0.5), end: Point(x: 0.5, y: 0.5), stops: [
+        GradientStop(offset: 0, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 1, green: 0, blue: 0))),
+        GradientStop(offset: 1, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 0, green: 0, blue: 1)))
+        ])
+    
+    context.draw(shape: Shape(ellipseIn: Rect(x: 20, y: 20, width: width - 40, height: height - 40)), winding: .nonZero, gradient: gradient)
     
     try context.render()
     
