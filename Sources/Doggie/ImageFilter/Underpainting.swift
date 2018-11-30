@@ -55,20 +55,29 @@ public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ 
     }
     
     let filter = _filter(Float(expand * 0.5))
-    var stencil = StencilTexture<Float>(texture: texture).map { $0.almostZero() ? $0 : 1 }._apply(filter).map { $0 < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1 }
-    stencil.resamplingAlgorithm = .none
+    let stencil = StencilTexture<Float>(texture: texture).map { $0.almostZero() ? $0 : 1 }._apply(filter)
     
     let half = filter.count >> 1
+    let s_width = stencil.width
     
-    result.withUnsafeMutableBufferPointer {
+    stencil.withUnsafeBufferPointer {
         
-        guard var output = $0.baseAddress else { return }
+        guard var stencil = $0.baseAddress else { return }
+        stencil += half + s_width * half
         
-        for y in 0..<height {
-            for x in 0..<width {
-                let shadowColor = ColorPixel(color: background_color, opacity: stencil.pixel(Point(x: x + half, y: y + half)))
-                output.pointee = Pixel(shadowColor.blended(source: output.pointee))
-                output += 1
+        result.withUnsafeMutableBufferPointer {
+            
+            guard var output = $0.baseAddress else { return }
+            
+            for _ in 0..<height {
+                var _stencil = stencil
+                for _ in 0..<width {
+                    let shadowColor = ColorPixel(color: background_color, opacity: _stencil.pointee < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1)
+                    output.pointee = Pixel(shadowColor.blended(source: output.pointee))
+                    output += 1
+                    _stencil += 1
+                }
+                stencil += s_width
             }
         }
     }
