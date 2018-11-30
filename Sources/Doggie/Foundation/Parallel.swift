@@ -47,6 +47,12 @@ extension RandomAccessCollection {
         DispatchQueue.concurrentPerform(iterations: self.count) { body(self[self.index(startIndex, offsetBy: $0)]) }
     }
     
+    @inlinable
+    @inline(__always)
+    public func parallelEach(threads: Int, body: (Element) -> ()) {
+        DispatchQueue.concurrentPerform(iterations: self.count, threads: threads) { body(self[self.index(startIndex, offsetBy: $0)]) }
+    }
+    
     /// Returns an array containing the results of mapping the given closure
     /// over the sequence's elements. The elements of the result are computed
     /// in parallel.
@@ -70,6 +76,19 @@ extension RandomAccessCollection {
         let count = self.count
         let buffer = UnsafeMutablePointer<T>.allocate(capacity: count)
         DispatchQueue.concurrentPerform(iterations: count) {
+            (buffer + $0).initialize(to: transform(self[self.index(startIndex, offsetBy: $0)]))
+        }
+        let result = ContiguousArray(UnsafeMutableBufferPointer(start: buffer, count: count))
+        buffer.deinitialize(count: count)
+        buffer.deallocate()
+        return Array(result)
+    }
+    
+    @inlinable
+    public func parallelMap<T>(threads: Int, _ transform: (Element) -> T) -> [T] {
+        let count = self.count
+        let buffer = UnsafeMutablePointer<T>.allocate(capacity: count)
+        DispatchQueue.concurrentPerform(iterations: count, threads: threads) {
             (buffer + $0).initialize(to: transform(self[self.index(startIndex, offsetBy: $0)]))
         }
         let result = ContiguousArray(UnsafeMutableBufferPointer(start: buffer, count: count))
