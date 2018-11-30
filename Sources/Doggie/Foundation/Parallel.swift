@@ -23,6 +23,15 @@
 //  THE SOFTWARE.
 //
 
+extension DispatchQueue {
+    
+    @inlinable
+    @inline(__always)
+    public class func concurrentPerform(iterations: Int, threads: Int, execute work: (Int) -> Void) {
+        concurrentPerform(iterations: threads) { stride(from: $0, to: iterations, by: threads).forEach(work) }
+    }
+}
+
 extension RandomAccessCollection {
     
     /// Call `body` on each element in `self` in parallel
@@ -33,10 +42,9 @@ extension RandomAccessCollection {
     ///   exit from the current call to `body`, not any outer scope, and won't
     ///   skip subsequent calls.
     @inlinable
+    @inline(__always)
     public func parallelEach(body: (Element) -> ()) {
-        DispatchQueue.concurrentPerform(iterations: self.count) {
-            body(self[self.index(startIndex, offsetBy: $0)])
-        }
+        DispatchQueue.concurrentPerform(iterations: self.count) { body(self[self.index(startIndex, offsetBy: $0)]) }
     }
     
     /// Returns an array containing the results of mapping the given closure
