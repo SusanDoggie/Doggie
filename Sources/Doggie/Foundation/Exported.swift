@@ -24,5 +24,19 @@
 //
 
 @_exported import doggie_c
+
 @_exported import Foundation
+
 @_exported import Dispatch
+
+#if canImport(Darwin)
+
+@_exported import Darwin
+
+#endif
+
+#if canImport(Glibc)
+
+@_exported import Glibc
+
+#endif
