@@ -119,6 +119,19 @@ public struct Font {
     }
 }
 
+extension Font : Hashable {
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(pointSize)
+        hasher.combine(features)
+        hasher.combine(fontName)
+    }
+    
+    public static func ==(lhs: Font, rhs: Font) -> Bool {
+        return lhs.pointSize == rhs.pointSize && lhs.features == rhs.features && lhs.fontName == rhs.fontName
+    }
+}
+
 extension Font {
     
     private class Cache {
