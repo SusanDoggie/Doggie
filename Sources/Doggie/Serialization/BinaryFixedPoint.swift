@@ -411,3 +411,32 @@ extension BinaryFixedPoint where Self : SignedNumeric, BitPattern : SignedNumeri
         self = -self
     }
 }
+
+extension BinaryFixedPoint {
+    
+    @inlinable
+    @inline(__always)
+    public static func random<T>(in range: Range<Self>, using generator: inout T) -> Self where T : RandomNumberGenerator {
+        return Self(bitPattern: BitPattern.random(in: range.lowerBound.bitPattern..<range.upperBound.bitPattern, using: &generator))
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func random(in range: Range<Self>) -> Self {
+        var g = SystemRandomNumberGenerator()
+        return Self.random(in: range, using: &g)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func random<T>(in range: ClosedRange<Self>, using generator: inout T) -> Self where T : RandomNumberGenerator {
+        return Self(bitPattern: BitPattern.random(in: range.lowerBound.bitPattern...range.upperBound.bitPattern, using: &generator))
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func random(in range: ClosedRange<Self>) -> Self {
+        var g = SystemRandomNumberGenerator()
+        return Self.random(in: range, using: &g)
+    }
+}

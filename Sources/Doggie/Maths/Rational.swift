@@ -187,8 +187,18 @@ extension Rational : ScalarProtocol {
 
 @inlinable
 @inline(__always)
+func _common_denom(_ lhs: Rational, _ rhs: Rational) -> (Int64, Int64, Int64) {
+    let denom = gcd(lhs.denominator, rhs.denominator)
+    let d1 = lhs.denominator / denom
+    let d2 = rhs.denominator / denom
+    return (lhs.numerator * d2, rhs.numerator * d1, lhs.denominator * d2)
+}
+
+@inlinable
+@inline(__always)
 public func <(lhs: Rational, rhs: Rational) -> Bool {
-    return lhs.numerator * rhs.denominator < lhs.denominator * rhs.numerator
+    let (n1, n2, _) = _common_denom(lhs, rhs)
+    return n1 < n2
 }
 
 @inlinable
@@ -206,13 +216,15 @@ public prefix func -(x: Rational) -> Rational {
 @inlinable
 @inline(__always)
 public func +(lhs: Rational, rhs: Rational) -> Rational {
-    return lhs.denominator == rhs.denominator ? Rational(lhs.numerator + rhs.numerator, lhs.denominator) : Rational(lhs.numerator * rhs.denominator + lhs.denominator * rhs.numerator, lhs.denominator * rhs.denominator)
+    let (n1, n2, denom) = _common_denom(lhs, rhs)
+    return Rational(n1 + n2, denom)
 }
 
 @inlinable
 @inline(__always)
 public func -(lhs: Rational, rhs: Rational) -> Rational {
-    return lhs.denominator == rhs.denominator ? Rational(lhs.numerator - rhs.numerator, lhs.denominator) : Rational(lhs.numerator * rhs.denominator - lhs.denominator * rhs.numerator, lhs.denominator * rhs.denominator)
+    let (n1, n2, denom) = _common_denom(lhs, rhs)
+    return Rational(n1 - n2, denom)
 }
 
 @inlinable

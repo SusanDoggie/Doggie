@@ -57,6 +57,7 @@ extension FixedWidthInteger {
 }
 
 @inlinable
+@inline(__always)
 public func log2<T: FixedWidthInteger>(_ x: T) -> T {
     return x == 0 ? 0 : T(x.bitWidth - x.leadingZeroBitCount - 1)
 }
@@ -88,6 +89,7 @@ extension BinaryInteger {
 extension BinaryInteger {
     
     @inlinable
+    @inline(__always)
     public func align(_ s: Self) -> Self {
         assert(s.isPower2, "alignment is not power of 2.")
         let MASK = s - 1
@@ -96,6 +98,7 @@ extension BinaryInteger {
 }
 
 @inlinable
+@inline(__always)
 public func addmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
@@ -104,12 +107,14 @@ public func addmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: 
     return a < c ? a &+ b : a &- c
 }
 @inlinable
+@inline(__always)
 public func negmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
     return m &- a
 }
 @inlinable
+@inline(__always)
 public func submod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
@@ -119,6 +124,7 @@ public func submod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: 
 }
 
 @inlinable
+@inline(__always)
 public func mulmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m
@@ -147,6 +153,7 @@ public func pow<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ n: T, _ m: T =
 }
 
 @inlinable
+@inline(__always)
 public func gcd<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b
@@ -156,6 +163,7 @@ public func gcd<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     return a
 }
 @inlinable
+@inline(__always)
 public func gcd<S: SignedInteger>(_ a: S, _ b: S) -> S {
     var a = a
     var b = b
@@ -167,6 +175,7 @@ public func gcd<S: SignedInteger>(_ a: S, _ b: S) -> S {
 }
 
 @inlinable
+@inline(__always)
 public func exgcd<S: SignedInteger>(_ a: S, _ b: S) -> (gcd: S, x: S, y: S) {
     var a = a
     var b = b
@@ -190,6 +199,7 @@ public func exgcd<S: SignedInteger>(_ a: S, _ b: S) -> (gcd: S, x: S, y: S) {
 }
 
 @inlinable
+@inline(__always)
 public func modinv<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
     var a = a
     var b = b
@@ -213,15 +223,18 @@ public func modinv<U: UnsignedInteger>(_ a: U, _ b: U) -> U {
 }
 
 @inlinable
+@inline(__always)
 public func lcm<T: UnsignedInteger>(_ a: T, _ b: T) -> T {
-    return a * b / gcd(a, b)
+    return a / gcd(a, b) * b
 }
 @inlinable
+@inline(__always)
 public func lcm<T: SignedInteger>(_ a: T, _ b: T) -> T {
-    return a * b / gcd(a, b)
+    return a / gcd(a, b) * b
 }
 
 @inlinable
+@inline(__always)
 public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride : SignedInteger {
     if x == 0 || x == 1 {
         return 1
@@ -234,6 +247,7 @@ public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride : SignedIn
 }
 
 @inlinable
+@inline(__always)
 public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
     if k == 0 {
         return 1
@@ -247,7 +261,9 @@ public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride 
     }
     return _a
 }
+
 @inlinable
+@inline(__always)
 public func combination<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
     return permutation(n, k) / factorial(k)
 }
