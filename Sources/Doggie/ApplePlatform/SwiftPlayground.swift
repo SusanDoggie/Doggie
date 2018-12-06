@@ -127,22 +127,6 @@ extension Shape : CustomPlaygroundDisplayConvertible {
     }
 }
 
-extension ShapeRegion : CustomPlaygroundDisplayConvertible {
-    
-    @inlinable
-    public var playgroundDescription: Any {
-        return NSBezierPath(self.shape)
-    }
-}
-
-extension ShapeRegion.Solid : CustomPlaygroundDisplayConvertible {
-    
-    @inlinable
-    public var playgroundDescription: Any {
-        return NSBezierPath(self.shape)
-    }
-}
-
 #endif
 
 #if canImport(UIKit)
@@ -157,11 +141,13 @@ extension Shape : CustomPlaygroundDisplayConvertible {
     }
 }
 
+#endif
+
 extension ShapeRegion : CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
-        return UIBezierPath(self.shape)
+        return shape
     }
 }
 
@@ -169,8 +155,6 @@ extension ShapeRegion.Solid : CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
-        return UIBezierPath(self.shape)
+        return shape
     }
 }
-
-#endif
