@@ -32,56 +32,40 @@ extension FileManager {
         var checked: Set<URL> = []
         var searchPaths = Array(urls)
         
-        func touching(url: URL) {
+        while let url = searchPaths.popLast()?.standardized {
+            
+            guard !checked.contains(url) else { continue }
+            checked.insert(url)
             
             #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
             
-            guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .isAliasFileKey]) else { return }
-            
-            if resourceValues.isAliasFile == true {
-                
-                guard let _url = try? URL(resolvingAliasFileAt: url) else { return }
+            if let _url = try? URL(resolvingAliasFileAt: url).standardized, _url != url {
                 searchPaths.append(_url)
-                
-            } else if resourceValues.isSymbolicLink == true {
-                
-                searchPaths.append(url)
-                
-            } else if resourceValues.isRegularFile == true {
-                
-                result.insert(url)
-            }
-            
-            #else
-            
-            guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey]) else { return }
-            
-            if resourceValues.isSymbolicLink == true {
-                
-                searchPaths.append(url)
-                
-            } else if resourceValues.isRegularFile == true {
-                
-                result.insert(url)
+                continue
             }
             
             #endif
-        }
-        
-        while let url = searchPaths.popLast()?.standardized.resolvingSymlinksInPath() {
             
-            guard !checked.contains(url) else { continue }
-            guard let enumerator = self.enumerator(at: url, includingPropertiesForKeys: nil, options: [], errorHandler: nil) else { continue }
+            let _url = url.resolvingSymlinksInPath().standardized
+            if _url != url {
+                searchPaths.append(_url)
+                continue
+            }
             
-            checked.insert(url)
+            var directory: ObjCBool = false
+            self.fileExists(atPath: url.path, isDirectory: &directory)
             
-            touching(url: url)
-            
-            for url in enumerator {
+            if directory.boolValue {
                 
-                guard let url = url as? URL else { continue }
+                guard let enumerator = self.enumerator(at: url, includingPropertiesForKeys: nil, options: [], errorHandler: nil) else { continue }
                 
-                touching(url: url)
+                for url in enumerator {
+                    guard let url = url as? URL else { continue }
+                    searchPaths.append(url)
+                }
+                
+            } else {
+                result.insert(url)
             }
         }
         
