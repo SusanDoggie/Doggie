@@ -53,7 +53,7 @@ extension FileManager {
             }
             
             var directory: ObjCBool = false
-            self.fileExists(atPath: url.path, isDirectory: &directory)
+            guard self.fileExists(atPath: url.path, isDirectory: &directory) else { continue }
             
             if directory.boolValue {
                 
