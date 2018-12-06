@@ -18,12 +18,24 @@ extension AtomicTest {
     ]
 }
 
+extension ColorSpaceTest {
+    static let __allTests = [
+        ("testLoadingColorSpace", testLoadingColorSpace),
+    ]
+}
+
 extension CompressionTest {
     static let __allTests = [
         ("testDeflatePerformance", testDeflatePerformance),
         ("testGzip", testGzip),
         ("testInflatePerformance", testInflatePerformance),
         ("testZlib", testZlib),
+    ]
+}
+
+extension FontTest {
+    static let __allTests = [
+        ("testLoadingFont", testLoadingFont),
     ]
 }
 
@@ -106,7 +118,9 @@ public func __allTests() -> [XCTestCaseEntry] {
     return [
         testCase(ArithmeticTest.__allTests),
         testCase(AtomicTest.__allTests),
+        testCase(ColorSpaceTest.__allTests),
         testCase(CompressionTest.__allTests),
+        testCase(FontTest.__allTests),
         testCase(FourierTest.__allTests),
         testCase(ImageTest.__allTests),
         testCase(PolynomialTest.__allTests),
