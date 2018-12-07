@@ -46,6 +46,8 @@
 		08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B457E51EDD3223007AA4F0 /* Arithmetic.swift */; };
 		08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A301ED07A2400F8D423 /* ColorSpace.swift */; };
 		08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */; };
+		0A00F05321BA17F200CAF48C /* AvailableColorSpaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A00F05221BA17F200CAF48C /* AvailableColorSpaces.swift */; };
+		0A00F05521BA192E00CAF48C /* CoreText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A00F05421BA192E00CAF48C /* CoreText.swift */; };
 		0A0697591E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
 		0A06975C1E4D66A3005CF664 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975A1E4D66A3005CF664 /* Filter.swift */; };
 		0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A06975D1E4D6732005CF664 /* NSImage.swift */; };
@@ -214,7 +216,7 @@
 		0A9F99441F56734A0008D36D /* SFNTNAME.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99431F56734A0008D36D /* SFNTNAME.swift */; };
 		0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99461F568FD40008D36D /* SFNTPlatform.swift */; };
 		0AA33B6020942B5900317F54 /* SimplexNoise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA33B5F20942B5800317F54 /* SimplexNoise.swift */; };
-		0AA4D8451F63908200AFF16B /* CGFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4D8441F63908200AFF16B /* CGFont.swift */; };
+		0AA4D8451F63908200AFF16B /* AvailableFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4D8441F63908200AFF16B /* AvailableFonts.swift */; };
 		0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6C73A20E6190400682EFA /* RGBA32ColorPixel.swift */; };
 		0AA6C73D20E6190400682EFA /* RGBA64ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6C73B20E6190400682EFA /* RGBA64ColorPixel.swift */; };
 		0AA7B54C2178834F00F36185 /* SFNTMORX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA7B54B2178834E00F36185 /* SFNTMORX.swift */; };
@@ -325,6 +327,8 @@
 		08B68A301ED07A2400F8D423 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ColorSpace.swift; sourceTree = "<group>"; };
 		08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = LinearToneColorSpace.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FourierTest.swift; sourceTree = "<group>"; };
+		0A00F05221BA17F200CAF48C /* AvailableColorSpaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableColorSpaces.swift; sourceTree = "<group>"; };
+		0A00F05421BA192E00CAF48C /* CoreText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreText.swift; sourceTree = "<group>"; };
 		0A0697571E4D6659005CF664 /* Graphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Graphic.swift; sourceTree = "<group>"; };
 		0A06975A1E4D66A3005CF664 /* Filter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Filter.swift; sourceTree = "<group>"; };
 		0A06975D1E4D6732005CF664 /* NSImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = NSImage.swift; sourceTree = "<group>"; };
@@ -493,7 +497,7 @@
 		0A9F99431F56734A0008D36D /* SFNTNAME.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTNAME.swift; sourceTree = "<group>"; };
 		0A9F99461F568FD40008D36D /* SFNTPlatform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTPlatform.swift; sourceTree = "<group>"; };
 		0AA33B5F20942B5800317F54 /* SimplexNoise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimplexNoise.swift; sourceTree = "<group>"; };
-		0AA4D8441F63908200AFF16B /* CGFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGFont.swift; sourceTree = "<group>"; };
+		0AA4D8441F63908200AFF16B /* AvailableFonts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AvailableFonts.swift; sourceTree = "<group>"; };
 		0AA6C73A20E6190400682EFA /* RGBA32ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RGBA32ColorPixel.swift; sourceTree = "<group>"; };
 		0AA6C73B20E6190400682EFA /* RGBA64ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RGBA64ColorPixel.swift; sourceTree = "<group>"; };
 		0AA7B54B2178834E00F36185 /* SFNTMORX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTMORX.swift; sourceTree = "<group>"; };
@@ -679,6 +683,7 @@
 				0AFC4E311F7268A200E5FD5A /* XML */,
 				0AD3E6301F53DA03003CC21A /* Font */,
 				0AB2E23B1F17765900B0CA84 /* Compression */,
+				0A00F05121BA17AD00CAF48C /* Platform */,
 				0A0697561E4D6659005CF664 /* ApplePlatform */,
 				0A9F28191EF0D96100E69976 /* ColorModel */,
 				0A7A1FAC1F04FBFC0016B3FB /* ColorPixel */,
@@ -753,6 +758,15 @@
 			path = ColorSpace;
 			sourceTree = "<group>";
 		};
+		0A00F05121BA17AD00CAF48C /* Platform */ = {
+			isa = PBXGroup;
+			children = (
+				0A00F05221BA17F200CAF48C /* AvailableColorSpaces.swift */,
+				0AA4D8441F63908200AFF16B /* AvailableFonts.swift */,
+			);
+			path = Platform;
+			sourceTree = "<group>";
+		};
 		0A0697561E4D6659005CF664 /* ApplePlatform */ = {
 			isa = PBXGroup;
 			children = (
@@ -760,9 +774,9 @@
 				0AA8D462204E486700ED0175 /* SwiftPlayground.swift */,
 				0A06975A1E4D66A3005CF664 /* Filter.swift */,
 				0A0697571E4D6659005CF664 /* Graphic.swift */,
-				0AA4D8441F63908200AFF16B /* CGFont.swift */,
 				0A36612A1EEA54AB00216A26 /* CGPath.swift */,
 				0AE762571EE9583400E926D5 /* CGImage.swift */,
+				0A00F05421BA192E00CAF48C /* CoreText.swift */,
 				0A3FD861210079BC006D4737 /* CGContext.swift */,
 				0AABCC6220F9982F00D7BD78 /* ImageIO.swift */,
 				0A3674B321634DC800175580 /* CGImageRep.swift */,
@@ -1399,6 +1413,7 @@
 				0A8D4F2020C8FD9200921F91 /* QuadBezier.swift in Sources */,
 				0A8EDDC01F19B1CD00C917CC /* iccCurve.swift in Sources */,
 				0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */,
+				0A00F05321BA17F200CAF48C /* AvailableColorSpaces.swift in Sources */,
 				0A8ABC1420E48BA600A2634A /* TextureProtocol.swift in Sources */,
 				0A8EDDD41F19E74000C917CC /* iccTextDescription.swift in Sources */,
 				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
@@ -1417,7 +1432,7 @@
 				0AE71A011EF517CA0086923C /* AnyImage.swift in Sources */,
 				0A7D3ADC1ECAD5890030DC26 /* BlendMode.swift in Sources */,
 				0A9F281F1EF0D9AA00E69976 /* CMYKColorModel.swift in Sources */,
-				0AA4D8451F63908200AFF16B /* CGFont.swift in Sources */,
+				0AA4D8451F63908200AFF16B /* AvailableFonts.swift in Sources */,
 				0A831A8D1F1872770007932A /* Gray16ColorPixel.swift in Sources */,
 				0AE762561EE9475400E926D5 /* CGColorSpace.swift in Sources */,
 				0AE67D0C21A544EC004E21F2 /* AppleCompression.swift in Sources */,
@@ -1478,6 +1493,7 @@
 				0A1A68B12171A16C00EFF088 /* SFNTSBIX.swift in Sources */,
 				0A9D27E51F0CF629003638D3 /* BinaryFixedPoint.swift in Sources */,
 				0A8DD8791F1F2FC200457676 /* TIFFDecoder.swift in Sources */,
+				0A00F05521BA192E00CAF48C /* CoreText.swift in Sources */,
 				08458B2F1E2E627600D01813 /* Image.swift in Sources */,
 				0A7F5B671F79F13600685AA0 /* MappedBuffer.swift in Sources */,
 				0A792C751FDA28DB003C0290 /* PathBuilder.swift in Sources */,

@@ -1,5 +1,5 @@
 //
-//  AppleExported.swift
+//  CoreText.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -25,42 +25,37 @@
 
 #if canImport(CoreGraphics)
 
-@_exported import CoreGraphics
+extension CTFramesetter {
+    
+    public var typesetter: CTTypesetter {
+        return CTFramesetterGetTypesetter(self)
+    }
+    
+    public func createFrame(_ path: CGPath,
+                            _ stringRange: CFRange = CFRange(),
+                            _ frameAttributes: CFDictionary? = nil) -> CTFrame {
+        return CTFramesetterCreateFrame(self, stringRange, path, frameAttributes)
+    }
+    
+    public func suggestFrameSize(_ constraints: CGSize,
+                                 _ stringRange: CFRange = CFRange(),
+                                 _ frameAttributes: CFDictionary? = nil,
+                                 _ fitRange: UnsafeMutablePointer<CFRange>? = nil) -> CGSize {
+        return CTFramesetterSuggestFrameSizeWithConstraints(self, stringRange, frameAttributes, constraints, fitRange)
+    }
+}
 
-#endif
-
-#if canImport(CoreText)
-
-@_exported import CoreText
-
-#endif
-
-#if canImport(MobileCoreServices)
-
-@_exported import MobileCoreServices
-
-#endif
-
-#if canImport(CoreImage)
-
-@_exported import CoreImage
-
-#endif
-
-#if canImport(QuartzCore)
-
-@_exported import QuartzCore
-
-#endif
-
-#if canImport(ImageIO)
-
-@_exported import ImageIO
-
-#endif
-
-#if canImport(AVFoundation)
-
-@_exported import AVFoundation
+extension CGContext {
+    
+    public func draw(_ string: CFAttributedString, in path: CGPath) {
+        let framesetter = CTFramesetterCreateWithAttributedString(string)
+        let frame = framesetter.createFrame(path)
+        self.draw(frame)
+    }
+    
+    public func draw(_ frame: CTFrame) {
+        CTFrameDraw(frame, self)
+    }
+}
 
 #endif
