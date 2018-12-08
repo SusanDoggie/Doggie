@@ -162,7 +162,7 @@ public func Bluestein(_ buffer: [Double], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    MulConj(buffer.count, _kernel, 1, buffer, 1, &result, 1)
+    vec_op(buffer.count, _kernel, 1, buffer, 1, &result, 1) { conj($0) * $1 }
     
     if buffer.count & 1 == 0 {
         CircularConvolve(result, _kernel, &result)
@@ -170,9 +170,9 @@ public func Bluestein(_ buffer: [Double], _ result: inout [Complex]) {
         NegacyclicConvolve(result, _kernel, &result)
     }
     
-    MulConj(buffer.count, _kernel, 1, result, 1, &result, 1)
-    var _sqrt = sqrt(Double(buffer.count))
-    Div(buffer.count, result, 1, &_sqrt, 0, &result, 1)
+    vec_op(buffer.count, _kernel, 1, result, 1, &result, 1) { conj($0) * $1 }
+    let _sqrt = 1 / sqrt(Double(buffer.count))
+    vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
 }
 @inlinable
 @inline(__always)
@@ -183,7 +183,7 @@ public func Bluestein(_ buffer: [Complex], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    MulConj(buffer.count, _kernel, 1, buffer, 1, &result, 1)
+    vec_op(buffer.count, _kernel, 1, buffer, 1, &result, 1) { conj($0) * $1 }
     
     if buffer.count & 1 == 0 {
         CircularConvolve(result, _kernel, &result)
@@ -191,9 +191,9 @@ public func Bluestein(_ buffer: [Complex], _ result: inout [Complex]) {
         NegacyclicConvolve(result, _kernel, &result)
     }
     
-    MulConj(buffer.count, _kernel, 1, result, 1, &result, 1)
-    var _sqrt = sqrt(Double(buffer.count))
-    Div(buffer.count, result, 1, &_sqrt, 0, &result, 1)
+    vec_op(buffer.count, _kernel, 1, result, 1, &result, 1) { conj($0) * $1 }
+    let _sqrt = 1 / sqrt(Double(buffer.count))
+    vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
 }
 @inlinable
 @inline(__always)
@@ -204,7 +204,7 @@ public func InverseBluestein(_ buffer: [Double], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    MulConj(buffer.count, _kernel, 1, buffer, 1, &result, 1)
+    vec_op(buffer.count, _kernel, 1, buffer, 1, &result, 1) { conj($0) * $1 }
     
     if buffer.count & 1 == 0 {
         CircularConvolve(result, _kernel, &result)
@@ -212,9 +212,9 @@ public func InverseBluestein(_ buffer: [Double], _ result: inout [Complex]) {
         NegacyclicConvolve(result, _kernel, &result)
     }
     
-    MulConj(buffer.count, _kernel, 1, result, 1, &result, 1)
-    var _sqrt = sqrt(Double(buffer.count))
-    Div(buffer.count, result, 1, &_sqrt, 0, &result, 1)
+    vec_op(buffer.count, _kernel, 1, result, 1, &result, 1) { conj($0) * $1 }
+    let _sqrt = 1 / sqrt(Double(buffer.count))
+    vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
 }
 @inlinable
 @inline(__always)
@@ -225,7 +225,7 @@ public func InverseBluestein(_ buffer: [Complex], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    MulConj(buffer.count, _kernel, 1, buffer, 1, &result, 1)
+    vec_op(buffer.count, _kernel, 1, buffer, 1, &result, 1) { conj($0) * $1 }
     
     if buffer.count & 1 == 0 {
         CircularConvolve(result, _kernel, &result)
@@ -233,9 +233,9 @@ public func InverseBluestein(_ buffer: [Complex], _ result: inout [Complex]) {
         NegacyclicConvolve(result, _kernel, &result)
     }
     
-    MulConj(buffer.count, _kernel, 1, result, 1, &result, 1)
-    var _sqrt = sqrt(Double(buffer.count))
-    Div(buffer.count, result, 1, &_sqrt, 0, &result, 1)
+    vec_op(buffer.count, _kernel, 1, result, 1, &result, 1) { conj($0) * $1 }
+    let _sqrt = 1 / sqrt(Double(buffer.count))
+    vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
 }
 
 // MARK: Radix-2 Cooley-Tukey
@@ -316,9 +316,9 @@ public func CircularConvolve(_ signal: [Double], _ kernel: [Double], _ result: i
         let block = signal.count
         let count = result.count / block
         for idx in 1..<count {
-            Add(block, result, 1, UnsafePointer(result) + idx * block, 1, &result, 1)
+            vec_op(block, result, 1, UnsafePointer(result) + idx * block, 1, &result, 1) { $0 + $1 }
         }
-        Add(result.count % block, result, 1, UnsafePointer(result) + count * block, 1, &result, 1)
+        vec_op(result.count % block, result, 1, UnsafePointer(result) + count * block, 1, &result, 1) { $0 + $1 }
         result.removeSubrange(block..<result.count)
     }
 }
@@ -349,9 +349,9 @@ public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex], _ result:
         let block = signal.count
         let count = result.count / block
         for idx in 1..<count {
-            Add(block, result, 1, UnsafePointer<Complex>(result) + idx * block, 1, &result, 1)
+            vec_op(block, result, 1, UnsafePointer(result) + idx * block, 1, &result, 1) { $0 + $1 }
         }
-        Add(result.count % block, result, 1, UnsafePointer<Complex>(result) + count * block, 1, &result, 1)
+        vec_op(result.count % block, result, 1, UnsafePointer(result) + count * block, 1, &result, 1) { $0 + $1 }
         result.removeSubrange(block..<result.count)
     }
 }
@@ -416,7 +416,7 @@ public func FFTConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inou
 public func OverlapConvolve(signal: [Double], kernel: [Double], _ overlap: inout [Double], _ result: inout [Double]) {
     FFTConvolve(signal, kernel, &result)
     let count = min(result.count, overlap.count)
-    Add(count, result, 1, overlap, 1, &result, 1)
+    vec_op(count, result, 1, overlap, 1, &result, 1) { $0 + $1 }
     overlap.replaceSubrange(0..<count, with: result[signal.count..<result.count])
     result.removeSubrange(signal.count..<result.count)
 }
@@ -425,7 +425,7 @@ public func OverlapConvolve(signal: [Double], kernel: [Double], _ overlap: inout
 public func OverlapConvolve(signal: [Complex], kernel: [Complex], _ overlap: inout [Complex], _ result: inout [Complex]) {
     FFTConvolve(signal, kernel, &result)
     let count = min(result.count, overlap.count)
-    Add(count, result, 1, overlap, 1, &result, 1)
+    vec_op(count, result, 1, overlap, 1, &result, 1) { $0 + $1 }
     overlap.replaceSubrange(0..<count, with: result[signal.count..<result.count])
     result.removeSubrange(signal.count..<result.count)
 }

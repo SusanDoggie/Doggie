@@ -81,13 +81,13 @@ func _TextureConvolution<Pixel, T: BinaryFloatingPoint>(_ texture: Texture<Pixel
                 
                 HalfRadix2CooleyTukey(level1, horizontal_filter, 1, horizontal_filter.count, _kreal1, _kimag1, 2)
                 
-                var _length1 = T(length1)
-                Div(length1, _kreal1, _kimag1, 2, &_length1, 0, _kreal1, _kimag1, 2)
+                let _length1 = 1 / T(length1)
+                vec_op(length1 << 1, _kreal1, 1, _kreal1, 1) { $0 * _length1 }
                 
                 HalfRadix2CooleyTukey(level2, vertical_filter, 1, vertical_filter.count, _kreal2, _kimag2, 2)
                 
-                var _length2 = T(length2)
-                Div(length2, _kreal2, _kimag2, 2, &_length2, 0, _kreal2, _kimag2, 2)
+                let _length2 = 1 / T(length2)
+                vec_op(length2 << 1, _kreal2, 1, _kreal2, 1) { $0 * _length2 }
                 
                 for _ in 0..<numberOfComponents {
                     
@@ -143,8 +143,8 @@ func _TextureConvolutionHorizontal<Pixel, T: BinaryFloatingPoint>(_ texture: Tex
                 
                 HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
                 
-                var _length = T(length)
-                Div(length, _kreal, _kimag, 2, &_length, 0, _kreal, _kimag, 2)
+                let _length = 1 / T(length)
+                vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
                 
                 for _ in 0..<numberOfComponents {
                     
@@ -207,8 +207,8 @@ func _TextureConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ texture: Textu
                 
                 HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
                 
-                var _length = T(length)
-                Div(length, _kreal, _kimag, 2, &_length, 0, _kreal, _kimag, 2)
+                let _length = 1 / T(length)
+                vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
                 
                 for _ in 0..<numberOfComponents {
                     

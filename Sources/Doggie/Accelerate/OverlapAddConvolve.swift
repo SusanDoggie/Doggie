@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & AdditiveArithmetic & FloatingMathProtocol> {
+public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & FloatingMathProtocol> {
     
     @usableFromInline
     let fft_length: Int
@@ -86,7 +86,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & AdditiveArithmet
                 
                 Radix2FiniteImpulseFilter(level, source.baseAddress!, 1, count, kreal, kimag, 1, temp, 1)
                 
-                Add(overlap_length, temp, 1, overlap, 1, temp, 1)
+                vec_op(overlap_length, temp, 1, overlap, 1, temp, 1) { $0 + $1 }
                 Move(overlap_length, temp + count, 1, overlap, 1)
                 
                 callback(UnsafeBufferPointer(start: temp, count: count))

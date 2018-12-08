@@ -12,7 +12,6 @@
 		08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
 		08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */; };
 		08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB31E2E627600D01813 /* CircularConvolve.swift */; };
-		08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB41E2E627600D01813 /* ComplexConversion.swift */; };
 		08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB51E2E627600D01813 /* CooleyTukey.swift */; };
 		08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB61E2E627600D01813 /* DiscreteConvolve.swift */; };
 		08458AFD1E2E627600D01813 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB71E2E627600D01813 /* Move.swift */; };
@@ -291,7 +290,6 @@
 		08458AB11E2E627600D01813 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
 		08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AccelerateArithmetic.swift; sourceTree = "<group>"; };
 		08458AB31E2E627600D01813 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CircularConvolve.swift; sourceTree = "<group>"; };
-		08458AB41E2E627600D01813 /* ComplexConversion.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ComplexConversion.swift; sourceTree = "<group>"; };
 		08458AB51E2E627600D01813 /* CooleyTukey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CooleyTukey.swift; sourceTree = "<group>"; };
 		08458AB61E2E627600D01813 /* DiscreteConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DiscreteConvolve.swift; sourceTree = "<group>"; };
 		08458AB71E2E627600D01813 /* Move.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Move.swift; sourceTree = "<group>"; };
@@ -590,7 +588,6 @@
 				08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */,
 				08458AB31E2E627600D01813 /* CircularConvolve.swift */,
 				0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */,
-				08458AB41E2E627600D01813 /* ComplexConversion.swift */,
 				08458AB51E2E627600D01813 /* CooleyTukey.swift */,
 				08458AB61E2E627600D01813 /* DiscreteConvolve.swift */,
 				08458AB71E2E627600D01813 /* Move.swift */,
@@ -1534,7 +1531,6 @@
 				0AFC4E331F7268AE00E5FD5A /* SDXMLParser.swift in Sources */,
 				0ADAA3B620CB6FFF006682EA /* ConcatCollection.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
-				08458AF71E2E627600D01813 /* ComplexConversion.swift in Sources */,
 				0AB380F320A5374A00A8CBD7 /* Texture.swift in Sources */,
 				0A9CD5951EEB9A2A00094148 /* CalibratedGrayColorSpace.swift in Sources */,
 				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,

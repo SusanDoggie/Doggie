@@ -169,13 +169,13 @@ extension StencilTexture {
                     
                     HalfRadix2CooleyTukey(level1, filter, 1, filter.count, _kreal1, _kimag1, 2)
                     
-                    var _length1 = T(length1)
-                    Div(length1, _kreal1, _kimag1, 2, &_length1, 0, _kreal1, _kimag1, 2)
+                    let _length1 = 1 / T(length1)
+                    vec_op(length1 << 1, _kreal1, 1, _kreal1, 1) { $0 * _length1 }
                     
                     HalfRadix2CooleyTukey(level2, filter, 1, filter.count, _kreal2, _kimag2, 2)
                     
-                    var _length2 = T(length2)
-                    Div(length2, _kreal2, _kimag2, 2, &_length2, 0, _kreal2, _kimag2, 2)
+                    let _length2 = 1 / T(length2)
+                    vec_op(length2 << 1, _kreal2, 1, _kreal2, 1) { $0 * _length2 }
                     
                     _Radix2FiniteImpulseFilter(level1, height, source, 1, width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
                     _Radix2FiniteImpulseFilter(level2, n_width, _temp, length1, 1, height, _kreal2, _kimag2, 2, 0, output, n_width, 1)
