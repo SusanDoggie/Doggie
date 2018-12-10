@@ -58,6 +58,20 @@ extension FixedWidthInteger {
 
 @inlinable
 @inline(__always)
+func _scale_integer<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger & UnsignedInteger>(_ x: T, _ from_max: T, _ to_max: R) -> R {
+    
+    @inline(__always)
+    func __scale_integer<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ from_max: T, _ to_max: T) -> T {
+        let (quotient, remainder) = from_max.dividingFullWidth(x.multipliedFullWidth(by: to_max))
+        let (_remainder, overflow) = remainder.multipliedReportingOverflow(by: 2)
+        return !overflow && _remainder < from_max ? quotient : quotient + 1
+    }
+    
+    return T.bitWidth > R.bitWidth ? R(__scale_integer(x, from_max, T(to_max))) : __scale_integer(R(x), R(from_max), to_max)
+}
+
+@inlinable
+@inline(__always)
 public func log2<T: FixedWidthInteger>(_ x: T) -> T {
     return x == 0 ? 0 : T(x.bitWidth - x.leadingZeroBitCount - 1)
 }
@@ -95,6 +109,14 @@ extension BinaryInteger {
         let MASK = s - 1
         return (self + MASK) & ~MASK
     }
+}
+
+@inlinable
+@inline(__always)
+func _scale_integer<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ from_max: T, _ to_max: T) -> T {
+    let (quotient, remainder) = from_max.dividingFullWidth(x.multipliedFullWidth(by: to_max))
+    let (_remainder, overflow) = remainder.multipliedReportingOverflow(by: 2)
+    return !overflow && _remainder < from_max ? quotient : quotient + 1
 }
 
 @inlinable
