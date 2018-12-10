@@ -358,9 +358,6 @@ struct TIFFEncoder : ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         
-        var data = MappedBuffer<UInt8>(fileBacked: true)
-        data.encode(TIFFHeader(endianness: .BIG, version: 42, IFD: 8))
-        
         let isOpaque = image.isOpaque
         let samplesPerPixel = isOpaque ? image.colorSpace.numberOfComponents : image.colorSpace.numberOfComponents + 1
         
@@ -394,6 +391,9 @@ struct TIFFEncoder : ImageRepEncoder {
         case is ColorSpace<LabColorModel>: photometric = 8
         default: photometric = 5
         }
+        
+        let colorSpace = photometric == 8 ? AnyColorSpace(.cieLab(white: Point(x: 0.34567, y: 0.35850))) : image.colorSpace
+        guard let iccData = colorSpace.iccData else { return encode(image: AnyImage(Image<FloatColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850)))), properties: properties) }
         
         switch image.base {
         case let image as Image<ARGB32ColorPixel>:
@@ -437,10 +437,10 @@ struct TIFFEncoder : ImageRepEncoder {
             bitsPerChannel = 16
             
             if photometric == 8 {
-                if image.base is Image<FloatColorPixel<LabColorModel>> {
-                    pixelData = rawData(Image<FloatColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850))), isOpaque)
+                if let image = image.base as? Image<ColorPixel<LabColorModel>>, image.colorSpace == .cieLab(white: Point(x: 0.34567, y: 0.35850)) {
+                    pixelData = rawData(image, isOpaque)
                 } else {
-                    pixelData = rawData(Image<ColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850))), isOpaque)
+                    pixelData = rawData(Image<FloatColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850))), isOpaque)
                 }
             } else {
                 let image = image.base as! TIFFRawRepresentable
@@ -453,6 +453,9 @@ struct TIFFEncoder : ImageRepEncoder {
         if !isOpaque {
             tag_count += 1
         }
+        
+        var data = MappedBuffer<UInt8>(fileBacked: true)
+        data.encode(TIFFHeader(endianness: .BIG, version: 42, IFD: 8))
         
         data.encode(tag_count.bigEndian)
         encode(tag: .SamplesPerPixel, type: 3, value: [samplesPerPixel], &data)
@@ -513,9 +516,6 @@ struct TIFFEncoder : ImageRepEncoder {
         }
         
         do {
-            
-            let colorSpace = photometric == 8 ? AnyColorSpace(.cieLab(white: Point(x: 0.34567, y: 0.35850))) : image.colorSpace
-            guard let iccData = colorSpace.iccData else { return nil }
             
             data.encode(TIFFTag.Tag.IccProfile.rawValue.bigEndian)
             data.encode(UInt16(7).bigEndian)
