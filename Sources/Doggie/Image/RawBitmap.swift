@@ -149,45 +149,28 @@ extension Image {
                                 switch channel.format {
                                 case .unsigned:
                                     
-                                    if channel.bitRange.count > 64 {
-                                        for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
-                                            value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern + UInt(slice.count), significandBitPattern: value.significandBitPattern) + Double(channelByte(i) & UInt8((1 << slice.count) - 1))
-                                        }
-                                    } else {
-                                        var bitPattern: UInt64 = 0
-                                        for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
-                                            bitPattern = (bitPattern << slice.count) | UInt64(channelByte(i))
-                                        }
-                                        value = Double(bitPattern)
+                                    var bitPattern: UInt64 = 0
+                                    for (i, slice) in channel.bitRange.slice(by: 8).enumerated() where i < 8 {
+                                        bitPattern = (bitPattern << slice.count) | UInt64(channelByte(i))
                                     }
                                     
-                                    value /= Double(sign: .plus, exponent: channel.bitRange.count, significand: 1) - 1
+                                    value = Double(bitPattern) / (scalbn(1, min(channel.bitRange.count, 64)) - 1)
                                     
                                 case .signed:
                                     
                                     var signed = false
                                     
-                                    if channel.bitRange.count > 64 {
-                                        for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
-                                            let byte = channelByte(i)
-                                            if i == 0 && byte & 0x80 != 0 {
-                                                signed = true
-                                            }
-                                            value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern + UInt(slice.count), significandBitPattern: value.significandBitPattern) + Double(byte & UInt8((1 << slice.count) - 1))
+                                    var bitPattern: UInt64 = 0
+                                    for (i, slice) in channel.bitRange.slice(by: 8).enumerated() where i < 8 {
+                                        let byte = channelByte(i)
+                                        if i == 0 && byte & 0x80 != 0 {
+                                            signed = true
                                         }
-                                    } else {
-                                        var bitPattern: UInt64 = 0
-                                        for (i, slice) in channel.bitRange.slice(by: 8).enumerated() {
-                                            let byte = channelByte(i)
-                                            if i == 0 && byte & 0x80 != 0 {
-                                                signed = true
-                                            }
-                                            bitPattern = (bitPattern << slice.count) | UInt64(byte)
-                                        }
-                                        value = Double(bitPattern)
+                                        bitPattern = (bitPattern << slice.count) | UInt64(byte)
                                     }
                                     
-                                    value = Double(sign: value.sign, exponentBitPattern: value.exponentBitPattern - UInt(channel.bitRange.count), significandBitPattern: value.significandBitPattern)
+                                    value = Double(bitPattern)
+                                    value = scalbn(value, -min(channel.bitRange.count, 64))
                                     
                                     value += signed ? -0.5 : 0.5
                                     
