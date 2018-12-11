@@ -194,12 +194,12 @@ struct PNGEncoder : ImageRepEncoder {
     
     private static func encodeRGB(image: Image<ARGB64ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
         
+        guard let iccp = iCCP(image.colorSpace) else { return encodeRGB(image: Image<ARGB64ColorPixel>(image: image, colorSpace: .sRGB), interlace: interlace) }
+        
         let opaque = image.isOpaque
         
         let ihdr = IHDR(width: image.width, height: image.height, bitDepth: 16, colour: opaque ? 2 : 6, interlace: interlace)
         let phys = pHYs(image.resolution)
-        
-        guard let iccp = iCCP(image.colorSpace) else { return nil }
         
         let _idat: PNGChunk?
         
@@ -227,12 +227,12 @@ struct PNGEncoder : ImageRepEncoder {
     
     private static func encodeRGB(image: Image<ARGB32ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
         
+        guard let iccp = iCCP(image.colorSpace) else { return encodeRGB(image: Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB), interlace: interlace) }
+        
         let opaque = image.isOpaque
         
         let ihdr = IHDR(width: image.width, height: image.height, bitDepth: 8, colour: opaque ? 2 : 6, interlace: interlace)
         let phys = pHYs(image.resolution)
-        
-        guard let iccp = iCCP(image.colorSpace) else { return nil }
         
         let _idat: PNGChunk?
         
@@ -260,12 +260,12 @@ struct PNGEncoder : ImageRepEncoder {
     
     private static func encodeGray(image: Image<Gray32ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
         
+        guard let iccp = iCCP(image.colorSpace) else { return encodeGray(image: Image<Gray32ColorPixel>(image: image, colorSpace: .genericGamma22Gray), interlace: interlace) }
+        
         let opaque = image.isOpaque
         
         let ihdr = IHDR(width: image.width, height: image.height, bitDepth: 16, colour: opaque ? 0 : 4, interlace: interlace)
         let phys = pHYs(image.resolution)
-        
-        guard let iccp = iCCP(image.colorSpace) else { return nil }
         
         let _idat: PNGChunk?
         
@@ -289,12 +289,12 @@ struct PNGEncoder : ImageRepEncoder {
     
     private static func encodeGray(image: Image<Gray16ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
         
+        guard let iccp = iCCP(image.colorSpace) else { return encodeGray(image: Image<Gray16ColorPixel>(image: image, colorSpace: .genericGamma22Gray), interlace: interlace) }
+        
         let opaque = image.isOpaque
         
         let ihdr = IHDR(width: image.width, height: image.height, bitDepth: 8, colour: opaque ? 0 : 4, interlace: interlace)
         let phys = pHYs(image.resolution)
-        
-        guard let iccp = iCCP(image.colorSpace) else { return nil }
         
         let _idat: PNGChunk?
         

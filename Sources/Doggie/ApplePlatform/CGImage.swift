@@ -183,13 +183,21 @@ extension AnyImage {
         let channel_endian: RawBitmap.Endianness
         let pixel_endian: RawBitmap.Endianness
         
-        switch (bitsPerComponent, byteOrder) {
-        case (16, .byteOrder16Little), (32, .byteOrder32Little): channel_endian = .little
-        default: channel_endian = .big
-        }
-        switch (bitsPerPixel, byteOrder) {
-        case (16, .byteOrder16Little), (32, .byteOrder32Little): pixel_endian = .little
-        default: pixel_endian = .big
+        if bitsPerComponent == bitsPerPixel {
+            pixel_endian = .big
+            switch (bitsPerComponent, byteOrder) {
+            case (16, .byteOrder16Little), (32, .byteOrder32Little): channel_endian = .little
+            default: channel_endian = .big
+            }
+        } else {
+            switch (bitsPerComponent, byteOrder) {
+            case (16, .byteOrder16Little), (32, .byteOrder32Little): channel_endian = .little
+            default: channel_endian = .big
+            }
+            switch (bitsPerPixel, byteOrder) {
+            case (16, .byteOrder16Little), (32, .byteOrder32Little): pixel_endian = .little
+            default: pixel_endian = .big
+            }
         }
         
         let alphaInfo = cgImage.alphaInfo
@@ -247,7 +255,9 @@ extension AnyImage {
         default: return nil
         }
         
-        let bitmap = RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: cgImage.bytesPerRow << 3, startsRow: 0, endianness: pixel_endian, channels: channels, data: data)
+        let _channels = pixel_endian == .big ? channels : channels.map { RawBitmap.Channel(index: $0.index, format: $0.format, endianness: .little, bitRange: bitsPerPixel - $0.bitRange.upperBound..<bitsPerPixel - $0.bitRange.lowerBound) } 
+        
+        let bitmap = RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: cgImage.bytesPerRow << 3, startsRow: 0, channels: _channels, data: data)
         
         self.init(width: cgImage.width, height: cgImage.height, colorSpace: colorSpace, bitmaps: [bitmap], premultiplied: premultiplied, fileBacked: fileBacked)
     }

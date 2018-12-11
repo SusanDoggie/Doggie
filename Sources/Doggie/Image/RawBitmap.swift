@@ -29,20 +29,14 @@ public struct RawBitmap {
     public var bitsPerRow: Int
     public var startsRow: Int
     
-    public var endianness: Endianness
-    
     public var channels: [Channel]
     
     public var data: Data
     
-    public init(bitsPerPixel: Int, bitsPerRow: Int, startsRow: Int, endianness: Endianness, channels: [Channel], data: Data) {
-        if endianness == .little {
-            precondition(bitsPerPixel % 8 == 0, "Unsupported bitsPerPixel with little-endian.")
-        }
+    public init(bitsPerPixel: Int, bitsPerRow: Int, startsRow: Int, channels: [Channel], data: Data) {
         self.bitsPerPixel = bitsPerPixel
         self.bitsPerRow = bitsPerRow
         self.startsRow = startsRow
-        self.endianness = endianness
         self.channels = channels
         self.data = data
     }
@@ -131,10 +125,7 @@ extension Image {
                             
                             @inline(__always)
                             func pixelByte(_ i: Int) -> UInt8 {
-                                switch bitmap.endianness {
-                                case .big: return pixelShift == 0 ? source[i] : (source[i] << pixelShift) | (source[i + 1] >> (8 - pixelShift))
-                                case .little: return source[bytesPerPixel - i - 1]
-                                }
+                                return pixelShift == 0 ? source[i] : (source[i] << pixelShift) | (source[i + 1] >> (8 - pixelShift))
                             }
                             
                             var pixel = _destination.pointee
