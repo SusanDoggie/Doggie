@@ -1,5 +1,5 @@
 //
-//  NSImage.swift
+//  UIImage.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
@@ -23,37 +23,15 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(AppKit)
+#if canImport(UIKit)
 
-import AppKit
+import UIKit
 
-extension NSImage {
+extension UIImage {
     
-    public convenience init(cgImage image: CGImage) {
-        self.init(cgImage: image, size: NSZeroSize)
-    }
-    
-    @available(OSX 10.11, *)
-    public convenience init(ciImage image: CoreImage.CIImage) {
-        self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
-    }
-    
-    public var cgImage: CGImage? {
-        return cgImage(forProposedRect: nil, context: nil, hints: nil)
-    }
-    public var ciImage: CIImage? {
-        if let cgImage = self.cgImage {
-            return CoreImage.CIImage(cgImage: cgImage)
-        }
-        return nil
-    }
-}
-
-extension NSImage {
-    
-    public func fileBacked() -> NSImage? {
+    public func fileBacked() -> UIImage? {
         guard let cgImage = self.cgImage?.fileBacked() else { return nil }
-        return NSImage(cgImage: cgImage)
+        return UIImage(cgImage: cgImage)
     }
 }
 
