@@ -72,6 +72,19 @@ extension FourierTest {
     ]
 }
 
+extension ImageCodecTest {
+    static let __allTests = [
+        ("testBmp1", testBmp1),
+        ("testBmp2", testBmp2),
+        ("testPng1", testPng1),
+        ("testPng2", testPng2),
+        ("testTiff1", testTiff1),
+        ("testTiff2", testTiff2),
+        ("testTiff3", testTiff3),
+        ("testTiff4", testTiff4),
+    ]
+}
+
 extension ImageTest {
     static let __allTests = [
         ("testClipPerformance", testClipPerformance),
@@ -122,6 +135,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(CompressionTest.__allTests),
         testCase(FontTest.__allTests),
         testCase(FourierTest.__allTests),
+        testCase(ImageCodecTest.__allTests),
         testCase(ImageTest.__allTests),
         testCase(PolynomialTest.__allTests),
         testCase(XMLTest.__allTests),

@@ -90,6 +90,7 @@
 		0A3FD862210079BC006D4737 /* CGContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3FD861210079BC006D4737 /* CGContext.swift */; };
 		0A404BE2218BE24F00F7F1AD /* blend.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A404BE1218BE24F00F7F1AD /* blend.metal */; };
 		0A404BE6218C46AF00F7F1AD /* resampling.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A404BE5218C46AF00F7F1AD /* resampling.metal */; };
+		0A4101A521BF72AD00CD9CB7 /* ImageCodecTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4101A421BF72AC00CD9CB7 /* ImageCodecTest.swift */; };
 		0A459AAA219014180015CDCD /* shadow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A459AA9219014180015CDCD /* shadow.metal */; };
 		0A4A752E21B8D61500AF0CB6 /* ColorSpaceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A752C21B8D61400AF0CB6 /* ColorSpaceTest.swift */; };
 		0A4A752F21B8D61500AF0CB6 /* FontTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A752D21B8D61400AF0CB6 /* FontTest.swift */; };
@@ -369,6 +370,7 @@
 		0A3FD861210079BC006D4737 /* CGContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGContext.swift; sourceTree = "<group>"; };
 		0A404BE1218BE24F00F7F1AD /* blend.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = blend.metal; sourceTree = "<group>"; };
 		0A404BE5218C46AF00F7F1AD /* resampling.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = resampling.metal; sourceTree = "<group>"; };
+		0A4101A421BF72AC00CD9CB7 /* ImageCodecTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCodecTest.swift; sourceTree = "<group>"; };
 		0A459AA9219014180015CDCD /* shadow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shadow.metal; sourceTree = "<group>"; };
 		0A4A752C21B8D61400AF0CB6 /* ColorSpaceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpaceTest.swift; sourceTree = "<group>"; };
 		0A4A752D21B8D61400AF0CB6 /* FontTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontTest.swift; sourceTree = "<group>"; };
@@ -728,6 +730,7 @@
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0AEB4E0621758C0600939383 /* PolynomialTest.swift */,
 				0A8D98A21E53ED0F0050E112 /* ImageTest.swift */,
+				0A4101A421BF72AC00CD9CB7 /* ImageCodecTest.swift */,
 				0A4A752D21B8D61400AF0CB6 /* FontTest.swift */,
 				0A4A752C21B8D61400AF0CB6 /* ColorSpaceTest.swift */,
 				0A7A4BFF1F738D18005F44CD /* XMLTest.swift */,
@@ -1625,6 +1628,7 @@
 				0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */,
 				0A4A752E21B8D61500AF0CB6 /* ColorSpaceTest.swift in Sources */,
 				0A4C4DA221952B16002E40DE /* ArithmeticTest.swift in Sources */,
+				0A4101A521BF72AD00CD9CB7 /* ImageCodecTest.swift in Sources */,
 				0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */,
 				0A4A752F21B8D61500AF0CB6 /* FontTest.swift in Sources */,
 				0AEB4E0721758C0600939383 /* PolynomialTest.swift in Sources */,
