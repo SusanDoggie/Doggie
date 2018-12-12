@@ -105,6 +105,42 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
 extension MappedBuffer {
     
     @inlinable
+    @inline(__always)
+    public init(buffer: UnsafeBufferPointer<Element>, fileBacked: Bool = false) {
+        self.base = Base(capacity: buffer.count, fileBacked: fileBacked)
+        if let bytes = buffer.baseAddress, buffer.count != 0 {
+            self.base.count = buffer.count
+            self.base.address.initialize(from: bytes, count: buffer.count)
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init(buffer: UnsafeMutableBufferPointer<Element>, fileBacked: Bool = false) {
+        self.base = Base(capacity: buffer.count, fileBacked: fileBacked)
+        if let bytes = buffer.baseAddress, buffer.count != 0 {
+            self.base.count = buffer.count
+            self.base.address.initialize(from: bytes, count: buffer.count)
+        }
+    }
+}
+
+extension MappedBuffer where Element == UInt8 {
+    
+    @inlinable
+    @inline(__always)
+    public init(bytes: UnsafeRawBufferPointer, fileBacked: Bool = false) {
+        self.base = Base(capacity: bytes.count, fileBacked: fileBacked)
+        if let _bytes = bytes.baseAddress, bytes.count != 0 {
+            self.base.count = bytes.count
+            memcpy(self.base.address, _bytes, bytes.count)
+        }
+    }
+}
+
+extension MappedBuffer {
+    
+    @inlinable
     public var fileBacked: Bool {
         get {
             return base.fileBacked
