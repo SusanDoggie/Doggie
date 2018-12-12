@@ -635,7 +635,8 @@ extension MappedBuffer {
                 var path = ""
                 
                 while true {
-                    let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(UUID().uuidString)")
+                    let unique_name = ProcessInfo.processInfo.globallyUniqueString
+                    let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(unique_name)")
                     path = path_url.withUnsafeFileSystemRepresentation { String(cString: $0!) }
                     fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)
                     guard fd == -1 && errno == EEXIST else { break }
