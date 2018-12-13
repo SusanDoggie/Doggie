@@ -409,9 +409,13 @@ extension MetalRenderer.Encoder {
             let parameter: BlendParameter
             
             if let stencil_bound = stencil_bound {
-                _width = min(width, Int(ceil(stencil_bound.width)) + 1)
-                _height = min(height, Int(ceil(stencil_bound.height)) + 1)
-                parameter = BlendParameter(offset_x: max(0, UInt32(floor(stencil_bound.x))), offset_y: max(0, UInt32(floor(stencil_bound.y))), width: UInt32(width))
+                let _min_x = max(0, Int(floor(stencil_bound.minX)))
+                let _min_y = max(0, Int(floor(stencil_bound.minY)))
+                let _max_x = min(width, Int(ceil(stencil_bound.maxX)))
+                let _max_y = min(height, Int(ceil(stencil_bound.maxY)))
+                _width = _max_x - _min_x
+                _height = _max_y - _min_y
+                parameter = BlendParameter(offset_x: UInt32(_min_x), offset_y: UInt32(_min_y), width: UInt32(width))
             } else {
                 _width = width
                 _height = height
