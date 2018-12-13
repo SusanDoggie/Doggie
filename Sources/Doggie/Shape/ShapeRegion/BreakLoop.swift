@@ -155,7 +155,9 @@ extension Shape {
                 case let .cubic(p1, p2, p3):
                     
                     if segment.start.almostEqual(p3) {
-                        solids.append(ShapeRegion.Solid(segments: CollectionOfOne(segment))!)
+                        if let loop = ShapeRegion.Solid(segments: CollectionOfOne(segment)) {
+                            solids.append(loop)
+                        }
                     } else {
                         
                         var segment = segment
