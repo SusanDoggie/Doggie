@@ -85,7 +85,7 @@ protocol DGRendererEncoder {
     
     func setOpacity(_ destination: Buffer, _ opacity: Double) throws
     
-    func blend(_ source: Buffer, _ destination: Buffer, _ stencil: Buffer?, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws
+    func blend(_ source: Buffer, _ destination: Buffer, _ stencil: Buffer?, _ stencil_bound: Rect?, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws
     
     func shadow(_ source: Buffer, _ destination: Buffer, _ color: FloatColorPixel<Renderer.Model>, _ offset: Size, _ blur: Double) throws
     
@@ -125,6 +125,15 @@ private let DGImageContextCacheLock = SDLock()
 private var DGImageContextCache: [AnyHashable: Any] = [:]
 
 extension DGImageContext {
+    
+    public struct Error: Swift.Error, CustomStringConvertible {
+        
+        public var description: String
+        
+        init(description: String) {
+            self.description = description
+        }
+    }
     
     private struct CacheKey<Renderer: DGRenderer> : Hashable {
         
@@ -215,20 +224,20 @@ extension DGImageContext {
             return buffer
         }
         
-        func render<Encoder>(encoder: Encoder, resource: Resource<Encoder>) throws -> (Encoder.Buffer, Encoder.Buffer?, Bool) {
+        func render<Encoder>(encoder: Encoder, resource: Resource<Encoder>) throws -> (Encoder.Buffer, Encoder.Buffer?, Rect?, Bool) {
             
             if let shapeLayer = self as? ShapeLayer {
                 
                 let buffer = try self.request_buffer(encoder: encoder, resource: resource)
                 let stencil = try self.request_buffer(encoder: encoder, resource: resource)
                 try shapeLayer.render(encoder: encoder, output: buffer, stencil: stencil, resource: resource)
-                return (buffer, stencil, true)
+                return (buffer, stencil, shapeLayer.shape.boundary, true)
                 
             } else {
                 
                 let buffer = try self.request_buffer(encoder: encoder, resource: resource)
                 try self.render(encoder: encoder, output: buffer, resource: resource)
-                return (buffer, nil, true)
+                return (buffer, nil, nil, true)
             }
         }
         
@@ -253,8 +262,8 @@ extension DGImageContext {
             return source
         }
         
-        override func render<Encoder>(encoder: Encoder, resource: Resource<Encoder>) throws -> (Encoder.Buffer, Encoder.Buffer?, Bool) {
-            return (try encoder.make_buffer(source.pixels), nil, false)
+        override func render<Encoder>(encoder: Encoder, resource: Resource<Encoder>) throws -> (Encoder.Buffer, Encoder.Buffer?, Rect?, Bool) {
+            return (try encoder.make_buffer(source.pixels), nil, nil, false)
         }
         
         override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
@@ -297,11 +306,11 @@ extension DGImageContext {
             return shadowColor.opacity > 0 && shadowBlur > 0
         }
         
-        private func blend<Encoder: DGRendererEncoder>(encoder: Encoder, source: Encoder.Buffer, output: Encoder.Buffer, stencil: Encoder.Buffer?) throws where Model == Encoder.Renderer.Model {
+        private func blend<Encoder: DGRendererEncoder>(encoder: Encoder, source: Encoder.Buffer, output: Encoder.Buffer, stencil: Encoder.Buffer?, stencil_bound: Rect?) throws where Model == Encoder.Renderer.Model {
             switch (compositingMode, blendMode, stencil) {
             case (.copy, .normal, nil): try encoder.copy(source, output)
             case (.clear, _, nil): try encoder.clear(output)
-            default: try encoder.blend(source, output, stencil, compositingMode, blendMode)
+            default: try encoder.blend(source, output, stencil, stencil_bound, compositingMode, blendMode)
             }
         }
         
@@ -313,13 +322,15 @@ extension DGImageContext {
             
             if !source.is_empty && opacity != 0 {
                 
-                let (_source, _stencil, _source_recyclable) = try source.render(encoder: encoder, resource: resource)
+                let (_source, _stencil, _stencil_bound, _source_recyclable) = try source.render(encoder: encoder, resource: resource)
                 
                 if opacity != 1 {
                     try encoder.setOpacity(_source, opacity)
                 }
                 
-                if let clip = clip, !clip.is_empty {
+                if let clip = clip {
+                    
+                    guard !clip.is_empty else { return }
                     
                     let _clip: Encoder.Renderer.ClipEncoder.Buffer
                     
@@ -360,11 +371,17 @@ extension DGImageContext {
                 if isShadow {
                     let _shadow = try self.request_buffer(encoder: encoder, resource: resource)
                     try encoder.shadow(_source, _shadow, shadowColor, shadowOffset, shadowBlur)
-                    try self.blend(encoder: encoder, source: _shadow, output: output, stencil: _shadow)
+                    try self.blend(encoder: encoder, source: _shadow, output: output, stencil: _shadow, stencil_bound: nil)
                     resource.recycle.append(_shadow)
                 }
                 
-                try self.blend(encoder: encoder, source: _source, output: output, stencil: _stencil)
+                if let _stencil_bound = _stencil_bound {
+                    if _stencil_bound.isIntersect(Rect(x: 0, y: 0, width: encoder.width, height: encoder.height)) {
+                        try self.blend(encoder: encoder, source: _source, output: output, stencil: _stencil, stencil_bound: _stencil_bound)
+                    }
+                } else {
+                    try self.blend(encoder: encoder, source: _source, output: output, stencil: _stencil, stencil_bound: nil)
+                }
                 
                 if _source_recyclable {
                     resource.recycle.append(_source)

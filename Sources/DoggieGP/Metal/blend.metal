@@ -28,6 +28,12 @@ using namespace metal;
 
 constant int countOfComponents [[function_constant(0)]];
 
+struct blend_parameter {
+    
+    const packed_uint2 offset;
+    const uint width;
+};
+
 const float _multiply(const float destination, const float source) {
     return destination * source;
 }
@@ -169,13 +175,15 @@ void _blend_clear_##BLENDING(device float *destination, const device float *sour
         destination[idx + i] = 0;                                                                                       \
     }                                                                                                                   \
 }                                                                                                                       \
-kernel void blend_clear_##BLENDING##_clip(const device float *source [[buffer(0)]],                                     \
-                                          device float *destination [[buffer(1)]],                                      \
-                                          const device float *clip [[buffer(2)]],                                       \
-                                          uint2 id [[thread_position_in_grid]],                                         \
-                                          uint2 grid [[threads_per_grid]]) {                                            \
+kernel void blend_clear_##BLENDING##_clip(const device blend_parameter &parameter [[buffer(0)]],                        \
+                                          const device float *source [[buffer(1)]],                                     \
+                                          device float *destination [[buffer(2)]],                                      \
+                                          const device float *clip [[buffer(3)]],                                       \
+                                          uint2 id [[thread_position_in_grid]]) {                                       \
                                                                                                                         \
-    const int idx = id.x + id.y * grid.x;                                                                               \
+    const int width = parameter.width;                                                                                  \
+    const int2 position = int2(id.x + parameter.offset[0], id.y + parameter.offset[1]);                                 \
+    const int idx = width * position.y + position.x;                                                                    \
     const int _idx = idx * countOfComponents;                                                                           \
                                                                                                                         \
     if (!(clip[_idx + countOfComponents - 1] > 0)) { return; }                                                          \
@@ -218,13 +226,15 @@ kernel void blend_##COMPOSITING##_normal(const device float *source [[buffer(0)]
     const int idx = id.x + id.y * grid.x;                                                                               \
     _blend_##COMPOSITING##_normal(destination, source, idx * countOfComponents);                                        \
 }                                                                                                                       \
-kernel void blend_##COMPOSITING##_normal_clip(const device float *source [[buffer(0)]],                                 \
-                                              device float *destination [[buffer(1)]],                                  \
-                                              const device float *clip [[buffer(2)]],                                   \
-                                              uint2 id [[thread_position_in_grid]],                                     \
-                                              uint2 grid [[threads_per_grid]]) {                                        \
+kernel void blend_##COMPOSITING##_normal_clip(const device blend_parameter &parameter [[buffer(0)]],                    \
+                                              const device float *source [[buffer(1)]],                                 \
+                                              device float *destination [[buffer(2)]],                                  \
+                                              const device float *clip [[buffer(3)]],                                   \
+                                              uint2 id [[thread_position_in_grid]]) {                                   \
                                                                                                                         \
-    const int idx = id.x + id.y * grid.x;                                                                               \
+    const int width = parameter.width;                                                                                  \
+    const int2 position = int2(id.x + parameter.offset[0], id.y + parameter.offset[1]);                                 \
+    const int idx = width * position.y + position.x;                                                                    \
     const int _idx = idx * countOfComponents;                                                                           \
                                                                                                                         \
     if (!(clip[_idx + countOfComponents - 1] > 0)) { return; }                                                          \
@@ -268,13 +278,15 @@ kernel void blend_##COMPOSITING##_##BLENDING(const device float *source [[buffer
     const int idx = id.x + id.y * grid.x;                                                                               \
     _blend_##COMPOSITING##_##BLENDING(destination, source, idx * countOfComponents);                                    \
 }                                                                                                                       \
-kernel void blend_##COMPOSITING##_##BLENDING##_clip(const device float *source [[buffer(0)]],                           \
-                                                    device float *destination [[buffer(1)]],                            \
-                                                    const device float *clip [[buffer(2)]],                             \
-                                                    uint2 id [[thread_position_in_grid]],                               \
-                                                    uint2 grid [[threads_per_grid]]) {                                  \
+kernel void blend_##COMPOSITING##_##BLENDING##_clip(const device blend_parameter &parameter [[buffer(0)]],              \
+                                                    const device float *source [[buffer(1)]],                           \
+                                                    device float *destination [[buffer(2)]],                            \
+                                                    const device float *clip [[buffer(3)]],                             \
+                                                    uint2 id [[thread_position_in_grid]]) {                             \
                                                                                                                         \
-    const int idx = id.x + id.y * grid.x;                                                                               \
+    const int width = parameter.width;                                                                                  \
+    const int2 position = int2(id.x + parameter.offset[0], id.y + parameter.offset[1]);                                 \
+    const int idx = width * position.y + position.x;                                                                    \
     const int _idx = idx * countOfComponents;                                                                           \
                                                                                                                         \
     if (!(clip[_idx + countOfComponents - 1] > 0)) { return; }                                                          \

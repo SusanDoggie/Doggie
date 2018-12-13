@@ -66,7 +66,7 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
             return queue
         }
         
-        guard let queue = device.makeCommandQueue() else { throw Error(description: "MTLDevice.makeCommandQueue failed.") }
+        guard let queue = device.makeCommandQueue() else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeCommandQueue failed.") }
         MTLCommandQueueCache[key] = queue
         
         return queue
@@ -91,7 +91,10 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     }
     
     func encoder(width: Int, height: Int) throws -> Encoder {
-        return Encoder(width: width, height: height, renderer: self)
+        let encoder = Encoder(width: width, height: height, renderer: self)
+        guard encoder.texture_size <= device.maxBufferLength else { throw DGImageContext<Model>.Error(description: "Texture size is limited to \(device.maxBufferLength / 0x100000) MB.") }
+        return encoder
+        
     }
 }
 
@@ -108,7 +111,7 @@ extension DGImageContext {
     }
     
     public func render() throws {
-        guard let device = MTLCreateSystemDefaultDevice() else { throw MetalRenderer<Model>.Error(description: "MTLCreateSystemDefaultDevice failed.") }
+        guard let device = MTLCreateSystemDefaultDevice() else { throw Error(description: "MTLCreateSystemDefaultDevice failed.") }
         try self.render(device: device)
     }
     
@@ -119,11 +122,6 @@ extension DGImageContext {
 
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer {
-    
-    struct Error: Swift.Error, CustomStringConvertible {
-        
-        var description: String
-    }
     
     class Encoder : DGRendererEncoder {
         
@@ -165,7 +163,7 @@ extension MetalRenderer.Encoder {
         commandBuffer = nil
         command_counter = 0
         
-        guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw MetalRenderer.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
+        guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw DGImageContext<Model>.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
         self.commandBuffer = _commandBuffer
         
     }
@@ -183,7 +181,7 @@ extension MetalRenderer.Encoder {
             commandEncoder = nil
         }
         
-        guard let encoder = commandBuffer!.makeBlitCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+        guard let encoder = commandBuffer!.makeBlitCommandEncoder() else { throw DGImageContext<Model>.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
         self.commandEncoder = encoder
         return encoder
     }
@@ -201,7 +199,7 @@ extension MetalRenderer.Encoder {
             commandEncoder = nil
         }
         
-        guard let encoder = commandBuffer!.makeComputeCommandEncoder() else { throw MetalRenderer.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        guard let encoder = commandBuffer!.makeComputeCommandEncoder() else { throw DGImageContext<Model>.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         self.commandEncoder = encoder
         return encoder
     }
@@ -327,12 +325,12 @@ extension MetalRenderer.Encoder {
     }
     
     func alloc_texture() throws -> MTLBuffer {
-        guard let buffer = device.makeBuffer(length: texture_size, options: .storageModePrivate) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+        guard let buffer = device.makeBuffer(length: texture_size, options: .storageModePrivate) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
         return buffer
     }
     
     func make_buffer<T>(_ buffer: MappedBuffer<T>) throws -> MTLBuffer {
-        guard let buffer = device.makeBuffer(buffer) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+        guard let buffer = device.makeBuffer(buffer) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
         return buffer
     }
     
@@ -362,7 +360,7 @@ extension MetalRenderer.Encoder {
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
-    func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ stencil: MTLBuffer?, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
+    func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ stencil: MTLBuffer?, _ stencil_bound: Rect?, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
         
         let compositing_name: String
         let blending_name: String
@@ -403,17 +401,40 @@ extension MetalRenderer.Encoder {
         let pipeline = try renderer.request_pipeline(stencil == nil ? "blend_\(compositing_name)_\(blending_name)" : "blend_\(compositing_name)_\(blending_name)_clip")
         encoder.setComputePipelineState(pipeline)
         
-        encoder.setBuffer(source, offset: 0, index: 0)
-        encoder.setBuffer(destination, offset: 0, index: 1)
+        let _width: Int
+        let _height: Int
+        
         if let stencil = stencil {
-            encoder.setBuffer(stencil, offset: 0, index: 2)
+            
+            let parameter: BlendParameter
+            
+            if let stencil_bound = stencil_bound {
+                _width = min(width, Int(ceil(stencil_bound.width)) + 1)
+                _height = min(height, Int(ceil(stencil_bound.height)) + 1)
+                parameter = BlendParameter(offset_x: max(0, UInt32(floor(stencil_bound.x))), offset_y: max(0, UInt32(floor(stencil_bound.y))), width: UInt32(width))
+            } else {
+                _width = width
+                _height = height
+                parameter = BlendParameter(offset_x: 0, offset_y: 0, width: UInt32(width))
+            }
+            
+            encoder.setValue(parameter, index: 0)
+            encoder.setBuffer(source, offset: 0, index: 1)
+            encoder.setBuffer(destination, offset: 0, index: 2)
+            encoder.setBuffer(stencil, offset: 0, index: 3)
+            
+        } else {
+            _width = width
+            _height = height
+            encoder.setBuffer(source, offset: 0, index: 0)
+            encoder.setBuffer(destination, offset: 0, index: 1)
         }
         
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
-        let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
+        let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
         
-        encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
     func shadow(_ source: MTLBuffer, _ destination: MTLBuffer, _ color: FloatColorPixel<Model>, _ offset: Size, _ blur: Double) throws {
@@ -439,6 +460,7 @@ extension MetalRenderer.Encoder {
         let stencil: MTLBuffer
         
         let stencil_size = width * height * antialias * antialias * 2
+        guard stencil_size <= device.maxBufferLength else { throw DGImageContext<Model>.Error(description: "Texture size is limited to \(device.maxBufferLength / 0x100000) MB.") }
         
         if let stencil_buffer = self.stencil_buffer, stencil_buffer.length >= stencil_size {
             
@@ -447,7 +469,7 @@ extension MetalRenderer.Encoder {
             
         } else {
             
-            guard let _stencil = device.makeBuffer(length: stencil_size, options: .storageModePrivate) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+            guard let _stencil = device.makeBuffer(length: stencil_size, options: .storageModePrivate) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
             
             self.stencil_buffer = _stencil
             stencil = _stencil
@@ -493,7 +515,7 @@ extension MetalRenderer.Encoder {
     
     func draw(_ source: Texture<FloatColorPixel<Model>>, _ destination: MTLBuffer, _ transform: SDTransform, _ antialias: Int) throws {
         
-        guard let _source = device.makeBuffer(source.pixels) else { throw MetalRenderer.Error(description: "MTLDevice.makeBuffer failed.") }
+        guard let _source = device.makeBuffer(source.pixels) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
         
         let algorithm_name: String
         let h_wrapping_name: String
@@ -699,6 +721,13 @@ extension MetalRenderer.Encoder {
         var width: UInt32
         var antialias: UInt32
         var color: GPColor
+    }
+    
+    private struct BlendParameter {
+        
+        var offset_x: UInt32
+        var offset_y: UInt32
+        var width: UInt32
     }
     
     private struct _GradientStop {
