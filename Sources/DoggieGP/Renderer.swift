@@ -48,6 +48,8 @@ protocol DGRenderer {
     
     var device: Device { get }
     
+    func prepare() -> Bool
+    
     init(device: Device) throws
     
     func encoder(width: Int, height: Int) throws -> Encoder
@@ -68,8 +70,6 @@ protocol DGRendererEncoder {
     var height: Int { get }
     
     var texture_size: Int { get }
-    
-    func prepare() -> Bool
     
     func commit(waitUntilCompleted: Bool)
     
@@ -171,13 +171,8 @@ extension DGImageContext {
     }
     
     func prepare<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) -> Bool where Renderer.Model == Model {
-        
-        guard width != 0 && height != 0 else { return true }
-        
         guard let renderer = try? DGImageContext.make_renderer(device, Renderer.self) else { return false }
-        guard let encoder = try? renderer.encoder(width: width, height: height) else { return false }
-        
-        return encoder.prepare()
+        return renderer.prepare()
     }
     
     func render<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws where Renderer.Model == Model {

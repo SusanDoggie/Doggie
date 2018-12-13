@@ -94,7 +94,6 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
         let encoder = Encoder(width: width, height: height, renderer: self)
         guard encoder.texture_size <= device.maxBufferLength else { throw DGImageContext<Model>.Error(description: "Texture size is limited to \(device.maxBufferLength / 0x100000) MB.") }
         return encoder
-        
     }
 }
 
@@ -122,91 +121,6 @@ extension DGImageContext {
 
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer {
-    
-    class Encoder : DGRendererEncoder {
-        
-        let width: Int
-        let height: Int
-        
-        let renderer: MetalRenderer<Model>
-        var commandBuffer: MTLCommandBuffer?
-        var commandEncoder: MTLCommandEncoder?
-        
-        var command_counter = 0
-        
-        var stencil_buffer: MTLBuffer?
-        
-        init(width: Int, height: Int, renderer: MetalRenderer<Model>) {
-            self.width = width
-            self.height = height
-            self.renderer = renderer
-        }
-        
-        deinit {
-            self.commit(waitUntilCompleted: false)
-        }
-    }
-}
-
-@available(OSX 10.13, iOS 11.0, *)
-extension MetalRenderer.Encoder {
-    
-    private func check_limit() throws {
-        
-        guard self.commandEncoder == nil || command_counter >= command_encoder_limit else { return }
-        
-        commandEncoder?.endEncoding()
-        commandBuffer?.commit()
-        commandBuffer?.waitUntilScheduled()
-        
-        commandEncoder = nil
-        commandBuffer = nil
-        command_counter = 0
-        
-        guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw DGImageContext<Model>.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
-        self.commandBuffer = _commandBuffer
-        
-    }
-    
-    private func makeBlitCommandEncoder() throws -> MTLBlitCommandEncoder {
-        
-        try self.check_limit()
-        
-        command_counter += 1
-        
-        if let encoder = self.commandEncoder as? MTLBlitCommandEncoder {
-            return encoder
-        } else {
-            commandEncoder?.endEncoding()
-            commandEncoder = nil
-        }
-        
-        guard let encoder = commandBuffer!.makeBlitCommandEncoder() else { throw DGImageContext<Model>.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
-        self.commandEncoder = encoder
-        return encoder
-    }
-    
-    private func makeComputeCommandEncoder() throws -> MTLComputeCommandEncoder {
-        
-        try self.check_limit()
-        
-        command_counter += 1
-        
-        if let encoder = self.commandEncoder as? MTLComputeCommandEncoder {
-            return encoder
-        } else {
-            commandEncoder?.endEncoding()
-            commandEncoder = nil
-        }
-        
-        guard let encoder = commandBuffer!.makeComputeCommandEncoder() else { throw DGImageContext<Model>.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
-        self.commandEncoder = encoder
-        return encoder
-    }
-}
-
-@available(OSX 10.13, iOS 11.0, *)
-extension MetalRenderer.Encoder {
     
     func prepare() -> Bool {
         
@@ -307,11 +221,99 @@ extension MetalRenderer.Encoder {
         }
         
         for pipeline in pipelines {
-            guard (try? renderer.request_pipeline(pipeline)) != nil else { return false }
+            guard (try? self.request_pipeline(pipeline)) != nil else { return false }
         }
         
         return true
     }
+}
+
+@available(OSX 10.13, iOS 11.0, *)
+extension MetalRenderer {
+    
+    class Encoder : DGRendererEncoder {
+        
+        let width: Int
+        let height: Int
+        
+        let renderer: MetalRenderer<Model>
+        var commandBuffer: MTLCommandBuffer?
+        var commandEncoder: MTLCommandEncoder?
+        
+        var command_counter = 0
+        
+        var stencil_buffer: MTLBuffer?
+        
+        init(width: Int, height: Int, renderer: MetalRenderer<Model>) {
+            self.width = width
+            self.height = height
+            self.renderer = renderer
+        }
+        
+        deinit {
+            self.commit(waitUntilCompleted: false)
+        }
+    }
+}
+
+@available(OSX 10.13, iOS 11.0, *)
+extension MetalRenderer.Encoder {
+    
+    private func check_limit() throws {
+        
+        guard self.commandEncoder == nil || command_counter >= command_encoder_limit else { return }
+        
+        commandEncoder?.endEncoding()
+        commandBuffer?.commit()
+        commandBuffer?.waitUntilScheduled()
+        
+        commandEncoder = nil
+        commandBuffer = nil
+        command_counter = 0
+        
+        guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw DGImageContext<Model>.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
+        self.commandBuffer = _commandBuffer
+    }
+    
+    private func makeBlitCommandEncoder() throws -> MTLBlitCommandEncoder {
+        
+        try self.check_limit()
+        
+        command_counter += 1
+        
+        if let encoder = self.commandEncoder as? MTLBlitCommandEncoder {
+            return encoder
+        } else {
+            commandEncoder?.endEncoding()
+            commandEncoder = nil
+        }
+        
+        guard let encoder = commandBuffer!.makeBlitCommandEncoder() else { throw DGImageContext<Model>.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
+        self.commandEncoder = encoder
+        return encoder
+    }
+    
+    private func makeComputeCommandEncoder() throws -> MTLComputeCommandEncoder {
+        
+        try self.check_limit()
+        
+        command_counter += 1
+        
+        if let encoder = self.commandEncoder as? MTLComputeCommandEncoder {
+            return encoder
+        } else {
+            commandEncoder?.endEncoding()
+            commandEncoder = nil
+        }
+        
+        guard let encoder = commandBuffer!.makeComputeCommandEncoder() else { throw DGImageContext<Model>.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
+        self.commandEncoder = encoder
+        return encoder
+    }
+}
+
+@available(OSX 10.13, iOS 11.0, *)
+extension MetalRenderer.Encoder {
     
     func commit(waitUntilCompleted: Bool) {
         commandEncoder?.endEncoding()
