@@ -47,6 +47,13 @@ extension ImageContext {
         
         let (bound, stencil) = self._stencil(shape: shape)
         
+        let _min_x = max(0, Int(floor(bound.minX)))
+        let _min_y = max(0, Int(floor(bound.minY)))
+        let _max_x = min(width, Int(ceil(bound.maxX)))
+        let _max_y = min(height, Int(ceil(bound.maxY)))
+        
+        guard _max_x > _min_x && _max_y > _min_y else { return }
+        
         if shouldAntialias && antialias > 1 {
             
             stencil.withUnsafeBufferPointer { stencil in
@@ -57,26 +64,21 @@ extension ImageContext {
                     
                     guard var clip = buffer.baseAddress else { return }
                     
-                    let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
-                    let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
-                    let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
-                    let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
-                    
                     let _stencil_width = antialias * width
                     let _stencil_width2 = antialias * _stencil_width
                     
-                    clip += offset_x + offset_y * width
-                    _stencil += antialias * offset_x + offset_y * _stencil_width2
+                    clip += _min_x + _min_y * width
+                    _stencil += antialias * _min_x + _min_y * _stencil_width2
                     
                     let _antialias2 = antialias * antialias
                     let div = 1 / Double(_antialias2)
                     
-                    for _ in 0..<_height {
+                    for _ in _min_y..<_max_y {
                         
                         var _clip = clip
                         var __stencil = _stencil
                         
-                        for _ in 0..<_width {
+                        for _ in _min_x..<_max_x {
                             
                             var _p: UInt8 = 0
                             
@@ -116,20 +118,15 @@ extension ImageContext {
                     
                     guard var clip = buffer.baseAddress else { return }
                     
-                    let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
-                    let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
-                    let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
-                    let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
+                    clip += _min_x + _min_y * width
+                    _stencil += _min_x + _min_y * width
                     
-                    clip += offset_x + offset_y * width
-                    _stencil += offset_x + offset_y * width
-                    
-                    for _ in 0..<_height {
+                    for _ in _min_y..<_max_y {
                         
                         var _clip = clip
                         var __stencil = _stencil
                         
-                        for _ in 0..<_width {
+                        for _ in _min_x..<_max_x {
                             
                             if winding(__stencil.pointee) {
                                 _clip.pointee = 1
