@@ -893,16 +893,12 @@ extension MetalRenderer.Encoder {
         
         try shape.render { op in
             
-            switch op {
+            switch op * transform {
             case let .triangle(p0, p1, p2):
                 
-                let q0 = p0 * transform
-                let q1 = p1 * transform
-                let q2 = p2 * transform
+                bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
                 
-                bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                
-                let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
+                let triangle = Triangle(GPPoint(p0), GPPoint(p1), GPPoint(p2))
                 
                 guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: triangle) else { return }
                 
@@ -910,13 +906,9 @@ extension MetalRenderer.Encoder {
                 
             case let .quadratic(p0, p1, p2):
                 
-                let q0 = p0 * transform
-                let q1 = p1 * transform
-                let q2 = p2 * transform
+                bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
                 
-                bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                
-                let triangle = Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))
+                let triangle = Triangle(GPPoint(p0), GPPoint(p1), GPPoint(p2))
                 
                 guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: triangle) else { return }
                 
@@ -924,15 +916,11 @@ extension MetalRenderer.Encoder {
                 
             case let .cubic(p0, p1, p2, v0, v1, v2):
                 
-                let q0 = p0 * transform
-                let q1 = p1 * transform
-                let q2 = p2 * transform
+                bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
                 
-                bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: Triangle(GPPoint(p0), GPPoint(p1), GPPoint(p2))) else { return }
                 
-                guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: Triangle(GPPoint(q0), GPPoint(q1), GPPoint(q2))) else { return }
-                
-                let triangle = CubicTriangle(GPPoint(q0), GPPoint(q1), GPPoint(q2), GPVector(v0), GPVector(v1), GPVector(v2))
+                let triangle = CubicTriangle(GPPoint(p0), GPPoint(p1), GPPoint(p2), GPVector(v0), GPVector(v1), GPVector(v2))
                 try render_stencil(width: width, pipeline: "stencil_cubic", x_length: x_length, y_range: y_range, triangle: triangle, output: output)
             }
         }

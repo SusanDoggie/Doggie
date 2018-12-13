@@ -59,38 +59,30 @@ struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
 
 @inlinable
 @inline(__always)
-func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SDTransform, stencil: UnsafeMutablePointer<Int16>) {
+func _render(_ op: Shape.RenderOperation, width: Int, height: Int, stencil: UnsafeMutablePointer<Int16>) {
     
     let rasterizer = ShapeRasterizeBuffer(stencil: stencil, width: width, height: height)
     
     switch op {
     case let .triangle(p0, p1, p2):
         
-        let q0 = p0 * transform
-        let q1 = p1 * transform
-        let q2 = p2 * transform
-        
-        if cross(q1 - q0, q2 - q0).sign == .plus {
-            rasterizer.rasterize(q0, q1, q2) { pixel in pixel.stencil.pointee += 1 }
+        if cross(p1 - p0, p2 - p0).sign == .plus {
+            rasterizer.rasterize(p0, p1, p2) { pixel in pixel.stencil.pointee += 1 }
         } else {
-            rasterizer.rasterize(q0, q1, q2) { pixel in pixel.stencil.pointee -= 1 }
+            rasterizer.rasterize(p0, p1, p2) { pixel in pixel.stencil.pointee -= 1 }
         }
         
     case let .quadratic(p0, p1, p2):
         
-        let q0 = p0 * transform
-        let q1 = p1 * transform
-        let q2 = p2 * transform
-        
-        if cross(q1 - q0, q2 - q0).sign == .plus {
-            rasterizer.rasterize(q0, q1, q2) { barycentric, _, pixel in
+        if cross(p1 - p0, p2 - p0).sign == .plus {
+            rasterizer.rasterize(p0, p1, p2) { barycentric, _, pixel in
                 let s = 0.5 * barycentric.y + barycentric.z
                 if s * s < barycentric.z {
                     pixel.stencil.pointee += 1
                 }
             }
         } else {
-            rasterizer.rasterize(q0, q1, q2) { barycentric, _, pixel in
+            rasterizer.rasterize(p0, p1, p2) { barycentric, _, pixel in
                 let s = 0.5 * barycentric.y + barycentric.z
                 if s * s < barycentric.z {
                     pixel.stencil.pointee -= 1
@@ -100,12 +92,8 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
         
     case let .cubic(p0, p1, p2, v0, v1, v2):
         
-        let q0 = p0 * transform
-        let q1 = p1 * transform
-        let q2 = p2 * transform
-        
-        if cross(q1 - q0, q2 - q0).sign == .plus {
-            rasterizer.rasterize(q0, q1, q2) { barycentric, _, pixel in
+        if cross(p1 - p0, p2 - p0).sign == .plus {
+            rasterizer.rasterize(p0, p1, p2) { barycentric, _, pixel in
                 let u0 = barycentric.x * v0
                 let u1 = barycentric.y * v1
                 let u2 = barycentric.z * v2
@@ -115,7 +103,7 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, transform: SD
                 }
             }
         } else {
-            rasterizer.rasterize(q0, q1, q2) { barycentric, _, pixel in
+            rasterizer.rasterize(p0, p1, p2) { barycentric, _, pixel in
                 let u0 = barycentric.x * v0
                 let u1 = barycentric.y * v1
                 let u2 = barycentric.z * v2
@@ -150,32 +138,14 @@ extension Shape {
             
             self.render { op in
                 
-                _render(op, width: width, height: height, transform: transform, stencil: ptr)
+                let _op = op * transform
                 
-                switch op {
-                case let .triangle(p0, p1, p2):
-                    
-                    let q0 = p0 * transform
-                    let q1 = p1 * transform
-                    let q2 = p2 * transform
-                    
-                    bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                    
-                case let .quadratic(p0, p1, p2):
-                    
-                    let q0 = p0 * transform
-                    let q1 = p1 * transform
-                    let q2 = p2 * transform
-                    
-                    bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
-                    
-                case let .cubic(p0, p1, p2, _, _, _):
-                    
-                    let q0 = p0 * transform
-                    let q1 = p1 * transform
-                    let q2 = p2 * transform
-                    
-                    bound = bound?.union(Rect.bound([q0, q1, q2])) ?? Rect.bound([q0, q1, q2])
+                _render(_op, width: width, height: height, stencil: ptr)
+                
+                switch _op {
+                case let .triangle(p0, p1, p2): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
+                case let .quadratic(p0, p1, p2): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
+                case let .cubic(p0, p1, p2, _, _, _): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
                 }
             }
         }

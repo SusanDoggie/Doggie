@@ -32,6 +32,22 @@ extension Shape {
     }
 }
 
+@inlinable
+@inline(__always)
+public func * (lhs: Shape.RenderOperation, rhs: SDTransform) -> Shape.RenderOperation {
+    switch lhs {
+    case let .triangle(p0, p1, p2): return .triangle(p0 * rhs, p1 * rhs, p2 * rhs)
+    case let .quadratic(p0, p1, p2): return .quadratic(p0 * rhs, p1 * rhs, p2 * rhs)
+    case let .cubic(p0, p1, p2, v0, v1, v2): return .cubic(p0 * rhs, p1 * rhs, p2 * rhs, v0, v1, v2)
+    }
+}
+
+@inlinable
+@inline(__always)
+public func *= (lhs: inout Shape.RenderOperation, rhs: SDTransform) {
+    lhs = lhs * rhs
+}
+
 @inline(__always)
 private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) throws -> Void) rethrows {
     
@@ -218,32 +234,38 @@ extension Shape.Component {
             }
         }
         
-        if let first = self.first {
+        let start = self.start
+        
+        try self.segments.withUnsafeBufferPointer { segments in
             
-            var last = self.start
-            
-            switch first {
-            case let .line(q1): last = q1
-            case let .quad(q1, q2):
-                try operation(.quadratic(last, q1, q2))
-                last = q2
-            case let .cubic(q1, q2, q3):
-                try drawCubic(last, q1, q2, q3, operation: operation)
-                last = q3
-            }
-            for segment in self.dropFirst() {
-                switch segment {
-                case let .line(q1):
-                    try operation(.triangle(self.start, last, q1))
-                    last = q1
+            if let first = segments.first {
+                
+                var last = start
+                
+                switch first {
+                case let .line(q1): last = q1
                 case let .quad(q1, q2):
-                    try operation(.triangle(self.start, last, q2))
                     try operation(.quadratic(last, q1, q2))
                     last = q2
                 case let .cubic(q1, q2, q3):
-                    try operation(.triangle(self.start, last, q3))
                     try drawCubic(last, q1, q2, q3, operation: operation)
                     last = q3
+                }
+                
+                for segment in segments.dropFirst() {
+                    switch segment {
+                    case let .line(q1):
+                        try operation(.triangle(start, last, q1))
+                        last = q1
+                    case let .quad(q1, q2):
+                        try operation(.triangle(start, last, q2))
+                        try operation(.quadratic(last, q1, q2))
+                        last = q2
+                    case let .cubic(q1, q2, q3):
+                        try operation(.triangle(start, last, q3))
+                        try drawCubic(last, q1, q2, q3, operation: operation)
+                        last = q3
+                    }
                 }
             }
         }
@@ -254,9 +276,7 @@ extension Shape {
     
     @inlinable
     public func render(_ operation: (Shape.RenderOperation) throws -> Void) rethrows {
-        for component in self {
-            try component.render(operation)
-        }
+        try self.components.withUnsafeBufferPointer { try $0.forEach { try $0.render(operation) } }
     }
 }
 
@@ -334,9 +354,14 @@ extension Shape {
     
     @inlinable
     public func winding(_ position: Point) -> Int {
+        
         guard !transform.determinant.almostZero() else { return 0 }
+        
         let position = position * transform.inverse
-        return self.reduce(0) { $0 + $1.winding(position) }
+        
+        var counter = 0
+        self.render { counter += $0.winding(position) }
+        return counter
     }
 }
 
