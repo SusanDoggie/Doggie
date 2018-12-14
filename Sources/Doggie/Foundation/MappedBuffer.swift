@@ -674,7 +674,17 @@ extension MappedBuffer {
                     let unique_name = ProcessInfo.processInfo.globallyUniqueString
                     let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(unique_name)")
                     path = path_url.withUnsafeFileSystemRepresentation { String(cString: $0!) }
+                    
+                    #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+                    
+                    fd = open(path, O_RDWR | O_CREAT | O_EXCL | O_EXLOCK, S_IRUSR | S_IWUSR)
+                    
+                    #else
+                    
                     fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)
+                    
+                    #endif
+                    
                     guard fd == -1 && errno == EEXIST else { break }
                 }
                 
@@ -682,7 +692,13 @@ extension MappedBuffer {
                 self.path = path
                 
                 guard fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
+                
+                #if !os(macOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
+                
                 guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
+                
+                #endif
+                
                 guard ftruncate(fd, off_t(mapped_size)) != -1 else { fatalError(String(cString: strerror(errno))) }
                 
                 let _address = mmap(nil, mapped_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0)
@@ -712,7 +728,6 @@ extension MappedBuffer {
             
             if fileBacked {
                 ftruncate(fd, 0)
-                flock(fd, LOCK_UN)
                 close(fd)
                 Foundation.remove(path)
             }
