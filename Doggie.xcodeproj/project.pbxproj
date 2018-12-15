@@ -93,6 +93,7 @@
 		0A4101A521BF72AD00CD9CB7 /* ImageCodecTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4101A421BF72AC00CD9CB7 /* ImageCodecTest.swift */; };
 		0A4101F721BFC31B00CD9CB7 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4101F621BFC31B00CD9CB7 /* UIImage.swift */; };
 		0A459AAA219014180015CDCD /* shadow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A459AA9219014180015CDCD /* shadow.metal */; };
+		0A4A1E2021C4B17D00FD90A0 /* ShapeRegionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A1E1E21C4B14500FD90A0 /* ShapeRegionTest.swift */; };
 		0A4A752E21B8D61500AF0CB6 /* ColorSpaceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A752C21B8D61400AF0CB6 /* ColorSpaceTest.swift */; };
 		0A4A752F21B8D61500AF0CB6 /* FontTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A752D21B8D61400AF0CB6 /* FontTest.swift */; };
 		0A4C4DA221952B16002E40DE /* ArithmeticTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4C4DA121952B16002E40DE /* ArithmeticTest.swift */; };
@@ -374,6 +375,7 @@
 		0A4101A421BF72AC00CD9CB7 /* ImageCodecTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCodecTest.swift; sourceTree = "<group>"; };
 		0A4101F621BFC31B00CD9CB7 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		0A459AA9219014180015CDCD /* shadow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shadow.metal; sourceTree = "<group>"; };
+		0A4A1E1E21C4B14500FD90A0 /* ShapeRegionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeRegionTest.swift; sourceTree = "<group>"; };
 		0A4A752C21B8D61400AF0CB6 /* ColorSpaceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpaceTest.swift; sourceTree = "<group>"; };
 		0A4A752D21B8D61400AF0CB6 /* FontTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontTest.swift; sourceTree = "<group>"; };
 		0A4C4DA121952B16002E40DE /* ArithmeticTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArithmeticTest.swift; sourceTree = "<group>"; };
@@ -732,6 +734,7 @@
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0AEB4E0621758C0600939383 /* PolynomialTest.swift */,
 				0A8D98A21E53ED0F0050E112 /* ImageTest.swift */,
+				0A4A1E1E21C4B14500FD90A0 /* ShapeRegionTest.swift */,
 				0A4101A421BF72AC00CD9CB7 /* ImageCodecTest.swift */,
 				0A4A752D21B8D61400AF0CB6 /* FontTest.swift */,
 				0A4A752C21B8D61400AF0CB6 /* ColorSpaceTest.swift */,
@@ -1630,6 +1633,7 @@
 			files = (
 				0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */,
 				0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */,
+				0A4A1E2021C4B17D00FD90A0 /* ShapeRegionTest.swift in Sources */,
 				0A4A752E21B8D61500AF0CB6 /* ColorSpaceTest.swift in Sources */,
 				0A4C4DA221952B16002E40DE /* ArithmeticTest.swift in Sources */,
 				0A4101A521BF72AD00CD9CB7 /* ImageCodecTest.swift in Sources */,

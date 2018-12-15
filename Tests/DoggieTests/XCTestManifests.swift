@@ -106,8 +106,6 @@ extension ImageTest {
         ("testResamplingMitchellPerformance", testResamplingMitchellPerformance),
         ("testResamplingNoneAntialiasPerformance", testResamplingNoneAntialiasPerformance),
         ("testResamplingNonePerformance", testResamplingNonePerformance),
-        ("testShapeRegionEvenOdd", testShapeRegionEvenOdd),
-        ("testShapeRegionNonZero", testShapeRegionNonZero),
     ]
 }
 
@@ -117,6 +115,17 @@ extension PolynomialTest {
         ("testPolynomialModPerformance", testPolynomialModPerformance),
         ("testPolynomialMulPerformance", testPolynomialMulPerformance),
         ("testPolynomialPowPerformance", testPolynomialPowPerformance),
+    ]
+}
+
+extension ShapeRegionTest {
+    static let __allTests = [
+        ("testShapeRegionEvenOdd", testShapeRegionEvenOdd),
+        ("testShapeRegionIntersection", testShapeRegionIntersection),
+        ("testShapeRegionNonZero", testShapeRegionNonZero),
+        ("testShapeRegionSubtracting", testShapeRegionSubtracting),
+        ("testShapeRegionSymmetricDifference", testShapeRegionSymmetricDifference),
+        ("testShapeRegionUnion", testShapeRegionUnion),
     ]
 }
 
@@ -138,6 +147,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(ImageCodecTest.__allTests),
         testCase(ImageTest.__allTests),
         testCase(PolynomialTest.__allTests),
+        testCase(ShapeRegionTest.__allTests),
         testCase(XMLTest.__allTests),
     ]
 }
