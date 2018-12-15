@@ -459,7 +459,7 @@ extension DrawableContext {
     @inline(__always)
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
         
-        self.saveGraphicState()
+        self.beginTransparencyLayer()
         
         self.setClip(shape: shape, winding: winding)
         
@@ -473,7 +473,7 @@ extension DrawableContext {
         case .radial: self.drawRadialGradient(stops: gradient.stops, start: gradient.start, startRadius: 0, end: gradient.end, endRadius: 0.5, startSpread: .pad, endSpread: .pad)
         }
         
-        self.restoreGraphicState()
+        self.endTransparencyLayer()
     }
     
     @inlinable

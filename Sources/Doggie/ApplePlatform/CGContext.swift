@@ -95,7 +95,7 @@ extension CGContext {
     
     public func draw(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<AnyColor>, colorSpace: AnyColorSpace) {
         
-        self.saveGState()
+        self.beginTransparencyLayer()
         
         self.addPath(shape)
         switch winding {
@@ -115,7 +115,7 @@ extension CGContext {
         case .radial: self.drawRadialGradient(colorSpace: colorSpace, stops: gradient.stops, start: gradient.start, startRadius: 0, end: gradient.end, endRadius: 0.5, options: options)
         }
         
-        self.restoreGState()
+        self.endTransparencyLayer()
     }
     
     public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<AnyColor>, colorSpace: AnyColorSpace) {
