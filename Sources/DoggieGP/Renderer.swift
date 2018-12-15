@@ -48,6 +48,8 @@ protocol DGRenderer {
     
     var device: Device { get }
     
+    var maxBufferLength: { get }
+    
     func prepare() -> Bool
     
     init(device: Device) throws
@@ -101,18 +103,21 @@ protocol DGRendererEncoder {
     
 }
 
+extension DGRenderer {
+    
+    static var pixel_size: Int {
+        return Renderer.Model.numberOfComponents << 2 + 4
+    }
+}
+
 extension DGRendererEncoder {
     
     var device: Renderer.Device {
         return renderer.device
     }
     
-    private var pixel_size: Int {
-        return Renderer.Model.numberOfComponents << 2 + 4
-    }
-    
     var texture_size: Int {
-        return width * height * pixel_size
+        return width * height * Renderer.pixel_size
     }
     
     func clip_encoder() throws -> Renderer.ClipEncoder {
@@ -184,6 +189,9 @@ extension DGImageContext {
         let renderer = try DGImageContext.make_renderer(device, Renderer.self)
         let encoder = try renderer.encoder(width: width, height: height)
         
+        let maxBufferLength = renderer.maxBufferLength
+        guard encoder.texture_size <= maxBufferLength else { throw Error(description: "Texture size is limited to \(maxBufferLength / 0x100000) MB.") }
+        
         let texture = Texture<FloatColorPixel<Model>>(width: width, height: height, fileBacked: false)
         let resource = Resource<Renderer.Encoder>()
         
@@ -192,6 +200,17 @@ extension DGImageContext {
         encoder.commit(waitUntilCompleted: true)
         
         self._image = TextureLayer(texture)
+    }
+    
+    static func maxPixelsCount<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws -> Int where Renderer.Model == Model {
+        let renderer = try DGImageContext.make_renderer(device, Renderer.self)
+        return renderer.maxBufferLength / Renderer.pixel_size
+    }
+    
+    func maxAntialiasLevel<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws -> Int where Renderer.Model == Model {
+        guard width != 0 && height != 0 else { return 0 }
+        let renderer = try DGImageContext.make_renderer(device, Renderer.self)
+        return Int(isqrt(UInt(renderer.maxBufferLength / (width * height * 2))))
     }
 }
 

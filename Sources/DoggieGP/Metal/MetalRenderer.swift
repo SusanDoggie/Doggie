@@ -49,6 +49,10 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     let lck = SDLock()
     var _pipeline: [String: MTLComputePipelineState] = [:]
     
+    var maxBufferLength: Int {
+        return device.maxBufferLength
+    }
+    
     required init(device: MTLDevice) throws {
         self.device = device
         self.library = try device.makeDefaultLibrary(bundle: Bundle(for: MetalRenderer.self))
@@ -91,9 +95,7 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
     }
     
     func encoder(width: Int, height: Int) throws -> Encoder {
-        let encoder = Encoder(width: width, height: height, renderer: self)
-        guard encoder.texture_size <= device.maxBufferLength else { throw DGImageContext<Model>.Error(description: "Texture size is limited to \(device.maxBufferLength / 0x100000) MB.") }
-        return encoder
+        return Encoder(width: width, height: height, renderer: self)
     }
 }
 
@@ -116,6 +118,14 @@ extension DGImageContext {
     
     public func render(device: MTLDevice) throws {
         try autoreleasepool { try self.render(device, MetalRenderer.self) }
+    }
+    
+    public static func maxPixelsCount(for device: MTLDevice) throws -> Int {
+        return try maxPixelsCount(device, MetalRenderer.self)
+    }
+    
+    public func maxAntialiasLevel(for device: MTLDevice) throws -> Int {
+        return try self.maxAntialiasLevel(device, MetalRenderer.self)
     }
 }
 

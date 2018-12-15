@@ -113,6 +113,18 @@ func _scale_integer<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger
 
 @inlinable
 @inline(__always)
+public func isqrt<T: FixedWidthInteger & UnsignedInteger>(_ x: T) -> T {
+    if x < 2 {
+        return x
+    } else {
+        let m = isqrt(x >> 2) << 1
+        let n = m + 1
+        return n * n > x ? m : n
+    }
+}
+
+@inlinable
+@inline(__always)
 public func addmod<T: FixedWidthInteger & UnsignedInteger>(_ a: T, _ b: T, _ m: T) -> T {
     assert(m != 0, "divide by zero")
     let a = a % m

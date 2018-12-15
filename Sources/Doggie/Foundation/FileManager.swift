@@ -37,7 +37,7 @@ extension FileManager {
             guard !checked.contains(url) else { continue }
             checked.insert(url)
             
-            #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+            #if canImport(Darwin)
             
             if let _url = try? URL(resolvingAliasFileAt: url).standardized, _url != url {
                 searchPaths.append(_url)

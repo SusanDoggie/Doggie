@@ -675,7 +675,7 @@ extension MappedBuffer {
                     let path_url = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.SusanDoggie.MappedBuffer.\(unique_name)")
                     path = path_url.withUnsafeFileSystemRepresentation { String(cString: $0!) }
                     
-                    #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+                    #if canImport(Darwin)
                     
                     fd = open(path, O_RDWR | O_CREAT | O_EXCL | O_EXLOCK, S_IRUSR | S_IWUSR)
                     
@@ -693,7 +693,7 @@ extension MappedBuffer {
                 
                 guard fd != -1 else { fatalError("\(String(cString: strerror(errno))): \(path)") }
                 
-                #if !os(macOS) && !os(iOS) && !os(tvOS) && !os(watchOS)
+                #if !canImport(Darwin)
                 
                 guard flock(fd, LOCK_EX) != -1 else { fatalError(String(cString: strerror(errno))) }
                 
