@@ -294,6 +294,7 @@ public struct GradientStop<Color: ColorProtocol> {
     public var color: Color
     
     @inlinable
+    @inline(__always)
     public init(offset: Double, color: Color) {
         self.offset = offset
         self.color = color
@@ -303,6 +304,7 @@ public struct GradientStop<Color: ColorProtocol> {
 extension GradientStop : Equatable where Color : Equatable {
     
     @inlinable
+    @inline(__always)
     public static func ==(lhs: GradientStop, rhs: GradientStop) -> Bool {
         return lhs.offset == rhs.offset && lhs.color == rhs.color
     }
@@ -311,6 +313,7 @@ extension GradientStop : Equatable where Color : Equatable {
 extension GradientStop : Hashable where Color : Hashable {
     
     @inlinable
+    @inline(__always)
     public func hash(into hasher: inout Hasher) {
         hasher.combine(offset)
         hasher.combine(color)
@@ -320,13 +323,30 @@ extension GradientStop : Hashable where Color : Hashable {
 extension GradientStop where Color == AnyColor {
     
     @inlinable
+    @inline(__always)
     public init<M>(_ stop: GradientStop<Doggie.Color<M>>) {
         self.init(offset: stop.offset, color: AnyColor(stop.color))
     }
     
     @inlinable
+    @inline(__always)
     public init<M>(offset: Double, color: Doggie.Color<M>) {
         self.init(offset: offset, color: AnyColor(color))
+    }
+}
+
+extension GradientStop {
+    
+    @inlinable
+    @inline(__always)
+    public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> GradientStop<Doggie.Color<Model>> {
+        return GradientStop<Doggie.Color<Model>>(offset: offset, color: color.convert(to: colorSpace, intent: intent))
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> GradientStop<AnyColor> {
+        return GradientStop<AnyColor>(offset: offset, color: color.convert(to: colorSpace, intent: intent))
     }
 }
 
@@ -336,6 +356,7 @@ public enum GradientType {
     case radial
 }
 
+@_fixed_layout
 public struct Gradient<Color: ColorProtocol> {
     
     public var type: GradientType
@@ -343,13 +364,16 @@ public struct Gradient<Color: ColorProtocol> {
     public var start: Point
     public var end: Point
     
-    fileprivate var rawCenter: Point {
+    @_transparent
+    @usableFromInline
+    var rawCenter: Point {
         switch type {
         case .linear: return 0.5 * (start + end)
         case .radial: return end
         }
     }
     
+    @_transparent
     public var center: Point {
         get {
             return rawCenter * transform
@@ -369,6 +393,8 @@ public struct Gradient<Color: ColorProtocol> {
     
     public var stops: [GradientStop<Color>]
     
+    @inlinable
+    @inline(__always)
     public init(type: GradientType, start: Point, end: Point, stops: [GradientStop<Color>]) {
         self.type = type
         self.start = start
@@ -380,6 +406,7 @@ public struct Gradient<Color: ColorProtocol> {
 extension Gradient where Color == AnyColor {
     
     @inlinable
+    @inline(__always)
     public init<M>(_ gradient: Gradient<Doggie.Color<M>>) {
         self.init(type: gradient.type, start: gradient.start, end: gradient.end, stops: gradient.stops.map(GradientStop<AnyColor>.init))
         self.transform = gradient.transform
@@ -390,56 +417,87 @@ extension Gradient where Color == AnyColor {
 extension Gradient {
     
     @inlinable
+    @inline(__always)
+    public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> Gradient<Doggie.Color<Model>> {
+        var result = Gradient<Doggie.Color<Model>>(type: self.type, start: self.start, end: self.end, stops: self.stops.map { $0.convert(to: colorSpace, intent: intent) })
+        result.transform = self.transform
+        result.opacity = self.opacity
+        return result
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> Gradient<AnyColor> {
+        var result = Gradient<AnyColor>(type: self.type, start: self.start, end: self.end, stops: self.stops.map { $0.convert(to: colorSpace, intent: intent) })
+        result.transform = self.transform
+        result.opacity = self.opacity
+        return result
+    }
+}
+
+extension Gradient {
+    
+    @inlinable
+    @inline(__always)
     public mutating func rotate(_ angle: Double) {
         let center = self.center
         self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.rotate(angle) * SDTransform.translate(x: center.x, y: center.y)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func skewX(_ angle: Double) {
         let center = self.center
         self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.skewX(angle) * SDTransform.translate(x: center.x, y: center.y)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func skewY(_ angle: Double) {
         let center = self.center
         self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.skewY(angle) * SDTransform.translate(x: center.x, y: center.y)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func scale(_ scale: Double) {
         let center = self.center
         self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.scale(scale) * SDTransform.translate(x: center.x, y: center.y)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func scale(x: Double = 1, y: Double = 1) {
         let center = self.center
         self.transform *= SDTransform.translate(x: -center.x, y: -center.y) * SDTransform.scale(x: x, y: y) * SDTransform.translate(x: center.x, y: center.y)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func translate(x: Double = 0, y: Double = 0) {
         self.transform *= SDTransform.translate(x: x, y: y)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func reflectX() {
         self.transform *= SDTransform.reflectX(self.center.x)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func reflectY() {
         self.transform *= SDTransform.reflectY(self.center.y)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func reflectX(_ x: Double) {
         self.transform *= SDTransform.reflectX(x)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func reflectY(_ y: Double) {
         self.transform *= SDTransform.reflectY(y)
     }

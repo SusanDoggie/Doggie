@@ -125,7 +125,7 @@ extension CGContext {
     public func drawLinearGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
-        let stops = stops.map { GradientStop(offset: $0.offset, color: $0.color.convert(to: colorSpace)) }
+        let stops = stops.map { $0.convert(to: colorSpace) }
         
         let range = 0...colorSpace.numberOfComponents
         guard let gradient = CGGradient(colorSpace: cgColorSpace, colorComponents: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, count: stops.count) else { return }
@@ -136,7 +136,7 @@ extension CGContext {
     public func drawRadialGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
-        let stops = stops.map { GradientStop(offset: $0.offset, color: $0.color.convert(to: colorSpace)) }
+        let stops = stops.map { $0.convert(to: colorSpace) }
         
         let range = 0...colorSpace.numberOfComponents
         guard let gradient = CGGradient(colorSpace: cgColorSpace, colorComponents: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, count: stops.count) else { return }
