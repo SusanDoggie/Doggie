@@ -48,7 +48,7 @@ protocol DGRenderer {
     
     var device: Device { get }
     
-    var maxBufferLength: { get }
+    var maxBufferLength: Int { get }
     
     func prepare() -> Bool
     
@@ -106,7 +106,7 @@ protocol DGRendererEncoder {
 extension DGRenderer {
     
     static var pixel_size: Int {
-        return Renderer.Model.numberOfComponents << 2 + 4
+        return Model.numberOfComponents << 2 + 4
     }
 }
 
