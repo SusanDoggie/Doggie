@@ -260,6 +260,7 @@
 		0ADAA3B620CB6FFF006682EA /* ConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADAA3B520CB6FFF006682EA /* ConcatCollection.swift */; };
 		0ADAA3B820CB7019006682EA /* IndexedCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADAA3B720CB7019006682EA /* IndexedCollection.swift */; };
 		0ADAA3BA20CB7056006682EA /* KeyValueCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADAA3B920CB7056006682EA /* KeyValueCollection.swift */; };
+		0AE4CA2C21C773C2009883C0 /* CollectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE4CA2B21C773C2009883C0 /* CollectionTest.swift */; };
 		0AE67D0C21A544EC004E21F2 /* AppleCompression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE67D0B21A544EC004E21F2 /* AppleCompression.swift */; };
 		0AE719FB1EF50EEB0086923C /* AnyColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE719F91EF50EEB0086923C /* AnyColor.swift */; };
 		0AE71A011EF517CA0086923C /* AnyImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE719FF1EF517CA0086923C /* AnyImage.swift */; };
@@ -542,6 +543,7 @@
 		0ADAA3B520CB6FFF006682EA /* ConcatCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcatCollection.swift; sourceTree = "<group>"; };
 		0ADAA3B720CB7019006682EA /* IndexedCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexedCollection.swift; sourceTree = "<group>"; };
 		0ADAA3B920CB7056006682EA /* KeyValueCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueCollection.swift; sourceTree = "<group>"; };
+		0AE4CA2B21C773C2009883C0 /* CollectionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionTest.swift; sourceTree = "<group>"; };
 		0AE67D0B21A544EC004E21F2 /* AppleCompression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleCompression.swift; sourceTree = "<group>"; };
 		0AE719F91EF50EEB0086923C /* AnyColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AnyColor.swift; sourceTree = "<group>"; };
 		0AE719FF1EF517CA0086923C /* AnyImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AnyImage.swift; sourceTree = "<group>"; };
@@ -730,6 +732,7 @@
 			children = (
 				0AFCA14F1D9E1F130034AB10 /* AtomicTest.swift */,
 				0A4C4DA121952B16002E40DE /* ArithmeticTest.swift */,
+				0AE4CA2B21C773C2009883C0 /* CollectionTest.swift */,
 				0A26A0901FA98994008BEADB /* CompressionTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0AEB4E0621758C0600939383 /* PolynomialTest.swift */,
@@ -1634,6 +1637,7 @@
 				0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */,
 				0A92062D1F14A29E00AF5C49 /* ImageTest.swift in Sources */,
 				0A4A1E2021C4B17D00FD90A0 /* ShapeRegionTest.swift in Sources */,
+				0AE4CA2C21C773C2009883C0 /* CollectionTest.swift in Sources */,
 				0A4A752E21B8D61500AF0CB6 /* ColorSpaceTest.swift in Sources */,
 				0A4C4DA221952B16002E40DE /* ArithmeticTest.swift in Sources */,
 				0A4101A521BF72AD00CD9CB7 /* ImageCodecTest.swift in Sources */,

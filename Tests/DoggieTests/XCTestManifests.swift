@@ -18,6 +18,20 @@ extension AtomicTest {
     ]
 }
 
+extension CollectionTest {
+    static let __allTests = [
+        ("testCollectionRangeOf", testCollectionRangeOf),
+        ("testConcatCollection", testConcatCollection),
+        ("testIndexedCollection", testIndexedCollection),
+        ("testLazySequenceScan", testLazySequenceScan),
+        ("testNextPermute1", testNextPermute1),
+        ("testNextPermute2", testNextPermute2),
+        ("testOptionOneCollection1", testOptionOneCollection1),
+        ("testOptionOneCollection2", testOptionOneCollection2),
+        ("testSequenceScan", testSequenceScan),
+    ]
+}
+
 extension ColorSpaceTest {
     static let __allTests = [
         ("testLoadingColorSpace", testLoadingColorSpace),
@@ -140,6 +154,7 @@ public func __allTests() -> [XCTestCaseEntry] {
     return [
         testCase(ArithmeticTest.__allTests),
         testCase(AtomicTest.__allTests),
+        testCase(CollectionTest.__allTests),
         testCase(ColorSpaceTest.__allTests),
         testCase(CompressionTest.__allTests),
         testCase(FontTest.__allTests),
