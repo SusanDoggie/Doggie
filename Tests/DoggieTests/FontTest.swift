@@ -36,6 +36,25 @@ class FontTest: XCTestCase {
         for font in availableFonts {
             print(font.fontName)
         }
+        
+        for font in availableFonts {
+            
+            let font = font.with(size: 64)
+            
+            let string = "Doggie\u{0301}".precomposedStringWithCanonicalMapping
+            
+            let glyphs = font.glyphs(with: string)
+            let advances = glyphs.map { font.advance(forGlyph: $0) }.scan(0, +)
+            
+            var shape = Shape()
+            
+            for (advance, glyph) in zip(advances, glyphs) {
+                var outline = font.shape(forGlyph: glyph)
+                outline.center.x += advance
+                shape.append(contentsOf: outline.identity)
+            }
+        }
+        
     }
     
 }
