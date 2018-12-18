@@ -60,6 +60,38 @@ class ImageCodecTest: XCTestCase {
         return context.image
     }()
     
+    var sample3: Image<Gray16ColorPixel> = {
+        
+        let context = ImageContext<Gray16ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.genericGamma22Gray)
+        
+        context.draw(rect: Rect(x: 0, y: 0, width: 100, height: 100), color: .white)
+        
+        context.draw(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), color: GrayColorModel(white: 217/255))
+        
+        context.stroke(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), width: 1, cap: .round, join: .round, color: GrayColorModel())
+        
+        context.draw(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), color: GrayColorModel(white: 24/255))
+        
+        context.stroke(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), width: 1, cap: .round, join: .round, color: GrayColorModel())
+        
+        return context.image
+    }()
+    
+    var sample4: Image<Gray16ColorPixel> = {
+        
+        let context = ImageContext<Gray16ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.genericGamma22Gray)
+        
+        context.draw(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), color: GrayColorModel(white: 217/255))
+        
+        context.stroke(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), width: 1, cap: .round, join: .round, color: GrayColorModel())
+        
+        context.draw(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), color: GrayColorModel(white: 24/255))
+        
+        context.stroke(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), width: 1, cap: .round, join: .round, color: GrayColorModel())
+        
+        return context.image
+    }()
+    
     func testPng1() {
         
         guard let data = sample1.pngRepresentation else {
@@ -88,6 +120,36 @@ class ImageCodecTest: XCTestCase {
         }
         
         XCTAssertEqual(sample2.pixels, result.pixels)
+    }
+    
+    func testPng3() {
+        
+        guard let data = sample3.pngRepresentation else {
+            XCTFail()
+            return
+        }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(sample3.pixels, result.pixels)
+    }
+    
+    func testPng4() {
+        
+        guard let data = sample4.pngRepresentation else {
+            XCTFail()
+            return
+        }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(sample4.pixels, result.pixels)
     }
     
     func testBmp1() {
@@ -152,6 +214,36 @@ class ImageCodecTest: XCTestCase {
     
     func testTiff3() {
         
+        guard let data = sample3.tiffRepresentation else {
+            XCTFail()
+            return
+        }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(sample3.pixels, result.pixels)
+    }
+    
+    func testTiff4() {
+        
+        guard let data = sample4.tiffRepresentation else {
+            XCTFail()
+            return
+        }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(sample4.pixels, result.pixels)
+    }
+    
+    func testTiff5() {
+        
         guard let data = Image<FloatColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation else {
             XCTFail()
             return
@@ -165,7 +257,7 @@ class ImageCodecTest: XCTestCase {
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
     
-    func testTiff4() {
+    func testTiff6() {
         
         guard let data = Image<FloatColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation else {
             XCTFail()

@@ -92,11 +92,15 @@ extension ImageCodecTest {
         ("testBmp2", testBmp2),
         ("testPng1", testPng1),
         ("testPng2", testPng2),
+        ("testPng3", testPng3),
+        ("testPng4", testPng4),
         ("testPngSuite", testPngSuite),
         ("testTiff1", testTiff1),
         ("testTiff2", testTiff2),
         ("testTiff3", testTiff3),
         ("testTiff4", testTiff4),
+        ("testTiff5", testTiff5),
+        ("testTiff6", testTiff6),
     ]
 }
 
