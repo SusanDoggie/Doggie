@@ -33,6 +33,8 @@ protocol CGImageRepBase {
     
     var resolution: Resolution { get }
     
+    var mediaType: CGImageRep.MediaType? { get }
+    
     var numberOfPages: Int { get }
     
     func page(_ index: Int) -> CGImageRepBase
@@ -116,6 +118,38 @@ extension CGImageRep {
     }
 }
 
+extension CGImageRep {
+    
+    public enum MediaType {
+        
+        case image
+        
+        case pict
+        
+        case bmp
+        
+        case gif
+        
+        case jpeg
+        
+        case jpeg2000
+        
+        case png
+        
+        case tiff
+        
+        case quickTimeImage
+        
+        case appleICNS
+        
+        case icon
+    }
+    
+    public var mediaType: MediaType? {
+        return base.mediaType
+    }
+}
+
 struct _CGImageSourceImageRepBase : CGImageRepBase {
     
     let source: CGImageSource
@@ -191,6 +225,23 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         }
         
         return Resolution(resolution: 1, unit: .point)
+    }
+    
+    var mediaType: CGImageRep.MediaType? {
+        switch CGImageSourceGetType(source) {
+        case kUTTypeImage: return .image
+        case kUTTypeJPEG: return .jpeg
+        case kUTTypeJPEG2000: return .jpeg2000
+        case kUTTypeTIFF: return .tiff
+        case kUTTypePICT: return .pict
+        case kUTTypeGIF: return .gif
+        case kUTTypePNG: return .png
+        case kUTTypeQuickTimeImage: return .quickTimeImage
+        case kUTTypeAppleICNS: return .appleICNS
+        case kUTTypeBMP: return .bmp
+        case kUTTypeICO: return .icon
+        default: return nil
+        }
     }
     
     func page(_ index: Int) -> CGImageRepBase {
