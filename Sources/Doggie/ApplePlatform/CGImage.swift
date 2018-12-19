@@ -28,9 +28,15 @@
 extension CGImage {
     
     public func fileBacked() -> CGImage? {
+        
         guard let colorSpace = self.colorSpace else { return nil }
-        guard let data = self.dataProvider?.data as Data? else { return nil }
-        guard let providerRef = CGDataProvider(data: data.fileBacked() as CFData) else { return nil }
+        guard let cfdata = self.dataProvider?.data else { return nil }
+        
+        var buffer = MappedBuffer<UInt8>(repeating: 0, count: CFDataGetLength(cfdata), fileBacked: true)
+        buffer.withUnsafeMutableBufferPointer { CFDataGetBytes(cfdata, CFRange(location: 0, length: $0.count), $0.baseAddress) }
+        
+        guard let providerRef = CGDataProvider(data: buffer.data as CFData) else { return nil }
+        
         return CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo, provider: providerRef, decode: nil, shouldInterpolate: shouldInterpolate, intent: renderingIntent)
     }
 }
