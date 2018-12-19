@@ -25,12 +25,12 @@
 
 private protocol TIFFRawRepresentable {
     
-    func rawData(_ isOpaque: Bool) -> MappedBuffer<UInt8>
+    func rawData(_ isOpaque: Bool) -> Data
 }
 
 extension Image : TIFFRawRepresentable {
     
-    fileprivate func rawData(_ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    fileprivate func rawData(_ isOpaque: Bool) -> Data {
         
         let samplesPerPixel = isOpaque ? Pixel.Model.numberOfComponents : Pixel.Model.numberOfComponents + 1
         let bytesPerSample = 2
@@ -63,13 +63,13 @@ extension Image : TIFFRawRepresentable {
             }
         }
         
-        return data
+        return data.data
     }
 }
 
 struct TIFFEncoder : ImageRepEncoder {
     
-    private static func rawData(_ image: Image<FloatColorPixel<LabColorModel>>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    private static func rawData(_ image: Image<FloatColorPixel<LabColorModel>>, _ isOpaque: Bool) -> Data {
         
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
@@ -100,9 +100,9 @@ struct TIFFEncoder : ImageRepEncoder {
             }
         }
         
-        return data
+        return data.data
     }
-    private static func rawData(_ image: Image<ColorPixel<LabColorModel>>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    private static func rawData(_ image: Image<ColorPixel<LabColorModel>>, _ isOpaque: Bool) -> Data {
         
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
@@ -133,9 +133,9 @@ struct TIFFEncoder : ImageRepEncoder {
             }
         }
         
-        return data
+        return data.data
     }
-    private static func rawData(_ image: Image<ARGB32ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    private static func rawData(_ image: Image<ARGB32ColorPixel>, _ isOpaque: Bool) -> Data {
         
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
@@ -166,9 +166,9 @@ struct TIFFEncoder : ImageRepEncoder {
             }
         }
         
-        return data
+        return data.data
     }
-    private static func rawData(_ image: Image<ARGB64ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    private static func rawData(_ image: Image<ARGB64ColorPixel>, _ isOpaque: Bool) -> Data {
         
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 2
@@ -199,9 +199,9 @@ struct TIFFEncoder : ImageRepEncoder {
             }
         }
         
-        return data
+        return data.data
     }
-    private static func rawData(_ image: Image<RGBA32ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    private static func rawData(_ image: Image<RGBA32ColorPixel>, _ isOpaque: Bool) -> Data {
         
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 1
@@ -232,9 +232,9 @@ struct TIFFEncoder : ImageRepEncoder {
             }
         }
         
-        return data
+        return data.data
     }
-    private static func rawData(_ image: Image<RGBA64ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    private static func rawData(_ image: Image<RGBA64ColorPixel>, _ isOpaque: Bool) -> Data {
         
         let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 2
@@ -265,9 +265,9 @@ struct TIFFEncoder : ImageRepEncoder {
             }
         }
         
-        return data
+        return data.data
     }
-    private static func rawData(_ image: Image<Gray16ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    private static func rawData(_ image: Image<Gray16ColorPixel>, _ isOpaque: Bool) -> Data {
         
         let samplesPerPixel = isOpaque ? 1 : 2
         let bytesPerSample = 1
@@ -294,9 +294,9 @@ struct TIFFEncoder : ImageRepEncoder {
             }
         }
         
-        return data
+        return data.data
     }
-    private static func rawData(_ image: Image<Gray32ColorPixel>, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    private static func rawData(_ image: Image<Gray32ColorPixel>, _ isOpaque: Bool) -> Data {
         
         let samplesPerPixel = isOpaque ? 1 : 2
         let bytesPerSample = 2
@@ -323,7 +323,7 @@ struct TIFFEncoder : ImageRepEncoder {
             }
         }
         
-        return data
+        return data.data
     }
     
     private static func encode(tag: TIFFTag.Tag, type: UInt16, value: [Int], _ data: inout MappedBuffer<UInt8>) {
@@ -358,12 +358,14 @@ struct TIFFEncoder : ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         
+        let compression = properties[.compression] as? ImageRep.TIFFCompressionScheme ?? .none
+        
         let isOpaque = image.isOpaque
         let samplesPerPixel = isOpaque ? image.colorSpace.numberOfComponents : image.colorSpace.numberOfComponents + 1
         
         let bitsPerChannel: Int
         let photometric: Int
-        let pixelData: MappedBuffer<UInt8>
+        var pixelData: Data
         
         let resolutionUnit: Int
         let resolutionX: Double
@@ -448,6 +450,13 @@ struct TIFFEncoder : ImageRepEncoder {
             }
         }
         
+        switch compression {
+        case .none: break
+        case .deflate:
+            guard let _data = try? Deflate(windowBits: 15).process(pixelData) else { return nil }
+            pixelData = _data
+        }
+        
         var tag_count: UInt16 = 14
         
         if !isOpaque {
@@ -462,7 +471,10 @@ struct TIFFEncoder : ImageRepEncoder {
         encode(tag: .NewSubfileType, type: 4, value: [0], &data)
         encode(tag: .ImageWidth, type: 3, value: [image.width], &data)
         encode(tag: .ImageHeight, type: 3, value: [image.height], &data)
-        encode(tag: .Compression, type: 3, value: [1], &data)
+        switch compression {
+        case .none: encode(tag: .Compression, type: 3, value: [1], &data)
+        case .deflate: encode(tag: .Compression, type: 3, value: [8], &data)
+        }
         encode(tag: .PlanarConfiguration, type: 3, value: [1], &data)
         encode(tag: .Photometric, type: 3, value: [photometric], &data)
         encode(tag: .StripByteCounts, type: 4, value: [pixelData.count], &data)

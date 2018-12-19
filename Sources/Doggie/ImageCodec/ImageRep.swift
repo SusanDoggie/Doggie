@@ -202,9 +202,18 @@ extension ImageRep {
     
     public enum PropertyKey {
         
+        case compression
+        
         case compressionQuality
         
         case interlaced
+    }
+    
+    public enum TIFFCompressionScheme {
+        
+        case none
+        
+        case deflate
     }
     
     public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
@@ -261,8 +270,8 @@ extension AnyImage {
 
 extension Image {
     
-    public var tiffRepresentation: Data? {
-        return self.representation(using: .tiff, properties: [:])
+    public func tiffRepresentation(compression: ImageRep.TIFFCompressionScheme = .none) -> Data? {
+        return self.representation(using: .tiff, properties: [.compression: compression])
     }
     
     public func pngRepresentation(interlaced: Bool = false) -> Data? {
@@ -272,8 +281,8 @@ extension Image {
 
 extension AnyImage {
     
-    public var tiffRepresentation: Data? {
-        return self.representation(using: .tiff, properties: [:])
+    public func tiffRepresentation(compression: ImageRep.TIFFCompressionScheme = .none) -> Data? {
+        return self.representation(using: .tiff, properties: [.compression: compression])
     }
     
     public func pngRepresentation(interlaced: Bool = false) -> Data? {
