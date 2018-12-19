@@ -74,7 +74,20 @@ extension CGImage {
     
     public enum PropertyKey : Int {
         
+        case compression
+        
         case compressionQuality
+        
+        case interlaced
+    }
+    
+    public enum TIFFCompressionScheme {
+        
+        case none
+        
+        case lzw
+        
+        case packBits
     }
     
     public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
@@ -87,8 +100,26 @@ extension CGImage {
         case .gif: type = kUTTypeGIF
         case .jpeg: type = kUTTypeJPEG
         case .jpeg2000: type = kUTTypeJPEG2000
-        case .png: type = kUTTypePNG
-        case .tiff: type = kUTTypeTIFF
+        case .png:
+            
+            type = kUTTypePNG
+            
+            if properties[.interlaced] as? Bool == true {
+                _properties[kCGImagePropertyPNGDictionary] = [kCGImagePropertyPNGInterlaceType: 1]
+            }
+            
+        case .tiff:
+            
+            type = kUTTypeTIFF
+            
+            if let compression = properties[.compression] as? TIFFCompressionScheme {
+                switch compression {
+                case .none: break
+                case .lzw: _properties[kCGImagePropertyTIFFDictionary] = [kCGImagePropertyTIFFCompression: 5]
+                case .packBits: _properties[kCGImagePropertyTIFFDictionary] = [kCGImagePropertyTIFFCompression: 32773]
+                }
+            }
+            
         case .heic:
             guard #available(OSX 10.13, iOS 11.0, tvOS 11.0, *) else { return nil }
             type = AVFileType.heic as CFString
@@ -101,12 +132,12 @@ extension CGImage {
         return CGImage.withImageDestination(type, 1) { CGImageDestinationAddImage($0, self, _properties as CFDictionary) }
     }
     
-    public var tiffRepresentation: Data? {
-        return self.representation(using: .tiff, properties: [:])
+    public func tiffRepresentation(compression: TIFFCompressionScheme = .none) -> Data? {
+        return self.representation(using: .tiff, properties: [.compression: compression])
     }
     
-    public var pngRepresentation: Data? {
-        return self.representation(using: .png, properties: [:])
+    public func pngRepresentation(interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, properties: [.interlaced: interlaced])
     }
     
     public func jpegRepresentation(compressionQuality: Double) -> Data? {

@@ -265,8 +265,8 @@ extension Image {
         return self.representation(using: .tiff, properties: [:])
     }
     
-    public var pngRepresentation: Data? {
-        return self.representation(using: .png, properties: [:])
+    public func pngRepresentation(interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, properties: [.interlaced: interlaced])
     }
 }
 
@@ -276,8 +276,8 @@ extension AnyImage {
         return self.representation(using: .tiff, properties: [:])
     }
     
-    public var pngRepresentation: Data? {
-        return self.representation(using: .png, properties: [:])
+    public func pngRepresentation(interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, properties: [.interlaced: interlaced])
     }
 }
 

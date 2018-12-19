@@ -318,7 +318,7 @@ struct PNGEncoder : ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         
-        let interlaced = properties[ImageRep.PropertyKey.interlaced] as? Bool == true
+        let interlaced = properties[.interlaced] as? Bool == true
         
         if let image = image.base as? Image<Gray32ColorPixel> {
             return encodeGray(image: image, interlace: interlaced)?.data

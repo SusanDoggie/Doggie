@@ -94,7 +94,7 @@ class ImageCodecTest: XCTestCase {
     
     func testPng1() {
         
-        guard let data = sample1.pngRepresentation else {
+        guard let data = sample1.pngRepresentation() else {
             XCTFail()
             return
         }
@@ -109,7 +109,7 @@ class ImageCodecTest: XCTestCase {
     
     func testPng2() {
         
-        guard let data = sample2.pngRepresentation else {
+        guard let data = sample2.pngRepresentation() else {
             XCTFail()
             return
         }
@@ -124,7 +124,7 @@ class ImageCodecTest: XCTestCase {
     
     func testPng3() {
         
-        guard let data = sample3.pngRepresentation else {
+        guard let data = sample3.pngRepresentation() else {
             XCTFail()
             return
         }
@@ -139,7 +139,67 @@ class ImageCodecTest: XCTestCase {
     
     func testPng4() {
         
-        guard let data = sample4.pngRepresentation else {
+        guard let data = sample4.pngRepresentation() else {
+            XCTFail()
+            return
+        }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(sample4.pixels, result.pixels)
+    }
+    
+    func testPng1Interlaced() {
+        
+        guard let data = sample1.pngRepresentation(interlaced: true) else {
+            XCTFail()
+            return
+        }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(sample1.pixels, result.pixels)
+    }
+    
+    func testPng2Interlaced() {
+        
+        guard let data = sample2.pngRepresentation(interlaced: true) else {
+            XCTFail()
+            return
+        }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(sample2.pixels, result.pixels)
+    }
+    
+    func testPng3Interlaced() {
+        
+        guard let data = sample3.pngRepresentation(interlaced: true) else {
+            XCTFail()
+            return
+        }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(sample3.pixels, result.pixels)
+    }
+    
+    func testPng4Interlaced() {
+        
+        guard let data = sample4.pngRepresentation(interlaced: true) else {
             XCTFail()
             return
         }
