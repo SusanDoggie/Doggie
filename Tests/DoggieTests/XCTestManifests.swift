@@ -100,11 +100,17 @@ extension ImageCodecTest {
         ("testPng4Interlaced", testPng4Interlaced),
         ("testPngSuite", testPngSuite),
         ("testTiff1", testTiff1),
+        ("testTiff1Deflate", testTiff1Deflate),
         ("testTiff2", testTiff2),
+        ("testTiff2Deflate", testTiff2Deflate),
         ("testTiff3", testTiff3),
+        ("testTiff3Deflate", testTiff3Deflate),
         ("testTiff4", testTiff4),
+        ("testTiff4Deflate", testTiff4Deflate),
         ("testTiff5", testTiff5),
+        ("testTiff5Deflate", testTiff5Deflate),
         ("testTiff6", testTiff6),
+        ("testTiff6Deflate", testTiff6Deflate),
     ]
 }
 

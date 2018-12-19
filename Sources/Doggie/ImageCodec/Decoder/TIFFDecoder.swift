@@ -252,7 +252,7 @@ struct TIFFPage : ImageRepBase {
         }
         
         switch self.compression {
-        case 1: break
+        case 1, 8: break
         default: throw ImageRep.Error.Unsupported("Unsupported compression.")
         }
         
@@ -446,118 +446,131 @@ struct TIFFPage : ImageRepBase {
         }
     }
     
+    func _decompressed(data: Data, fileBacked: Bool) throws -> Data {
+        switch compression {
+        case 1: return data
+        case 8:
+            
+            var decompressed = MappedBuffer<UInt8>(capacity: data.count, fileBacked: fileBacked)
+            
+            try Inflate().process(data, &decompressed)
+            
+            return decompressed.data
+            
+        default: fatalError()
+        }
+    }
+    
+    func decompressed_strips(fileBacked: Bool) -> [Data] {
+        return strips.map { (try? _decompressed(data: $0, fileBacked: fileBacked)) ?? Data() }
+    }
+    
     func image(fileBacked: Bool) -> AnyImage {
         
         let colorSpace = self.colorSpace
         
-        switch compression {
-        case 1:
-            if photometric == 3 {
+        if photometric == 3 {
+            
+            var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: colorSpace.base as! ColorSpace<RGBColorModel>, fileBacked: fileBacked)
+            
+            image.withUnsafeMutableBufferPointer { palettePixelReader($0.baseAddress, fileBacked: fileBacked) }
+            
+            return AnyImage(image)
+            
+        } else {
+            
+            var image: AnyImage
+            
+            let row = columnX ? height : width
+            let column = columnX ? width : height
+            
+            let endianness: RawBitmap.Endianness
+            
+            switch self.endianness {
+            case .BIG: endianness = .big
+            case .LITTLE: endianness = .little
+            default: fatalError()
+            }
+            
+            switch planarConfiguration {
+            case 1:
                 
-                var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: colorSpace.base as! ColorSpace<RGBColorModel>, fileBacked: fileBacked)
+                var bitmaps = [RawBitmap]()
                 
-                image.withUnsafeMutableBufferPointer { uncompressedPalettePixelReader($0.baseAddress) }
+                let bitsPerPixel = self.bitsPerSample.reduce(0, +)
                 
-                return AnyImage(image)
+                var offset = 0
                 
-            } else {
+                var channels = [RawBitmap.Channel]()
                 
-                var image: AnyImage
-                
-                let row = columnX ? height : width
-                let column = columnX ? width : height
-                
-                let endianness: RawBitmap.Endianness
-                
-                switch self.endianness {
-                case .BIG: endianness = .big
-                case .LITTLE: endianness = .little
-                default: fatalError()
+                for (i, (bits, format)) in zip(self.bitsPerSample, self.sampleFormat).enumerated() {
+                    
+                    if photometric == 8 && (i == 1 || i == 2) && format == 1 {
+                        channels.append(RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
+                    } else {
+                        switch format {
+                        case 1: channels.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: offset..<offset + bits))
+                        case 2: channels.append(RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
+                        case 3: channels.append(RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: offset..<offset + bits))
+                        default: break
+                        }
+                    }
+                    
+                    offset += bits
                 }
                 
-                switch planarConfiguration {
-                case 1:
+                for (i, data) in decompressed_strips(fileBacked: fileBacked).enumerated() {
+                    bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), startsRow: i * rowsPerStrip, channels: channels, data: data))
+                }
+                
+                image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
+                
+            case 2:
+                
+                var bitmaps = [RawBitmap]()
+                
+                for (i, strips) in decompressed_strips(fileBacked: fileBacked).slice(by: stripsPerImage).enumerated() {
                     
-                    var bitmaps = [RawBitmap]()
+                    let bits = bitsPerSample[i]
+                    let format = sampleFormat[i]
                     
-                    let bitsPerPixel = self.bitsPerSample.reduce(0, +)
-                    
-                    var offset = 0
-                    
-                    var channels = [RawBitmap.Channel]()
-                    
-                    for (i, (bits, format)) in zip(self.bitsPerSample, self.sampleFormat).enumerated() {
+                    for (j, strip) in strips.enumerated() {
                         
                         if photometric == 8 && (i == 1 || i == 2) && format == 1 {
-                            channels.append(RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
+                            bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
                         } else {
                             switch format {
-                            case 1: channels.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: offset..<offset + bits))
-                            case 2: channels.append(RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
-                            case 3: channels.append(RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: offset..<offset + bits))
+                            case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
                             default: break
                             }
                         }
-                        
-                        offset += bits
                     }
-                    
-                    for (i, data) in strips.enumerated() {
-                        bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), startsRow: i * rowsPerStrip, channels: channels, data: data))
-                    }
-                    
-                    image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
-                    
-                case 2:
-                    
-                    var bitmaps = [RawBitmap]()
-                    
-                    for (i, strips) in strips.slice(by: stripsPerImage).enumerated() {
-                        
-                        let bits = bitsPerSample[i]
-                        let format = sampleFormat[i]
-                        
-                        for (j, strip) in strips.enumerated() {
-                            
-                            if photometric == 8 && (i == 1 || i == 2) && format == 1 {
-                                bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                            } else {
-                                switch format {
-                                case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                                case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                                case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                                default: break
-                                }
-                            }
-                        }
-                    }
-                    
-                    image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
-                    
-                default: fatalError()
                 }
                 
-                switch orientation {
-                case 1: image.setOrientation(.up)
-                case 2: image.setOrientation(.upMirrored)
-                case 3: image.setOrientation(.down)
-                case 4: image.setOrientation(.downMirrored)
-                case 5: image.setOrientation(.leftMirrored)
-                case 6: image.setOrientation(.right)
-                case 7: image.setOrientation(.rightMirrored)
-                case 8: image.setOrientation(.left)
-                default: fatalError()
-                }
+                image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
                 
-                return image
+            default: fatalError()
             }
-        default: fatalError()
+            
+            switch orientation {
+            case 1: image.setOrientation(.up)
+            case 2: image.setOrientation(.upMirrored)
+            case 3: image.setOrientation(.down)
+            case 4: image.setOrientation(.downMirrored)
+            case 5: image.setOrientation(.leftMirrored)
+            case 6: image.setOrientation(.right)
+            case 7: image.setOrientation(.rightMirrored)
+            case 8: image.setOrientation(.left)
+            default: fatalError()
+            }
+            
+            return image
         }
-        
-        return AnyImage(width: 0, height: 0, colorSpace: colorSpace, fileBacked: fileBacked)
     }
     
-    func uncompressedPalettePixelReader(_ pixel: UnsafeMutablePointer<ARGB64ColorPixel>?) {
+    func palettePixelReader(_ pixel: UnsafeMutablePointer<ARGB64ColorPixel>?, fileBacked: Bool) {
         
         guard let pixel = pixel else { return }
         
@@ -595,7 +608,7 @@ struct TIFFPage : ImageRepBase {
             var remain = height
             let rowSize = width * ((bitWidth + 7) >> 3)
             
-            for strip in strips {
+            for strip in decompressed_strips(fileBacked: fileBacked) {
                 
                 let rowCount = min(rowsPerStrip, remain)
                 
