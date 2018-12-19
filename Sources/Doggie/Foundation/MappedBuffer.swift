@@ -70,7 +70,6 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     public init(repeating repeatedValue: Element, count: Int, fileBacked: Bool = false) {
         self.base = Base(capacity: count, fileBacked: fileBacked)
         self.base.count = count
-        
         guard Swift.withUnsafeBytes(of: repeatedValue, { $0.contains { $0 != 0 } }) else { return }
         self.base.address.initialize(repeating: repeatedValue, count: count)
     }
@@ -87,22 +86,12 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     @inline(__always)
     public init<S : Sequence>(_ elements: S, fileBacked: Bool = false) where S.Element == Element {
         if let elements = elements as? MappedBuffer {
-            if elements.fileBacked == fileBacked {
-                self = elements
-            } else {
-                let _base = elements.base
-                self.base = Base(capacity: _base.capacity, fileBacked: fileBacked)
-                self.base.count = _base.count
-                self.base.address.initialize(from: _base.address, count: _base.count)
-            }
+            self = elements.fileBacked == fileBacked ? elements : elements.withUnsafeBufferPointer { MappedBuffer(buffer: $0, fileBacked: fileBacked) }
         } else {
             self.base = Base(capacity: elements.underestimatedCount, fileBacked: fileBacked)
             self.append(contentsOf: elements)
         }
     }
-}
-
-extension MappedBuffer {
     
     @inlinable
     @inline(__always)

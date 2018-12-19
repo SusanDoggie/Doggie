@@ -450,13 +450,9 @@ struct TIFFPage : ImageRepBase {
         switch compression {
         case 1: return data
         case 8:
-            
             var decompressed = MappedBuffer<UInt8>(capacity: data.count, fileBacked: fileBacked)
-            
-            try Inflate().process(data, &decompressed)
-            
+            try Inflate().final(data, &decompressed)
             return decompressed.data
-            
         default: fatalError()
         }
     }
