@@ -111,6 +111,8 @@ extension ImageCodecTest {
         ("testTiff5Deflate", testTiff5Deflate),
         ("testTiff6", testTiff6),
         ("testTiff6Deflate", testTiff6Deflate),
+        ("testTiffOrientation1", testTiffOrientation1),
+        ("testTiffOrientation2", testTiffOrientation2),
     ]
 }
 
