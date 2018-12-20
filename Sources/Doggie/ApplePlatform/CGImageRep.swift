@@ -172,17 +172,30 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         return CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [CFString : Any] ?? [:]
     }
     
-    var width: Int {
+    var orientation: Int {
+        let orientation = properties[kCGImagePropertyOrientation] as? NSNumber
+        return orientation?.intValue ?? 1
+    }
+    
+    var _width: Int {
         let width = properties[kCGImagePropertyPixelWidth] as? NSNumber
         return width?.intValue ?? 0
     }
     
-    var height: Int {
+    var _height: Int {
         let height = properties[kCGImagePropertyPixelHeight] as? NSNumber
         return height?.intValue ?? 0
     }
     
-    var resolution: Resolution {
+    var width: Int {
+        return 1...4 ~= orientation ? _width : _height
+    }
+    
+    var height: Int {
+        return 1...4 ~= orientation ? _height : _width
+    }
+    
+    var _resolution: Resolution {
         
         if let resolutionX = properties[kCGImagePropertyDPIWidth] as? NSNumber, let resolutionY = properties[kCGImagePropertyDPIHeight] as? NSNumber {
             
@@ -225,6 +238,11 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         }
         
         return Resolution(resolution: 1, unit: .point)
+    }
+    
+    var resolution: Resolution {
+        let resolution = self._resolution
+        return 1...4 ~= orientation ? resolution : Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit)
     }
     
     var mediaType: CGImageRep.MediaType? {

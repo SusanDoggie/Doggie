@@ -151,8 +151,16 @@ struct TIFFPage : ImageRepBase {
         return self.newSubfileType & 4 == 1
     }
     
-    var width: Int
-    var height: Int
+    var width: Int {
+        return 1...4 ~= self.orientation ? _width : _height
+    }
+    
+    var height: Int {
+        return 1...4 ~= self.orientation ? _height : _width
+    }
+    
+    var _width: Int
+    var _height: Int
     
     var compression: Int = 1
     var planarConfiguration: Int = 1
@@ -194,8 +202,8 @@ struct TIFFPage : ImageRepBase {
         guard let stripOffsets = tags.first(where: { $0.tag == .StripOffsets }) else { throw ImageRep.Error.InvalidFormat("Invalid strip offset type.") }
         guard let stripByteCounts = tags.first(where: { $0.tag == .StripByteCounts }) else { throw ImageRep.Error.InvalidFormat("Strip byte counts not found.") }
         
-        self.width = try width.fatchInteger()
-        self.height = try height.fatchInteger()
+        self._width = try width.fatchInteger()
+        self._height = try height.fatchInteger()
         self.photometric = try photometric.fatchInteger()
         self.samplesPerPixel = try samplesPerPixel.fatchInteger()
         self.bitsPerSample = try bitsPerSample.fatchIntegers(data)
@@ -210,15 +218,15 @@ struct TIFFPage : ImageRepBase {
             self.rowsPerStrip = _rowsPerStrip
         } else {
             switch self.orientation {
-            case 1...4: self.rowsPerStrip = self.height
-            case 5...8: self.rowsPerStrip = self.width
+            case 1...4: self.rowsPerStrip = self._height
+            case 5...8: self.rowsPerStrip = self._width
             default: throw ImageRep.Error.InvalidFormat("Invalid orientation.")
             }
         }
         
         switch self.orientation {
-        case 1...4: self.stripsPerImage = (self.height + self.rowsPerStrip - 1) / self.rowsPerStrip
-        case 5...8: self.stripsPerImage = (self.width + self.rowsPerStrip - 1) / self.rowsPerStrip
+        case 1...4: self.stripsPerImage = (self._height + self.rowsPerStrip - 1) / self.rowsPerStrip
+        case 5...8: self.stripsPerImage = (self._width + self.rowsPerStrip - 1) / self.rowsPerStrip
         default: throw ImageRep.Error.InvalidFormat("Invalid orientation.")
         }
         
@@ -416,7 +424,7 @@ struct TIFFPage : ImageRepBase {
         }
     }
     
-    var resolution: Resolution {
+    var _resolution: Resolution {
         switch resolutionUnit {
         case 1: return Resolution(horizontal: resolutionX, vertical: resolutionY, unit: .point)
         case 2: return Resolution(horizontal: resolutionX, vertical: resolutionY, unit: .inch)
@@ -425,25 +433,9 @@ struct TIFFPage : ImageRepBase {
         }
     }
     
-    var columnX: Bool {
-        switch orientation {
-        case 1, 2, 3, 4: return true
-        default: return false
-        }
-    }
-    
-    var flipX: Bool {
-        switch orientation {
-        case 2, 3, 8, 7: return true
-        default: return false
-        }
-    }
-    
-    var flipY: Bool {
-        switch orientation {
-        case 3, 4, 7, 6: return true
-        default: return false
-        }
+    var resolution: Resolution {
+        let resolution = self._resolution
+        return 1...4 ~= orientation ? resolution : Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit)
     }
     
     func _decompressed(data: Data, fileBacked: Bool) throws -> Data {
@@ -465,20 +457,17 @@ struct TIFFPage : ImageRepBase {
         
         let colorSpace = self.colorSpace
         
+        var image: AnyImage
+        
         if photometric == 3 {
             
-            var image = Image<ARGB64ColorPixel>(width: width, height: height, colorSpace: colorSpace.base as! ColorSpace<RGBColorModel>, fileBacked: fileBacked)
+            var _image = Image<ARGB64ColorPixel>(width: _width, height: _height, colorSpace: colorSpace.base as! ColorSpace<RGBColorModel>, fileBacked: fileBacked)
             
-            image.withUnsafeMutableBufferPointer { palettePixelReader($0.baseAddress, fileBacked: fileBacked) }
+            _image.withUnsafeMutableBufferPointer { palettePixelReader($0.baseAddress, fileBacked: fileBacked) }
             
-            return AnyImage(image)
+            image = AnyImage(_image)
             
         } else {
-            
-            var image: AnyImage
-            
-            let row = columnX ? height : width
-            let column = columnX ? width : height
             
             let endianness: RawBitmap.Endianness
             
@@ -516,10 +505,10 @@ struct TIFFPage : ImageRepBase {
                 }
                 
                 for (i, data) in decompressed_strips(fileBacked: fileBacked).enumerated() {
-                    bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * column).align(8), startsRow: i * rowsPerStrip, channels: channels, data: data))
+                    bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bitsPerRow: (bitsPerPixel * _width).align(8), startsRow: i * rowsPerStrip, channels: channels, data: data))
                 }
                 
-                image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
+                image = AnyImage(width: _width, height: _height, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
                 
             case 2:
                 
@@ -533,67 +522,45 @@ struct TIFFPage : ImageRepBase {
                     for (j, strip) in strips.enumerated() {
                         
                         if photometric == 8 && (i == 1 || i == 2) && format == 1 {
-                            bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * _width).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
                         } else {
                             switch format {
-                            case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                            case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                            case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * column).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * _width).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * _width).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bitsPerRow: (bits * _width).align(8), startsRow: j * rowsPerStrip, channels: [RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
                             default: break
                             }
                         }
                     }
                 }
                 
-                image = AnyImage(width: column, height: row, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
+                image = AnyImage(width: _width, height: _height, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
                 
             default: fatalError()
             }
-            
-            switch orientation {
-            case 1: image.setOrientation(.up)
-            case 2: image.setOrientation(.upMirrored)
-            case 3: image.setOrientation(.down)
-            case 4: image.setOrientation(.downMirrored)
-            case 5: image.setOrientation(.leftMirrored)
-            case 6: image.setOrientation(.right)
-            case 7: image.setOrientation(.rightMirrored)
-            case 8: image.setOrientation(.left)
-            default: fatalError()
-            }
-            
-            return image
         }
+        
+        switch orientation {
+        case 1: image.setOrientation(.up)
+        case 2: image.setOrientation(.upMirrored)
+        case 3: image.setOrientation(.down)
+        case 4: image.setOrientation(.downMirrored)
+        case 5: image.setOrientation(.leftMirrored)
+        case 6: image.setOrientation(.right)
+        case 7: image.setOrientation(.rightMirrored)
+        case 8: image.setOrientation(.left)
+        default: fatalError()
+        }
+        
+        return image
+        
     }
     
     func palettePixelReader(_ pixel: UnsafeMutablePointer<ARGB64ColorPixel>?, fileBacked: Bool) {
         
         guard let pixel = pixel else { return }
         
-        let row: Int
-        let col: Int
-        
         var destination = pixel
-        
-        if columnX {
-            row = flipY ? -width : width
-            col = flipX ? -1 : 1
-            if flipY {
-                destination += width * (height - 1)
-            }
-            if flipX {
-                destination += width - 1
-            }
-        } else {
-            row = flipY ? -1 : 1
-            col = flipX ? -width : width
-            if flipY {
-                destination += width - 1
-            }
-            if flipX {
-                destination += width * (height - 1)
-            }
-        }
         
         palette.withUnsafeBufferPointer {
             
@@ -601,8 +568,8 @@ struct TIFFPage : ImageRepBase {
             
             let bitWidth = self.bitsPerSample[0]
             
-            var remain = height
-            let rowSize = width * ((bitWidth + 7) >> 3)
+            var remain = _height
+            let rowSize = _width * ((bitWidth + 7) >> 3)
             
             for strip in decompressed_strips(fileBacked: fileBacked) {
                 
@@ -621,7 +588,7 @@ struct TIFFPage : ImageRepBase {
                         var _bitsOffset = bitsOffset
                         var _destination = destination
                         
-                        for _ in 0..<width {
+                        for _ in 0..<_width {
                             
                             guard _bitsOffset + bitWidth <= dataBitSize else { return }
                             
@@ -648,11 +615,11 @@ struct TIFFPage : ImageRepBase {
                             _destination.pointee = ARGB64ColorPixel(red: r, green: g, blue: b)
                             
                             _bitsOffset += bitWidth
-                            _destination += col
+                            _destination += 1
                         }
                         
                         bitsOffset += rowSize << 3
-                        destination += row
+                        destination += _width
                     }
                 }
                 
