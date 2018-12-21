@@ -28,6 +28,8 @@ before_install:
   - echo "swift test -c release" | cat >./.swift-test-macOS
   - echo "swift build -c release" | cat >./.swift-build-linux
   - echo "swift test -c release" | cat >./.swift-test-linux
+  - echo "xcodebuild -quiet -project Doggie.xcodeproj -scheme Doggie-Package -sdk macosx -configuration Release -enableCodeCoverage YES -skipUnavailableActions test" | cat >./.swift-codecov
+  - echo -n >./.swift-xcodeproj
   - |
     cat <<"EOF" > build.sh
     set -e
