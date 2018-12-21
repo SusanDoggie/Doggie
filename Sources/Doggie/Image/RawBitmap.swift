@@ -146,8 +146,8 @@ extension Image {
                 
                 for _ in bitmap.startsRow..<height {
                     
-                    guard data.count / MemoryLayout<T>.stride != 0 else { return }
                     let data_count = min(bitmap.bytesPerRow, data.count) / MemoryLayout<T>.stride
+                    guard data_count != 0 else { return }
                     
                     data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<T>) in
                         
@@ -227,8 +227,8 @@ extension Image {
             
             for _ in bitmap.startsRow..<height {
                 
-                guard data.count / MemoryLayout<T>.stride != 0 else { return }
                 let data_count = min(bitmap.bytesPerRow, data.count) / MemoryLayout<T>.stride
+                guard data_count != 0 else { return }
                 
                 data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<T>) in
                     
@@ -241,7 +241,7 @@ extension Image {
                     
                     for _ in 0..<width {
                         
-                        guard _source < source_end else { return }
+                        guard _source + channel_count <= source_end else { return }
                         
                         let __destination = _destination + channel.index
                         
@@ -313,8 +313,8 @@ extension Image {
             
             for _ in bitmap.startsRow..<height {
                 
-                guard data.count / MemoryLayout<T.BitPattern>.stride != 0 else { return }
                 let data_count = min(bitmap.bytesPerRow, data.count) / MemoryLayout<T.BitPattern>.stride
+                guard data_count != 0 else { return }
                 
                 data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<T.BitPattern>) in
                     
@@ -325,7 +325,7 @@ extension Image {
                     
                     for _ in 0..<width {
                         
-                        guard _source < source_end else { return }
+                        guard _source + channel_count <= source_end else { return }
                         
                         let __destination = _destination + channel.index
                         
