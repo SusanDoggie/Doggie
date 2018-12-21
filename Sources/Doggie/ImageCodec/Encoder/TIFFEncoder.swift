@@ -57,6 +57,14 @@ struct TIFFEncoder : ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         
+        let bitsPerChannel: Int
+        let photometric: Int
+        var pixelData: MappedBuffer<UInt8>
+        
+        let resolutionUnit: Int
+        let resolutionX: Double
+        let resolutionY: Double
+        
         let compression = properties[.compression] as? ImageRep.TIFFCompressionScheme ?? .none
         let predictor: Int
         
@@ -65,16 +73,18 @@ struct TIFFEncoder : ImageRepEncoder {
         case .deflate: predictor = 1
         }
         
+        switch image.colorSpace.base {
+        case is ColorSpace<RGBColorModel>: photometric = 2
+        case is ColorSpace<GrayColorModel>: photometric = 1
+        case is ColorSpace<LabColorModel>: photometric = 8
+        default: photometric = 5
+        }
+        
+        let colorSpace = photometric == 8 ? AnyColorSpace(.cieLab(white: Point(x: 0.34567, y: 0.35850))) : image.colorSpace
+        guard let iccData = colorSpace.iccData else { return encode(image: AnyImage(Image<FloatColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850)))), properties: properties) }
+        
         let isOpaque = image.isOpaque
         let samplesPerPixel = isOpaque ? image.colorSpace.numberOfComponents : image.colorSpace.numberOfComponents + 1
-        
-        let bitsPerChannel: Int
-        let photometric: Int
-        var pixelData: MappedBuffer<UInt8>
-        
-        let resolutionUnit: Int
-        let resolutionX: Double
-        let resolutionY: Double
         
         switch image.resolution.unit {
         case .inch:
@@ -91,16 +101,6 @@ struct TIFFEncoder : ImageRepEncoder {
             resolutionX = resolution.horizontal
             resolutionY = resolution.vertical
         }
-        
-        switch image.colorSpace.base {
-        case is ColorSpace<RGBColorModel>: photometric = 2
-        case is ColorSpace<GrayColorModel>: photometric = 1
-        case is ColorSpace<LabColorModel>: photometric = 8
-        default: photometric = 5
-        }
-        
-        let colorSpace = photometric == 8 ? AnyColorSpace(.cieLab(white: Point(x: 0.34567, y: 0.35850))) : image.colorSpace
-        guard let iccData = colorSpace.iccData else { return encode(image: AnyImage(Image<FloatColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850)))), properties: properties) }
         
         switch image.base {
         case let image as Image<ARGB32ColorPixel>:
