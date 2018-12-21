@@ -33,13 +33,13 @@ struct TIFFEncoder : ImageRepEncoder {
         
         switch type {
         case 1:
-            guard 1...4 ~= value.count else { fatalError() }
+            precondition(1...4 ~= value.count)
             for v in value {
                 data.encode(UInt8(v).bigEndian)
             }
             data.append(contentsOf: repeatElement(0 as UInt8, count: 4 - value.count))
         case 3:
-            guard 1...2 ~= value.count else { fatalError() }
+            precondition(1...2 ~= value.count)
             for v in value {
                 data.encode(UInt16(v).bigEndian)
             }
@@ -47,7 +47,7 @@ struct TIFFEncoder : ImageRepEncoder {
                 data.encode(0 as UInt16)
             }
         case 4:
-            guard value.count == 1 else { fatalError() }
+            precondition(value.count == 1)
             for v in value {
                 data.encode(UInt32(v).bigEndian)
             }
@@ -70,7 +70,7 @@ struct TIFFEncoder : ImageRepEncoder {
         
         switch compression {
         case .none: predictor = 1
-        case .deflate: predictor = 1
+        case .deflate: predictor = 2
         }
         
         switch image.colorSpace.base {

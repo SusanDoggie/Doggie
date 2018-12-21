@@ -202,22 +202,22 @@ extension SDXMLElement {
 extension SDXMLElement {
     
     public mutating func setAttribute(for attribute: String, namespace: String = "", value: String?) {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         _attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)] = value
     }
     
     public func attributes() -> [SDXMLAttribute: String] {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         return _attributes
     }
     
     public func attributes(for attribute: String) -> [SDXMLAttribute: String] {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         return _attributes.filter { $0.key.attribute == attribute }
     }
     
     public func attributes(for attribute: String, namespace: String) -> String? {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         return _attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)]
     }
 }
@@ -265,13 +265,13 @@ extension SDXMLElement : RandomAccessCollection, MutableCollection {
     
     public subscript(position : Int) -> SDXMLElement {
         get {
-            guard kind == .node else { fatalError() }
+            precondition(kind == .node)
             var element = _elements[position]
             element._tree = _tree.map { _Tree(root: $0.root, parent: self, level: $0.level.map { $0 + 1 }, index: position) } ?? _Tree(root: nil, parent: self, level: nil, index: position)
             return element
         }
         set {
-            guard kind == .node else { fatalError() }
+            precondition(kind == .node)
             if let xmlns = _attributes["xmlns"] {
                 _elements[position] = newValue._apply_global_namespace(xmlns)._detach()
             } else {
@@ -284,7 +284,7 @@ extension SDXMLElement : RandomAccessCollection, MutableCollection {
 extension SDXMLElement {
     
     public mutating func append(_ newElement: SDXMLElement) {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         if let xmlns = _attributes["xmlns"] {
             _elements.append(newElement._apply_global_namespace(xmlns)._detach())
         } else {
@@ -293,7 +293,7 @@ extension SDXMLElement {
     }
     
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         if let xmlns = _attributes["xmlns"] {
             _elements.append(contentsOf: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() })
         } else {
@@ -302,7 +302,7 @@ extension SDXMLElement {
     }
     
     public mutating func insert(_ newElement: SDXMLElement, at i: Int) {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         if let xmlns = _attributes["xmlns"] {
             _elements.insert(newElement._apply_global_namespace(xmlns)._detach(), at: i)
         } else {
@@ -311,7 +311,7 @@ extension SDXMLElement {
     }
     
     public mutating func insert<C : Collection>(contentsOf newElements: C, at i: Int) where C.Element == SDXMLElement {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         if let xmlns = _attributes["xmlns"] {
             _elements.insert(contentsOf: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() }, at: i)
         } else {
@@ -320,47 +320,47 @@ extension SDXMLElement {
     }
     
     public mutating func remove(at position: Int) -> SDXMLElement {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         return _elements.remove(at: position)
     }
     
     public mutating func removeSubrange(_ bounds: Range<Index>) {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         _elements.removeSubrange(bounds)
     }
     
     public mutating func removeFirst(_ n: Int) {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         _elements.removeFirst(n)
     }
     
     public mutating func removeFirst() -> SDXMLElement {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         return _elements.removeFirst()
     }
     
     public mutating func removeLast(_ n: Int) {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         _elements.removeLast(n)
     }
     
     public mutating func removeLast() -> SDXMLElement {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         return _elements.removeLast()
     }
     
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         _elements.reserveCapacity(minimumCapacity)
     }
     
     public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         _elements.removeAll(keepingCapacity: keepCapacity)
     }
     
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
-        guard kind == .node else { fatalError() }
+        precondition(kind == .node)
         if let xmlns = _attributes["xmlns"] {
             _elements.replaceSubrange(subRange, with: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() })
         } else {

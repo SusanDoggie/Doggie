@@ -65,7 +65,7 @@ extension png_filter0_encoder {
     
     mutating func encode(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
         
-        guard flag else { fatalError() }
+        precondition(flag)
         
         let row_length = self.row_length
         let stride = self.stride
@@ -154,7 +154,7 @@ extension png_filter0_encoder {
     
     mutating func final(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
         
-        guard flag else { fatalError() }
+        precondition(flag)
         
         if index != 0 {
             try buffer.withUnsafeBufferPointer { buf in
@@ -227,7 +227,7 @@ extension png_filter0_decoder {
     
     mutating func decode(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
         
-        guard flag else { fatalError() }
+        precondition(flag)
         
         let row_length = self.row_length
         let stride = self.stride
@@ -282,7 +282,7 @@ extension png_filter0_decoder {
     
     mutating func final(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
         
-        guard flag else { fatalError() }
+        precondition(flag)
         
         if index != 0 {
             try buffer.withUnsafeBufferPointer { try callback(UnsafeBufferPointer(rebasing: $0.suffix(row_length).prefix(index))) }

@@ -47,7 +47,7 @@ extension ImageRepBase {
     }
     
     func page(_ index: Int) -> ImageRepBase {
-        guard index == 0 else { fatalError("Index out of range.") }
+        precondition(index == 0, "Index out of range.")
         return self
     }
 }

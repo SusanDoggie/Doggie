@@ -23,22 +23,40 @@
 //  THE SOFTWARE.
 //
 
+extension AnyImage {
+    
+    @inlinable
+    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool = false) {
+        self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked))
+    }
+}
+
 public struct RawBitmap {
     
-    public var bitsPerPixel: Int
-    public var bitsPerRow: Int
-    public var startsRow: Int
+    public let bitsPerPixel: Int
+    public let bytesPerRow: Int
+    public let startsRow: Int
     
-    public var channels: [Channel]
+    public let tiff_predictor: Int
     
-    public var data: Data
+    public let channels: [Channel]
     
-    public init(bitsPerPixel: Int, bitsPerRow: Int, startsRow: Int, channels: [Channel], data: Data) {
+    public let data: Data
+    
+    public init(bitsPerPixel: Int, bytesPerRow: Int, startsRow: Int, tiff_predictor: Int = 1, channels: [Channel], data: Data) {
+        precondition(channels.allSatisfy({ 0...bitsPerPixel ~= $0.bitRange.lowerBound && 0...bitsPerPixel ~= $0.bitRange.upperBound }), "Invalid channel bitRange.")
         self.bitsPerPixel = bitsPerPixel
-        self.bitsPerRow = bitsPerRow
+        self.bytesPerRow = bytesPerRow
         self.startsRow = startsRow
-        self.channels = channels
+        self.tiff_predictor = tiff_predictor
+        self.channels = channels.sorted { $0.bitRange.lowerBound }
         self.data = data
+    }
+    
+    public var isCompact: Bool {
+        return channels.first?.bitRange.lowerBound == 0
+            && channels.last?.bitRange.upperBound == bitsPerPixel
+            && zip(channels, channels.dropFirst()).allSatisfy { $0.bitRange.upperBound == $1.bitRange.lowerBound }
     }
 }
 
@@ -46,12 +64,12 @@ extension RawBitmap {
     
     public struct Channel {
         
-        public var index: Int
+        public let index: Int
         
-        public var format: Format
-        public var endianness: Endianness
+        public let format: Format
+        public let endianness: Endianness
         
-        public var bitRange: Range<Int>
+        public let bitRange: Range<Int>
         
         public init(index: Int, format: Format, endianness: Endianness, bitRange: Range<Int>) {
             if format == .float {
@@ -84,163 +102,433 @@ extension RawBitmap {
     }
 }
 
+@usableFromInline
+protocol RawBitmapFloatingPoint : BinaryFloatingPoint {
+    
+    associatedtype BitPattern : FixedWidthInteger
+    
+    var bitPattern: BitPattern { get }
+    
+    init(bitPattern: BitPattern)
+    
+}
+
+extension Float : RawBitmapFloatingPoint {
+    
+}
+
+extension Double : RawBitmapFloatingPoint {
+    
+}
+
 extension Image {
     
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool = false) {
+    @inlinable
+    @inline(__always)
+    mutating func _read_compact_pixels<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ is_opaque: Bool, _ : T.Type) {
         
-        self.init(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+        let width = self.width
+        let height = self.height
         
-        let numberOfComponents = colorSpace.numberOfComponents
+        guard bitmap.startsRow < height else { return }
         
-        let isOpaque = !bitmaps.contains { $0.channels.contains { $0.index == numberOfComponents } }
-        
-        self.withUnsafeMutableBufferPointer {
+        self.withUnsafeMutableBytes {
             
-            guard let destination = $0.baseAddress else { return }
+            guard var destination = $0.baseAddress?.bindMemory(to: T.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
             
-            for bitmap in bitmaps where bitmap.startsRow < height {
+            bitmap.channels.withUnsafeBufferPointer { channels in
                 
-                let dataBitSize = bitmap.data.count << 3
+                let row = Pixel.numberOfComponents * width
                 
-                bitmap.data.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                destination += bitmap.startsRow * row
+                
+                var data = bitmap.data
+                
+                for _ in bitmap.startsRow..<height {
                     
-                    var destination = destination + bitmap.startsRow * width
+                    guard data.count / MemoryLayout<T>.stride != 0 else { return }
+                    let data_count = min(bitmap.bytesPerRow, data.count) / MemoryLayout<T>.stride
                     
-                    var bitsOffset = 0
-                    
-                    for _ in bitmap.startsRow..<height {
+                    data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<T>) in
                         
-                        var _bitsOffset = bitsOffset
+                        let source_end = source + data_count
+                        
+                        var _source = source
                         var _destination = destination
                         
                         for _ in 0..<width {
                             
-                            guard _bitsOffset + bitmap.bitsPerPixel <= dataBitSize else { return }
-                            
-                            let bytesOffset = _bitsOffset >> 3
-                            let source = source + bytesOffset
-                            
-                            let bytesPerPixel = bitmap.bitsPerPixel >> 3
-                            let pixelShift = _bitsOffset & 7
-                            
-                            @inline(__always)
-                            func pixelByte(_ i: Int) -> UInt8 {
-                                return pixelShift == 0 ? source[i] : (source[i] << pixelShift) | (source[i + 1] >> (8 - pixelShift))
-                            }
-                            
-                            var pixel = _destination.pointee
-                            
-                            for channel in bitmap.channels where channel.index <= numberOfComponents {
+                            for channel in channels {
                                 
-                                var value = 0.0
+                                guard _source < source_end else { return }
                                 
-                                let channelBytesOffset = channel.bitRange.lowerBound >> 3
-                                let channelShift = channel.bitRange.lowerBound & 7
-                                let bytesPerChannel = channel.bitRange.count >> 3
+                                let __destination = _destination + channel.index
                                 
-                                @inline(__always)
-                                func channelByte(_ i: Int) -> UInt8 {
-                                    switch channel.endianness {
-                                    case .big: return channelShift == 0 ? pixelByte(i + channelBytesOffset) : (pixelByte(i + channelBytesOffset) << channelShift) | (pixelByte(i + 1 + channelBytesOffset) >> (8 - channelShift))
-                                    case .little: return pixelByte(bytesPerChannel - i - 1 + channelBytesOffset)
-                                    }
+                                switch channel.endianness {
+                                case .big: __destination.pointee = T(bigEndian: _source.pointee)
+                                case .little: __destination.pointee = T(littleEndian: _source.pointee)
                                 }
                                 
-                                switch channel.format {
-                                case .unsigned:
-                                    
-                                    var bitPattern: UInt64 = 0
-                                    for (i, slice) in channel.bitRange.slice(by: 8).enumerated() where i < 8 {
-                                        bitPattern = (bitPattern << slice.count) | UInt64(channelByte(i))
+                                switch bitmap.tiff_predictor {
+                                case 1: break
+                                case 2:
+                                    if _destination > destination {
+                                        let lhs = __destination - Pixel.numberOfComponents
+                                        __destination.pointee &+= lhs.pointee
                                     }
-                                    
-                                    value = Double(bitPattern) / (scalbn(1, min(channel.bitRange.count, 64)) - 1)
-                                    
-                                case .signed:
-                                    
-                                    var signed = false
-                                    
-                                    var bitPattern: UInt64 = 0
-                                    for (i, slice) in channel.bitRange.slice(by: 8).enumerated() where i < 8 {
-                                        let byte = channelByte(i)
-                                        if i == 0 && byte & 0x80 != 0 {
-                                            signed = true
-                                        }
-                                        bitPattern = (bitPattern << slice.count) | UInt64(byte)
-                                    }
-                                    
-                                    value = Double(bitPattern)
-                                    value = scalbn(value, -min(channel.bitRange.count, 64))
-                                    
-                                    value += signed ? -0.5 : 0.5
-                                    
-                                case .float:
-                                    
-                                    var bitPattern: UInt64 = 0
-                                    
-                                    for offset in 0..<bytesPerChannel {
-                                        bitPattern = (bitPattern << 8) | UInt64(channelByte(offset))
-                                    }
-                                    
-                                    switch channel.bitRange.count {
-                                    case 32: value = Double(Float(bitPattern: UInt32(truncatingIfNeeded: bitPattern)))
-                                    case 64: value = Double(bitPattern: bitPattern)
-                                    default: break
-                                    }
+                                default: fatalError("Unsupported tiff predictor.")
                                 }
                                 
-                                if !value.isNormal && !value.isSubnormal && !value.isZero {
-                                    value = 0
-                                }
-                                
-                                pixel.setNormalizedComponent(channel.index, value)
+                                _source += 1
                             }
                             
-                            if isOpaque {
-                                pixel.opacity = 1
+                            if is_opaque {
+                                _destination[Pixel.numberOfComponents - 1] = T.max
                             }
                             
-                            _destination.pointee = pixel
-                            
-                            _bitsOffset += bitmap.bitsPerPixel
-                            _destination += 1
+                            _destination += Pixel.numberOfComponents
                         }
                         
-                        bitsOffset += bitmap.bitsPerRow
-                        destination += width
+                        destination += row
+                    }
+                }
+            }
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
+    mutating func _read_compact_pixels<T: FixedWidthInteger, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type, _ : R.Type) {
+        
+        let width = self.width
+        let height = self.height
+        
+        guard bitmap.startsRow < height else { return }
+        
+        let channel = bitmap.channels[channel_idx]
+        let channel_count = bitmap.channels.count
+        
+        @inline(__always)
+        func _denormalized(_ value: R) -> R {
+            guard channel.index < Pixel.Model.numberOfComponents else { return value }
+            let range = Pixel.Model.rangeOfComponent(channel.index)
+            return value * R(range.upperBound - range.lowerBound) + R(range.lowerBound)
+        }
+        
+        self.withUnsafeMutableBytes {
+            
+            guard var destination = $0.baseAddress?.bindMemory(to: R.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
+            
+            let row = Pixel.numberOfComponents * width
+            
+            destination += bitmap.startsRow * row
+            
+            var data = bitmap.data
+            
+            for _ in bitmap.startsRow..<height {
+                
+                guard data.count / MemoryLayout<T>.stride != 0 else { return }
+                let data_count = min(bitmap.bytesPerRow, data.count) / MemoryLayout<T>.stride
+                
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<T>) in
+                    
+                    let source_end = source + data_count
+                    
+                    var _source = source + channel_idx
+                    var _destination = destination
+                    
+                    var tiff_predictor_record: T = 0
+                    
+                    for _ in 0..<width {
+                        
+                        guard _source < source_end else { return }
+                        
+                        let __destination = _destination + channel.index
+                        
+                        let _s: T
+                        let _d: T
+                        
+                        switch channel.endianness {
+                        case .big: _s = T(bigEndian: _source.pointee)
+                        case .little: _s = T(littleEndian: _source.pointee)
+                        }
+                        
+                        switch bitmap.tiff_predictor {
+                        case 1: _d = _s
+                        case 2: _d = _s &+ tiff_predictor_record
+                        default: fatalError("Unsupported tiff predictor.")
+                        }
+                        
+                        if T.isSigned {
+                            __destination.pointee = _denormalized((R(_d) - R(T.min)) / (R(T.max) - R(T.min)))
+                        } else {
+                            __destination.pointee = _denormalized(R(_d) / R(T.max))
+                        }
+                        
+                        tiff_predictor_record = _d
+                        
+                        _source += channel_count
+                        
+                        if is_opaque {
+                            _destination[Pixel.numberOfComponents - 1] = 1
+                        }
+                        
+                        _destination += Pixel.numberOfComponents
+                    }
+                    
+                    destination += row
+                }
+            }
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
+    mutating func _read_compact_pixels<T: RawBitmapFloatingPoint, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type, _ : R.Type) {
+        
+        let width = self.width
+        let height = self.height
+        
+        guard bitmap.startsRow < height else { return }
+        
+        let channel = bitmap.channels[channel_idx]
+        let channel_count = bitmap.channels.count
+        
+        @inline(__always)
+        func _denormalized(_ value: R) -> R {
+            guard channel.index < Pixel.Model.numberOfComponents else { return value }
+            let range = Pixel.Model.rangeOfComponent(channel.index)
+            return value * R(range.upperBound - range.lowerBound) + R(range.lowerBound)
+        }
+        
+        self.withUnsafeMutableBytes {
+            
+            guard var destination = $0.baseAddress?.bindMemory(to: R.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
+            
+            let row = Pixel.numberOfComponents * width
+            
+            destination += bitmap.startsRow * row
+            
+            var data = bitmap.data
+            
+            for _ in bitmap.startsRow..<height {
+                
+                guard data.count / MemoryLayout<T.BitPattern>.stride != 0 else { return }
+                let data_count = min(bitmap.bytesPerRow, data.count) / MemoryLayout<T.BitPattern>.stride
+                
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<T.BitPattern>) in
+                    
+                    let source_end = source + data_count
+                    
+                    var _source = source + channel_idx
+                    var _destination = destination
+                    
+                    for _ in 0..<width {
+                        
+                        guard _source < source_end else { return }
+                        
+                        let __destination = _destination + channel.index
+                        
+                        switch channel.endianness {
+                        case .big: __destination.pointee = _denormalized(R(T(bitPattern: T.BitPattern(bigEndian: _source.pointee))))
+                        case .little: __destination.pointee = _denormalized(R(T(bitPattern: T.BitPattern(littleEndian: _source.pointee))))
+                        }
+                        
+                        _source += channel_count
+                        
+                        if is_opaque {
+                            _destination[Pixel.numberOfComponents - 1] = 1
+                        }
+                        
+                        _destination += Pixel.numberOfComponents
+                    }
+                    
+                    destination += row
+                }
+            }
+        }
+    }
+}
+
+extension Image {
+    
+    @inlinable
+    @inline(__always)
+    mutating func _decode_premultiplied() {
+        
+        let width = self.width
+        let height = self.height
+        
+        self.withUnsafeMutableBufferPointer {
+            
+            guard var destination = $0.baseAddress else { return }
+            
+            for _ in 0..<width * height {
+                
+                var pixel = destination.pointee
+                
+                let opacity = pixel.opacity
+                
+                if opacity != 0 {
+                    pixel.color /= opacity
+                }
+                
+                destination += 1
+            }
+        }
+    }
+}
+
+extension ColorSpace {
+    
+    @inlinable
+    @inline(__always)
+    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol {
+        
+        let numberOfComponents = self.numberOfComponents
+        let is_opaque = !bitmaps.contains { $0.channels.contains { $0.index == numberOfComponents } }
+        
+        precondition(bitmaps.allSatisfy({ $0.channels.allSatisfy { 0...numberOfComponents ~= $0.index } }), "Invalid channel index.")
+        
+        switch self {
+        case let colorSpace as ColorSpace<GrayColorModel>:
+            
+            if bitmaps.allSatisfy({ $0.bitsPerPixel == $0.channels.count * 8 && $0.isCompact && $0.channels.allSatisfy { $0.format == .unsigned } }) {
+                
+                var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                for bitmap in bitmaps {
+                    image._read_compact_pixels(bitmap, is_opaque, UInt8.self)
+                }
+                
+                if premultiplied {
+                    image._decode_premultiplied()
+                }
+                
+                return image
+                
+            } else if bitmaps.allSatisfy({ $0.bitsPerPixel == $0.channels.count * 16 && $0.isCompact && $0.channels.allSatisfy { $0.format == .unsigned } }) {
+                
+                var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                for bitmap in bitmaps {
+                    image._read_compact_pixels(bitmap, is_opaque, UInt16.self)
+                }
+                
+                if premultiplied {
+                    image._decode_premultiplied()
+                }
+                
+                return image
+                
+            }
+            
+        case let colorSpace as ColorSpace<RGBColorModel>:
+            
+            if bitmaps.allSatisfy({ $0.bitsPerPixel == $0.channels.count * 8 && $0.isCompact && $0.channels.allSatisfy { $0.format == .unsigned } }) {
+                
+                var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                for bitmap in bitmaps {
+                    image._read_compact_pixels(bitmap, is_opaque, UInt8.self)
+                }
+                
+                if premultiplied {
+                    image._decode_premultiplied()
+                }
+                
+                return image
+                
+            } else if bitmaps.allSatisfy({ $0.bitsPerPixel == $0.channels.count * 16 && $0.isCompact && $0.channels.allSatisfy { $0.format == .unsigned } }) {
+                
+                var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                for bitmap in bitmaps {
+                    image._read_compact_pixels(bitmap, is_opaque, UInt16.self)
+                }
+                
+                if premultiplied {
+                    image._decode_premultiplied()
+                }
+                
+                return image
+                
+            }
+            
+        default: break
+        }
+        
+        if bitmaps.allSatisfy({ ($0.bitsPerPixel == $0.channels.count * 8 && $0.isCompact && $0.channels.allSatisfy { $0.format == .unsigned || $0.format == .signed }) ||
+            ($0.bitsPerPixel == $0.channels.count * 16 && $0.isCompact && $0.channels.allSatisfy { $0.format == .unsigned || $0.format == .signed }) ||
+            ($0.bitsPerPixel == $0.channels.count * 32 && $0.isCompact && $0.channels.allSatisfy { $0.format == .float }) }) {
+            
+            var image = Image<FloatColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+            
+            for bitmap in bitmaps {
+                
+                let bitsPerSample = bitmap.bitsPerPixel / bitmap.channels.count
+                
+                for (channel_idx, channel) in bitmap.channels.enumerated() {
+                    switch (bitsPerSample, channel.format) {
+                    case (8, .unsigned): image._read_compact_pixels(bitmap, channel_idx, is_opaque, UInt8.self, Float.self)
+                    case (8, .signed): image._read_compact_pixels(bitmap, channel_idx, is_opaque, Int8.self, Float.self)
+                    case (16, .unsigned): image._read_compact_pixels(bitmap, channel_idx, is_opaque, UInt16.self, Float.self)
+                    case (16, .signed): image._read_compact_pixels(bitmap, channel_idx, is_opaque, Int16.self, Float.self)
+                    case (32, .float): image._read_compact_pixels(bitmap, channel_idx, is_opaque, Float.self, Float.self)
+                    default: break
                     }
                 }
             }
             
             if premultiplied {
+                image._decode_premultiplied()
+            }
+            
+            return image
+            
+        } else {
+            
+            var image = Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+            
+            for bitmap in bitmaps {
                 
-                var destination = destination
-                
-                for _ in 0..<width * height {
+                if (bitmap.bitsPerPixel == bitmap.channels.count * 8 && bitmap.isCompact && bitmap.channels.allSatisfy { $0.format == .unsigned || $0.format == .signed }) ||
+                    (bitmap.bitsPerPixel == bitmap.channels.count * 16 && bitmap.isCompact && bitmap.channels.allSatisfy { $0.format == .unsigned || $0.format == .signed }) ||
+                    (bitmap.bitsPerPixel == bitmap.channels.count * 32 && bitmap.isCompact && bitmap.channels.allSatisfy { $0.format == .unsigned || $0.format == .signed || $0.format == .float }) ||
+                    (bitmap.bitsPerPixel == bitmap.channels.count * 64 && bitmap.isCompact && bitmap.channels.allSatisfy { $0.format == .unsigned || $0.format == .signed || $0.format == .float }) {
                     
-                    var pixel = destination.pointee
+                    let bitsPerSample = bitmap.bitsPerPixel / bitmap.channels.count
                     
-                    let opacity = pixel.opacity
-                    
-                    if opacity != 0 {
-                        pixel.color /= opacity
+                    for (channel_idx, channel) in bitmap.channels.enumerated() {
+                        switch (bitsPerSample, channel.format) {
+                        case (8, .unsigned): image._read_compact_pixels(bitmap, channel_idx, is_opaque, UInt8.self, Double.self)
+                        case (8, .signed): image._read_compact_pixels(bitmap, channel_idx, is_opaque, Int8.self, Double.self)
+                        case (16, .unsigned): image._read_compact_pixels(bitmap, channel_idx, is_opaque, UInt16.self, Double.self)
+                        case (16, .signed): image._read_compact_pixels(bitmap, channel_idx, is_opaque, Int16.self, Double.self)
+                        case (32, .unsigned): image._read_compact_pixels(bitmap, channel_idx, is_opaque, UInt32.self, Double.self)
+                        case (32, .signed): image._read_compact_pixels(bitmap, channel_idx, is_opaque, Int32.self, Double.self)
+                        case (32, .float): image._read_compact_pixels(bitmap, channel_idx, is_opaque, Float.self, Double.self)
+                        case (64, .unsigned): image._read_compact_pixels(bitmap, channel_idx, is_opaque, UInt64.self, Double.self)
+                        case (64, .signed): image._read_compact_pixels(bitmap, channel_idx, is_opaque, Int64.self, Double.self)
+                        case (64, .float): image._read_compact_pixels(bitmap, channel_idx, is_opaque, Double.self, Double.self)
+                        default: break
+                        }
                     }
                     
-                    destination += 1
+                } else {
+                    
+                    for channel in bitmap.channels {
+                        
+                    }
                 }
             }
             
+            if premultiplied {
+                image._decode_premultiplied()
+            }
+            
+            return image
+            
         }
-        
-    }
-    
-}
-
-extension AnyImage {
-    
-    @inlinable
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool = false) {
-        self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked))
     }
 }
-

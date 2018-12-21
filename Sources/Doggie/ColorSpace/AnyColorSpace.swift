@@ -90,11 +90,6 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol {
-        return Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked)
-    }
-    
-    @inlinable
     func _create_image(image: AnyImage, intent: RenderingIntent) -> AnyImageBaseProtocol {
         return Image<ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
     }
