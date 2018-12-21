@@ -37,6 +37,8 @@ protocol CGImageRepBase {
     
     var numberOfPages: Int { get }
     
+    var properties: [CFString : Any] { get }
+    
     func page(_ index: Int) -> CGImageRepBase
     
     var cgImage: CGImage? { get }
@@ -115,6 +117,13 @@ extension CGImageRep {
     
     public var resolution: Resolution {
         return base.resolution
+    }
+}
+
+extension CGImageRep {
+    
+    public var properties: [CFString : Any] {
+        return base.properties
     }
 }
 

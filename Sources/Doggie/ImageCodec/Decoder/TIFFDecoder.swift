@@ -163,6 +163,7 @@ struct TIFFPage : ImageRepBase {
     var _height: Int
     
     var compression: Int = 1
+    var predictor: Int = 1
     var planarConfiguration: Int = 1
     
     var sampleFormat: [Int] = []
@@ -241,6 +242,9 @@ struct TIFFPage : ImageRepBase {
         if let compression = tags.first(where: { $0.tag == .Compression }), let _compression = try? compression.fatchInteger() {
             self.compression = _compression
         }
+        if let predictor = tags.first(where: { $0.tag == .Predictor }), let _predictor = try? predictor.fatchInteger() {
+            self.predictor = _predictor
+        }
         if let planarConfiguration = tags.first(where: { $0.tag == .PlanarConfiguration }), let _planarConfiguration = try? planarConfiguration.fatchInteger() {
             self.planarConfiguration = _planarConfiguration
         }
@@ -260,7 +264,12 @@ struct TIFFPage : ImageRepBase {
         }
         
         switch self.compression {
-        case 1, 8: break
+        case 1: break
+        case 8:
+            switch self.predictor {
+            case 1, 2: break
+            default: throw ImageRep.Error.Unsupported("Unsupported compression.")
+            }
         default: throw ImageRep.Error.Unsupported("Unsupported compression.")
         }
         
@@ -857,6 +866,7 @@ extension TIFFTag {
         static let GrayResponseCurve: Tag                          = 291
         static let ResolutionUnit: Tag                             = 296
         static let TransferFunction: Tag                           = 301
+        static let Predictor: Tag                                  = 317
         static let WhitePoint: Tag                                 = 318
         static let PrimaryChromaticities: Tag                      = 319
         static let ColorMap: Tag                                   = 320
