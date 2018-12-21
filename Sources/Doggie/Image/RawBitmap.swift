@@ -170,7 +170,7 @@ extension Image {
                                 switch bitmap.tiff_predictor {
                                 case 1: break
                                 case 2:
-                                    if _destination > dest {
+                                    if destination > dest {
                                         let lhs = _destination - Pixel.numberOfComponents
                                         _destination.pointee &+= lhs.pointee
                                     }
@@ -410,8 +410,9 @@ extension ColorSpace {
                     }
                     
                     return image
-                    
-                } else if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count == 16 && $0.format == .unsigned } }) {
+                }
+                
+                if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count == 16 && $0.format == .unsigned } }) {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
@@ -424,7 +425,6 @@ extension ColorSpace {
                     }
                     
                     return image
-                    
                 }
                 
             case let colorSpace as ColorSpace<RGBColorModel>:
@@ -442,8 +442,9 @@ extension ColorSpace {
                     }
                     
                     return image
-                    
-                } else if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count == 16 && $0.format == .unsigned } }) {
+                }
+                
+                if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count == 16 && $0.format == .unsigned } }) {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
@@ -456,7 +457,6 @@ extension ColorSpace {
                     }
                     
                     return image
-                    
                 }
                 
             default: break
@@ -484,8 +484,9 @@ extension ColorSpace {
                 }
                 
                 return image
-                
-            } else if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count == 8 ||
+            }
+            
+            if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count == 8 ||
                 $0.bitRange.count == 16 ||
                 $0.bitRange.count == 32 ||
                 $0.bitRange.count == 64 } }) {
@@ -515,18 +516,98 @@ extension ColorSpace {
                 }
                 
                 return image
+            }
+        }
+        
+        switch self {
+        case let colorSpace as ColorSpace<GrayColorModel>:
+            
+            if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 8 && $0.format == .unsigned } }) {
                 
+                var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                for bitmap in bitmaps {
+                    
+                }
+                
+                if premultiplied {
+                    image._decode_premultiplied()
+                }
+                
+                return image
             }
             
-        } else if bitmaps.allSatisfy({ $0.bitsPerPixel & 7 == 0 }) {
+            if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 16 && $0.format == .unsigned } }) {
+                
+                var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                for bitmap in bitmaps {
+                    
+                }
+                
+                if premultiplied {
+                    image._decode_premultiplied()
+                }
+                
+                return image
+            }
             
+        case let colorSpace as ColorSpace<RGBColorModel>:
+            
+            if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 8 && $0.format == .unsigned } }) {
+                
+                var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                for bitmap in bitmaps {
+                    
+                }
+                
+                if premultiplied {
+                    image._decode_premultiplied()
+                }
+                
+                return image
+            }
+            
+            if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 16 && $0.format == .unsigned } }) {
+                
+                var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                for bitmap in bitmaps {
+                    
+                }
+                
+                if premultiplied {
+                    image._decode_premultiplied()
+                }
+                
+                return image
+            }
+            
+        default: break
+        }
+        
+        if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 23 || ($0.bitRange.count == 32 && $0.format == .float) } }) {
+            
+            var image = Image<FloatColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+            
+            for bitmap in bitmaps {
+                for (channel_idx, channel) in bitmap.channels.enumerated() {
+                    
+                }
+            }
+            
+            if premultiplied {
+                image._decode_premultiplied()
+            }
+            
+            return image
         }
         
         var image = Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
         
         for bitmap in bitmaps {
-            
-            for channel in bitmap.channels {
+            for (channel_idx, channel) in bitmap.channels.enumerated() {
                 
             }
         }
@@ -536,6 +617,5 @@ extension ColorSpace {
         }
         
         return image
-        
     }
 }
