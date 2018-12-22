@@ -486,10 +486,7 @@ extension ColorSpace {
                 return image
             }
             
-            if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count == 8 ||
-                $0.bitRange.count == 16 ||
-                $0.bitRange.count == 32 ||
-                $0.bitRange.count == 64 } }) {
+            if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count == 8 || $0.bitRange.count == 16 || $0.bitRange.count == 32 || $0.bitRange.count == 64 } }) {
                 
                 var image = Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
                 
