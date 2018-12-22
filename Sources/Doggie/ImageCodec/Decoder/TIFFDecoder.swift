@@ -498,53 +498,76 @@ struct TIFFPage : ImageRepBase {
                 
                 var channels = [RawBitmap.Channel]()
                 
+                var premultiplied = false
+                
                 for (i, (bits, format)) in zip(self.bitsPerSample, self.sampleFormat).enumerated() {
                     
-                    if photometric == 8 && (i == 1 || i == 2) && format == 1 {
-                        channels.append(RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
+                    defer { offset += bits }
+                    
+                    let channel_index: Int
+                    
+                    if i < self.colorSpace.numberOfComponents {
+                        channel_index = i
+                    } else {
+                        let j = i - self.colorSpace.numberOfComponents
+                        guard extraSamples.indices ~= j && (extraSamples[j] == 1 || extraSamples[j] == 2) else { continue }
+                        premultiplied = extraSamples[j] == 1
+                        channel_index = self.colorSpace.numberOfComponents
+                    }
+                    
+                    if photometric == 8 && (channel_index == 1 || channel_index == 2) && format == 1 {
+                        channels.append(RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
                     } else {
                         switch format {
-                        case 1: channels.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: offset..<offset + bits))
-                        case 2: channels.append(RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
-                        case 3: channels.append(RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: offset..<offset + bits))
+                        case 1: channels.append(RawBitmap.Channel(index: channel_index, format: .unsigned, endianness: endianness, bitRange: offset..<offset + bits))
+                        case 2: channels.append(RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: offset..<offset + bits))
+                        case 3: channels.append(RawBitmap.Channel(index: channel_index, format: .float, endianness: endianness, bitRange: offset..<offset + bits))
                         default: break
                         }
                     }
-                    
-                    offset += bits
                 }
                 
                 for (i, data) in decompressed_strips(fileBacked: fileBacked).enumerated() {
                     bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: (bitsPerPixel * _width).align(8) >> 3, startsRow: i * rowsPerStrip, tiff_predictor: predictor, channels: channels, data: data))
                 }
                 
-                image = AnyImage(width: _width, height: _height, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
+                image = AnyImage(width: _width, height: _height, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked)
                 
             case 2:
                 
                 var bitmaps = [RawBitmap]()
                 
-                for (i, strips) in decompressed_strips(fileBacked: fileBacked).slice(by: stripsPerImage).enumerated() {
+                var premultiplied = false
+                
+                for (i, (strips, (bits, format))) in zip(decompressed_strips(fileBacked: fileBacked).slice(by: stripsPerImage), zip(self.bitsPerSample, self.sampleFormat)).enumerated() {
                     
-                    let bits = bitsPerSample[i]
-                    let format = sampleFormat[i]
+                    let channel_index: Int
+                    
+                    if i < self.colorSpace.numberOfComponents {
+                        channel_index = i
+                    } else {
+                        let j = i - self.colorSpace.numberOfComponents
+                        guard extraSamples.indices ~= j && (extraSamples[j] == 1 || extraSamples[j] == 2) else { continue }
+                        premultiplied = extraSamples[j] == 1
+                        channel_index = self.colorSpace.numberOfComponents
+                    }
                     
                     for (j, strip) in strips.enumerated() {
                         
-                        if photometric == 8 && (i == 1 || i == 2) && format == 1 {
-                            bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                        if photometric == 8 && (channel_index == 1 || channel_index == 2) && format == 1 {
+                            bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
                         } else {
                             switch format {
-                            case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: i, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                            case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: i, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                            case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: i, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
                             default: break
                             }
                         }
                     }
                 }
                 
-                image = AnyImage(width: _width, height: _height, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: extraSamples.contains(1), fileBacked: fileBacked)
+                image = AnyImage(width: _width, height: _height, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked)
                 
             default: fatalError()
             }
