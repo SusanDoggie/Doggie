@@ -392,7 +392,8 @@ extension ColorSpace {
         
         let premultiplied = premultiplied && !is_opaque
         
-        precondition(bitmaps.allSatisfy({ $0.channels.allSatisfy { 0...numberOfComponents ~= $0.index } }), "Invalid channel index.")
+        precondition(bitmaps.allSatisfy { (($0.bitsPerPixel * width).align(8) >> 3) <= $0.bytesPerRow }, "Invalid bytesPerRow.")
+        precondition(bitmaps.allSatisfy { $0.channels.allSatisfy { 0...numberOfComponents ~= $0.index } }, "Invalid channel index.")
         
         if bitmaps.allSatisfy({ $0.bitsPerPixel & 7 == 0 && $0.channels.allSatisfy { $0.bitRange.lowerBound & 7 == 0 } }) {
             
