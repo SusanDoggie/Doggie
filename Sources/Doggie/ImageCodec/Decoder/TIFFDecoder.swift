@@ -528,7 +528,7 @@ struct TIFFPage : ImageRepBase {
                 }
                 
                 for (i, data) in decompressed_strips(fileBacked: fileBacked).enumerated() {
-                    bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: (bitsPerPixel * _width).align(8) >> 3, startsRow: i * rowsPerStrip, tiff_predictor: predictor, channels: channels, data: data))
+                    bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: (bitsPerPixel * _width).align(8) >> 3, endianness: .big, startsRow: i * rowsPerStrip, tiff_predictor: predictor, channels: channels, data: data))
                 }
                 
                 image = AnyImage(width: _width, height: _height, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked)
@@ -555,12 +555,12 @@ struct TIFFPage : ImageRepBase {
                     for (j, strip) in strips.enumerated() {
                         
                         if photometric == 8 && (channel_index == 1 || channel_index == 2) && format == 1 {
-                            bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
                         } else {
                             switch format {
-                            case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                            case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                            case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
                             default: break
                             }
                         }

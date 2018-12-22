@@ -35,6 +35,8 @@ public struct RawBitmap {
     
     public let bitsPerPixel: Int
     public let bytesPerRow: Int
+    
+    public let endianness: Endianness
     public let startsRow: Int
     
     public let tiff_predictor: Int
@@ -43,13 +45,34 @@ public struct RawBitmap {
     
     public let data: Data
     
-    public init(bitsPerPixel: Int, bytesPerRow: Int, startsRow: Int, tiff_predictor: Int = 1, channels: [Channel], data: Data) {
+    public init(bitsPerPixel: Int, bytesPerRow: Int, endianness: Endianness, startsRow: Int, tiff_predictor: Int = 1, channels: [Channel], data: Data) {
+        
         precondition(channels.allSatisfy({ 0...bitsPerPixel ~= $0.bitRange.lowerBound && 0...bitsPerPixel ~= $0.bitRange.upperBound }), "Invalid channel bitRange.")
+        
+        if endianness == .little {
+            
+            precondition(bitsPerPixel % 8 == 0, "Unsupported bitsPerPixel with little-endian.")
+            
+            if channels.allSatisfy({ $0.bitRange.lowerBound % 8 == 0 && $0.bitRange.upperBound % 8 == 0 }) {
+                
+                self.endianness = .big
+                self.channels = channels.map { RawBitmap.Channel(index: $0.index, format: $0.format, endianness: $0.endianness == .big ? .little : .big, bitRange: bitsPerPixel - $0.bitRange.upperBound..<bitsPerPixel - $0.bitRange.lowerBound) }
+                
+            } else {
+                
+                self.endianness = .little
+                self.channels = channels
+            }
+            
+        } else {
+            self.endianness = .big
+            self.channels = channels
+        }
+        
         self.bitsPerPixel = bitsPerPixel
         self.bytesPerRow = bytesPerRow
         self.startsRow = startsRow
         self.tiff_predictor = tiff_predictor
-        self.channels = channels
         self.data = data
     }
 }
@@ -395,7 +418,7 @@ extension ColorSpace {
         precondition(bitmaps.allSatisfy { (($0.bitsPerPixel * width).align(8) >> 3) <= $0.bytesPerRow }, "Invalid bytesPerRow.")
         precondition(bitmaps.allSatisfy { $0.channels.allSatisfy { 0...numberOfComponents ~= $0.index } }, "Invalid channel index.")
         
-        if bitmaps.allSatisfy({ $0.bitsPerPixel & 7 == 0 && $0.channels.allSatisfy { $0.bitRange.lowerBound & 7 == 0 } }) {
+        if bitmaps.allSatisfy({ $0.bitsPerPixel % 8 == 0 && $0.endianness == .big && $0.channels.allSatisfy { $0.bitRange.lowerBound % 8 == 0 } }) {
             
             switch self {
             case let colorSpace as ColorSpace<GrayColorModel>:
