@@ -390,6 +390,8 @@ extension ColorSpace {
         let numberOfComponents = self.numberOfComponents
         let is_opaque = !bitmaps.contains { $0.channels.contains { $0.index == numberOfComponents } }
         
+        let premultiplied = premultiplied && !is_opaque
+        
         precondition(bitmaps.allSatisfy({ $0.channels.allSatisfy { 0...numberOfComponents ~= $0.index } }), "Invalid channel index.")
         
         if bitmaps.allSatisfy({ $0.bitsPerPixel & 7 == 0 && $0.channels.allSatisfy { $0.bitRange.lowerBound & 7 == 0 } }) {
