@@ -707,7 +707,7 @@ extension Image {
                         var _bitsOffset = 0
                         
                         if bitmap.tiff_predictor != 1 {
-                            memset(tiff_predictor_record.baseAddress, 0, tiff_predictor_record.count)
+                            memset(tiff_predictor_record.baseAddress!, 0, tiff_predictor_record.count)
                         }
                         
                         for _ in 0..<width {
