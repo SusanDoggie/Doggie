@@ -736,7 +736,7 @@ extension Image {
                                 
                                 var overflow = false
                                 for (i, slice) in _slices.enumerated() {
-                                    let byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i) >> (8 - slice.count)
+                                    let byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1) >> (8 - slice.count)
                                     if overflow {
                                         var overflow2 = false
                                         (tiff_predictor_record[i], overflow) = tiff_predictor_record[i].addingReportingOverflow(1)
