@@ -475,10 +475,9 @@ extension Image {
         
         @inline(__always)
         func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
-            let source = source + channelBytesOffset
             switch channel.endianness {
-            case .big: return channelShift == 0 ? read_pixel(source, offset, i) : (read_pixel(source, offset, i) << channelShift) | (read_pixel(source, offset, i + 1) >> (8 - channelShift))
-            case .little: return read_pixel(source, offset, bytesPerChannel - i - 1)
+            case .big: return channelShift == 0 ? read_pixel(source, offset, i + channelBytesOffset) : (read_pixel(source, offset, i + channelBytesOffset) << channelShift) | (read_pixel(source, offset, i + 1 + channelBytesOffset) >> (8 - channelShift))
+            case .little: return read_pixel(source, offset, bytesPerChannel - i - 1 + channelBytesOffset)
             }
         }
         
@@ -575,10 +574,9 @@ extension Image {
         
         @inline(__always)
         func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
-            let source = source + channelBytesOffset
             switch channel.endianness {
-            case .big: return channelShift == 0 ? read_pixel(source, offset, i) : (read_pixel(source, offset, i) << channelShift) | (read_pixel(source, offset, i + 1) >> (8 - channelShift))
-            case .little: return read_pixel(source, offset, bytesPerChannel - i - 1)
+            case .big: return channelShift == 0 ? read_pixel(source, offset, i + channelBytesOffset) : (read_pixel(source, offset, i + channelBytesOffset) << channelShift) | (read_pixel(source, offset, i + 1 + channelBytesOffset) >> (8 - channelShift))
+            case .little: return read_pixel(source, offset, bytesPerChannel - i - 1 + channelBytesOffset)
             }
         }
         
