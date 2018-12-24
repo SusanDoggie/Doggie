@@ -561,8 +561,8 @@ extension Image {
         
         let _slices: LazySliceSequence = channel.bitRange.lazy.slice(by: 8)
         
-        let _shift_integer_base = (1 as UInt64) << (channel.bitRange.count - 1)
-        let _shift_integer_mask = ((1 as UInt64) << channel.bitRange.count) &- 1
+        let _base = (1 as UInt64) << (channel.bitRange.count - 1)
+        let _mask = ((1 as UInt64) << channel.bitRange.count) &- 1
         
         @inline(__always)
         func read_pixel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
@@ -625,7 +625,7 @@ extension Image {
                         
                         switch channel.format {
                         case .unsigned: _destination.pointee = Image._denormalized(channel.index, T(_d) / channel_max)
-                        case .signed: _destination.pointee = Image._denormalized(channel.index, T((_d &+ _shift_integer_base) & _shift_integer_mask) / channel_max)
+                        case .signed: _destination.pointee = Image._denormalized(channel.index, T((_d &+ _base) & _mask) / channel_max)
                         default: break
                         }
                         
@@ -660,9 +660,6 @@ extension Image {
         let bytesPerChannel = channel.bitRange.count >> 3
         let channelBytesOffset = channel.bitRange.lowerBound >> 3
         let channelShift = channel.bitRange.lowerBound & 7
-        
-        let _shift_integer_base = (1 as UInt64) << (channel.bitRange.count - 1)
-        let _shift_integer_mask = ((1 as UInt64) << channel.bitRange.count) &- 1
         
         @inline(__always)
         func read_pixel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
@@ -721,34 +718,35 @@ extension Image {
                             switch bitmap.tiff_predictor {
                             case 1:
                                 
-                                let _slices: LazySliceSequence = channel.bitRange.lazy.slice(by: 8)
-                                
                                 var bitPattern: UInt64 = 0
-                                for (i, slice) in _slices.enumerated() where i < 8 {
-                                    bitPattern = (bitPattern << slice.count) | UInt64(read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i) >> (8 - slice.count))
+                                for i in 0..<8 {
+                                    bitPattern = (bitPattern << 8) | UInt64(read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i))
                                 }
                                 
                                 _d = bitPattern
                                 
                             case 2:
                                 
-                                let _slices: LazySliceSequence = channel.bitRange.reversed().lazy.slice(by: 8)
-                                
                                 var overflow = false
-                                for (i, slice) in _slices.enumerated() {
-                                    let byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1) >> (8 - slice.count)
+                                for i in 0..<tiff_predictor_record.count {
+                                    let byte: UInt8
+                                    if i == 0 && channel.bitRange.count & 7 != 0 {
+                                        let mask = ~((0xFF as UInt8) >> (channel.bitRange.count & 7))
+                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1) & mask
+                                    } else {
+                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1)
+                                    }
                                     if overflow {
-                                        var overflow2 = false
-                                        (tiff_predictor_record[i], overflow) = tiff_predictor_record[i].addingReportingOverflow(1)
-                                        (tiff_predictor_record[i], overflow2) = tiff_predictor_record[i].addingReportingOverflow(byte)
-                                        overflow = overflow || overflow2
+                                        let (_add, _overflow) = tiff_predictor_record[i].addingReportingOverflow(1)
+                                        (tiff_predictor_record[i], overflow) = _add.addingReportingOverflow(byte)
+                                        overflow = _overflow || overflow
                                     } else {
                                         (tiff_predictor_record[i], overflow) = tiff_predictor_record[i].addingReportingOverflow(byte)
                                     }
                                 }
                                 
                                 var bitPattern: UInt64 = 0
-                                for (i, byte) in tiff_predictor_record.reversed().enumerated() where i < 8 {
+                                for byte in tiff_predictor_record.reversed().prefix(8) {
                                     bitPattern = (bitPattern << 8) | UInt64(byte)
                                 }
                                 
