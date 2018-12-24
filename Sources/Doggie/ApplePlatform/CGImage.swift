@@ -257,7 +257,7 @@ extension AnyImage {
         default: return nil
         }
         
-        let bitmap = RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: cgImage.bytesPerRow, endianness: pixel_endian, startsRow: 0, channels: channels, data: data)
+        let bitmap = RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: cgImage.bytesPerRow, endianness: pixel_endian, channels: channels, data: data)
         self.init(width: cgImage.width, height: cgImage.height, colorSpace: colorSpace, bitmaps: [bitmap], premultiplied: premultiplied, fileBacked: fileBacked)
     }
     

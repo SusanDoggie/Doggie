@@ -45,7 +45,7 @@ public struct RawBitmap {
     
     public let data: Data
     
-    public init(bitsPerPixel: Int, bytesPerRow: Int, endianness: Endianness, startsRow: Int, tiff_predictor: Int = 1, channels: [Channel], data: Data) {
+    public init(bitsPerPixel: Int, bytesPerRow: Int, endianness: Endianness = .big, startsRow: Int = 0, tiff_predictor: Int = 1, channels: [Channel], data: Data) {
         
         precondition(channels.allSatisfy({ 0...bitsPerPixel ~= $0.bitRange.lowerBound && 0...bitsPerPixel ~= $0.bitRange.upperBound }), "Invalid channel bitRange.")
         
@@ -139,6 +139,14 @@ extension Double : RawBitmapFloatingPoint {
 }
 
 extension Image {
+    
+    @inlinable
+    @inline(__always)
+    static func _denormalized<T: BinaryFloatingPoint>(_ channel_index: Int, _ value: T) -> T {
+        guard channel_index < Pixel.Model.numberOfComponents else { return value }
+        let range = Pixel.Model.rangeOfComponent(channel_index)
+        return value * T(range.upperBound - range.lowerBound) + T(range.lowerBound)
+    }
     
     @inlinable
     @inline(__always)
@@ -252,6 +260,8 @@ extension Image {
                     var source = UnsafeRawPointer(bytes)
                     let source_end = source + _length
                     
+                    var tiff_predictor_record: T = 0
+                    
                     for _ in 0..<width {
                         
                         guard source + bytesPerPixel <= source_end else { return }
@@ -259,20 +269,23 @@ extension Image {
                         let _destination = destination + channel.index
                         let _source = source + byteOffset
                         
+                        let _s: T
+                        let _d: T
+                        
                         switch channel.endianness {
-                        case .big: _destination.pointee = T(bigEndian: _source.bindMemory(to: T.self, capacity: 1).pointee)
-                        case .little: _destination.pointee = T(littleEndian: _source.bindMemory(to: T.self, capacity: 1).pointee)
+                        case .big: _s = T(bigEndian: _source.bindMemory(to: T.self, capacity: 1).pointee)
+                        case .little: _s = T(littleEndian: _source.bindMemory(to: T.self, capacity: 1).pointee)
                         }
                         
                         switch bitmap.tiff_predictor {
-                        case 1: break
-                        case 2:
-                            if destination > dest {
-                                let lhs = _destination - Pixel.numberOfComponents
-                                _destination.pointee &+= lhs.pointee
-                            }
+                        case 1: _d = _s
+                        case 2: _d = _s &+ tiff_predictor_record
                         default: fatalError("Unsupported tiff predictor.")
                         }
+                        
+                        _destination.pointee = _d
+                        
+                        tiff_predictor_record = _d
                         
                         source += bytesPerPixel
                         
@@ -301,14 +314,8 @@ extension Image {
         let bytesPerPixel = bitmap.bitsPerPixel >> 3
         
         let channel = bitmap.channels[channel_idx]
+        let channel_max: R = scalbn(1, T.bitWidth) - 1
         let byteOffset = channel.bitRange.lowerBound >> 3
-        
-        @inline(__always)
-        func _denormalized(_ value: R) -> R {
-            guard channel.index < Pixel.Model.numberOfComponents else { return value }
-            let range = Pixel.Model.rangeOfComponent(channel.index)
-            return value * R(range.upperBound - range.lowerBound) + R(range.lowerBound)
-        }
         
         self.withUnsafeMutableBytes {
             
@@ -355,9 +362,9 @@ extension Image {
                         }
                         
                         if T.isSigned {
-                            _destination.pointee = _denormalized((R(_d) - R(T.min)) / (R(T.max) - R(T.min)))
+                            _destination.pointee = Image._denormalized(channel.index, R(UInt64(bitPattern: Int64(_d) &- Int64(T.min))) / channel_max)
                         } else {
-                            _destination.pointee = _denormalized(R(_d) / R(T.max))
+                            _destination.pointee = Image._denormalized(channel.index, R(_d) / channel_max)
                         }
                         
                         tiff_predictor_record = _d
@@ -391,13 +398,6 @@ extension Image {
         let channel = bitmap.channels[channel_idx]
         let byteOffset = channel.bitRange.lowerBound >> 3
         
-        @inline(__always)
-        func _denormalized(_ value: R) -> R {
-            guard channel.index < Pixel.Model.numberOfComponents else { return value }
-            let range = Pixel.Model.rangeOfComponent(channel.index)
-            return value * R(range.upperBound - range.lowerBound) + R(range.lowerBound)
-        }
-        
         self.withUnsafeMutableBytes {
             
             guard var dest = $0.baseAddress?.bindMemory(to: R.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
@@ -427,8 +427,8 @@ extension Image {
                         let _source = source + byteOffset
                         
                         switch channel.endianness {
-                        case .big: _destination.pointee = _denormalized(R(T(bitPattern: T.BitPattern(bigEndian: _source.bindMemory(to: T.BitPattern.self, capacity: 1).pointee))))
-                        case .little: _destination.pointee = _denormalized(R(T(bitPattern: T.BitPattern(littleEndian: _source.bindMemory(to: T.BitPattern.self, capacity: 1).pointee))))
+                        case .big: _destination.pointee = Image._denormalized(channel.index, R(T(bitPattern: T.BitPattern(bigEndian: _source.bindMemory(to: T.BitPattern.self, capacity: 1).pointee))))
+                        case .little: _destination.pointee = Image._denormalized(channel.index, R(T(bitPattern: T.BitPattern(littleEndian: _source.bindMemory(to: T.BitPattern.self, capacity: 1).pointee))))
                         }
                         
                         source += bytesPerPixel
@@ -450,17 +450,206 @@ extension Image {
     @inline(__always)
     mutating func _read_unsigned_channel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type) {
         
-    }
-    
-    @inlinable
-    @inline(__always)
-    mutating func _read_unsigned_channel<T: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type) {
+        let width = self.width
+        let height = self.height
         
+        guard bitmap.startsRow < height else { return }
+        
+        let channel = bitmap.channels[channel_idx]
+        let channel_max: T = (1 << channel.bitRange.count) &- 1
+        
+        let bytesPerPixel = bitmap.bitsPerPixel >> 3
+        let bytesPerChannel = channel.bitRange.count >> 3
+        let channelBytesOffset = channel.bitRange.lowerBound >> 3
+        let channelShift = channel.bitRange.lowerBound & 7
+        
+        let _slices: LazySliceSequence = channel.bitRange.lazy.slice(by: 8)
+        
+        @inline(__always)
+        func read_pixel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
+            switch bitmap.endianness {
+            case .big: return offset == 0 ? source[i] : (source[i] << offset) | (source[i + 1] >> (8 - offset))
+            case .little: return source[bytesPerPixel - i - 1]
+            }
+        }
+        
+        @inline(__always)
+        func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
+            let source = source + channelBytesOffset
+            switch channel.endianness {
+            case .big: return channelShift == 0 ? read_pixel(source, offset, i) : (read_pixel(source, offset, i) << channelShift) | (read_pixel(source, offset, i + 1) >> (8 - channelShift))
+            case .little: return read_pixel(source, offset, bytesPerChannel - i - 1)
+            }
+        }
+        
+        self.withUnsafeMutableBytes {
+            
+            guard var dest = $0.baseAddress?.bindMemory(to: T.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
+            
+            let row = Pixel.numberOfComponents * width
+            
+            dest += bitmap.startsRow * row
+            
+            var data = bitmap.data
+            
+            for _ in bitmap.startsRow..<height {
+                
+                let _length = min(bitmap.bytesPerRow, data.count)
+                guard _length != 0 else { return }
+                
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                    
+                    var destination = dest
+                    let dataBitSize = _length << 3
+                    
+                    var _bitsOffset = 0
+                    
+                    var tiff_predictor_record: T = 0
+                    
+                    for _ in 0..<width {
+                        
+                        guard _bitsOffset + bitmap.bitsPerPixel <= dataBitSize else { return }
+                        
+                        let _destination = destination + channel.index
+                        
+                        var bitPattern: T = 0
+                        for (i, slice) in _slices.enumerated() {
+                            bitPattern = (bitPattern << slice.count) | T(read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i) >> (8 - slice.count))
+                        }
+                        
+                        let _d: T
+                        
+                        switch bitmap.tiff_predictor {
+                        case 1: _d = bitPattern
+                        case 2: _d = bitPattern &+ tiff_predictor_record
+                        default: fatalError("Unsupported tiff predictor.")
+                        }
+                        
+                        _destination.pointee = _scale_integer(_d, channel_max, T.max)
+                        
+                        tiff_predictor_record = _d
+                        
+                        if is_opaque {
+                            destination[Pixel.numberOfComponents - 1] = T.max
+                        }
+                        
+                        destination += Pixel.numberOfComponents
+                        _bitsOffset += bitmap.bitsPerPixel
+                    }
+                    
+                    dest += row
+                }
+            }
+        }
     }
     
     @inlinable
     @inline(__always)
-    mutating func _read_signed_channel<T: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type) {
+    mutating func _read_channel<T: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type) {
+        
+        let width = self.width
+        let height = self.height
+        
+        guard bitmap.startsRow < height else { return }
+        
+        let channel = bitmap.channels[channel_idx]
+        let channel_max: T = scalbn(1, channel.bitRange.count) - 1
+        
+        let bytesPerPixel = bitmap.bitsPerPixel >> 3
+        let bytesPerChannel = channel.bitRange.count >> 3
+        let channelBytesOffset = channel.bitRange.lowerBound >> 3
+        let channelShift = channel.bitRange.lowerBound & 7
+        
+        let _slices: LazySliceSequence = channel.bitRange.lazy.slice(by: 8)
+        
+        let _shift_integer_base = (1 as UInt64) << (channel.bitRange.count - 1)
+        let _shift_integer_mask = ((1 as UInt64) << channel.bitRange.count) &- 1
+        
+        @inline(__always)
+        func read_pixel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
+            switch bitmap.endianness {
+            case .big: return offset == 0 ? source[i] : (source[i] << offset) | (source[i + 1] >> (8 - offset))
+            case .little: return source[bytesPerPixel - i - 1]
+            }
+        }
+        
+        @inline(__always)
+        func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
+            let source = source + channelBytesOffset
+            switch channel.endianness {
+            case .big: return channelShift == 0 ? read_pixel(source, offset, i) : (read_pixel(source, offset, i) << channelShift) | (read_pixel(source, offset, i + 1) >> (8 - channelShift))
+            case .little: return read_pixel(source, offset, bytesPerChannel - i - 1)
+            }
+        }
+        
+        self.withUnsafeMutableBytes {
+            
+            guard var dest = $0.baseAddress?.bindMemory(to: T.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
+            
+            let row = Pixel.numberOfComponents * width
+            
+            dest += bitmap.startsRow * row
+            
+            var data = bitmap.data
+            
+            for _ in bitmap.startsRow..<height {
+                
+                let _length = min(bitmap.bytesPerRow, data.count)
+                guard _length != 0 else { return }
+                
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                    
+                    var destination = dest
+                    let dataBitSize = _length << 3
+                    
+                    var _bitsOffset = 0
+                    
+                    var tiff_predictor_record: UInt64 = 0
+                    
+                    for _ in 0..<width {
+                        
+                        guard _bitsOffset + bitmap.bitsPerPixel <= dataBitSize else { return }
+                        
+                        let _destination = destination + channel.index
+                        
+                        var bitPattern: UInt64 = 0
+                        for (i, slice) in _slices.enumerated() {
+                            bitPattern = (bitPattern << slice.count) | UInt64(read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i) >> (8 - slice.count))
+                        }
+                        
+                        let _d: UInt64
+                        
+                        switch bitmap.tiff_predictor {
+                        case 1: _d = bitPattern
+                        case 2: _d = bitPattern &+ tiff_predictor_record
+                        default: fatalError("Unsupported tiff predictor.")
+                        }
+                        
+                        switch channel.format {
+                        case .unsigned: _destination.pointee = Image._denormalized(channel.index, T(_d) / channel_max)
+                        case .signed: _destination.pointee = Image._denormalized(channel.index, T((_d &+ _shift_integer_base) & _shift_integer_mask) / channel_max)
+                        default: break
+                        }
+                        
+                        tiff_predictor_record = _d
+                        
+                        if is_opaque {
+                            destination[Pixel.numberOfComponents - 1] = 1
+                        }
+                        
+                        destination += Pixel.numberOfComponents
+                        _bitsOffset += bitmap.bitsPerPixel
+                    }
+                    
+                    dest += row
+                }
+            }
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
+    mutating func _read_channel_to_double(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool) {
         
     }
 }
@@ -608,9 +797,7 @@ extension ColorSpace {
                     case (0, .big, 0, 16, .unsigned): image._read_aligned_channel(bitmap, channel_idx, is_opaque, UInt16.self, Float.self)
                     case (0, .big, 0, 16, .signed): image._read_aligned_channel(bitmap, channel_idx, is_opaque, Int16.self, Float.self)
                     case (0, .big, 0, 32, .float): image._read_aligned_channel(bitmap, channel_idx, is_opaque, Float.self, Float.self)
-                    case (_, _, _, _, .unsigned): image._read_unsigned_channel(bitmap, channel_idx, is_opaque, Float.self)
-                    case (_, _, _, _, .signed): image._read_signed_channel(bitmap, channel_idx, is_opaque, Float.self)
-                    default: break
+                    default: image._read_channel(bitmap, channel_idx, is_opaque, Float.self)
                     }
                 }
             }
@@ -637,9 +824,12 @@ extension ColorSpace {
                 case (0, .big, 0, 64, .unsigned): image._read_aligned_channel(bitmap, channel_idx, is_opaque, UInt64.self, Double.self)
                 case (0, .big, 0, 64, .signed): image._read_aligned_channel(bitmap, channel_idx, is_opaque, Int64.self, Double.self)
                 case (0, .big, 0, 64, .float): image._read_aligned_channel(bitmap, channel_idx, is_opaque, Double.self, Double.self)
-                case (_, _, _, _, .unsigned): image._read_unsigned_channel(bitmap, channel_idx, is_opaque, Double.self)
-                case (_, _, _, _, .signed): image._read_signed_channel(bitmap, channel_idx, is_opaque, Double.self)
-                default: break
+                default:
+                    if channel.bitRange.count <= 64 {
+                        image._read_channel(bitmap, channel_idx, is_opaque, Double.self)
+                    } else {
+                        image._read_channel_to_double(bitmap, channel_idx, is_opaque)
+                    }
                 }
             }
         }
