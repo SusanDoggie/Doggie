@@ -119,25 +119,6 @@ extension RawBitmap {
     }
 }
 
-@usableFromInline
-protocol RawBitmapFloatingPoint : BinaryFloatingPoint {
-    
-    associatedtype BitPattern : FixedWidthInteger
-    
-    var bitPattern: BitPattern { get }
-    
-    init(bitPattern: BitPattern)
-    
-}
-
-extension Float : RawBitmapFloatingPoint {
-    
-}
-
-extension Double : RawBitmapFloatingPoint {
-    
-}
-
 extension Image {
     
     @inlinable
@@ -386,7 +367,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _read_aligned_channel<T: RawBitmapFloatingPoint, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type, _ : R.Type) {
+    mutating func _read_aligned_channel<T: BinaryFloatingPoint & RawBitPattern, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type, _ : R.Type) {
         
         let width = self.width
         let height = self.height
@@ -513,7 +494,11 @@ extension Image {
                         
                         var bitPattern: T = 0
                         for (i, slice) in _slices.enumerated() {
-                            bitPattern = (bitPattern << slice.count) | T(read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i) >> (8 - slice.count))
+                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i)
+                            if slice.count != 8 {
+                                byte >>= 8 - slice.count
+                            }
+                            bitPattern = (bitPattern << slice.count) | T(byte)
                         }
                         
                         let _d: T
@@ -524,7 +509,7 @@ extension Image {
                         default: fatalError("Unsupported tiff predictor.")
                         }
                         
-                        _destination.pointee = _scale_integer(_d, channel_max, T.max)
+                        _destination.pointee = _scale_integer(_d & channel_max, channel_max, T.max)
                         
                         tiff_predictor_record = _d
                         
@@ -612,7 +597,11 @@ extension Image {
                         
                         var bitPattern: UInt64 = 0
                         for (i, slice) in _slices.enumerated() {
-                            bitPattern = (bitPattern << slice.count) | UInt64(read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i) >> (8 - slice.count))
+                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i)
+                            if slice.count != 8 {
+                                byte >>= 8 - slice.count
+                            }
+                            bitPattern = (bitPattern << slice.count) | UInt64(byte)
                         }
                         
                         let _d: UInt64
@@ -624,7 +613,7 @@ extension Image {
                         }
                         
                         switch channel.format {
-                        case .unsigned: _destination.pointee = Image._denormalized(channel.index, T(_d) / channel_max)
+                        case .unsigned: _destination.pointee = Image._denormalized(channel.index, T(_d & _mask) / channel_max)
                         case .signed: _destination.pointee = Image._denormalized(channel.index, T((_d &+ _base) & _mask) / channel_max)
                         default: break
                         }
