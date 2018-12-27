@@ -442,7 +442,7 @@ extension Image {
         let bytesPerPixel = bitmap.bitsPerPixel >> 3
         let bytesPerChannel = channel.bitRange.count >> 3
         let channelBytesOffset = channel.bitRange.lowerBound >> 3
-        let channelShift = channel.bitRange.lowerBound & 7
+        let channelBitsShift = channel.bitRange.lowerBound & 7
         
         let _slices: LazySliceSequence = channel.bitRange.lazy.slice(by: 8)
         
@@ -455,9 +455,9 @@ extension Image {
         }
         
         @inline(__always)
-        func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
+        func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int, _ bits_count: Int) -> UInt8 {
             switch channel.endianness {
-            case .big: return channelShift == 0 ? read_pixel(source, offset, i + channelBytesOffset) : (read_pixel(source, offset, i + channelBytesOffset) << channelShift) | (read_pixel(source, offset, i + 1 + channelBytesOffset) >> (8 - channelShift))
+            case .big: return channelBitsShift + bits_count <= 8 ? read_pixel(source, offset, i + channelBytesOffset) << channelBitsShift : (read_pixel(source, offset, i + channelBytesOffset) << channelBitsShift) | (read_pixel(source, offset, i + 1 + channelBytesOffset) >> (8 - channelBitsShift))
             case .little: return read_pixel(source, offset, bytesPerChannel - i - 1 + channelBytesOffset)
             }
         }
@@ -494,7 +494,7 @@ extension Image {
                         
                         var bitPattern: T = 0
                         for (i, slice) in _slices.enumerated() {
-                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i)
+                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i, slice.count)
                             if slice.count != 8 {
                                 byte >>= 8 - slice.count
                             }
@@ -542,7 +542,7 @@ extension Image {
         let bytesPerPixel = bitmap.bitsPerPixel >> 3
         let bytesPerChannel = channel.bitRange.count >> 3
         let channelBytesOffset = channel.bitRange.lowerBound >> 3
-        let channelShift = channel.bitRange.lowerBound & 7
+        let channelBitsShift = channel.bitRange.lowerBound & 7
         
         let _slices: LazySliceSequence = channel.bitRange.lazy.slice(by: 8)
         
@@ -558,9 +558,9 @@ extension Image {
         }
         
         @inline(__always)
-        func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
+        func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int, _ bits_count: Int) -> UInt8 {
             switch channel.endianness {
-            case .big: return channelShift == 0 ? read_pixel(source, offset, i + channelBytesOffset) : (read_pixel(source, offset, i + channelBytesOffset) << channelShift) | (read_pixel(source, offset, i + 1 + channelBytesOffset) >> (8 - channelShift))
+            case .big: return channelBitsShift + bits_count <= 8 ? read_pixel(source, offset, i + channelBytesOffset) << channelBitsShift : (read_pixel(source, offset, i + channelBytesOffset) << channelBitsShift) | (read_pixel(source, offset, i + 1 + channelBytesOffset) >> (8 - channelBitsShift))
             case .little: return read_pixel(source, offset, bytesPerChannel - i - 1 + channelBytesOffset)
             }
         }
@@ -597,7 +597,7 @@ extension Image {
                         
                         var bitPattern: UInt64 = 0
                         for (i, slice) in _slices.enumerated() {
-                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i)
+                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i, slice.count)
                             if slice.count != 8 {
                                 byte >>= 8 - slice.count
                             }
@@ -648,7 +648,7 @@ extension Image {
         let bytesPerPixel = bitmap.bitsPerPixel >> 3
         let bytesPerChannel = channel.bitRange.count >> 3
         let channelBytesOffset = channel.bitRange.lowerBound >> 3
-        let channelShift = channel.bitRange.lowerBound & 7
+        let channelBitsShift = channel.bitRange.lowerBound & 7
         
         @inline(__always)
         func read_pixel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
@@ -659,9 +659,9 @@ extension Image {
         }
         
         @inline(__always)
-        func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
+        func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int, _ bits_count: Int) -> UInt8 {
             switch channel.endianness {
-            case .big: return channelShift == 0 ? read_pixel(source, offset, i + channelBytesOffset) : (read_pixel(source, offset, i + channelBytesOffset) << channelShift) | (read_pixel(source, offset, i + 1 + channelBytesOffset) >> (8 - channelShift))
+            case .big: return channelBitsShift + bits_count <= 8 ? read_pixel(source, offset, i + channelBytesOffset) << channelBitsShift : (read_pixel(source, offset, i + channelBytesOffset) << channelBitsShift) | (read_pixel(source, offset, i + 1 + channelBytesOffset) >> (8 - channelBitsShift))
             case .little: return read_pixel(source, offset, bytesPerChannel - i - 1 + channelBytesOffset)
             }
         }
@@ -709,7 +709,7 @@ extension Image {
                                 
                                 var bitPattern: UInt64 = 0
                                 for i in 0..<8 {
-                                    bitPattern = (bitPattern << 8) | UInt64(read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i))
+                                    bitPattern = (bitPattern << 8) | UInt64(read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i, 8))
                                 }
                                 
                                 _d = bitPattern
@@ -721,9 +721,9 @@ extension Image {
                                     let byte: UInt8
                                     if i == 0 && channel.bitRange.count & 7 != 0 {
                                         let mask = ~((0xFF as UInt8) >> (channel.bitRange.count & 7))
-                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1) & mask
+                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1, channel.bitRange.count & 7) & mask
                                     } else {
-                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1)
+                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1, 8)
                                     }
                                     if overflow {
                                         let (_add, _overflow) = tiff_predictor_record[i].addingReportingOverflow(1)
