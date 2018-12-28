@@ -158,14 +158,14 @@ extension FloatColorPixel {
             
             let source = FloatColorPixel(source)
             
-            let d_alpha = self._opacity
-            let s_alpha = source._opacity
+            let d_alpha = self.floatOpacity
+            let s_alpha = source.floatOpacity
             
             let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
             
             if r_alpha > 0 {
-                let _source = source._color
-                let _destination = self._color
+                let _source = source.floatColor
+                let _destination = self.floatColor
                 let blended = (1 - d_alpha) * _source + d_alpha * _destination.combined(_source, blending)
                 return FloatColorPixel(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
             } else {
@@ -185,14 +185,14 @@ extension FloatColorPixel {
             
             let source = FloatColorPixel(source)
             
-            let d_alpha = self._opacity
-            let s_alpha = source._opacity
+            let d_alpha = self.floatOpacity
+            let s_alpha = source.floatOpacity
             
             let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
             
             if r_alpha > 0 {
-                let _source = source._color
-                let _destination = self._color
+                let _source = source.floatColor
+                let _destination = self.floatColor
                 let blended = blendMode == .normal ? _source : (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
                 return FloatColorPixel(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
             } else {

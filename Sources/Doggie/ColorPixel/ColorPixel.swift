@@ -574,50 +574,47 @@ public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, 
     
     public typealias Scalar = Float
     
-    @usableFromInline
-    var _color: Model.FloatComponents
-    
-    @usableFromInline
-    var _opacity: Float
+    public var floatColor: Model.FloatComponents
+    public var floatOpacity: Float
     
     @inlinable
     @inline(__always)
     public init() {
-        self._color = Model.FloatComponents()
-        self._opacity = 0
+        self.floatColor = Model.FloatComponents()
+        self.floatOpacity = 0
     }
     
     @inlinable
     @inline(__always)
     public init(color: Model.FloatComponents, opacity: Float = 1) {
-        self._color = color
-        self._opacity = opacity
+        self.floatColor = color
+        self.floatOpacity = opacity
     }
     
     @inlinable
     @inline(__always)
     public init(color: Model, opacity: Double = 1) {
-        self._color = color.floatComponents
-        self._opacity = Float(opacity)
+        self.floatColor = color.floatComponents
+        self.floatOpacity = Float(opacity)
     }
     
     @_transparent
     public var color: Model {
         get {
-            return Model(floatComponents: _color)
+            return Model(floatComponents: floatColor)
         }
         set {
-            self._color = newValue.floatComponents
+            self.floatColor = newValue.floatComponents
         }
     }
     
     @_transparent
     public var opacity: Double {
         get {
-            return Double(_opacity)
+            return Double(floatOpacity)
         }
         set {
-            self._opacity = Float(newValue)
+            self.floatOpacity = Float(newValue)
         }
     }
     
@@ -625,9 +622,9 @@ public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, 
     @inline(__always)
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
-            return Double(_color[index])
+            return Double(floatColor[index])
         } else if index == Model.numberOfComponents {
-            return Double(_opacity)
+            return Double(floatOpacity)
         } else {
             fatalError()
         }
@@ -637,9 +634,9 @@ public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, 
     @inline(__always)
     public mutating func setComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
-            _color[index] = Float(value)
+            floatColor[index] = Float(value)
         } else if index == Model.numberOfComponents {
-            _opacity = Float(value)
+            floatOpacity = Float(value)
         } else {
             fatalError()
         }
@@ -654,58 +651,58 @@ public prefix func +<Model>(val: FloatColorPixel<Model>) -> FloatColorPixel<Mode
 @inlinable
 @inline(__always)
 public prefix func -<Model>(val: FloatColorPixel<Model>) -> FloatColorPixel<Model> {
-    return FloatColorPixel(color: -val._color, opacity: -val._opacity)
+    return FloatColorPixel(color: -val.floatColor, opacity: -val.floatOpacity)
 }
 @inlinable
 @inline(__always)
 public func +<Model>(lhs: FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) -> FloatColorPixel<Model> {
-    return FloatColorPixel(color: lhs._color + rhs._color, opacity: lhs._opacity + rhs._opacity)
+    return FloatColorPixel(color: lhs.floatColor + rhs.floatColor, opacity: lhs.floatOpacity + rhs.floatOpacity)
 }
 @inlinable
 @inline(__always)
 public func -<Model>(lhs: FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) -> FloatColorPixel<Model> {
-    return FloatColorPixel(color: lhs._color - rhs._color, opacity: lhs._opacity - rhs._opacity)
+    return FloatColorPixel(color: lhs.floatColor - rhs.floatColor, opacity: lhs.floatOpacity - rhs.floatOpacity)
 }
 
 @inlinable
 @inline(__always)
 public func *<Model>(lhs: Float, rhs: FloatColorPixel<Model>) -> FloatColorPixel<Model> {
-    return FloatColorPixel(color: lhs * rhs._color, opacity: lhs * rhs._opacity)
+    return FloatColorPixel(color: lhs * rhs.floatColor, opacity: lhs * rhs.floatOpacity)
 }
 @inlinable
 @inline(__always)
 public func *<Model>(lhs: FloatColorPixel<Model>, rhs: Float) -> FloatColorPixel<Model> {
-    return FloatColorPixel(color: lhs._color * rhs, opacity: lhs._opacity * rhs)
+    return FloatColorPixel(color: lhs.floatColor * rhs, opacity: lhs.floatOpacity * rhs)
 }
 
 @inlinable
 @inline(__always)
 public func /<Model>(lhs: FloatColorPixel<Model>, rhs: Float) -> FloatColorPixel<Model> {
-    return FloatColorPixel(color: lhs._color / rhs, opacity: lhs._opacity / rhs)
+    return FloatColorPixel(color: lhs.floatColor / rhs, opacity: lhs.floatOpacity / rhs)
 }
 
 @inlinable
 @inline(__always)
 public func *=<Model> (lhs: inout FloatColorPixel<Model>, rhs: Float) {
-    lhs._color *= rhs
-    lhs._opacity *= rhs
+    lhs.floatColor *= rhs
+    lhs.floatOpacity *= rhs
 }
 @inlinable
 @inline(__always)
 public func /=<Model> (lhs: inout FloatColorPixel<Model>, rhs: Float) {
-    lhs._color /= rhs
-    lhs._opacity /= rhs
+    lhs.floatColor /= rhs
+    lhs.floatOpacity /= rhs
 }
 @inlinable
 @inline(__always)
 public func +=<Model> (lhs: inout FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) {
-    lhs._color += rhs._color
-    lhs._opacity += rhs._opacity
+    lhs.floatColor += rhs.floatColor
+    lhs.floatOpacity += rhs.floatOpacity
 }
 @inlinable
 @inline(__always)
 public func -=<Model> (lhs: inout FloatColorPixel<Model>, rhs: FloatColorPixel<Model>) {
-    lhs._color -= rhs._color
-    lhs._opacity -= rhs._opacity
+    lhs.floatColor -= rhs.floatColor
+    lhs.floatOpacity -= rhs.floatOpacity
 }
 
