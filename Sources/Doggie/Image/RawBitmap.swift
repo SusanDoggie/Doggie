@@ -271,7 +271,7 @@ extension Image {
                         source += bytesPerPixel
                         
                         if is_opaque {
-                            destination[Pixel.numberOfComponents - 1] = 1
+                            destination[Pixel.numberOfComponents - 1] = T.max
                         }
                         
                         destination += Pixel.numberOfComponents
