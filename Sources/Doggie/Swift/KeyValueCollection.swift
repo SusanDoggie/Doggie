@@ -142,20 +142,6 @@ public struct DefaultKeysCollection<Base: KeyValueCollection> : Collection {
     public func contains(_ element: Base.Key) -> Bool {
         return base.index(forKey: element) != nil
     }
-    
-    @inlinable
-    public static func == (lhs: DefaultKeysCollection, rhs: DefaultKeysCollection) -> Bool {
-        
-        if lhs.count != rhs.count {
-            return false
-        }
-        
-        for (key, _) in lhs.base where !rhs.contains(key) {
-            return false
-        }
-        
-        return true
-    }
 }
 
 extension DefaultKeysCollection : BidirectionalCollection where Base : BidirectionalCollection {
