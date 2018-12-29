@@ -105,6 +105,8 @@
 		0A53E46F1E35AEF80060FB83 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4551E35AEF80060FB83 /* Json.swift */; };
 		0A53E4791E35AEF80060FB83 /* Parallel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45A1E35AEF80060FB83 /* Parallel.swift */; };
 		0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45C1E35AEF80060FB83 /* Regex.swift */; };
+		0A55505721D7014E0035AF94 /* WeakDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55505621D7014E0035AF94 /* WeakDictionary.swift */; };
+		0A55505921D70E620035AF94 /* ObjectiveC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55505821D70E620035AF94 /* ObjectiveC.swift */; };
 		0A55AE6E20BFF98400FC951F /* ByteOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */; };
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
 		0A5DEDD71F7B60D600A45B4B /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DEDD61F7B60D600A45B4B /* Resolution.swift */; };
@@ -389,6 +391,8 @@
 		0A53E4551E35AEF80060FB83 /* Json.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Json.swift; sourceTree = "<group>"; };
 		0A53E45A1E35AEF80060FB83 /* Parallel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Parallel.swift; sourceTree = "<group>"; };
 		0A53E45C1E35AEF80060FB83 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Regex.swift; sourceTree = "<group>"; };
+		0A55505621D7014E0035AF94 /* WeakDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeakDictionary.swift; sourceTree = "<group>"; };
+		0A55505821D70E620035AF94 /* ObjectiveC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveC.swift; sourceTree = "<group>"; };
 		0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteOutputStream.swift; sourceTree = "<group>"; };
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RectCollection.swift; sourceTree = "<group>"; };
 		0A5DEDD61F7B60D600A45B4B /* Resolution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Resolution.swift; sourceTree = "<group>"; };
@@ -616,6 +620,7 @@
 				0A53E45A1E35AEF80060FB83 /* Parallel.swift */,
 				0A53E45C1E35AEF80060FB83 /* Regex.swift */,
 				0A7F5B661F79F13600685AA0 /* MappedBuffer.swift */,
+				0A55505621D7014E0035AF94 /* WeakDictionary.swift */,
 				0A792C9F1FDA9742003C0290 /* FileManager.swift */,
 				0A7C9D042022D01400927674 /* Cache.swift */,
 			);
@@ -782,6 +787,7 @@
 			children = (
 				0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */,
 				0AA8D462204E486700ED0175 /* SwiftPlayground.swift */,
+				0A55505821D70E620035AF94 /* ObjectiveC.swift */,
 				0A06975A1E4D66A3005CF664 /* Filter.swift */,
 				0A0697571E4D6659005CF664 /* Graphic.swift */,
 				0A36612A1EEA54AB00216A26 /* CGPath.swift */,
@@ -1539,6 +1545,7 @@
 				0A9F28221EF0D9BC00E69976 /* LabColorModel.swift in Sources */,
 				0A9CD5901EEB9A2700094148 /* CIELuvColorSpace.swift in Sources */,
 				0ADAA3B220CB6FD7006682EA /* GatheringCollection.swift in Sources */,
+				0A55505921D70E620035AF94 /* ObjectiveC.swift in Sources */,
 				08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				0A9F28381EF1174600E69976 /* iccType.swift in Sources */,
 				0A8F4F6A1F622C850062FD11 /* SetClip.swift in Sources */,
@@ -1557,6 +1564,7 @@
 				08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */,
 				0A7C9D052022D01400927674 /* Cache.swift in Sources */,
 				0A8ABC1720E4A0EF00A2634A /* Underpainting.swift in Sources */,
+				0A55505721D7014E0035AF94 /* WeakDictionary.swift in Sources */,
 				0A74D68820047BA600330C86 /* ImageConvolution.swift in Sources */,
 				0A8ABC1020E4852B00A2634A /* StencilTexture.swift in Sources */,
 				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,

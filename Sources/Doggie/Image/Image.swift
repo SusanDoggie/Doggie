@@ -158,14 +158,6 @@ struct ImageCacheColorConversionKey<Pixel: ColorPixelProtocol> : Hashable {
     }
 }
 
-extension Image {
-    
-    @inlinable
-    var cacheId: ObjectIdentifier {
-        return ObjectIdentifier(cache)
-    }
-}
-
 extension ImageCache {
     
     subscript<Value>(key: String) -> Value? {
@@ -219,7 +211,7 @@ extension Image {
     @inlinable
     @inline(__always)
     public static func ==(lhs: Image, rhs: Image) -> Bool {
-        return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resolution == rhs.resolution && lhs.colorSpace == rhs.colorSpace && (lhs.cacheId == rhs.cacheId || lhs.pixels == rhs.pixels)
+        return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resolution == rhs.resolution && lhs.colorSpace == rhs.colorSpace && (lhs.cache === rhs.cache || lhs.pixels == rhs.pixels)
     }
 }
 

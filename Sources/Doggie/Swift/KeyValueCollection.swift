@@ -25,7 +25,7 @@
 
 public protocol KeyValueCollection : Collection where Element == (key: Key, value: Value) {
     
-    associatedtype Key: Equatable
+    associatedtype Key
     
     associatedtype Value
     
@@ -79,7 +79,7 @@ extension Dictionary: KeyValueCollection {
 }
 
 @_fixed_layout
-public struct DefaultKeysCollection<Base: KeyValueCollection> : Collection, Equatable {
+public struct DefaultKeysCollection<Base: KeyValueCollection> : Collection {
     
     public typealias Index = Base.Index
     

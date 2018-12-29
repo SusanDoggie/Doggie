@@ -280,10 +280,6 @@ extension Shape {
             self.table = table
         }
     }
-    
-    var cacheId: ObjectIdentifier {
-        return ObjectIdentifier(cache)
-    }
 }
 
 extension Shape.Cache {
@@ -339,18 +335,6 @@ extension Shape.Component {
             self.index = index
             self.list = list
         }
-    }
-    
-    @usableFromInline
-    struct CacheIdentifier: Hashable {
-        
-        let index: Int
-        let list: ObjectIdentifier
-    }
-    
-    var cacheId: CacheIdentifier {
-        let cache = self.cache
-        return CacheIdentifier(index: cache.index, list: ObjectIdentifier(cache.list))
     }
     
     @usableFromInline

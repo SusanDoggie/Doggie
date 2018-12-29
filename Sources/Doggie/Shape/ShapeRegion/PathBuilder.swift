@@ -273,11 +273,23 @@ extension Shape.Component {
     }
 }
 
+extension WeakDictionary where Key == Shape.Component.CacheArray, Value == [Int: ConstructiveSolidResult] {
+    
+    fileprivate subscript(key: Shape.Component.Cache) -> ConstructiveSolidResult? {
+        get {
+            return self[key.list]?[key.index]
+        }
+        set {
+            self[key.list, default: [:]][key.index] = newValue
+        }
+    }
+}
+
 extension Shape.Component {
     
-    private var constructiveSolidResultCache: [Shape.Component.CacheIdentifier: ConstructiveSolidResult] {
+    private var constructiveSolidResultCache: WeakDictionary<Shape.Component.CacheArray, [Int: ConstructiveSolidResult]> {
         get {
-            return cache[ShapeCacheConstructiveSolidResultKey, default: [:]]
+            return cache[ShapeCacheConstructiveSolidResultKey, default: WeakDictionary()]
         }
         nonmutating set {
             cache[ShapeCacheConstructiveSolidResultKey] = newValue
@@ -336,8 +348,8 @@ extension Shape.Component {
     
     func process(_ other: Shape.Component) -> ConstructiveSolidResult {
         
-        if constructiveSolidResultCache[other.cacheId] == nil {
-            if let result = other.constructiveSolidResultCache[self.cacheId] {
+        if constructiveSolidResultCache[other.cache] == nil {
+            if let result = other.constructiveSolidResultCache[self.cache] {
                 switch result {
                 case let .overlap(overlap):
                     switch overlap {
@@ -352,20 +364,20 @@ extension Shape.Component {
             } else {
                 let intersectTable = ConstructiveSolidResult.Table(self, other)
                 if intersectTable.looping_left.count != 0 || intersectTable.looping_right.count != 0 {
-                    constructiveSolidResultCache[other.cacheId] = .regions(self._breakLoop(intersectTable.looping_left), other._breakLoop(intersectTable.looping_right))
+                    constructiveSolidResultCache[other.cache] = .regions(self._breakLoop(intersectTable.looping_left), other._breakLoop(intersectTable.looping_right))
                 } else {
                     
                     if intersectTable.l_graph.count == 0 {
-                        constructiveSolidResultCache[other.cacheId] = .overlap(intersectTable.overlap)
+                        constructiveSolidResultCache[other.cache] = .overlap(intersectTable.overlap)
                     } else {
                         let segments = create_solids(other, intersectTable.l_graph, intersectTable.r_graph)
                         let forward = segments.filter { self.area.sign == $0.solid.area.sign }
                         let backward = segments.filter { self.area.sign != $0.solid.area.sign }
-                        constructiveSolidResultCache[other.cacheId] = .segments(forward, backward)
+                        constructiveSolidResultCache[other.cache] = .segments(forward, backward)
                     }
                 }
             }
         }
-        return constructiveSolidResultCache[other.cacheId]!
+        return constructiveSolidResultCache[other.cache]!
     }
 }

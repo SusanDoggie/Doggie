@@ -169,15 +169,15 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
     
     /// - complexity: Amortized O(1)
-    @discardableResult
     @inlinable
+    @discardableResult
     public mutating func updateLink(from fromNode: Node, to toNode: Node, with link: Link) -> Link? {
         return table[fromNode, default: [:]].updateValue(link, forKey: toNode)
     }
     
     /// - complexity: Amortized O(1)
-    @discardableResult
     @inlinable
+    @discardableResult
     public mutating func removeLink(from fromNode: Node, to toNode: Node) -> Link? {
         if var list = table[fromNode], let result = list[toNode] {
             list.removeValue(forKey: toNode)
@@ -192,8 +192,8 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
     
     /// - complexity: Amortized O(1)
-    @discardableResult
     @inlinable
+    @discardableResult
     public mutating func removeLinks(between lhs: Node, _ rhs: Node) -> (Link?, Link?) {
         if lhs == rhs {
             let value = removeLink(from: lhs, to: rhs)
@@ -352,22 +352,22 @@ extension Graph where Node == AnyHashable {
     }
     
     /// - complexity: Amortized O(1)
-    @discardableResult
     @inlinable
+    @discardableResult
     public mutating func updateLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement, with link: Link) -> Link? {
         return self.updateLink(from: AnyHashable(fromNode), to: AnyHashable(toNode), with: link)
     }
     
     /// - complexity: Amortized O(1)
-    @discardableResult
     @inlinable
+    @discardableResult
     public mutating func removeLink<ConcreteElement : Hashable>(from fromNode: ConcreteElement, to toNode: ConcreteElement) -> Link? {
         return self.removeLink(from: AnyHashable(fromNode), to: AnyHashable(toNode))
     }
     
     /// - complexity: Amortized O(1)
-    @discardableResult
     @inlinable
+    @discardableResult
     public mutating func removeLinks<ConcreteElement : Hashable>(between node1: ConcreteElement, _ node2: ConcreteElement) -> (Link?, Link?) {
         return self.removeLinks(between: AnyHashable(node1), AnyHashable(node2))
     }
