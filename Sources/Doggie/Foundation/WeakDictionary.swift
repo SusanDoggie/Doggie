@@ -24,7 +24,9 @@
 //
 
 @_fixed_layout
-public struct WeakDictionary<Key: AnyObject, Value> {
+public struct WeakDictionary<Key: AnyObject, Value> : KeyValueCollection {
+    
+    public typealias Element = (key: Key, value: Value)
     
     @usableFromInline
     var base: [ObjectIdentifier: ValueContainer] {
@@ -37,6 +39,104 @@ public struct WeakDictionary<Key: AnyObject, Value> {
     public init() {
         self.base = [:]
     }
+}
+
+extension WeakDictionary {
+    
+    @_fixed_layout
+    @usableFromInline
+    struct ValueContainer {
+        
+        @usableFromInline
+        weak var key: Key?
+        
+        @usableFromInline
+        let value: Value
+        
+        @inlinable
+        init(key: Key, value: Value) {
+            self.key = key
+            self.value = value
+        }
+    }
+    
+    @_fixed_layout
+    public struct Index : Comparable {
+        
+        @usableFromInline
+        let base: Dictionary<ObjectIdentifier, ValueContainer>.Index
+        
+        @usableFromInline
+        let element: Element?
+        
+        @inlinable
+        init(base: Dictionary<ObjectIdentifier, ValueContainer>.Index, element: Element?) {
+            self.base = base
+            self.element = element
+        }
+        
+        @inlinable
+        public static func < (lhs: WeakDictionary<Key, Value>.Index, rhs: WeakDictionary<Key, Value>.Index) -> Bool {
+            return lhs.base < rhs.base
+        }
+        
+        @inlinable
+        public static func == (lhs: WeakDictionary<Key, Value>.Index, rhs: WeakDictionary<Key, Value>.Index) -> Bool {
+            return lhs.base == rhs.base
+        }
+    }
+}
+
+extension WeakDictionary {
+    
+    @inlinable
+    public var count: Int {
+        return base.values.count { $0.key != nil }
+    }
+    
+    @inlinable
+    public var startIndex: Index {
+        for (index, (key: _, value: container)) in base.indexed() {
+            if let key = container.key {
+                return Index(base: index, element: (key, container.value))
+            }
+        }
+        return self.endIndex
+    }
+    
+    @inlinable
+    public var endIndex: Index {
+        return Index(base: base.endIndex, element: nil)
+    }
+    
+    @inlinable
+    public subscript(position: Index) -> Element {
+        return position.element!
+    }
+    
+    @inlinable
+    public func index(after i: Index) -> Index {
+        for (index, (key: _, value: container)) in base.suffix(from: i.base).indexed() {
+            if let key = container.key {
+                return Index(base: index, element: (key, container.value))
+            }
+        }
+        return self.endIndex
+    }
+    
+    @inlinable
+    public func index(forKey key: Key) -> Index? {
+        
+        guard let index = base.index(forKey: ObjectIdentifier(key)) else { return nil }
+        
+        let container = base[index].value
+        guard let _key = container.key, _key === key else { return nil }
+        
+        return Index(base: index, element: (_key, container.value))
+    }
+}
+
+extension WeakDictionary {
     
     @inlinable
     public subscript(key: Key) -> Value? {
@@ -62,19 +162,8 @@ public struct WeakDictionary<Key: AnyObject, Value> {
 
 extension WeakDictionary {
     
-    @usableFromInline
-    struct ValueContainer {
-        
-        @usableFromInline
-        weak var key: Key?
-        
-        @usableFromInline
-        let value: Value
-        
-        @inlinable
-        init(key: Key, value: Value) {
-            self.key = key
-            self.value = value
-        }
+    @inlinable
+    public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
+        base.removeAll(keepingCapacity: keepCapacity)
     }
 }
