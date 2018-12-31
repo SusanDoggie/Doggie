@@ -23,16 +23,27 @@ let shape = try Shape(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50
 
 let region = ShapeRegion(shape, winding: .nonZero)
 let ellipse = ShapeRegion(ellipseIn: shape.boundary)
-
+```
+```swift
 region.union(ellipse)
-
+```
+![union](images/readme/ShapeRegion/union.png)
+```swift
 region.intersection(ellipse)
-
+```
+![intersection](images/readme/ShapeRegion/intersection.png)
+```swift
 region.subtracting(ellipse)
+```
+![subtracting](images/readme/ShapeRegion/subtracting.png)
+```swift
 ellipse.subtracting(region)
-
+```
+![subtracting](images/readme/ShapeRegion/subtracting2.png)
+```swift
 region.symmetricDifference(ellipse)
 ```
+![symmetricDifference](images/readme/ShapeRegion/symmetricDifference.png)
 - [font](docs/Font.md)
 ```swift
 let collection = try FontCollection(data: fontFileData)
@@ -55,7 +66,7 @@ if let font = collection.first?.with(size: 64) {
     print(shape.encode())
 }
 ```
-- [image](docs/Image.md) and [graphics](docs/ImageContext.md) with 2D/3D rendering
+- [image](docs/Image.md) and [graphics](docs/ImageContext.md) with 2D/3D drawing
 ```swift
 
 let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
@@ -70,6 +81,34 @@ context.stroke(shape: ellipse2, width: 1, cap: .round, join: .round, color: RGBC
         
 let image: Image<ARGB32ColorPixel> = context.image
 ```
+![drawing sample](images/readme/drawing_sample.png)
+- others
+```svg
+<svg width="200" height="200" viewBox="0 0 220 220"
+     xmlns="http://www.w3.org/2000/svg">
+  <filter id="displacementFilter">
+     <feTurbulence type="turbulence" baseFrequency="0.05"
+        numOctaves="2" result="turbulence"/>
+     <feDisplacementMap in2="turbulence" in="SourceGraphic"
+        scale="50" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+
+  <circle cx="100" cy="100" r="100"
+     style="filter: url(#displacementFilter)"/>
+</svg>
+```
+```swift
+let context = ImageContext<Gray16ColorPixel>(width: 220, height: 220, colorSpace: .default)
+
+context.draw(ellipseIn: Rect(x: 0, y: 0, width: 200, height: 200), color: .black)
+
+var image = context.image
+
+let turbulence: Image<RGBA32ColorPixel> = SVGTurbulence(220, 220, Rect(x: 0, y: 0, width: 220, height: 220), .turbulence, 0.05, false, 2, 0)
+
+image = DisplacementMap(image, turbulence, 0, 1, 50)
+```
+![turbulence](images/readme/turbulence.png)
 
 ## Documents
 
