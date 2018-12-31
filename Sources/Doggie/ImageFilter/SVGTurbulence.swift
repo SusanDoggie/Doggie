@@ -2,7 +2,7 @@
 //  SVGTurbulence.swift
 //
 //  The MIT License
-//  Copyright (c) 2015 - 2018 Susan Cheng. All rights reserved.
+//  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -31,11 +31,17 @@ public enum SVGTurbulenceType {
 
 @inlinable
 @inline(__always)
-public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ rect: Rect, _ type: SVGTurbulenceType, _ baseFrequency: Double, _ stitch: Bool, _ numOctaves: Int, _ seed: Int) -> Image<T> where T.Model == RGBColorModel {
+public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ rect: Rect, _ type: SVGTurbulenceType, _ baseFrequency: Double, _ stitch: Bool, _ numOctaves: Int, _ seed: Int, _ fileBacked: Bool = false) -> Image<T> where T.Model == RGBColorModel {
+    return Image(texture: SVGTurbulence(width, height, rect, type, baseFrequency, stitch, numOctaves, seed, fileBacked), colorSpace: ColorSpace<RGBColorModel>.sRGB.linearTone)
+}
+
+@inlinable
+@inline(__always)
+public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ rect: Rect, _ type: SVGTurbulenceType, _ baseFrequency: Double, _ stitch: Bool, _ numOctaves: Int, _ seed: Int, _ fileBacked: Bool = false) -> Texture<T> where T.Model == RGBColorModel {
     
-    var image = Image<T>(width: width, height: height, colorSpace: ColorSpace<RGBColorModel>.sRGB.linearTone)
+    var result = Texture<T>(width: width, height: height, fileBacked: fileBacked)
     
-    image.withUnsafeMutableBufferPointer {
+    result.withUnsafeMutableBufferPointer {
         
         guard var ptr = $0.baseAddress else { return }
         
@@ -88,5 +94,5 @@ public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ rect: Rect, _ type: 
         }
     }
     
-    return image
+    return result
 }
