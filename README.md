@@ -24,26 +24,13 @@ let shape = try Shape(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50
 let region = ShapeRegion(shape, winding: .nonZero)
 let ellipse = ShapeRegion(ellipseIn: shape.boundary)
 ```
-```swift
-region.union(ellipse)
-```
-![union](docs/images/readme/ShapeRegion/union.png)
-```swift
-region.intersection(ellipse)
-```
-![intersection](docs/images/readme/ShapeRegion/intersection.png)
-```swift
-region.subtracting(ellipse)
-```
-![subtracting](docs/images/readme/ShapeRegion/subtracting.png)
-```swift
-ellipse.subtracting(region)
-```
-![subtracting](docs/images/readme/ShapeRegion/subtracting2.png)
-```swift
-region.symmetricDifference(ellipse)
-```
-![symmetricDifference](docs/images/readme/ShapeRegion/symmetricDifference.png)
+operation | preview
+--- | ---
+``region.union(ellipse)`` | ![union](docs/images/readme/ShapeRegion/union.png)
+``region.subtracting(ellipse)`` | ![union](docs/images/readme/ShapeRegion/intersection.png)
+``ellipse.subtracting(region)`` | ![union](docs/images/readme/ShapeRegion/subtracting.png)
+``region.subtracting(ellipse)`` | ![union](docs/images/readme/ShapeRegion/subtracting2.png)
+``region.symmetricDifference(ellipse)`` | ![union](docs/images/readme/ShapeRegion/symmetricDifference.png)
 - [font](docs/Font.md)
 ```swift
 let collection = try FontCollection(data: fontFileData)
