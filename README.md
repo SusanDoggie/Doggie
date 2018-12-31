@@ -27,7 +27,7 @@ let ellipse = ShapeRegion(ellipseIn: shape.boundary)
 operation | preview
 --- | ---
 ``region.union(ellipse)`` | ![union](docs/images/readme/ShapeRegion/union.png)
-``region.subtracting(ellipse)`` | ![union](docs/images/readme/ShapeRegion/intersection.png)
+``region.intersection(ellipse)`` | ![union](docs/images/readme/ShapeRegion/intersection.png)
 ``ellipse.subtracting(region)`` | ![union](docs/images/readme/ShapeRegion/subtracting.png)
 ``region.subtracting(ellipse)`` | ![union](docs/images/readme/ShapeRegion/subtracting2.png)
 ``region.symmetricDifference(ellipse)`` | ![union](docs/images/readme/ShapeRegion/symmetricDifference.png)
