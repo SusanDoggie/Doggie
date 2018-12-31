@@ -27,23 +27,23 @@ let ellipse = ShapeRegion(ellipseIn: shape.boundary)
 ```swift
 region.union(ellipse)
 ```
-![union](images/readme/ShapeRegion/union.png)
+![union](docs/images/readme/ShapeRegion/union.png)
 ```swift
 region.intersection(ellipse)
 ```
-![intersection](images/readme/ShapeRegion/intersection.png)
+![intersection](docs/images/readme/ShapeRegion/intersection.png)
 ```swift
 region.subtracting(ellipse)
 ```
-![subtracting](images/readme/ShapeRegion/subtracting.png)
+![subtracting](docs/images/readme/ShapeRegion/subtracting.png)
 ```swift
 ellipse.subtracting(region)
 ```
-![subtracting](images/readme/ShapeRegion/subtracting2.png)
+![subtracting](docs/images/readme/ShapeRegion/subtracting2.png)
 ```swift
 region.symmetricDifference(ellipse)
 ```
-![symmetricDifference](images/readme/ShapeRegion/symmetricDifference.png)
+![symmetricDifference](docs/images/readme/ShapeRegion/symmetricDifference.png)
 - [font](docs/Font.md)
 ```swift
 let collection = try FontCollection(data: fontFileData)
@@ -81,7 +81,7 @@ context.stroke(shape: ellipse2, width: 1, cap: .round, join: .round, color: RGBC
         
 let image: Image<ARGB32ColorPixel> = context.image
 ```
-![drawing sample](images/readme/drawing_sample.png)
+![drawing sample](docs/images/readme/drawing_sample.png)
 - others
 ```svg
 <svg width="200" height="200" viewBox="0 0 220 220"
@@ -108,7 +108,7 @@ let turbulence: Image<RGBA32ColorPixel> = SVGTurbulence(220, 220, Rect(x: 0, y: 
 
 image = DisplacementMap(image, turbulence, 0, 1, 50)
 ```
-![turbulence](images/readme/turbulence.png)
+![turbulence](docs/images/readme/turbulence.png)
 
 ## Documents
 
