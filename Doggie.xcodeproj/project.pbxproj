@@ -93,6 +93,8 @@
 		0A4101A521BF72AD00CD9CB7 /* ImageCodecTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4101A421BF72AC00CD9CB7 /* ImageCodecTest.swift */; };
 		0A4101F721BFC31B00CD9CB7 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4101F621BFC31B00CD9CB7 /* UIImage.swift */; };
 		0A459AAA219014180015CDCD /* shadow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A459AA9219014180015CDCD /* shadow.metal */; };
+		0A4714AA21D9D03400650284 /* SVGNoise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4714A921D9D03400650284 /* SVGNoise.swift */; };
+		0A4714AC21D9D2B500650284 /* SVGTurbulence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4714AB21D9D2B500650284 /* SVGTurbulence.swift */; };
 		0A4A1E2021C4B17D00FD90A0 /* ShapeRegionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A1E1E21C4B14500FD90A0 /* ShapeRegionTest.swift */; };
 		0A4A752E21B8D61500AF0CB6 /* ColorSpaceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A752C21B8D61400AF0CB6 /* ColorSpaceTest.swift */; };
 		0A4A752F21B8D61500AF0CB6 /* FontTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A752D21B8D61400AF0CB6 /* FontTest.swift */; };
@@ -379,6 +381,8 @@
 		0A4101A421BF72AC00CD9CB7 /* ImageCodecTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCodecTest.swift; sourceTree = "<group>"; };
 		0A4101F621BFC31B00CD9CB7 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		0A459AA9219014180015CDCD /* shadow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shadow.metal; sourceTree = "<group>"; };
+		0A4714A921D9D03400650284 /* SVGNoise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGNoise.swift; sourceTree = "<group>"; };
+		0A4714AB21D9D2B500650284 /* SVGTurbulence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGTurbulence.swift; sourceTree = "<group>"; };
 		0A4A1E1E21C4B14500FD90A0 /* ShapeRegionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeRegionTest.swift; sourceTree = "<group>"; };
 		0A4A752C21B8D61400AF0CB6 /* ColorSpaceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorSpaceTest.swift; sourceTree = "<group>"; };
 		0A4A752D21B8D61400AF0CB6 /* FontTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontTest.swift; sourceTree = "<group>"; };
@@ -949,6 +953,7 @@
 				0AF566F720D21958003B243B /* Edges.swift */,
 				0A8ABC1620E4A0EF00A2634A /* Underpainting.swift */,
 				0A71434320FC404D009DFFB5 /* DisplacementMap.swift */,
+				0A4714AB21D9D2B500650284 /* SVGTurbulence.swift */,
 			);
 			path = ImageFilter;
 			sourceTree = "<group>";
@@ -1156,6 +1161,7 @@
 			children = (
 				08458AC31E2E627600D01813 /* Fourier.swift */,
 				0AA33B5F20942B5800317F54 /* SimplexNoise.swift */,
+				0A4714A921D9D03400650284 /* SVGNoise.swift */,
 			);
 			path = Misc;
 			sourceTree = "<group>";
@@ -1505,6 +1511,7 @@
 				0A9F28251EF0D9CE00E69976 /* LuvColorModel.swift in Sources */,
 				0A9F281C1EF0D98400E69976 /* RGBColorModel.swift in Sources */,
 				08458B291E2E627600D01813 /* ColorModel.swift in Sources */,
+				0A4714AC21D9D2B500650284 /* SVGTurbulence.swift in Sources */,
 				0A92C7B31E56A52E0090EBFC /* CompressionCodec.swift in Sources */,
 				0A53E46F1E35AEF80060FB83 /* Json.swift in Sources */,
 				0A9F282E1EF0DB1F00E69976 /* CMYColorModel.swift in Sources */,
@@ -1637,6 +1644,7 @@
 				0A8EDDC31F19B67800C917CC /* iccLUTTransform.swift in Sources */,
 				08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */,
 				0A9CD5841EEB989700094148 /* AdobeRGB.swift in Sources */,
+				0A4714AA21D9D03400650284 /* SVGNoise.swift in Sources */,
 				0A21118F20CA58F2003CA6BC /* JPEGQuantization.swift in Sources */,
 				0A8EDDC91F19D16B00C917CC /* iccMultiLocalizedUnicode.swift in Sources */,
 			);
