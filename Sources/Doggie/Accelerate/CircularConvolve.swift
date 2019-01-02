@@ -72,7 +72,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signa
         _kimag.pointee = _sr * _ki + _si * _kr
     }
     
-    HalfInverseRadix2CooleyTukey(level, output, output + out_stride, k_stride, output, out_stride)
+    HalfInverseRadix2CooleyTukey(level, output, out_stride)
 }
 
 @inlinable
@@ -156,7 +156,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
         _timag.pointee = _pow * T.sin(_arg)
     }
     
-    HalfInverseRadix2CooleyTukey(level, output, output + out_stride, t_stride, output, out_stride)
+    HalfInverseRadix2CooleyTukey(level, output, out_stride)
 }
 
 @inlinable
@@ -236,7 +236,7 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ si
         _timag.pointee = _tr * _ki + _ti * _kr
     }
     
-    HalfInverseRadix2CooleyTukey(level, output, output + out_stride, t_stride, output, out_stride)
+    HalfInverseRadix2CooleyTukey(level, output, out_stride)
 }
 
 @inlinable
