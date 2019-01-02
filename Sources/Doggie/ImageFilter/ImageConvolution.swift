@@ -41,17 +41,18 @@ func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ row: Int
 
 @inlinable
 @inline(__always)
-func _TextureConvolution<Pixel, T: BinaryFloatingPoint>(_ texture: Texture<Pixel>, _ filter: [T], _ filter_size: (Int, Int)) -> Texture<Pixel> where T : FloatingMathProtocol {
+func _TextureConvolution<Pixel, T: BinaryFloatingPoint>(_ texture: Texture<Pixel>, _ filter: [T], _ filter_width: Int, _ filter_height: Int) -> Texture<Pixel> where T : FloatingMathProtocol {
     
-    precondition(filter_size.0 > 0 && filter_size.1 > 0, "nonpositive filter_size is not allowed.")
-    precondition(filter_size.0 * filter_size.1 == filter.count, "mismatch filter count.")
+    precondition(filter_width > 0, "nonpositive filter_width is not allowed.")
+    precondition(filter_height > 0, "nonpositive filter_height is not allowed.")
+    precondition(filter_width * filter_height == filter.count, "mismatch filter count.")
     
     let width = texture.width
     let height = texture.height
     let numberOfComponents = Pixel.numberOfComponents
     
-    let n_width = width + filter_size.0 - 1
-    let n_height = height + filter_size.1 - 1
+    let n_width = width + filter_width - 1
+    let n_height = height + filter_height - 1
     
     guard width > 0 && height > 0 else { return texture }
     
@@ -67,7 +68,7 @@ func _TextureConvolution<Pixel, T: BinaryFloatingPoint>(_ texture: Texture<Pixel
             
             for _ in 0..<numberOfComponents {
                 
-                DiscreteConvolve2D((width, height), source, numberOfComponents, filter_size, filter, 1, output, numberOfComponents)
+                DiscreteConvolve2D((width, height), source, numberOfComponents, (filter_width, filter_height), filter, 1, output, numberOfComponents)
                 
                 source += 1
                 output += 1
@@ -267,13 +268,13 @@ func _TextureConvolutionVertical<Pixel, T: BinaryFloatingPoint>(_ texture: Textu
 
 @inlinable
 @inline(__always)
-public func TextureConvolution<Model>(_ texture: Texture<ColorPixel<Model>>, _ filter: [Double], _ filter_size: (Int, Int)) -> Texture<ColorPixel<Model>> {
-    return _TextureConvolution(texture, filter, filter_size)
+public func TextureConvolution<Model>(_ texture: Texture<ColorPixel<Model>>, _ filter: [Double], _ filter_width: Int, _ filter_height: Int) -> Texture<ColorPixel<Model>> {
+    return _TextureConvolution(texture, filter, filter_width, filter_height)
 }
 @inlinable
 @inline(__always)
-public func TextureConvolution<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ filter: [Float], _ filter_size: (Int, Int)) -> Texture<FloatColorPixel<Model>> {
-    return _TextureConvolution(texture, filter, filter_size)
+public func TextureConvolution<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ filter: [Float], _ filter_width: Int, _ filter_height: Int) -> Texture<FloatColorPixel<Model>> {
+    return _TextureConvolution(texture, filter, filter_width, filter_height)
 }
 @inlinable
 @inline(__always)
@@ -308,13 +309,13 @@ public func TextureConvolutionVertical<Model>(_ texture: Texture<FloatColorPixel
 
 @inlinable
 @inline(__always)
-public func ImageConvolution<Model>(_ image: Image<ColorPixel<Model>>, _ filter: [Double], _ filter_size: (Int, Int)) -> Image<ColorPixel<Model>> {
-    return Image(texture: TextureConvolution(Texture(image: image), filter, filter_size), resolution: image.resolution, colorSpace: image.colorSpace)
+public func ImageConvolution<Model>(_ image: Image<ColorPixel<Model>>, _ filter: [Double], _ filter_width: Int, _ filter_height: Int) -> Image<ColorPixel<Model>> {
+    return Image(texture: TextureConvolution(Texture(image: image), filter, filter_width, filter_height), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 @inlinable
 @inline(__always)
-public func ImageConvolution<Model>(_ image: Image<FloatColorPixel<Model>>, _ filter: [Float], _ filter_size: (Int, Int)) -> Image<FloatColorPixel<Model>> {
-    return Image(texture: TextureConvolution(Texture(image: image), filter, filter_size), resolution: image.resolution, colorSpace: image.colorSpace)
+public func ImageConvolution<Model>(_ image: Image<FloatColorPixel<Model>>, _ filter: [Float], _ filter_width: Int, _ filter_height: Int) -> Image<FloatColorPixel<Model>> {
+    return Image(texture: TextureConvolution(Texture(image: image), filter, filter_width, filter_height), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 @inlinable
 @inline(__always)
