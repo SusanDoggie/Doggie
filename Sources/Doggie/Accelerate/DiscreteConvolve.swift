@@ -27,24 +27,22 @@
 @inline(__always)
 public func DiscreteConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
+    let size = signal_count + kernel_count - 1
+    
     var output = output
     
-    let size = signal_count + kernel_count - 1
-    var _kp = kernel
     for t in 0..<size {
         var temp: T = 0
-        let begin = max(t - kernel_count + 1, 0)
-        let end = min(signal_count, t + 1)
-        var _sp = signal + begin * signal_stride
-        var _kp2 = _kp - begin * kernel_stride
-        for _ in begin..<end {
-            temp += _sp.pointee * _kp2.pointee
+        let range = max(t - kernel_count + 1, 0)..<min(t + 1, signal_count)
+        var _sp = signal + range.lowerBound * signal_stride
+        var _kp = kernel + (t - range.lowerBound) * signal_stride
+        for _ in range {
+            temp += _sp.pointee * _kp.pointee
             _sp += signal_stride
-            _kp2 -= kernel_stride
+            _kp -= kernel_stride
         }
         output.pointee = temp
         output += out_stride
-        _kp += kernel_stride
     }
 }
 
@@ -52,23 +50,65 @@ public func DiscreteConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: Un
 @inline(__always)
 public func DiscreteConvolve(_ signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     
+    let size = signal_count + kernel_count - 1
+    
     var output = output
     
-    let size = signal_count + kernel_count - 1
-    var _kp = kernel
     for t in 0..<size {
         var temp = Complex(0)
-        let begin = max(t - kernel_count + 1, 0)
-        let end = min(signal_count, t + 1)
-        var _sp = signal + begin * signal_stride
-        var _kp2 = _kp - begin * kernel_stride
-        for _ in begin..<end {
-            temp += _sp.pointee * _kp2.pointee
+        let range = max(t - kernel_count + 1, 0)..<min(t + 1, signal_count)
+        var _sp = signal + range.lowerBound * signal_stride
+        var _kp = kernel + (t - range.lowerBound) * signal_stride
+        for _ in range {
+            temp += _sp.pointee * _kp.pointee
             _sp += signal_stride
-            _kp2 -= kernel_stride
+            _kp -= kernel_stride
         }
         output.pointee = temp
         output += out_stride
-        _kp += kernel_stride
+    }
+}
+
+@inlinable
+@inline(__always)
+public func DiscreteConvolve2D<T: FloatingPoint>(_ signal_count: (Int, Int), _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: (Int, Int), _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    let width = signal_count.0 + kernel_count.0 - 1
+    let height = signal_count.1 + kernel_count.1 - 1
+    
+    let _signal_stride = signal_count.0 * signal_stride
+    let _kernel_stride = kernel_count.0 * kernel_stride
+    
+    var output = output
+    
+    for s in 0..<height {
+        for t in 0..<width {
+            
+            var temp: T = 0
+            
+            let range1 = max(t - kernel_count.0 + 1, 0)..<min(signal_count.0, t + 1)
+            let range2 = max(s - kernel_count.1 + 1, 0)..<min(signal_count.1, s + 1)
+            
+            var _sp = signal + (range2.lowerBound * signal_count.0 + range1.lowerBound) * signal_stride
+            var _kp = kernel + ((s - range2.lowerBound) * kernel_count.0 + (t - range1.lowerBound)) * kernel_stride
+            
+            for _ in range2 {
+                
+                var _sp2 = _sp
+                var _kp2 = _kp
+                
+                for _ in range1 {
+                    temp += _sp2.pointee * _kp2.pointee
+                    _sp2 += signal_stride
+                    _kp2 -= kernel_stride
+                }
+                
+                _sp += _signal_stride
+                _kp -= _kernel_stride
+            }
+            
+            output.pointee = temp
+            output += out_stride
+        }
     }
 }
