@@ -37,6 +37,7 @@ extension ImageContext {
         
         let width = self.width
         let height = self.height
+        let convolutionAlgorithm = self.convolutionAlgorithm
         
         let shadowColor = ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
         let shadowOffset = self.shadowOffset
@@ -45,7 +46,7 @@ extension ImageContext {
         let filter = GaussianBlurFilter(Float(0.5 * shadowBlur))
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
         
-        let shadow_layer = StencilTexture(width: width, height: height, pixels: stencil, resamplingAlgorithm: .linear)._apply(filter)
+        let shadow_layer = TextureConvolution(StencilTexture(width: width, height: height, pixels: stencil, resamplingAlgorithm: .linear), horizontal: filter, vertical: filter, convolutionAlgorithm)
         
         stencil.withUnsafeBufferPointer { stencil in
             
@@ -85,6 +86,7 @@ extension ImageContext {
         
         let width = self.width
         let height = self.height
+        let convolutionAlgorithm = self.convolutionAlgorithm
         
         let shadowColor = ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
         let shadowOffset = self.shadowOffset
@@ -93,7 +95,7 @@ extension ImageContext {
         let filter = GaussianBlurFilter(Float(0.5 * shadowBlur))
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
         
-        var shadow_layer = StencilTexture<Float>(texture: texture)._apply(filter)
+        var shadow_layer = TextureConvolution(StencilTexture<Float>(texture: texture), horizontal: filter, vertical: filter, convolutionAlgorithm)
         shadow_layer.resamplingAlgorithm = .linear
         
         texture.withUnsafeBufferPointer { source in
@@ -122,67 +124,5 @@ extension ImageContext {
                 }
             }
         }
-    }
-}
-
-extension StencilTexture {
-    
-    @inlinable
-    @inline(__always)
-    func _apply(_ filter: [T]) -> StencilTexture {
-        
-        let width = self.width
-        let height = self.height
-        let fileBacked = self.fileBacked
-        let resamplingAlgorithm = self.resamplingAlgorithm
-        
-        let n_width = width + filter.count - 1
-        
-        guard width > 0 && height > 0 else { return self }
-        
-        let length1 = Radix2CircularConvolveLength(width, filter.count)
-        let length2 = Radix2CircularConvolveLength(height, filter.count)
-        
-        var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, fileBacked: fileBacked)
-        var result = StencilTexture<T>(width: n_width, height: length2, resamplingAlgorithm: resamplingAlgorithm, fileBacked: fileBacked)
-        
-        buffer.withUnsafeMutableBufferPointer {
-            
-            guard let buffer = $0.baseAddress else { return }
-            
-            self.withUnsafeBufferPointer {
-                
-                guard let source = $0.baseAddress else { return }
-                
-                result.withUnsafeMutableBufferPointer {
-                    
-                    guard let output = $0.baseAddress else { return }
-                    
-                    let level1 = log2(length1)
-                    let level2 = log2(length2)
-                    
-                    let _kreal1 = buffer
-                    let _kimag1 = buffer + 1
-                    let _kreal2 = buffer + length1
-                    let _kimag2 = _kreal2 + 1
-                    let _temp = _kreal2 + length2
-                    
-                    HalfRadix2CooleyTukey(level1, filter, 1, filter.count, _kreal1, _kimag1, 2)
-                    
-                    let _length1 = 1 / T(length1)
-                    vec_op(length1 << 1, _kreal1, 1, _kreal1, 1) { $0 * _length1 }
-                    
-                    HalfRadix2CooleyTukey(level2, filter, 1, filter.count, _kreal2, _kimag2, 2)
-                    
-                    let _length2 = 1 / T(length2)
-                    vec_op(length2 << 1, _kreal2, 1, _kreal2, 1) { $0 * _length2 }
-                    
-                    _Radix2FiniteImpulseFilter(level1, height, source, 1, width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
-                    _Radix2FiniteImpulseFilter(level2, n_width, _temp, length1, 1, height, _kreal2, _kimag2, 2, 0, output, n_width, 1)
-                }
-            }
-        }
-        
-        return result
     }
 }

@@ -58,6 +58,8 @@
 		0A13DB36218AF88200BD05F8 /* gradient.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A13DB35218AF88200BD05F8 /* gradient.metal */; };
 		0A1A68B12171A16C00EFF088 /* SFNTSBIX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A68B02171A16C00EFF088 /* SFNTSBIX.swift */; };
 		0A1C14281EF3C5A5001ADB7F /* ICCColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A95A59D1EF3906000D030D5 /* ICCColorSpace.swift */; };
+		0A1DC92121DCB866007DCFC7 /* CooleyTukey2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DC92021DCB866007DCFC7 /* CooleyTukey2D.swift */; };
+		0A1DC92321DCB885007DCFC7 /* CircularConvolve2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DC92221DCB885007DCFC7 /* CircularConvolve2D.swift */; };
 		0A20DD5020C91C570067558F /* BezierProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A20DD4F20C91C570067558F /* BezierProtocol.swift */; };
 		0A21070E1E5BEEBB00F1E00E /* PathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2107081E5BEEBB00F1E00E /* PathCoder.swift */; };
 		0A2107121E5BEEBB00F1E00E /* PathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */; };
@@ -346,6 +348,8 @@
 		0A13DB33218AE99200BD05F8 /* clip.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = clip.metal; sourceTree = "<group>"; };
 		0A13DB35218AF88200BD05F8 /* gradient.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = gradient.metal; sourceTree = "<group>"; };
 		0A1A68B02171A16C00EFF088 /* SFNTSBIX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTSBIX.swift; sourceTree = "<group>"; };
+		0A1DC92021DCB866007DCFC7 /* CooleyTukey2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CooleyTukey2D.swift; sourceTree = "<group>"; };
+		0A1DC92221DCB885007DCFC7 /* CircularConvolve2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularConvolve2D.swift; sourceTree = "<group>"; };
 		0A20DD4F20C91C570067558F /* BezierProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierProtocol.swift; sourceTree = "<group>"; };
 		0A2107081E5BEEBB00F1E00E /* PathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PathCoder.swift; sourceTree = "<group>"; };
 		0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PathStroke.swift; sourceTree = "<group>"; };
@@ -605,8 +609,10 @@
 				08458AB11E2E627600D01813 /* AccelerateWrapper.swift */,
 				08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */,
 				08458AB31E2E627600D01813 /* CircularConvolve.swift */,
+				0A1DC92221DCB885007DCFC7 /* CircularConvolve2D.swift */,
 				0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */,
 				08458AB51E2E627600D01813 /* CooleyTukey.swift */,
+				0A1DC92021DCB866007DCFC7 /* CooleyTukey2D.swift */,
 				08458AB61E2E627600D01813 /* DiscreteConvolve.swift */,
 				08458AB71E2E627600D01813 /* Move.swift */,
 				08458AB81E2E627600D01813 /* SafeFunction.swift */,
@@ -1545,6 +1551,7 @@
 				0A7E3E951F5FD3E40020A507 /* OTFGDEF.swift in Sources */,
 				0A7E3E971F5FD8C90020A507 /* OTFScriptList.swift in Sources */,
 				08458AFD1E2E627600D01813 /* Move.swift in Sources */,
+				0A1DC92121DCB866007DCFC7 /* CooleyTukey2D.swift in Sources */,
 				0AFC4E351F72715600E5FD5A /* SDXMLElement.swift in Sources */,
 				0AA33B6020942B5900317F54 /* SimplexNoise.swift in Sources */,
 				0A8D4F2220C9042400921F91 /* LineSegment.swift in Sources */,
@@ -1592,6 +1599,7 @@
 				0A792CA01FDA9742003C0290 /* FileManager.swift in Sources */,
 				0A0F72132193F39C00BCC39B /* Resampling.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
+				0A1DC92321DCB885007DCFC7 /* CircularConvolve2D.swift in Sources */,
 				0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */,
 				0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,

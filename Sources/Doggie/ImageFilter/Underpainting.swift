@@ -25,13 +25,13 @@
 
 @inlinable
 @inline(__always)
-public func Underpainting<Pixel>(_ image: Image<Pixel>, _ expand: Double, _ background_color: Pixel.Model) -> Image<Pixel> {
-    return Image(texture: Underpainting(Texture(image: image), expand, background_color), resolution: image.resolution, colorSpace: image.colorSpace)
+public func Underpainting<Pixel>(_ image: Image<Pixel>, _ expand: Double, _ background_color: Pixel.Model, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<Pixel> {
+    return Image(texture: Underpainting(Texture(image: image), expand, background_color, algorithm), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
 @inline(__always)
-public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ background_color: Pixel.Model) -> Texture<Pixel> {
+public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ background_color: Pixel.Model, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<Pixel> {
     
     let width = texture.width
     let height = texture.height
@@ -55,7 +55,7 @@ public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ 
     }
     
     let filter = _filter(Float(expand * 0.5))
-    let stencil = StencilTexture<Float>(texture: texture).map { $0.almostZero() ? $0 : 1 }._apply(filter)
+    let stencil = TextureConvolution(StencilTexture<Float>(texture: texture).map { $0.almostZero() ? $0 : 1 }, horizontal: filter, vertical: filter, algorithm)
     
     let half = filter.count >> 1
     let s_width = stencil.width

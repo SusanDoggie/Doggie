@@ -36,6 +36,7 @@ private struct ImageContextStyles {
     var shadowColor: AnyColor = ImageContextStyles.defaultShadowColor
     var shadowOffset: Size = Size()
     var shadowBlur: Double = 0
+    var convolutionAlgorithm: ImageConvolutionAlgorithm = .cooleyTukey
     
     var compositingMode: ColorCompositingMode = .default
     var blendMode: ColorBlendMode = .default
@@ -216,6 +217,12 @@ extension ImageContext {
     }
 }
 
+public enum ImageConvolutionAlgorithm {
+    
+    case direct
+    case cooleyTukey
+}
+
 extension ImageContext {
     
     public var opacity: Double {
@@ -277,6 +284,15 @@ extension ImageContext {
         }
         set {
             current.styles.shadowBlur = newValue
+        }
+    }
+    
+    public var convolutionAlgorithm: ImageConvolutionAlgorithm {
+        get {
+            return current.styles.convolutionAlgorithm
+        }
+        set {
+            current.styles.convolutionAlgorithm = newValue
         }
     }
     

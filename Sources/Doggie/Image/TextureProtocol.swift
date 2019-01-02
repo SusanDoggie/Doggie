@@ -58,6 +58,18 @@ extension _TextureProtocolImplement {
     
     @inlinable
     @inline(__always)
+    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, pixel: RawPixel, fileBacked: Bool) {
+        precondition(width >= 0, "negative width is not allowed.")
+        precondition(height >= 0, "negative height is not allowed.")
+        let pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
+        self.init(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm)
+    }
+}
+
+extension _TextureProtocolImplement {
+    
+    @inlinable
+    @inline(__always)
     public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P> {
         
         var texture = try Texture<P>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
