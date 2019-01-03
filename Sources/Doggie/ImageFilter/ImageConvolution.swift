@@ -23,44 +23,128 @@
 //  THE SOFTWARE.
 //
 
-@inlinable
-@inline(__always)
-func _TextureConvolution<Texture: _TextureProtocolImplement, T: BinaryFloatingPoint>(_ texture: Texture, _ filter: [T], _ filter_width: Int, _ filter_height: Int) -> Texture where Texture.RawPixel : AdditiveArithmetic, T : FloatingMathProtocol {
+extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
     
-    precondition(filter_width > 0, "nonpositive filter_width is not allowed.")
-    precondition(filter_height > 0, "nonpositive filter_height is not allowed.")
-    precondition(filter_width * filter_height == filter.count, "mismatch filter count.")
-    
-    let width = texture.width
-    let height = texture.height
-    let numberOfComponents = MemoryLayout<Texture.RawPixel>.stride / MemoryLayout<T>.stride
-    
-    let n_width = width + filter_width - 1
-    let n_height = height + filter_height - 1
-    
-    guard width > 0 && height > 0 else { return texture }
-    
-    var result = Texture(width: n_width, height: n_height, resamplingAlgorithm: texture.resamplingAlgorithm, pixel: Texture.RawPixel.zero, fileBacked: texture.fileBacked)
-    
-    texture.withUnsafeBytes {
+    @inlinable
+    @inline(__always)
+    func _direct_convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int) -> Self {
         
-        guard var source = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+        let width = self.width
+        let height = self.height
+        let numberOfComponents = self.numberOfComponents
         
-        result.withUnsafeMutableBytes {
+        let n_width = width + filter_width - 1
+        let n_height = height + filter_height - 1
+        
+        guard width > 0 && height > 0 else { return self }
+        
+        var result = Self(width: n_width, height: n_height, resamplingAlgorithm: self.resamplingAlgorithm, pixel: RawPixel.zero, fileBacked: self.fileBacked)
+        
+        self.withUnsafeBytes {
             
-            guard var output = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+            guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
             
-            for _ in 0..<numberOfComponents {
+            result.withUnsafeMutableBytes {
                 
-                DiscreteConvolve2D((width, height), source, numberOfComponents, (filter_width, filter_height), filter, 1, output, numberOfComponents)
+                guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
                 
-                source += 1
-                output += 1
+                for _ in 0..<numberOfComponents {
+                    
+                    DirectConvolve2D((width, height), source, numberOfComponents, (filter_width, filter_height), filter, 1, output, numberOfComponents)
+                    
+                    source += 1
+                    output += 1
+                }
             }
         }
+        
+        return result
     }
     
-    return result
+    @inlinable
+    @inline(__always)
+    func _direct_convolution(_ horizontal_filter: [RawPixel.Scalar], _ vertical_filter: [RawPixel.Scalar]) -> Self {
+        return self._direct_convolution_horizontal(horizontal_filter)._direct_convolution_vertical(vertical_filter)
+    }
+    
+    @inlinable
+    @inline(__always)
+    func _direct_convolution_horizontal(_ filter: [RawPixel.Scalar]) -> Self {
+        
+        let width = self.width
+        let height = self.height
+        let numberOfComponents = self.numberOfComponents
+        
+        let n_width = width + filter.count - 1
+        
+        guard width > 0 && height > 0 else { return self }
+        
+        var result = Self(width: n_width, height: height, resamplingAlgorithm: self.resamplingAlgorithm, pixel: RawPixel.zero, fileBacked: self.fileBacked)
+        
+        self.withUnsafeBytes {
+            
+            guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+            
+            result.withUnsafeMutableBytes {
+                
+                guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                
+                for _ in 0..<numberOfComponents {
+                    
+                    let source_row_stride = width * numberOfComponents
+                    let output_row_stride = n_width * numberOfComponents
+                    
+                    var _source = source
+                    var _output = output
+                    
+                    for _ in 0..<height {
+                        DirectConvolve(width, _source, numberOfComponents, filter.count, filter, 1, _output, numberOfComponents)
+                        _source += source_row_stride
+                        _output += output_row_stride
+                    }
+                    
+                    source += 1
+                    output += 1
+                }
+            }
+        }
+        
+        return result
+    }
+    
+    @inlinable
+    @inline(__always)
+    func _direct_convolution_vertical(_ filter: [RawPixel.Scalar]) -> Self {
+        
+        let width = self.width
+        let height = self.height
+        let numberOfComponents = self.numberOfComponents
+        
+        let n_height = height + filter.count - 1
+        
+        guard width > 0 && height > 0 else { return self }
+        
+        var result = Self(width: width, height: n_height, resamplingAlgorithm: self.resamplingAlgorithm, pixel: RawPixel.zero, fileBacked: self.fileBacked)
+        
+        self.withUnsafeBytes {
+            
+            guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+            
+            result.withUnsafeMutableBytes {
+                
+                guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                
+                let row = width * numberOfComponents
+                for _ in 0..<row {
+                    DirectConvolve(height, source, row, filter.count, filter, 1, output, row)
+                    source += 1
+                    output += 1
+                }
+            }
+        }
+        
+        return result
+    }
 }
 
 @inlinable
@@ -79,393 +163,359 @@ func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ row: Int
     }
 }
 
-@inlinable
-@inline(__always)
-func _TextureFFTConvolution<Texture: _TextureProtocolImplement, T: BinaryFloatingPoint>(_ texture: Texture, _ filter: [T], _ filter_width: Int, _ filter_height: Int) -> Texture where Texture.RawPixel : AdditiveArithmetic, T : FloatingMathProtocol {
+extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
     
-    precondition(filter_width > 0, "nonpositive filter_width is not allowed.")
-    precondition(filter_height > 0, "nonpositive filter_height is not allowed.")
-    precondition(filter_width * filter_height == filter.count, "mismatch filter count.")
-    
-    let width = texture.width
-    let height = texture.height
-    let numberOfComponents = MemoryLayout<Texture.RawPixel>.stride / MemoryLayout<T>.stride
-    
-    let n_width = width + filter_width - 1
-    let n_height = height + filter_height - 1
-    
-    guard width > 0 && height > 0 else { return texture }
-    
-    let length1 = Radix2CircularConvolveLength(width, filter_width)
-    let length2 = Radix2CircularConvolveLength(height, filter_height)
-    
-    var buffer = MappedBuffer<T>(repeating: 0, count: length1 * length2 * 2, fileBacked: texture.fileBacked)
-    var result = Texture(width: n_width, height: n_height, resamplingAlgorithm: texture.resamplingAlgorithm, pixel: Texture.RawPixel.zero, fileBacked: texture.fileBacked)
-    
-    buffer.withUnsafeMutableBufferPointer {
+    @inlinable
+    @inline(__always)
+    func _cooleyTukey_convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int) -> Self {
         
-        guard let buffer = $0.baseAddress else { return }
+        let width = self.width
+        let height = self.height
+        let numberOfComponents = self.numberOfComponents
         
-        let temp = buffer + length1 * length2
+        let n_width = width + filter_width - 1
+        let n_height = height + filter_height - 1
         
-        texture.withUnsafeBytes {
+        guard width > 0 && height > 0 else { return self }
+        
+        let length1 = Radix2CircularConvolveLength(width, filter_width)
+        let length2 = Radix2CircularConvolveLength(height, filter_height)
+        
+        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length1 * length2 * 2, fileBacked: self.fileBacked)
+        var result = Self(width: n_width, height: n_height, resamplingAlgorithm: self.resamplingAlgorithm, pixel: RawPixel.zero, fileBacked: self.fileBacked)
+        
+        buffer.withUnsafeMutableBufferPointer {
             
-            guard var source = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+            guard let buffer = $0.baseAddress else { return }
             
-            result.withUnsafeMutableBytes {
+            let temp = buffer + length1 * length2
+            
+            self.withUnsafeBytes {
                 
-                guard var output = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+                guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
                 
-                let level1 = log2(length1)
-                let level2 = log2(length2)
-                
-                for _ in 0..<numberOfComponents {
+                result.withUnsafeMutableBytes {
                     
-                    Radix2CircularConvolve2D((level1, level2), source, numberOfComponents, (width, height), filter, 1, (filter_width, filter_height), buffer, 1, temp, 1)
+                    guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
                     
-                    do {
-                        var buffer = buffer
-                        var output = output
-                        let out_stride = numberOfComponents * n_width
-                        for _ in 0..<height {
-                            Move(n_width, buffer, 1, output, numberOfComponents)
-                            buffer += length1
-                            output += out_stride
+                    let level1 = log2(length1)
+                    let level2 = log2(length2)
+                    
+                    for _ in 0..<numberOfComponents {
+                        
+                        Radix2CircularConvolve2D((level1, level2), source, numberOfComponents, (width, height), filter, 1, (filter_width, filter_height), buffer, 1, temp, 1)
+                        
+                        do {
+                            var buffer = buffer
+                            var output = output
+                            let out_stride = numberOfComponents * n_width
+                            for _ in 0..<height {
+                                Move(n_width, buffer, 1, output, numberOfComponents)
+                                buffer += length1
+                                output += out_stride
+                            }
                         }
+                        
+                        source += 1
+                        output += 1
                     }
-                    
-                    source += 1
-                    output += 1
                 }
             }
         }
+        
+        return result
     }
     
-    return result
-}
-
-@inlinable
-@inline(__always)
-func _TextureFFTConvolution<Texture: _TextureProtocolImplement, T: BinaryFloatingPoint>(_ texture: Texture, _ horizontal_filter: [T], _ vertical_filter: [T]) -> Texture where Texture.RawPixel : AdditiveArithmetic, T : FloatingMathProtocol {
-    
-    let width = texture.width
-    let height = texture.height
-    let numberOfComponents = MemoryLayout<Texture.RawPixel>.stride / MemoryLayout<T>.stride
-    
-    let n_width = width + horizontal_filter.count - 1
-    let n_height = height + vertical_filter.count - 1
-    
-    guard width > 0 && height > 0 else { return texture }
-    
-    let length1 = Radix2CircularConvolveLength(width, horizontal_filter.count)
-    let length2 = Radix2CircularConvolveLength(height, vertical_filter.count)
-    
-    var buffer = MappedBuffer<T>(repeating: 0, count: length1 + length2 + length1 * height, fileBacked: texture.fileBacked)
-    var result = MappedBuffer<Texture.RawPixel>(repeating: Texture.RawPixel.zero, count: n_width * length2, fileBacked: texture.fileBacked)
-    
-    buffer.withUnsafeMutableBufferPointer {
+    @inlinable
+    @inline(__always)
+    func _cooleyTukey_convolution(_ horizontal_filter: [RawPixel.Scalar], _ vertical_filter: [RawPixel.Scalar]) -> Self {
         
-        guard let buffer = $0.baseAddress else { return }
+        let width = self.width
+        let height = self.height
+        let numberOfComponents = self.numberOfComponents
         
-        texture.withUnsafeBytes {
+        let n_width = width + horizontal_filter.count - 1
+        let n_height = height + vertical_filter.count - 1
+        
+        guard width > 0 && height > 0 else { return self }
+        
+        let length1 = Radix2CircularConvolveLength(width, horizontal_filter.count)
+        let length2 = Radix2CircularConvolveLength(height, vertical_filter.count)
+        
+        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length1 + length2 + length1 * height, fileBacked: self.fileBacked)
+        var result = MappedBuffer<RawPixel>(repeating: RawPixel.zero, count: n_width * length2, fileBacked: self.fileBacked)
+        
+        buffer.withUnsafeMutableBufferPointer {
             
-            guard var source = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+            guard let buffer = $0.baseAddress else { return }
             
-            result.withUnsafeMutableBytes {
+            self.withUnsafeBytes {
                 
-                guard var output = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+                guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
                 
-                let level1 = log2(length1)
-                let level2 = log2(length2)
-                
-                let _kreal1 = buffer
-                let _kimag1 = buffer + 1
-                let _kreal2 = buffer + length1
-                let _kimag2 = _kreal2 + 1
-                let _temp = _kreal2 + length2
-                
-                HalfRadix2CooleyTukey(level1, horizontal_filter, 1, horizontal_filter.count, _kreal1, _kimag1, 2)
-                
-                let _length1 = 1 / T(length1)
-                vec_op(length1 << 1, _kreal1, 1, _kreal1, 1) { $0 * _length1 }
-                
-                HalfRadix2CooleyTukey(level2, vertical_filter, 1, vertical_filter.count, _kreal2, _kimag2, 2)
-                
-                let _length2 = 1 / T(length2)
-                vec_op(length2 << 1, _kreal2, 1, _kreal2, 1) { $0 * _length2 }
-                
-                for _ in 0..<numberOfComponents {
+                result.withUnsafeMutableBytes {
                     
-                    _Radix2FiniteImpulseFilter(level1, height, source, numberOfComponents, numberOfComponents * width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
-                    _Radix2FiniteImpulseFilter(level2, n_width, _temp, length1, 1, height, _kreal2, _kimag2, 2, 0, output, numberOfComponents * n_width, numberOfComponents)
+                    guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
                     
-                    source += 1
-                    output += 1
+                    let level1 = log2(length1)
+                    let level2 = log2(length2)
+                    
+                    let _kreal1 = buffer
+                    let _kimag1 = buffer + 1
+                    let _kreal2 = buffer + length1
+                    let _kimag2 = _kreal2 + 1
+                    let _temp = _kreal2 + length2
+                    
+                    HalfRadix2CooleyTukey(level1, horizontal_filter, 1, horizontal_filter.count, _kreal1, _kimag1, 2)
+                    
+                    let _length1 = 1 / RawPixel.Scalar(length1)
+                    vec_op(length1 << 1, _kreal1, 1, _kreal1, 1) { $0 * _length1 }
+                    
+                    HalfRadix2CooleyTukey(level2, vertical_filter, 1, vertical_filter.count, _kreal2, _kimag2, 2)
+                    
+                    let _length2 = 1 / RawPixel.Scalar(length2)
+                    vec_op(length2 << 1, _kreal2, 1, _kreal2, 1) { $0 * _length2 }
+                    
+                    for _ in 0..<numberOfComponents {
+                        
+                        _Radix2FiniteImpulseFilter(level1, height, source, numberOfComponents, numberOfComponents * width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
+                        _Radix2FiniteImpulseFilter(level2, n_width, _temp, length1, 1, height, _kreal2, _kimag2, 2, 0, output, numberOfComponents * n_width, numberOfComponents)
+                        
+                        source += 1
+                        output += 1
+                    }
                 }
             }
         }
+        
+        result.removeLast(result.count - n_width * n_height)
+        
+        return Self(width: n_width, height: n_height, pixels: result, resamplingAlgorithm: self.resamplingAlgorithm)
     }
     
-    result.removeLast(result.count - n_width * n_height)
-    
-    return Texture(width: n_width, height: n_height, pixels: result, resamplingAlgorithm: texture.resamplingAlgorithm)
-}
-
-@inlinable
-@inline(__always)
-func _TextureFFTConvolutionHorizontal<Texture: _TextureProtocolImplement, T: BinaryFloatingPoint>(_ texture: Texture, _ filter: [T]) -> Texture where Texture.RawPixel : AdditiveArithmetic, T : FloatingMathProtocol {
-    
-    let width = texture.width
-    let height = texture.height
-    let numberOfComponents = MemoryLayout<Texture.RawPixel>.stride / MemoryLayout<T>.stride
-    
-    let n_width = width + filter.count - 1
-    
-    guard width > 0 && height > 0 else { return texture }
-    
-    let length = Radix2CircularConvolveLength(width, filter.count)
-    
-    var buffer = MappedBuffer<T>(repeating: 0, count: length + length * height, fileBacked: texture.fileBacked)
-    var result = Texture(width: n_width, height: height, resamplingAlgorithm: texture.resamplingAlgorithm, pixel: Texture.RawPixel.zero, fileBacked: texture.fileBacked)
-    
-    buffer.withUnsafeMutableBufferPointer {
+    @inlinable
+    @inline(__always)
+    func _cooleyTukey_convolution_horizontal(_ filter: [RawPixel.Scalar]) -> Self {
         
-        guard let buffer = $0.baseAddress else { return }
+        let width = self.width
+        let height = self.height
+        let numberOfComponents = self.numberOfComponents
         
-        texture.withUnsafeBytes {
+        let n_width = width + filter.count - 1
+        
+        guard width > 0 && height > 0 else { return self }
+        
+        let length = Radix2CircularConvolveLength(width, filter.count)
+        
+        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length + length * height, fileBacked: self.fileBacked)
+        var result = Self(width: n_width, height: height, resamplingAlgorithm: self.resamplingAlgorithm, pixel: RawPixel.zero, fileBacked: self.fileBacked)
+        
+        buffer.withUnsafeMutableBufferPointer {
             
-            guard var source = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+            guard let buffer = $0.baseAddress else { return }
             
-            result.withUnsafeMutableBytes {
+            self.withUnsafeBytes {
                 
-                guard var output = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+                guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
                 
-                let level = log2(length)
-                
-                let _kreal = buffer
-                let _kimag = buffer + 1
-                let _temp = buffer + length
-                
-                HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
-                
-                let _length = 1 / T(length)
-                vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
-                
-                for _ in 0..<numberOfComponents {
+                result.withUnsafeMutableBytes {
                     
-                    _Radix2FiniteImpulseFilter(level, height, source, numberOfComponents, numberOfComponents * width, width, _kreal, _kimag, 2, 0, _temp, 1, length)
+                    guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
                     
-                    do {
-                        var _temp = _temp
-                        var output = output
-                        let out_stride = numberOfComponents * n_width
-                        for _ in 0..<height {
-                            Move(n_width, _temp, 1, output, numberOfComponents)
-                            _temp += length
-                            output += out_stride
+                    let level = log2(length)
+                    
+                    let _kreal = buffer
+                    let _kimag = buffer + 1
+                    let _temp = buffer + length
+                    
+                    HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
+                    
+                    let _length = 1 / RawPixel.Scalar(length)
+                    vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
+                    
+                    for _ in 0..<numberOfComponents {
+                        
+                        _Radix2FiniteImpulseFilter(level, height, source, numberOfComponents, numberOfComponents * width, width, _kreal, _kimag, 2, 0, _temp, 1, length)
+                        
+                        do {
+                            var _temp = _temp
+                            var output = output
+                            let out_stride = numberOfComponents * n_width
+                            for _ in 0..<height {
+                                Move(n_width, _temp, 1, output, numberOfComponents)
+                                _temp += length
+                                output += out_stride
+                            }
                         }
+                        
+                        source += 1
+                        output += 1
                     }
-                    
-                    source += 1
-                    output += 1
                 }
             }
         }
+        
+        return result
     }
     
-    return result
-}
-
-@inlinable
-@inline(__always)
-func _TextureFFTConvolutionVertical<Texture: _TextureProtocolImplement, T: BinaryFloatingPoint>(_ texture: Texture, _ filter: [T]) -> Texture where Texture.RawPixel : AdditiveArithmetic, T : FloatingMathProtocol {
-    
-    let width = texture.width
-    let height = texture.height
-    let numberOfComponents = MemoryLayout<Texture.RawPixel>.stride / MemoryLayout<T>.stride
-    
-    let n_height = height + filter.count - 1
-    
-    guard width > 0 && height > 0 else { return texture }
-    
-    let length = Radix2CircularConvolveLength(height, filter.count)
-    
-    var buffer = MappedBuffer<T>(repeating: 0, count: length, fileBacked: texture.fileBacked)
-    var result = MappedBuffer<Texture.RawPixel>(repeating: Texture.RawPixel.zero, count: width * length, fileBacked: texture.fileBacked)
-    
-    buffer.withUnsafeMutableBufferPointer {
+    @inlinable
+    @inline(__always)
+    func _cooleyTukey_convolution_vertical(_ filter: [RawPixel.Scalar]) -> Self {
         
-        guard let buffer = $0.baseAddress else { return }
+        let width = self.width
+        let height = self.height
+        let numberOfComponents = self.numberOfComponents
         
-        texture.withUnsafeBytes {
+        let n_height = height + filter.count - 1
+        
+        guard width > 0 && height > 0 else { return self }
+        
+        let length = Radix2CircularConvolveLength(height, filter.count)
+        
+        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length, fileBacked: self.fileBacked)
+        var result = MappedBuffer<RawPixel>(repeating: RawPixel.zero, count: width * length, fileBacked: self.fileBacked)
+        
+        buffer.withUnsafeMutableBufferPointer {
             
-            guard var source = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+            guard let buffer = $0.baseAddress else { return }
             
-            result.withUnsafeMutableBytes {
+            self.withUnsafeBytes {
                 
-                guard var output = $0.baseAddress?.assumingMemoryBound(to: T.self) else { return }
+                guard let source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
                 
-                let level = log2(length)
-                
-                let _kreal = buffer
-                let _kimag = buffer + 1
-                
-                HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
-                
-                let _length = 1 / T(length)
-                vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
-                
-                for _ in 0..<numberOfComponents {
+                result.withUnsafeMutableBytes {
                     
-                    _Radix2FiniteImpulseFilter(level, width, source, numberOfComponents * width, numberOfComponents, height, _kreal, _kimag, 2, 0, output, numberOfComponents * width, numberOfComponents)
+                    guard let output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
                     
-                    source += 1
-                    output += 1
+                    let level = log2(length)
+                    
+                    let _kreal = buffer
+                    let _kimag = buffer + 1
+                    
+                    HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
+                    
+                    let _length = 1 / RawPixel.Scalar(length)
+                    vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
+                    
+                    let row = width * numberOfComponents
+                    _Radix2FiniteImpulseFilter(level, row, source, row, 1, height, _kreal, _kimag, 2, 0, output, row, 1)
                 }
             }
         }
+        
+        result.removeLast(result.count - width * n_height)
+        
+        return Self(width: width, height: n_height, pixels: result, resamplingAlgorithm: self.resamplingAlgorithm)
+    }
+}
+
+extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+    
+    @inlinable
+    @inline(__always)
+    func _convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int, algorithm: ImageConvolutionAlgorithm) -> Self {
+        
+        precondition(filter_width > 0, "nonpositive filter_width is not allowed.")
+        precondition(filter_height > 0, "nonpositive filter_height is not allowed.")
+        precondition(filter_width * filter_height == filter.count, "mismatch filter count.")
+        precondition(numberOfComponents * MemoryLayout<RawPixel.Scalar>.stride == MemoryLayout<RawPixel>.stride)
+        
+        var result: Self
+        
+        switch algorithm {
+        case .direct: result = _direct_convolution(filter, filter_width, filter_height)
+        case .cooleyTukey: result = _cooleyTukey_convolution(filter, filter_width, filter_height)
+        }
+        
+        result.horizontalWrappingMode = self.horizontalWrappingMode
+        result.verticalWrappingMode = self.verticalWrappingMode
+        
+        return result
     }
     
-    result.removeLast(result.count - width * n_height)
+    @inlinable
+    @inline(__always)
+    func _convolution(horizontal horizontal_filter: [RawPixel.Scalar], vertical vertical_filter: [RawPixel.Scalar], algorithm: ImageConvolutionAlgorithm) -> Self {
+        
+        precondition(horizontal_filter.count != 0, "horizontal_filter is empty.")
+        precondition(vertical_filter.count != 0, "vertical_filter is empty.")
+        precondition(numberOfComponents * MemoryLayout<RawPixel.Scalar>.stride == MemoryLayout<RawPixel>.stride)
+        
+        var result: Self
+        
+        switch (horizontal_filter.count, vertical_filter.count) {
+        case (1, 1):
+            let k = horizontal_filter[0] * vertical_filter[0]
+            result = Self(width: width, height: height, pixels: pixels.map { $0 * k }, resamplingAlgorithm: resamplingAlgorithm)
+        case (1, _):
+            let k = horizontal_filter[0]
+            let vertical_filter = vertical_filter.map { $0 * k }
+            switch algorithm {
+            case .direct: result = _direct_convolution_vertical(vertical_filter)
+            case .cooleyTukey: result = _cooleyTukey_convolution_vertical(vertical_filter)
+            }
+        case (_, 1):
+            let k = vertical_filter[0]
+            let horizontal_filter = horizontal_filter.map { $0 * k }
+            switch algorithm {
+            case .direct: result = _direct_convolution_horizontal(horizontal_filter)
+            case .cooleyTukey: result = _cooleyTukey_convolution_horizontal(horizontal_filter)
+            }
+        default:
+            switch algorithm {
+            case .direct: result = _direct_convolution(horizontal_filter, vertical_filter)
+            case .cooleyTukey: result = _cooleyTukey_convolution(horizontal_filter, vertical_filter)
+            }
+        }
+        
+        result.horizontalWrappingMode = self.horizontalWrappingMode
+        result.verticalWrappingMode = self.verticalWrappingMode
+        
+        return result
+    }
+}
+
+extension StencilTexture {
     
-    return Texture(width: width, height: n_height, pixels: result, resamplingAlgorithm: texture.resamplingAlgorithm)
-}
-
-@inlinable
-@inline(__always)
-public func TextureConvolution<T>(_ texture: StencilTexture<T>, _ filter: [T], _ filter_width: Int, _ filter_height: Int, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
-    switch algorithm {
-    case .direct: return _TextureConvolution(texture, filter, filter_width, filter_height)
-    case .cooleyTukey: return _TextureFFTConvolution(texture, filter, filter_width, filter_height)
+    @inlinable
+    @inline(__always)
+    public func convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int, algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture {
+        return self._convolution(filter, filter_width, filter_height, algorithm: algorithm)
     }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolution<T>(_ texture: StencilTexture<T>, horizontal horizontal_filter: [T], vertical vertical_filter: [T], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
-    switch algorithm {
-    case .direct: return _TextureFFTConvolution(texture, horizontal_filter, vertical_filter)
-    case .cooleyTukey: return _TextureFFTConvolution(texture, horizontal_filter, vertical_filter)
-    }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolutionHorizontal<T>(_ texture: StencilTexture<T>, _ filter: [T], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
-    switch algorithm {
-    case .direct: return _TextureFFTConvolutionHorizontal(texture, filter)
-    case .cooleyTukey: return _TextureFFTConvolutionHorizontal(texture, filter)
-    }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolutionVertical<T>(_ texture: StencilTexture<T>, _ filter: [T], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
-    switch algorithm {
-    case .direct: return _TextureFFTConvolutionVertical(texture, filter)
-    case .cooleyTukey: return _TextureFFTConvolutionVertical(texture, filter)
+    
+    @inlinable
+    @inline(__always)
+    public func convolution(horizontal horizontal_filter: [RawPixel.Scalar], vertical vertical_filter: [RawPixel.Scalar], algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture {
+        return self._convolution(horizontal: horizontal_filter, vertical: vertical_filter, algorithm: algorithm)
     }
 }
 
-@inlinable
-@inline(__always)
-public func TextureConvolution<Model>(_ texture: Texture<ColorPixel<Model>>, _ filter: [Double], _ filter_width: Int, _ filter_height: Int, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<ColorPixel<Model>> {
-    switch algorithm {
-    case .direct: return _TextureConvolution(texture, filter, filter_width, filter_height)
-    case .cooleyTukey: return _TextureFFTConvolution(texture, filter, filter_width, filter_height)
+extension Texture where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+    
+    @inlinable
+    @inline(__always)
+    public func convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int, algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture {
+        return self._convolution(filter, filter_width, filter_height, algorithm: algorithm)
     }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolution<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ filter: [Float], _ filter_width: Int, _ filter_height: Int, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<FloatColorPixel<Model>> {
-    switch algorithm {
-    case .direct: return _TextureConvolution(texture, filter, filter_width, filter_height)
-    case .cooleyTukey: return _TextureFFTConvolution(texture, filter, filter_width, filter_height)
-    }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolution<Model>(_ texture: Texture<ColorPixel<Model>>, horizontal horizontal_filter: [Double], vertical vertical_filter: [Double], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<ColorPixel<Model>> {
-    switch algorithm {
-    case .direct: return _TextureFFTConvolution(texture, horizontal_filter, vertical_filter)
-    case .cooleyTukey: return _TextureFFTConvolution(texture, horizontal_filter, vertical_filter)
-    }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolution<Model>(_ texture: Texture<FloatColorPixel<Model>>, horizontal horizontal_filter: [Float], vertical vertical_filter: [Float], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<FloatColorPixel<Model>> {
-    switch algorithm {
-    case .direct: return _TextureFFTConvolution(texture, horizontal_filter, vertical_filter)
-    case .cooleyTukey: return _TextureFFTConvolution(texture, horizontal_filter, vertical_filter)
-    }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolutionHorizontal<Model>(_ texture: Texture<ColorPixel<Model>>, _ filter: [Double], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<ColorPixel<Model>> {
-    switch algorithm {
-    case .direct: return _TextureFFTConvolutionHorizontal(texture, filter)
-    case .cooleyTukey: return _TextureFFTConvolutionHorizontal(texture, filter)
-    }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolutionHorizontal<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ filter: [Float], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<FloatColorPixel<Model>> {
-    switch algorithm {
-    case .direct: return _TextureFFTConvolutionHorizontal(texture, filter)
-    case .cooleyTukey: return _TextureFFTConvolutionHorizontal(texture, filter)
-    }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolutionVertical<Model>(_ texture: Texture<ColorPixel<Model>>, _ filter: [Double], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<ColorPixel<Model>> {
-    switch algorithm {
-    case .direct: return _TextureFFTConvolutionVertical(texture, filter)
-    case .cooleyTukey: return _TextureFFTConvolutionVertical(texture, filter)
-    }
-}
-@inlinable
-@inline(__always)
-public func TextureConvolutionVertical<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ filter: [Float], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<FloatColorPixel<Model>> {
-    switch algorithm {
-    case .direct: return _TextureFFTConvolutionVertical(texture, filter)
-    case .cooleyTukey: return _TextureFFTConvolutionVertical(texture, filter)
+    
+    @inlinable
+    @inline(__always)
+    public func convolution(horizontal horizontal_filter: [RawPixel.Scalar], vertical vertical_filter: [RawPixel.Scalar], algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture {
+        return self._convolution(horizontal: horizontal_filter, vertical: vertical_filter, algorithm: algorithm)
     }
 }
 
-@inlinable
-@inline(__always)
-public func ImageConvolution<Model>(_ image: Image<ColorPixel<Model>>, _ filter: [Double], _ filter_width: Int, _ filter_height: Int, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<ColorPixel<Model>> {
-    return Image(texture: TextureConvolution(Texture(image: image), filter, filter_width, filter_height, algorithm), resolution: image.resolution, colorSpace: image.colorSpace)
-}
-@inlinable
-@inline(__always)
-public func ImageConvolution<Model>(_ image: Image<FloatColorPixel<Model>>, _ filter: [Float], _ filter_width: Int, _ filter_height: Int, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<FloatColorPixel<Model>> {
-    return Image(texture: TextureConvolution(Texture(image: image), filter, filter_width, filter_height, algorithm), resolution: image.resolution, colorSpace: image.colorSpace)
-}
-@inlinable
-@inline(__always)
-public func ImageConvolution<Model>(_ image: Image<ColorPixel<Model>>, horizontal horizontal_filter: [Double], vertical vertical_filter: [Double], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<ColorPixel<Model>> {
-    return Image(texture: TextureConvolution(Texture(image: image), horizontal: horizontal_filter, vertical: vertical_filter, algorithm), resolution: image.resolution, colorSpace: image.colorSpace)
-}
-@inlinable
-@inline(__always)
-public func ImageConvolution<Model>(_ image: Image<FloatColorPixel<Model>>, horizontal horizontal_filter: [Float], vertical vertical_filter: [Float], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<FloatColorPixel<Model>> {
-    return Image(texture: TextureConvolution(Texture(image: image), horizontal: horizontal_filter, vertical: vertical_filter, algorithm), resolution: image.resolution, colorSpace: image.colorSpace)
-}
-@inlinable
-@inline(__always)
-public func ImageConvolutionHorizontal<Model>(_ image: Image<ColorPixel<Model>>, _ filter: [Double], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<ColorPixel<Model>> {
-    return Image(texture: TextureConvolutionHorizontal(Texture(image: image), filter, algorithm), resolution: image.resolution, colorSpace: image.colorSpace)
-}
-@inlinable
-@inline(__always)
-public func ImageConvolutionHorizontal<Model>(_ image: Image<FloatColorPixel<Model>>, _ filter: [Float], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<FloatColorPixel<Model>> {
-    return Image(texture: TextureConvolutionHorizontal(Texture(image: image), filter, algorithm), resolution: image.resolution, colorSpace: image.colorSpace)
-}
-@inlinable
-@inline(__always)
-public func ImageConvolutionVertical<Model>(_ image: Image<ColorPixel<Model>>, _ filter: [Double], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<ColorPixel<Model>> {
-    return Image(texture: TextureConvolutionVertical(Texture(image: image), filter, algorithm), resolution: image.resolution, colorSpace: image.colorSpace)
-}
-@inlinable
-@inline(__always)
-public func ImageConvolutionVertical<Model>(_ image: Image<FloatColorPixel<Model>>, _ filter: [Float], _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<FloatColorPixel<Model>> {
-    return Image(texture: TextureConvolutionVertical(Texture(image: image), filter, algorithm), resolution: image.resolution, colorSpace: image.colorSpace)
+extension Image where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+    
+    @inlinable
+    @inline(__always)
+    public func convolution(_ filter: [Pixel.Scalar], _ filter_width: Int, _ filter_height: Int, algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image {
+        return Image(texture: Texture(image: self).convolution(filter, filter_width, filter_height, algorithm: algorithm), resolution: self.resolution, colorSpace: self.colorSpace)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func convolution(horizontal horizontal_filter: [Pixel.Scalar], vertical vertical_filter: [Pixel.Scalar], algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image {
+        return Image(texture: Texture(image: self).convolution(horizontal: horizontal_filter, vertical: vertical_filter, algorithm: algorithm), resolution: self.resolution, colorSpace: self.colorSpace)
+    }
 }

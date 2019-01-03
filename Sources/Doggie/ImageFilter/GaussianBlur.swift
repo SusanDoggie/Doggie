@@ -43,33 +43,33 @@ public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ blur: T) -> [T] where T
 @inline(__always)
 public func GaussianBlur<T>(_ texture: StencilTexture<T>, _ blur: T, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
     let filter = GaussianBlurFilter(blur)
-    return TextureConvolution(texture, horizontal: filter, vertical: filter, algorithm)
+    return texture.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }
 
 @inlinable
 @inline(__always)
 public func GaussianBlur<Model>(_ texture: Texture<ColorPixel<Model>>, _ blur: Double, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<ColorPixel<Model>> {
     let filter = GaussianBlurFilter(blur)
-    return TextureConvolution(texture, horizontal: filter, vertical: filter, algorithm)
+    return texture.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }
 
 @inlinable
 @inline(__always)
 public func GaussianBlur<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ blur: Float, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<FloatColorPixel<Model>> {
     let filter = GaussianBlurFilter(blur)
-    return TextureConvolution(texture, horizontal: filter, vertical: filter, algorithm)
+    return texture.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }
 
 @inlinable
 @inline(__always)
 public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Double, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<ColorPixel<Model>> {
     let filter = GaussianBlurFilter(blur)
-    return ImageConvolution(image, horizontal: filter, vertical: filter, algorithm)
+    return image.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }
 
 @inlinable
 @inline(__always)
 public func GaussianBlur<Model>(_ image: Image<FloatColorPixel<Model>>, _ blur: Float, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<FloatColorPixel<Model>> {
     let filter = GaussianBlurFilter(blur)
-    return ImageConvolution(image, horizontal: filter, vertical: filter, algorithm)
+    return image.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }

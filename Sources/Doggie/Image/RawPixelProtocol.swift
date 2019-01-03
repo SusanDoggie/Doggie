@@ -27,6 +27,8 @@ public protocol RawPixelProtocol {
     
     associatedtype RawPixel
     
+    var numberOfComponents: Int { get }
+    
     var width: Int { get }
     
     var height: Int { get }

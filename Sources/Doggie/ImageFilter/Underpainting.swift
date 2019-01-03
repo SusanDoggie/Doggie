@@ -55,7 +55,7 @@ public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ 
     }
     
     let filter = _filter(Float(expand * 0.5))
-    let stencil = TextureConvolution(StencilTexture<Float>(texture: texture).map { $0.almostZero() ? $0 : 1 }, horizontal: filter, vertical: filter, algorithm)
+    let stencil = StencilTexture<Float>(texture: texture).map { $0.almostZero() ? $0 : 1 }.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
     
     let half = filter.count >> 1
     let s_width = stencil.width

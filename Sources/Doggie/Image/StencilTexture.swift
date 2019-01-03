@@ -95,6 +95,14 @@ extension StencilTexture : CustomStringConvertible {
 extension StencilTexture {
     
     @inlinable
+    public var numberOfComponents: Int {
+        return 1
+    }
+}
+
+extension StencilTexture {
+    
+    @inlinable
     public var fileBacked: Bool {
         get {
             return pixels.fileBacked

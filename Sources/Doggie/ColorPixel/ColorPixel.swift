@@ -477,7 +477,11 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
     }
 }
 
-public struct ColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, ScalarMultiplicative {
+public protocol _FloatComponentPixel : ColorPixelProtocol, ScalarMultiplicative {
+    
+}
+
+public struct ColorPixel<Model : ColorModelProtocol> : _FloatComponentPixel {
     
     public typealias Scalar = Double
     
@@ -570,7 +574,7 @@ public func -=<Model> (lhs: inout ColorPixel<Model>, rhs: ColorPixel<Model>) {
 }
 
 @_fixed_layout
-public struct FloatColorPixel<Model : ColorModelProtocol> : ColorPixelProtocol, ScalarMultiplicative {
+public struct FloatColorPixel<Model : ColorModelProtocol> : _FloatComponentPixel {
     
     public typealias Scalar = Float
     

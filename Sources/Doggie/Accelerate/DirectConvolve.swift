@@ -1,5 +1,5 @@
 //
-//  DiscreteConvolve.swift
+//  DirectConvolve.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-public func DiscreteConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func DirectConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     let size = signal_count + kernel_count - 1
     
@@ -35,7 +35,7 @@ public func DiscreteConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: Un
         var temp: T = 0
         let range = max(t - kernel_count + 1, 0)..<min(t + 1, signal_count)
         var _sp = signal + range.lowerBound * signal_stride
-        var _kp = kernel + (t - range.lowerBound) * signal_stride
+        var _kp = kernel + (t - range.lowerBound) * kernel_stride
         for _ in range {
             temp += _sp.pointee * _kp.pointee
             _sp += signal_stride
@@ -48,7 +48,7 @@ public func DiscreteConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: Un
 
 @inlinable
 @inline(__always)
-public func DiscreteConvolve(_ signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+public func DirectConvolve(_ signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     
     let size = signal_count + kernel_count - 1
     
@@ -58,7 +58,7 @@ public func DiscreteConvolve(_ signal_count: Int, _ signal: UnsafePointer<Comple
         var temp = Complex(0)
         let range = max(t - kernel_count + 1, 0)..<min(t + 1, signal_count)
         var _sp = signal + range.lowerBound * signal_stride
-        var _kp = kernel + (t - range.lowerBound) * signal_stride
+        var _kp = kernel + (t - range.lowerBound) * kernel_stride
         for _ in range {
             temp += _sp.pointee * _kp.pointee
             _sp += signal_stride
@@ -71,7 +71,7 @@ public func DiscreteConvolve(_ signal_count: Int, _ signal: UnsafePointer<Comple
 
 @inlinable
 @inline(__always)
-public func DiscreteConvolve2D<T: FloatingPoint>(_ signal_count: (Int, Int), _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: (Int, Int), _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func DirectConvolve2D<T: FloatingPoint>(_ signal_count: (Int, Int), _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: (Int, Int), _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     let width = signal_count.0 + kernel_count.0 - 1
     let height = signal_count.1 + kernel_count.1 - 1
@@ -86,8 +86,8 @@ public func DiscreteConvolve2D<T: FloatingPoint>(_ signal_count: (Int, Int), _ s
             
             var temp: T = 0
             
-            let range1 = max(t - kernel_count.0 + 1, 0)..<min(signal_count.0, t + 1)
-            let range2 = max(s - kernel_count.1 + 1, 0)..<min(signal_count.1, s + 1)
+            let range1 = max(t - kernel_count.0 + 1, 0)..<min(t + 1, signal_count.0)
+            let range2 = max(s - kernel_count.1 + 1, 0)..<min(s + 1, signal_count.1)
             
             var _sp = signal + (range2.lowerBound * signal_count.0 + range1.lowerBound) * signal_stride
             var _kp = kernel + ((s - range2.lowerBound) * kernel_count.0 + (t - range1.lowerBound)) * kernel_stride

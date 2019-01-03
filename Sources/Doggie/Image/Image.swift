@@ -226,6 +226,14 @@ extension Image : CustomStringConvertible {
 extension Image {
     
     @inlinable
+    public var numberOfComponents: Int {
+        return Pixel.numberOfComponents
+    }
+}
+
+extension Image {
+    
+    @inlinable
     public var fileBacked: Bool {
         get {
             return pixels.fileBacked

@@ -13,7 +13,7 @@
 		08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */; };
 		08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB31E2E627600D01813 /* CircularConvolve.swift */; };
 		08458AF91E2E627600D01813 /* CooleyTukey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB51E2E627600D01813 /* CooleyTukey.swift */; };
-		08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB61E2E627600D01813 /* DiscreteConvolve.swift */; };
+		08458AFB1E2E627600D01813 /* DirectConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB61E2E627600D01813 /* DirectConvolve.swift */; };
 		08458AFD1E2E627600D01813 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB71E2E627600D01813 /* Move.swift */; };
 		08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB81E2E627600D01813 /* SafeFunction.swift */; };
 		08458B131E2E627600D01813 /* Fourier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AC31E2E627600D01813 /* Fourier.swift */; };
@@ -302,7 +302,7 @@
 		08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AccelerateArithmetic.swift; sourceTree = "<group>"; };
 		08458AB31E2E627600D01813 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CircularConvolve.swift; sourceTree = "<group>"; };
 		08458AB51E2E627600D01813 /* CooleyTukey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CooleyTukey.swift; sourceTree = "<group>"; };
-		08458AB61E2E627600D01813 /* DiscreteConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DiscreteConvolve.swift; sourceTree = "<group>"; };
+		08458AB61E2E627600D01813 /* DirectConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DirectConvolve.swift; sourceTree = "<group>"; };
 		08458AB71E2E627600D01813 /* Move.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Move.swift; sourceTree = "<group>"; };
 		08458AB81E2E627600D01813 /* SafeFunction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SafeFunction.swift; sourceTree = "<group>"; };
 		08458AC31E2E627600D01813 /* Fourier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Fourier.swift; sourceTree = "<group>"; };
@@ -613,7 +613,7 @@
 				0AC588A820CF69AD00C326FF /* OverlapAddConvolve.swift */,
 				08458AB51E2E627600D01813 /* CooleyTukey.swift */,
 				0A1DC92021DCB866007DCFC7 /* CooleyTukey2D.swift */,
-				08458AB61E2E627600D01813 /* DiscreteConvolve.swift */,
+				08458AB61E2E627600D01813 /* DirectConvolve.swift */,
 				08458AB71E2E627600D01813 /* Move.swift */,
 				08458AB81E2E627600D01813 /* SafeFunction.swift */,
 			);
@@ -1638,7 +1638,7 @@
 				0A7314C01F3D7B720008461E /* ShapeSegment.swift in Sources */,
 				0AA7B54C2178834F00F36185 /* SFNTMORX.swift in Sources */,
 				0A967E501F132DC0007E38E4 /* BMPEncoder.swift in Sources */,
-				08458AFB1E2E627600D01813 /* DiscreteConvolve.swift in Sources */,
+				08458AFB1E2E627600D01813 /* DirectConvolve.swift in Sources */,
 				0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */,
 				0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */,
 				0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */,

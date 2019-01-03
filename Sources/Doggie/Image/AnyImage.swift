@@ -28,6 +28,8 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     var _colorSpace: AnyColorSpaceBaseProtocol { get }
     
+    var numberOfComponents: Int { get }
+    
     var width: Int { get }
     
     var height: Int { get }
@@ -168,6 +170,11 @@ extension AnyImage {
     @inlinable
     public var colorSpace: AnyColorSpace {
         return AnyColorSpace(base: _base._colorSpace)
+    }
+    
+    @inlinable
+    public var numberOfComponents: Int {
+        return _base.numberOfComponents
     }
     
     @inlinable

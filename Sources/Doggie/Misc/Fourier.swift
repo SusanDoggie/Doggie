@@ -498,21 +498,21 @@ public func InverseDiscreteFourier(_ buffer: [Complex], _ result: inout [Complex
 }
 @inlinable
 @inline(__always)
-public func DiscreteConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
+public func DirectConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     let size = signal.count + kernel.count - 1
     if result.count != size {
         result.replace(with: repeatElement(0, count: size))
     }
-    DiscreteConvolve(signal.count, signal, 1, kernel.count, kernel, 1, &result, 1)
+    DirectConvolve(signal.count, signal, 1, kernel.count, kernel, 1, &result, 1)
 }
 @inlinable
 @inline(__always)
-public func DiscreteConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
+public func DirectConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     let size = signal.count + kernel.count - 1
     if result.count != size {
         result.replace(with: repeatElement(Complex(0), count: size))
     }
-    DiscreteConvolve(signal.count, signal, 1, kernel.count, kernel, 1, &result, 1)
+    DirectConvolve(signal.count, signal, 1, kernel.count, kernel, 1, &result, 1)
 }
 
 // MARK: Other Transform

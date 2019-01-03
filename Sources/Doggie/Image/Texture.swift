@@ -102,6 +102,14 @@ extension Texture : CustomStringConvertible {
 extension Texture {
     
     @inlinable
+    public var numberOfComponents: Int {
+        return Pixel.numberOfComponents
+    }
+}
+
+extension Texture {
+    
+    @inlinable
     public var fileBacked: Bool {
         get {
             return pixels.fileBacked

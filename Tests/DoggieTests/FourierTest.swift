@@ -209,7 +209,7 @@ class FourierTest: XCTestCase {
             }
             
             var answer = [Double]()
-            DiscreteConvolve(a, b, &answer)
+            DirectConvolve(a, b, &answer)
             
             var result = [Double]()
             Convolve(a, b, &result)
@@ -232,7 +232,7 @@ class FourierTest: XCTestCase {
             }
             
             var answer = [Complex]()
-            DiscreteConvolve(a, b, &answer)
+            DirectConvolve(a, b, &answer)
             
             var result = [Complex]()
             Convolve(a, b, &result)
@@ -256,7 +256,7 @@ class FourierTest: XCTestCase {
             }
             
             var answer = [Double]()
-            DiscreteConvolve(a, b, &answer)
+            DirectConvolve(a, b, &answer)
             let part = answer[a.count..<answer.count]
             answer = [Double](answer[0..<a.count])
             for i in 0..<part.count {
@@ -284,7 +284,7 @@ class FourierTest: XCTestCase {
             }
             
             var answer = [Complex]()
-            DiscreteConvolve(a, b, &answer)
+            DirectConvolve(a, b, &answer)
             let part = answer[a.count..<answer.count]
             answer = [Complex](answer[0..<a.count])
             for i in 0..<part.count {
@@ -313,7 +313,7 @@ class FourierTest: XCTestCase {
             }
             
             var answer = [Double]()
-            DiscreteConvolve(a, b, &answer)
+            DirectConvolve(a, b, &answer)
             let part = answer[a.count..<answer.count]
             answer = [Double](answer[0..<a.count])
             for i in 0..<part.count {
@@ -341,7 +341,7 @@ class FourierTest: XCTestCase {
             }
             
             var answer = [Complex]()
-            DiscreteConvolve(a, b, &answer)
+            DirectConvolve(a, b, &answer)
             let part = answer[a.count..<answer.count]
             answer = [Complex](answer[0..<a.count])
             for i in 0..<part.count {
