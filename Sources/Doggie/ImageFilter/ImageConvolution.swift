@@ -209,7 +209,7 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                             var buffer = buffer
                             var output = output
                             let out_stride = numberOfComponents * n_width
-                            for _ in 0..<height {
+                            for _ in 0..<n_height {
                                 Move(n_width, buffer, 1, output, numberOfComponents)
                                 buffer += length1
                                 output += out_stride
@@ -422,9 +422,25 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
         
         var result: Self
         
-        switch algorithm {
-        case .direct: result = _direct_convolution(filter, filter_width, filter_height)
-        case .cooleyTukey: result = _cooleyTukey_convolution(filter, filter_width, filter_height)
+        switch (filter_width, filter_height) {
+        case (1, 1):
+            let k = filter[0]
+            result = Self(width: width, height: height, pixels: pixels.map { $0 * k }, resamplingAlgorithm: resamplingAlgorithm)
+        case (1, _):
+            switch algorithm {
+            case .direct: result = _direct_convolution_vertical(filter)
+            case .cooleyTukey: result = _cooleyTukey_convolution_vertical(filter)
+            }
+        case (_, 1):
+            switch algorithm {
+            case .direct: result = _direct_convolution_horizontal(filter)
+            case .cooleyTukey: result = _cooleyTukey_convolution_horizontal(filter)
+            }
+        default:
+            switch algorithm {
+            case .direct: result = _direct_convolution(filter, filter_width, filter_height)
+            case .cooleyTukey: result = _cooleyTukey_convolution(filter, filter_width, filter_height)
+            }
         }
         
         result.horizontalWrappingMode = self.horizontalWrappingMode
@@ -449,17 +465,15 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
             result = Self(width: width, height: height, pixels: pixels.map { $0 * k }, resamplingAlgorithm: resamplingAlgorithm)
         case (1, _):
             let k = horizontal_filter[0]
-            let vertical_filter = vertical_filter.map { $0 * k }
             switch algorithm {
-            case .direct: result = _direct_convolution_vertical(vertical_filter)
-            case .cooleyTukey: result = _cooleyTukey_convolution_vertical(vertical_filter)
+            case .direct: result = _direct_convolution_vertical(vertical_filter.map { $0 * k })
+            case .cooleyTukey: result = _cooleyTukey_convolution_vertical(vertical_filter.map { $0 * k })
             }
         case (_, 1):
             let k = vertical_filter[0]
-            let horizontal_filter = horizontal_filter.map { $0 * k }
             switch algorithm {
-            case .direct: result = _direct_convolution_horizontal(horizontal_filter)
-            case .cooleyTukey: result = _cooleyTukey_convolution_horizontal(horizontal_filter)
+            case .direct: result = _direct_convolution_horizontal(horizontal_filter.map { $0 * k })
+            case .cooleyTukey: result = _cooleyTukey_convolution_horizontal(horizontal_filter.map { $0 * k })
             }
         default:
             switch algorithm {

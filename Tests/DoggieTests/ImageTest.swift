@@ -28,6 +28,8 @@ import XCTest
 
 class ImageTest: XCTestCase {
     
+    let accuracy = 0.00000001
+    
     var sample: Image<ARGB32ColorPixel> = {
         
         let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
@@ -42,6 +44,199 @@ class ImageTest: XCTestCase {
         
         return context.image
     }()
+    
+    func testImageConvolutionA() {
+        
+        var image = Image<ColorPixel<RGBColorModel>>(width: 100, height: 100, colorSpace: .sRGB)
+        
+        image.withUnsafeMutableBufferPointer {
+            
+            guard var ptr = $0.baseAddress else { return }
+            
+            for _ in 0..<$0.count {
+                ptr.pointee.color.red = Double.random(in: 0...1)
+                ptr.pointee.color.green = Double.random(in: 0...1)
+                ptr.pointee.color.blue = Double.random(in: 0...1)
+                ptr.pointee.opacity = Double.random(in: 0...1)
+                ptr += 1
+            }
+        }
+        
+        for s in 1...11 {
+            for t in 1...11 {
+                
+                var horizontal = [Double](repeating: 0, count: s)
+                var vertical = [Double](repeating: 0, count: t)
+                for i in 0..<horizontal.count {
+                    horizontal[i] = Double.random(in: 0...1)
+                }
+                for i in 0..<vertical.count {
+                    vertical[i] = Double.random(in: 0...1)
+                }
+                
+                let filter = vertical.flatMap { a in horizontal.map { a * $0 } }
+                
+                let result1 = image.convolution(horizontal: horizontal, vertical: vertical, algorithm: .direct)
+                let result2 = image.convolution(horizontal: horizontal, vertical: vertical, algorithm: .cooleyTukey)
+                let result3 = image.convolution(filter, horizontal.count, vertical.count, algorithm: .direct)
+                let result4 = image.convolution(filter, horizontal.count, vertical.count, algorithm: .cooleyTukey)
+                
+                XCTAssertEqual(result1.width, result2.width)
+                XCTAssertEqual(result1.height, result2.height)
+                
+                XCTAssertEqual(result1.width, result3.width)
+                XCTAssertEqual(result1.height, result3.height)
+                
+                XCTAssertEqual(result1.width, result4.width)
+                XCTAssertEqual(result1.height, result4.height)
+                
+                for i in 0..<result1.pixels.count {
+                    XCTAssertEqual(result1.pixels[i].red, result2.pixels[i].red, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].red, result3.pixels[i].red, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].red, result4.pixels[i].red, accuracy: accuracy)
+                    
+                    XCTAssertEqual(result1.pixels[i].green, result2.pixels[i].green, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].green, result3.pixels[i].green, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].green, result4.pixels[i].green, accuracy: accuracy)
+                    
+                    XCTAssertEqual(result1.pixels[i].blue, result2.pixels[i].blue, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].blue, result3.pixels[i].blue, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].blue, result4.pixels[i].blue, accuracy: accuracy)
+                    
+                    XCTAssertEqual(result1.pixels[i].opacity, result2.pixels[i].opacity, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].opacity, result3.pixels[i].opacity, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].opacity, result4.pixels[i].opacity, accuracy: accuracy)
+                }
+            }
+        }
+    }
+    
+    func testImageConvolutionB() {
+        
+        var image = Image<ColorPixel<RGBColorModel>>(width: 100, height: 100, colorSpace: .sRGB)
+        
+        image.withUnsafeMutableBufferPointer {
+            
+            guard var ptr = $0.baseAddress else { return }
+            
+            for _ in 0..<$0.count {
+                ptr.pointee.color.red = Double.random(in: 0...1)
+                ptr.pointee.color.green = Double.random(in: 0...1)
+                ptr.pointee.color.blue = Double.random(in: 0...1)
+                ptr.pointee.opacity = Double.random(in: 0...1)
+                ptr += 1
+            }
+        }
+        
+        for s in 1...11 {
+            for t in 1...11 {
+                
+                var filter = [Double](repeating: 0, count: s * t)
+                for i in 0..<filter.count {
+                    filter[i] = Double.random(in: 0...1)
+                }
+                
+                let result1 = image.convolution(filter, s, t, algorithm: .direct)
+                let result2 = image.convolution(filter, s, t, algorithm: .cooleyTukey)
+                
+                XCTAssertEqual(result1.width, result2.width)
+                XCTAssertEqual(result1.height, result2.height)
+                
+                for i in 0..<result1.pixels.count {
+                    XCTAssertEqual(result1.pixels[i].red, result2.pixels[i].red, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].green, result2.pixels[i].green, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].blue, result2.pixels[i].blue, accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i].opacity, result2.pixels[i].opacity, accuracy: accuracy)
+                }
+            }
+        }
+    }
+    
+    func testStencilTextureConvolutionA() {
+        
+        var stencil: StencilTexture<Double> = StencilTexture(width: 100, height: 100)
+        
+        stencil.withUnsafeMutableBufferPointer {
+            
+            guard var ptr = $0.baseAddress else { return }
+            
+            for _ in 0..<$0.count {
+                ptr.pointee = Double.random(in: 0...1)
+                ptr += 1
+            }
+        }
+        
+        for s in 1...11 {
+            for t in 1...11 {
+                
+                var horizontal = [Double](repeating: 0, count: s)
+                var vertical = [Double](repeating: 0, count: t)
+                for i in 0..<horizontal.count {
+                    horizontal[i] = Double.random(in: 0...1)
+                }
+                for i in 0..<vertical.count {
+                    vertical[i] = Double.random(in: 0...1)
+                }
+                
+                let filter = vertical.flatMap { a in horizontal.map { a * $0 } }
+                
+                let result1 = stencil.convolution(horizontal: horizontal, vertical: vertical, algorithm: .direct)
+                let result2 = stencil.convolution(horizontal: horizontal, vertical: vertical, algorithm: .cooleyTukey)
+                let result3 = stencil.convolution(filter, horizontal.count, vertical.count, algorithm: .direct)
+                let result4 = stencil.convolution(filter, horizontal.count, vertical.count, algorithm: .cooleyTukey)
+                
+                XCTAssertEqual(result1.width, result2.width)
+                XCTAssertEqual(result1.height, result2.height)
+                
+                XCTAssertEqual(result1.width, result3.width)
+                XCTAssertEqual(result1.height, result3.height)
+                
+                XCTAssertEqual(result1.width, result4.width)
+                XCTAssertEqual(result1.height, result4.height)
+                
+                for i in 0..<result1.pixels.count {
+                    XCTAssertEqual(result1.pixels[i], result2.pixels[i], accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i], result3.pixels[i], accuracy: accuracy)
+                    XCTAssertEqual(result1.pixels[i], result4.pixels[i], accuracy: accuracy)
+                }
+            }
+        }
+    }
+    
+    func testStencilTextureConvolutionB() {
+        
+        var stencil: StencilTexture<Double> = StencilTexture(width: 100, height: 100)
+        
+        stencil.withUnsafeMutableBufferPointer {
+            
+            guard var ptr = $0.baseAddress else { return }
+            
+            for _ in 0..<$0.count {
+                ptr.pointee = Double.random(in: 0...1)
+                ptr += 1
+            }
+        }
+        
+        for s in 1...11 {
+            for t in 1...11 {
+                
+                var filter = [Double](repeating: 0, count: s * t)
+                for i in 0..<filter.count {
+                    filter[i] = Double.random(in: 0...1)
+                }
+                
+                let result1 = stencil.convolution(filter, s, t, algorithm: .direct)
+                let result2 = stencil.convolution(filter, s, t, algorithm: .cooleyTukey)
+                
+                XCTAssertEqual(result1.width, result2.width)
+                XCTAssertEqual(result1.height, result2.height)
+                
+                for i in 0..<result1.pixels.count {
+                    XCTAssertEqual(result1.pixels[i], result2.pixels[i], accuracy: accuracy)
+                }
+            }
+        }
+    }
     
     func testDrawing() {
         

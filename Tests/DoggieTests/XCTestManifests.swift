@@ -132,6 +132,8 @@ extension ImageTest {
         ("testClipPerformance", testClipPerformance),
         ("testColorSpaceConversionPerformance", testColorSpaceConversionPerformance),
         ("testDrawing", testDrawing),
+        ("testImageConvolutionA", testImageConvolutionA),
+        ("testImageConvolutionB", testImageConvolutionB),
         ("testLinearGradientPerformance", testLinearGradientPerformance),
         ("testRadialGradientPerformance", testRadialGradientPerformance),
         ("testResamplingCosineAntialiasPerformance", testResamplingCosineAntialiasPerformance),
@@ -148,6 +150,8 @@ extension ImageTest {
         ("testResamplingMitchellPerformance", testResamplingMitchellPerformance),
         ("testResamplingNoneAntialiasPerformance", testResamplingNoneAntialiasPerformance),
         ("testResamplingNonePerformance", testResamplingNonePerformance),
+        ("testStencilTextureConvolutionA", testStencilTextureConvolutionA),
+        ("testStencilTextureConvolutionB", testStencilTextureConvolutionB),
     ]
 }
 
