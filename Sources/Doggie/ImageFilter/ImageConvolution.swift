@@ -409,78 +409,6 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
     }
 }
 
-@inlinable
-@inline(__always)
-func _filter_separation<T: BinaryFloatingPoint>(_ filter: [T], _ width: Int, _ height: Int) -> ([T], [T])? {
-    
-    var horizontal = [T](repeating: 0, count: width)
-    var vertical = [T](repeating: 0, count: height)
-    
-    filter.withUnsafeBufferPointer {
-        
-        guard var filter = $0.baseAddress else { return }
-        
-        return horizontal.withUnsafeMutableBufferPointer {
-            
-            guard let horizontal = $0.baseAddress else { return }
-            
-            return vertical.withUnsafeMutableBufferPointer {
-                
-                guard var vertical = $0.baseAddress else { return }
-                
-                var i = 0
-                var j = 0
-                
-                loop: for _ in 0..<height {
-                    
-                    var _filter = filter
-                    j = 0
-                    
-                    for _ in 0..<width {
-                        if !_filter.pointee.almostZero() {
-                            break loop
-                        }
-                        _filter += 1
-                        j += 1
-                    }
-                    
-                    filter += width
-                    vertical += 1
-                    i += 1
-                }
-                
-                if i < height {
-                    
-                    var _filter = filter
-                    var _horizontal = horizontal
-                    
-                    for _ in 0..<width {
-                        _horizontal.pointee = _filter.pointee
-                        _filter += 1
-                        _horizontal += 1
-                    }
-                }
-                
-                do {
-                    
-                    var _filter = filter + j
-                    let _horizontal = horizontal + j
-                    
-                    for _ in i..<height {
-                        vertical.pointee = _filter.pointee / _horizontal.pointee
-                        _filter += width
-                        vertical += 1
-                    }
-                }
-            }
-        }
-    }
-    
-    let is_equal = zip(filter, vertical.flatMap { a in horizontal.map { a * $0 } }).allSatisfy { $0.almostEqual($1) }
-    
-    return is_equal ? (horizontal, vertical) : nil
-}
-
 extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
     
     @inlinable
@@ -509,16 +437,9 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
             case .cooleyTukey: result = _cooleyTukey_convolution_horizontal(filter)
             }
         default:
-            if let (horizontal, vertical) = _filter_separation(filter, filter_width, filter_height) {
-                switch algorithm {
-                case .direct: result = _direct_convolution(horizontal, vertical)
-                case .cooleyTukey: result = _cooleyTukey_convolution(horizontal, vertical)
-                }
-            } else {
-                switch algorithm {
-                case .direct: result = _direct_convolution(filter, filter_width, filter_height)
-                case .cooleyTukey: result = _cooleyTukey_convolution(filter, filter_width, filter_height)
-                }
+            switch algorithm {
+            case .direct: result = _direct_convolution(filter, filter_width, filter_height)
+            case .cooleyTukey: result = _cooleyTukey_convolution(filter, filter_width, filter_height)
             }
         }
         

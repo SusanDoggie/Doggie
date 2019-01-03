@@ -134,6 +134,7 @@ extension ImageTest {
         ("testDrawing", testDrawing),
         ("testImageConvolutionA", testImageConvolutionA),
         ("testImageConvolutionB", testImageConvolutionB),
+        ("testImageGaussianBlur", testImageGaussianBlur),
         ("testLinearGradientPerformance", testLinearGradientPerformance),
         ("testRadialGradientPerformance", testRadialGradientPerformance),
         ("testResamplingCosineAntialiasPerformance", testResamplingCosineAntialiasPerformance),
