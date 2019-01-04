@@ -121,3 +121,63 @@ public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ level: (Int
         }
     }
 }
+
+@inlinable
+@inline(__always)
+public func separate_convolution_filter<T: BinaryFloatingPoint>(_ filter: [T], _ width: Int, _ height: Int) -> ([T], [T])? {
+    
+    var horizontal = [T](repeating: 0, count: width)
+    var vertical = [T](repeating: 0, count: height)
+    
+    filter.withUnsafeBufferPointer {
+        
+        guard let filter = $0.baseAddress else { return }
+        
+        return horizontal.withUnsafeMutableBufferPointer {
+            
+            guard let horizontal = $0.baseAddress else { return }
+            
+            return vertical.withUnsafeMutableBufferPointer {
+                
+                guard let vertical = $0.baseAddress else { return }
+                
+                var (i, m) = UnsafeBufferPointer(start: filter, count: width * height).enumerated().max { abs($0.element) < abs($1.element) }!
+                
+                guard m != 0 else { return }
+                
+                let j = i % width
+                i /= width
+                m = 1 / sqrt(abs(m))
+                
+                do {
+                    
+                    var _filter = filter + i * width
+                    var _horizontal = horizontal
+                    
+                    for _ in 0..<width {
+                        _horizontal.pointee = _filter.pointee * m
+                        _filter += 1
+                        _horizontal += 1
+                    }
+                }
+                
+                do {
+                    
+                    var _filter = filter + j
+                    let _horizontal = horizontal + j
+                    var _vertical = vertical
+                    
+                    for _ in 0..<height {
+                        _vertical.pointee = _filter.pointee / _horizontal.pointee
+                        _filter += width
+                        _vertical += 1
+                    }
+                }
+            }
+        }
+    }
+    
+    let is_equal = zip(filter, vertical.flatMap { a in horizontal.map { a * $0 } }).allSatisfy { $0.almostEqual($1) }
+    
+    return is_equal ? (horizontal, vertical) : nil
+}
