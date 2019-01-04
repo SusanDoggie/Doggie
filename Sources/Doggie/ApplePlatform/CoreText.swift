@@ -37,7 +37,7 @@ extension CTFramesetter {
         return CTFramesetterCreateFrame(self, stringRange, path, frameAttributes)
     }
     
-    public func suggestFrameSize(_ constraints: CGSize,
+    public func suggestFrameSize(_ constraints: CGSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude),
                                  _ stringRange: CFRange = CFRange(),
                                  _ frameAttributes: CFDictionary? = nil,
                                  _ fitRange: UnsafeMutablePointer<CFRange>? = nil) -> CGSize {
