@@ -91,7 +91,7 @@ context.draw(ellipseIn: Rect(x: 0, y: 0, width: 200, height: 200), color: .black
 
 var image = context.image
 
-let turbulence: Image<RGBA32ColorPixel> = SVGTurbulence(220, 220, Rect(x: 0, y: 0, width: 220, height: 220), .turbulence, 0.05, false, 2, 0)
+let turbulence: Image<RGBA32ColorPixel> = SVGTurbulence(220, 220, .turbulence, nil, .identity, 0, 0.05, 2)
 
 image = DisplacementMap(image, turbulence, 0, 1, 50)
 ```

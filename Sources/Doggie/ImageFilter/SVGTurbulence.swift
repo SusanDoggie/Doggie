@@ -31,13 +31,13 @@ public enum SVGTurbulenceType {
 
 @inlinable
 @inline(__always)
-public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ rect: Rect, _ type: SVGTurbulenceType, _ baseFrequency: Double, _ stitch: Bool, _ numOctaves: Int, _ seed: Int, _ fileBacked: Bool = false) -> Image<T> where T.Model == RGBColorModel {
-    return Image(texture: SVGTurbulence(width, height, rect, type, baseFrequency, stitch, numOctaves, seed, fileBacked), colorSpace: ColorSpace<RGBColorModel>.sRGB.linearTone)
+public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ type: SVGTurbulenceType, _ stitchTile: Rect?, _ transform: SDTransform, _ seed: Int, _ baseFrequency: Double, _ numOctaves: Int, _ fileBacked: Bool = false) -> Image<T> where T.Model == RGBColorModel {
+    return Image(texture: SVGTurbulence(width, height, type, stitchTile, transform, seed, baseFrequency, numOctaves, fileBacked), colorSpace: ColorSpace<RGBColorModel>.sRGB.linearTone)
 }
 
 @inlinable
 @inline(__always)
-public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ rect: Rect, _ type: SVGTurbulenceType, _ baseFrequency: Double, _ stitch: Bool, _ numOctaves: Int, _ seed: Int, _ fileBacked: Bool = false) -> Texture<T> where T.Model == RGBColorModel {
+public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ type: SVGTurbulenceType, _ stitchTile: Rect?, _ transform: SDTransform, _ seed: Int, _ baseFrequency: Double, _ numOctaves: Int, _ fileBacked: Bool = false) -> Texture<T> where T.Model == RGBColorModel {
     
     var result = Texture<T>(width: width, height: height, fileBacked: fileBacked)
     
@@ -50,14 +50,10 @@ public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ rect: Rect, _ type: 
         switch type {
         case .fractalNoise:
             
-            let x_scale = rect.width / Double(width)
-            let y_scale = rect.height / Double(height)
-            let stitchTile = stitch ? Rect(origin: Point(), size: rect.size) : nil
-            
             for y in 0..<height {
                 for x in 0..<width {
                     
-                    let point = Point(x: Double(x) * x_scale, y: Double(y) * y_scale) + rect.origin
+                    let point = Point(x: x, y: y) * transform
                     
                     let red = noise.turbulence(0, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
                     let green = noise.turbulence(1, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
@@ -72,14 +68,10 @@ public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ rect: Rect, _ type: 
             
         case .turbulence:
             
-            let x_scale = rect.width / Double(width)
-            let y_scale = rect.height / Double(height)
-            let stitchTile = stitch ? Rect(origin: Point(), size: rect.size) : nil
-            
             for y in 0..<height {
                 for x in 0..<width {
                     
-                    let point = Point(x: Double(x) * x_scale, y: Double(y) * y_scale) + rect.origin
+                    let point = Point(x: x, y: y) * transform
                     
                     let red = noise.turbulence(0, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
                     let green = noise.turbulence(1, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
