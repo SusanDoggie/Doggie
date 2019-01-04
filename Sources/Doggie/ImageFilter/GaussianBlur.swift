@@ -48,28 +48,14 @@ public func GaussianBlur<T>(_ texture: StencilTexture<T>, _ blur: T, _ algorithm
 
 @inlinable
 @inline(__always)
-public func GaussianBlur<Model>(_ texture: Texture<ColorPixel<Model>>, _ blur: Double, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<ColorPixel<Model>> {
+public func GaussianBlur<RawPixel>(_ texture: Texture<RawPixel>, _ blur: RawPixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<RawPixel> where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
     let filter = GaussianBlurFilter(blur)
     return texture.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }
 
 @inlinable
 @inline(__always)
-public func GaussianBlur<Model>(_ texture: Texture<FloatColorPixel<Model>>, _ blur: Float, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<FloatColorPixel<Model>> {
-    let filter = GaussianBlurFilter(blur)
-    return texture.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
-}
-
-@inlinable
-@inline(__always)
-public func GaussianBlur<Model>(_ image: Image<ColorPixel<Model>>, _ blur: Double, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<ColorPixel<Model>> {
-    let filter = GaussianBlurFilter(blur)
-    return image.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
-}
-
-@inlinable
-@inline(__always)
-public func GaussianBlur<Model>(_ image: Image<FloatColorPixel<Model>>, _ blur: Float, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<FloatColorPixel<Model>> {
+public func GaussianBlur<Pixel>(_ image: Image<Pixel>, _ blur: Pixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<Pixel> where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
     let filter = GaussianBlurFilter(blur)
     return image.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }
