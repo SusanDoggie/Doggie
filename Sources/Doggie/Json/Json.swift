@@ -99,18 +99,7 @@ extension Json: ExpressibleByFloatLiteral {
 
 extension Json: ExpressibleByStringLiteral {
     
-    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-    public typealias UnicodeScalarLiteralType = StringLiteralType
-    
     public init(stringLiteral value: StringLiteralType) {
-        self.init(value)
-    }
-    
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        self.init(value)
-    }
-    
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
         self.init(value)
     }
 }

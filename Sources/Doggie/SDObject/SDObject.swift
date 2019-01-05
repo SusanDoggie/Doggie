@@ -134,21 +134,8 @@ extension SDObject: ExpressibleByFloatLiteral {
 
 extension SDObject: ExpressibleByStringLiteral {
     
-    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-    public typealias UnicodeScalarLiteralType = StringLiteralType
-    
     @inlinable
     public init(stringLiteral value: StringLiteralType) {
-        self.init(value)
-    }
-    
-    @inlinable
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        self.init(value)
-    }
-    
-    @inlinable
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
         self.init(value)
     }
 }

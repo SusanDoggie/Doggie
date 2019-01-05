@@ -55,18 +55,7 @@ public struct Regex : Equatable {
 
 extension Regex: ExpressibleByStringLiteral {
     
-    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-    public typealias UnicodeScalarLiteralType = StringLiteralType
-    
     public init(stringLiteral value: StringLiteralType) {
-        try! self.init(pattern: value)
-    }
-    
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        try! self.init(pattern: value)
-    }
-    
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
         try! self.init(pattern: value)
     }
 }

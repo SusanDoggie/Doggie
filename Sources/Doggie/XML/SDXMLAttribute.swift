@@ -46,18 +46,7 @@ public struct SDXMLAttribute : Hashable {
 
 extension SDXMLAttribute: ExpressibleByStringLiteral {
     
-    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-    public typealias UnicodeScalarLiteralType = StringLiteralType
-    
     public init(stringLiteral value: StringLiteralType) {
-        self.init(attribute: value)
-    }
-    
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        self.init(attribute: value)
-    }
-    
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
         self.init(attribute: value)
     }
 }

@@ -103,18 +103,7 @@ public struct SDXMLElement {
 
 extension SDXMLElement: ExpressibleByStringLiteral {
     
-    public typealias ExtendedGraphemeClusterLiteralType = StringLiteralType
-    public typealias UnicodeScalarLiteralType = StringLiteralType
-    
     public init(stringLiteral value: StringLiteralType) {
-        self.init(characters: value)
-    }
-    
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        self.init(characters: value)
-    }
-    
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
         self.init(characters: value)
     }
 }
