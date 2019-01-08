@@ -81,11 +81,11 @@ extension SDXMLElement {
             "<".write(to: &output)
             name.write(to: &output)
             
-            for attribute in _attributes_order {
+            for (attribute, value) in self._attributes {
                 " ".write(to: &output)
                 (prefixMap[attribute.namespace].map { "\($0):\(attribute.attribute)" } ?? attribute.attribute).write(to: &output)
                 "=\"".write(to: &output)
-                self._attributes[attribute]!.write(to: &output)
+                value.write(to: &output)
                 "\"".write(to: &output)
             }
             
