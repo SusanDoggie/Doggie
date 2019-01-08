@@ -76,27 +76,50 @@ extension SDXMLElement {
             }
             
             let name = prefixMap[self._namespace].map { "\($0):\(self._name)" } ?? self._name
-            let attributes = self._attributes.map { attribute, value in " \(prefixMap[attribute.namespace].map { "\($0):\(attribute.attribute)" } ?? attribute.attribute)=\"\(value)\"" }.joined()
+            
+            indent.write(to: &output)
+            "<".write(to: &output)
+            name.write(to: &output)
+            
+            for attribute in _attributes_order {
+                " ".write(to: &output)
+                (prefixMap[attribute.namespace].map { "\($0):\(attribute.attribute)" } ?? attribute.attribute).write(to: &output)
+                "=\"".write(to: &output)
+                self._attributes[attribute]!.write(to: &output)
+                "\"".write(to: &output)
+            }
             
             if self.count == 0 {
-                "\(indent)<\(name)\(attributes) />".write(to: &output)
+                " />".write(to: &output)
             } else {
-                "\(indent)<\(name)\(attributes)>".write(to: &output)
+                ">".write(to: &output)
                 var flag = false
                 for element in self._elements {
                     flag = element.isNode || flag
                     element._xml(indent == "" ? indent : "\(indent)  ", prefixMap: prefixMap, &output)
                 }
                 if flag {
-                    "\(indent)</\(name)>".write(to: &output)
-                } else {
-                    "</\(name)>".write(to: &output)
+                    indent.write(to: &output)
                 }
+                "</".write(to: &output)
+                name.write(to: &output)
+                ">".write(to: &output)
             }
             
         case .characters: _string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).write(to: &output)
-        case .comment: "\(indent)<!--\(_string)-->".write(to: &output)
-        case .CDATA: "\(indent)<![CDATA[\(_string)]]>".write(to: &output)
+        case .comment:
+            
+            indent.write(to: &output)
+            "<!--".write(to: &output)
+            _string.write(to: &output)
+            "-->".write(to: &output)
+            
+        case .CDATA:
+            
+            indent.write(to: &output)
+            "<![CDATA[".write(to: &output)
+            _string.write(to: &output)
+            "]]>".write(to: &output)
         }
     }
 }

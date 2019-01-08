@@ -37,9 +37,12 @@ public struct SDXMLElement {
     let _name: String
     let _namespace: String
     
+    var _attributes_order: [SDXMLAttribute]
     var _attributes: [SDXMLAttribute: String] {
         didSet {
+            let _old_attributes_order = self._attributes_order
             _attributes = _attributes.filter { $0.key.attribute != "" }
+            self._attributes_order = _old_attributes_order.filter { _attributes.keys.contains($0) } + _attributes.keys.filter { !_old_attributes_order.contains($0) }
         }
     }
     
@@ -64,10 +67,21 @@ public struct SDXMLElement {
     
     var _tree: _Tree?
     
+    init(name: String, namespace: String, attributes_order: [SDXMLAttribute], attributes: [SDXMLAttribute: String], elements: [SDXMLElement]) {
+        self.kind = .node
+        self._name = name
+        self._namespace = namespace
+        self._attributes_order = attributes_order
+        self._attributes = attributes
+        self._elements = elements.map { $0._detach() }
+        self._string = ""
+    }
+    
     public init(name: String, namespace: String = "", attributes: [SDXMLAttribute: String] = [:], elements: [SDXMLElement] = []) {
         self.kind = .node
         self._name = name
         self._namespace = namespace
+        self._attributes_order = Array(attributes.keys)
         self._attributes = attributes.filter { $0.key.attribute != "" }
         self._elements = elements.map { $0._detach() }
         self._string = ""
@@ -77,6 +91,7 @@ public struct SDXMLElement {
         self.kind = .CDATA
         self._name = ""
         self._namespace = ""
+        self._attributes_order = []
         self._attributes = [:]
         self._elements = []
         self._string = value
@@ -86,6 +101,7 @@ public struct SDXMLElement {
         self.kind = .comment
         self._name = ""
         self._namespace = ""
+        self._attributes_order = []
         self._attributes = [:]
         self._elements = []
         self._string = value
@@ -95,6 +111,7 @@ public struct SDXMLElement {
         self.kind = .characters
         self._name = ""
         self._namespace = ""
+        self._attributes_order = []
         self._attributes = [:]
         self._elements = []
         self._string = value
@@ -217,18 +234,24 @@ extension SDXMLElement {
         
         guard kind == .node else { return self }
         
+        var attributes_order: [SDXMLAttribute] = []
         var attributes: [SDXMLAttribute: String] = [:]
-        attributes.reserveCapacity(self._attributes.count)
+        attributes_order.reserveCapacity(self._attributes_order.count)
+        attributes.reserveCapacity(self._attributes_order.count)
         
-        for (attribute, value) in self._attributes {
+        for attribute in self._attributes_order where attribute.attribute != "" {
+            let value = self._attributes[attribute]!
             if attribute.namespace != "" || attribute.attribute == "xmlns" || attribute.attribute.contains(":") {
                 attributes[attribute] = value
+                attributes_order.append(attribute)
             } else {
-                attributes[SDXMLAttribute(attribute: attribute.attribute, namespace: namespace)] = value
+                let _attribute = SDXMLAttribute(attribute: attribute.attribute, namespace: namespace)
+                attributes[_attribute] = value
+                attributes_order.append(_attribute)
             }
         }
         
-        return SDXMLElement(name: self._name, namespace: self._namespace == "" ? namespace : self._namespace, attributes: _attributes, elements: self._elements.map { $0._apply_global_namespace(namespace) })
+        return SDXMLElement(name: self._name, namespace: self._namespace == "" ? namespace : self._namespace, attributes_order: attributes_order, attributes: attributes, elements: self._elements.map { $0._apply_global_namespace(namespace) })
     }
     
     func _detach() -> SDXMLElement {
