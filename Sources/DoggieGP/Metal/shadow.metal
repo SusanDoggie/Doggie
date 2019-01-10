@@ -26,8 +26,6 @@
 #include <metal_stdlib>
 using namespace metal;
 
-#define M_PI 3.1415926535897932384626433832795028841971693993751058
-
 constant int countOfComponents [[function_constant(0)]];
 
 struct shadow_parameter {
@@ -64,7 +62,7 @@ kernel void shadow(const device shadow_parameter &parameter [[buffer(0)]],
             
             const float2 point = float2((float)position.x + (float)i - offset.x, (float)position.y + (float)j - offset.y);
             const float d = length_squared(float2(i, j));
-            const float k = exp(-d / _blur) / (M_PI * _blur);
+            const float k = exp(-d / _blur) / (M_PI_F * _blur);
             
             _shadow += _linear_interpolate_none_none(source, point, opacity_idx, size) * k;
             sum += k;

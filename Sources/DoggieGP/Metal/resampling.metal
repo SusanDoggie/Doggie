@@ -26,8 +26,6 @@
 #include <metal_stdlib>
 using namespace metal;
 
-#define M_PI 3.1415926535897932384626433832795028841971693993751058
-
 constant int countOfComponents [[function_constant(0)]];
 
 struct interpolate_parameter {
@@ -50,7 +48,7 @@ const float _linear_interpolate(const float t, const float a, const float b) {
 }
 
 const float _cosine_interpolate(const float t, const float a, const float b) {
-    const float u = 1 - cos(t * M_PI);
+    const float u = 1 - cospi(t);
     const float v = 0.5 * u;
     return _linear_interpolate(v, a, b);
 }
@@ -124,7 +122,7 @@ const float _lanczos_kernel(const float x, const uint a) {
         return 1;
     }
     if (x < (float)a) {
-        const float _x = M_PI * x;
+        const float _x = M_PI_F * x;
         const float u = sin(_x) * sin(_x * _a);
         const float v = _x * _x;
         return (float)a * u / v;
