@@ -36,6 +36,7 @@
 		08458B5D1E2E627600D01813 /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AED1E2E627600D01813 /* AtomicStack.swift */; };
 		08458B5F1E2E627600D01813 /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEE1E2E627600D01813 /* Lock.swift */; };
 		08458B611E2E627600D01813 /* SDTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* SDTask.swift */; };
+		084638E121EA524A005D2EDD /* DGImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084638E021EA524A005D2EDD /* DGImage.swift */; };
 		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
 		086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* GradientMesh.swift */; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -75,7 +76,7 @@
 		0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26A0901FA98994008BEADB /* CompressionTest.swift */; };
 		0A29B20C218998710046FFB4 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DB2189985D0046FFB4 /* Renderer.swift */; };
 		0A29B237218998710046FFB4 /* stencil.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1D92189985D0046FFB4 /* stencil.metal */; };
-		0A29B266218998710046FFB4 /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DA2189985D0046FFB4 /* ImageContext.swift */; };
+		0A29B266218998710046FFB4 /* DGImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */; };
 		0A29B2DD218999020046FFB4 /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; };
 		0A29B2F22189A4210046FFB4 /* set_opacity.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F12189A4210046FFB4 /* set_opacity.metal */; };
 		0A29B2F82189A9A10046FFB4 /* MetalRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */; };
@@ -325,6 +326,7 @@
 		08458AED1E2E627600D01813 /* AtomicStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AtomicStack.swift; sourceTree = "<group>"; };
 		08458AEE1E2E627600D01813 /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Lock.swift; sourceTree = "<group>"; };
 		08458AEF1E2E627600D01813 /* SDTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SDTask.swift; sourceTree = "<group>"; };
+		084638E021EA524A005D2EDD /* DGImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGImage.swift; sourceTree = "<group>"; };
 		086F06481EDC623D00BA70C8 /* Rasterizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rasterizer.swift; sourceTree = "<group>"; };
 		086F064B1EDC65D600BA70C8 /* GradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GradientMesh.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -364,7 +366,7 @@
 		0A251C622101849A00E31473 /* SDObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDObject.swift; sourceTree = "<group>"; };
 		0A26A0901FA98994008BEADB /* CompressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CompressionTest.swift; sourceTree = "<group>"; };
 		0A29B1D92189985D0046FFB4 /* stencil.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = stencil.metal; sourceTree = "<group>"; };
-		0A29B1DA2189985D0046FFB4 /* ImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageContext.swift; sourceTree = "<group>"; };
+		0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGImageContext.swift; sourceTree = "<group>"; };
 		0A29B1DB2189985D0046FFB4 /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		0A29B2DA218998710046FFB4 /* DoggieGP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DoggieGP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A29B2F12189A4210046FFB4 /* set_opacity.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = set_opacity.metal; sourceTree = "<group>"; };
@@ -692,6 +694,23 @@
 			path = Thread;
 			sourceTree = "<group>";
 		};
+		084638DE21EA5224005D2EDD /* DGImageContext */ = {
+			isa = PBXGroup;
+			children = (
+				0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */,
+				0A29B1DB2189985D0046FFB4 /* Renderer.swift */,
+			);
+			path = DGImageContext;
+			sourceTree = "<group>";
+		};
+		084638DF21EA524A005D2EDD /* DGImage */ = {
+			isa = PBXGroup;
+			children = (
+				084638E021EA524A005D2EDD /* DGImage.swift */,
+			);
+			path = DGImage;
+			sourceTree = "<group>";
+		};
 		0858DA401C0550B7007FA426 /* Doggie */ = {
 			isa = PBXGroup;
 			children = (
@@ -860,8 +879,8 @@
 			isa = PBXGroup;
 			children = (
 				0A29B2F02189A3FB0046FFB4 /* Metal */,
-				0A29B1DA2189985D0046FFB4 /* ImageContext.swift */,
-				0A29B1DB2189985D0046FFB4 /* Renderer.swift */,
+				084638DE21EA5224005D2EDD /* DGImageContext */,
+				084638DF21EA524A005D2EDD /* DGImage */,
 			);
 			name = DoggieGP;
 			path = Sources/DoggieGP;
@@ -1689,8 +1708,9 @@
 				0A29B2F82189A9A10046FFB4 /* MetalRenderer.swift in Sources */,
 				0A098F2521967002003F3CE4 /* fill_stencil.metal in Sources */,
 				0A13DB36218AF88200BD05F8 /* gradient.metal in Sources */,
-				0A29B266218998710046FFB4 /* ImageContext.swift in Sources */,
+				0A29B266218998710046FFB4 /* DGImageContext.swift in Sources */,
 				0A404BE2218BE24F00F7F1AD /* blend.metal in Sources */,
+				084638E121EA524A005D2EDD /* DGImage.swift in Sources */,
 				0A404BE6218C46AF00F7F1AD /* resampling.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

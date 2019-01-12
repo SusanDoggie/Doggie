@@ -1,5 +1,5 @@
 //
-//  ImageContext.swift
+//  DGImageContext.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
