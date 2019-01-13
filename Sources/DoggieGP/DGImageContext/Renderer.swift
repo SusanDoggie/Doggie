@@ -79,7 +79,7 @@ protocol DGRendererEncoder {
     
     func alloc_texture() throws -> Buffer
     
-    func make_buffer<T>(_ buffer: MappedBuffer<T>) throws -> Buffer
+    func make_buffer(_ texture: Texture<FloatColorPixel<Renderer.Model>>) throws -> Buffer
     
     func clear(_ buffer: Buffer) throws
     
@@ -195,7 +195,7 @@ extension DGImageContext {
         let texture = Texture<FloatColorPixel<Model>>(width: width, height: height, fileBacked: false)
         let resource = Resource<Renderer.Encoder>()
         
-        try self._image.render(encoder: encoder, output: encoder.make_buffer(texture.pixels), resource: resource)
+        try self._image.render(encoder: encoder, output: encoder.make_buffer(texture), resource: resource)
         
         encoder.commit(waitUntilCompleted: true)
         
@@ -277,11 +277,11 @@ extension DGImageContext {
         }
         
         override func render<Encoder>(encoder: Encoder, resource: Resource<Encoder>) throws -> (Encoder.Buffer, Encoder.Buffer?, Rect?, Bool) {
-            return (try encoder.make_buffer(source.pixels), nil, nil, false)
+            return (try encoder.make_buffer(source), nil, nil, false)
         }
         
         override func render<Encoder>(encoder: Encoder, output: Encoder.Buffer, resource: Resource<Encoder>) throws {
-            try encoder.copy(encoder.make_buffer(source.pixels), output)
+            try encoder.copy(encoder.make_buffer(source), output)
         }
     }
     

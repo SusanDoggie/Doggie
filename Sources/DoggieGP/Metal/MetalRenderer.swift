@@ -341,8 +341,8 @@ extension MetalRenderer.Encoder {
         return buffer
     }
     
-    func make_buffer<T>(_ buffer: MappedBuffer<T>) throws -> MTLBuffer {
-        guard let buffer = device.makeBuffer(buffer) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
+    func make_buffer(_ texture: Texture<FloatColorPixel<Model>>) throws -> MTLBuffer {
+        guard let buffer = device.makeBuffer(texture.pixels) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
         return buffer
     }
     
