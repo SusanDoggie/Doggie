@@ -125,6 +125,13 @@ extension Image {
                 let byteOrder = CGBitmapInfo.byteOrder32Big
                 bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
                 
+            case is Image<BGRA32ColorPixel>:
+                
+                bitsPerComponent = 8
+                
+                let byteOrder = CGBitmapInfo.byteOrder32Little
+                bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
+                
             case is Image<ARGB64ColorPixel>:
                 
                 bitsPerComponent = 16
