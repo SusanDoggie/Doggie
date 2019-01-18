@@ -33,16 +33,10 @@ public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
     
     var floatComponents: FloatComponents { get set }
     
-    func min() -> Double
-    
-    func max() -> Double
 }
 
 public protocol FloatColorComponents : Hashable, Tensor where Scalar == Float {
     
-    func min() -> Float
-    
-    func max() -> Float
 }
 
 extension ColorModelProtocol {

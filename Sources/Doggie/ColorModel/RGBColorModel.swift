@@ -250,18 +250,6 @@ extension RGBColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return Swift.min(red, green, blue)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(red, green, blue)
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> RGBColorModel {
         return RGBColorModel(red: transform(red), green: transform(green), blue: transform(blue))
     }
@@ -357,18 +345,6 @@ extension RGBColorModel {
 }
 
 extension RGBColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(red, green, blue)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(red, green, blue)
-    }
     
     @inlinable
     @inline(__always)

@@ -125,18 +125,6 @@ extension YxyColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return Swift.min(luminance, x, y)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(luminance, x, y)
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> YxyColorModel {
         return YxyColorModel(luminance: transform(luminance), x: transform(x), y: transform(y))
     }
@@ -232,18 +220,6 @@ extension YxyColorModel {
 }
 
 extension YxyColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(luminance, x, y)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(luminance, x, y)
-    }
     
     @inlinable
     @inline(__always)

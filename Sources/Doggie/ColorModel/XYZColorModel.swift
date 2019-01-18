@@ -149,18 +149,6 @@ extension XYZColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return Swift.min(x, y, z)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(x, y, z)
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> XYZColorModel {
         return XYZColorModel(x: transform(x), y: transform(y), z: transform(z))
     }
@@ -256,18 +244,6 @@ extension XYZColorModel {
 }
 
 extension XYZColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(x, y, z)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(x, y, z)
-    }
     
     @inlinable
     @inline(__always)

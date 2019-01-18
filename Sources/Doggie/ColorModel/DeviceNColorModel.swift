@@ -81,18 +81,6 @@ extension Device2ColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return Swift.min(component_0, component_1)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(component_0, component_1)
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device2ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -177,18 +165,6 @@ public struct Device3ColorModel : ColorModelProtocol {
 }
 
 extension Device3ColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(component_0, component_1, component_2)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(component_0, component_1, component_2)
-    }
     
     @inlinable
     @inline(__always)
@@ -284,18 +260,6 @@ public struct Device4ColorModel : ColorModelProtocol {
 }
 
 extension Device4ColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(component_0, component_1, component_2, component_3)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(component_0, component_1, component_2, component_3)
-    }
     
     @inlinable
     @inline(__always)
@@ -400,24 +364,6 @@ public struct Device5ColorModel : ColorModelProtocol {
 }
 
 extension Device5ColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -536,24 +482,6 @@ public struct Device6ColorModel : ColorModelProtocol {
 }
 
 extension Device6ColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -681,26 +609,6 @@ public struct Device7ColorModel : ColorModelProtocol {
 }
 
 extension Device7ColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -838,26 +746,6 @@ public struct Device8ColorModel : ColorModelProtocol {
 }
 
 extension Device8ColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -1003,26 +891,6 @@ public struct Device9ColorModel : ColorModelProtocol {
 }
 
 extension Device9ColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -1177,28 +1045,6 @@ public struct DeviceAColorModel : ColorModelProtocol {
 }
 
 extension DeviceAColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -1363,28 +1209,6 @@ public struct DeviceBColorModel : ColorModelProtocol {
 }
 
 extension DeviceBColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -1557,28 +1381,6 @@ public struct DeviceCColorModel : ColorModelProtocol {
 }
 
 extension DeviceCColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -1760,30 +1562,6 @@ public struct DeviceDColorModel : ColorModelProtocol {
 }
 
 extension DeviceDColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -1975,30 +1753,6 @@ public struct DeviceEColorModel : ColorModelProtocol {
 }
 
 extension DeviceEColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12, component_13
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12, component_13
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -2201,30 +1955,6 @@ extension DeviceFColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12, component_13, component_14
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12, component_13, component_14
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceFColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2372,18 +2102,6 @@ extension Device2ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func min() -> Float {
-        return Swift.min(component_0, component_1)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(component_0, component_1)
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Float) -> Float) -> Device2ColorModel.FloatComponents {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2482,18 +2200,6 @@ extension Device3ColorModel {
 }
 
 extension Device3ColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(component_0, component_1, component_2)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(component_0, component_1, component_2)
-    }
     
     @inlinable
     @inline(__always)
@@ -2605,18 +2311,6 @@ extension Device4ColorModel {
 }
 
 extension Device4ColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(component_0, component_1, component_2, component_3)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(component_0, component_1, component_2, component_3)
-    }
     
     @inlinable
     @inline(__always)
@@ -2742,24 +2436,6 @@ extension Device5ColorModel {
 }
 
 extension Device5ColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -2901,24 +2577,6 @@ extension Device6ColorModel {
 }
 
 extension Device6ColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -3072,26 +2730,6 @@ extension Device7ColorModel {
 }
 
 extension Device7ColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -3257,26 +2895,6 @@ extension Device8ColorModel {
 }
 
 extension Device8ColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -3452,26 +3070,6 @@ extension Device9ColorModel {
 }
 
 extension Device9ColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -3659,28 +3257,6 @@ extension DeviceAColorModel {
 }
 
 extension DeviceAColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -3880,28 +3456,6 @@ extension DeviceBColorModel {
 }
 
 extension DeviceBColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -4111,28 +3665,6 @@ extension DeviceCColorModel {
 }
 
 extension DeviceCColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -4354,30 +3886,6 @@ extension DeviceDColorModel {
 }
 
 extension DeviceDColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -4611,30 +4119,6 @@ extension DeviceEColorModel {
 }
 
 extension DeviceEColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12, component_13
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12, component_13
-        )
-    }
     
     @inlinable
     @inline(__always)
@@ -4878,30 +4362,6 @@ extension DeviceFColorModel {
 }
 
 extension DeviceFColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12, component_13, component_14
-        )
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(
-            component_0, component_1, component_2,
-            component_3, component_4, component_5,
-            component_6, component_7, component_8,
-            component_9, component_10, component_11,
-            component_12, component_13, component_14
-        )
-    }
     
     @inlinable
     @inline(__always)

@@ -23,6 +23,14 @@
 //  THE SOFTWARE.
 //
 
+extension Sequence {
+    
+    @inlinable
+    public func reduce(_ nextPartialResult: (Element, Element) throws -> Element) rethrows -> Element? {
+        return try self.reduce(nil) { partial, current in try partial.map { try nextPartialResult($0, current) } ?? current }
+    }
+}
+
 extension MutableCollection {
     
     @inlinable

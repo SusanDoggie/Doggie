@@ -130,18 +130,6 @@ extension LabColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return Swift.min(lightness, a, b)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(lightness, a, b)
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> LabColorModel {
         return LabColorModel(lightness: transform(lightness), a: transform(a), b: transform(b))
     }
@@ -237,18 +225,6 @@ extension LabColorModel {
 }
 
 extension LabColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(lightness, a, b)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(lightness, a, b)
-    }
     
     @inlinable
     @inline(__always)

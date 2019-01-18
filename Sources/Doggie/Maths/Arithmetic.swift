@@ -83,12 +83,20 @@ public protocol MapReduceArithmetic {
     
     func map(_ transform: (Element) -> Element) -> Self
     
+    func reduce(_ nextPartialResult: (Element, Element) -> Element) -> Element?
+    
     func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result
     
     func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result
 }
 
 extension MapReduceArithmetic {
+    
+    @inlinable
+    @inline(__always)
+    public func reduce(_ nextPartialResult: (Element, Element) -> Element) -> Element? {
+        return self.reduce(nil) { partial, current in partial.map { nextPartialResult($0, current) } ?? current }
+    }
     
     @inlinable
     @inline(__always)

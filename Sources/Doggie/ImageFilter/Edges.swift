@@ -93,10 +93,10 @@ public func Edges<S, T>(_ texture: Texture<S>, _ intensity: Double) -> Texture<T
                     var c1 = 0.25 * (v0 + v2)
                     c1 += 0.5 * v1
                     
-                    let x_max = max(c0.opacity, c0.color.max())
-                    let x_min = min(c0.opacity, c0.color.min())
-                    let y_max = max(c1.opacity, c1.color.max())
-                    let y_min = min(c1.opacity, c1.color.min())
+                    let x_max = max(c0.opacity, c0.color.reduce(max)!)
+                    let x_min = min(c0.opacity, c0.color.reduce(min)!)
+                    let y_max = max(c1.opacity, c1.color.reduce(max)!)
+                    let y_min = min(c1.opacity, c1.color.reduce(min)!)
                     
                     let x = -x_min > x_max ? x_min : x_max
                     let y = -y_min > y_max ? y_min : y_max

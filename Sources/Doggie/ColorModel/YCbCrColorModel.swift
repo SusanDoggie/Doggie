@@ -86,18 +86,6 @@ extension YCbCrColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return Swift.min(y, cb, cr)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(y, cb, cr)
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> YCbCrColorModel {
         return YCbCrColorModel(y: transform(y), cb: transform(cb), cr: transform(cr))
     }
@@ -193,18 +181,6 @@ extension YCbCrColorModel {
 }
 
 extension YCbCrColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(y, cb, cr)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(y, cb, cr)
-    }
     
     @inlinable
     @inline(__always)

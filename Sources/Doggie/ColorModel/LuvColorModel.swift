@@ -129,18 +129,6 @@ extension LuvColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return Swift.min(lightness, u, v)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(lightness, u, v)
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> LuvColorModel {
         return LuvColorModel(lightness: transform(lightness), u: transform(u), v: transform(v))
     }
@@ -236,18 +224,6 @@ extension LuvColorModel {
 }
 
 extension LuvColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(lightness, u, v)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(lightness, u, v)
-    }
     
     @inlinable
     @inline(__always)

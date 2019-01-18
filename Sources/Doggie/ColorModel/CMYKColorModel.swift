@@ -168,18 +168,6 @@ extension CMYKColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return Swift.min(cyan, magenta, yellow, black)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return Swift.max(cyan, magenta, yellow, black)
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> CMYKColorModel {
         return CMYKColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow), black: transform(black))
     }
@@ -283,18 +271,6 @@ extension CMYKColorModel {
 }
 
 extension CMYKColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return Swift.min(cyan, magenta, yellow, black)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return Swift.max(cyan, magenta, yellow, black)
-    }
     
     @inlinable
     @inline(__always)

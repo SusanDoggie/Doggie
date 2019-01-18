@@ -92,18 +92,6 @@ extension GrayColorModel {
     
     @inlinable
     @inline(__always)
-    public func min() -> Double {
-        return white
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Double {
-        return white
-    }
-    
-    @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: transform(white))
     }
@@ -183,18 +171,6 @@ extension GrayColorModel {
 }
 
 extension GrayColorModel.FloatComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func min() -> Float {
-        return white
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func max() -> Float {
-        return white
-    }
     
     @inlinable
     @inline(__always)
