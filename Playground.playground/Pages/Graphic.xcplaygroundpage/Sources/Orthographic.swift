@@ -6,7 +6,7 @@ private struct ColorVertex : ImageContextRenderVertex {
     
     var position: Vector
     
-    var color: ColorPixel<RGBColorModel>
+    var color: Float64ColorPixel<RGBColorModel>
     
     static func + (lhs: ColorVertex, rhs: ColorVertex) -> ColorVertex {
         return ColorVertex(position: lhs.position + rhs.position, color: lhs.color + rhs.color)
@@ -23,14 +23,14 @@ public func orthographicProject(width: Int, height: Int) -> Image<ARGB32ColorPix
     
     let matrix = Matrix.scale(0.4) * Matrix.rotateY(.pi / 6) * Matrix.rotateX(.pi / 6) * Matrix.translate(x: 0, y: 0, z: 100)
     
-    let c0 = ColorPixel(red: 0, green: 0, blue: 0, opacity: 1)
-    let c1 = ColorPixel(red: 1, green: 0, blue: 0, opacity: 1)
-    let c2 = ColorPixel(red: 0, green: 1, blue: 0, opacity: 1)
-    let c3 = ColorPixel(red: 0, green: 0, blue: 1, opacity: 1)
-    let c4 = ColorPixel(red: 1, green: 1, blue: 0, opacity: 1)
-    let c5 = ColorPixel(red: 1, green: 0, blue: 1, opacity: 1)
-    let c6 = ColorPixel(red: 0, green: 1, blue: 1, opacity: 1)
-    let c7 = ColorPixel(red: 1, green: 1, blue: 1, opacity: 1)
+    let c0 = Float64ColorPixel(red: 0, green: 0, blue: 0, opacity: 1)
+    let c1 = Float64ColorPixel(red: 1, green: 0, blue: 0, opacity: 1)
+    let c2 = Float64ColorPixel(red: 0, green: 1, blue: 0, opacity: 1)
+    let c3 = Float64ColorPixel(red: 0, green: 0, blue: 1, opacity: 1)
+    let c4 = Float64ColorPixel(red: 1, green: 1, blue: 0, opacity: 1)
+    let c5 = Float64ColorPixel(red: 1, green: 0, blue: 1, opacity: 1)
+    let c6 = Float64ColorPixel(red: 0, green: 1, blue: 1, opacity: 1)
+    let c7 = Float64ColorPixel(red: 1, green: 1, blue: 1, opacity: 1)
     
     let v0 = ColorVertex(position: Vector(x: 1, y: 1, z: -1) * matrix, color: c0)
     let v1 = ColorVertex(position: Vector(x: -1, y: 1, z: -1) * matrix, color: c1)
@@ -65,7 +65,7 @@ public func orthographicProject(width: Int, height: Int) -> Image<ARGB32ColorPix
     let t10 = (v7, v3, v2)
     let t11 = (v7, v2, v6)
     
-    func shader(stageIn: ImageContextRenderStageIn<ColorVertex>) -> ColorPixel<RGBColorModel> {
+    func shader(stageIn: ImageContextRenderStageIn<ColorVertex>) -> Float64ColorPixel<RGBColorModel> {
         
         return stageIn.vertex.color
     }

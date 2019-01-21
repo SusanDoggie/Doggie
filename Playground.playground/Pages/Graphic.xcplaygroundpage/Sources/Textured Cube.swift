@@ -66,7 +66,7 @@ public func texturedCube(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     let t10 = (UVVertex(position: v7, uv: Point(x: 0, y: 0)), UVVertex(position: v3, uv: Point(x: 1, y: 0)), UVVertex(position: v2, uv: Point(x: 1, y: 1)))
     let t11 = (UVVertex(position: v7, uv: Point(x: 0, y: 0)), UVVertex(position: v2, uv: Point(x: 1, y: 1)), UVVertex(position: v6, uv: Point(x: 0, y: 1)))
     
-    func shader(stageIn: ImageContextRenderStageIn<UVVertex>) -> ColorPixel<RGBColorModel> {
+    func shader(stageIn: ImageContextRenderStageIn<UVVertex>) -> Float64ColorPixel<RGBColorModel> {
         
         return texture.pixel(stageIn.vertex.uv * 16)
     }

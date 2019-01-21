@@ -105,13 +105,13 @@ public func tessellation(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let list = [p0, p1, p2, p3, p4, p5, p6, p7]
     
-    func shader(stageIn: ImageContextRenderStageIn<Vector>) -> ColorPixel<RGBColorModel> {
+    func shader(stageIn: ImageContextRenderStageIn<Vector>) -> Float64ColorPixel<RGBColorModel> {
         
         let position = stageIn.vertex.position
         let normal = stageIn.normal.unit
         
         let obj_color = RGBColorModel(red: 0.8, green: 0.7, blue: 1)
-        var result = ColorPixel(color: RGBColorModel(red: 0, green: 0, blue: 0))
+        var result = Float64ColorPixel(color: RGBColorModel(red: 0, green: 0, blue: 0))
         
         do {
             
