@@ -37,7 +37,7 @@ public func kMeansClustering<Pixel>(_ texture: Texture<Pixel>, _ resultingImageC
     
     func distance(_ c0: Float64ColorPixel<Pixel.Model>, _ c1: Pixel) -> Double {
         let d = c0 - Float64ColorPixel(c1)
-        return d.color.reduce(d.opacity * d.opacity) { $0 + $1 * $1 }.squareRoot()
+        return d.color.reduce(d.opacity, hypot)
     }
     
     color.withUnsafeBufferPointer { color in
