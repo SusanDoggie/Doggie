@@ -1,5 +1,5 @@
 //
-//  ColorModel.swift
+//  Float32ColorPixel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -23,43 +23,43 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
+@_fixed_layout
+public struct Float32ColorPixel<Model : ColorModelProtocol> : _FloatComponentPixel, _FloatComponentPixelImplement {
     
-    associatedtype Float32Components : _FloatColorComponents where Float32Components.Scalar == Float
+    public typealias Scalar = Float
     
-    static func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
+    public var _color: Model.Float32Components
     
-    init(floatComponents: Float32Components)
-    
-    var float32Components: Float32Components { get set }
-}
-
-public protocol _FloatColorComponents : Hashable, Tensor where Scalar : BinaryFloatingPoint {
-    
-}
-
-extension ColorModelProtocol {
+    public var _opacity: Float
     
     @inlinable
     @inline(__always)
-    public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
-        return Self.rangeOfComponent(i)
-    }
-}
-
-extension ColorModelProtocol {
-    
-    @inlinable
-    @inline(__always)
-    public func normalizedComponent(_ index: Int) -> Double {
-        let range = Self.rangeOfComponent(index)
-        return (self[index] - range.lowerBound) / (range.upperBound - range.lowerBound)
+    public init() {
+        self._color = Model.Float32Components()
+        self._opacity = 0
     }
     
     @inlinable
     @inline(__always)
-    public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
-        let range = Self.rangeOfComponent(index)
-        self[index] = value * (range.upperBound - range.lowerBound) + range.lowerBound
+    public init(color: Model, opacity: Double = 1) {
+        self._color = color.float32Components
+        self._opacity = Float(opacity)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init(color: Model.Float32Components, opacity: Float = 1) {
+        self._color = color
+        self._opacity = opacity
+    }
+    
+    @_transparent
+    public var color: Model {
+        get {
+            return Model(floatComponents: _color)
+        }
+        set {
+            self._color = newValue.float32Components
+        }
     }
 }

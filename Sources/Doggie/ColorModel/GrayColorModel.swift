@@ -24,7 +24,7 @@
 //
 
 public struct GrayColorModel : ColorModelProtocol {
-
+    
     public typealias Indices = Range<Int>
     
     public typealias Scalar = Double
@@ -113,34 +113,34 @@ extension GrayColorModel {
 
 extension GrayColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.white = Double(floatComponents.white)
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(white: Float(self.white))
+            return Float32Components(self)
         }
         set {
-            self.white = Double(newValue.white)
+            self = GrayColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
-        
-        public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
-        
-        public var white: Float
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         @_transparent
         public static var numberOfComponents: Int {
             return 1
         }
+        
+        public typealias Indices = Range<Int>
+        
+        public var white: Scalar
         
         @inline(__always)
         public init() {
@@ -148,12 +148,24 @@ extension GrayColorModel {
         }
         
         @inline(__always)
-        public init(white: Float) {
+        public init(white: Scalar) {
             self.white = white
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: GrayColorModel) {
+            self.white = Scalar(color.white)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.white = Scalar(floatComponents.white)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return white
@@ -174,13 +186,13 @@ extension GrayColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> GrayColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> GrayColorModel.FloatComponents<Scalar> {
         return GrayColorModel.FloatComponents(white: transform(white))
     }
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, white)
         return accumulator
@@ -188,7 +200,7 @@ extension GrayColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: GrayColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> GrayColorModel.FloatComponents {
+    public func combined(_ other: GrayColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> GrayColorModel.FloatComponents<Scalar> {
         return GrayColorModel.FloatComponents(white: transform(self.white, other.white))
     }
 }

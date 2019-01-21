@@ -180,40 +180,38 @@ extension CMYColorModel {
 
 extension CMYColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.cyan = Double(floatComponents.cyan)
         self.magenta = Double(floatComponents.magenta)
         self.yellow = Double(floatComponents.yellow)
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(cyan: Float(self.cyan), magenta: Float(self.magenta), yellow: Float(self.yellow))
+            return Float32Components(self)
         }
         set {
-            self.cyan = Double(newValue.cyan)
-            self.magenta = Double(newValue.magenta)
-            self.yellow = Double(newValue.yellow)
+            self = CMYColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 3
         }
         
-        public var cyan: Float
-        public var magenta: Float
-        public var yellow: Float
+        public var cyan: Scalar
+        public var magenta: Scalar
+        public var yellow: Scalar
         
         @inline(__always)
         public init() {
@@ -223,14 +221,30 @@ extension CMYColorModel {
         }
         
         @inline(__always)
-        public init(cyan: Float, magenta: Float, yellow: Float) {
+        public init(cyan: Scalar, magenta: Scalar, yellow: Scalar) {
             self.cyan = cyan
             self.magenta = magenta
             self.yellow = yellow
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: CMYColorModel) {
+            self.cyan = Scalar(color.cyan)
+            self.magenta = Scalar(color.magenta)
+            self.yellow = Scalar(color.yellow)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.cyan = Scalar(floatComponents.cyan)
+            self.magenta = Scalar(floatComponents.magenta)
+            self.yellow = Scalar(floatComponents.yellow)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return cyan
@@ -255,13 +269,13 @@ extension CMYColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> CMYColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> CMYColorModel.FloatComponents<Scalar> {
         return CMYColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, cyan)
         updateAccumulatingResult(&accumulator, magenta)
@@ -271,7 +285,7 @@ extension CMYColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: CMYColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> CMYColorModel.FloatComponents {
+    public func combined(_ other: CMYColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> CMYColorModel.FloatComponents<Scalar> {
         return CMYColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
     }
 }

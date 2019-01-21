@@ -273,40 +273,38 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.red = Double(floatComponents.red)
         self.green = Double(floatComponents.green)
         self.blue = Double(floatComponents.blue)
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(red: Float(self.red), green: Float(self.green), blue: Float(self.blue))
+            return Float32Components(self)
         }
         set {
-            self.red = Double(newValue.red)
-            self.green = Double(newValue.green)
-            self.blue = Double(newValue.blue)
+            self = RGBColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 3
         }
         
-        public var red: Float
-        public var green: Float
-        public var blue: Float
+        public var red: Scalar
+        public var green: Scalar
+        public var blue: Scalar
         
         @inline(__always)
         public init() {
@@ -316,14 +314,30 @@ extension RGBColorModel {
         }
         
         @inline(__always)
-        public init(red: Float, green: Float, blue: Float) {
+        public init(red: Scalar, green: Scalar, blue: Scalar) {
             self.red = red
             self.green = green
             self.blue = blue
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: RGBColorModel) {
+            self.red = Scalar(color.red)
+            self.green = Scalar(color.green)
+            self.blue = Scalar(color.blue)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.red = Scalar(floatComponents.red)
+            self.green = Scalar(floatComponents.green)
+            self.blue = Scalar(floatComponents.blue)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return red
@@ -348,13 +362,13 @@ extension RGBColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> RGBColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> RGBColorModel.FloatComponents<Scalar> {
         return RGBColorModel.FloatComponents(red: transform(red), green: transform(green), blue: transform(blue))
     }
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, red)
         updateAccumulatingResult(&accumulator, green)
@@ -364,7 +378,7 @@ extension RGBColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: RGBColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> RGBColorModel.FloatComponents {
+    public func combined(_ other: RGBColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> RGBColorModel.FloatComponents<Scalar> {
         return RGBColorModel.FloatComponents(red: transform(self.red, other.red), green: transform(self.green, other.green), blue: transform(self.blue, other.blue))
     }
 }

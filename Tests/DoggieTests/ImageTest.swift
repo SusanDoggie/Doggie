@@ -220,7 +220,7 @@ class ImageTest: XCTestCase {
     
     func testImageGaussianBlur() {
         
-        var image = Image<ColorPixel<RGBColorModel>>(width: 100, height: 100, colorSpace: .sRGB)
+        var image = Image<Float64ColorPixel<RGBColorModel>>(width: 100, height: 100, colorSpace: .sRGB)
         
         image.withUnsafeMutableBufferPointer {
             

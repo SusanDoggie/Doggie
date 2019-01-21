@@ -469,7 +469,7 @@ struct PNGDecoder : ImageRepDecoder {
             switch ihdr.bitDepth {
             case 1, 2, 4:
                 
-                var image = Image<ColorPixel<GrayColorModel>>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
+                var image = Image<Float64ColorPixel<GrayColorModel>>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
                 
                 pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
                     
@@ -512,7 +512,7 @@ struct PNGDecoder : ImageRepDecoder {
                                     default: fatalError()
                                     }
                                     
-                                    _destination.pointee = ColorPixel(white: Double(value) / d)
+                                    _destination.pointee = Float64ColorPixel(white: Double(value) / d)
                                     _destination += 1
                                 }
                                 
@@ -523,7 +523,7 @@ struct PNGDecoder : ImageRepDecoder {
                         } else {
                             let d = Double(1 << ihdr.bitDepth - 1)
                             for _ in 0..<pixels_count {
-                                destination.pointee = ColorPixel(white: Double(source.pointee) / d)
+                                destination.pointee = Float64ColorPixel(white: Double(source.pointee) / d)
                                 source += 1
                                 destination += 1
                             }

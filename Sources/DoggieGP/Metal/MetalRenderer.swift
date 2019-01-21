@@ -341,7 +341,7 @@ extension MetalRenderer.Encoder {
         return buffer
     }
     
-    func make_buffer(_ texture: Texture<FloatColorPixel<Model>>) throws -> MTLBuffer {
+    func make_buffer(_ texture: Texture<Float32ColorPixel<Model>>) throws -> MTLBuffer {
         guard let buffer = device.makeBuffer(texture.pixels) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
         return buffer
     }
@@ -453,7 +453,7 @@ extension MetalRenderer.Encoder {
         encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
-    func shadow(_ source: MTLBuffer, _ destination: MTLBuffer, _ color: FloatColorPixel<Model>, _ offset: Size, _ blur: Double) throws {
+    func shadow(_ source: MTLBuffer, _ destination: MTLBuffer, _ color: Float32ColorPixel<Model>, _ offset: Size, _ blur: Double) throws {
         
         let encoder = try self.makeComputeCommandEncoder()
         
@@ -471,7 +471,7 @@ extension MetalRenderer.Encoder {
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
-    func draw(_ destination: MTLBuffer, _ _stencil: MTLBuffer?, _ shape: Shape, _ color: FloatColorPixel<Model>, _ winding: Shape.WindingRule, _ antialias: Int) throws {
+    func draw(_ destination: MTLBuffer, _ _stencil: MTLBuffer?, _ shape: Shape, _ color: Float32ColorPixel<Model>, _ winding: Shape.WindingRule, _ antialias: Int) throws {
         
         let stencil: MTLBuffer
         
@@ -529,7 +529,7 @@ extension MetalRenderer.Encoder {
         encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
     
-    func draw(_ source: Texture<FloatColorPixel<Model>>, _ destination: MTLBuffer, _ transform: SDTransform, _ antialias: Int) throws {
+    func draw(_ source: Texture<Float32ColorPixel<Model>>, _ destination: MTLBuffer, _ transform: SDTransform, _ antialias: Int) throws {
         
         guard let _source = device.makeBuffer(source.pixels) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
         
@@ -784,7 +784,7 @@ extension MetalRenderer.Encoder {
         var b: UInt32
         var antialias: UInt32
         
-        init(_ source: Texture<FloatColorPixel<Model>>, _ transform: SDTransform, _ antialias: Int) {
+        init(_ source: Texture<Float32ColorPixel<Model>>, _ transform: SDTransform, _ antialias: Int) {
             self.transform = GPTransform(transform)
             self.source_size = (UInt32(source.width), UInt32(source.height))
             self.antialias = UInt32(antialias)

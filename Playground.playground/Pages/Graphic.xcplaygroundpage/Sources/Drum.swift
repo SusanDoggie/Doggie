@@ -18,7 +18,7 @@ public func drum(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
 }
 
 
-public func drum_gp(width: Int, height: Int) throws -> Image<FloatColorPixel<RGBColorModel>> {
+public func drum_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
     let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     

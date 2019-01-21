@@ -27,7 +27,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func draw(shape: Shape, color: ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
+    func draw(shape: Shape, color: Float64ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
         
         if shape.reduce(0, { $0 + $1.count }) == 0 {
             return
@@ -132,7 +132,7 @@ extension ImageContext {
                             
                             for _ in _min_x..<_max_x {
                                 
-                                _blender.draw { () -> ColorPixel<Pixel.Model>? in
+                                _blender.draw { () -> Float64ColorPixel<Pixel.Model>? in
                                     
                                     var _p: UInt8 = 0
                                     
@@ -219,8 +219,8 @@ extension ImageContext {
     @inline(__always)
     public func draw(shape: Shape, winding: Shape.WindingRule, color: Pixel.Model, opacity: Double = 1) {
         switch winding {
-        case .nonZero: self.draw(shape: shape, color: ColorPixel(color: color, opacity: opacity)) { $0 != 0 }
-        case .evenOdd: self.draw(shape: shape, color: ColorPixel(color: color, opacity: opacity)) { $0 & 1 == 1 }
+        case .nonZero: self.draw(shape: shape, color: Float64ColorPixel(color: color, opacity: opacity)) { $0 != 0 }
+        case .evenOdd: self.draw(shape: shape, color: Float64ColorPixel(color: color, opacity: opacity)) { $0 & 1 == 1 }
         }
     }
 }

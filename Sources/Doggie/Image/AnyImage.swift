@@ -66,7 +66,7 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     func _convert<Pixel>(colorSpace: Image<Pixel>.ColorSpace, intent: RenderingIntent) -> Image<Pixel>
     
-    func _copy<Model>() -> Image<ColorPixel<Model>>?
+    func _copy<Model>() -> Image<Float64ColorPixel<Model>>?
 }
 
 extension Image : AnyImageBaseProtocol {
@@ -102,8 +102,8 @@ extension Image : AnyImageBaseProtocol {
     }
     
     @inlinable
-    func _copy<Model>() -> Image<ColorPixel<Model>>? {
-        return Image<ColorPixel<Pixel.Model>>(self) as? Image<ColorPixel<Model>>
+    func _copy<Model>() -> Image<Float64ColorPixel<Model>>? {
+        return Image<Float64ColorPixel<Pixel.Model>>(self) as? Image<Float64ColorPixel<Model>>
     }
 }
 
@@ -285,7 +285,7 @@ extension Image {
         if let image = image._base as? Image {
             self.init(image)
         } else {
-            guard let image: Image<ColorPixel<Pixel.Model>> = image._base._copy() else { return nil }
+            guard let image: Image<Float64ColorPixel<Pixel.Model>> = image._base._copy() else { return nil }
             self.init(image)
         }
     }

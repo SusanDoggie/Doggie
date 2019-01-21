@@ -2034,37 +2034,36 @@ extension DeviceFColorModel {
 
 extension Device2ColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(Float(self.component_0), Float(self.component_1))
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
+            self = Device2ColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 2
         }
         
-        public var component_0: Float
-        public var component_1: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
         
         @inline(__always)
         public init() {
@@ -2073,13 +2072,27 @@ extension Device2ColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: Device2ColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -2102,7 +2115,7 @@ extension Device2ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> Device2ColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> Device2ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         return Device2ColorModel.FloatComponents(component_0, component_1)
@@ -2110,7 +2123,7 @@ extension Device2ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -2119,7 +2132,7 @@ extension Device2ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: Device2ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device2ColorModel.FloatComponents {
+    public func combined(_ other: Device2ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device2ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         return Device2ColorModel.FloatComponents(component_0, component_1)
@@ -2128,40 +2141,38 @@ extension Device2ColorModel.FloatComponents {
 
 extension Device3ColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(Float(self.component_0), Float(self.component_1), Float(self.component_2))
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
+            self = Device3ColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 3
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
         
         @inline(__always)
         public init() {
@@ -2171,14 +2182,30 @@ extension Device3ColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: Device3ColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -2203,7 +2230,7 @@ extension Device3ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> Device3ColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> Device3ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -2212,7 +2239,7 @@ extension Device3ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -2222,7 +2249,7 @@ extension Device3ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: Device3ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device3ColorModel.FloatComponents {
+    public func combined(_ other: Device3ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device3ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -2232,9 +2259,11 @@ extension Device3ColorModel.FloatComponents {
 
 extension Device4ColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -2242,33 +2271,28 @@ extension Device4ColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(Float(self.component_0), Float(self.component_1), Float(self.component_2), Float(self.component_3))
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
+            self = Device4ColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 4
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
         
         @inline(__always)
         public init() {
@@ -2279,7 +2303,7 @@ extension Device4ColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float, _ component_3: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar, _ component_3: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -2287,7 +2311,25 @@ extension Device4ColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: Device4ColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -2314,7 +2356,7 @@ extension Device4ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> Device4ColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> Device4ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -2324,7 +2366,7 @@ extension Device4ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -2335,7 +2377,7 @@ extension Device4ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: Device4ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device4ColorModel.FloatComponents {
+    public func combined(_ other: Device4ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device4ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -2346,9 +2388,11 @@ extension Device4ColorModel.FloatComponents {
 
 extension Device5ColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -2357,38 +2401,29 @@ extension Device5ColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
+            self = Device5ColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 5
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
         
         @inline(__always)
         public init() {
@@ -2400,8 +2435,8 @@ extension Device5ColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -2410,7 +2445,27 @@ extension Device5ColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: Device5ColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -2439,7 +2494,7 @@ extension Device5ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> Device5ColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> Device5ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -2453,7 +2508,7 @@ extension Device5ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -2465,7 +2520,7 @@ extension Device5ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: Device5ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device5ColorModel.FloatComponents {
+    public func combined(_ other: Device5ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device5ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -2480,9 +2535,11 @@ extension Device5ColorModel.FloatComponents {
 
 extension Device6ColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -2492,40 +2549,30 @@ extension Device6ColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
+            self = Device6ColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 6
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
         
         @inline(__always)
         public init() {
@@ -2538,8 +2585,8 @@ extension Device6ColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -2549,7 +2596,29 @@ extension Device6ColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: Device6ColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -2580,7 +2649,7 @@ extension Device6ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> Device6ColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> Device6ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -2595,7 +2664,7 @@ extension Device6ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -2608,7 +2677,7 @@ extension Device6ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: Device6ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device6ColorModel.FloatComponents {
+    public func combined(_ other: Device6ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device6ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -2624,9 +2693,11 @@ extension Device6ColorModel.FloatComponents {
 
 extension Device7ColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -2637,43 +2708,31 @@ extension Device7ColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5),
-                Float(self.component_6)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
-            self.component_6 = Double(newValue.component_6)
+            self = Device7ColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 7
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
-        public var component_6: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
+        public var component_6: Scalar
         
         @inline(__always)
         public init() {
@@ -2687,9 +2746,9 @@ extension Device7ColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float,
-                    _ component_6: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
+                    _ component_6: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -2700,7 +2759,31 @@ extension Device7ColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: Device7ColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+            self.component_6 = Scalar(color.component_6)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+            self.component_6 = Scalar(floatComponents.component_6)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -2733,7 +2816,7 @@ extension Device7ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> Device7ColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> Device7ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -2750,7 +2833,7 @@ extension Device7ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -2764,7 +2847,7 @@ extension Device7ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: Device7ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device7ColorModel.FloatComponents {
+    public func combined(_ other: Device7ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device7ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -2782,9 +2865,11 @@ extension Device7ColorModel.FloatComponents {
 
 extension Device8ColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -2796,45 +2881,32 @@ extension Device8ColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5),
-                Float(self.component_6), Float(self.component_7)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
-            self.component_6 = Double(newValue.component_6)
-            self.component_7 = Double(newValue.component_7)
+            self = Device8ColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 8
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
-        public var component_6: Float
-        public var component_7: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
+        public var component_6: Scalar
+        public var component_7: Scalar
         
         @inline(__always)
         public init() {
@@ -2849,9 +2921,9 @@ extension Device8ColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float,
-                    _ component_6: Float, _ component_7: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
+                    _ component_6: Scalar, _ component_7: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -2863,7 +2935,33 @@ extension Device8ColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: Device8ColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+            self.component_6 = Scalar(color.component_6)
+            self.component_7 = Scalar(color.component_7)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+            self.component_6 = Scalar(floatComponents.component_6)
+            self.component_7 = Scalar(floatComponents.component_7)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -2898,7 +2996,7 @@ extension Device8ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> Device8ColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> Device8ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -2916,7 +3014,7 @@ extension Device8ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -2931,7 +3029,7 @@ extension Device8ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: Device8ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device8ColorModel.FloatComponents {
+    public func combined(_ other: Device8ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device8ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -2950,9 +3048,11 @@ extension Device8ColorModel.FloatComponents {
 
 extension Device9ColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -2965,47 +3065,33 @@ extension Device9ColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5),
-                Float(self.component_6), Float(self.component_7), Float(self.component_8)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
-            self.component_6 = Double(newValue.component_6)
-            self.component_7 = Double(newValue.component_7)
-            self.component_8 = Double(newValue.component_8)
+            self = Device9ColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 9
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
-        public var component_6: Float
-        public var component_7: Float
-        public var component_8: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
+        public var component_6: Scalar
+        public var component_7: Scalar
+        public var component_8: Scalar
         
         @inline(__always)
         public init() {
@@ -3021,9 +3107,9 @@ extension Device9ColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float,
-                    _ component_6: Float, _ component_7: Float, _ component_8: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
+                    _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -3036,7 +3122,35 @@ extension Device9ColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: Device9ColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+            self.component_6 = Scalar(color.component_6)
+            self.component_7 = Scalar(color.component_7)
+            self.component_8 = Scalar(color.component_8)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+            self.component_6 = Scalar(floatComponents.component_6)
+            self.component_7 = Scalar(floatComponents.component_7)
+            self.component_8 = Scalar(floatComponents.component_8)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -3073,7 +3187,7 @@ extension Device9ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> Device9ColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> Device9ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -3092,7 +3206,7 @@ extension Device9ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -3108,7 +3222,7 @@ extension Device9ColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: Device9ColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> Device9ColorModel.FloatComponents {
+    public func combined(_ other: Device9ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device9ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -3128,9 +3242,11 @@ extension Device9ColorModel.FloatComponents {
 
 extension DeviceAColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -3144,50 +3260,34 @@ extension DeviceAColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5),
-                Float(self.component_6), Float(self.component_7), Float(self.component_8),
-                Float(self.component_9)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
-            self.component_6 = Double(newValue.component_6)
-            self.component_7 = Double(newValue.component_7)
-            self.component_8 = Double(newValue.component_8)
-            self.component_9 = Double(newValue.component_9)
+            self = DeviceAColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 10
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
-        public var component_6: Float
-        public var component_7: Float
-        public var component_8: Float
-        public var component_9: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
+        public var component_6: Scalar
+        public var component_7: Scalar
+        public var component_8: Scalar
+        public var component_9: Scalar
         
         @inline(__always)
         public init() {
@@ -3204,10 +3304,10 @@ extension DeviceAColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float,
-                    _ component_6: Float, _ component_7: Float, _ component_8: Float,
-                    _ component_9: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
+                    _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
+                    _ component_9: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -3221,7 +3321,37 @@ extension DeviceAColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: DeviceAColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+            self.component_6 = Scalar(color.component_6)
+            self.component_7 = Scalar(color.component_7)
+            self.component_8 = Scalar(color.component_8)
+            self.component_9 = Scalar(color.component_9)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+            self.component_6 = Scalar(floatComponents.component_6)
+            self.component_7 = Scalar(floatComponents.component_7)
+            self.component_8 = Scalar(floatComponents.component_8)
+            self.component_9 = Scalar(floatComponents.component_9)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -3260,7 +3390,7 @@ extension DeviceAColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> DeviceAColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> DeviceAColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -3281,7 +3411,7 @@ extension DeviceAColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -3298,7 +3428,7 @@ extension DeviceAColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: DeviceAColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceAColorModel.FloatComponents {
+    public func combined(_ other: DeviceAColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceAColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -3320,9 +3450,11 @@ extension DeviceAColorModel.FloatComponents {
 
 extension DeviceBColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -3337,52 +3469,35 @@ extension DeviceBColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5),
-                Float(self.component_6), Float(self.component_7), Float(self.component_8),
-                Float(self.component_9), Float(self.component_10)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
-            self.component_6 = Double(newValue.component_6)
-            self.component_7 = Double(newValue.component_7)
-            self.component_8 = Double(newValue.component_8)
-            self.component_9 = Double(newValue.component_9)
-            self.component_10 = Double(newValue.component_10)
+            self = DeviceBColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 11
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
-        public var component_6: Float
-        public var component_7: Float
-        public var component_8: Float
-        public var component_9: Float
-        public var component_10: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
+        public var component_6: Scalar
+        public var component_7: Scalar
+        public var component_8: Scalar
+        public var component_9: Scalar
+        public var component_10: Scalar
         
         @inline(__always)
         public init() {
@@ -3400,10 +3515,10 @@ extension DeviceBColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float,
-                    _ component_6: Float, _ component_7: Float, _ component_8: Float,
-                    _ component_9: Float, _ component_10: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
+                    _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
+                    _ component_9: Scalar, _ component_10: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -3418,7 +3533,39 @@ extension DeviceBColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: DeviceBColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+            self.component_6 = Scalar(color.component_6)
+            self.component_7 = Scalar(color.component_7)
+            self.component_8 = Scalar(color.component_8)
+            self.component_9 = Scalar(color.component_9)
+            self.component_10 = Scalar(color.component_10)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+            self.component_6 = Scalar(floatComponents.component_6)
+            self.component_7 = Scalar(floatComponents.component_7)
+            self.component_8 = Scalar(floatComponents.component_8)
+            self.component_9 = Scalar(floatComponents.component_9)
+            self.component_10 = Scalar(floatComponents.component_10)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -3459,7 +3606,7 @@ extension DeviceBColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> DeviceBColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> DeviceBColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -3481,7 +3628,7 @@ extension DeviceBColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -3499,7 +3646,7 @@ extension DeviceBColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: DeviceBColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceBColorModel.FloatComponents {
+    public func combined(_ other: DeviceBColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceBColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -3522,9 +3669,11 @@ extension DeviceBColorModel.FloatComponents {
 
 extension DeviceCColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -3540,54 +3689,36 @@ extension DeviceCColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5),
-                Float(self.component_6), Float(self.component_7), Float(self.component_8),
-                Float(self.component_9), Float(self.component_10), Float(self.component_11)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
-            self.component_6 = Double(newValue.component_6)
-            self.component_7 = Double(newValue.component_7)
-            self.component_8 = Double(newValue.component_8)
-            self.component_9 = Double(newValue.component_9)
-            self.component_10 = Double(newValue.component_10)
-            self.component_11 = Double(newValue.component_11)
+            self = DeviceCColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 12
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
-        public var component_6: Float
-        public var component_7: Float
-        public var component_8: Float
-        public var component_9: Float
-        public var component_10: Float
-        public var component_11: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
+        public var component_6: Scalar
+        public var component_7: Scalar
+        public var component_8: Scalar
+        public var component_9: Scalar
+        public var component_10: Scalar
+        public var component_11: Scalar
         
         @inline(__always)
         public init() {
@@ -3606,10 +3737,10 @@ extension DeviceCColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float,
-                    _ component_6: Float, _ component_7: Float, _ component_8: Float,
-                    _ component_9: Float, _ component_10: Float, _ component_11: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
+                    _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
+                    _ component_9: Scalar, _ component_10: Scalar, _ component_11: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -3625,7 +3756,41 @@ extension DeviceCColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: DeviceCColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+            self.component_6 = Scalar(color.component_6)
+            self.component_7 = Scalar(color.component_7)
+            self.component_8 = Scalar(color.component_8)
+            self.component_9 = Scalar(color.component_9)
+            self.component_10 = Scalar(color.component_10)
+            self.component_11 = Scalar(color.component_11)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+            self.component_6 = Scalar(floatComponents.component_6)
+            self.component_7 = Scalar(floatComponents.component_7)
+            self.component_8 = Scalar(floatComponents.component_8)
+            self.component_9 = Scalar(floatComponents.component_9)
+            self.component_10 = Scalar(floatComponents.component_10)
+            self.component_11 = Scalar(floatComponents.component_11)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -3668,7 +3833,7 @@ extension DeviceCColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> DeviceCColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> DeviceCColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -3691,7 +3856,7 @@ extension DeviceCColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -3710,7 +3875,7 @@ extension DeviceCColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: DeviceCColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceCColorModel.FloatComponents {
+    public func combined(_ other: DeviceCColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceCColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -3734,9 +3899,11 @@ extension DeviceCColorModel.FloatComponents {
 
 extension DeviceDColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -3753,57 +3920,37 @@ extension DeviceDColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5),
-                Float(self.component_6), Float(self.component_7), Float(self.component_8),
-                Float(self.component_9), Float(self.component_10), Float(self.component_11),
-                Float(self.component_12)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
-            self.component_6 = Double(newValue.component_6)
-            self.component_7 = Double(newValue.component_7)
-            self.component_8 = Double(newValue.component_8)
-            self.component_9 = Double(newValue.component_9)
-            self.component_10 = Double(newValue.component_10)
-            self.component_11 = Double(newValue.component_11)
-            self.component_12 = Double(newValue.component_12)
+            self = DeviceDColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 13
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
-        public var component_6: Float
-        public var component_7: Float
-        public var component_8: Float
-        public var component_9: Float
-        public var component_10: Float
-        public var component_11: Float
-        public var component_12: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
+        public var component_6: Scalar
+        public var component_7: Scalar
+        public var component_8: Scalar
+        public var component_9: Scalar
+        public var component_10: Scalar
+        public var component_11: Scalar
+        public var component_12: Scalar
         
         @inline(__always)
         public init() {
@@ -3823,11 +3970,11 @@ extension DeviceDColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float,
-                    _ component_6: Float, _ component_7: Float, _ component_8: Float,
-                    _ component_9: Float, _ component_10: Float, _ component_11: Float,
-                    _ component_12: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
+                    _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
+                    _ component_9: Scalar, _ component_10: Scalar, _ component_11: Scalar,
+                    _ component_12: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -3844,7 +3991,43 @@ extension DeviceDColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: DeviceDColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+            self.component_6 = Scalar(color.component_6)
+            self.component_7 = Scalar(color.component_7)
+            self.component_8 = Scalar(color.component_8)
+            self.component_9 = Scalar(color.component_9)
+            self.component_10 = Scalar(color.component_10)
+            self.component_11 = Scalar(color.component_11)
+            self.component_12 = Scalar(color.component_12)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+            self.component_6 = Scalar(floatComponents.component_6)
+            self.component_7 = Scalar(floatComponents.component_7)
+            self.component_8 = Scalar(floatComponents.component_8)
+            self.component_9 = Scalar(floatComponents.component_9)
+            self.component_10 = Scalar(floatComponents.component_10)
+            self.component_11 = Scalar(floatComponents.component_11)
+            self.component_12 = Scalar(floatComponents.component_12)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -3889,7 +4072,7 @@ extension DeviceDColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> DeviceDColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> DeviceDColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -3914,7 +4097,7 @@ extension DeviceDColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -3934,7 +4117,7 @@ extension DeviceDColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: DeviceDColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceDColorModel.FloatComponents {
+    public func combined(_ other: DeviceDColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceDColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -3960,9 +4143,11 @@ extension DeviceDColorModel.FloatComponents {
 
 extension DeviceEColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -3980,59 +4165,38 @@ extension DeviceEColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5),
-                Float(self.component_6), Float(self.component_7), Float(self.component_8),
-                Float(self.component_9), Float(self.component_10), Float(self.component_11),
-                Float(self.component_12), Float(self.component_13)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
-            self.component_6 = Double(newValue.component_6)
-            self.component_7 = Double(newValue.component_7)
-            self.component_8 = Double(newValue.component_8)
-            self.component_9 = Double(newValue.component_9)
-            self.component_10 = Double(newValue.component_10)
-            self.component_11 = Double(newValue.component_11)
-            self.component_12 = Double(newValue.component_12)
-            self.component_13 = Double(newValue.component_13)
+            self = DeviceEColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 14
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
-        public var component_6: Float
-        public var component_7: Float
-        public var component_8: Float
-        public var component_9: Float
-        public var component_10: Float
-        public var component_11: Float
-        public var component_12: Float
-        public var component_13: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
+        public var component_6: Scalar
+        public var component_7: Scalar
+        public var component_8: Scalar
+        public var component_9: Scalar
+        public var component_10: Scalar
+        public var component_11: Scalar
+        public var component_12: Scalar
+        public var component_13: Scalar
         
         @inline(__always)
         public init() {
@@ -4053,11 +4217,11 @@ extension DeviceEColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float,
-                    _ component_6: Float, _ component_7: Float, _ component_8: Float,
-                    _ component_9: Float, _ component_10: Float, _ component_11: Float,
-                    _ component_12: Float, _ component_13: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
+                    _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
+                    _ component_9: Scalar, _ component_10: Scalar, _ component_11: Scalar,
+                    _ component_12: Scalar, _ component_13: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -4075,7 +4239,45 @@ extension DeviceEColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: DeviceEColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+            self.component_6 = Scalar(color.component_6)
+            self.component_7 = Scalar(color.component_7)
+            self.component_8 = Scalar(color.component_8)
+            self.component_9 = Scalar(color.component_9)
+            self.component_10 = Scalar(color.component_10)
+            self.component_11 = Scalar(color.component_11)
+            self.component_12 = Scalar(color.component_12)
+            self.component_13 = Scalar(color.component_13)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+            self.component_6 = Scalar(floatComponents.component_6)
+            self.component_7 = Scalar(floatComponents.component_7)
+            self.component_8 = Scalar(floatComponents.component_8)
+            self.component_9 = Scalar(floatComponents.component_9)
+            self.component_10 = Scalar(floatComponents.component_10)
+            self.component_11 = Scalar(floatComponents.component_11)
+            self.component_12 = Scalar(floatComponents.component_12)
+            self.component_13 = Scalar(floatComponents.component_13)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -4122,7 +4324,7 @@ extension DeviceEColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> DeviceEColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> DeviceEColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -4148,7 +4350,7 @@ extension DeviceEColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -4169,7 +4371,7 @@ extension DeviceEColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: DeviceEColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceEColorModel.FloatComponents {
+    public func combined(_ other: DeviceEColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceEColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)
@@ -4196,9 +4398,11 @@ extension DeviceEColorModel.FloatComponents {
 
 extension DeviceFColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.component_0 = Double(floatComponents.component_0)
         self.component_1 = Double(floatComponents.component_1)
         self.component_2 = Double(floatComponents.component_2)
@@ -4217,61 +4421,39 @@ extension DeviceFColorModel {
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(
-                Float(self.component_0), Float(self.component_1), Float(self.component_2),
-                Float(self.component_3), Float(self.component_4), Float(self.component_5),
-                Float(self.component_6), Float(self.component_7), Float(self.component_8),
-                Float(self.component_9), Float(self.component_10), Float(self.component_11),
-                Float(self.component_12), Float(self.component_13), Float(self.component_14)
-            )
+            return Float32Components(self)
         }
         set {
-            self.component_0 = Double(newValue.component_0)
-            self.component_1 = Double(newValue.component_1)
-            self.component_2 = Double(newValue.component_2)
-            self.component_3 = Double(newValue.component_3)
-            self.component_4 = Double(newValue.component_4)
-            self.component_5 = Double(newValue.component_5)
-            self.component_6 = Double(newValue.component_6)
-            self.component_7 = Double(newValue.component_7)
-            self.component_8 = Double(newValue.component_8)
-            self.component_9 = Double(newValue.component_9)
-            self.component_10 = Double(newValue.component_10)
-            self.component_11 = Double(newValue.component_11)
-            self.component_12 = Double(newValue.component_12)
-            self.component_13 = Double(newValue.component_13)
-            self.component_14 = Double(newValue.component_14)
+            self = DeviceFColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 15
         }
         
-        public var component_0: Float
-        public var component_1: Float
-        public var component_2: Float
-        public var component_3: Float
-        public var component_4: Float
-        public var component_5: Float
-        public var component_6: Float
-        public var component_7: Float
-        public var component_8: Float
-        public var component_9: Float
-        public var component_10: Float
-        public var component_11: Float
-        public var component_12: Float
-        public var component_13: Float
-        public var component_14: Float
+        public var component_0: Scalar
+        public var component_1: Scalar
+        public var component_2: Scalar
+        public var component_3: Scalar
+        public var component_4: Scalar
+        public var component_5: Scalar
+        public var component_6: Scalar
+        public var component_7: Scalar
+        public var component_8: Scalar
+        public var component_9: Scalar
+        public var component_10: Scalar
+        public var component_11: Scalar
+        public var component_12: Scalar
+        public var component_13: Scalar
+        public var component_14: Scalar
         
         @inline(__always)
         public init() {
@@ -4293,11 +4475,11 @@ extension DeviceFColorModel {
         }
         
         @inline(__always)
-        public init(_ component_0: Float, _ component_1: Float, _ component_2: Float,
-                    _ component_3: Float, _ component_4: Float, _ component_5: Float,
-                    _ component_6: Float, _ component_7: Float, _ component_8: Float,
-                    _ component_9: Float, _ component_10: Float, _ component_11: Float,
-                    _ component_12: Float, _ component_13: Float, _ component_14: Float) {
+        public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
+                    _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
+                    _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
+                    _ component_9: Scalar, _ component_10: Scalar, _ component_11: Scalar,
+                    _ component_12: Scalar, _ component_13: Scalar, _ component_14: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
             self.component_2 = component_2
@@ -4316,7 +4498,47 @@ extension DeviceFColorModel {
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: DeviceFColorModel) {
+            self.component_0 = Scalar(color.component_0)
+            self.component_1 = Scalar(color.component_1)
+            self.component_2 = Scalar(color.component_2)
+            self.component_3 = Scalar(color.component_3)
+            self.component_4 = Scalar(color.component_4)
+            self.component_5 = Scalar(color.component_5)
+            self.component_6 = Scalar(color.component_6)
+            self.component_7 = Scalar(color.component_7)
+            self.component_8 = Scalar(color.component_8)
+            self.component_9 = Scalar(color.component_9)
+            self.component_10 = Scalar(color.component_10)
+            self.component_11 = Scalar(color.component_11)
+            self.component_12 = Scalar(color.component_12)
+            self.component_13 = Scalar(color.component_13)
+            self.component_14 = Scalar(color.component_14)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.component_0 = Scalar(floatComponents.component_0)
+            self.component_1 = Scalar(floatComponents.component_1)
+            self.component_2 = Scalar(floatComponents.component_2)
+            self.component_3 = Scalar(floatComponents.component_3)
+            self.component_4 = Scalar(floatComponents.component_4)
+            self.component_5 = Scalar(floatComponents.component_5)
+            self.component_6 = Scalar(floatComponents.component_6)
+            self.component_7 = Scalar(floatComponents.component_7)
+            self.component_8 = Scalar(floatComponents.component_8)
+            self.component_9 = Scalar(floatComponents.component_9)
+            self.component_10 = Scalar(floatComponents.component_10)
+            self.component_11 = Scalar(floatComponents.component_11)
+            self.component_12 = Scalar(floatComponents.component_12)
+            self.component_13 = Scalar(floatComponents.component_13)
+            self.component_14 = Scalar(floatComponents.component_14)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return component_0
@@ -4365,7 +4587,7 @@ extension DeviceFColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> DeviceFColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> DeviceFColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
         let component_2 = transform(self.component_2)
@@ -4392,7 +4614,7 @@ extension DeviceFColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
         updateAccumulatingResult(&accumulator, component_1)
@@ -4414,7 +4636,7 @@ extension DeviceFColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: DeviceFColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> DeviceFColorModel.FloatComponents {
+    public func combined(_ other: DeviceFColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceFColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
         let component_2 = transform(self.component_2, other.component_2)

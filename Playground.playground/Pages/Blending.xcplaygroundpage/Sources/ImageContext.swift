@@ -26,7 +26,7 @@ public func doggie(blendMode: ColorBlendMode, compositingMode: ColorCompositingM
     return context.image
 }
 
-public func doggie_gp(blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, opacity: Double) throws -> Image<FloatColorPixel<RGBColorModel>> {
+public func doggie_gp(blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, opacity: Double) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
     let context = DGImageContext<RGBColorModel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
     

@@ -43,7 +43,7 @@ public struct LuvColorModel : ColorModelProtocol {
         default: return -128...128
         }
     }
-
+    
     /// The lightness dimension.
     public var lightness: Double
     /// The u color component.
@@ -152,40 +152,38 @@ extension LuvColorModel {
 
 extension LuvColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.lightness = Double(floatComponents.lightness)
         self.u = Double(floatComponents.u)
         self.v = Double(floatComponents.v)
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(lightness: Float(self.lightness), u: Float(self.u), v: Float(self.v))
+            return Float32Components(self)
         }
         set {
-            self.lightness = Double(newValue.lightness)
-            self.u = Double(newValue.u)
-            self.v = Double(newValue.v)
+            self = LuvColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 3
         }
         
-        public var lightness: Float
-        public var u: Float
-        public var v: Float
+        public var lightness: Scalar
+        public var u: Scalar
+        public var v: Scalar
         
         @inline(__always)
         public init() {
@@ -195,14 +193,30 @@ extension LuvColorModel {
         }
         
         @inline(__always)
-        public init(lightness: Float, u: Float, v: Float) {
+        public init(lightness: Scalar, u: Scalar, v: Scalar) {
             self.lightness = lightness
             self.u = u
             self.v = v
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: LuvColorModel) {
+            self.lightness = Scalar(color.lightness)
+            self.u = Scalar(color.u)
+            self.v = Scalar(color.v)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.lightness = Scalar(floatComponents.lightness)
+            self.u = Scalar(floatComponents.u)
+            self.v = Scalar(floatComponents.v)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return lightness
@@ -227,13 +241,13 @@ extension LuvColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> LuvColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> LuvColorModel.FloatComponents<Scalar> {
         return LuvColorModel.FloatComponents(lightness: transform(lightness), u: transform(u), v: transform(v))
     }
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, lightness)
         updateAccumulatingResult(&accumulator, u)
@@ -243,7 +257,7 @@ extension LuvColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: LuvColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> LuvColorModel.FloatComponents {
+    public func combined(_ other: LuvColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> LuvColorModel.FloatComponents<Scalar> {
         return LuvColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
     }
 }

@@ -172,40 +172,38 @@ extension XYZColorModel {
 
 extension XYZColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.x = Double(floatComponents.x)
         self.y = Double(floatComponents.y)
         self.z = Double(floatComponents.z)
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(x: Float(self.x), y: Float(self.y), z: Float(self.z))
+            return Float32Components(self)
         }
         set {
-            self.x = Double(newValue.x)
-            self.y = Double(newValue.y)
-            self.z = Double(newValue.z)
+            self = XYZColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 3
         }
         
-        public var x: Float
-        public var y: Float
-        public var z: Float
+        public var x: Scalar
+        public var y: Scalar
+        public var z: Scalar
         
         @inline(__always)
         public init() {
@@ -215,14 +213,30 @@ extension XYZColorModel {
         }
         
         @inline(__always)
-        public init(x: Float, y: Float, z: Float) {
+        public init(x: Scalar, y: Scalar, z: Scalar) {
             self.x = x
             self.y = y
             self.z = z
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: XYZColorModel) {
+            self.x = Scalar(color.x)
+            self.y = Scalar(color.y)
+            self.z = Scalar(color.z)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.x = Scalar(floatComponents.x)
+            self.y = Scalar(floatComponents.y)
+            self.z = Scalar(floatComponents.z)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return x
@@ -247,13 +261,13 @@ extension XYZColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> XYZColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> XYZColorModel.FloatComponents<Scalar> {
         return XYZColorModel.FloatComponents(x: transform(x), y: transform(y), z: transform(z))
     }
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, x)
         updateAccumulatingResult(&accumulator, y)
@@ -263,7 +277,7 @@ extension XYZColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: XYZColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> XYZColorModel.FloatComponents {
+    public func combined(_ other: XYZColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> XYZColorModel.FloatComponents<Scalar> {
         return XYZColorModel.FloatComponents(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
     }
 }

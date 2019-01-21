@@ -301,7 +301,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .float, endianness: .big, bitRange: 64..<96),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<FloatColorPixel<RGBColorModel>>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float32ColorPixel<RGBColorModel>>
         
         XCTAssertNotNil(image)
         
@@ -310,9 +310,9 @@ class ImageCodecTest: XCTestCase {
         var result = Data()
         
         for i in 0..<pixels.count {
-            withUnsafeBytes(of: pixels[i].floatColor.red.bitPattern.bigEndian) { result.append(contentsOf: $0) }
-            withUnsafeBytes(of: pixels[i].floatColor.green.bitPattern.bigEndian) { result.append(contentsOf: $0) }
-            withUnsafeBytes(of: pixels[i].floatColor.blue.bitPattern.bigEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.red.bitPattern.bigEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.green.bitPattern.bigEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.blue.bitPattern.bigEndian) { result.append(contentsOf: $0) }
             XCTAssertEqual(1, pixels[i].opacity)
         }
         
@@ -342,7 +342,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .float, endianness: .little, bitRange: 64..<96),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<FloatColorPixel<RGBColorModel>>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float32ColorPixel<RGBColorModel>>
         
         XCTAssertNotNil(image)
         
@@ -351,9 +351,9 @@ class ImageCodecTest: XCTestCase {
         var result = Data()
         
         for i in 0..<pixels.count {
-            withUnsafeBytes(of: pixels[i].floatColor.red.bitPattern.littleEndian) { result.append(contentsOf: $0) }
-            withUnsafeBytes(of: pixels[i].floatColor.green.bitPattern.littleEndian) { result.append(contentsOf: $0) }
-            withUnsafeBytes(of: pixels[i].floatColor.blue.bitPattern.littleEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.red.bitPattern.littleEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.green.bitPattern.littleEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.blue.bitPattern.littleEndian) { result.append(contentsOf: $0) }
             XCTAssertEqual(1, pixels[i].opacity)
         }
         
@@ -383,7 +383,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .float, endianness: .big, bitRange: 128..<192),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<ColorPixel<RGBColorModel>>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float64ColorPixel<RGBColorModel>>
         
         XCTAssertNotNil(image)
         
@@ -424,7 +424,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .float, endianness: .little, bitRange: 128..<192),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<ColorPixel<RGBColorModel>>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float64ColorPixel<RGBColorModel>>
         
         XCTAssertNotNil(image)
         
@@ -634,7 +634,7 @@ class ImageCodecTest: XCTestCase {
     
     func testTiff5() {
         
-        guard let data = Image<FloatColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation() else { XCTFail(); return }
+        guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation() else { XCTFail(); return }
         
         guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
         
@@ -643,7 +643,7 @@ class ImageCodecTest: XCTestCase {
     
     func testTiff6() {
         
-        guard let data = Image<FloatColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation() else { XCTFail(); return }
+        guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation() else { XCTFail(); return }
         
         guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
         
@@ -688,7 +688,7 @@ class ImageCodecTest: XCTestCase {
     
     func testTiff5Deflate() {
         
-        guard let data = Image<FloatColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation(compression: .deflate) else { XCTFail(); return }
+        guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation(compression: .deflate) else { XCTFail(); return }
         
         guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
         
@@ -697,7 +697,7 @@ class ImageCodecTest: XCTestCase {
     
     func testTiff6Deflate() {
         
-        guard let data = Image<FloatColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation(compression: .deflate) else { XCTFail(); return }
+        guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation(compression: .deflate) else { XCTFail(); return }
         
         guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
         

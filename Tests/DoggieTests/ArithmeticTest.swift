@@ -173,11 +173,11 @@ class ArithmeticTest: XCTestCase {
     
     func _testFloatComponentsOperation<T: ColorModelProtocol>(_: T.Type) {
         
-        _testFloatComponentsOperation_1(T.FloatComponents.self, +, +)
-        _testFloatComponentsOperation_1(T.FloatComponents.self, -, -)
-        _testFloatComponentsOperation_2(T.FloatComponents.self, *, *)
-        _testFloatComponentsOperation_3(T.FloatComponents.self, *, *)
-        _testFloatComponentsOperation_3(T.FloatComponents.self, /, /)
+        _testFloatComponentsOperation_1(T.Float32Components.self, +, +)
+        _testFloatComponentsOperation_1(T.Float32Components.self, -, -)
+        _testFloatComponentsOperation_2(T.Float32Components.self, *, *)
+        _testFloatComponentsOperation_3(T.Float32Components.self, *, *)
+        _testFloatComponentsOperation_3(T.Float32Components.self, /, /)
         
     }
     

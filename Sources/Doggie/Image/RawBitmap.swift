@@ -899,7 +899,7 @@ extension ColorSpace {
         
         if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 23 || ($0.bitRange.count == 32 && $0.format == .float) } }) {
             
-            var image = Image<FloatColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+            var image = Image<Float32ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
             
             for bitmap in bitmaps {
                 for (channel_idx, channel) in bitmap.channels.enumerated() {
@@ -921,7 +921,7 @@ extension ColorSpace {
             return image
         }
         
-        var image = Image<ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+        var image = Image<Float64ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
         
         for bitmap in bitmaps {
             for (channel_idx, channel) in bitmap.channels.enumerated() {

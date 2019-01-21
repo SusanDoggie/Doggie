@@ -84,7 +84,7 @@ public class DGImageContext<Model: ColorModelProtocol> : TypedDrawableContext {
     
     private var graphicStateStack: [GraphicState] = []
     
-    public init(image: Image<FloatColorPixel<Model>>) {
+    public init(image: Image<Float32ColorPixel<Model>>) {
         self.width = image.width
         self.height = image.height
         self.resolution = image.resolution
@@ -117,7 +117,7 @@ extension DGImageContext {
 
 extension DGImageContext {
     
-    public var image: Image<FloatColorPixel<Model>> {
+    public var image: Image<Float32ColorPixel<Model>> {
         guard width != 0 && height != 0 else { return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
         guard let texture = self._image.cached_image else { return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
         return Image(texture: texture, resolution: resolution, colorSpace: colorSpace)
@@ -139,7 +139,7 @@ extension DGImageContext {
         } else if value == 0 {
             current.clip = DGImageContext<GrayColorModel>.Layer()
         } else {
-            let _clip = Texture(width: width, height: height, pixel: FloatColorPixel(white: value), fileBacked: false)
+            let _clip = Texture(width: width, height: height, pixel: Float32ColorPixel(white: value), fileBacked: false)
             current.clip = DGImageContext<GrayColorModel>.TextureLayer(_clip)
         }
     }
@@ -286,7 +286,7 @@ extension DGImageContext {
         
         guard !source.is_empty && (clip?.is_empty != true) else { return }
         
-        let shadowColor = FloatColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
+        let shadowColor = Float32ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
         
         self._image = BlendedLayer(source: source,
                                    destination: self._image,
@@ -356,7 +356,7 @@ extension DGImageContext {
             return
         }
         
-        let _shape = ShapeLayer(shape: shape, winding: winding, color: FloatColorPixel(color: color, opacity: opacity), antialias: shouldAntialias ? antialias : 1)
+        let _shape = ShapeLayer(shape: shape, winding: winding, color: Float32ColorPixel(color: color, opacity: opacity), antialias: shouldAntialias ? antialias : 1)
         
         self.draw_layer(_shape)
     }
@@ -442,7 +442,7 @@ extension DGImageContext {
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: Float64ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         let gradient = LinearGradientLayer(stops: stops, transform: transform.inverse, start: start, end: end, startSpread: startSpread, endSpread: endSpread)
         
@@ -460,7 +460,7 @@ extension DGImageContext {
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { DGRendererEncoderGradientStop(offset: $0.1.offset, color: Float64ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         let gradient = RadialGradientLayer(stops: stops, transform: transform.inverse, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
         

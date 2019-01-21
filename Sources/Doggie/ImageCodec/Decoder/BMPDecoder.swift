@@ -92,7 +92,7 @@ struct BMPDecoder : ImageRepDecoder {
         
         guard width > 0 && height > 0 else { return AnyImage(Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)) }
         
-        func UncompressedPixelReader<Pixel : FixedWidthInteger>(_ rMask: Pixel, _ gMask: Pixel, _ bMask: Pixel, _ aMask: Pixel) -> Image<ColorPixel<RGBColorModel>> {
+        func UncompressedPixelReader<Pixel : FixedWidthInteger>(_ rMask: Pixel, _ gMask: Pixel, _ bMask: Pixel, _ aMask: Pixel) -> Image<Float64ColorPixel<RGBColorModel>> {
             
             var rMask = UInt32(rMask)
             var gMask = UInt32(gMask)
@@ -117,7 +117,7 @@ struct BMPDecoder : ImageRepDecoder {
             let bMax = bMask >> bOffset
             let aMax = aMask >> aOffset
             
-            var image = Image<ColorPixel<RGBColorModel>>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+            var image = Image<Float64ColorPixel<RGBColorModel>>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
             
             guard (rMax + 1).isPower2 else { return image }
             guard (gMax + 1).isPower2 else { return image }
@@ -156,7 +156,7 @@ struct BMPDecoder : ImageRepDecoder {
                             let b = bMax == 0 ? 0 : Double((color & bMask) >> bOffset) / Double(bMax)
                             let a = aMax == 0 ? 1 : Double((color & aMask) >> aOffset) / Double(aMax)
                             
-                            _destination.pointee = ColorPixel(red: r, green: g, blue: b, opacity: a)
+                            _destination.pointee = Float64ColorPixel(red: r, green: g, blue: b, opacity: a)
                             
                             _source += 1
                             _destination += 1

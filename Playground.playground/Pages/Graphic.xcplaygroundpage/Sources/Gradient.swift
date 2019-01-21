@@ -79,7 +79,7 @@ public func meshGradient(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
 }
 
 
-public func linearGradient_gp(width: Int, height: Int) throws -> Image<FloatColorPixel<RGBColorModel>> {
+public func linearGradient_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
     let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
@@ -95,7 +95,7 @@ public func linearGradient_gp(width: Int, height: Int) throws -> Image<FloatColo
     return context.image
 }
 
-public func radialGradient_gp(width: Int, height: Int) throws -> Image<FloatColorPixel<RGBColorModel>> {
+public func radialGradient_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
     let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
@@ -111,7 +111,7 @@ public func radialGradient_gp(width: Int, height: Int) throws -> Image<FloatColo
     return context.image
 }
 
-public func linearGradient2_gp(width: Int, height: Int) throws -> Image<FloatColorPixel<RGBColorModel>> {
+public func linearGradient2_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
     let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
@@ -127,7 +127,7 @@ public func linearGradient2_gp(width: Int, height: Int) throws -> Image<FloatCol
     return context.image
 }
 
-public func radialGradient2_gp(width: Int, height: Int) throws -> Image<FloatColorPixel<RGBColorModel>> {
+public func radialGradient2_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
     let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     

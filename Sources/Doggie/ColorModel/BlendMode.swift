@@ -195,7 +195,7 @@ extension ColorModelProtocol {
     }
 }
 
-extension FloatColorComponents {
+extension _FloatColorComponents {
     
     @inlinable
     @inline(__always)

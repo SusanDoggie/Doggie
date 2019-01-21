@@ -155,6 +155,18 @@ extension ImageTest {
     ]
 }
 
+extension LayoutTest {
+    static let __allTests = [
+        ("testColorComponentsLayout", testColorComponentsLayout),
+        ("testColorModelLayout", testColorModelLayout),
+        ("testComplexLayout", testComplexLayout),
+        ("testFloat32ColorPixelLayout", testFloat32ColorPixelLayout),
+        ("testFloat64ColorPixelLayout", testFloat64ColorPixelLayout),
+        ("testPointLayout", testPointLayout),
+        ("testVectorLayout", testVectorLayout),
+    ]
+}
+
 extension PolynomialTest {
     static let __allTests = [
         ("testPolynomialDivPerformance", testPolynomialDivPerformance),
@@ -193,6 +205,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(FourierTest.__allTests),
         testCase(ImageCodecTest.__allTests),
         testCase(ImageTest.__allTests),
+        testCase(LayoutTest.__allTests),
         testCase(PolynomialTest.__allTests),
         testCase(ShapeRegionTest.__allTests),
         testCase(XMLTest.__allTests),

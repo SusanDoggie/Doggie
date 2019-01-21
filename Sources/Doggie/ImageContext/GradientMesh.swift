@@ -61,7 +61,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _drawGradient(_ blender: ImageContextPixelBlender<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
+    func _drawGradient(_ blender: ImageContextPixelBlender<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float64ColorPixel<Pixel.Model>, _ c1: Float64ColorPixel<Pixel.Model>, _ c2: Float64ColorPixel<Pixel.Model>, _ c3: Float64ColorPixel<Pixel.Model>) {
         
         let (p0, p1, p2, p3) = patch.split(0.5, 0.5)
         
@@ -69,10 +69,10 @@ extension ImageContext {
         let c5 = 0.5 * (c0 + c2)
         let c6 = 0.5 * (c1 + c3)
         let c7 = 0.5 * (c2 + c3)
-        let c8 = 0.25 * (c0 + c1 + c2 + c3)
+        let c8 = 0.5 * (c4 + c7)
         
         @inline(__always)
-        func _draw(_ patch: CubicBezierPatch<Point>, _ c0: ColorPixel<Pixel.Model>, _ c1: ColorPixel<Pixel.Model>, _ c2: ColorPixel<Pixel.Model>, _ c3: ColorPixel<Pixel.Model>) {
+        func _draw(_ patch: CubicBezierPatch<Point>, _ c0: Float64ColorPixel<Pixel.Model>, _ c1: Float64ColorPixel<Pixel.Model>, _ c2: Float64ColorPixel<Pixel.Model>, _ c3: Float64ColorPixel<Pixel.Model>) {
             
             let d0 = patch.m00 - patch.m03
             let d1 = patch.m30 - patch.m33
@@ -115,10 +115,10 @@ extension ImageContext {
         
         self.withUnsafePixelBlender { blender in
             _drawGradient(blender, patch * transform,
-                          ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent)),
-                          ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent)),
-                          ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent)),
-                          ColorPixel(c3.convert(to: colorSpace, intent: renderingIntent)))
+                          Float64ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent)),
+                          Float64ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent)),
+                          Float64ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent)),
+                          Float64ColorPixel(c3.convert(to: colorSpace, intent: renderingIntent)))
         }
     }
 }

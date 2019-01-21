@@ -72,7 +72,7 @@ public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ 
             for _ in 0..<height {
                 var _stencil = stencil
                 for _ in 0..<width {
-                    let shadowColor = ColorPixel(color: background_color, opacity: _stencil.pointee < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1)
+                    let shadowColor = Float64ColorPixel(color: background_color, opacity: _stencil.pointee < 0.6854015858994297386824412701652185185921339959326058 ? 0 : 1)
                     output.pointee = Pixel(shadowColor.blended(source: output.pointee))
                     output += 1
                     _stencil += 1

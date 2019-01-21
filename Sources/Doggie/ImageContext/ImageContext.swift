@@ -566,6 +566,6 @@ extension ImageContext {
     @inlinable
     @inline(__always)
     public func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel {
-        self.drawClip { (context: ImageContext<ColorPixel<GrayColorModel>>) in context.draw(texture: texture, transform: transform) }
+        self.drawClip { (context: ImageContext<Float64ColorPixel<GrayColorModel>>) in context.draw(texture: texture, transform: transform) }
     }
 }

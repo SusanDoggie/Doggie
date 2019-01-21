@@ -175,7 +175,7 @@ extension ImageContext {
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { ($0.1.offset, ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { ($0.1.offset, Float64ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         switch stops.count {
         case 0: break
@@ -189,7 +189,7 @@ extension ImageContext {
             let first = stops.first!
             let last = stops.last!
             
-            axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { t -> ColorPixel<Pixel.Model> in
+            axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { t -> Float64ColorPixel<Pixel.Model> in
                 
                 if t <= first.0 {
                     return first.1
@@ -218,7 +218,7 @@ extension ImageContext {
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { ($0.1.offset, ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { ($0.1.offset, Float64ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
         
         switch stops.count {
         case 0: break
@@ -232,7 +232,7 @@ extension ImageContext {
             let first = stops.first!
             let last = stops.last!
             
-            radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { t -> ColorPixel<Pixel.Model> in
+            radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { t -> Float64ColorPixel<Pixel.Model> in
                 
                 if t <= first.0 {
                     return first.1

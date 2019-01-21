@@ -148,40 +148,38 @@ extension YxyColorModel {
 
 extension YxyColorModel {
     
+    public typealias Float32Components = FloatComponents<Float>
+    
     @inlinable
     @inline(__always)
-    public init(floatComponents: FloatComponents) {
+    public init<T>(floatComponents: FloatComponents<T>) {
         self.luminance = Double(floatComponents.luminance)
         self.x = Double(floatComponents.x)
         self.y = Double(floatComponents.y)
     }
     
     @_transparent
-    public var floatComponents: FloatComponents {
+    public var float32Components: Float32Components {
         get {
-            return FloatComponents(luminance: Float(self.luminance), x: Float(self.x), y: Float(self.y))
+            return Float32Components(self)
         }
         set {
-            self.luminance = Double(newValue.luminance)
-            self.x = Double(newValue.x)
-            self.y = Double(newValue.y)
+            self = YxyColorModel(floatComponents: newValue)
         }
     }
     
-    public struct FloatComponents : FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
-        
-        public typealias Scalar = Float
         
         @_transparent
         public static var numberOfComponents: Int {
             return 3
         }
         
-        public var luminance: Float
-        public var x: Float
-        public var y: Float
+        public var luminance: Scalar
+        public var x: Scalar
+        public var y: Scalar
         
         @inline(__always)
         public init() {
@@ -191,14 +189,30 @@ extension YxyColorModel {
         }
         
         @inline(__always)
-        public init(luminance: Float, x: Float, y: Float) {
+        public init(luminance: Scalar, x: Scalar, y: Scalar) {
             self.luminance = luminance
             self.x = x
             self.y = y
         }
         
         @inlinable
-        public subscript(position: Int) -> Float {
+        @inline(__always)
+        public init(_ color: YxyColorModel) {
+            self.luminance = Scalar(color.luminance)
+            self.x = Scalar(color.x)
+            self.y = Scalar(color.y)
+        }
+        
+        @inlinable
+        @inline(__always)
+        public init<T>(floatComponents: FloatComponents<T>) {
+            self.luminance = Scalar(floatComponents.luminance)
+            self.x = Scalar(floatComponents.x)
+            self.y = Scalar(floatComponents.y)
+        }
+        
+        @inlinable
+        public subscript(position: Int) -> Scalar {
             get {
                 switch position {
                 case 0: return luminance
@@ -223,13 +237,13 @@ extension YxyColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Float) -> Float) -> YxyColorModel.FloatComponents {
+    public func map(_ transform: (Scalar) -> Scalar) -> YxyColorModel.FloatComponents<Scalar> {
         return YxyColorModel.FloatComponents(luminance: transform(luminance), x: transform(x), y: transform(y))
     }
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Float) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, luminance)
         updateAccumulatingResult(&accumulator, x)
@@ -239,7 +253,7 @@ extension YxyColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: YxyColorModel.FloatComponents, _ transform: (Float, Float) -> Float) -> YxyColorModel.FloatComponents {
+    public func combined(_ other: YxyColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> YxyColorModel.FloatComponents<Scalar> {
         return YxyColorModel.FloatComponents(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
 }

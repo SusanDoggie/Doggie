@@ -55,14 +55,14 @@ extension ImageContext {
                 stencil.withUnsafeStencilTexture { stencil in
                     for y in stride(from: 0, to: height * antialias, by: antialias) {
                         for x in stride(from: 0, to: width * antialias, by: antialias) {
-                            blender.draw { () -> ColorPixel<Pixel.Model> in
+                            blender.draw { () -> Float64ColorPixel<Pixel.Model> in
                                 var pixel: T = 0
                                 for _y in y..<y + antialias {
                                     for _x in x..<x + antialias {
                                         pixel += stencil.pixel(Point(x: _x, y: _y) * __transform)
                                     }
                                 }
-                                return ColorPixel(color: color, opacity: Double(pixel) * div)
+                                return Float64ColorPixel(color: color, opacity: Double(pixel) * div)
                             }
                             blender += 1
                         }
@@ -76,7 +76,7 @@ extension ImageContext {
                 stencil.withUnsafeStencilTexture { stencil in
                     for y in 0..<height {
                         for x in 0..<width {
-                            blender.draw { ColorPixel(color: color, opacity: Double(stencil.pixel(Point(x: x, y: y) * _transform))) }
+                            blender.draw { Float64ColorPixel(color: color, opacity: Double(stencil.pixel(Point(x: x, y: y) * _transform))) }
                             blender += 1
                         }
                     }
@@ -115,8 +115,8 @@ extension ImageContext {
                 texture.withUnsafeTexture { texture in
                     for y in stride(from: 0, to: height * antialias, by: antialias) {
                         for x in stride(from: 0, to: width * antialias, by: antialias) {
-                            blender.draw { () -> ColorPixel<Pixel.Model> in
-                                var pixel = ColorPixel<Pixel.Model>()
+                            blender.draw { () -> Float64ColorPixel<Pixel.Model> in
+                                var pixel = Float64ColorPixel<Pixel.Model>()
                                 for _y in y..<y + antialias {
                                     for _x in x..<x + antialias {
                                         pixel += texture.pixel(Point(x: _x, y: _y) * __transform)
@@ -231,7 +231,7 @@ struct _UnsafeStencilTexture<T: BinaryFloatingPoint> : _ResamplingImplement wher
 }
 
 @usableFromInline
-struct _UnsafeTexture<Base: _TextureProtocolImplement> : _ResamplingImplement where Base.RawPixel: ColorPixelProtocol, Base.Pixel == ColorPixel<Base.RawPixel.Model> {
+struct _UnsafeTexture<Base: _TextureProtocolImplement> : _ResamplingImplement where Base.RawPixel: ColorPixelProtocol, Base.Pixel == Float64ColorPixel<Base.RawPixel.Model> {
     
     @usableFromInline
     typealias RawPixel = Base.RawPixel
@@ -270,15 +270,15 @@ struct _UnsafeTexture<Base: _TextureProtocolImplement> : _ResamplingImplement wh
     
     @inlinable
     @inline(__always)
-    func read_source(_ x: Int, _ y: Int) -> ColorPixel<RawPixel.Model> {
+    func read_source(_ x: Int, _ y: Int) -> Float64ColorPixel<RawPixel.Model> {
         
-        guard width != 0 && height != 0 else { return ColorPixel() }
+        guard width != 0 && height != 0 else { return Float64ColorPixel() }
         
         let (x_flag, _x) = horizontalWrappingMode.addressing(x, width)
         let (y_flag, _y) = verticalWrappingMode.addressing(y, height)
         
         let pixel = pixels[_y * width + _x]
-        return x_flag && y_flag ? ColorPixel(pixel) : ColorPixel(color: pixel.color, opacity: 0)
+        return x_flag && y_flag ? Float64ColorPixel(pixel) : Float64ColorPixel(color: pixel.color, opacity: 0)
     }
 }
 

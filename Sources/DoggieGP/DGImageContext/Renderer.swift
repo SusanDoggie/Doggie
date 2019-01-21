@@ -28,9 +28,9 @@ import Doggie
 struct DGRendererEncoderGradientStop<Model : ColorModelProtocol> {
     
     var offset: Double
-    var color: ColorPixel<Model>
+    var color: Float64ColorPixel<Model>
     
-    init(offset: Double, color: ColorPixel<Model>) {
+    init(offset: Double, color: Float64ColorPixel<Model>) {
         self.offset = offset
         self.color = color
     }
@@ -79,7 +79,7 @@ protocol DGRendererEncoder {
     
     func alloc_texture() throws -> Buffer
     
-    func make_buffer(_ texture: Texture<FloatColorPixel<Renderer.Model>>) throws -> Buffer
+    func make_buffer(_ texture: Texture<Float32ColorPixel<Renderer.Model>>) throws -> Buffer
     
     func clear(_ buffer: Buffer) throws
     
@@ -89,11 +89,11 @@ protocol DGRendererEncoder {
     
     func blend(_ source: Buffer, _ destination: Buffer, _ stencil: Buffer?, _ stencil_bound: Rect?, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws
     
-    func shadow(_ source: Buffer, _ destination: Buffer, _ color: FloatColorPixel<Renderer.Model>, _ offset: Size, _ blur: Double) throws
+    func shadow(_ source: Buffer, _ destination: Buffer, _ color: Float32ColorPixel<Renderer.Model>, _ offset: Size, _ blur: Double) throws
     
-    func draw(_ destination: Buffer, _ stencil: Buffer?, _ shape: Shape, _ color: FloatColorPixel<Renderer.Model>, _ winding: Shape.WindingRule, _ antialias: Int) throws
+    func draw(_ destination: Buffer, _ stencil: Buffer?, _ shape: Shape, _ color: Float32ColorPixel<Renderer.Model>, _ winding: Shape.WindingRule, _ antialias: Int) throws
     
-    func draw(_ source: Texture<FloatColorPixel<Renderer.Model>>, _ destination: Buffer, _ transform: SDTransform, _ antialias: Int) throws
+    func draw(_ source: Texture<Float32ColorPixel<Renderer.Model>>, _ destination: Buffer, _ transform: SDTransform, _ antialias: Int) throws
     
     func clip(_ destination: Buffer, _ clip: Renderer.ClipEncoder.Buffer) throws
     
@@ -192,7 +192,7 @@ extension DGImageContext {
         let maxBufferLength = renderer.maxBufferLength
         guard encoder.texture_size <= maxBufferLength else { throw Error(description: "Texture size is limited to \(maxBufferLength / 0x100000) MB.") }
         
-        let texture = Texture<FloatColorPixel<Model>>(width: width, height: height, fileBacked: false)
+        let texture = Texture<Float32ColorPixel<Model>>(width: width, height: height, fileBacked: false)
         let resource = Resource<Renderer.Encoder>()
         
         try self._image.render(encoder: encoder, output: encoder.make_buffer(texture), resource: resource)
@@ -228,7 +228,7 @@ extension DGImageContext {
             return true
         }
         
-        var cached_image: Texture<FloatColorPixel<Model>>? {
+        var cached_image: Texture<Float32ColorPixel<Model>>? {
             return nil
         }
         
@@ -262,9 +262,9 @@ extension DGImageContext {
     
     class TextureLayer: Layer {
         
-        let source: Texture<FloatColorPixel<Model>>
+        let source: Texture<Float32ColorPixel<Model>>
         
-        init(_ source: Texture<FloatColorPixel<Model>>) {
+        init(_ source: Texture<Float32ColorPixel<Model>>) {
             self.source = source
         }
         
@@ -272,7 +272,7 @@ extension DGImageContext {
             return false
         }
         
-        override var cached_image: Texture<FloatColorPixel<Model>>? {
+        override var cached_image: Texture<Float32ColorPixel<Model>>? {
             return source
         }
         
@@ -292,7 +292,7 @@ extension DGImageContext {
         
         let clip: DGImageContext<GrayColorModel>.Layer?
         
-        let shadowColor: FloatColorPixel<Model>
+        let shadowColor: Float32ColorPixel<Model>
         let shadowOffset: Size
         let shadowBlur: Double
         
@@ -300,7 +300,7 @@ extension DGImageContext {
         let compositingMode: ColorCompositingMode
         let blendMode: ColorBlendMode
         
-        init(source: Layer, destination: Layer, clip: DGImageContext<GrayColorModel>.Layer?, shadowColor: FloatColorPixel<Model>, shadowOffset: Size, shadowBlur: Double, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
+        init(source: Layer, destination: Layer, clip: DGImageContext<GrayColorModel>.Layer?, shadowColor: Float32ColorPixel<Model>, shadowOffset: Size, shadowBlur: Double, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
             self.source = source
             self.destination = destination
             self.clip = clip
@@ -411,10 +411,10 @@ extension DGImageContext {
         
         let shape: Shape
         let winding: Shape.WindingRule
-        let color: FloatColorPixel<Model>
+        let color: Float32ColorPixel<Model>
         let antialias: Int
         
-        init(shape: Shape, winding: Shape.WindingRule, color: FloatColorPixel<Model>, antialias: Int) {
+        init(shape: Shape, winding: Shape.WindingRule, color: Float32ColorPixel<Model>, antialias: Int) {
             self.shape = shape
             self.winding = winding
             self.color = color
@@ -436,11 +436,11 @@ extension DGImageContext {
     
     class ImageLayer: Layer {
         
-        let source: Texture<FloatColorPixel<Model>>
+        let source: Texture<Float32ColorPixel<Model>>
         let transform: SDTransform
         let antialias: Int
         
-        init(source: Texture<FloatColorPixel<Model>>, transform: SDTransform, antialias: Int) {
+        init(source: Texture<Float32ColorPixel<Model>>, transform: SDTransform, antialias: Int) {
             self.source = source
             self.transform = transform
             self.antialias = antialias

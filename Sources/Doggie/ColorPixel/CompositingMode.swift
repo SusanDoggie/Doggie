@@ -134,71 +134,82 @@ extension ColorPixelProtocol {
     }
 }
 
-extension FloatColorPixel {
+extension ColorPixelProtocol where Self : _FloatComponentPixelImplement {
     
     @inlinable
     @inline(__always)
-    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> FloatColorPixel where C.Model == Model {
-        return blended(source: source, compositingMode: compositingMode, blending: { Float(blending(Double($0), Double($1))) })
+    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model {
+        return _blended(source: source, compositingMode: compositingMode, blending: { Scalar(blending(Double($0), Double($1))) })
     }
     
     @inlinable
     @inline(__always)
-    public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blending: (Float, Float) -> Float) where C.Model == Model {
+    public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blending: (Scalar, Scalar) -> Scalar) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blending: blending)
     }
     
     @inlinable
     @inline(__always)
-    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Float, Float) -> Float) -> FloatColorPixel where C.Model == Model {
+    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Scalar, Scalar) -> Scalar) -> Self where C.Model == Model {
+        return self._blended(source: source, compositingMode: compositingMode, blending: blending)
+    }
+    
+    @inlinable
+    @inline(__always)
+    func _blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Scalar, Scalar) -> Scalar) -> Self where C.Model == Model {
         
         switch compositingMode {
-        case .clear: return FloatColorPixel()
+        case .clear: return Self()
         default:
             
-            let source = FloatColorPixel(source)
+            let source = Self(source)
             
-            let d_alpha = self.floatOpacity
-            let s_alpha = source.floatOpacity
+            let d_alpha = self._opacity
+            let s_alpha = source._opacity
             
             let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
             
             if r_alpha > 0 {
-                let _source = source.floatColor
-                let _destination = self.floatColor
+                let _source = source._color
+                let _destination = self._color
                 let blended = (1 - d_alpha) * _source + d_alpha * _destination.combined(_source, blending)
-                return FloatColorPixel(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
+                return Self(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
             } else {
-                return FloatColorPixel()
+                return Self()
             }
         }
     }
     
     @inlinable
     @inline(__always)
-    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> FloatColorPixel where C.Model == Model {
+    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
+        return _blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
+    }
+    
+    @inlinable
+    @inline(__always)
+    func _blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self where C.Model == Model {
         
         switch (compositingMode, blendMode) {
-        case (.clear, _): return FloatColorPixel()
-        case (.copy, .normal): return FloatColorPixel(source)
+        case (.clear, _): return Self()
+        case (.copy, .normal): return Self(source)
         default:
             
-            let source = FloatColorPixel(source)
+            let source = Self(source)
             
-            let d_alpha = self.floatOpacity
-            let s_alpha = source.floatOpacity
+            let d_alpha = self._opacity
+            let s_alpha = source._opacity
             
             let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
             
             if r_alpha > 0 {
-                let _source = source.floatColor
-                let _destination = self.floatColor
+                let _source = source._color
+                let _destination = self._color
                 let blended = blendMode == .normal ? _source : (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
-                return FloatColorPixel(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
+                return Self(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
             } else {
-                return FloatColorPixel()
+                return Self()
             }
         }
     }
 }
-

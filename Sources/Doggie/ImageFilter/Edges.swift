@@ -70,14 +70,14 @@ public func Edges<S, T>(_ texture: Texture<S>, _ intensity: Double) -> Texture<T
                     let s20 = r0 ~= i - 1 ? s21 - 1 : s21
                     let s22 = r0 ~= i + 1 ? s21 + 1 : s21
                     
-                    let t00 = ColorPixel(s00.pointee)
-                    let t01 = ColorPixel(s01.pointee)
-                    let t02 = ColorPixel(s02.pointee)
-                    let t10 = ColorPixel(s10.pointee)
-                    let t12 = ColorPixel(s12.pointee)
-                    let t20 = ColorPixel(s20.pointee)
-                    let t21 = ColorPixel(s21.pointee)
-                    let t22 = ColorPixel(s22.pointee)
+                    let t00 = Float64ColorPixel(s00.pointee)
+                    let t01 = Float64ColorPixel(s01.pointee)
+                    let t02 = Float64ColorPixel(s02.pointee)
+                    let t10 = Float64ColorPixel(s10.pointee)
+                    let t12 = Float64ColorPixel(s12.pointee)
+                    let t20 = Float64ColorPixel(s20.pointee)
+                    let t21 = Float64ColorPixel(s21.pointee)
+                    let t22 = Float64ColorPixel(s22.pointee)
                     
                     let h0 = t02 - t00
                     let h1 = t12 - t10

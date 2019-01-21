@@ -33,13 +33,13 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _drawWithShadow(stencil: MappedBuffer<Float>, color: ColorPixel<Pixel.Model>) {
+    func _drawWithShadow(stencil: MappedBuffer<Float>, color: Float64ColorPixel<Pixel.Model>) {
         
         let width = self.width
         let height = self.height
         let convolutionAlgorithm = self.convolutionAlgorithm
         
-        let shadowColor = ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
+        let shadowColor = Float64ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
         let shadowOffset = self.shadowOffset
         let shadowBlur = self.shadowBlur
         
@@ -58,7 +58,7 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        blender.draw { () -> ColorPixel<Pixel.Model>? in
+                        blender.draw { () -> Float64ColorPixel<Pixel.Model>? in
                             
                             let _shadow = shadow_layer.pixel(Point(x: x, y: y) + _offset)
                             guard _shadow > 0 else { return nil }
@@ -67,7 +67,7 @@ extension ImageContext {
                             shadowColor.opacity *= Double(_shadow)
                             return shadowColor
                         }
-                        blender.draw { () -> ColorPixel<Pixel.Model> in
+                        blender.draw { () -> Float64ColorPixel<Pixel.Model> in
                             var color = color
                             color.opacity *= Double(stencil.pointee)
                             return color
@@ -88,7 +88,7 @@ extension ImageContext {
         let height = self.height
         let convolutionAlgorithm = self.convolutionAlgorithm
         
-        let shadowColor = ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
+        let shadowColor = Float64ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
         let shadowOffset = self.shadowOffset
         let shadowBlur = self.shadowBlur
         
@@ -108,7 +108,7 @@ extension ImageContext {
                 
                 for y in 0..<height {
                     for x in 0..<width {
-                        blender.draw { () -> ColorPixel<Pixel.Model>? in
+                        blender.draw { () -> Float64ColorPixel<Pixel.Model>? in
                             
                             let _shadow = shadow_layer.pixel(Point(x: x, y: y) + _offset)
                             guard _shadow > 0 else { return nil }

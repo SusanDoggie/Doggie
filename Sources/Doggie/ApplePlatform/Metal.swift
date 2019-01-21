@@ -94,7 +94,7 @@ extension MTLDevice {
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == FloatColorPixel<RGBColorModel> {
+    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == Float32ColorPixel<RGBColorModel> {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: image.width, height: image.height, mipmapped: false)
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
