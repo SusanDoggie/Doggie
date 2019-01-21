@@ -280,9 +280,9 @@
 		0AE762591EE9583400E926D5 /* CGImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE762571EE9583400E926D5 /* CGImage.swift */; };
 		0AE9683221F575F000FCA4C1 /* LayoutTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9683121F575F000FCA4C1 /* LayoutTest.swift */; };
 		0AE9686721F59F8000FCA4C1 /* kMeansClustering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9686621F59F8000FCA4C1 /* kMeansClustering.swift */; };
+		0AE9686921F5C6D700FCA4C1 /* LaplacianOfGaussian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE9686821F5C6D700FCA4C1 /* LaplacianOfGaussian.swift */; };
 		0AEB4E0721758C0600939383 /* PolynomialTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEB4E0621758C0600939383 /* PolynomialTest.swift */; };
 		0AF2BA4D1FCD00D200B185BA /* iccTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF2BA4C1FCD00D200B185BA /* iccTransform.swift */; };
-		0AF566F820D21958003B243B /* Edges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF566F720D21958003B243B /* Edges.swift */; };
 		0AF5676620D26AC9003B243B /* YxyColorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF5676520D26AC9003B243B /* YxyColorModel.swift */; };
 		0AF5676820D26DDE003B243B /* CIEYxyColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF5676720D26DDE003B243B /* CIEYxyColorSpace.swift */; };
 		0AF93C911FF4A0CC000AEAB7 /* Rational.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF93C901FF4A0CC000AEAB7 /* Rational.swift */; };
@@ -576,9 +576,9 @@
 		0AE762571EE9583400E926D5 /* CGImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGImage.swift; sourceTree = "<group>"; };
 		0AE9683121F575F000FCA4C1 /* LayoutTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTest.swift; sourceTree = "<group>"; };
 		0AE9686621F59F8000FCA4C1 /* kMeansClustering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kMeansClustering.swift; sourceTree = "<group>"; };
+		0AE9686821F5C6D700FCA4C1 /* LaplacianOfGaussian.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaplacianOfGaussian.swift; sourceTree = "<group>"; };
 		0AEB4E0621758C0600939383 /* PolynomialTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolynomialTest.swift; sourceTree = "<group>"; };
 		0AF2BA4C1FCD00D200B185BA /* iccTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = iccTransform.swift; sourceTree = "<group>"; };
-		0AF566F720D21958003B243B /* Edges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Edges.swift; sourceTree = "<group>"; };
 		0AF5676520D26AC9003B243B /* YxyColorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YxyColorModel.swift; sourceTree = "<group>"; };
 		0AF5676720D26DDE003B243B /* CIEYxyColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIEYxyColorSpace.swift; sourceTree = "<group>"; };
 		0AF93C901FF4A0CC000AEAB7 /* Rational.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rational.swift; sourceTree = "<group>"; };
@@ -977,11 +977,11 @@
 			children = (
 				0A74D68720047BA600330C86 /* ImageConvolution.swift */,
 				0A74D68920047BF700330C86 /* GaussianBlur.swift */,
-				0AF566F720D21958003B243B /* Edges.swift */,
 				0A8ABC1620E4A0EF00A2634A /* Underpainting.swift */,
 				0A71434320FC404D009DFFB5 /* DisplacementMap.swift */,
 				0A4714AB21D9D2B500650284 /* SVGTurbulence.swift */,
 				0AE9686621F59F8000FCA4C1 /* kMeansClustering.swift */,
+				0AE9686821F5C6D700FCA4C1 /* LaplacianOfGaussian.swift */,
 			);
 			path = ImageFilter;
 			sourceTree = "<group>";
@@ -1539,6 +1539,7 @@
 				0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */,
 				0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */,
 				0A9ED9D71F5D360E00205C1B /* SFNTGLYF.swift in Sources */,
+				0AE9686921F5C6D700FCA4C1 /* LaplacianOfGaussian.swift in Sources */,
 				0A53E46D1E35AEF80060FB83 /* Integer.swift in Sources */,
 				0A967E521F132DC0007E38E4 /* GIFEncoder.swift in Sources */,
 				0ADAA3BA20CB7056006682EA /* KeyValueCollection.swift in Sources */,
@@ -1592,7 +1593,6 @@
 				08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */,
 				0A9F28381EF1174600E69976 /* iccType.swift in Sources */,
 				0A8F4F6A1F622C850062FD11 /* SetClip.swift in Sources */,
-				0AF566F820D21958003B243B /* Edges.swift in Sources */,
 				08458B331E2E627600D01813 /* Complex.swift in Sources */,
 				0AC588A920CF69AD00C326FF /* OverlapAddConvolve.swift in Sources */,
 				0AFC4E331F7268AE00E5FD5A /* SDXMLParser.swift in Sources */,
