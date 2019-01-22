@@ -26,7 +26,7 @@
 @inlinable
 @inline(__always)
 public func kMeansClustering<Pixel>(_ image: Image<Pixel>, _ resultingImageColor: Bool, _ color: inout [Pixel]) {
-    return kMeansClustering(Texture(image: image), resultingImageColor, &color)
+    kMeansClustering(Texture(image: image), resultingImageColor, &color)
 }
 
 @inlinable
@@ -35,6 +35,7 @@ public func kMeansClustering<Pixel>(_ texture: Texture<Pixel>, _ resultingImageC
     
     var means: [(Float64ColorPixel<Pixel.Model>, Int)] = Array(repeating: (Float64ColorPixel<Pixel.Model>(), 0), count: color.count)
     
+    @inline(__always)
     func distance(_ c0: Float64ColorPixel<Pixel.Model>, _ c1: Pixel) -> Double {
         let d = c0 - Float64ColorPixel(c1)
         return d.color.reduce(d.opacity, hypot)
@@ -73,7 +74,7 @@ public func kMeansClustering<Pixel>(_ texture: Texture<Pixel>, _ resultingImageC
 @inlinable
 @inline(__always)
 public func kMeansClustering<Pixel : _FloatComponentPixelImplement>(_ image: Image<Pixel>, _ resultingImageColor: Bool, _ color: inout [Pixel]) where Pixel.Scalar : FloatingMathProtocol {
-    return kMeansClustering(Texture(image: image), resultingImageColor, &color)
+    kMeansClustering(Texture(image: image), resultingImageColor, &color)
 }
 
 @inlinable
@@ -82,6 +83,7 @@ public func kMeansClustering<Pixel : _FloatComponentPixelImplement>(_ texture: T
     
     var means: [(Pixel, Int)] = Array(repeating: (Pixel(), 0), count: color.count)
     
+    @inline(__always)
     func distance(_ c0: Pixel, _ c1: Pixel) -> Pixel.Scalar {
         let d = c0 - c1
         return d._color.reduce(d._opacity, Pixel.Scalar.hypot)
