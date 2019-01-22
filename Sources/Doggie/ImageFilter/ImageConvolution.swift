@@ -489,7 +489,18 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
     }
 }
 
-extension StencilTexture {
+public protocol _ImageConvolutionProtocol {
+    
+    associatedtype _ConvolutionFilterScalar : BinaryFloatingPoint
+    
+    func convolution(_ filter: [_ConvolutionFilterScalar], _ filter_width: Int, _ filter_height: Int, algorithm: ImageConvolutionAlgorithm) -> Self
+    
+    func convolution(horizontal horizontal_filter: [_ConvolutionFilterScalar], vertical vertical_filter: [_ConvolutionFilterScalar], algorithm: ImageConvolutionAlgorithm) -> Self
+}
+
+extension StencilTexture : _ImageConvolutionProtocol {
+    
+    public typealias _ConvolutionFilterScalar = RawPixel.Scalar
     
     @inlinable
     @inline(__always)
@@ -504,7 +515,9 @@ extension StencilTexture {
     }
 }
 
-extension Texture where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+extension Texture : _ImageConvolutionProtocol where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+    
+    public typealias _ConvolutionFilterScalar = RawPixel.Scalar
     
     @inlinable
     @inline(__always)
@@ -519,7 +532,9 @@ extension Texture where RawPixel : _FloatComponentPixel, RawPixel.Scalar : Binar
     }
 }
 
-extension Image where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+extension Image : _ImageConvolutionProtocol where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+    
+    public typealias _ConvolutionFilterScalar = Pixel.Scalar
     
     @inlinable
     @inline(__always)

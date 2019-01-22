@@ -43,21 +43,7 @@ public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] where T: 
 
 @inlinable
 @inline(__always)
-public func GaussianBlur<T>(_ texture: StencilTexture<T>, _ sd: T, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
-    let filter = GaussianBlurFilter(sd)
-    return texture.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
-}
-
-@inlinable
-@inline(__always)
-public func GaussianBlur<RawPixel>(_ texture: Texture<RawPixel>, _ sd: RawPixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<RawPixel> where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
-    let filter = GaussianBlurFilter(sd)
-    return texture.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
-}
-
-@inlinable
-@inline(__always)
-public func GaussianBlur<Pixel>(_ image: Image<Pixel>, _ sd: Pixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<Pixel> where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+public func GaussianBlur<Image: _ImageConvolutionProtocol>(_ image: Image, _ sd: Image._ConvolutionFilterScalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image where Image._ConvolutionFilterScalar : FloatingMathProtocol {
     let filter = GaussianBlurFilter(sd)
     return image.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }

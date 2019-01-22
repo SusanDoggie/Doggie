@@ -49,23 +49,7 @@ public func LaplacianOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] wh
 
 @inlinable
 @inline(__always)
-public func LaplacianOfGaussian<T>(_ texture: StencilTexture<T>, _ sd: T, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
-    let filter = LaplacianOfGaussianFilter(sd)
-    let size = Int(isqrt(UInt(filter.count)))
-    return texture.convolution(filter, size, size, algorithm: algorithm)
-}
-
-@inlinable
-@inline(__always)
-public func LaplacianOfGaussian<RawPixel>(_ texture: Texture<RawPixel>, _ sd: RawPixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<RawPixel> where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
-    let filter = LaplacianOfGaussianFilter(sd)
-    let size = Int(isqrt(UInt(filter.count)))
-    return texture.convolution(filter, size, size, algorithm: algorithm)
-}
-
-@inlinable
-@inline(__always)
-public func LaplacianOfGaussian<Pixel>(_ image: Image<Pixel>, _ sd: Pixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<Pixel> where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+public func LaplacianOfGaussian<Image: _ImageConvolutionProtocol>(_ image: Image, _ sd: Image._ConvolutionFilterScalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image where Image._ConvolutionFilterScalar : FloatingMathProtocol {
     let filter = LaplacianOfGaussianFilter(sd)
     let size = Int(isqrt(UInt(filter.count)))
     return image.convolution(filter, size, size, algorithm: algorithm)

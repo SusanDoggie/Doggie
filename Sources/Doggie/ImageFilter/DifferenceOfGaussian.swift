@@ -51,23 +51,7 @@ public func DifferenceOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T, _ k: T) 
 
 @inlinable
 @inline(__always)
-public func DifferenceOfGaussian<T>(_ texture: StencilTexture<T>, _ sd: T, _ k: T, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
-    let filter = DifferenceOfGaussianFilter(sd, k)
-    let size = Int(isqrt(UInt(filter.count)))
-    return texture.convolution(filter, size, size, algorithm: algorithm)
-}
-
-@inlinable
-@inline(__always)
-public func DifferenceOfGaussian<RawPixel>(_ texture: Texture<RawPixel>, _ sd: RawPixel.Scalar, _ k: RawPixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<RawPixel> where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
-    let filter = DifferenceOfGaussianFilter(sd, k)
-    let size = Int(isqrt(UInt(filter.count)))
-    return texture.convolution(filter, size, size, algorithm: algorithm)
-}
-
-@inlinable
-@inline(__always)
-public func DifferenceOfGaussian<Pixel>(_ image: Image<Pixel>, _ sd: Pixel.Scalar, _ k: Pixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<Pixel> where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+public func DifferenceOfGaussian<Image: _ImageConvolutionProtocol>(_ image: Image, _ sd: Image._ConvolutionFilterScalar, _ k: Image._ConvolutionFilterScalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image where Image._ConvolutionFilterScalar : FloatingMathProtocol {
     let filter = DifferenceOfGaussianFilter(sd, k)
     let size = Int(isqrt(UInt(filter.count)))
     return image.convolution(filter, size, size, algorithm: algorithm)

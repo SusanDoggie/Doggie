@@ -69,3 +69,48 @@ public func kMeansClustering<Pixel>(_ texture: Texture<Pixel>, _ resultingImageC
         color = _color.map(Pixel.init)
     }
 }
+
+@inlinable
+@inline(__always)
+public func kMeansClustering<Pixel : _FloatComponentPixelImplement>(_ image: Image<Pixel>, _ resultingImageColor: Bool, _ color: inout [Pixel]) where Pixel.Scalar : FloatingMathProtocol {
+    return kMeansClustering(Texture(image: image), resultingImageColor, &color)
+}
+
+@inlinable
+@inline(__always)
+public func kMeansClustering<Pixel : _FloatComponentPixelImplement>(_ texture: Texture<Pixel>, _ resultingImageColor: Bool, _ color: inout [Pixel]) where Pixel.Scalar : FloatingMathProtocol {
+    
+    var means: [(Pixel, Int)] = Array(repeating: (Pixel(), 0), count: color.count)
+    
+    func distance(_ c0: Pixel, _ c1: Pixel) -> Pixel.Scalar {
+        let d = c0 - c1
+        return d._color.reduce(d._opacity, Pixel.Scalar.hypot)
+    }
+    
+    color.withUnsafeBufferPointer { color in
+        
+        means.withUnsafeMutableBufferPointer {
+            
+            guard let means = $0.baseAddress else { return }
+            
+            texture.withUnsafeBufferPointer { pixels in
+                
+                for pixel in pixels {
+                    
+                    let index = color.enumerated().min { distance(pixel, $0.1) }!.0
+                    
+                    means[index].0 += pixel
+                    means[index].1 += 1
+                }
+            }
+        }
+    }
+    
+    let _color = zip(color, means).map { $1.1 == 0 ? $0 : $1.0 / Pixel.Scalar($1.1) }
+    
+    if resultingImageColor {
+        color = texture.withUnsafeBufferPointer { pixels in _color.map { color in pixels.min { distance(color, $0) }! } }
+    } else {
+        color = _color
+    }
+}
