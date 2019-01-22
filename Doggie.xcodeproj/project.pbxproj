@@ -97,6 +97,7 @@
 		0A440A5C21F55C6300AB5B80 /* FloatComponentPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A440A5B21F55C6300AB5B80 /* FloatComponentPixel.swift */; };
 		0A440A5E21F55C9000AB5B80 /* Float32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A440A5D21F55C9000AB5B80 /* Float32ColorPixel.swift */; };
 		0A440A6021F55C9B00AB5B80 /* Float64ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A440A5F21F55C9B00AB5B80 /* Float64ColorPixel.swift */; };
+		0A44F77A21F6C38900383140 /* DifferenceOfGaussian.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A44F77921F6C38900383140 /* DifferenceOfGaussian.swift */; };
 		0A459AAA219014180015CDCD /* shadow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A459AA9219014180015CDCD /* shadow.metal */; };
 		0A4714AA21D9D03400650284 /* SVGNoise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4714A921D9D03400650284 /* SVGNoise.swift */; };
 		0A4714AC21D9D2B500650284 /* SVGTurbulence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4714AB21D9D2B500650284 /* SVGTurbulence.swift */; };
@@ -393,6 +394,7 @@
 		0A440A5B21F55C6300AB5B80 /* FloatComponentPixel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatComponentPixel.swift; sourceTree = "<group>"; };
 		0A440A5D21F55C9000AB5B80 /* Float32ColorPixel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Float32ColorPixel.swift; sourceTree = "<group>"; };
 		0A440A5F21F55C9B00AB5B80 /* Float64ColorPixel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Float64ColorPixel.swift; sourceTree = "<group>"; };
+		0A44F77921F6C38900383140 /* DifferenceOfGaussian.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DifferenceOfGaussian.swift; sourceTree = "<group>"; };
 		0A459AA9219014180015CDCD /* shadow.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shadow.metal; sourceTree = "<group>"; };
 		0A4714A921D9D03400650284 /* SVGNoise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGNoise.swift; sourceTree = "<group>"; };
 		0A4714AB21D9D2B500650284 /* SVGTurbulence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGTurbulence.swift; sourceTree = "<group>"; };
@@ -982,6 +984,7 @@
 				0A4714AB21D9D2B500650284 /* SVGTurbulence.swift */,
 				0AE9686621F59F8000FCA4C1 /* kMeansClustering.swift */,
 				0AE9686821F5C6D700FCA4C1 /* LaplacianOfGaussian.swift */,
+				0A44F77921F6C38900383140 /* DifferenceOfGaussian.swift */,
 			);
 			path = ImageFilter;
 			sourceTree = "<group>";
@@ -1577,6 +1580,7 @@
 				08458B271E2E627600D01813 /* Color.swift in Sources */,
 				0A8B10511F1DE69B00D93CF9 /* JPEGDecoder.swift in Sources */,
 				0A5E8D4C1F57BF28000D51E3 /* SFNTVHEA.swift in Sources */,
+				0A44F77A21F6C38900383140 /* DifferenceOfGaussian.swift in Sources */,
 				0A3FD862210079BC006D4737 /* CGContext.swift in Sources */,
 				0A7E3E951F5FD3E40020A507 /* OTFGDEF.swift in Sources */,
 				0A7E3E971F5FD8C90020A507 /* OTFScriptList.swift in Sources */,

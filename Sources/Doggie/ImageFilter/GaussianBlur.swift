@@ -25,13 +25,15 @@
 
 @inlinable
 @inline(__always)
-public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ blur: T) -> [T] where T: FloatingMathProtocol {
+public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] where T: FloatingMathProtocol {
     
-    let t = 2 * blur * blur
+    precondition(sd > 0, "sd is less than or equal to zero.")
+    
+    let t = 2 * sd * sd
     let c = 1 / sqrt(.pi * t)
     let _t = -1 / t
     
-    let s = Int(ceil(6 * blur)) >> 1
+    let s = Int(ceil(6 * sd)) >> 1
     
     return (-s...s).map {
         let x = T($0)
@@ -41,21 +43,21 @@ public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ blur: T) -> [T] where T
 
 @inlinable
 @inline(__always)
-public func GaussianBlur<T>(_ texture: StencilTexture<T>, _ blur: T, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
-    let filter = GaussianBlurFilter(blur)
+public func GaussianBlur<T>(_ texture: StencilTexture<T>, _ sd: T, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture<T> {
+    let filter = GaussianBlurFilter(sd)
     return texture.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }
 
 @inlinable
 @inline(__always)
-public func GaussianBlur<RawPixel>(_ texture: Texture<RawPixel>, _ blur: RawPixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<RawPixel> where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
-    let filter = GaussianBlurFilter(blur)
+public func GaussianBlur<RawPixel>(_ texture: Texture<RawPixel>, _ sd: RawPixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<RawPixel> where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+    let filter = GaussianBlurFilter(sd)
     return texture.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }
 
 @inlinable
 @inline(__always)
-public func GaussianBlur<Pixel>(_ image: Image<Pixel>, _ blur: Pixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<Pixel> where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
-    let filter = GaussianBlurFilter(blur)
+public func GaussianBlur<Pixel>(_ image: Image<Pixel>, _ sd: Pixel.Scalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image<Pixel> where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+    let filter = GaussianBlurFilter(sd)
     return image.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
 }
