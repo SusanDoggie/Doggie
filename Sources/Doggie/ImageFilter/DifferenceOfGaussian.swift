@@ -34,7 +34,7 @@ public func DifferenceOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T, _ k: T) 
     let _t = -1 / t
     let _k2 = 1 / (k * k)
     
-    let s = Int(ceil(6 * sd * k)) >> 1
+    let s = Int(ceil(6 * max(sd, sd * k))) >> 1
     
     var filter: [T] = []
     
