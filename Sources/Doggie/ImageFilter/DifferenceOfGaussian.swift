@@ -28,7 +28,6 @@
 public func DifferenceOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T, _ k: T) -> [T] where T: FloatingMathProtocol {
     
     precondition(sd > 0, "sd is less than or equal to zero.")
-    precondition(k > 1, "sd is less than or equal to one.")
     
     let t = 2 * sd * sd
     let c = 1 / (.pi * t)
