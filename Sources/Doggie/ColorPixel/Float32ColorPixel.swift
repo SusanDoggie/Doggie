@@ -24,20 +24,13 @@
 //
 
 @_fixed_layout
-public struct Float32ColorPixel<Model : ColorModelProtocol> : _FloatComponentPixel, _FloatComponentPixelImplement {
+public struct Float32ColorPixel<Model : ColorModelProtocol> : _FloatComponentPixel {
     
     public typealias Scalar = Float
     
     public var _color: Model.Float32Components
     
     public var _opacity: Float
-    
-    @inlinable
-    @inline(__always)
-    public init() {
-        self._color = Model.Float32Components()
-        self._opacity = 0
-    }
     
     @inlinable
     @inline(__always)

@@ -134,7 +134,7 @@ extension ColorPixelProtocol {
     }
 }
 
-extension ColorPixelProtocol where Self : _FloatComponentPixelImplement {
+extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
     
     @inlinable
     @inline(__always)

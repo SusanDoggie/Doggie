@@ -515,7 +515,7 @@ extension StencilTexture : _ImageConvolutionProtocol {
     }
 }
 
-extension Texture : _ImageConvolutionProtocol where RawPixel : _FloatComponentPixel, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+extension Texture : _ImageConvolutionProtocol where RawPixel : _FloatComponentPixel, RawPixel.Scalar : FloatingMathProtocol {
     
     public typealias _ConvolutionFilterScalar = RawPixel.Scalar
     
@@ -532,7 +532,7 @@ extension Texture : _ImageConvolutionProtocol where RawPixel : _FloatComponentPi
     }
 }
 
-extension Image : _ImageConvolutionProtocol where Pixel : _FloatComponentPixel, Pixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
+extension Image : _ImageConvolutionProtocol where Pixel : _FloatComponentPixel, Pixel.Scalar : FloatingMathProtocol {
     
     public typealias _ConvolutionFilterScalar = Pixel.Scalar
     

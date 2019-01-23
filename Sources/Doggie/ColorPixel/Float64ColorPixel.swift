@@ -26,6 +26,8 @@
 @_fixed_layout
 public struct Float64ColorPixel<Model : ColorModelProtocol> : _FloatComponentPixel {
     
+    public typealias ColorComponents = Model
+    
     public typealias Scalar = Double
     
     public var color: Model
@@ -33,78 +35,38 @@ public struct Float64ColorPixel<Model : ColorModelProtocol> : _FloatComponentPix
     
     @inlinable
     @inline(__always)
-    public init() {
-        self.color = Model()
-        self.opacity = 0
-    }
-    
-    @inlinable
-    @inline(__always)
     public init(color: Model, opacity: Double = 1) {
         self.color = color
         self.opacity = opacity
     }
+    
+    @inlinable
+    @inline(__always)
+    public init<C : ColorPixelProtocol>(_ color: C) where C.Model == Model {
+        self.color = color.color
+        self.opacity = color.opacity
+    }
 }
 
-@inlinable
-@inline(__always)
-public prefix func +<Model>(val: Float64ColorPixel<Model>) -> Float64ColorPixel<Model> {
-    return val
-}
-@inlinable
-@inline(__always)
-public prefix func -<Model>(val: Float64ColorPixel<Model>) -> Float64ColorPixel<Model> {
-    return Float64ColorPixel(color: -val.color, opacity: -val.opacity)
-}
-@inlinable
-@inline(__always)
-public func +<Model>(lhs: Float64ColorPixel<Model>, rhs: Float64ColorPixel<Model>) -> Float64ColorPixel<Model> {
-    return Float64ColorPixel(color: lhs.color + rhs.color, opacity: lhs.opacity + rhs.opacity)
-}
-@inlinable
-@inline(__always)
-public func -<Model>(lhs: Float64ColorPixel<Model>, rhs: Float64ColorPixel<Model>) -> Float64ColorPixel<Model> {
-    return Float64ColorPixel(color: lhs.color - rhs.color, opacity: lhs.opacity - rhs.opacity)
-}
-
-@inlinable
-@inline(__always)
-public func *<Model>(lhs: Double, rhs: Float64ColorPixel<Model>) -> Float64ColorPixel<Model> {
-    return Float64ColorPixel(color: lhs * rhs.color, opacity: lhs * rhs.opacity)
-}
-@inlinable
-@inline(__always)
-public func *<Model>(lhs: Float64ColorPixel<Model>, rhs: Double) -> Float64ColorPixel<Model> {
-    return Float64ColorPixel(color: lhs.color * rhs, opacity: lhs.opacity * rhs)
-}
-
-@inlinable
-@inline(__always)
-public func /<Model>(lhs: Float64ColorPixel<Model>, rhs: Double) -> Float64ColorPixel<Model> {
-    return Float64ColorPixel(color: lhs.color / rhs, opacity: lhs.opacity / rhs)
-}
-
-@inlinable
-@inline(__always)
-public func *=<Model> (lhs: inout Float64ColorPixel<Model>, rhs: Double) {
-    lhs.color *= rhs
-    lhs.opacity *= rhs
-}
-@inlinable
-@inline(__always)
-public func /=<Model> (lhs: inout Float64ColorPixel<Model>, rhs: Double) {
-    lhs.color /= rhs
-    lhs.opacity /= rhs
-}
-@inlinable
-@inline(__always)
-public func +=<Model> (lhs: inout Float64ColorPixel<Model>, rhs: Float64ColorPixel<Model>) {
-    lhs.color += rhs.color
-    lhs.opacity += rhs.opacity
-}
-@inlinable
-@inline(__always)
-public func -=<Model> (lhs: inout Float64ColorPixel<Model>, rhs: Float64ColorPixel<Model>) {
-    lhs.color -= rhs.color
-    lhs.opacity -= rhs.opacity
+extension Float64ColorPixel {
+    
+    @_transparent
+    public var _color: Model {
+        get {
+            return color
+        }
+        set {
+            color = newValue
+        }
+    }
+    
+    @_transparent
+    public var _opacity: Double {
+        get {
+            return opacity
+        }
+        set {
+            opacity = newValue
+        }
+    }
 }

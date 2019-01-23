@@ -23,7 +23,6 @@
 //  THE SOFTWARE.
 //
 
-
 @inlinable
 @inline(__always)
 public func BilateralFilter<Pixel>(_ image: Image<Pixel>, _ spatial: Double, _ range: Double) -> Image<Pixel> {
@@ -105,13 +104,13 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Double,
 
 @inlinable
 @inline(__always)
-public func BilateralFilter<Pixel : _FloatComponentPixelImplement>(_ image: Image<Pixel>, _ spatial: Pixel.Scalar, _ range: Pixel.Scalar) -> Image<Pixel> where Pixel.Scalar : FloatingMathProtocol {
+public func BilateralFilter<Pixel : _FloatComponentPixel>(_ image: Image<Pixel>, _ spatial: Pixel.Scalar, _ range: Pixel.Scalar) -> Image<Pixel> where Pixel.Scalar : FloatingMathProtocol {
     return Image(texture: BilateralFilter(Texture(image: image), spatial, range), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
 @inline(__always)
-public func BilateralFilter<Pixel : _FloatComponentPixelImplement>(_ texture: Texture<Pixel>, _ spatial: Pixel.Scalar, _ range: Pixel.Scalar) -> Texture<Pixel> where Pixel.Scalar : FloatingMathProtocol {
+public func BilateralFilter<Pixel : _FloatComponentPixel>(_ texture: Texture<Pixel>, _ spatial: Pixel.Scalar, _ range: Pixel.Scalar) -> Texture<Pixel> where Pixel.Scalar : FloatingMathProtocol {
     
     precondition(spatial > 0, "spatial is less than or equal to zero.")
     precondition(range > 0, "range is less than or equal to zero.")

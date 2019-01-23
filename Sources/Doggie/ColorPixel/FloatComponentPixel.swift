@@ -23,22 +23,39 @@
 //  THE SOFTWARE.
 //
 
-public protocol _FloatComponentPixel : ColorPixelProtocol, ScalarMultiplicative {
+public protocol _FloatComponentPixel : ColorPixelProtocol, ScalarMultiplicative where Scalar : BinaryFloatingPoint {
     
-}
-
-public protocol _FloatComponentPixelImplement: _FloatComponentPixel {
+    associatedtype ColorComponents : Tensor where ColorComponents.Scalar == Scalar
     
-    associatedtype ColorComponents : _FloatColorComponents where ColorComponents.Scalar == Scalar
+    init(color: ColorComponents, opacity: Scalar)
     
     var _color: ColorComponents { get set }
     
     var _opacity: Scalar { get set }
     
-    init(color: ColorComponents, opacity: Scalar)
+    var magnitude: Scalar { get set }
+    
+    var unit: Self { get }
+    
+    func distance(to: Self) -> Scalar
 }
 
-extension ColorPixelProtocol where Self : _FloatComponentPixelImplement {
+extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
+    
+    @inlinable
+    @inline(__always)
+    public init() {
+        self.init(color: ColorComponents(), opacity: 0)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init<C : ColorPixelProtocol>(_ color: C) where C.Model == Model {
+        self.init(color: color.color, opacity: color.opacity)
+    }
+}
+
+extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
     
     @_transparent
     public var opacity: Double {
@@ -49,6 +66,14 @@ extension ColorPixelProtocol where Self : _FloatComponentPixelImplement {
             self._opacity = Scalar(newValue)
         }
     }
+    
+    @_transparent
+    public var isOpaque: Bool {
+        return _opacity >= 1
+    }
+}
+
+extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
     
     @inlinable
     @inline(__always)
@@ -101,65 +126,92 @@ extension ColorPixelProtocol where Self : _FloatComponentPixelImplement {
     }
 }
 
+extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.Scalar : FloatingMathProtocol {
+    
+    @_transparent
+    public var magnitude: Scalar {
+        get {
+            return Scalar.hypot(_color.magnitude, _opacity)
+        }
+        set {
+            let m = self.magnitude
+            let scale = m == 0 ? 0 : newValue / m
+            self *= scale
+        }
+    }
+    
+    @_transparent
+    public var unit: Self {
+        let m = self.magnitude
+        return m == 0 ? Self() : self / m
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func distance(to: Self) -> Scalar {
+        return (to - self).magnitude
+    }
+}
+
 @inlinable
 @inline(__always)
-public prefix func +<C : _FloatComponentPixelImplement>(val: C) -> C {
+public prefix func +<Pixel : _FloatComponentPixel>(val: Pixel) -> Pixel {
     return val
 }
 @inlinable
 @inline(__always)
-public prefix func -<C : _FloatComponentPixelImplement>(val: C) -> C {
-    return C(color: -val._color, opacity: -val._opacity)
+public prefix func -<Pixel : _FloatComponentPixel>(val: Pixel) -> Pixel {
+    return Pixel(color: -val._color, opacity: -val._opacity)
 }
 @inlinable
 @inline(__always)
-public func +<C : _FloatComponentPixelImplement>(lhs: C, rhs: C) -> C {
-    return C(color: lhs._color + rhs._color, opacity: lhs._opacity + rhs._opacity)
+public func +<Pixel : _FloatComponentPixel>(lhs: Pixel, rhs: Pixel) -> Pixel {
+    return Pixel(color: lhs._color + rhs._color, opacity: lhs._opacity + rhs._opacity)
 }
 @inlinable
 @inline(__always)
-public func -<C : _FloatComponentPixelImplement>(lhs: C, rhs: C) -> C {
-    return C(color: lhs._color - rhs._color, opacity: lhs._opacity - rhs._opacity)
-}
-
-@inlinable
-@inline(__always)
-public func *<C : _FloatComponentPixelImplement>(lhs: C.Scalar, rhs: C) -> C {
-    return C(color: lhs * rhs._color, opacity: lhs * rhs._opacity)
-}
-@inlinable
-@inline(__always)
-public func *<C : _FloatComponentPixelImplement>(lhs: C, rhs: C.Scalar) -> C {
-    return C(color: lhs._color * rhs, opacity: lhs._opacity * rhs)
+public func -<Pixel : _FloatComponentPixel>(lhs: Pixel, rhs: Pixel) -> Pixel {
+    return Pixel(color: lhs._color - rhs._color, opacity: lhs._opacity - rhs._opacity)
 }
 
 @inlinable
 @inline(__always)
-public func /<C : _FloatComponentPixelImplement>(lhs: C, rhs: C.Scalar) -> C {
-    return C(color: lhs._color / rhs, opacity: lhs._opacity / rhs)
+public func *<Pixel : _FloatComponentPixel>(lhs: Pixel.Scalar, rhs: Pixel) -> Pixel {
+    return Pixel(color: lhs * rhs._color, opacity: lhs * rhs._opacity)
+}
+@inlinable
+@inline(__always)
+public func *<Pixel : _FloatComponentPixel>(lhs: Pixel, rhs: Pixel.Scalar) -> Pixel {
+    return Pixel(color: lhs._color * rhs, opacity: lhs._opacity * rhs)
 }
 
 @inlinable
 @inline(__always)
-public func *=<C : _FloatComponentPixelImplement> (lhs: inout C, rhs: C.Scalar) {
+public func /<Pixel : _FloatComponentPixel>(lhs: Pixel, rhs: Pixel.Scalar) -> Pixel {
+    return Pixel(color: lhs._color / rhs, opacity: lhs._opacity / rhs)
+}
+
+@inlinable
+@inline(__always)
+public func *=<Pixel : _FloatComponentPixel> (lhs: inout Pixel, rhs: Pixel.Scalar) {
     lhs._color *= rhs
     lhs._opacity *= rhs
 }
 @inlinable
 @inline(__always)
-public func /=<C : _FloatComponentPixelImplement> (lhs: inout C, rhs: C.Scalar) {
+public func /=<Pixel : _FloatComponentPixel> (lhs: inout Pixel, rhs: Pixel.Scalar) {
     lhs._color /= rhs
     lhs._opacity /= rhs
 }
 @inlinable
 @inline(__always)
-public func +=<C : _FloatComponentPixelImplement> (lhs: inout C, rhs: C) {
+public func +=<Pixel : _FloatComponentPixel> (lhs: inout Pixel, rhs: Pixel) {
     lhs._color += rhs._color
     lhs._opacity += rhs._opacity
 }
 @inlinable
 @inline(__always)
-public func -=<C : _FloatComponentPixelImplement> (lhs: inout C, rhs: C) {
+public func -=<Pixel : _FloatComponentPixel> (lhs: inout Pixel, rhs: Pixel) {
     lhs._color -= rhs._color
     lhs._opacity -= rhs._opacity
 }

@@ -32,31 +32,17 @@ public func ColorSeparation<Pixel>(_ image: Image<Pixel>, _ palette: [Pixel]) ->
 @inlinable
 @inline(__always)
 public func ColorSeparation<Pixel>(_ texture: Texture<Pixel>, _ palette: [Pixel]) -> Texture<Pixel> {
-    
-    @inline(__always)
-    func distance(_ c0: Pixel, _ c1: Pixel) -> Double {
-        let d = Float64ColorPixel(c0) - Float64ColorPixel(c1)
-        return d.color.reduce(d.opacity, hypot)
-    }
-    
-    return palette.withUnsafeBufferPointer { palette in texture.map { pixel in palette.min { distance(pixel, $0) }! } }
+    return palette.map(Float64ColorPixel.init).withUnsafeBufferPointer { palette in texture.map { pixel in Pixel(palette.min { Float64ColorPixel(pixel).distance(to: $0) }!) } }
 }
 
 @inlinable
 @inline(__always)
-public func ColorSeparation<Pixel : _FloatComponentPixelImplement>(_ image: Image<Pixel>, _ palette: [Pixel]) -> Image<Pixel> where Pixel.Scalar : FloatingMathProtocol {
+public func ColorSeparation<Pixel : _FloatComponentPixel>(_ image: Image<Pixel>, _ palette: [Pixel]) -> Image<Pixel> where Pixel.Scalar : FloatingMathProtocol {
     return Image(texture: ColorSeparation(Texture(image: image), palette), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
 @inline(__always)
-public func ColorSeparation<Pixel : _FloatComponentPixelImplement>(_ texture: Texture<Pixel>, _ palette: [Pixel]) -> Texture<Pixel> where Pixel.Scalar : FloatingMathProtocol {
-    
-    @inline(__always)
-    func distance(_ c0: Pixel, _ c1: Pixel) -> Pixel.Scalar {
-        let d = c0 - c1
-        return d._color.reduce(d._opacity, Pixel.Scalar.hypot)
-    }
-    
-    return palette.withUnsafeBufferPointer { palette in texture.map { pixel in palette.min { distance(pixel, $0) }! } }
+public func ColorSeparation<Pixel : _FloatComponentPixel>(_ texture: Texture<Pixel>, _ palette: [Pixel]) -> Texture<Pixel> where Pixel.Scalar : FloatingMathProtocol {
+    return palette.withUnsafeBufferPointer { palette in texture.map { pixel in palette.min { pixel.distance(to: $0) }! } }
 }
