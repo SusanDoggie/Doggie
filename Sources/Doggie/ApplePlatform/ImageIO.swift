@@ -79,6 +79,8 @@ extension CGImage {
         case compressionQuality
         
         case interlaced
+        
+        case resolution
     }
     
     public enum TIFFCompressionScheme {
@@ -125,6 +127,12 @@ extension CGImage {
             type = AVFileType.heic as CFString
         }
         
+        if let resolution = properties[.resolution] as? Resolution {
+            let _resolution = resolution.convert(to: .inch)
+            _properties[kCGImagePropertyDPIWidth] = _resolution.horizontal
+            _properties[kCGImagePropertyDPIHeight] = _resolution.vertical
+        }
+        
         if let compressionQuality = properties[.compressionQuality] as? NSNumber {
             _properties[kCGImageDestinationLossyCompressionQuality] = compressionQuality
         }
@@ -132,16 +140,16 @@ extension CGImage {
         return CGImage.withImageDestination(type, 1) { CGImageDestinationAddImage($0, self, _properties as CFDictionary) }
     }
     
-    public func tiffRepresentation(compression: TIFFCompressionScheme = .none) -> Data? {
-        return self.representation(using: .tiff, properties: [.compression: compression])
+    public func tiffRepresentation(compression: TIFFCompressionScheme = .none, resolution: Resolution = Resolution(resolution: 1, unit: .point)) -> Data? {
+        return self.representation(using: .tiff, properties: [.compression: compression, .resolution: resolution])
     }
     
-    public func pngRepresentation(interlaced: Bool = false) -> Data? {
-        return self.representation(using: .png, properties: [.interlaced: interlaced])
+    public func pngRepresentation(interlaced: Bool = false, resolution: Resolution = Resolution(resolution: 1, unit: .point)) -> Data? {
+        return self.representation(using: .png, properties: [.interlaced: interlaced, .resolution: resolution])
     }
     
-    public func jpegRepresentation(compressionQuality: Double) -> Data? {
-        return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality])
+    public func jpegRepresentation(compressionQuality: Double, resolution: Resolution = Resolution(resolution: 1, unit: .point)) -> Data? {
+        return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality, .resolution: resolution])
     }
 }
 
