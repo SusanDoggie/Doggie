@@ -676,7 +676,7 @@ extension Image {
 
             var data = bitmap.data
 
-            var tiff_predictor_record: [UInt8] = Array(repeating: 0, count: bytesPerChannel + (channel.bitRange.count & 7 == 0 ? 0 : 1))
+            var tiff_predictor_record: [UInt8] = Array(zeros: bytesPerChannel + (channel.bitRange.count & 7 == 0 ? 0 : 1))
 
             tiff_predictor_record.withUnsafeMutableBufferPointer { tiff_predictor_record in
 

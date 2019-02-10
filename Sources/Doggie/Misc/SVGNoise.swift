@@ -32,7 +32,7 @@ public struct SVGNoise {
 
         let BSize = 0x100
 
-        self.uLatticeSelector = Array(repeating: 0, count: BSize + BSize + 2)
+        self.uLatticeSelector = Array(zeros: BSize + BSize + 2)
         self.fGradient = Array(repeating: Array(repeating: Point(), count: BSize + BSize + 2), count: 4)
 
         var RG = RandomGenerator(lSeed)

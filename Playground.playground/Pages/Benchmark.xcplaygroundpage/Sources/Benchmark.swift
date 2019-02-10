@@ -4,9 +4,9 @@ import Doggie
 
 public func HalfRadix2CooleyTukey_OutPlace_Benchmark(_ n: Int) -> Double {
 
-    let real = [Double](repeating: 0.0, count: 1 << n)
-    var _real = [Double](repeating: 0.0, count: 1 << (n - 1))
-    var _imag = [Double](repeating: 0.0, count: 1 << (n - 1))
+    let real = [Double](zeros: 1 << n)
+    var _real = [Double](zeros: 1 << (n - 1))
+    var _imag = [Double](zeros: 1 << (n - 1))
 
     var time: clock_t = 0
 
@@ -23,7 +23,7 @@ public func HalfRadix2CooleyTukey_OutPlace_Benchmark(_ n: Int) -> Double {
 }
 public func HalfRadix2CooleyTukey_InPlace_Benchmark(_ n: Int) -> Double {
 
-    var buffer = [Double](repeating: 0.0, count: 1 << n)
+    var buffer = [Double](zeros: 1 << n)
 
     var time: clock_t = 0
 
@@ -40,9 +40,9 @@ public func HalfRadix2CooleyTukey_InPlace_Benchmark(_ n: Int) -> Double {
 }
 public func RealRadix2CooleyTukey_Benchmark(_ n: Int) -> Double {
 
-    let real = [Double](repeating: 0.0, count: 1 << n)
-    var _real = [Double](repeating: 0.0, count: 1 << n)
-    var _imag = [Double](repeating: 0.0, count: 1 << n)
+    let real = [Double](zeros: 1 << n)
+    var _real = [Double](zeros: 1 << n)
+    var _imag = [Double](zeros: 1 << n)
 
     var time: clock_t = 0
 
@@ -60,10 +60,10 @@ public func RealRadix2CooleyTukey_Benchmark(_ n: Int) -> Double {
 
 public func Radix2CooleyTukey_OutPlace_Benchmark(_ n: Int) -> Double {
 
-    let real = [Double](repeating: 0.0, count: 1 << n)
-    let imag = [Double](repeating: 0.0, count: 1 << n)
-    var _real = [Double](repeating: 0.0, count: 1 << n)
-    var _imag = [Double](repeating: 0.0, count: 1 << n)
+    let real = [Double](zeros: 1 << n)
+    let imag = [Double](zeros: 1 << n)
+    var _real = [Double](zeros: 1 << n)
+    var _imag = [Double](zeros: 1 << n)
 
     var time: clock_t = 0
 
@@ -81,8 +81,8 @@ public func Radix2CooleyTukey_OutPlace_Benchmark(_ n: Int) -> Double {
 
 public func Radix2CooleyTukey_InPlace_Benchmark(_ n: Int) -> Double {
 
-    var real = [Double](repeating: 0.0, count: 1 << n)
-    var imag = [Double](repeating: 0.0, count: 1 << n)
+    var real = [Double](zeros: 1 << n)
+    var imag = [Double](zeros: 1 << n)
 
     var time: clock_t = 0
 

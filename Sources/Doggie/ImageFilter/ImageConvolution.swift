@@ -181,7 +181,7 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
         let length1 = Radix2CircularConvolveLength(width, filter_width)
         let length2 = Radix2CircularConvolveLength(height, filter_height)
 
-        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length1 * length2 * 2, fileBacked: self.fileBacked)
+        var buffer = MappedBuffer<RawPixel.Scalar>(zeros: length1 * length2 * 2, fileBacked: self.fileBacked)
         var result = Self(width: n_width, height: n_height, resamplingAlgorithm: self.resamplingAlgorithm, pixel: RawPixel.zero, fileBacked: self.fileBacked)
 
         buffer.withUnsafeMutableBufferPointer {
@@ -242,7 +242,7 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
         let length1 = Radix2CircularConvolveLength(width, horizontal_filter.count)
         let length2 = Radix2CircularConvolveLength(height, vertical_filter.count)
 
-        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length1 + length2 + length1 * height, fileBacked: self.fileBacked)
+        var buffer = MappedBuffer<RawPixel.Scalar>(zeros: length1 + length2 + length1 * height, fileBacked: self.fileBacked)
         var result = MappedBuffer<RawPixel>(repeating: RawPixel.zero, count: n_width * length2, fileBacked: self.fileBacked)
 
         buffer.withUnsafeMutableBufferPointer {
@@ -307,7 +307,7 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
 
         let length = Radix2CircularConvolveLength(width, filter.count)
 
-        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length + length * height, fileBacked: self.fileBacked)
+        var buffer = MappedBuffer<RawPixel.Scalar>(zeros: length + length * height, fileBacked: self.fileBacked)
         var result = Self(width: n_width, height: height, resamplingAlgorithm: self.resamplingAlgorithm, pixel: RawPixel.zero, fileBacked: self.fileBacked)
 
         buffer.withUnsafeMutableBufferPointer {
@@ -372,7 +372,7 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
 
         let length = Radix2CircularConvolveLength(height, filter.count)
 
-        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length, fileBacked: self.fileBacked)
+        var buffer = MappedBuffer<RawPixel.Scalar>(zeros: length, fileBacked: self.fileBacked)
         var result = MappedBuffer<RawPixel>(repeating: RawPixel.zero, count: width * length, fileBacked: self.fileBacked)
 
         buffer.withUnsafeMutableBufferPointer {

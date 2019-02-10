@@ -345,8 +345,8 @@ public func quorem(_ lhs: Polynomial, _ rhs: Polynomial) -> (quo: Polynomial, re
     case 0: fatalError("Divide by zero.")
     case 1: return (lhs / rhs[0], [])
     default:
-        var quotient = [Double](repeating: 0, count: lhs.count - rhs.count + 1)
-        var residue = [Double](repeating: 0, count: rhs.count - 1)
+        var quotient = [Double](zeros: lhs.count - rhs.count + 1)
+        var residue = [Double](zeros: rhs.count - 1)
         Deconvolve(lhs.count, lhs.coeffs.reversed(), 1, rhs.count, rhs.coeffs.reversed(), 1, &quotient, 1, &residue, 1)
         return (Polynomial(quotient.reversed()), Polynomial(residue.reversed()))
     }
@@ -415,7 +415,7 @@ public prefix func - (p: Polynomial) -> Polynomial {
 @inlinable
 public func + (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     var lhs = lhs
-    var buf = [Double](repeating: 0, count: max(lhs.count, rhs.count))
+    var buf = [Double](zeros: max(lhs.count, rhs.count))
     for idx in buf.indices {
         buf[idx] = lhs[idx] + rhs[idx]
     }
@@ -439,7 +439,7 @@ public func + (lhs: Polynomial, rhs: Double) -> Polynomial {
 @inlinable
 public func - (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     var lhs = lhs
-    var buf = [Double](repeating: 0, count: max(lhs.count, rhs.count))
+    var buf = [Double](zeros: max(lhs.count, rhs.count))
     for idx in buf.indices {
         buf[idx] = lhs[idx] - rhs[idx]
     }
@@ -481,7 +481,7 @@ public func * (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     if rhs.count == 1 {
         return lhs * rhs[0]
     }
-    var result = [Double](repeating: 0, count: lhs.count + rhs.count - 1)
+    var result = [Double](zeros: lhs.count + rhs.count - 1)
     DirectConvolve(lhs.count, lhs.coeffs, 1, rhs.count, rhs.coeffs, 1, &result, 1)
     return Polynomial(result)
 }
@@ -509,7 +509,7 @@ public func / (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     case 0: fatalError("Divide by zero.")
     case 1: return lhs / rhs[0]
     default:
-        var result = [Double](repeating: 0, count: lhs.count - rhs.count + 1)
+        var result = [Double](zeros: lhs.count - rhs.count + 1)
         Deconvolve(lhs.count, lhs.coeffs.reversed(), 1, rhs.count, rhs.coeffs.reversed(), 1, &result, 1)
         return Polynomial(result.reversed())
     }
@@ -538,8 +538,8 @@ public func % (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
     case 0: fatalError("Divide by zero.")
     case 1: return []
     default:
-        var quotient = [Double](repeating: 0, count: lhs.count - rhs.count + 1)
-        var result = [Double](repeating: 0, count: rhs.count - 1)
+        var quotient = [Double](zeros: lhs.count - rhs.count + 1)
+        var result = [Double](zeros: rhs.count - 1)
         Deconvolve(lhs.count, lhs.coeffs.reversed(), 1, rhs.count, rhs.coeffs.reversed(), 1, &quotient, 1, &result, 1)
         return Polynomial(result.reversed())
     }

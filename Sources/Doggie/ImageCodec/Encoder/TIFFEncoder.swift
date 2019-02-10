@@ -410,7 +410,7 @@ extension Image : TIFFRawRepresentable {
                 }
             case 2:
 
-                var lhs: [UInt16] = Array(repeating: 0, count: samplesPerPixel)
+                var lhs: [UInt16] = Array(zeros: samplesPerPixel)
 
                 lhs.withUnsafeMutableBufferPointer {
 

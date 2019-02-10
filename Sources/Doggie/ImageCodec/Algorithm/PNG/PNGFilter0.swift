@@ -55,7 +55,7 @@ struct png_filter0_encoder {
     init(row_length: Int, bitsPerPixel: UInt8) {
         self.row_length = row_length
         self.stride = max(1, Int(bitsPerPixel >> 3))
-        self.buffer = Array(repeating: 0, count: row_length + (row_length + 1) * 5)
+        self.buffer = Array(zeros: row_length + (row_length + 1) * 5)
         self.index = 0
         self.flag = true
     }
@@ -217,7 +217,7 @@ struct png_filter0_decoder {
     init(row_length: Int, bitsPerPixel: UInt8) {
         self.row_length = row_length
         self.stride = max(1, Int(bitsPerPixel >> 3))
-        self.buffer = Array(repeating: 0, count: row_length << 1)
+        self.buffer = Array(zeros: row_length << 1)
         self.index = 0
         self.flag = true
     }

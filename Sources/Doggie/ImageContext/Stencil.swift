@@ -170,7 +170,7 @@ extension ImageContext {
 
             shape.transform = transform * SDTransform.scale(Double(antialias))
 
-            var stencil = MappedBuffer<Int16>(repeating: 0, count: width * height * antialias * antialias)
+            var stencil = MappedBuffer<Int16>(zeros: width * height * antialias * antialias)
 
             let bound = shape.raster(width: width * antialias, height: height * antialias, stencil: &stencil)
 
@@ -180,7 +180,7 @@ extension ImageContext {
 
             shape.transform = transform
 
-            var stencil = MappedBuffer<Int16>(repeating: 0, count: width * height)
+            var stencil = MappedBuffer<Int16>(zeros: width * height)
 
             let bound = shape.raster(width: width, height: height, stencil: &stencil)
 

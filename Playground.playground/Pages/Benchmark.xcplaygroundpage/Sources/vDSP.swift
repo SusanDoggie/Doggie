@@ -4,9 +4,9 @@ import Accelerate
 
 public func vDSP_fft_zropD_Benchmark(_ n: Int) -> Double {
 
-    var real = [Double](repeating: 0.0, count: 1 << n)
-    var _real = [Double](repeating: 0.0, count: 1 << (n - 1))
-    var _imag = [Double](repeating: 0.0, count: 1 << (n - 1))
+    var real = [Double](zeros: 1 << n)
+    var _real = [Double](zeros: 1 << (n - 1))
+    var _imag = [Double](zeros: 1 << (n - 1))
 
     let setup = vDSP_create_fftsetupD(vDSP_Length(n), FFTRadix(kFFTRadix2))!
     defer { vDSP_destroy_fftsetupD(setup) }
@@ -44,8 +44,8 @@ public func vDSP_fft_zropD_Benchmark(_ n: Int) -> Double {
 }
 public func vDSP_fft_zripD_Benchmark(_ n: Int) -> Double {
 
-    var _real = [Double](repeating: 0.0, count: 1 << (n - 1))
-    var _imag = [Double](repeating: 0.0, count: 1 << (n - 1))
+    var _real = [Double](zeros: 1 << (n - 1))
+    var _imag = [Double](zeros: 1 << (n - 1))
 
     let setup = vDSP_create_fftsetupD(vDSP_Length(n), FFTRadix(kFFTRadix2))!
     defer { vDSP_destroy_fftsetupD(setup) }
@@ -77,10 +77,10 @@ public func vDSP_fft_zripD_Benchmark(_ n: Int) -> Double {
 }
 public func vDSP_fft_zopD_Benchmark(_ n: Int) -> Double {
 
-    var real = [Double](repeating: 0.0, count: 1 << n)
-    var imag = [Double](repeating: 0.0, count: 1 << n)
-    var _real = [Double](repeating: 0.0, count: 1 << n)
-    var _imag = [Double](repeating: 0.0, count: 1 << n)
+    var real = [Double](zeros: 1 << n)
+    var imag = [Double](zeros: 1 << n)
+    var _real = [Double](zeros: 1 << n)
+    var _imag = [Double](zeros: 1 << n)
 
     let setup = vDSP_create_fftsetupD(vDSP_Length(n), FFTRadix(kFFTRadix2))!
     defer { vDSP_destroy_fftsetupD(setup) }
@@ -123,8 +123,8 @@ public func vDSP_fft_zopD_Benchmark(_ n: Int) -> Double {
 }
 public func vDSP_fft_zipD_Benchmark(_ n: Int) -> Double {
 
-    var _real = [Double](repeating: 0.0, count: 1 << n)
-    var _imag = [Double](repeating: 0.0, count: 1 << n)
+    var _real = [Double](zeros: 1 << n)
+    var _imag = [Double](zeros: 1 << n)
 
     let setup = vDSP_create_fftsetupD(vDSP_Length(n), FFTRadix(kFFTRadix2))!
     defer { vDSP_destroy_fftsetupD(setup) }

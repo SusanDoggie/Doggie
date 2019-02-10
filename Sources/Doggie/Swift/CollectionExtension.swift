@@ -333,6 +333,13 @@ extension RangeReplaceableCollection {
     }
 }
 
+extension RangeReplaceableCollection where Element : AdditiveArithmetic {
+    @inlinable
+    public init(zeros count: Int) {
+        self.init(repeating: .zero, count: count)
+    }
+}
+
 extension BidirectionalCollection where Self : MutableCollection {
 
     @inlinable

@@ -46,7 +46,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & FloatingMathProt
 
         self.fft_length = fft_length
         self.overlap_length = kernel.count - 1
-        self.buffer = Array(repeating: 0, count: fft_length << 1 + overlap_length)
+        self.buffer = Array(zeros: fft_length << 1 + overlap_length)
 
         buffer.withUnsafeMutableBufferPointer {
 

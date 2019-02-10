@@ -62,8 +62,8 @@ class ImageTest: XCTestCase {
         for s in [1, 2, 3, 5, 7, 11] {
             for t in [1, 2, 3, 5, 7, 11] {
 
-                var horizontal = [Double](repeating: 0, count: s)
-                var vertical = [Double](repeating: 0, count: t)
+                var horizontal = [Double](zeros: s)
+                var vertical = [Double](zeros: t)
                 for i in 0..<horizontal.count {
                     horizontal[i] = Double.random(in: -1...1)
                 }
@@ -125,8 +125,8 @@ class ImageTest: XCTestCase {
         for s in [1, 2, 3, 5, 7, 11] {
             for t in [1, 2, 3, 5, 7, 11] {
 
-                var horizontal = [Double](repeating: 0, count: s)
-                var vertical = [Double](repeating: 0, count: t)
+                var horizontal = [Double](zeros: s)
+                var vertical = [Double](zeros: t)
                 for i in 0..<horizontal.count {
                     horizontal[i] = Double(Int.random(in: 0...10))
                 }
@@ -188,7 +188,7 @@ class ImageTest: XCTestCase {
         for s in [1, 2, 3, 5, 7, 11] {
             for t in [1, 2, 3, 5, 7, 11] {
 
-                var filter = [Double](repeating: 0, count: s * t)
+                var filter = [Double](zeros: s * t)
                 for i in 0..<filter.count {
                     filter[i] = Double.random(in: -1...1)
                 }

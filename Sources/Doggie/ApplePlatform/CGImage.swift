@@ -32,7 +32,7 @@ extension CGImage {
         guard let colorSpace = self.colorSpace else { return nil }
         guard let cfdata = self.dataProvider?.data else { return nil }
 
-        var buffer = MappedBuffer<UInt8>(repeating: 0, count: CFDataGetLength(cfdata), fileBacked: true)
+        var buffer = MappedBuffer<UInt8>(zeros: CFDataGetLength(cfdata), fileBacked: true)
         buffer.withUnsafeMutableBufferPointer { CFDataGetBytes(cfdata, CFRange(location: 0, length: $0.count), $0.baseAddress) }
 
         guard let providerRef = CGDataProvider(data: buffer.data as CFData) else { return nil }

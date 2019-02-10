@@ -35,7 +35,7 @@ class FourierTest: XCTestCase {
         for i in 0...10 {
             let n = 1 << i
 
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -78,7 +78,7 @@ class FourierTest: XCTestCase {
         for i in 0...10 {
             let n = 1 << i
 
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -119,7 +119,7 @@ class FourierTest: XCTestCase {
     func testRadix2CooleyTukeyB() {
 
         for n in 2...11 {
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -159,7 +159,7 @@ class FourierTest: XCTestCase {
     func testInverseRadix2CooleyTukeyB() {
 
         for n in 2...11 {
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -199,8 +199,8 @@ class FourierTest: XCTestCase {
     func testConvolve() {
 
         for n in 2...11 {
-            var a = [Double](repeating: 0, count: n)
-            var b = [Double](repeating: 0, count: n)
+            var a = [Double](zeros: n)
+            var b = [Double](zeros: n)
             for i in 0..<a.count {
                 a[i] = Double.random(in: 0..<1)
             }
@@ -246,8 +246,8 @@ class FourierTest: XCTestCase {
     func testCircularConvolve() {
 
         for n in 2...11 {
-            var a = [Double](repeating: 0, count: n)
-            var b = [Double](repeating: 0, count: n)
+            var a = [Double](zeros: n)
+            var b = [Double](zeros: n)
             for i in 0..<a.count {
                 a[i] = Double.random(in: 0..<1)
             }
@@ -303,8 +303,8 @@ class FourierTest: XCTestCase {
     func testNegacyclicConvolve() {
 
         for n in 2...11 {
-            var a = [Double](repeating: 0, count: n)
-            var b = [Double](repeating: 0, count: n)
+            var a = [Double](zeros: n)
+            var b = [Double](zeros: n)
             for i in 0..<a.count {
                 a[i] = Double.random(in: 0..<1)
             }
@@ -361,7 +361,7 @@ class FourierTest: XCTestCase {
     func testDCTII() {
 
         for n in 2...11 {
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -380,7 +380,7 @@ class FourierTest: XCTestCase {
     func testDCTIII() {
 
         for n in 2...11 {
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -399,7 +399,7 @@ class FourierTest: XCTestCase {
     func testDCTIV() {
 
         for n in 2...11 {
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -418,7 +418,7 @@ class FourierTest: XCTestCase {
     func testDSTII() {
 
         for n in 2...11 {
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -437,7 +437,7 @@ class FourierTest: XCTestCase {
     func testDSTIII() {
 
         for n in 2...11 {
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -456,7 +456,7 @@ class FourierTest: XCTestCase {
     func testDSTIV() {
 
         for n in 2...11 {
-            var sample = [Double](repeating: 0, count: n)
+            var sample = [Double](zeros: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
@@ -475,7 +475,7 @@ class FourierTest: XCTestCase {
 
     func testFourierBPerformance() {
 
-        let sample = [Double](repeating: 0, count: 32700)
+        let sample = [Double](zeros: 32700)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
@@ -485,7 +485,7 @@ class FourierTest: XCTestCase {
     }
     func testFourierCPerformance() {
 
-        let sample = [Double](repeating: 0, count: 32768)
+        let sample = [Double](zeros: 32768)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
@@ -495,7 +495,7 @@ class FourierTest: XCTestCase {
     }
     func testFourierBPerformanceX2() {
 
-        let sample = [Double](repeating: 0, count: 65500)
+        let sample = [Double](zeros: 65500)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
@@ -505,7 +505,7 @@ class FourierTest: XCTestCase {
     }
     func testFourierCPerformanceX2() {
 
-        let sample = [Double](repeating: 0, count: 65536)
+        let sample = [Double](zeros: 65536)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
@@ -515,7 +515,7 @@ class FourierTest: XCTestCase {
     }
     func testFourierCPerformanceX3() {
 
-        let sample = [Double](repeating: 0, count: 131072)
+        let sample = [Double](zeros: 131072)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
@@ -525,7 +525,7 @@ class FourierTest: XCTestCase {
     }
     func testCircularConvolvePerformance() {
 
-        let sample = [Double](repeating: 0, count: 44100)
+        let sample = [Double](zeros: 44100)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
         self.measure() {
@@ -535,7 +535,7 @@ class FourierTest: XCTestCase {
     }
     func testCircularConvolvePerformanceX2() {
 
-        let sample = [Double](repeating: 0, count: 96000)
+        let sample = [Double](zeros: 96000)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
         self.measure() {
@@ -545,7 +545,7 @@ class FourierTest: XCTestCase {
     }
     func testCircularConvolvePerformanceX3() {
 
-        let sample = [Double](repeating: 0, count: 192000)
+        let sample = [Double](zeros: 192000)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
         self.measure() {
@@ -556,7 +556,7 @@ class FourierTest: XCTestCase {
 }
 
 func _DCTII(_ buffer: [Double], result: inout [Double]) {
-    result = [Double](repeating: 0, count: buffer.count)
+    result = [Double](zeros: buffer.count)
     let angle = Double.pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -568,7 +568,7 @@ func _DCTII(_ buffer: [Double], result: inout [Double]) {
     result[0] *= sqrt(0.5)
 }
 func _DCTIII(_ buffer: [Double], result: inout [Double]) {
-    result = [Double](repeating: 0, count: buffer.count)
+    result = [Double](zeros: buffer.count)
     let angle = Double.pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -583,7 +583,7 @@ func _DCTIII(_ buffer: [Double], result: inout [Double]) {
     }
 }
 func _DCTIV(_ buffer: [Double], result: inout [Double]) {
-    result = [Double](repeating: 0, count: buffer.count)
+    result = [Double](zeros: buffer.count)
     let angle = Double.pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -594,7 +594,7 @@ func _DCTIV(_ buffer: [Double], result: inout [Double]) {
     }
 }
 func _DSTII(_ buffer: [Double], result: inout [Double]) {
-    result = [Double](repeating: 0, count: buffer.count)
+    result = [Double](zeros: buffer.count)
     let angle = Double.pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -606,7 +606,7 @@ func _DSTII(_ buffer: [Double], result: inout [Double]) {
     result[buffer.count - 1] *= sqrt(0.5)
 }
 func _DSTIII(_ buffer: [Double], result: inout [Double]) {
-    result = [Double](repeating: 0, count: buffer.count)
+    result = [Double](zeros: buffer.count)
     let angle = Double.pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
@@ -621,7 +621,7 @@ func _DSTIII(_ buffer: [Double], result: inout [Double]) {
     }
 }
 func _DSTIV(_ buffer: [Double], result: inout [Double]) {
-    result = [Double](repeating: 0, count: buffer.count)
+    result = [Double](zeros: buffer.count)
     let angle = Double.pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {

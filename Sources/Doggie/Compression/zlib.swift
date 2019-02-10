@@ -140,7 +140,7 @@ extension _Z_STREAM {
 
     private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
 
-        var buffer = [UInt8](repeating: 0, count: 4096)
+        var buffer = [UInt8](zeros: 4096)
 
         try buffer.withUnsafeMutableBufferPointer { buf in
 
