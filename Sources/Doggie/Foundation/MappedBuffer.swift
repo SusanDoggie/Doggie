@@ -76,12 +76,6 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
 
     @inlinable
     @inline(__always)
-    public init(zeros count: Int, fileBacked: Bool = false) {
-        self.init(repeating: 0, count: count, fileBacked: fileBacked)
-    }
-
-    @inlinable
-    @inline(__always)
     public init(arrayLiteral elements: Element ...) {
         self.base = Base(capacity: elements.count, fileBacked: false)
         self.base.count = elements.count
@@ -801,5 +795,13 @@ extension MappedBuffer {
         func memory_unlock() {
             munlock(address, mapped_size)
         }
+    }
+}
+
+extension MappedBuffer where Element : AdditiveArithmetic {
+    @inlinable
+    @inline(__always)
+    public init(zeros count: Int, fileBacked: Bool = false) {
+        self.init(repeating: .zero, count: count, fileBacked: fileBacked)
     }
 }
