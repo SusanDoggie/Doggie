@@ -24,7 +24,7 @@
 //
 
 extension RandomAccessCollection {
-    
+
     @inlinable
     public func slice(by maxLength: Int) -> [SubSequence] {
         return Array(self.lazy.slice(by: maxLength))
@@ -33,23 +33,23 @@ extension RandomAccessCollection {
 
 @_fixed_layout
 public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtocol, LazySequenceProtocol {
-    
+
     @usableFromInline
     let base: Base
-    
+
     @usableFromInline
     let maxLength: Int
-    
+
     @usableFromInline
     var currentIndex: Base.Index
-    
+
     @inlinable
     init(base: Base, maxLength: Int, currentIndex: Base.Index) {
         self.base = base
         self.maxLength = maxLength
         self.currentIndex = currentIndex
     }
-    
+
     @inlinable
     public mutating func next() -> Base.SubSequence? {
         if currentIndex != base.endIndex {
@@ -60,7 +60,7 @@ public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtoco
         }
         return nil
     }
-    
+
     @inlinable
     public var underestimatedCount: Int {
         return base.underestimatedCount / Int(maxLength)
@@ -68,7 +68,7 @@ public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtoco
 }
 
 extension LazyCollectionProtocol where Elements : RandomAccessCollection {
-    
+
     @inlinable
     public func slice(by maxLength: Int) -> LazySliceSequence<Elements> {
         precondition(maxLength != 0, "Sliced by zero-length.")

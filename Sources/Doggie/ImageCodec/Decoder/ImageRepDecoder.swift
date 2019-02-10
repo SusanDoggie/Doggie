@@ -24,25 +24,25 @@
 //
 
 protocol ImageRepDecoder : ImageRepBase {
-    
+
     init?(data: Data) throws
-    
+
     var mediaType: ImageRep.MediaType { get }
 }
 
 struct ImageRepDecoderBitStream : Sequence, IteratorProtocol {
-    
+
     let mask: UInt8
     let shift: Int
     let bitWidth: Int
     let count1: Int
     let count2: Int
-    
+
     var counter1: Int
     var counter2: Int
     var byte: UInt8
     var buffer: UnsafePointer<UInt8>
-    
+
     init(buffer: UnsafePointer<UInt8>, count: Int, bitWidth: Int) {
         switch bitWidth {
         case 1:
@@ -70,23 +70,23 @@ struct ImageRepDecoderBitStream : Sequence, IteratorProtocol {
         self.byte = 0
         self.buffer = buffer
     }
-    
+
     mutating func next() -> UInt8? {
-        
+
         guard counter2 < count2 else { return nil }
-        
+
         if counter1 == 0 {
             byte = buffer.pointee
             buffer += 1
             counter1 = count1
         }
-        
+
         let value = (byte & mask) >> shift
         byte <<= bitWidth
-        
+
         counter1 -= 1
         counter2 += 1
-        
+
         return value
     }
 }

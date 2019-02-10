@@ -27,101 +27,101 @@ import Doggie
 import XCTest
 
 class CompressionTest: XCTestCase {
-    
+
     let sample = ColorSpace.adobeRGB.iccData!
-    
+
     func testZlib() {
-        
+
         do {
-            
+
             let deflate = try Deflate(windowBits: 15)
             let inflate = try Inflate()
-            
+
             let sample = self.sample
-            
+
             let result = try inflate.process(deflate.process(self.sample))
-            
+
             XCTAssertEqual(result, sample)
-            
+
         } catch let error {
-            
+
             XCTFail("\(error)")
-            
+
         }
-        
+
     }
-    
+
     func testGzip() {
-        
+
         do {
-            
+
             let deflate = try Deflate(windowBits: 15 + 16)
             let inflate = try Inflate()
-            
+
             let sample = self.sample
-            
+
             let result = try inflate.process(deflate.process(self.sample))
-            
+
             XCTAssertEqual(result, sample)
-            
+
         } catch let error {
-            
+
             XCTFail("\(error)")
-            
+
         }
-        
+
     }
-    
+
     func testDeflatePerformance() {
-        
+
         let sample = self.sample
-        
+
         self.measure() {
-            
+
             do {
-                
+
                 let deflate = try Deflate(windowBits: 15)
-                
+
                 XCTAssert(try deflate.process(sample).count > 0)
-                
+
             } catch let error {
-                
+
                 XCTFail("\(error)")
-                
+
             }
         }
     }
-    
+
     func testInflatePerformance() {
-        
+
         do {
-            
+
             let deflate = try Deflate(windowBits: 15)
-            
+
             let sample = try deflate.process(self.sample)
-            
+
             self.measure() {
-                
+
                 do {
-                    
+
                     let inflate = try Inflate()
-                    
+
                     XCTAssert(try inflate.process(sample).count > 0)
-                    
+
                 } catch let error {
-                    
+
                     XCTFail("\(error)")
-                    
+
                 }
-                
+
             }
-            
+
         } catch let error {
-            
+
             XCTFail("\(error)")
-            
+
         }
-        
+
     }
-    
+
 }

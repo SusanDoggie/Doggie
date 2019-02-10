@@ -25,7 +25,7 @@
 
 @inline(__always)
 private func JPEGFDCT<T: BinaryFloatingPoint>(_ a1: T, _ h1: T, _ e1: T, _ d1: T, _ c1: T, _ f1: T, _ g1: T, _ b1: T) -> (T, T, T, T, T, T, T, T) {
-    
+
     let a3 = a1 + b1
     let b3 = a1 - b1
     let c3 = c1 + d1
@@ -34,31 +34,31 @@ private func JPEGFDCT<T: BinaryFloatingPoint>(_ a1: T, _ h1: T, _ e1: T, _ d1: T
     let f3 = e1 - f1
     let g3 = g1 + h1
     let h3 = g1 - h1
-    
+
     let a5 = a3 + c3
     let c5 = a3 - c3
     let e5 = e3 + g3
     let g5 = e3 - g3
-    
+
     let M_SQRT1_2 = 0.7071067811865475244008443621048490392848359376884740 as T
-    
+
     let i = M_SQRT1_2 * (f3 - h3)
     let j = M_SQRT1_2 * (f3 + h3)
-    
+
     let a7 = a5 + e5
     let b7 = a5 - e5
     let c7 = b3 + i
     let d7 = d3 + j
     let g7 = b3 - i
     let h7 = d3 - j
-    
+
     let C1 = 1.3870398453221474618216191915664386311134980027420540 as T
     let C2 = 1.3065629648763765278566431734271871535837611883492695 as T
     let C3 = 1.1758756024193587169744671046112612779016253486452909 as T
     let S1 = 0.2758993792829430123359575636693728823636236212324459 as T
     let S2 = 0.5411961001461969843997232053663894200610720633780154 as T
     let S3 = 0.7856949583871021812778973676572167960462421131413813 as T
-    
+
     return (
         a7,
         c7 * C1 - d7 * S1,
@@ -73,14 +73,14 @@ private func JPEGFDCT<T: BinaryFloatingPoint>(_ a1: T, _ h1: T, _ e1: T, _ d1: T
 
 @inline(__always)
 private func JPEGIDCT<T: BinaryFloatingPoint>(_ i0: T, _ i1: T, _ i2: T, _ i3: T, _ i4: T, _ i5: T, _ i6: T, _ i7: T) -> (T, T, T, T, T, T, T, T) {
-    
+
     let C1 = 0.6935199226610737309108095957832193155567490013710270 as T
     let C2 = 0.6532814824381882639283215867135935767918805941746348 as T
     let C3 = 0.5879378012096793584872335523056306389508126743226455 as T
     let S1 = 0.1379496896414715061679787818346864411818118106162230 as T
     let S2 = 0.2705980500730984921998616026831947100305360316890077 as T
     let S3 = 0.3928474791935510906389486838286083980231210565706906 as T
-    
+
     let a1 = i0
     let b1 = i4
     let e1 = i1 * C1 + i7 * S1
@@ -89,7 +89,7 @@ private func JPEGIDCT<T: BinaryFloatingPoint>(_ i0: T, _ i1: T, _ i2: T, _ i3: T
     let c2 = i2 * S2 - i6 * C2
     let g1 = i3 * C3 + i5 * S3
     let g2 = i3 * S3 - i5 * C3
-    
+
     let a3 = a1 + b1
     let b3 = a1 - b1
     let c3 = c1 + c1
@@ -102,7 +102,7 @@ private func JPEGIDCT<T: BinaryFloatingPoint>(_ i0: T, _ i1: T, _ i2: T, _ i3: T
     let g4 = g2 - e2
     let h3 = g1 - e1
     let h4 = g2 + e2
-    
+
     let a5 = a3 + c3
     let b5 = b3 - d4
     let c5 = a3 - c3
@@ -113,12 +113,12 @@ private func JPEGIDCT<T: BinaryFloatingPoint>(_ i0: T, _ i1: T, _ i2: T, _ i3: T
     let g6 = e4 - g4
     let h5 = f3 + h4
     let h6 = f4 - h3
-    
+
     let M_SQRT1_2 = 0.7071067811865475244008443621048490392848359376884740 as T
-    
+
     let i = M_SQRT1_2 * (f5 - f6)
     let k = M_SQRT1_2 * (h5 + h6)
-    
+
     return (
         a5 + e5,
         d5 + k,
@@ -132,7 +132,7 @@ private func JPEGIDCT<T: BinaryFloatingPoint>(_ i0: T, _ i1: T, _ i2: T, _ i3: T
 }
 
 struct JPEG_DCT_BLOCK<T: FixedWidthInteger> {
-    
+
     var r0: (T, T, T, T, T, T, T, T)
     var r1: (T, T, T, T, T, T, T, T)
     var r2: (T, T, T, T, T, T, T, T)
@@ -141,7 +141,7 @@ struct JPEG_DCT_BLOCK<T: FixedWidthInteger> {
     var r5: (T, T, T, T, T, T, T, T)
     var r6: (T, T, T, T, T, T, T, T)
     var r7: (T, T, T, T, T, T, T, T)
-    
+
     init(_ r0: (T, T, T, T, T, T, T, T),
          _ r1: (T, T, T, T, T, T, T, T),
          _ r2: (T, T, T, T, T, T, T, T),
@@ -159,7 +159,7 @@ struct JPEG_DCT_BLOCK<T: FixedWidthInteger> {
         self.r6 = r6
         self.r7 = r7
     }
-    
+
     init<S: BinaryFloatingPoint>(_ r0: (S, S, S, S, S, S, S, S),
                                  _ r1: (S, S, S, S, S, S, S, S),
                                  _ r2: (S, S, S, S, S, S, S, S),
@@ -190,9 +190,9 @@ struct JPEG_DCT_BLOCK<T: FixedWidthInteger> {
 }
 
 extension JPEG_DCT_BLOCK {
-    
+
     func FDCT() -> JPEG_DCT_BLOCK {
-        
+
         let c0 = JPEGFDCT(Double(r0.0), Double(r0.1), Double(r0.2), Double(r0.3), Double(r0.4), Double(r0.5), Double(r0.6), Double(r0.7))
         let c1 = JPEGFDCT(Double(r1.0), Double(r1.1), Double(r1.2), Double(r1.3), Double(r1.4), Double(r1.5), Double(r1.6), Double(r1.7))
         let c2 = JPEGFDCT(Double(r2.0), Double(r2.1), Double(r2.2), Double(r2.3), Double(r2.4), Double(r2.5), Double(r2.6), Double(r2.7))
@@ -201,7 +201,7 @@ extension JPEG_DCT_BLOCK {
         let c5 = JPEGFDCT(Double(r5.0), Double(r5.1), Double(r5.2), Double(r5.3), Double(r5.4), Double(r5.5), Double(r5.6), Double(r5.7))
         let c6 = JPEGFDCT(Double(r6.0), Double(r6.1), Double(r6.2), Double(r6.3), Double(r6.4), Double(r6.5), Double(r6.6), Double(r6.7))
         let c7 = JPEGFDCT(Double(r7.0), Double(r7.1), Double(r7.2), Double(r7.3), Double(r7.4), Double(r7.5), Double(r7.6), Double(r7.7))
-        
+
         let d0 = JPEGFDCT(c0.0, c1.0, c2.0, c3.0, c4.0, c5.0, c6.0, c7.0)
         let d1 = JPEGFDCT(c0.1, c1.1, c2.1, c3.1, c4.1, c5.1, c6.1, c7.1)
         let d2 = JPEGFDCT(c0.2, c1.2, c2.2, c3.2, c4.2, c5.2, c6.2, c7.2)
@@ -210,7 +210,7 @@ extension JPEG_DCT_BLOCK {
         let d5 = JPEGFDCT(c0.5, c1.5, c2.5, c3.5, c4.5, c5.5, c6.5, c7.5)
         let d6 = JPEGFDCT(c0.6, c1.6, c2.6, c3.6, c4.6, c5.6, c6.6, c7.6)
         let d7 = JPEGFDCT(c0.7, c1.7, c2.7, c3.7, c4.7, c5.7, c6.7, c7.7)
-        
+
         return JPEG_DCT_BLOCK(
             (d0.0 * 0.125, d1.0 * 0.125, d2.0 * 0.125, d3.0 * 0.125, d4.0 * 0.125, d5.0 * 0.125, d6.0 * 0.125, d7.0 * 0.125),
             (d0.1 * 0.125, d1.1 * 0.125, d2.1 * 0.125, d3.1 * 0.125, d4.1 * 0.125, d5.1 * 0.125, d6.1 * 0.125, d7.1 * 0.125),
@@ -222,9 +222,9 @@ extension JPEG_DCT_BLOCK {
             (d0.7 * 0.125, d1.7 * 0.125, d2.7 * 0.125, d3.7 * 0.125, d4.7 * 0.125, d5.7 * 0.125, d6.7 * 0.125, d7.7 * 0.125)
         )
     }
-    
+
     func IDCT() -> JPEG_DCT_BLOCK {
-        
+
         let c0 = JPEGIDCT(Double(r0.0), Double(r0.1), Double(r0.2), Double(r0.3), Double(r0.4), Double(r0.5), Double(r0.6), Double(r0.7))
         let c1 = JPEGIDCT(Double(r1.0), Double(r1.1), Double(r1.2), Double(r1.3), Double(r1.4), Double(r1.5), Double(r1.6), Double(r1.7))
         let c2 = JPEGIDCT(Double(r2.0), Double(r2.1), Double(r2.2), Double(r2.3), Double(r2.4), Double(r2.5), Double(r2.6), Double(r2.7))
@@ -233,7 +233,7 @@ extension JPEG_DCT_BLOCK {
         let c5 = JPEGIDCT(Double(r5.0), Double(r5.1), Double(r5.2), Double(r5.3), Double(r5.4), Double(r5.5), Double(r5.6), Double(r5.7))
         let c6 = JPEGIDCT(Double(r6.0), Double(r6.1), Double(r6.2), Double(r6.3), Double(r6.4), Double(r6.5), Double(r6.6), Double(r6.7))
         let c7 = JPEGIDCT(Double(r7.0), Double(r7.1), Double(r7.2), Double(r7.3), Double(r7.4), Double(r7.5), Double(r7.6), Double(r7.7))
-        
+
         let d0 = JPEGIDCT(c0.0, c1.0, c2.0, c3.0, c4.0, c5.0, c6.0, c7.0)
         let d1 = JPEGIDCT(c0.1, c1.1, c2.1, c3.1, c4.1, c5.1, c6.1, c7.1)
         let d2 = JPEGIDCT(c0.2, c1.2, c2.2, c3.2, c4.2, c5.2, c6.2, c7.2)
@@ -242,7 +242,7 @@ extension JPEG_DCT_BLOCK {
         let d5 = JPEGIDCT(c0.5, c1.5, c2.5, c3.5, c4.5, c5.5, c6.5, c7.5)
         let d6 = JPEGIDCT(c0.6, c1.6, c2.6, c3.6, c4.6, c5.6, c6.6, c7.6)
         let d7 = JPEGIDCT(c0.7, c1.7, c2.7, c3.7, c4.7, c5.7, c6.7, c7.7)
-        
+
         return JPEG_DCT_BLOCK(
             (d0.0 * 0.125, d1.0 * 0.125, d2.0 * 0.125, d3.0 * 0.125, d4.0 * 0.125, d5.0 * 0.125, d6.0 * 0.125, d7.0 * 0.125),
             (d0.1 * 0.125, d1.1 * 0.125, d2.1 * 0.125, d3.1 * 0.125, d4.1 * 0.125, d5.1 * 0.125, d6.1 * 0.125, d7.1 * 0.125),

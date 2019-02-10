@@ -24,33 +24,33 @@
 //
 
 public protocol UnsafeBufferProtocol: RandomAccessCollection {
-    
+
     func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R
 }
 
 public protocol UnsafeMutableBufferProtocol: UnsafeBufferProtocol, MutableCollection {
-    
+
     mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws -> R) rethrows -> R
 }
 
 extension Array: UnsafeMutableBufferProtocol {
-    
+
 }
 
 extension ArraySlice: UnsafeMutableBufferProtocol {
-    
+
 }
 
 extension ContiguousArray: UnsafeMutableBufferProtocol {
-    
+
 }
 
 extension MappedBuffer: UnsafeMutableBufferProtocol {
-    
+
 }
 
 extension UnsafeBufferPointer: UnsafeBufferProtocol {
-    
+
     @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R {
         return try body(self)
@@ -58,12 +58,12 @@ extension UnsafeBufferPointer: UnsafeBufferProtocol {
 }
 
 extension UnsafeMutableBufferPointer: UnsafeMutableBufferProtocol {
-    
+
     @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R {
         return try body(UnsafeBufferPointer(self))
     }
-    
+
     @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws -> R) rethrows -> R {
         var copy = self
@@ -74,25 +74,25 @@ extension UnsafeMutableBufferPointer: UnsafeMutableBufferProtocol {
 }
 
 extension Data: UnsafeMutableBufferProtocol {
-    
+
     @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<UInt8>) throws -> R) rethrows -> R {
         let count = self.count
         return try self.withUnsafeBytes { try body(UnsafeBufferPointer(start: $0, count: count)) }
     }
-    
+
     @inlinable
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<UInt8>) throws -> R) rethrows -> R {
-        
+
         let count = self.count
-        
+
         return try self.withUnsafeMutableBytes { (bytes: UnsafeMutablePointer<UInt8>) in
-            
+
             var buf = UnsafeMutableBufferPointer(start: bytes, count: count)
-            
+
             defer { precondition(buf.baseAddress == bytes) }
             defer { precondition(buf.count == count) }
-            
+
             return try body(&buf)
         }
     }

@@ -24,7 +24,7 @@
 //
 
 struct SFNTPOST : ByteDecodable {
-    
+
     var format: Fixed16Number<BEInt32>
     var italicAngle: Fixed16Number<BEInt32>
     var underlinePosition: BEInt16
@@ -34,7 +34,7 @@ struct SFNTPOST : ByteDecodable {
     var maxMemType42: BEUInt32
     var minMemType1: BEUInt32
     var maxMemType1: BEUInt32
-    
+
     init(from data: inout Data) throws {
         self.format = try data.decode(Fixed16Number<BEInt32>.self)
         self.italicAngle = try data.decode(Fixed16Number<BEInt32>.self)

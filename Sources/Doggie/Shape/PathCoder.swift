@@ -24,22 +24,22 @@
 //
 
 private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequence where I.Element == String {
-    
+
     var iterator: I
     var current: String!
-    
+
     @inlinable
     @inline(__always)
     init(_ iterator: I) {
         self.iterator = iterator
     }
-    
+
     @inlinable
     @inline(__always)
     init<S : Sequence>(_ sequence: S) where S.Iterator == I {
         self.iterator = sequence.makeIterator()
     }
-    
+
     @inlinable
     @inline(__always)
     @discardableResult
@@ -52,41 +52,41 @@ private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequenc
 private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?"
 
 extension Shape {
-    
+
     public struct ParserError : Error {
-        
+
         var command: String?
     }
-    
+
     @inline(__always)
     private func toDouble(_ str: String?) throws -> Double {
-        
+
         if str != nil, let val = Double(str!) {
             return val
         }
         throw ParserError(command: str)
     }
-    
+
     @inline(__always)
     private func toInt(_ str: String?) throws -> Int {
-        
+
         if str != nil, let val = Int(str!) {
             return val
         }
         throw ParserError(command: str)
     }
-    
+
     public init(code: String) throws {
         self.init()
-        
+
         var g = PathDataScanner(code.match(regex: pathDataMatcher))
         var component = Component()
         var relative = Point()
         var lastcontrol = Point()
         var lastbezier = 0
-        
+
         let commandsymbol = Array("MmLlHhVvCcSsQqTtAaZz".utf8)
-        
+
         g.next()
         while let command = g.current {
             g.next()
@@ -333,11 +333,11 @@ extension Shape {
                 throw ParserError(command: command)
             }
         }
-        
+
         if component.count != 0 {
             self.append(component)
         }
-        
+
         self.makeContiguousBuffer()
     }
 }
@@ -379,9 +379,9 @@ private func getPathDataString(_ command: Character?, _ x: Double ...) -> String
 }
 
 extension Shape {
-    
+
     public func encode() -> String {
-        
+
         var data = ""
         var currentState = -1
         var start = Point()
@@ -395,23 +395,23 @@ extension Shape {
 }
 
 extension Shape.Component {
-    
+
     fileprivate func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?, _ data: inout String) {
-        
+
         let move1 = getPathDataString("M", self.start.x, self.start.y)
         let move2 = getPathDataString("m", self.start.x - relative.x, self.start.y - relative.y)
-        
+
         currentState = 0
         start = self.start
         relative = self.start
         lastControl = nil
-        
+
         if move1.count <= move2.count {
             move1.write(to: &data)
         } else {
             move2.write(to: &data)
         }
-        
+
         for item in self {
             let _serialize1 = item.serialize1(currentState, relative, lastControl)
             let _serialize2 = item.serialize2(currentState, relative, lastControl)
@@ -427,32 +427,32 @@ extension Shape.Component {
                 lastControl = _serialize2.3
             }
         }
-        
+
         if self.isClosed {
             data.append("z")
             relative = self.start
         }
     }
-    
+
 }
 
 extension Shape.Segment {
-    
+
     @inline(__always)
     fileprivate func isSmooth(_ p: Point, _ relative: Point, _ lastControl: Point?) -> Bool {
-        
+
         if let lastControl = lastControl {
             let d = p + lastControl - 2 * relative
             return _round(d.x) == 0 && _round(d.y) == 0
         }
         return false
     }
-    
+
     fileprivate func serialize1(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
-        
+
         switch self {
         case let .line(point):
-            
+
             var currentState = currentState
             let str: String
             if _round(relative.x) == _round(point.x) {
@@ -467,7 +467,7 @@ extension Shape.Segment {
             }
             return (str, currentState, point, nil)
         case let .quad(p1, p2):
-            
+
             var currentState = currentState
             let str: String
             if isSmooth(p1, relative, lastControl) && 7...10 ~= currentState {
@@ -479,7 +479,7 @@ extension Shape.Segment {
             }
             return (str, currentState, p2, p1)
         case let .cubic(p1, p2, p3):
-            
+
             var currentState = currentState
             let str: String
             if isSmooth(p1, relative, lastControl) && 11...14 ~= currentState {
@@ -492,12 +492,12 @@ extension Shape.Segment {
             return (str, currentState, p3, p2)
         }
     }
-    
+
     fileprivate func serialize2(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
-        
+
         switch self {
         case let .line(point):
-            
+
             var currentState = currentState
             let str: String
             if _round(relative.x) == _round(point.x) {
@@ -512,7 +512,7 @@ extension Shape.Segment {
             }
             return (str, currentState, point, nil)
         case let .quad(p1, p2):
-            
+
             var currentState = currentState
             let str: String
             if isSmooth(p1, relative, lastControl) && 7...10 ~= currentState {
@@ -524,7 +524,7 @@ extension Shape.Segment {
             }
             return (str, currentState, p2, p1)
         case let .cubic(p1, p2, p3):
-            
+
             var currentState = currentState
             let str: String
             if isSmooth(p1, relative, lastControl) && 11...14 ~= currentState {

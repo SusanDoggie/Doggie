@@ -24,14 +24,14 @@
 //
 
 public protocol CompressionCodec: AnyObject {
-    
+
     func process(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws
-    
+
     func final(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws
 }
 
 extension CompressionCodec {
-    
+
     @inlinable
     public func final(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         try process(source, callback)
@@ -40,22 +40,22 @@ extension CompressionCodec {
 }
 
 extension CompressionCodec {
-    
+
     @inlinable
     public func process<S : UnsafeBufferProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where S.Element == UInt8, C.Element == UInt8 {
         try process(source) { output.append(contentsOf: $0) }
     }
-    
+
     @inlinable
     public func final<S : UnsafeBufferProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where S.Element == UInt8, C.Element == UInt8 {
         try final(source) { output.append(contentsOf: $0) }
     }
-    
+
     @inlinable
     public func process<S : UnsafeBufferProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws where S.Element == UInt8 {
         try source.withUnsafeBufferPointer { try process($0, callback) }
     }
-    
+
     @inlinable
     public func final<S : UnsafeBufferProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws where S.Element == UInt8 {
         try source.withUnsafeBufferPointer { try final($0, callback) }
@@ -63,7 +63,7 @@ extension CompressionCodec {
 }
 
 extension CompressionCodec {
-    
+
     @inlinable
     public func final<C : RangeReplaceableCollection>(_ output: inout C) throws where C.Element == UInt8 {
         try final { output.append(contentsOf: $0) }
@@ -71,7 +71,7 @@ extension CompressionCodec {
 }
 
 extension CompressionCodec {
-    
+
     @inlinable
     public func process(_ source: Data) throws -> Data {
         var result = Data(capacity: source.count)

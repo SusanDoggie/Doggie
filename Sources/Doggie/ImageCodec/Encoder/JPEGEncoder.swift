@@ -24,11 +24,11 @@
 //
 
 struct JPEGEncoder : ImageRepEncoder {
-    
+
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
-        
+
         return nil
     }
-    
+
 }
 

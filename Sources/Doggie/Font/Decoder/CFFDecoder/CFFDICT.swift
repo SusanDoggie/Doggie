@@ -24,9 +24,9 @@
 //
 
 struct CFFDICT : ByteDecodable {
-    
+
     var dict: [Int: [Operand]] = [:]
-    
+
     init(from data: inout Data) throws {
         var operands = [Operand]()
         while let byte = data.popFirst() {
@@ -39,30 +39,30 @@ struct CFFDICT : ByteDecodable {
                 }
                 operands = []
             } else {
-                
+
                 switch byte {
                 case 28:
-                    
+
                     guard let b1 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     guard let b2 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     operands.append(.integer(b1 << 8 | b2))
-                    
+
                 case 29:
-                    
+
                     guard let b1 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     guard let b2 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     guard let b3 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     guard let b4 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     operands.append(.integer(b1 << 24 | b2 << 16 | b3 << 8 | b4))
-                    
+
                 case 30:
-                    
+
                     var numberStr = ""
-                    
+
                     loop: while true {
-                        
+
                         guard let b1 = data.popFirst() else { throw ByteDecodeError.endOfData }
-                        
+
                         switch b1 >> 4 {
                         case 0x0: numberStr.append("0")
                         case 0x1: numberStr.append("1")
@@ -104,31 +104,31 @@ struct CFFDICT : ByteDecodable {
                         default: break
                         }
                     }
-                    
+
                     guard let number = Double(numberStr) else { throw FontCollection.Error.InvalidFormat("Invalid CFF DICT operand.") }
-                    
+
                     operands.append(.number(number))
-                    
+
                 case 32...246:
-                    
+
                     operands.append(.integer(Int(byte) - 139))
-                    
+
                 case 247...250:
-                    
+
                     guard let b1 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     operands.append(.integer((Int(byte) - 247) << 8 + b1 + 108))
-                    
+
                 case 251...254:
-                    
+
                     guard let b1 = data.popFirst().map(Int.init) else { throw ByteDecodeError.endOfData }
                     operands.append(.integer(-(Int(byte) - 251) << 8 - b1 - 108))
-                    
+
                 default: throw FontCollection.Error.InvalidFormat("Invalid CFF DICT operand.")
                 }
             }
         }
     }
-    
+
     enum Operand {
         case integer(Int)
         case number(Double)
@@ -136,7 +136,7 @@ struct CFFDICT : ByteDecodable {
 }
 
 extension CFFDICT {
-    
+
     var fdArrayOffset: Int? {
         if case let .some(.integer(offset)) = dict[1236]?.first, offset != 0 {
             return offset
@@ -149,35 +149,35 @@ extension CFFDICT {
         }
         return nil
     }
-    
+
     var pDICTRange: Range<Int>? {
         if let operands = dict[18], operands.count == 2, case let .integer(size) = operands[0], case let .integer(offset) = operands[1], size != 0 && offset != 0 {
             return offset..<offset + size
         }
         return nil
     }
-    
+
     var subrsOffset: Int? {
         if case let .some(.integer(offset)) = dict[19]?.first, offset != 0 {
             return offset
         }
         return nil
     }
-    
+
     var charstringType: Int {
         if case let .some(.integer(type)) = dict[1206]?.first {
             return type
         }
         return 2
     }
-    
+
     var charStringsOffset: Int? {
         if case let .some(.integer(offset)) = dict[17]?.first, offset != 0 {
             return offset
         }
         return nil
     }
-    
+
     var encodingOffset: Int? {
         if case let .some(.integer(offset)) = dict[16]?.first, offset != 0 {
             return offset

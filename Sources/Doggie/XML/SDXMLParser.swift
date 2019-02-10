@@ -24,18 +24,18 @@
 //
 
 extension SDXMLDocument {
-    
+
     public enum Error : Swift.Error {
-        
+
         case unknown
         case parser(String)
     }
-    
+
     public init(xml string: String) throws {
         guard let data = string.data(using: .utf8) else { throw Error.unknown }
         try self.init(data: data)
     }
-    
+
     public init(data: Data) throws {
         let parser = SDXMLParser(data: data)
         guard parser.parse() else { throw parser.parserError.map { Error.parser($0.localizedDescription) } ?? Error.unknown }
@@ -44,40 +44,40 @@ extension SDXMLDocument {
 }
 
 class SDXMLParser : XMLParser, XMLParserDelegate {
-    
+
     var document = SDXMLDocument()
     var stack: [(SDXMLElement, [String: String])] = []
     var namespaces: [String: String] = [:]
-    
+
     override init(data: Data) {
         super.init(data: data)
         self.delegate = self
         self.shouldProcessNamespaces = true
         self.shouldReportNamespacePrefixes = true
     }
-    
+
     func parser(_ parser: XMLParser, didStartMappingPrefix prefix: String, toURI namespaceURI: String) {
         namespaces[prefix] = namespaceURI
     }
-    
+
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
-        
+
         var attributeDict = attributeDict
-        
+
         for (prefix, uri) in namespaces {
             attributeDict[prefix == "" ? "xmlns" : "xmlns:\(prefix)"] = uri
         }
-        
+
         var attributes: [SDXMLAttribute: String] = [:]
-        
+
         for (_attribute, value) in attributeDict {
-            
+
             let prefix: String
             let attribute: String
             var namespace: String?
-            
+
             let split = _attribute.split(separator: ":")
-            
+
             if split.count == 2 && split[0] != "xmlns" {
                 prefix = String(split[0])
                 attribute = String(split[1])
@@ -85,7 +85,7 @@ class SDXMLParser : XMLParser, XMLParserDelegate {
                 prefix = ""
                 attribute = _attribute
             }
-            
+
             if let _namespace = namespaces.first(where: { $0.key == prefix })?.value {
                 namespace = _namespace
             } else {
@@ -96,18 +96,18 @@ class SDXMLParser : XMLParser, XMLParserDelegate {
                     }
                 }
             }
-            
+
             if let namespace = namespace {
                 attributes[SDXMLAttribute(attribute: attribute, namespace: namespace)] = value
             } else {
                 attributes[SDXMLAttribute(attribute: _attribute)] = value
             }
         }
-        
+
         stack.append((SDXMLElement(name: elementName, namespace: namespaceURI ?? "", attributes: attributes), namespaces))
         namespaces = [:]
     }
-    
+
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         if let last = stack.popLast() {
             if stack.count == 0 {
@@ -117,11 +117,11 @@ class SDXMLParser : XMLParser, XMLParserDelegate {
             }
         }
     }
-    
+
     func parser(_ parser: XMLParser, foundCharacters string: String) {
-        
+
         let string = string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        
+
         if string != "" {
             if stack.count == 0 {
                 document.append(SDXMLElement(characters: string))
@@ -130,7 +130,7 @@ class SDXMLParser : XMLParser, XMLParserDelegate {
             }
         }
     }
-    
+
     func parser(_ parser: XMLParser, foundComment comment: String) {
         if stack.count == 0 {
             document.append(SDXMLElement(comment: comment))
@@ -138,7 +138,7 @@ class SDXMLParser : XMLParser, XMLParserDelegate {
             stack.mutableLast.0.append(SDXMLElement(comment: comment))
         }
     }
-    
+
     func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
         if stack.count == 0 {
             document.append(SDXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))

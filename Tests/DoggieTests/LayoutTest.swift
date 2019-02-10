@@ -27,64 +27,64 @@ import Doggie
 import XCTest
 
 class LayoutTest: XCTestCase {
-    
+
     func _testLayout<T: Tensor>(_: T.Type) -> Bool where T.Scalar : BinaryFloatingPoint {
-        
+
         guard MemoryLayout<T>.size == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }
         guard MemoryLayout<T>.stride == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }
-        
+
         var x = T()
-        
+
         for i in 0..<T.numberOfComponents {
             x[i] = T.Scalar(i + 1)
             guard x[i] == T.Scalar(i + 1) else { return false }
         }
-        
+
         return withUnsafeBytes(of: x) {
-            
+
             guard let ptr = $0.baseAddress?.assumingMemoryBound(to: T.Scalar.self) else { return false }
-            
+
             for i in 0..<T.numberOfComponents {
                 guard ptr[i] == T.Scalar(i + 1) else { return false }
             }
-            
+
             return true
         }
     }
-    
+
     func testComplexLayout() {
-        
+
         XCTAssertEqual(MemoryLayout<Complex>.size, MemoryLayout<Double>.stride * 2)
         XCTAssertEqual(MemoryLayout<Complex>.stride, MemoryLayout<Double>.stride * 2)
-        
+
         var c = Complex()
-        
+
         c.real = 1.0
         c.imag = 2.0
-        
+
         withUnsafeBytes(of: c) {
-            
+
             guard let ptr = $0.baseAddress?.assumingMemoryBound(to: Double.self) else { XCTFail(); return }
-            
+
             XCTAssertEqual(ptr[0], 1.0)
             XCTAssertEqual(ptr[1], 2.0)
         }
     }
-    
+
     func testPointLayout() {
-        
+
         XCTAssertTrue(_testLayout(Point.self))
-        
+
     }
-    
+
     func testVectorLayout() {
-        
+
         XCTAssertTrue(_testLayout(Vector.self))
-        
+
     }
-    
+
     func testColorModelLayout() {
-        
+
         XCTAssertTrue(_testLayout(GrayColorModel.self))
         XCTAssertTrue(_testLayout(XYZColorModel.self))
         XCTAssertTrue(_testLayout(YxyColorModel.self))
@@ -108,11 +108,11 @@ class LayoutTest: XCTestCase {
         XCTAssertTrue(_testLayout(DeviceDColorModel.self))
         XCTAssertTrue(_testLayout(DeviceEColorModel.self))
         XCTAssertTrue(_testLayout(DeviceFColorModel.self))
-        
+
     }
-    
+
     func testColorComponentsLayout() {
-        
+
         XCTAssertTrue(_testLayout(GrayColorModel.Float32Components.self))
         XCTAssertTrue(_testLayout(XYZColorModel.Float32Components.self))
         XCTAssertTrue(_testLayout(YxyColorModel.Float32Components.self))
@@ -136,36 +136,36 @@ class LayoutTest: XCTestCase {
         XCTAssertTrue(_testLayout(DeviceDColorModel.Float32Components.self))
         XCTAssertTrue(_testLayout(DeviceEColorModel.Float32Components.self))
         XCTAssertTrue(_testLayout(DeviceFColorModel.Float32Components.self))
-        
+
     }
-    
+
     func _testLayout<T: _FloatComponentPixel>(_: T.Type) -> Bool {
-        
+
         guard MemoryLayout<T>.size == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }
         guard MemoryLayout<T>.stride == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }
-        
+
         var c = T.Model()
-        
+
         for i in 0..<T.Model.numberOfComponents {
             c[i] = Double(i + 1)
         }
-        
+
         let x = T(color: c, opacity: Double(T.numberOfComponents))
-        
+
         return withUnsafeBytes(of: x) {
-            
+
             guard let ptr = $0.baseAddress?.assumingMemoryBound(to: T.Scalar.self) else { return false }
-            
+
             for i in 0..<T.numberOfComponents {
                 guard ptr[i] == T.Scalar(i + 1) else { return false }
             }
-            
+
             return true
         }
     }
-    
+
     func testFloat32ColorPixelLayout() {
-        
+
         XCTAssertTrue(_testLayout(Float32ColorPixel<GrayColorModel>.self))
         XCTAssertTrue(_testLayout(Float32ColorPixel<XYZColorModel>.self))
         XCTAssertTrue(_testLayout(Float32ColorPixel<YxyColorModel>.self))
@@ -189,11 +189,11 @@ class LayoutTest: XCTestCase {
         XCTAssertTrue(_testLayout(Float32ColorPixel<DeviceDColorModel>.self))
         XCTAssertTrue(_testLayout(Float32ColorPixel<DeviceEColorModel>.self))
         XCTAssertTrue(_testLayout(Float32ColorPixel<DeviceFColorModel>.self))
-        
+
     }
-    
+
     func testFloat64ColorPixelLayout() {
-        
+
         XCTAssertTrue(_testLayout(Float64ColorPixel<GrayColorModel>.self))
         XCTAssertTrue(_testLayout(Float64ColorPixel<XYZColorModel>.self))
         XCTAssertTrue(_testLayout(Float64ColorPixel<YxyColorModel>.self))
@@ -217,7 +217,7 @@ class LayoutTest: XCTestCase {
         XCTAssertTrue(_testLayout(Float64ColorPixel<DeviceDColorModel>.self))
         XCTAssertTrue(_testLayout(Float64ColorPixel<DeviceEColorModel>.self))
         XCTAssertTrue(_testLayout(Float64ColorPixel<DeviceFColorModel>.self))
-        
+
     }
-    
+
 }

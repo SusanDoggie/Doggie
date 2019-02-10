@@ -24,17 +24,17 @@
 //
 
 public struct Radius : Hashable {
-    
+
     public var x: Double
     public var y: Double
-    
+
     @inlinable
     @inline(__always)
     public init() {
         self.x = 0
         self.y = 0
     }
-    
+
     @inlinable
     @inline(__always)
     public init(x: Double, y: Double) {
@@ -50,7 +50,7 @@ public struct Radius : Hashable {
 }
 
 extension Radius: CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return "Radius(x: \(x), y: \(y))"
@@ -58,7 +58,7 @@ extension Radius: CustomStringConvertible {
 }
 
 extension Radius : Codable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -66,7 +66,7 @@ extension Radius : Codable {
         self.x = try container.decode(Double.self)
         self.y = try container.decode(Double.self)
     }
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -94,36 +94,36 @@ public func EllipseRadius(_ p0: Point, _ p1: Point, _ r: Radius, _ rotate: Doubl
 
 @inlinable
 public func EllipseCenter(_ r: Radius, _ rotate: Double, _ a: Point, _ b: Point) -> [Point] {
-    
+
     let _sin = sin(rotate)
     let _cos = cos(rotate)
-    
+
     let ax = a.x * _cos + a.y * _sin
     let ay = a.y * _cos - a.x * _sin
     let bx = b.x * _cos + b.y * _sin
     let by = b.y * _cos - b.x * _sin
-    
+
     let dx = (ax - bx) / r.x
     let dy = (ay - by) / r.y
     let d = dx * dx + dy * dy
-    
+
     let _x = 0.5 * (ax + bx)
     let _y = 0.5 * (ay + by)
-    
+
     if d == 4 {
         return [Point(x: _x * _cos - _y * _sin, y: _x * _sin + _y * _cos)]
     } else if d < 4 {
         let _t = sqrt((1 - d * 0.25) / d)
-        
+
         let cx1 = _x + _t * dy * r.x
         let cy1 = _y - _t * dx * r.y
         let cx2 = _x - _t * dy * r.x
         let cy2 = _y + _t * dx * r.y
-        
+
         return [Point(x: cx1 * _cos - cy1 * _sin, y: cx1 * _sin + cy1 * _cos),
                 Point(x: cx2 * _cos - cy2 * _sin, y: cx2 * _sin + cy2 * _cos)]
     }
-    
+
     return []
 }
 
@@ -156,25 +156,25 @@ public func EllipseStationary(_ r: Radius, _ a: Double, _ b: Double) -> Double {
 @inlinable
 @inline(__always)
 public func EllipseBound(_ center: Point, _ r: Radius, _ matrix: SDTransform) -> Rect {
-    
+
     let t1 = EllipseStationary(r, matrix.a, matrix.b)
     let t2 = EllipseStationary(r, matrix.d, matrix.e)
-    
+
     let p0 = Ellipse(t1, center, r)
     let p1 = Ellipse(t1 + Double.pi, center, r)
     let p2 = Ellipse(t2, center, r)
     let p3 = Ellipse(t2 + Double.pi, center, r)
-    
+
     let _p0 = matrix.a * p0.x + matrix.b * p0.y
     let _p1 = matrix.a * p1.x + matrix.b * p1.y
     let _p2 = matrix.d * p2.x + matrix.e * p2.y
     let _p3 = matrix.d * p3.x + matrix.e * p3.y
-    
+
     let minX = min(_p0, _p1)
     let minY = min(_p2, _p3)
     let maxX = max(_p0, _p1)
     let maxY = max(_p2, _p3)
-    
+
     return Rect(x: minX + matrix.c, y: minY + matrix.f, width: maxX - minX, height: maxY - minY)
 }
 
@@ -183,7 +183,7 @@ public func EllipseBound(_ center: Point, _ r: Radius, _ matrix: SDTransform) ->
 @inlinable
 @inline(__always)
 public func ArcSignedArea(_ startAngle: Double, _ endAngle: Double, _ center: Point, _ radius: Radius) -> Double {
-    
+
     let diffAngle = endAngle - startAngle
     let sin1 = sin(startAngle)
     let cos1 = cos(startAngle)

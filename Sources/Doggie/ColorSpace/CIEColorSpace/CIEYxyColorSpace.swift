@@ -24,12 +24,12 @@
 //
 
 extension ColorSpace where Model == YxyColorModel {
-    
+
     @inlinable
     public static func cieYxy<C>(from colorSpace: ColorSpace<C>) -> ColorSpace {
         return ColorSpace(base: CIEYxyColorSpace(colorSpace.base.cieXYZ))
     }
-    
+
     @inlinable
     public static func cieYxy(white: Point) -> ColorSpace {
         return ColorSpace(base: CIEYxyColorSpace(CIEXYZColorSpace(white: white)))
@@ -39,13 +39,13 @@ extension ColorSpace where Model == YxyColorModel {
 @_fixed_layout
 @usableFromInline
 struct CIEYxyColorSpace : ColorSpaceBaseProtocol {
-    
+
     @usableFromInline
     typealias Model = YxyColorModel
-    
+
     @usableFromInline
     let cieXYZ: CIEXYZColorSpace
-    
+
     @inlinable
     init(_ cieXYZ: CIEXYZColorSpace) {
         self.cieXYZ = cieXYZ
@@ -53,7 +53,7 @@ struct CIEYxyColorSpace : ColorSpaceBaseProtocol {
 }
 
 extension CIEYxyColorSpace {
-    
+
     @inlinable
     func hash(into hasher: inout Hasher) {
         hasher.combine("CIEYxyColorSpace")
@@ -62,7 +62,7 @@ extension CIEYxyColorSpace {
 }
 
 extension CIEYxyColorSpace {
-    
+
     @inlinable
     var localizedName: String? {
         return "Doggie CIE Yxy Color Space (white = \(cieXYZ.white.point))"
@@ -70,7 +70,7 @@ extension CIEYxyColorSpace {
 }
 
 extension CIEYxyColorSpace {
-    
+
     @inlinable
     var linearTone: CIEYxyColorSpace {
         return self
@@ -78,22 +78,22 @@ extension CIEYxyColorSpace {
 }
 
 extension CIEYxyColorSpace {
-    
+
     @inlinable
     func convertToLinear(_ color: Model) -> Model {
         return color
     }
-    
+
     @inlinable
     func convertFromLinear(_ color: Model) -> Model {
         return color
     }
-    
+
     @inlinable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         return XYZColorModel(color)
     }
-    
+
     @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         return Model(color)

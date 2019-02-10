@@ -24,10 +24,10 @@
 //
 
 struct SFNTPlatform : ByteDecodable {
-    
+
     var platform: BEUInt16
     var specific: BEUInt16
-    
+
     init(from data: inout Data) throws {
         self.platform = try data.decode(BEUInt16.self)
         self.specific = try data.decode(BEUInt16.self)
@@ -35,7 +35,7 @@ struct SFNTPlatform : ByteDecodable {
 }
 
 extension SFNTPlatform {
-    
+
     var encoding: String.Encoding? {
         switch Int(platform) {
         case 0: return .utf16BigEndian

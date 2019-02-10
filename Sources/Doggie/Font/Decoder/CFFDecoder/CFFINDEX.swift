@@ -24,16 +24,16 @@
 //
 
 struct CFFINDEX : ByteDecodable, RandomAccessCollection {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Index = Int
-    
+
     var _count: BEUInt16
     var offSize: UInt8
     var offset: Data
     var data: Data
-    
+
     init(from data: inout Data) throws {
         self._count = try data.decode(BEUInt16.self)
         if _count == 0 {
@@ -41,55 +41,55 @@ struct CFFINDEX : ByteDecodable, RandomAccessCollection {
             self.offset = Data()
             self.data = Data()
         } else {
-            
+
             self.offSize = try data.decode(UInt8.self)
-            
+
             guard 1...4 ~= offSize else { throw FontCollection.Error.InvalidFormat("Invalid CFF INDEX format.") }
-            
+
             let offsetSize = Int(offSize) * (Int(_count) + 1)
             self.offset = data.popFirst(offsetSize)
             guard offset.count == offsetSize else { throw ByteDecodeError.endOfData }
-            
+
             let dataSize = CFFINDEX._offset(Int(_count) - 1, offSize, offset).upperBound
             self.data = data.popFirst(dataSize)
             guard self.data.count == dataSize else { throw ByteDecodeError.endOfData }
         }
     }
-    
+
     static func _offset(_ index: Int, _ offSize: UInt8, _ offset: Data) -> Range<Int> {
-        
+
         return offset.withUnsafeBytes { (offset: UnsafePointer<UInt8>) in
-            
+
             let offSize = Int(offSize)
-            
+
             var start = offset + index * offSize
             var end = start + offSize
-            
+
             var startIndex = 0
             var endIndex = 0
-            
+
             for _ in 0..<offSize {
                 startIndex = (startIndex << 8) | Int(start.pointee)
                 endIndex = (endIndex << 8) | Int(end.pointee)
                 start += 1
                 end += 1
             }
-            
+
             startIndex -= 1
             endIndex -= 1
-            
+
             return startIndex..<Swift.max(startIndex, endIndex)
         }
     }
-    
+
     var startIndex: Int {
         return 0
     }
-    
+
     var endIndex: Int {
         return Int(_count)
     }
-    
+
     subscript(position: Int) -> Data {
         precondition(position < count, "Index out of range.")
         let range = CFFINDEX._offset(position, offSize, offset)

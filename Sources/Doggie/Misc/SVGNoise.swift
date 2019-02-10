@@ -24,19 +24,19 @@
 //
 
 public struct SVGNoise {
-    
+
     private var uLatticeSelector: [Int]
     private var fGradient: [[Point]]
-    
+
     public init(_ lSeed: Int) {
-        
+
         let BSize = 0x100
-        
+
         self.uLatticeSelector = Array(repeating: 0, count: BSize + BSize + 2)
         self.fGradient = Array(repeating: Array(repeating: Point(), count: BSize + BSize + 2), count: 4)
-        
+
         var RG = RandomGenerator(lSeed)
-        
+
         for k in 0..<4 {
             for i in 0..<BSize {
                 uLatticeSelector[i] = i
@@ -45,14 +45,14 @@ public struct SVGNoise {
                 fGradient[k][i] /= fGradient[k][i].magnitude
             }
         }
-        
+
         for i in (1..<BSize).reversed() {
             let k = uLatticeSelector[i]
             let j = RG.random() % BSize
             uLatticeSelector[i] = uLatticeSelector[j]
             uLatticeSelector[j] = k
         }
-        
+
         for i in 0..<BSize + 2 {
             uLatticeSelector[BSize + i] = uLatticeSelector[i]
             for k in 0..<4 {
@@ -63,16 +63,16 @@ public struct SVGNoise {
 }
 
 extension SVGNoise {
-    
+
     private static let RAND_m = 2147483647
     private static let RAND_a = 16807
     private static let RAND_q = 127773
     private static let RAND_r = 2836
-    
+
     private struct RandomGenerator {
-        
+
         private var seed: Int
-        
+
         init(_ lSeed: Int) {
             var lSeed = lSeed
             if lSeed <= 0 {
@@ -83,7 +83,7 @@ extension SVGNoise {
             }
             self.seed = lSeed
         }
-        
+
         private mutating func _random() {
             var result = RAND_a * (seed % RAND_q) - RAND_r * (seed / RAND_q)
             if result <= 0 {
@@ -91,7 +91,7 @@ extension SVGNoise {
             }
             self.seed = result
         }
-        
+
         mutating func random() -> Int {
             self._random()
             return seed
@@ -100,28 +100,28 @@ extension SVGNoise {
 }
 
 extension SVGNoise {
-    
+
     private struct StitchInfo {
-        
+
         var width: Int = 0
         var height: Int = 0
         var wrapX: Int = 0
         var wrapY: Int = 0
     }
-    
+
     private static func s_curve(_ t: Double) -> Double {
         return t * t * (3.0 - 2.0 * t)
     }
     private static func lerp(_ t: Double, _ a: Double, _ b: Double) -> Double {
         return a + t * (b - a)
     }
-    
+
     private func noise2(_ channel: Int, _ point: Point, _ stitchInfo: StitchInfo?) -> Double {
-        
+
         var bx0, bx1, by0, by1, b00, b10, b01, b11: Int
         var rx0, rx1, ry0, ry1, sx, sy, a, b, t, u, v: Double
         var q: Point
-        
+
         t = point.x + 4096
         bx0 = Int(t)
         bx1 = bx0 + 1
@@ -132,7 +132,7 @@ extension SVGNoise {
         by1 = by0 + 1
         ry0 = t - Double(Int(t))
         ry1 = ry0 - 1.0
-        
+
         if let stitchInfo = stitchInfo {
             if bx0 >= stitchInfo.wrapX {
                 bx0 -= stitchInfo.width
@@ -147,12 +147,12 @@ extension SVGNoise {
                 by1 -= stitchInfo.height
             }
         }
-        
+
         bx0 &= 0xFF
         bx1 &= 0xFF
         by0 &= 0xFF
         by1 &= 0xFF
-        
+
         let i = uLatticeSelector[bx0]
         let j = uLatticeSelector[bx1]
         b00 = uLatticeSelector[i + by0]
@@ -161,7 +161,7 @@ extension SVGNoise {
         b11 = uLatticeSelector[j + by1]
         sx = SVGNoise.s_curve(rx0)
         sy = SVGNoise.s_curve(ry0)
-        
+
         q = fGradient[channel][b00]
         u = rx0 * q.x + ry0 * q.y
         q = fGradient[channel][b10]
@@ -172,19 +172,19 @@ extension SVGNoise {
         q = fGradient[channel][b11]
         v = rx1 * q.x + ry1 * q.y
         b = SVGNoise.lerp(sx, u, v)
-        
+
         return SVGNoise.lerp(sy, a, b)
     }
-    
+
     public func turbulence(_ channel: Int, _ point: Point, _ baseFreqX: Double, _ baseFreqY: Double, _ numOctaves: Int, _ fractalSum: Bool, _ stitchTile: Rect?) -> Double {
-        
+
         var stitchInfo: StitchInfo?
-        
+
         var baseFreqX = baseFreqX
         var baseFreqY = baseFreqY
-        
+
         if let stitchTile = stitchTile {
-            
+
             if baseFreqX != 0.0 {
                 let fLoFreq = floor(stitchTile.width * baseFreqX) / stitchTile.width
                 let fHiFreq = ceil(stitchTile.width * baseFreqX) / stitchTile.width
@@ -203,32 +203,32 @@ extension SVGNoise {
                     baseFreqY = fHiFreq
                 }
             }
-            
+
             stitchInfo = StitchInfo()
             stitchInfo!.width = Int(stitchTile.width * baseFreqX + 0.5)
             stitchInfo!.wrapX = Int(stitchTile.x * baseFreqX + 4096 + Double(stitchInfo!.width))
             stitchInfo!.height = Int(stitchTile.height * baseFreqY + 0.5)
             stitchInfo!.wrapY = Int(stitchTile.y * baseFreqY + 4096 + Double(stitchInfo!.height))
         }
-        
+
         var fSum = 0.0
         var point = point
         point.x *= baseFreqX
         point.y *= baseFreqY
         var ratio = 1.0
-        
+
         for _ in 0..<numOctaves {
-            
+
             if fractalSum {
                 fSum += noise2(channel, point, stitchInfo) / ratio
             } else {
                 fSum += fabs(noise2(channel, point, stitchInfo)) / ratio
             }
-            
+
             point.x *= 2
             point.y *= 2
             ratio *= 2
-            
+
             if stitchInfo != nil {
                 stitchInfo!.width *= 2
                 stitchInfo!.wrapX = 2 * stitchInfo!.wrapX - 0x1000

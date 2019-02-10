@@ -39,61 +39,61 @@ private let command_encoder_limit = 512
 
 @available(OSX 10.13, iOS 11.0, *)
 class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
-    
+
     typealias ClipEncoder = MetalRenderer<GrayColorModel>.Encoder
-    
+
     let device: MTLDevice
     let library: MTLLibrary
     let queue: MTLCommandQueue
-    
+
     let lck = SDLock()
     var _pipeline: [String: MTLComputePipelineState] = [:]
-    
+
     var maxBufferLength: Int {
         return device.maxBufferLength
     }
-    
+
     required init(device: MTLDevice) throws {
         self.device = device
         self.library = try device.makeDefaultLibrary(bundle: Bundle(for: MetalRenderer.self))
         self.queue = try MetalRenderer.make_queue(device: device)
     }
-    
+
     static func make_queue(device: MTLDevice) throws -> MTLCommandQueue {
-        
+
         MTLCommandQueueCacheLock.lock()
         defer { MTLCommandQueueCacheLock.unlock() }
-        
+
         let key = device as! NSObject
-        
+
         if let queue = MTLCommandQueueCache[key] {
             return queue
         }
-        
+
         guard let queue = device.makeCommandQueue() else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeCommandQueue failed.") }
         MTLCommandQueueCache[key] = queue
-        
+
         return queue
     }
-    
+
     func request_pipeline(_ name: String) throws -> MTLComputePipelineState {
-        
+
         lck.lock()
         defer { lck.unlock() }
-        
+
         if let pipeline = _pipeline[name] {
             return pipeline
         }
-        
+
         let constant = MTLFunctionConstantValues()
         constant.setConstantValue([Int32(Model.numberOfComponents + 1)], type: .int, withName: "countOfComponents")
-        
+
         let pipeline = try device.makeComputePipelineState(function: library.makeFunction(name: name, constantValues: constant))
         _pipeline[name] = pipeline
-        
+
         return pipeline
     }
-    
+
     func encoder(width: Int, height: Int) throws -> Encoder {
         return Encoder(width: width, height: height, renderer: self)
     }
@@ -101,29 +101,29 @@ class MetalRenderer<Model : ColorModelProtocol> : DGRenderer {
 
 @available(OSX 10.13, iOS 11.0, *)
 extension DGImageContext {
-    
+
     public func prepare() -> Bool {
         guard let device = MTLCreateSystemDefaultDevice() else { return false }
         return self.prepare(device: device)
     }
-    
+
     public func prepare(device: MTLDevice) -> Bool {
         return autoreleasepool { self.prepare(device, MetalRenderer.self) }
     }
-    
+
     public func render() throws {
         guard let device = MTLCreateSystemDefaultDevice() else { throw Error(description: "MTLCreateSystemDefaultDevice failed.") }
         try self.render(device: device)
     }
-    
+
     public func render(device: MTLDevice) throws {
         try autoreleasepool { try self.render(device, MetalRenderer.self) }
     }
-    
+
     public static func maxPixelsCount(for device: MTLDevice) throws -> Int {
         return try maxPixelsCount(device, MetalRenderer.self)
     }
-    
+
     public func maxAntialiasLevel(for device: MTLDevice) throws -> Int {
         return try self.maxAntialiasLevel(device, MetalRenderer.self)
     }
@@ -131,23 +131,23 @@ extension DGImageContext {
 
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer {
-    
+
     func prepare() -> Bool {
-        
+
         var pipelines = [
             "set_opacity",
             "shadow",
             "clip",
             ]
-        
+
         let winding = [
             "nonZero",
             "evenOdd",
             ]
-        
+
         pipelines.append(contentsOf: winding.map { "fill_\($0)_stencil" })
         pipelines.append(contentsOf: winding.map { "fill_\($0)_stencil2" })
-        
+
         let compositing_mode = [
             "copy",
             "sourceOver",
@@ -160,7 +160,7 @@ extension MetalRenderer {
             "destinationAtop",
             "exclusiveOr",
             ]
-        
+
         let blend_mode = [
             "normal",
             "multiply",
@@ -177,11 +177,11 @@ extension MetalRenderer {
             "plusDarker",
             "plusLighter",
             ]
-        
+
         for blending_name in blend_mode {
             pipelines.append("blend_clear_\(blending_name)_clip")
         }
-        
+
         for compositing_name in compositing_mode {
             for blending_name in blend_mode {
                 if compositing_name != "copy" || blending_name != "normal" {
@@ -190,7 +190,7 @@ extension MetalRenderer {
                 pipelines.append("blend_\(compositing_name)_\(blending_name)_clip")
             }
         }
-        
+
         let resampling = [
             "none",
             "linear",
@@ -200,14 +200,14 @@ extension MetalRenderer {
             "mitchell",
             "lanczos",
             ]
-        
+
         let wrapping = [
             "none",
             "clamp",
             "repeat",
             "mirror",
             ]
-        
+
         for algorithm_name in resampling {
             for h_wrapping_name in wrapping {
                 for v_wrapping_name in wrapping {
@@ -215,51 +215,51 @@ extension MetalRenderer {
                 }
             }
         }
-        
+
         let gradient_spread = [
             "none",
             "pad",
             "reflect",
             "repeat",
             ]
-        
+
         for start_name in gradient_spread {
             for end_name in gradient_spread {
                 pipelines.append("axial_gradient_\(start_name)_\(end_name)")
                 pipelines.append("radial_gradient_\(start_name)_\(end_name)")
             }
         }
-        
+
         for pipeline in pipelines {
             guard (try? self.request_pipeline(pipeline)) != nil else { return false }
         }
-        
+
         return true
     }
 }
 
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer {
-    
+
     class Encoder : DGRendererEncoder {
-        
+
         let width: Int
         let height: Int
-        
+
         let renderer: MetalRenderer<Model>
         var commandBuffer: MTLCommandBuffer?
         var commandEncoder: MTLCommandEncoder?
-        
+
         var command_counter = 0
-        
+
         var stencil_buffer: MTLBuffer?
-        
+
         init(width: Int, height: Int, renderer: MetalRenderer<Model>) {
             self.width = width
             self.height = height
             self.renderer = renderer
         }
-        
+
         deinit {
             self.commit(waitUntilCompleted: false)
         }
@@ -268,54 +268,54 @@ extension MetalRenderer {
 
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
-    
+
     private func check_limit() throws {
-        
+
         guard self.commandEncoder == nil || command_counter >= command_encoder_limit else { return }
-        
+
         commandEncoder?.endEncoding()
         commandBuffer?.commit()
         commandBuffer?.waitUntilScheduled()
-        
+
         commandEncoder = nil
         commandBuffer = nil
         command_counter = 0
-        
+
         guard let _commandBuffer = renderer.queue.makeCommandBuffer() else { throw DGImageContext<Model>.Error(description: "MTLCommandQueue.makeCommandBuffer failed.") }
         self.commandBuffer = _commandBuffer
     }
-    
+
     private func makeBlitCommandEncoder() throws -> MTLBlitCommandEncoder {
-        
+
         try self.check_limit()
-        
+
         command_counter += 1
-        
+
         if let encoder = self.commandEncoder as? MTLBlitCommandEncoder {
             return encoder
         } else {
             commandEncoder?.endEncoding()
             commandEncoder = nil
         }
-        
+
         guard let encoder = commandBuffer!.makeBlitCommandEncoder() else { throw DGImageContext<Model>.Error(description: "MTLCommandBuffer.makeBlitCommandEncoder failed.") }
         self.commandEncoder = encoder
         return encoder
     }
-    
+
     private func makeComputeCommandEncoder() throws -> MTLComputeCommandEncoder {
-        
+
         try self.check_limit()
-        
+
         command_counter += 1
-        
+
         if let encoder = self.commandEncoder as? MTLComputeCommandEncoder {
             return encoder
         } else {
             commandEncoder?.endEncoding()
             commandEncoder = nil
         }
-        
+
         guard let encoder = commandBuffer!.makeComputeCommandEncoder() else { throw DGImageContext<Model>.Error(description: "MTLCommandBuffer.makeComputeCommandEncoder failed.") }
         self.commandEncoder = encoder
         return encoder
@@ -324,7 +324,7 @@ extension MetalRenderer.Encoder {
 
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
-    
+
     func commit(waitUntilCompleted: Bool) {
         commandEncoder?.endEncoding()
         commandBuffer?.commit()
@@ -335,48 +335,48 @@ extension MetalRenderer.Encoder {
         commandBuffer = nil
         command_counter = 0
     }
-    
+
     func alloc_texture() throws -> MTLBuffer {
         guard let buffer = device.makeBuffer(length: texture_size, options: .storageModePrivate) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
         return buffer
     }
-    
+
     func make_buffer(_ texture: Texture<Float32ColorPixel<Model>>) throws -> MTLBuffer {
         guard let buffer = device.makeBuffer(texture.pixels) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
         return buffer
     }
-    
+
     func clear(_ buffer: Buffer) throws {
         try self.makeBlitCommandEncoder().fill(buffer: buffer, range: 0..<texture_size, value: 0)
     }
-    
+
     func copy(_ source: MTLBuffer, _ destination: MTLBuffer) throws {
         guard source !== destination else { return }
         try self.makeBlitCommandEncoder().copy(from: source, sourceOffset: 0, to: destination, destinationOffset: 0, size: texture_size)
     }
-    
+
     func setOpacity(_ destination: MTLBuffer, _ opacity: Double) throws {
-        
+
         let encoder = try self.makeComputeCommandEncoder()
-        
+
         let pipeline = try renderer.request_pipeline("set_opacity")
         encoder.setComputePipelineState(pipeline)
-        
+
         encoder.setValue(Float(opacity), index: 0)
         encoder.setBuffer(destination, offset: 0, index: 1)
-        
+
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
-        
+
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
-    
+
     func blend(_ source: MTLBuffer, _ destination: MTLBuffer, _ stencil: MTLBuffer?, _ stencil_bound: Rect?, _ compositingMode: ColorCompositingMode, _ blendMode: ColorBlendMode) throws {
-        
+
         let compositing_name: String
         let blending_name: String
-        
+
         switch compositingMode {
         case .clear: compositing_name = "clear"
         case .copy: compositing_name = "copy"
@@ -390,7 +390,7 @@ extension MetalRenderer.Encoder {
         case .destinationAtop: compositing_name = "destinationAtop"
         case .xor: compositing_name = "exclusiveOr"
         }
-        
+
         switch blendMode {
         case .normal: blending_name = "normal"
         case .multiply: blending_name = "multiply"
@@ -407,19 +407,19 @@ extension MetalRenderer.Encoder {
         case .plusDarker: blending_name = "plusDarker"
         case .plusLighter: blending_name = "plusLighter"
         }
-        
+
         let encoder = try self.makeComputeCommandEncoder()
-        
+
         let pipeline = try renderer.request_pipeline(stencil == nil ? "blend_\(compositing_name)_\(blending_name)" : "blend_\(compositing_name)_\(blending_name)_clip")
         encoder.setComputePipelineState(pipeline)
-        
+
         let _width: Int
         let _height: Int
-        
+
         if let stencil = stencil {
-            
+
             let parameter: BlendParameter
-            
+
             if let stencil_bound = stencil_bound {
                 let _min_x = max(0, Int(floor(stencil_bound.minX)))
                 let _min_y = max(0, Int(floor(stencil_bound.minY)))
@@ -433,110 +433,110 @@ extension MetalRenderer.Encoder {
                 _height = height
                 parameter = BlendParameter(offset_x: 0, offset_y: 0, width: UInt32(width))
             }
-            
+
             encoder.setValue(parameter, index: 0)
             encoder.setBuffer(source, offset: 0, index: 1)
             encoder.setBuffer(destination, offset: 0, index: 2)
             encoder.setBuffer(stencil, offset: 0, index: 3)
-            
+
         } else {
             _width = width
             _height = height
             encoder.setBuffer(source, offset: 0, index: 0)
             encoder.setBuffer(destination, offset: 0, index: 1)
         }
-        
+
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
-        
+
         encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
-    
+
     func shadow(_ source: MTLBuffer, _ destination: MTLBuffer, _ color: Float32ColorPixel<Model>, _ offset: Size, _ blur: Double) throws {
-        
+
         let encoder = try self.makeComputeCommandEncoder()
-        
+
         let pipeline = try renderer.request_pipeline("shadow")
         encoder.setComputePipelineState(pipeline)
-        
+
         encoder.setValue(ShadowParameter(offset: GPSize(offset), blur: Float(blur), color: GPColor(color)), index: 0)
         encoder.setBuffer(source, offset: 0, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
-        
+
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
-        
+
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
-    
+
     func draw(_ destination: MTLBuffer, _ _stencil: MTLBuffer?, _ shape: Shape, _ color: Float32ColorPixel<Model>, _ winding: Shape.WindingRule, _ antialias: Int) throws {
-        
+
         let stencil: MTLBuffer
-        
+
         let stencil_size = width * height * antialias * antialias * 2
         guard stencil_size <= device.maxBufferLength else { throw DGImageContext<Model>.Error(description: "Texture size is limited to \(device.maxBufferLength / 0x100000) MB.") }
-        
+
         if let stencil_buffer = self.stencil_buffer, stencil_buffer.length >= stencil_size {
-            
+
             try self.makeBlitCommandEncoder().fill(buffer: stencil_buffer, range: 0..<stencil_size, value: 0)
             stencil = stencil_buffer
-            
+
         } else {
-            
+
             guard let _stencil = device.makeBuffer(length: stencil_size, options: .storageModePrivate) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
-            
+
             self.stencil_buffer = _stencil
             stencil = _stencil
         }
-        
+
         var shape = shape
         shape.transform = shape.transform * SDTransform.scale(Double(antialias))
-        
+
         guard var bound = try self.stencil(shape: shape, width: width * antialias, height: height * antialias, output: stencil) else { return }
-        
+
         bound /= Double(antialias)
-        
+
         let offset_x = max(0, min(width - 1, Int(floor(bound.x))))
         let offset_y = max(0, min(height - 1, Int(floor(bound.y))))
         let _width = min(width - offset_x, Int(ceil(bound.width + 1)))
         let _height = min(height - offset_y, Int(ceil(bound.height + 1)))
-        
+
         let winding_name: String
-        
+
         switch winding {
         case .nonZero: winding_name = "nonZero"
         case .evenOdd: winding_name = "evenOdd"
         }
-        
+
         let encoder = try self.makeComputeCommandEncoder()
-        
+
         let pipeline = try renderer.request_pipeline(_stencil == nil ? "fill_\(winding_name)_stencil" : "fill_\(winding_name)_stencil2")
         encoder.setComputePipelineState(pipeline)
-        
+
         encoder.setValue(FillStencilParameter(offset_x: UInt32(offset_x), offset_y: UInt32(offset_y), width: UInt32(width), antialias: UInt32(antialias), color: GPColor(color)), index: 0)
         encoder.setBuffer(stencil, offset: 0, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
         if let _stencil = _stencil {
             encoder.setBuffer(_stencil, offset: 0, index: 3)
         }
-        
+
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, _width), height: min(h, _height), depth: 1)
-        
+
         encoder.dispatchThreads(MTLSize(width: _width, height: _height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
-    
+
     func draw(_ source: Texture<Float32ColorPixel<Model>>, _ destination: MTLBuffer, _ transform: SDTransform, _ antialias: Int) throws {
-        
+
         guard let _source = device.makeBuffer(source.pixels) else { throw DGImageContext<Model>.Error(description: "MTLDevice.makeBuffer failed.") }
-        
+
         let algorithm_name: String
         let h_wrapping_name: String
         let v_wrapping_name: String
-        
+
         switch source.resamplingAlgorithm {
         case .none: algorithm_name = "none"
         case .linear: algorithm_name = "linear"
@@ -546,93 +546,93 @@ extension MetalRenderer.Encoder {
         case .mitchell: algorithm_name = "mitchell"
         case .lanczos: algorithm_name = "lanczos"
         }
-        
+
         switch source.horizontalWrappingMode {
         case .none: h_wrapping_name = "none"
         case .clamp: h_wrapping_name = "clamp"
         case .repeat: h_wrapping_name = "repeat"
         case .mirror: h_wrapping_name = "mirror"
         }
-        
+
         switch source.verticalWrappingMode {
         case .none: v_wrapping_name = "none"
         case .clamp: v_wrapping_name = "clamp"
         case .repeat: v_wrapping_name = "repeat"
         case .mirror: v_wrapping_name = "mirror"
         }
-        
+
         let encoder = try self.makeComputeCommandEncoder()
-        
+
         let pipeline = try renderer.request_pipeline("\(algorithm_name)_interpolate_\(h_wrapping_name)_\(v_wrapping_name)")
         encoder.setComputePipelineState(pipeline)
-        
+
         encoder.setValue(InterpolateParameter(source, transform, antialias), index: 0)
         encoder.setBuffer(_source, offset: 0, index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
-        
+
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
-        
+
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
-    
+
     func clip(_ destination: MTLBuffer, _ clip: MTLBuffer) throws {
-        
+
         let encoder = try self.makeComputeCommandEncoder()
-        
+
         let pipeline = try renderer.request_pipeline("clip")
         encoder.setComputePipelineState(pipeline)
-        
+
         encoder.setBuffer(clip, offset: 0, index: 0)
         encoder.setBuffer(destination, offset: 0, index: 1)
-        
+
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
-        
+
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
-    
+
     private func draw_gradient(_ destination: MTLBuffer, _ type: String, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
-        
+
         let start_name: String
         let end_name: String
-        
+
         switch startSpread {
         case .none: start_name = "none"
         case .pad: start_name = "pad"
         case .reflect: start_name = "reflect"
         case .repeat: start_name = "repeat"
         }
-        
+
         switch endSpread {
         case .none: end_name = "none"
         case .pad: end_name = "pad"
         case .reflect: end_name = "reflect"
         case .repeat: end_name = "repeat"
         }
-        
+
         let encoder = try self.makeComputeCommandEncoder()
-        
+
         let pipeline = try renderer.request_pipeline("\(type)_gradient_\(start_name)_\(end_name)")
         encoder.setComputePipelineState(pipeline)
-        
+
         encoder.setValue(GradientParameter(stops.count, transform, start, startRadius, end, endRadius), index: 0)
         encoder.setBuffer(stops.map(_GradientStop.init), index: 1)
         encoder.setBuffer(destination, offset: 0, index: 2)
-        
+
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, width), height: min(h, height), depth: 1)
-        
+
         encoder.dispatchThreads(MTLSize(width: width, height: height, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
-    
+
     func linearGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ end: Point, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
         try draw_gradient(destination, "axial", stops, transform, start, 0, end, 0, startSpread, endSpread)
     }
-    
+
     func radialGradient(_ destination: MTLBuffer, _ stops: [DGRendererEncoderGradientStop<Model>], _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double, _ startSpread: GradientSpreadMode, _ endSpread: GradientSpreadMode) throws {
         try draw_gradient(destination, "radial", stops, transform, start, startRadius, end, endRadius, startSpread, endSpread)
     }
@@ -640,65 +640,65 @@ extension MetalRenderer.Encoder {
 
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
-    
+
     private struct GPPoint {
-        
+
         var x: Float
         var y: Float
-        
+
         init(_ point: Point) {
             self.x = Float(point.x)
             self.y = Float(point.y)
         }
     }
-    
+
     private struct GPSize {
-        
+
         var width: Float
         var height: Float
-        
+
         init(width: Float, height: Float) {
             self.width = width
             self.height = height
         }
-        
+
         init(_ size: Size) {
             self.width = Float(size.width)
             self.height = Float(size.height)
         }
     }
-    
+
     private struct GPVector {
-        
+
         var x: Float
         var y: Float
         var z: Float
-        
+
         init(_ point: Vector) {
             self.x = Float(point.x)
             self.y = Float(point.y)
             self.z = Float(point.z)
         }
     }
-    
+
     private struct GPTransform {
-        
+
         var transform: (Float, Float, Float, Float, Float, Float)
-        
+
         init(_ transform: SDTransform) {
             self.transform = (Float(transform.a), Float(transform.d), Float(transform.b), Float(transform.e), Float(transform.c), Float(transform.f))
         }
     }
-    
+
     private struct GPColor {
-        
+
         var color: (Float, Float, Float, Float,
         Float, Float, Float, Float,
         Float, Float, Float, Float,
         Float, Float, Float, Float)
-        
+
         init<Pixel: ColorPixelProtocol>(_ color: Pixel) {
-            
+
             let _color0 = 0..<Pixel.numberOfComponents ~= 0 ? Float(color.component(0)) : 0
             let _color1 = 0..<Pixel.numberOfComponents ~= 1 ? Float(color.component(1)) : 0
             let _color2 = 0..<Pixel.numberOfComponents ~= 2 ? Float(color.component(2)) : 0
@@ -715,57 +715,57 @@ extension MetalRenderer.Encoder {
             let _color13 = 0..<Pixel.numberOfComponents ~= 13 ? Float(color.component(13)) : 0
             let _color14 = 0..<Pixel.numberOfComponents ~= 14 ? Float(color.component(14)) : 0
             let _color15 = 0..<Pixel.numberOfComponents ~= 15 ? Float(color.component(15)) : 0
-            
+
             self.color = (_color0, _color1, _color2, _color3,
                           _color4, _color5, _color6, _color7,
                           _color8, _color9, _color10, _color11,
                           _color12, _color13, _color14, _color15)
         }
     }
-    
+
     private struct ShadowParameter {
-        
+
         var offset: GPSize
         var blur: Float
         var color: GPColor
     }
-    
+
     private struct FillStencilParameter {
-        
+
         var offset_x: UInt32
         var offset_y: UInt32
         var width: UInt32
         var antialias: UInt32
         var color: GPColor
     }
-    
+
     private struct BlendParameter {
-        
+
         var offset_x: UInt32
         var offset_y: UInt32
         var width: UInt32
     }
-    
+
     private struct _GradientStop {
-        
+
         var offset: Float
         var color: GPColor
-        
+
         init(_ stop: DGRendererEncoderGradientStop<Model>) {
             self.offset = Float(stop.offset)
             self.color = GPColor(stop.color)
         }
     }
-    
+
     private struct GradientParameter {
-        
+
         var transform: GPTransform
         var start: GPPoint
         var end: GPPoint
         var radius: GPSize
         var numOfStops: UInt32
         var padding: UInt32
-        
+
         init(_ numOfStops: Int, _ transform: SDTransform, _ start: Point, _ startRadius: Double, _ end: Point, _ endRadius: Double) {
             self.transform = GPTransform(transform)
             self.start = GPPoint(start)
@@ -775,15 +775,15 @@ extension MetalRenderer.Encoder {
             self.padding = 0
         }
     }
-    
+
     private struct InterpolateParameter {
-        
+
         var transform: GPTransform
         var source_size: (UInt32, UInt32)
         var a: (Float, Float)
         var b: UInt32
         var antialias: UInt32
-        
+
         init(_ source: Texture<Float32ColorPixel<Model>>, _ transform: SDTransform, _ antialias: Int) {
             self.transform = GPTransform(transform)
             self.source_size = (UInt32(source.width), UInt32(source.height))
@@ -808,29 +808,29 @@ extension MetalRenderer.Encoder {
 
 @available(OSX 10.13, iOS 11.0, *)
 extension MetalRenderer.Encoder {
-    
+
     private struct Triangle {
-        
+
         var p0: GPPoint
         var p1: GPPoint
         var p2: GPPoint
-        
+
         init(_ p0: GPPoint, _ p1: GPPoint, _ p2: GPPoint) {
             self.p0 = p0
             self.p1 = p1
             self.p2 = p2
         }
     }
-    
+
     private struct CubicTriangle {
-        
+
         var p0: GPPoint
         var p1: GPPoint
         var p2: GPPoint
         var v0: GPVector
         var v1: GPVector
         var v2: GPVector
-        
+
         init(_ p0: GPPoint, _ p1: GPPoint, _ p2: GPPoint, _ v0: GPVector, _ v1: GPVector, _ v2: GPVector) {
             self.p0 = p0
             self.p1 = p1
@@ -840,7 +840,7 @@ extension MetalRenderer.Encoder {
             self.v2 = v2
         }
     }
-    
+
     private func scan(_ p0: GPPoint, _ p1: GPPoint, _ y: Float) -> Float {
         let d = p1.y - p0.y
         let _d = 1 / d
@@ -848,95 +848,95 @@ extension MetalRenderer.Encoder {
         let r = (p0.x * p1.y - p1.x * p0.y) * _d
         return q * y + r
     }
-    
+
     private func intRange(_ min: Float, _ max: Float, _ bound: Range<Int>) -> Range<Int> {
-        
+
         let _min = min.rounded(.up)
         let _max = max.rounded(.down)
-        
+
         let __min = Int(_min)
         let __max = Int(_max)
-        
+
         guard __min <= __max else { return (__min..<__min).clamped(to: bound) }
-        
+
         return _max == max ? (__min..<__max).clamped(to: bound) : Range(__min...__max).clamped(to: bound)
     }
-    
+
     private func rasterize_bound(width: Int, height: Int, triangle: Triangle) throws -> (Int, Range<Int>)? {
-        
+
         var q0 = triangle.p0
         var q1 = triangle.p1
         var q2 = triangle.p2
-        
+
         sort(&q0, &q1, &q2) { $0.y < $1.y }
-        
+
         let y_range = intRange(q0.y, q2.y, 0..<height)
         guard y_range.count != 0 else { return nil }
-        
+
         let x0 = scan(q0, q2, q1.y)
         let x_range = intRange(0, max(x0, q1.x) - min(x0, q1.x), 0..<width)
         guard x_range.count != 0 else { return nil }
-        
+
         return (x_range.count, y_range)
     }
-    
+
     private func render_stencil<T>(width: Int, pipeline: String, x_length: Int, y_range: Range<Int>, triangle: T, output: MTLBuffer) throws {
-        
+
         let encoder = try self.makeComputeCommandEncoder()
-        
+
         let pipeline = try renderer.request_pipeline(pipeline)
         encoder.setComputePipelineState(pipeline)
-        
+
         encoder.setValue((UInt32(y_range.lowerBound), UInt32(width), triangle), index: 0)
         encoder.setBuffer(output, offset: 0, index: 1)
-        
+
         let w = pipeline.threadExecutionWidth
         let h = pipeline.maxTotalThreadsPerThreadgroup / w
         let threadsPerThreadgroup = MTLSize(width: min(w, x_length), height: min(h, y_range.count), depth: 1)
-        
+
         encoder.dispatchThreads(MTLSize(width: x_length, height: y_range.count, depth: 1), threadsPerThreadgroup: threadsPerThreadgroup)
     }
-    
+
     private func stencil(shape: Shape, width: Int, height: Int, output: MTLBuffer) throws -> Rect? {
-        
+
         let transform = shape.transform
-        
+
         var bound: Rect?
-        
+
         try shape.render { op in
-            
+
             switch op * transform {
             case let .triangle(p0, p1, p2):
-                
+
                 bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
-                
+
                 let triangle = Triangle(GPPoint(p0), GPPoint(p1), GPPoint(p2))
-                
+
                 guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: triangle) else { return }
-                
+
                 try render_stencil(width: width, pipeline: "stencil_triangle", x_length: x_length, y_range: y_range, triangle: triangle, output: output)
-                
+
             case let .quadratic(p0, p1, p2):
-                
+
                 bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
-                
+
                 let triangle = Triangle(GPPoint(p0), GPPoint(p1), GPPoint(p2))
-                
+
                 guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: triangle) else { return }
-                
+
                 try render_stencil(width: width, pipeline: "stencil_quadratic", x_length: x_length, y_range: y_range, triangle: triangle, output: output)
-                
+
             case let .cubic(p0, p1, p2, v0, v1, v2):
-                
+
                 bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
-                
+
                 guard let (x_length, y_range) = try rasterize_bound(width: width, height: height, triangle: Triangle(GPPoint(p0), GPPoint(p1), GPPoint(p2))) else { return }
-                
+
                 let triangle = CubicTriangle(GPPoint(p0), GPPoint(p1), GPPoint(p2), GPVector(v0), GPVector(v1), GPVector(v2))
                 try render_stencil(width: width, pipeline: "stencil_cubic", x_length: x_length, y_range: y_range, triangle: triangle, output: output)
             }
         }
-        
+
         return bound
     }
 }

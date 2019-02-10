@@ -24,18 +24,18 @@
 //
 
 public protocol RawBitPattern {
-    
+
     associatedtype BitPattern : FixedWidthInteger
-    
+
     var bitPattern: BitPattern { get }
-    
+
     init(bitPattern: BitPattern)
 }
 
 extension Float : RawBitPattern {
-    
+
 }
 
 extension Double : RawBitPattern {
-    
+
 }

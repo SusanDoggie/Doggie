@@ -24,7 +24,7 @@
 //
 
 public enum SVGTurbulenceType {
-    
+
     case fractalNoise
     case turbulence
 }
@@ -38,53 +38,53 @@ public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ type: SVGTurbulenceT
 @inlinable
 @inline(__always)
 public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ type: SVGTurbulenceType, _ stitchTile: Rect?, _ transform: SDTransform, _ seed: Int, _ baseFrequency: Double, _ numOctaves: Int, _ fileBacked: Bool = false) -> Texture<T> where T.Model == RGBColorModel {
-    
+
     var result = Texture<T>(width: width, height: height, fileBacked: fileBacked)
-    
+
     result.withUnsafeMutableBufferPointer {
-        
+
         guard var ptr = $0.baseAddress else { return }
-        
+
         let noise = SVGNoise(seed)
-        
+
         switch type {
         case .fractalNoise:
-            
+
             for y in 0..<height {
                 for x in 0..<width {
-                    
+
                     let point = Point(x: x, y: y) * transform
-                    
+
                     let red = noise.turbulence(0, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
                     let green = noise.turbulence(1, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
                     let blue = noise.turbulence(2, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
                     let opacity = noise.turbulence(3, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
-                    
+
                     ptr.pointee = T(red: red, green: green, blue: blue, opacity: opacity)
-                    
+
                     ptr += 1
                 }
             }
-            
+
         case .turbulence:
-            
+
             for y in 0..<height {
                 for x in 0..<width {
-                    
+
                     let point = Point(x: x, y: y) * transform
-                    
+
                     let red = noise.turbulence(0, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
                     let green = noise.turbulence(1, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
                     let blue = noise.turbulence(2, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
                     let opacity = noise.turbulence(3, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
-                    
+
                     ptr.pointee = T(red: red, green: green, blue: blue, opacity: opacity)
-                    
+
                     ptr += 1
                 }
             }
         }
     }
-    
+
     return result
 }

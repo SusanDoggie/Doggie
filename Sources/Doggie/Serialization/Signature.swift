@@ -24,16 +24,16 @@
 //
 
 public protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, ByteCodable {
-    
+
     associatedtype Bytes : FixedWidthInteger
-    
+
     var rawValue: Bytes { get set }
-    
+
     init(rawValue: Bytes)
 }
 
 extension SignatureProtocol {
-    
+
     @inlinable
     @inline(__always)
     public init<S: SignatureProtocol>(_ signature: S) where S.Bytes == Bytes {
@@ -42,20 +42,20 @@ extension SignatureProtocol {
 }
 
 extension SignatureProtocol {
-    
+
     @inlinable
     @inline(__always)
     public init(integerLiteral value: Bytes.IntegerLiteralType) {
         self.init(rawValue: Bytes(integerLiteral: value))
     }
-    
+
     @inlinable
     @inline(__always)
     public init(stringLiteral value: StaticString) {
         precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
         self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
     }
-    
+
     @_transparent
     public var description: String {
         return String(self)
@@ -63,7 +63,7 @@ extension SignatureProtocol {
 }
 
 extension String {
-    
+
     @inlinable
     @inline(__always)
     public init<S: SignatureProtocol>(_ signature: S) {
@@ -72,7 +72,7 @@ extension String {
 }
 
 extension SignatureProtocol where Bytes : ByteOutputStreamable {
-    
+
     @inlinable
     @inline(__always)
     public func write<Target: ByteOutputStream>(to stream: inout Target) {
@@ -81,7 +81,7 @@ extension SignatureProtocol where Bytes : ByteOutputStreamable {
 }
 
 extension SignatureProtocol where Bytes : ByteDecodable {
-    
+
     @inlinable
     @inline(__always)
     public init(from data: inout Data) throws {
@@ -90,9 +90,9 @@ extension SignatureProtocol where Bytes : ByteDecodable {
 }
 
 public struct Signature<Bytes : FixedWidthInteger & ByteCodable> : SignatureProtocol {
-    
+
     public var rawValue: Bytes
-    
+
     @inlinable
     @inline(__always)
     public init(rawValue: Bytes) {
@@ -101,6 +101,6 @@ public struct Signature<Bytes : FixedWidthInteger & ByteCodable> : SignatureProt
 }
 
 extension Signature : ByteDecodable where Bytes : ByteDecodable {
-    
+
 }
 

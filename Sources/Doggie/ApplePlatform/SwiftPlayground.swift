@@ -24,7 +24,7 @@
 //
 
 extension Point : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
         return CGPoint(self)
@@ -32,7 +32,7 @@ extension Point : CustomPlaygroundDisplayConvertible {
 }
 
 extension Size : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
         return CGSize(self)
@@ -40,7 +40,7 @@ extension Size : CustomPlaygroundDisplayConvertible {
 }
 
 extension Rect : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
         return CGRect(self)
@@ -48,69 +48,69 @@ extension Rect : CustomPlaygroundDisplayConvertible {
 }
 
 extension Image : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
-        
+
         #if canImport(CoreGraphics)
-        
+
         return cgImage ?? description
-        
+
         #else
-        
+
         return description
-        
+
         #endif
     }
 }
 
 extension AnyImage : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
-        
+
         #if canImport(CoreGraphics)
-        
+
         return cgImage ?? "\(self)"
-        
+
         #else
-        
+
         return "\(self)"
-        
+
         #endif
     }
 }
 
 extension Color : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
-        
+
         #if canImport(CoreGraphics)
-        
+
         return cgColor ?? "\(self)"
-        
+
         #else
-        
+
         return "\(self)"
-        
+
         #endif
     }
 }
 
 extension AnyColor : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
-        
+
         #if canImport(CoreGraphics)
-        
+
         return cgColor ?? "\(self)"
-        
+
         #else
-        
+
         return "\(self)"
-        
+
         #endif
     }
 }
@@ -120,7 +120,7 @@ extension AnyColor : CustomPlaygroundDisplayConvertible {
 import AppKit
 
 extension Shape : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
         return NSBezierPath(self)
@@ -134,7 +134,7 @@ extension Shape : CustomPlaygroundDisplayConvertible {
 import UIKit
 
 extension Shape : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
         return UIBezierPath(self)
@@ -144,7 +144,7 @@ extension Shape : CustomPlaygroundDisplayConvertible {
 #endif
 
 extension ShapeRegion : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
         return shape
@@ -152,7 +152,7 @@ extension ShapeRegion : CustomPlaygroundDisplayConvertible {
 }
 
 extension ShapeRegion.Solid : CustomPlaygroundDisplayConvertible {
-    
+
     @inlinable
     public var playgroundDescription: Any {
         return shape

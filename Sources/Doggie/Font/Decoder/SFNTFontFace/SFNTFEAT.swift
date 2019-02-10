@@ -24,69 +24,69 @@
 //
 
 struct SFNTFEAT: RandomAccessCollection {
-    
+
     var version: BEUInt32
     var featureNameCount: BEUInt16
     var reserved1: BEUInt16
     var reserved2: BEUInt32
-    
+
     var data: Data
-    
+
     init(_ data: Data) throws {
-        
+
         var data = data
-        
+
         self.version = try data.decode(BEUInt32.self)
         self.featureNameCount = try data.decode(BEUInt16.self)
         self.reserved1 = try data.decode(BEUInt16.self)
         self.reserved2 = try data.decode(BEUInt32.self)
         self.data = data
     }
-    
+
     var startIndex: Int {
         return 0
     }
-    
+
     var endIndex: Int {
         return Int(featureNameCount)
     }
-    
+
     subscript(position: Int) -> Name? {
-        
+
         precondition(position < count, "Index out of range.")
-        
+
         var data = self.data.dropFirst(12 * position)
-        
+
         guard let feature = try? data.decode(BEUInt16.self) else { return nil }
         guard let nSettings = try? data.decode(BEUInt16.self) else { return nil }
         guard let settingTable = try? data.decode(BEUInt32.self), settingTable >= 12 else { return nil }
         guard let featureFlags = try? data.decode(BEUInt16.self) else { return nil }
         guard let nameIndex = try? data.decode(BEInt16.self) else { return nil }
-        
+
         return Name(feature: feature, nSettings: nSettings, settingTable: settingTable, featureFlags: featureFlags, nameIndex: nameIndex, data: self.data.dropFirst(Int(settingTable) - 12))
     }
 }
 
 extension SFNTFEAT {
-    
+
     struct Name {
-        
+
         var feature: BEUInt16
         var nSettings: BEUInt16
         var settingTable: BEUInt32
         var featureFlags: BEUInt16
         var nameIndex: BEInt16
-        
+
         var data: Data
     }
 }
 
 extension SFNTFEAT.Name {
-    
+
     var isExclusive: Bool {
         return featureFlags & 0x8000 != 0
     }
-    
+
     var defaultSetting: Int {
         let index = featureFlags & 0x4000 == 0 ? 0 : Int(featureFlags & 0xff)
         return index < nSettings ? index : 0
@@ -94,30 +94,30 @@ extension SFNTFEAT.Name {
 }
 
 extension SFNTFEAT.Name: RandomAccessCollection {
-    
+
     struct Setting {
-        
+
         var setting: BEUInt16
         var nameIndex: BEInt16
     }
-    
+
     var startIndex: Int {
         return 0
     }
-    
+
     var endIndex: Int {
         return Int(nSettings)
     }
-    
+
     subscript(position: Int) -> Setting? {
-        
+
         precondition(position < count, "Index out of range.")
-        
+
         var data = self.data.dropFirst(4 * position)
-        
+
         guard let setting = try? data.decode(BEUInt16.self) else { return nil }
         guard let nameIndex = try? data.decode(BEInt16.self) else { return nil }
-        
+
         return Setting(setting: setting, nameIndex: nameIndex)
     }
 }

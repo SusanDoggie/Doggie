@@ -24,7 +24,7 @@
 //
 
 struct iccMatrix3x3 : ByteCodable {
-    
+
     var e00: Fixed16Number<BEInt32>
     var e01: Fixed16Number<BEInt32>
     var e02: Fixed16Number<BEInt32>
@@ -34,7 +34,7 @@ struct iccMatrix3x3 : ByteCodable {
     var e20: Fixed16Number<BEInt32>
     var e21: Fixed16Number<BEInt32>
     var e22: Fixed16Number<BEInt32>
-    
+
     init(_ matrix: Matrix) {
         self.e00 = Fixed16Number(matrix.a)
         self.e01 = Fixed16Number(matrix.b)
@@ -46,13 +46,13 @@ struct iccMatrix3x3 : ByteCodable {
         self.e21 = Fixed16Number(matrix.j)
         self.e22 = Fixed16Number(matrix.k)
     }
-    
+
     var matrix: Matrix {
         return Matrix(a: e00.representingValue, b: e01.representingValue, c: e02.representingValue, d: 0,
                       e: e10.representingValue, f: e11.representingValue, g: e12.representingValue, h: 0,
                       i: e20.representingValue, j: e21.representingValue, k: e22.representingValue, l: 0)
     }
-    
+
     init(from data: inout Data) throws {
         self.e00 = try data.decode(Fixed16Number.self)
         self.e01 = try data.decode(Fixed16Number.self)
@@ -64,7 +64,7 @@ struct iccMatrix3x3 : ByteCodable {
         self.e21 = try data.decode(Fixed16Number.self)
         self.e22 = try data.decode(Fixed16Number.self)
     }
-    
+
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(e00)
         stream.encode(e01)
@@ -79,33 +79,33 @@ struct iccMatrix3x3 : ByteCodable {
 }
 
 struct iccMatrix3x4 : ByteCodable {
-    
+
     var m: iccMatrix3x3
-    
+
     var e03: Fixed16Number<BEInt32>
     var e13: Fixed16Number<BEInt32>
     var e23: Fixed16Number<BEInt32>
-    
+
     init(_ matrix: Matrix) {
         self.m = iccMatrix3x3(matrix)
         self.e03 = Fixed16Number(matrix.d)
         self.e13 = Fixed16Number(matrix.h)
         self.e23 = Fixed16Number(matrix.l)
     }
-    
+
     var matrix: Matrix {
         return Matrix(a: m.e00.representingValue, b: m.e01.representingValue, c: m.e02.representingValue, d: e03.representingValue,
                       e: m.e10.representingValue, f: m.e11.representingValue, g: m.e12.representingValue, h: e13.representingValue,
                       i: m.e20.representingValue, j: m.e21.representingValue, k: m.e22.representingValue, l: e23.representingValue)
     }
-    
+
     init(from data: inout Data) throws {
         self.m = try data.decode(iccMatrix3x3.self)
         self.e03 = try data.decode(Fixed16Number.self)
         self.e13 = try data.decode(Fixed16Number.self)
         self.e23 = try data.decode(Fixed16Number.self)
     }
-    
+
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(m)
         stream.encode(e03)

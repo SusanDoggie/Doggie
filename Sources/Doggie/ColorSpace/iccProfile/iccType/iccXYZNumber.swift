@@ -24,29 +24,29 @@
 //
 
 struct iccXYZNumber : ByteCodable {
-    
+
     var x: Fixed16Number<BEInt32>
     var y: Fixed16Number<BEInt32>
     var z: Fixed16Number<BEInt32>
-    
+
     init(x: Fixed16Number<BEInt32>, y: Fixed16Number<BEInt32>, z: Fixed16Number<BEInt32>) {
         self.x = x
         self.y = y
         self.z = z
     }
-    
+
     init(_ xyz: XYZColorModel) {
         self.x = Fixed16Number(xyz.x)
         self.y = Fixed16Number(xyz.y)
         self.z = Fixed16Number(xyz.z)
     }
-    
+
     init(from data: inout Data) throws {
         self.x = try data.decode(Fixed16Number.self)
         self.y = try data.decode(Fixed16Number.self)
         self.z = try data.decode(Fixed16Number.self)
     }
-    
+
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(x)
         stream.encode(y)

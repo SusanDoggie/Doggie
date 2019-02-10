@@ -24,7 +24,7 @@
 //
 
 struct SFNTOS2 : ByteDecodable {
-    
+
     var version: BEUInt16
     var xAvgCharWidth: BEInt16
     var usWeightClass: BEUInt16
@@ -47,7 +47,7 @@ struct SFNTOS2 : ByteDecodable {
     var fsSelection: BEUInt16
     var fsFirstCharIndex: BEUInt16
     var fsLastCharIndex: BEUInt16
-    
+
     var sTypoAscender: BEInt16?
     var sTypoDescender: BEInt16?
     var sTypoLineGap: BEInt16?
@@ -60,7 +60,7 @@ struct SFNTOS2 : ByteDecodable {
     var usDefaultChar: BEUInt16?
     var usBreakChar: BEUInt16?
     var usMaxContext: BEUInt16?
-    
+
     init(from data: inout Data) throws {
         self.version = try data.decode(BEUInt16.self)
         self.xAvgCharWidth = try data.decode(BEInt16.self)
@@ -84,7 +84,7 @@ struct SFNTOS2 : ByteDecodable {
         self.fsSelection = try data.decode(BEUInt16.self)
         self.fsFirstCharIndex = try data.decode(BEUInt16.self)
         self.fsLastCharIndex = try data.decode(BEUInt16.self)
-        
+
         self.sTypoAscender = try? data.decode(BEInt16.self)
         self.sTypoDescender = try? data.decode(BEInt16.self)
         self.sTypoLineGap = try? data.decode(BEInt16.self)
@@ -98,9 +98,9 @@ struct SFNTOS2 : ByteDecodable {
         self.usBreakChar = try? data.decode(BEUInt16.self)
         self.usMaxContext = try? data.decode(BEUInt16.self)
     }
-    
+
     struct PANOSE : ByteDecodable {
-        
+
         var bFamilyType: UInt8
         var bSerifStyle: UInt8
         var bWeight: UInt8
@@ -111,7 +111,7 @@ struct SFNTOS2 : ByteDecodable {
         var bLetterform: UInt8
         var bMidline: UInt8
         var bXHeight: UInt8
-        
+
         init(from data: inout Data) throws {
             self.bFamilyType = try data.decode(UInt8.self)
             self.bSerifStyle = try data.decode(UInt8.self)
@@ -124,6 +124,6 @@ struct SFNTOS2 : ByteDecodable {
             self.bMidline = try data.decode(UInt8.self)
             self.bXHeight = try data.decode(UInt8.self)
         }
-        
+
     }
 }

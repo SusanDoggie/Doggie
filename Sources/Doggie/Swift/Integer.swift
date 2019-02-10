@@ -24,34 +24,34 @@
 //
 
 extension FixedWidthInteger {
-    
+
     @inlinable
     public var reverse: Self {
-        
+
         var m1: Self = 0
         for _ in 0..<bitWidth >> 3 {
             m1 = (m1 << 8) | 0x0F
         }
-        
+
         let m2 = (m1 << 2) ^ m1
         let m3 = (m2 << 1) ^ m2
-        
+
         let s1 = (0xF0 as Self).byteSwapped
         let s2 = s1 << 2
         let s3 = s2 << 1
-        
+
         let x0 = self.byteSwapped
         let u0 = (x0 & m1) << 4
         let v0 = ((x0 & ~m1) >> 4) & ~s1
-        
+
         let x1 = u0 | v0
         let u1 = (x1 & m2) << 2
         let v1 = ((x1 & ~m2) >> 2) & ~s2
-        
+
         let x2 = u1 | v1
         let u2 = (x2 & m3) << 1
         let v2 = ((x2 & ~m3) >> 1) & ~s3
-        
+
         return u2 | v2
     }
 }
@@ -63,7 +63,7 @@ public func log2<T: FixedWidthInteger>(_ x: T) -> T {
 }
 
 extension FixedWidthInteger {
-    
+
     @inlinable
     public var hibit: Self {
         return 1 << log2(self)
@@ -71,7 +71,7 @@ extension FixedWidthInteger {
 }
 
 extension FixedWidthInteger {
-    
+
     @inlinable
     public var lowbit: Self {
         return 1 << self.trailingZeroBitCount
@@ -79,7 +79,7 @@ extension FixedWidthInteger {
 }
 
 extension BinaryInteger {
-    
+
     @inlinable
     public var isPower2 : Bool {
         return 0 < self && self & (self - 1) == 0
@@ -87,7 +87,7 @@ extension BinaryInteger {
 }
 
 extension BinaryInteger {
-    
+
     @inlinable
     @inline(__always)
     public func align(_ s: Self) -> Self {
@@ -100,14 +100,14 @@ extension BinaryInteger {
 @inlinable
 @inline(__always)
 func _scale_integer<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger & UnsignedInteger>(_ x: T, _ from_max: T, _ to_max: R) -> R {
-    
+
     @inline(__always)
     func __scale_integer<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ from_max: T, _ to_max: T) -> T {
         let (quotient, remainder) = from_max.dividingFullWidth(x.multipliedFullWidth(by: to_max))
         let (_remainder, overflow) = remainder.multipliedReportingOverflow(by: 2)
         return !overflow && _remainder < from_max ? quotient : quotient + 1
     }
-    
+
     return T.bitWidth > R.bitWidth ? R(__scale_integer(x, from_max, T(to_max))) : __scale_integer(R(x), R(from_max), to_max)
 }
 

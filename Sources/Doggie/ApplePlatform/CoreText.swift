@@ -26,17 +26,17 @@
 #if canImport(CoreGraphics)
 
 extension CTFramesetter {
-    
+
     public var typesetter: CTTypesetter {
         return CTFramesetterGetTypesetter(self)
     }
-    
+
     public func createFrame(_ path: CGPath,
                             _ stringRange: CFRange = CFRange(),
                             _ frameAttributes: CFDictionary? = nil) -> CTFrame {
         return CTFramesetterCreateFrame(self, stringRange, path, frameAttributes)
     }
-    
+
     public func suggestFrameSize(_ constraints: CGSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude),
                                  _ stringRange: CFRange = CFRange(),
                                  _ frameAttributes: CFDictionary? = nil,
@@ -46,13 +46,13 @@ extension CTFramesetter {
 }
 
 extension CGContext {
-    
+
     public func draw(_ string: CFAttributedString, in path: CGPath) {
         let framesetter = CTFramesetterCreateWithAttributedString(string)
         let frame = framesetter.createFrame(path)
         self.draw(frame)
     }
-    
+
     public func draw(_ frame: CTFrame) {
         CTFrameDraw(frame, self)
     }

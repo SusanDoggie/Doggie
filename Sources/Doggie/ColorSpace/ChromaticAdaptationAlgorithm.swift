@@ -31,7 +31,7 @@ public enum ChromaticAdaptationAlgorithm : Hashable {
 }
 
 extension ChromaticAdaptationAlgorithm {
-    
+
     @inlinable
     public static var `default` : ChromaticAdaptationAlgorithm {
         return .bradford
@@ -39,7 +39,7 @@ extension ChromaticAdaptationAlgorithm {
 }
 
 extension ChromaticAdaptationAlgorithm {
-    
+
     @inlinable
     var matrix: Matrix {
         switch self {
@@ -56,12 +56,12 @@ extension ChromaticAdaptationAlgorithm {
 }
 
 extension CIEXYZColorSpace {
-    
+
     @inlinable
     func chromaticAdaptationMatrix(to other: CIEXYZColorSpace, _ algorithm: ChromaticAdaptationAlgorithm) -> Matrix {
         return self.chromaticAdaptationMatrix(to: other, (algorithm, algorithm))
     }
-    
+
     @inlinable
     func chromaticAdaptationMatrix(to other: CIEXYZColorSpace, _ algorithm: (source: ChromaticAdaptationAlgorithm, destination: ChromaticAdaptationAlgorithm)) -> Matrix {
         let m1 = self.normalizeMatrix * algorithm.source.matrix

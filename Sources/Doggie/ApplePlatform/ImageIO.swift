@@ -26,10 +26,10 @@
 #if canImport(CoreGraphics) && canImport(ImageIO) && canImport(AVFoundation)
 
 public struct CGImageAnimationFrame {
-    
+
     public var image: CGImage
     public var delay: Double
-    
+
     public init(image: CGImage, delay: Double) {
         self.image = image
         self.delay = delay
@@ -37,83 +37,83 @@ public struct CGImageAnimationFrame {
 }
 
 extension CGImage {
-    
+
     private static func withImageDestination(_ type: CFString, _ count: Int, callback: (CGImageDestination) -> Void) -> Data? {
-        
+
         let data = NSMutableData()
-        
+
         guard let imageDestination = CGImageDestinationCreateWithData(data, type, count, nil) else { return nil }
-        
+
         callback(imageDestination)
-        
+
         guard CGImageDestinationFinalize(imageDestination) else { return nil }
-        
+
         return data as Data
     }
 }
 
 extension CGImage {
-    
+
     public enum MediaType {
-        
+
         case bmp
-        
+
         case gif
-        
+
         case jpeg
-        
+
         case jpeg2000
-        
+
         case png
-        
+
         case tiff
-        
+
         @available(OSX 10.13, iOS 11.0, tvOS 11.0, *)
         case heic
     }
-    
+
     public enum PropertyKey : Int {
-        
+
         case compression
-        
+
         case compressionQuality
-        
+
         case interlaced
-        
+
         case resolution
     }
-    
+
     public enum TIFFCompressionScheme {
-        
+
         case none
-        
+
         case lzw
-        
+
         case packBits
     }
-    
+
     public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
-        
+
         let type: CFString
         var _properties: [CFString: Any] = [:]
-        
+
         switch storageType {
         case .bmp: type = kUTTypeBMP
         case .gif: type = kUTTypeGIF
         case .jpeg: type = kUTTypeJPEG
         case .jpeg2000: type = kUTTypeJPEG2000
         case .png:
-            
+
             type = kUTTypePNG
-            
+
             if properties[.interlaced] as? Bool == true {
                 _properties[kCGImagePropertyPNGDictionary] = [kCGImagePropertyPNGInterlaceType: 1]
             }
-            
+
         case .tiff:
-            
+
             type = kUTTypeTIFF
-            
+
             if let compression = properties[.compression] as? TIFFCompressionScheme {
                 switch compression {
                 case .none: break
@@ -121,58 +121,58 @@ extension CGImage {
                 case .packBits: _properties[kCGImagePropertyTIFFDictionary] = [kCGImagePropertyTIFFCompression: 32773]
                 }
             }
-            
+
         case .heic:
             guard #available(OSX 10.13, iOS 11.0, tvOS 11.0, *) else { return nil }
             type = AVFileType.heic as CFString
         }
-        
+
         if let resolution = properties[.resolution] as? Resolution {
             let _resolution = resolution.convert(to: .inch)
             _properties[kCGImagePropertyDPIWidth] = _resolution.horizontal
             _properties[kCGImagePropertyDPIHeight] = _resolution.vertical
         }
-        
+
         if let compressionQuality = properties[.compressionQuality] as? NSNumber {
             _properties[kCGImageDestinationLossyCompressionQuality] = compressionQuality
         }
-        
+
         return CGImage.withImageDestination(type, 1) { CGImageDestinationAddImage($0, self, _properties as CFDictionary) }
     }
-    
+
     public func tiffRepresentation(compression: TIFFCompressionScheme = .none, resolution: Resolution = Resolution(resolution: 1, unit: .point)) -> Data? {
         return self.representation(using: .tiff, properties: [.compression: compression, .resolution: resolution])
     }
-    
+
     public func pngRepresentation(interlaced: Bool = false, resolution: Resolution = Resolution(resolution: 1, unit: .point)) -> Data? {
         return self.representation(using: .png, properties: [.interlaced: interlaced, .resolution: resolution])
     }
-    
+
     public func jpegRepresentation(compressionQuality: Double, resolution: Resolution = Resolution(resolution: 1, unit: .point)) -> Data? {
         return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality, .resolution: resolution])
     }
 }
 
 extension CGImage {
-    
+
     public static func animatedGIFRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
-        
+
         return CGImage.withImageDestination(kUTTypeGIF, frames.count) { imageDestination in
-            
+
             CGImageDestinationSetProperties(imageDestination, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: loop]] as CFDictionary)
-            
+
             for frame in frames {
                 CGImageDestinationAddImage(imageDestination, frame.image, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: frame.delay]] as CFDictionary)
             }
         }
     }
-    
+
     public static func animatedPNGRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
-        
+
         return CGImage.withImageDestination(kUTTypePNG, frames.count) { imageDestination in
-            
+
             CGImageDestinationSetProperties(imageDestination, [kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGLoopCount: loop]] as CFDictionary)
-            
+
             for frame in frames {
                 CGImageDestinationAddImage(imageDestination, frame.image, [kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGDelayTime: frame.delay]] as CFDictionary)
             }
@@ -181,11 +181,11 @@ extension CGImage {
 }
 
 extension CGImage {
-    
+
     public static func animatedGIFRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
         return self.animatedGIFRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }
-    
+
     public static func animatedPNGRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
         return self.animatedPNGRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }

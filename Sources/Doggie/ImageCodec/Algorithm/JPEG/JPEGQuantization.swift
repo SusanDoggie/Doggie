@@ -24,9 +24,9 @@
 //
 
 struct JPEGQuantizationTable : ByteCodable {
-    
+
     var tables: [(UInt8, Table)]
-    
+
     init(from data: inout Data) throws {
         self.tables = []
         while data.count != 0 {
@@ -38,7 +38,7 @@ struct JPEGQuantizationTable : ByteCodable {
             }
         }
     }
-    
+
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         for table in tables {
             stream.encode(table.0)
@@ -48,7 +48,7 @@ struct JPEGQuantizationTable : ByteCodable {
             }
         }
     }
-    
+
     enum Table {
         case table8(Table8)
         case table16(Table16)
@@ -56,9 +56,9 @@ struct JPEGQuantizationTable : ByteCodable {
 }
 
 extension JPEGQuantizationTable {
-    
+
     struct Table8 : ByteCodable {
-        
+
         var table: (
         UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
         UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
@@ -69,7 +69,7 @@ extension JPEGQuantizationTable {
         UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
         UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8
         )
-        
+
         init(from data: inout Data) throws {
             self.table = (
                 try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
@@ -90,7 +90,7 @@ extension JPEGQuantizationTable {
                 try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self)
             )
         }
-        
+
         func write<Target: ByteOutputStream>(to stream: inout Target) {
             stream.encode(table.0)
             stream.encode(table.1)
@@ -161,9 +161,9 @@ extension JPEGQuantizationTable {
 }
 
 extension JPEGQuantizationTable {
-    
+
     struct Table16 : ByteCodable {
-        
+
         var table: (
         UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
         UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
@@ -174,7 +174,7 @@ extension JPEGQuantizationTable {
         UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,
         UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16
         )
-        
+
         init(from data: inout Data) throws {
             self.table = (
                 UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)),
@@ -195,7 +195,7 @@ extension JPEGQuantizationTable {
                 UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self)), UInt16(try data.decode(BEUInt16.self))
             )
         }
-        
+
         func write<Target: ByteOutputStream>(to stream: inout Target) {
             stream.encode(table.0)
             stream.encode(table.1)

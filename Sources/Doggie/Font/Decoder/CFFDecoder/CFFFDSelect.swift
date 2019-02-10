@@ -24,91 +24,91 @@
 //
 
 struct CFFFDSelect {
-    
+
     var nGlyphs: Int
     var format: UInt8
-    
+
     var fds: Data
-    
+
     var nRanges: BEUInt16
     var range: Data
     var sentinel: BEUInt16
-    
+
     init(_ data: Data, _ nGlyphs: Int) throws {
-        
+
         var data = data
-        
+
         self.nGlyphs = nGlyphs
         self.format = try data.decode(UInt8.self)
-        
+
         fds = Data()
         nRanges = 0
         range = Data()
         sentinel = 0
-        
+
         switch format {
         case 0:
-            
+
             self.fds = data.popFirst(nGlyphs)
             guard self.fds.count == nGlyphs else { throw ByteDecodeError.endOfData }
-            
+
         case 3:
-            
+
             self.nRanges = try data.decode(BEUInt16.self)
-            
+
             self.range = data.popFirst(Int(nRanges) * 3)
             guard self.range.count == Int(nRanges) * 3 else { throw ByteDecodeError.endOfData }
-            
+
             self.sentinel = try data.decode(BEUInt16.self)
-            
+
         default: throw FontCollection.Error.InvalidFormat("Invalid CFF FDSelect format.")
         }
     }
-    
+
     func fdIndex(glyph: UInt16) -> UInt8? {
-        
+
         switch format {
         case 0:
             if glyph < nGlyphs {
                 return self.fds[Int(glyph)]
             }
         case 3:
-            
+
             let limit = min(UInt16(sentinel), UInt16(nGlyphs))
-            
+
             if glyph < limit {
-                
+
                 let rangeCount = Int(nRanges)
                 var _range = 0..<rangeCount
-                
+
                 while _range.count != 0 {
-                    
+
                     let mid = (_range.lowerBound + _range.upperBound) >> 1
                     var records = self.range.dropFirst(mid * 3)
-                    
+
                     guard let _startGlyphID = try? records.decode(BEUInt16.self) else { return nil }
                     guard let fd = try? records.decode(UInt8.self) else { return nil }
-                    
+
                     let startGlyphID = UInt16(_startGlyphID)
                     let endGlyphID: UInt16
-                    
+
                     if mid + 1 < rangeCount {
                         guard let _endGlyphID = try? records.decode(BEUInt16.self) else { return nil }
                         endGlyphID = UInt16(_endGlyphID)
                     } else {
                         endGlyphID = limit - 1
                     }
-                    
+
                     if startGlyphID <= endGlyphID && startGlyphID...endGlyphID ~= glyph {
                         return fd
                     }
-                    
+
                     _range = glyph < startGlyphID ? _range.prefix(upTo: mid) : _range.suffix(from: mid).dropFirst()
                 }
-                
+
                 return nil
             }
-            
+
         default: break
         }
         return nil

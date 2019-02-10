@@ -3,13 +3,13 @@ import Cocoa
 import Doggie
 
 public class TensorPatchView: NSView, NSGestureRecognizerDelegate {
-    
+
     public var shape: Shape? {
         didSet {
             self.setNeedsDisplay(frame)
         }
     }
-    
+
     public var p0: Point = Point() {
         didSet {
             self.setNeedsDisplay(frame)
@@ -90,55 +90,55 @@ public class TensorPatchView: NSView, NSGestureRecognizerDelegate {
             self.setNeedsDisplay(frame)
         }
     }
-    
+
     var target: Int = -1
-    
+
     public override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        
+
         let pan = NSPanGestureRecognizer(target: self, action: #selector(handleGesture))
         pan.delegate = self
-        
+
         self.addGestureRecognizer(pan)
-        
+
         p0 = Point(x: frame.width * 0.1, y: frame.height * 0.1)
         p3 = Point(x: frame.width * 0.9, y: frame.height * 0.1)
         p12 = Point(x: frame.width * 0.1, y: frame.height * 0.9)
         p15 = Point(x: frame.width * 0.9, y: frame.height * 0.9)
-        
+
         p1 = Bezier(p0, p3).eval(1 / 3)
         p2 = Bezier(p0, p3).eval(2 / 3)
-        
+
         p13 = Bezier(p12, p15).eval(1 / 3)
         p14 = Bezier(p12, p15).eval(2 / 3)
-        
+
         p4 = Bezier(p0, p12).eval(1 / 3)
         p8 = Bezier(p0, p12).eval(2 / 3)
-        
+
         p5 = Bezier(p1, p13).eval(1 / 3)
         p9 = Bezier(p1, p13).eval(2 / 3)
-        
+
         p6 = Bezier(p2, p14).eval(1 / 3)
         p10 = Bezier(p2, p14).eval(2 / 3)
-        
+
         p7 = Bezier(p3, p15).eval(1 / 3)
         p11 = Bezier(p3, p15).eval(2 / 3)
     }
-    
+
     public func implement() -> Shape? {
-        
+
         if let shape = shape {
-            
+
             var path: [Shape.Component] = []
-            
+
             path.reserveCapacity(shape.count)
-            
+
             for item in shape.identity {
                 var flag = true
                 var component = Shape.Component()
-                
+
                 var last = item.start
-                
+
                 func addCurves(_ points: [Bezier<Point>]) {
                     if let first = points.first {
                         if flag {
@@ -155,7 +155,7 @@ public class TensorPatchView: NSView, NSGestureRecognizerDelegate {
                         }
                     }
                 }
-                
+
                 for segment in item {
                     switch segment {
                     case let .line(p1):
@@ -169,7 +169,7 @@ public class TensorPatchView: NSView, NSGestureRecognizerDelegate {
                         last = p3
                     }
                 }
-                
+
                 if item.isClosed {
                     let z = item.start - last
                     if !z.x.almostZero() || !z.y.almostZero() {
@@ -177,73 +177,73 @@ public class TensorPatchView: NSView, NSGestureRecognizerDelegate {
                     }
                     component.isClosed = true
                 }
-                
+
                 path.append(component)
             }
-            
+
             return Shape(path)
         }
-        
+
         return nil
     }
-    
+
     public override func draw(_ dirtyRect: NSRect) {
-        
+
         NSColor.white.setFill()
         dirtyRect.fill()
-        
+
         func drawPoint(_ context: CGContext, _ point: Point) {
             context.strokeEllipse(in: CGRect(x: point.x - 2, y: point.y - 2, width: 4, height: 4))
         }
-        
+
         if let context = NSGraphicsContext.current?.cgContext {
-            
+
             context.setStrokeColor(NSColor(white: 0.9, alpha: 1).cgColor)
-            
+
             let n = 8
-            
+
             for _v in 0...n {
                 let v = Double(_v) / Double(n)
                 for _u in 0...n {
                     let u = Double(_u) / Double(n)
-                    
+
                     let q1 = Bezier(p0, p1, p2, p3)
                     let q2 = Bezier(p4, p5, p6, p7)
                     let q3 = Bezier(p8, p9, p10, p11)
                     let q4 = Bezier(p12, p13, p14, p15)
-                    
+
                     context.move(to: CGPoint(q1.eval(u)))
                     context.addCurve(to: CGPoint(q4.eval(u)), control1: CGPoint(q2.eval(u)), control2: CGPoint(q3.eval(u)))
-                    
+
                     let q5 = Bezier(p0, p4, p8, p12)
                     let q6 = Bezier(p1, p5, p9, p13)
                     let q7 = Bezier(p2, p6, p10, p14)
                     let q8 = Bezier(p3, p7, p11, p15)
-                    
+
                     context.move(to: CGPoint(q5.eval(v)))
                     context.addCurve(to: CGPoint(q8.eval(v)), control1: CGPoint(q6.eval(v)), control2: CGPoint(q7.eval(v)))
                 }
             }
-            
+
             context.strokePath()
-            
+
             context.setStrokeColor(NSColor.red.cgColor)
-            
+
             if let shape = implement() {
                 context.addPath(shape.cgPath)
             }
-            
+
             context.strokePath()
-            
+
             context.setStrokeColor(NSColor.blue.cgColor)
-            
+
             drawPoint(context, p0)
             drawPoint(context, p3)
             drawPoint(context, p12)
             drawPoint(context, p15)
-            
+
             context.setStrokeColor(NSColor.green.cgColor)
-            
+
             drawPoint(context, p1)
             drawPoint(context, p2)
             drawPoint(context, p4)
@@ -256,19 +256,19 @@ public class TensorPatchView: NSView, NSGestureRecognizerDelegate {
             drawPoint(context, p11)
             drawPoint(context, p13)
             drawPoint(context, p14)
-            
+
         }
-        
+
         super.draw(dirtyRect)
     }
-    
+
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     @objc
     func handleGesture(_ sender: NSPanGestureRecognizer) {
-        
+
         switch sender.state {
         case .began:
             let location = sender.location(in: self)

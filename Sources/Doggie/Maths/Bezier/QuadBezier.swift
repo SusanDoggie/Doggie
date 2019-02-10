@@ -24,13 +24,13 @@
 //
 
 public struct QuadBezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
-    
+
     public typealias Scalar = Double
-    
+
     public var p0: Element
     public var p1: Element
     public var p2: Element
-    
+
     @inlinable
     @inline(__always)
     public init() {
@@ -38,7 +38,7 @@ public struct QuadBezier<Element : ScalarMultiplicative> : Equatable, BezierProt
         self.p1 = .zero
         self.p2 = .zero
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_ p0: Element, _ p1: Element, _ p2: Element) {
@@ -49,7 +49,7 @@ public struct QuadBezier<Element : ScalarMultiplicative> : Equatable, BezierProt
 }
 
 extension Bezier {
-    
+
     @inlinable
     public init(_ bezier: QuadBezier<Element>) {
         self.init(bezier.p0, bezier.p1, bezier.p2)
@@ -57,11 +57,11 @@ extension Bezier {
 }
 
 extension QuadBezier : Hashable where Element : Hashable {
-    
+
 }
 
 extension QuadBezier: Decodable where Element : Decodable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -73,7 +73,7 @@ extension QuadBezier: Decodable where Element : Decodable {
 }
 
 extension QuadBezier: Encodable where Element : Encodable {
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -85,13 +85,13 @@ extension QuadBezier: Encodable where Element : Encodable {
 }
 
 extension QuadBezier {
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Element) -> Element) -> QuadBezier {
         return QuadBezier(transform(p0), transform(p1), transform(p2))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
@@ -104,11 +104,11 @@ extension QuadBezier {
 }
 
 extension QuadBezier {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Index = Int
-    
+
     @_transparent
     public var startIndex: Int {
         return 0
@@ -117,7 +117,7 @@ extension QuadBezier {
     public var endIndex: Int {
         return 3
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Element {
         get {
@@ -140,7 +140,7 @@ extension QuadBezier {
 }
 
 extension QuadBezier {
-    
+
     @inlinable
     @inline(__always)
     public func eval(_ t: Double) -> Element {
@@ -153,7 +153,7 @@ extension QuadBezier {
 }
 
 extension QuadBezier where Element == Double {
-    
+
     @inlinable
     public var polynomial: Polynomial {
         let a = p0
@@ -164,7 +164,7 @@ extension QuadBezier where Element == Double {
 }
 
 extension QuadBezier {
-    
+
     @inlinable
     @inline(__always)
     public func elevated() -> CubicBezier<Element> {
@@ -176,7 +176,7 @@ extension QuadBezier {
 }
 
 extension QuadBezier {
-    
+
     @inlinable
     @inline(__always)
     public func split(_ t: Double) -> (QuadBezier, QuadBezier) {
@@ -188,7 +188,7 @@ extension QuadBezier {
 }
 
 extension QuadBezier {
-    
+
     @inlinable
     @inline(__always)
     public func derivative() -> LineSegment<Element> {
@@ -197,7 +197,7 @@ extension QuadBezier {
 }
 
 extension QuadBezier where Element == Point {
-    
+
     @inlinable
     public func closest(_ point: Point) -> [Double] {
         let a = p0 - point
@@ -211,24 +211,24 @@ extension QuadBezier where Element == Point {
 }
 
 extension QuadBezier where Element == Point {
-    
+
     @_transparent
     public var area: Double {
         let a = p0.x - 2 * p1.x + p2.x
         let b = 2 * (p1.x - p0.x)
-        
+
         let c = p0.y - 2 * p1.y + p2.y
         let d = 2 * (p1.y - p0.y)
-        
+
         return 0.5 * (p0.x * p2.y - p2.x * p0.y) + (b * c - a * d) / 6
     }
 }
 
 extension QuadBezier where Element == Point {
-    
+
     @inline(__always)
     private func _length(_ t: Double, _ a: Double, _ b: Double, _ c: Double) -> Double {
-        
+
         if a.almostZero() {
             if b.almostZero() {
                 return sqrt(c) * t
@@ -252,7 +252,7 @@ extension QuadBezier where Element == Point {
             let h = sqrt(a * g * g)
             return 0.5 * t * (t - 2) * h / g
         }
-        
+
         let delta = b * b - 4 * a * c
         if delta.almostZero() {
             let g = sqrt(a)
@@ -264,7 +264,7 @@ extension QuadBezier where Element == Point {
             let j = 0.5 * t * abs(i) * (i + h) / i
             return t < -b / a ? c / g + j : j
         }
-        
+
         let g = 2 * sqrt(a * (t * (a * t + b) + c))
         let h = 2 * a * t + b
         let i = 0.125 * pow(a, -1.5)
@@ -273,56 +273,56 @@ extension QuadBezier where Element == Point {
         let l = log(j + b)
         return i * (g * h - j * b - delta * (k - l))
     }
-    
+
     public func length(_ t: Double) -> Double {
-        
+
         if t.almostZero() {
             return t
         }
-        
+
         let x = QuadBezier<Double>(p0.x, p1.x, p2.x).polynomial.derivative
         let y = QuadBezier<Double>(p0.y, p1.y, p2.y).polynomial.derivative
-        
+
         let u = x * x + y * y
-        
+
         return _length(t, u[2], u[1], u[0])
     }
-    
+
     public func inverseLength(_ length: Double) -> Double {
-        
+
         if length.almostZero() {
             return length
         }
-        
+
         let x = QuadBezier<Double>(p0.x, p1.x, p2.x).polynomial.derivative
         let y = QuadBezier<Double>(p0.y, p1.y, p2.y).polynomial.derivative
-        
+
         let u = x * x + y * y
-        
+
         let a = u[2]
         let b = u[1]
         let c = u[0]
-        
+
         if a.almostZero() {
             return b.almostZero() ? length / sqrt(c) : (pow(1.5 * b * length, 2 / 3) - c) / b
         }
         if a.almostEqual(c) && a.almostEqual(-0.5 * b) && length.almostEqual(0.5 * sqrt(a)) {
             return 1
         }
-        
+
         var t = length / _length(1, a, b, c)
-        
+
         t -= (_length(t, a, b, c) - length) / sqrt((a * t + b) * t + c)
         t -= (_length(t, a, b, c) - length) / sqrt((a * t + b) * t + c)
         t -= (_length(t, a, b, c) - length) / sqrt((a * t + b) * t + c)
         t -= (_length(t, a, b, c) - length) / sqrt((a * t + b) * t + c)
-        
+
         return t
     }
 }
 
 extension QuadBezier where Element == Double {
-    
+
     @_transparent
     public var stationary: OptionOneCollection<Double> {
         let d = p0 + p2 - 2 * p1
@@ -334,107 +334,107 @@ extension QuadBezier where Element == Double {
 }
 
 extension QuadBezier where Element == Point {
-    
+
     @_transparent
     public var boundary: Rect {
-        
+
         let bx = QuadBezier<Double>(p0.x, p1.x, p2.x)
         let by = QuadBezier<Double>(p0.y, p1.y, p2.y)
-        
+
         let _x = bx.stationary.value.map { bx.eval($0.clamped(to: 0...1)) }
         let _y = by.stationary.value.map { by.eval($0.clamped(to: 0...1)) }
-        
+
         let minX = _x.map { Swift.min(p0.x, p2.x, $0) } ?? Swift.min(p0.x, p2.x)
         let minY = _y.map { Swift.min(p0.y, p2.y, $0) } ?? Swift.min(p0.y, p2.y)
         let maxX = _x.map { Swift.max(p0.x, p2.x, $0) } ?? Swift.max(p0.x, p2.x)
         let maxY = _y.map { Swift.max(p0.y, p2.y, $0) } ?? Swift.max(p0.y, p2.y)
-        
+
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
 }
 
 extension QuadBezier where Element == Point {
-    
+
     @inlinable
     public func overlap(_ other: LineSegment<Element>) -> Bool {
-        
+
         let a = p0 - other.p0
         let b = 2 * (p1 - p0)
         let c = p0 - 2 * p1 + p2
-        
+
         let u0: Polynomial = [a.x, b.x, c.x]
         let u1 = other.p0.x - other.p1.x
-        
+
         let v0: Polynomial = [a.y, b.y, c.y]
         let v1 = other.p0.y - other.p1.y
-        
+
         let det = u1 * v0 - u0 * v1
         return det.allSatisfy { $0.almostZero() }
     }
-    
+
     @inlinable
     public func overlap(_ other: QuadBezier) -> Bool {
-        
+
         let a = p0 - other.p0
         let b = 2 * (p1 - p0)
         let c = p0 - 2 * p1 + p2
-        
+
         let u0: Polynomial = [a.x, b.x, c.x]
         let u1 = 2 * (other.p0.x - other.p1.x)
         let u2 = 2 * other.p1.x - other.p0.x -  other.p2.x
-        
+
         let v0: Polynomial = [a.y, b.y, c.y]
         let v1 = 2 * (other.p0.y - other.p1.y)
         let v2 = 2 * other.p1.y - other.p0.y -  other.p2.y
-        
+
         // Bézout matrix
         let m00 = u2 * v1 - u1 * v2
         let m01 = u2 * v0 - u0 * v2
         let m10 = m01
         let m11 = u1 * v0 - u0 * v1
-        
+
         let det = m00 * m11 - m01 * m10
         return det.allSatisfy { $0.almostZero() }
     }
-    
+
     @inlinable
     public func intersect(_ other: LineSegment<Element>) -> [Double]? {
-        
+
         let a = p0 - other.p0
         let b = 2 * (p1 - p0)
         let c = p0 - 2 * p1 + p2
-        
+
         let u0: Polynomial = [a.x, b.x, c.x]
         let u1 = other.p0.x - other.p1.x
-        
+
         let v0: Polynomial = [a.y, b.y, c.y]
         let v1 = other.p0.y - other.p1.y
-        
+
         let det = u1 * v0 - u0 * v1
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }
-    
+
     @inlinable
     public func intersect(_ other: QuadBezier) -> [Double]? {
-        
+
         let a = p0 - other.p0
         let b = 2 * (p1 - p0)
         let c = p0 - 2 * p1 + p2
-        
+
         let u0: Polynomial = [a.x, b.x, c.x]
         let u1 = 2 * (other.p0.x - other.p1.x)
         let u2 = 2 * other.p1.x - other.p0.x -  other.p2.x
-        
+
         let v0: Polynomial = [a.y, b.y, c.y]
         let v1 = 2 * (other.p0.y - other.p1.y)
         let v2 = 2 * other.p1.y - other.p0.y -  other.p2.y
-        
+
         // Bézout matrix
         let m00 = u2 * v1 - u1 * v2
         let m01 = u2 * v0 - u0 * v2
         let m10 = m01
         let m11 = u1 * v0 - u0 * v1
-        
+
         let det = m00 * m11 - m01 * m10
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }

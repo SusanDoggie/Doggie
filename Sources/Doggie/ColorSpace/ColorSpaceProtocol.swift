@@ -24,25 +24,25 @@
 //
 
 public protocol ColorSpaceProtocol {
-    
+
     var iccData: Data? { get }
-    
+
     var localizedName: String? { get }
-    
+
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
-    
+
     var numberOfComponents: Int { get }
-    
+
     func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
-    
+
     var cieXYZ: ColorSpace<XYZColorModel> { get }
-    
+
     var referenceWhite: XYZColorModel { get }
-    
+
     var referenceBlack: XYZColorModel { get }
-    
+
     var luminance: Double { get }
-    
+
     var linearTone: Self { get }
 }
 

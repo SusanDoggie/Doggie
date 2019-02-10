@@ -24,7 +24,7 @@
 //
 
 public enum SDObjectType : Hashable {
-    
+
     case null
     case boolean
     case string
@@ -40,60 +40,60 @@ public enum SDObjectType : Hashable {
 
 @_fixed_layout
 public struct SDObject {
-    
+
     @usableFromInline
     let base: Base
-    
+
     @inlinable
     init(_ base: Base) {
         self.base = base.dictionary.map { .dictionary($0) } ?? base
     }
-    
+
     @inlinable
     public init(decode data: Data) {
         self.init(.undecoded(SDUndecodedObject(data: data)))
     }
-    
+
     @inlinable
     public init(_ value: Bool) {
         self.base = .boolean(value)
     }
-    
+
     @inlinable
     public init(_ value: String) {
         self.base = .string(value)
     }
-    
+
     @inlinable
     public init<T : FixedWidthInteger & SignedInteger>(_ value: T) {
         self.base = .signed(Int64(value))
     }
-    
+
     @inlinable
     public init<T : FixedWidthInteger & UnsignedInteger>(_ value: T) {
         self.base = .unsigned(UInt64(value))
     }
-    
+
     @inlinable
     public init<T : BinaryFloatingPoint>(_ value: T) {
         self.base = .number(Double(value))
     }
-    
+
     @inlinable
     public init(_ binary: Data) {
         self.base = .binary(binary)
     }
-    
+
     @inlinable
     public init(_ uuid: UUID) {
         self.base = .uuid(uuid)
     }
-    
+
     @inlinable
     public init<S : Sequence>(_ elements: S) where S.Element == SDObject {
         self.base = .array(Array(elements))
     }
-    
+
     @inlinable
     public init(_ elements: [String: SDObject]) {
         self.base = .dictionary(elements)
@@ -101,7 +101,7 @@ public struct SDObject {
 }
 
 extension SDObject: ExpressibleByNilLiteral {
-    
+
     @inlinable
     public init(nilLiteral value: Void) {
         self.base = .null
@@ -109,7 +109,7 @@ extension SDObject: ExpressibleByNilLiteral {
 }
 
 extension SDObject: ExpressibleByBooleanLiteral {
-    
+
     @inlinable
     public init(booleanLiteral value: BooleanLiteralType) {
         self.init(value)
@@ -117,7 +117,7 @@ extension SDObject: ExpressibleByBooleanLiteral {
 }
 
 extension SDObject: ExpressibleByIntegerLiteral {
-    
+
     @inlinable
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
@@ -125,7 +125,7 @@ extension SDObject: ExpressibleByIntegerLiteral {
 }
 
 extension SDObject: ExpressibleByFloatLiteral {
-    
+
     @inlinable
     public init(floatLiteral value: FloatLiteralType) {
         self.init(value)
@@ -133,7 +133,7 @@ extension SDObject: ExpressibleByFloatLiteral {
 }
 
 extension SDObject: ExpressibleByStringLiteral {
-    
+
     @inlinable
     public init(stringLiteral value: StringLiteralType) {
         self.init(value)
@@ -141,7 +141,7 @@ extension SDObject: ExpressibleByStringLiteral {
 }
 
 extension SDObject: ExpressibleByArrayLiteral {
-    
+
     @inlinable
     public init(arrayLiteral elements: SDObject ...) {
         self.init(elements)
@@ -149,7 +149,7 @@ extension SDObject: ExpressibleByArrayLiteral {
 }
 
 extension SDObject: ExpressibleByDictionaryLiteral {
-    
+
     @inlinable
     public init(dictionaryLiteral elements: (String, SDObject) ...) {
         self.init(Dictionary(uniqueKeysWithValues: elements))
@@ -157,7 +157,7 @@ extension SDObject: ExpressibleByDictionaryLiteral {
 }
 
 extension SDObject: CustomStringConvertible {
-    
+
     @inlinable
     public var description: String {
         switch type {
@@ -177,7 +177,7 @@ extension SDObject: CustomStringConvertible {
 }
 
 extension SDObject : Hashable {
-    
+
     @inlinable
     public static func == (lhs: SDObject, rhs: SDObject) -> Bool {
         switch (lhs.type, rhs.type) {
@@ -194,7 +194,7 @@ extension SDObject : Hashable {
         default: return false
         }
     }
-    
+
     @inlinable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(type)
@@ -214,7 +214,7 @@ extension SDObject : Hashable {
 }
 
 extension SDObject {
-    
+
     @inlinable
     public func encode() -> Data {
         var result = MappedBuffer<UInt8>()
@@ -224,12 +224,12 @@ extension SDObject {
 }
 
 extension SDObject {
-    
+
     @inlinable
     public var type: SDObjectType {
         return base.type
     }
-    
+
     @inlinable
     public var isUnknownType: Bool {
         switch type {
@@ -237,47 +237,47 @@ extension SDObject {
         default: return false
         }
     }
-    
+
     @inlinable
     public var isNil : Bool {
         return type == .null
     }
-    
+
     @inlinable
     public var isBool : Bool {
         return type == .boolean
     }
-    
+
     @inlinable
     public var isString : Bool {
         return type == .string
     }
-    
+
     @inlinable
     public var isArray : Bool {
         return type == .array
     }
-    
+
     @inlinable
     public var isObject : Bool {
         return type == .dictionary
     }
-    
+
     @inlinable
     public var isSigned : Bool {
         return type == .signed
     }
-    
+
     @inlinable
     public var isUnsigned : Bool {
         return type == .unsigned
     }
-    
+
     @inlinable
     public var isNumber : Bool {
         return type == .number
     }
-    
+
     @inlinable
     public var isNumeric : Bool {
         switch type {
@@ -287,12 +287,12 @@ extension SDObject {
         default: return false
         }
     }
-    
+
     @inlinable
     public var isBinary : Bool {
         return type == .binary
     }
-    
+
     @inlinable
     public var isUUID : Bool {
         return type == .uuid
@@ -300,7 +300,7 @@ extension SDObject {
 }
 
 extension SDObject {
-    
+
     @usableFromInline
     enum Base {
         case null
@@ -318,7 +318,7 @@ extension SDObject {
 }
 
 extension SDObject.Base {
-    
+
     @inlinable
     var type: SDObjectType {
         switch self {
@@ -335,7 +335,7 @@ extension SDObject.Base {
         case let .undecoded(value): return value.type
         }
     }
-    
+
     @inlinable
     var boolValue: Bool? {
         switch self {
@@ -344,7 +344,7 @@ extension SDObject.Base {
         default: return nil
         }
     }
-    
+
     @inlinable
     var int64Value: Int64? {
         switch self {
@@ -353,7 +353,7 @@ extension SDObject.Base {
         default: return nil
         }
     }
-    
+
     @inlinable
     var uint64Value: UInt64? {
         switch self {
@@ -362,7 +362,7 @@ extension SDObject.Base {
         default: return nil
         }
     }
-    
+
     @inlinable
     var doubleValue: Double? {
         switch self {
@@ -371,7 +371,7 @@ extension SDObject.Base {
         default: return nil
         }
     }
-    
+
     @inlinable
     var string: String? {
         switch self {
@@ -380,7 +380,7 @@ extension SDObject.Base {
         default: return nil
         }
     }
-    
+
     @inlinable
     var binary: Data? {
         switch self {
@@ -389,7 +389,7 @@ extension SDObject.Base {
         default: return nil
         }
     }
-    
+
     @inlinable
     var uuid: UUID? {
         switch self {
@@ -398,7 +398,7 @@ extension SDObject.Base {
         default: return nil
         }
     }
-    
+
     @inlinable
     var array: [SDObject]? {
         switch self {
@@ -407,7 +407,7 @@ extension SDObject.Base {
         default: return nil
         }
     }
-    
+
     @inlinable
     var dictionary: [String: SDObject]? {
         switch self {
@@ -416,28 +416,28 @@ extension SDObject.Base {
         default: return nil
         }
     }
-    
+
     @inlinable
     func encode(to data: inout MappedBuffer<UInt8>) {
         switch self {
         case .null: data.append(0x3F)
         case let .boolean(value):
-            
+
             if value {
                 data.append(0x74)
             } else {
                 data.append(0x66)
             }
-            
+
         case let .string(value):
-            
+
             data.append(0x73)
             if let utf8 = value.data(using: .utf8) {
                 data.append(contentsOf: utf8)
             }
-            
+
         case let .signed(value):
-            
+
             data.append(0x69)
             if let value = Int8(exactly: value) {
                 data.encode(value)
@@ -448,9 +448,9 @@ extension SDObject.Base {
             } else {
                 data.encode(BEInt64(value))
             }
-            
+
         case let .unsigned(value):
-            
+
             data.append(0x75)
             if let value = UInt8(exactly: value) {
                 data.encode(value)
@@ -461,24 +461,24 @@ extension SDObject.Base {
             } else {
                 data.encode(BEUInt64(value))
             }
-            
+
         case let .number(value):
-            
+
             data.append(0x6E)
             data.encode(BEUInt64(value.bitPattern))
-            
+
         case let .binary(value):
-            
+
             data.append(0x62)
             data.append(contentsOf: value)
-            
+
         case let .uuid(value):
-            
+
             data.append(0x67)
             withUnsafeBytes(of: value.uuid) { data.append(contentsOf: $0) }
-            
+
         case let .array(array):
-            
+
             data.append(0x61)
             data.encode(BEUInt64(array.count))
             data.encode(0 as BEUInt64)
@@ -488,9 +488,9 @@ extension SDObject.Base {
                 data.encode(BEUInt64(body.count))
             }
             data.append(contentsOf: body)
-            
+
         case let .dictionary(dictionary):
-            
+
             data.append(0x64)
             data.encode(BEUInt64(dictionary.count))
             data.encode(0 as BEUInt64)
@@ -503,19 +503,19 @@ extension SDObject.Base {
                 data.encode(BEUInt64(body.count))
             }
             data.append(contentsOf: body)
-            
+
         case let .undecoded(value): value.encode(to: &data)
         }
     }
 }
 
 extension SDObject {
-    
+
     @inlinable
     public var boolValue: Bool? {
         return base.boolValue
     }
-    
+
     @inlinable
     public var int8Value: Int8? {
         switch type {
@@ -525,7 +525,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var uint8Value: UInt8? {
         switch type {
@@ -535,7 +535,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var int16Value: Int16? {
         switch type {
@@ -545,7 +545,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var uint16Value: UInt16? {
         switch type {
@@ -555,7 +555,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var int32Value: Int32? {
         switch type {
@@ -565,7 +565,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var uint32Value: UInt32? {
         switch type {
@@ -575,7 +575,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var int64Value: Int64? {
         switch type {
@@ -585,7 +585,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var uint64Value: UInt64? {
         switch type {
@@ -595,7 +595,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var intValue: Int? {
         switch type {
@@ -605,7 +605,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var uintValue: UInt? {
         switch type {
@@ -615,7 +615,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var floatValue: Float? {
         switch type {
@@ -625,7 +625,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var doubleValue: Double? {
         switch type {
@@ -635,7 +635,7 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var decimalValue: Decimal? {
         switch type {
@@ -645,27 +645,27 @@ extension SDObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     public var string: String? {
         return base.string
     }
-    
+
     @inlinable
     public var binary: Data? {
         return base.binary
     }
-    
+
     @inlinable
     public var uuid: UUID? {
         return base.uuid
     }
-    
+
     @inlinable
     public var array: [SDObject]? {
         return base.array
     }
-    
+
     @inlinable
     public var dictionary: [String: SDObject]? {
         return base.dictionary
@@ -675,13 +675,13 @@ extension SDObject {
 @_fixed_layout
 @usableFromInline
 struct SDUndecodedObject {
-    
+
     @usableFromInline
     let type: SDObjectType
-    
+
     @usableFromInline
     let data: Data
-    
+
     @inlinable
     init(data: Data) {
         if let type = data.first {
@@ -703,7 +703,7 @@ struct SDUndecodedObject {
         }
         self.data = type == .boolean ? data : data.dropFirst()
     }
-    
+
     @inlinable
     var boolValue: Bool? {
         guard let value = data.first else { return nil }
@@ -713,7 +713,7 @@ struct SDUndecodedObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     var int64Value: Int64? {
         guard type == .signed else { return nil }
@@ -725,7 +725,7 @@ struct SDUndecodedObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     var uint64Value: UInt64? {
         guard type == .unsigned else { return nil }
@@ -737,19 +737,19 @@ struct SDUndecodedObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     var doubleValue: Double? {
         guard data.count == 8 && type == .number else { return nil }
         return data.withUnsafeBytes { Double(bitPattern: UInt64(bigEndian: $0.pointee)) }
     }
-    
+
     @inlinable
     var string: String? {
         guard type == .string else { return nil }
         return String(bytes: data, encoding: .utf8)
     }
-    
+
     @inlinable
     var binary: Data? {
         switch type {
@@ -758,42 +758,42 @@ struct SDUndecodedObject {
         default: return nil
         }
     }
-    
+
     @inlinable
     var uuid: UUID? {
         guard data.count == 16 && type == .uuid else { return nil }
         return UUID(uuid: data.withUnsafeBytes { $0.pointee as uuid_t })
     }
-    
+
     @inlinable
     var array: [SDObject]? {
         guard type == .array else { return nil }
         return (0..<count).map { self[$0] }
     }
-    
+
     @inlinable
     var dictionary: [String: SDObject]? {
         guard type == .dictionary else { return nil }
         return Dictionary((0..<count).lazy.compactMap { self[keyValuePairs: $0] }.filter { !$0.1.isNil }) { lhs, _ in lhs }
     }
-    
+
     @inlinable
     var count: Int {
         guard data.count >= 8 && (type == .array || type == .dictionary) else { return 0 }
         return data.prefix(8).withUnsafeBytes { Int(UInt64(bigEndian: $0.pointee)) }
     }
-    
+
     @inlinable
     subscript(index: Int) -> SDObject {
-        
+
         guard type == .array else { return nil }
-        
+
         let count = self.count
         let table_size = (count + 1) << 3
         let data = self.data.dropFirst(8)
-        
+
         guard data.count > table_size else { return nil }
-        
+
         return data.prefix(table_size).withUnsafeBytes { (offsets: UnsafePointer<UInt64>) in
             let from = Int(UInt64(bigEndian: offsets[index]))
             let to = Int(UInt64(bigEndian: offsets[index + 1]))
@@ -801,36 +801,36 @@ struct SDUndecodedObject {
             return SDObject(decode: data.dropFirst(table_size).dropFirst(from).prefix(to - from))
         }
     }
-    
+
     @inlinable
     subscript(keyValuePairs index: Int) -> (String, SDObject)? {
-        
+
         guard type == .dictionary else { return nil }
-        
+
         let count = self.count
         let table_size = (count + 1) << 4
         let data = self.data.dropFirst(8)
-        
+
         guard data.count > table_size else { return nil }
-        
+
         return data.prefix(table_size).withUnsafeBytes { (offsets: UnsafePointer<(UInt64, UInt64)>) in
-            
+
             let from = Int(UInt64(bigEndian: offsets[index].1))
-            
+
             let offset_0 = Int(UInt64(bigEndian: offsets[index + 1].0))
             let offset_1 = Int(UInt64(bigEndian: offsets[index + 1].1))
-            
+
             guard offset_0 > from && offset_1 > offset_0 && data.count >= table_size + offset_1 else { return nil }
-            
+
             let _key = data.dropFirst(table_size).dropFirst(from).prefix(offset_0 - from)
             let _value = data.dropFirst(table_size).dropFirst(offset_0).prefix(offset_1 - offset_0)
-            
+
             guard let key = String(bytes: _key, encoding: .utf8) else { return nil }
-            
+
             return (key, SDObject(decode: _value))
         }
     }
-    
+
     @inlinable
     func encode(to data: inout MappedBuffer<UInt8>) {
         switch type {
@@ -850,7 +850,7 @@ struct SDUndecodedObject {
 }
 
 extension SDObject {
-    
+
     @inlinable
     public var count: Int {
         switch base {
@@ -860,7 +860,7 @@ extension SDObject {
         default: fatalError("Not an array or object.")
         }
     }
-    
+
     @inlinable
     public subscript(index: Int) -> SDObject {
         get {
@@ -874,33 +874,33 @@ extension SDObject {
         set {
             switch base {
             case let .undecoded(value):
-                
+
                 guard var array = value.array else { fatalError("Not an array.") }
                 if index >= array.count {
                     array.append(contentsOf: repeatElement(nil, count: index - array.count + 1))
                 }
                 array[index] = newValue
                 self = SDObject(array)
-                
+
             case var .array(value):
-                
+
                 if index >= value.count {
                     value.append(contentsOf: repeatElement(nil, count: index - value.count + 1))
                 }
                 value[index] = newValue
                 self = SDObject(value)
-                
+
             default: fatalError("Not an array.")
             }
         }
     }
-    
+
     @inlinable
     public var keys: Dictionary<String, SDObject>.Keys {
         guard case let .dictionary(value) = base else { return [:].keys }
         return value.keys
     }
-    
+
     @inlinable
     public subscript(key: String) -> SDObject {
         get {

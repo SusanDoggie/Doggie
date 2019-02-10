@@ -24,28 +24,28 @@
 //
 
 public enum ImageOrientation {
-    
+
     /// original
     case up
-    
+
     /// 180 deg rotation
     case down
-    
+
     /// 90 deg counterclockwise
     case left
-    
+
     /// 90 deg clockwise
     case right
-    
+
     /// horizontal flip
     case upMirrored
-    
+
     /// vertical flip
     case downMirrored
-    
+
     /// 90 deg clockwise and flipped horizontally
     case leftMirrored
-    
+
     /// 90 deg counterclockwise and flipped horizontally
     case rightMirrored
 }

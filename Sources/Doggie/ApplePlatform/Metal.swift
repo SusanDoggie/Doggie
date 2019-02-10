@@ -29,24 +29,24 @@ import Metal
 
 @available(OSX 10.11, iOS 8.3, tvOS 9.0, *)
 extension MTLComputeCommandEncoder {
-    
+
     public func setBuffer(_ buffer: Data, index: Int) {
         let count = buffer.count
         buffer.withUnsafeBytes { (ptr: UnsafePointer<Int8>) in self.setBytes(ptr, length: count, index: index) }
     }
-    
+
     public func setBuffer<T>(_ buffer: [T], index: Int) {
         buffer.withUnsafeBytes { self.setBytes($0.baseAddress!, length: $0.count, index: index) }
     }
-    
+
     public func setBuffer<T>(_ buffer: ArraySlice<T>, index: Int) {
         buffer.withUnsafeBytes { self.setBytes($0.baseAddress!, length: $0.count, index: index) }
     }
-    
+
     public func setValue<T>(_ value: T, index: Int) {
         withUnsafeBytes(of: value) { self.setBytes($0.baseAddress!, length: $0.count, index: index) }
     }
-    
+
     public func setValues<T>(_ value: T ..., index: Int) {
         value.withUnsafeBytes { self.setBytes($0.baseAddress!, length: $0.count, index: index) }
     }
@@ -54,7 +54,7 @@ extension MTLComputeCommandEncoder {
 
 @available(OSX 10.11, iOS 8.0, tvOS 9.0, *)
 extension MTLComputeCommandEncoder {
-    
+
     public func setBuffer<T>(_ buffer: MappedBuffer<T>, offset: Int, index: Int) {
         self.setBuffer(self.device.makeBuffer(buffer), offset: offset, index: index)
     }
@@ -62,7 +62,7 @@ extension MTLComputeCommandEncoder {
 
 @available(OSX 10.11, iOS 8.0, tvOS 9.0, *)
 extension MTLDevice {
-    
+
     public func makeBuffer<T>(_ buffer: MappedBuffer<T>, options: MTLResourceOptions = []) -> MTLBuffer? {
         var box = MappedBuffer<T>._Box(ref: buffer.base)
         let length = (buffer.count * MemoryLayout<T>.stride).align(Int(getpagesize()))
@@ -73,27 +73,27 @@ extension MTLDevice {
 
 @available(OSX 10.13, iOS 8.0, tvOS 9.0, *)
 extension MTLDevice {
-    
+
     private func makeTexture<T>(_ buffer: MappedBuffer<T>, descriptor: MTLTextureDescriptor, options: MTLResourceOptions) -> MTLTexture? {
         guard let buffer = self.makeBuffer(buffer, options: options) else { return nil }
         return buffer.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: descriptor.width * MemoryLayout<T>.stride)
     }
-    
+
     public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA32ColorPixel {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: image.width, height: image.height, mipmapped: false)
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
-    
+
     public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == BGRA32ColorPixel {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm, width: image.width, height: image.height, mipmapped: false)
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
-    
+
     public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA64ColorPixel {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Unorm, width: image.width, height: image.height, mipmapped: false)
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
-    
+
     public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == Float32ColorPixel<RGBColorModel> {
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: image.width, height: image.height, mipmapped: false)
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)

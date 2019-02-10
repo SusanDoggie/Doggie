@@ -26,12 +26,12 @@
 @inlinable
 @inline(__always)
 public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ level: (Int, Int), _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: (Int, Int), _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: (Int, Int), _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
-    
+
     let width = 1 << level.0
     let height = 1 << level.1
     let half_width = width >> 1
     let half_height = height >> 1
-    
+
     if _slowPath(signal_count.0 == 0 || signal_count.1 == 0 || kernel_count.0 == 0 || kernel_count.1 == 0) {
         var output = output
         for _ in 0..<width * height {
@@ -40,29 +40,29 @@ public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ level: (Int, Int)
         }
         return
     }
-    
+
     var _sreal = temp
     var _simag = temp + temp_stride
     var _kreal = output
     var _kimag = output + out_stride
-    
+
     let s_stride = temp_stride << 1
     let k_stride = out_stride << 1
-    
+
     HalfRadix2CooleyTukey2D(level, signal, signal_stride, signal_count, _sreal, _simag, s_stride)
     HalfRadix2CooleyTukey2D(level, kernel, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
-    
+
     let m = 1 / T(width * height)
     let s_row_stride = s_stride * half_width
     let k_row_stride = k_stride * half_width
-    
+
     func _multiply_complex(_ length: Int, _ sreal: UnsafeMutablePointer<T>, _ simag: UnsafeMutablePointer<T>, _ s_stride: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ k_stride: Int) {
-        
+
         var sreal = sreal
         var simag = simag
         var kreal = kreal
         var kimag = kimag
-        
+
         for _ in 1..<length {
             sreal += s_stride
             simag += s_stride
@@ -76,39 +76,39 @@ public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ level: (Int, Int)
             simag.pointee = _sr * _ki + _si * _kr
         }
     }
-    
+
     do {
-        
+
         var _sreal = _sreal
         var _simag = _simag
         var _kreal = _kreal
         var _kimag = _kimag
-        
+
         _sreal.pointee *= m * _kreal.pointee
         _simag.pointee *= m * _kimag.pointee
-        
+
         _sreal += s_row_stride
         _simag += s_row_stride
         _kreal += k_row_stride
         _kimag += k_row_stride
-        
+
         _sreal.pointee *= m * _kreal.pointee
         _simag.pointee *= m * _kimag.pointee
     }
-    
+
     _multiply_complex(half_height, _sreal, _sreal + s_row_stride, s_row_stride << 1, _kreal, _kreal + k_row_stride, k_row_stride << 1)
     _multiply_complex(half_height, _simag, _simag + s_row_stride, s_row_stride << 1, _kimag, _kimag + k_row_stride, k_row_stride << 1)
-    
+
     do {
-        
+
         var _sreal = _sreal
         var _simag = _simag
         var _kreal = _kreal
         var _kimag = _kimag
-        
+
         let s_row_stride = s_stride * half_width
         let k_row_stride = k_stride * half_width
-        
+
         for _ in 0..<height {
             _multiply_complex(half_width, _sreal, _simag, s_stride, _kreal, _kimag, k_stride)
             _sreal += s_row_stride
@@ -117,6 +117,6 @@ public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ level: (Int, Int)
             _kimag += k_row_stride
         }
     }
-    
+
     HalfInverseRadix2CooleyTukey2D(level, _sreal, _simag, s_stride, output, out_stride)
 }

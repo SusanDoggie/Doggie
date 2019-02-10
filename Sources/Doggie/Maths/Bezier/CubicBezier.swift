@@ -24,14 +24,14 @@
 //
 
 public struct CubicBezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
-    
+
     public typealias Scalar = Double
-    
+
     public var p0: Element
     public var p1: Element
     public var p2: Element
     public var p3: Element
-    
+
     @inlinable
     @inline(__always)
     public init() {
@@ -40,7 +40,7 @@ public struct CubicBezier<Element : ScalarMultiplicative> : Equatable, BezierPro
         self.p2 = .zero
         self.p3 = .zero
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_ p0: Element, _ p1: Element, _ p2: Element, _ p3: Element) {
@@ -52,7 +52,7 @@ public struct CubicBezier<Element : ScalarMultiplicative> : Equatable, BezierPro
 }
 
 extension Bezier {
-    
+
     @inlinable
     public init(_ bezier: CubicBezier<Element>) {
         self.init(bezier.p0, bezier.p1, bezier.p2, bezier.p3)
@@ -60,11 +60,11 @@ extension Bezier {
 }
 
 extension CubicBezier : Hashable where Element : Hashable {
-    
+
 }
 
 extension CubicBezier: Decodable where Element : Decodable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -77,7 +77,7 @@ extension CubicBezier: Decodable where Element : Decodable {
 }
 
 extension CubicBezier: Encodable where Element : Encodable {
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -90,13 +90,13 @@ extension CubicBezier: Encodable where Element : Encodable {
 }
 
 extension CubicBezier {
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Element) -> Element) -> CubicBezier {
         return CubicBezier(transform(p0), transform(p1), transform(p2), transform(p3))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
@@ -110,11 +110,11 @@ extension CubicBezier {
 }
 
 extension CubicBezier {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Index = Int
-    
+
     @_transparent
     public var startIndex: Int {
         return 0
@@ -123,7 +123,7 @@ extension CubicBezier {
     public var endIndex: Int {
         return 4
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Element {
         get {
@@ -148,7 +148,7 @@ extension CubicBezier {
 }
 
 extension CubicBezier {
-    
+
     @inlinable
     @inline(__always)
     public func eval(_ t: Double) -> Element {
@@ -164,7 +164,7 @@ extension CubicBezier {
 }
 
 extension CubicBezier where Element == Double {
-    
+
     @inlinable
     public var polynomial: Polynomial {
         let a = p0
@@ -176,7 +176,7 @@ extension CubicBezier where Element == Double {
 }
 
 extension CubicBezier {
-    
+
     @inlinable
     public func elevated() -> Bezier<Element> {
         return Bezier(self).elevated()
@@ -184,7 +184,7 @@ extension CubicBezier {
 }
 
 extension CubicBezier {
-    
+
     @inlinable
     @inline(__always)
     public func split(_ t: Double) -> (CubicBezier, CubicBezier) {
@@ -199,7 +199,7 @@ extension CubicBezier {
 }
 
 extension CubicBezier {
-    
+
     @inlinable
     @inline(__always)
     public func derivative() -> QuadBezier<Element> {
@@ -208,7 +208,7 @@ extension CubicBezier {
 }
 
 extension CubicBezier where Element == Point {
-    
+
     @inlinable
     public func closest(_ point: Point) -> [Double] {
         let a = p0 - point
@@ -223,23 +223,23 @@ extension CubicBezier where Element == Point {
 }
 
 extension CubicBezier where Element == Point {
-    
+
     @_transparent
     public var area: Double {
         let a = p3.x - p0.x + 3 * (p1.x - p2.x)
         let b = 3 * (p2.x + p0.x) - 6 * p1.x
         let c = 3 * (p1.x - p0.x)
-        
+
         let d = p3.y - p0.y + 3 * (p1.y - p2.y)
         let e = 3 * (p2.y + p0.y) - 6 * p1.y
         let f = 3 * (p1.y - p0.y)
-        
+
         return 0.5 * (p0.x * p3.y - p3.x * p0.y) + 0.1 * (b * d - a * e) + 0.25 * (c * d - a * f) + (c * e - b * f) / 6
     }
 }
 
 extension CubicBezier where Element == Point {
-    
+
     @inlinable
     public var inflection: Degree2Roots {
         let p = (p3 - p0).phase
@@ -261,7 +261,7 @@ extension CubicBezier where Element == Point {
 }
 
 extension CubicBezier where Element == Double {
-    
+
     @inlinable
     public var stationary: Degree2Roots {
         let _a = 3 * (p3 - p0) + 9 * (p1 - p2)
@@ -291,117 +291,117 @@ extension CubicBezier where Element == Double {
 }
 
 extension CubicBezier where Element == Point {
-    
+
     @inlinable
     public var boundary: Rect {
-        
+
         let bx = CubicBezier<Double>(p0.x, p1.x, p2.x, p3.x)
         let by = CubicBezier<Double>(p0.y, p1.y, p2.y, p3.y)
-        
+
         let _x = bx.stationary.lazy.map { bx.eval($0.clamped(to: 0...1)) }
         let _y = by.stationary.lazy.map { by.eval($0.clamped(to: 0...1)) }
-        
+
         let minX = _x.min().map { Swift.min(p0.x, p3.x, $0) } ?? Swift.min(p0.x, p3.x)
         let minY = _y.min().map { Swift.min(p0.y, p3.y, $0) } ?? Swift.min(p0.y, p3.y)
         let maxX = _x.max().map { Swift.max(p0.x, p3.x, $0) } ?? Swift.max(p0.x, p3.x)
         let maxY = _y.max().map { Swift.max(p0.y, p3.y, $0) } ?? Swift.max(p0.y, p3.y)
-        
+
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
 }
 
 extension CubicBezier where Element == Point {
-    
+
     @inlinable
     @inline(__always)
     public func selfIntersect() -> (Double, Double)? {
-        
+
         let q1 = 3 * (p1 - p0)
         let q2 = 3 * (p2 + p0) - 6 * p1
         let q3 = p3 - p0 + 3 * (p1 - p2)
-        
+
         let d1 = -cross(q3, q2)
         let d2 = cross(q3, q1)
         let d3 = -cross(q2, q1)
-        
+
         let discr = 3 * d2 * d2 - 4 * d1 * d3
-        
+
         if !d1.almostZero() && !discr.almostZero() && discr < 0 {
-            
+
             let delta = sqrt(-discr)
-            
+
             let s = 0.5 / d1
             let td = d2 + delta
             let te = d2 - delta
-            
+
             return (td * s, te * s)
         }
-        
+
         return nil
     }
-    
+
     @inlinable
     public func overlap(_ other: LineSegment<Element>) -> Bool {
-        
+
         let a = p0 - other.p0
         let b = 3 * (p1 - p0)
         let c = 3 * (p2 + p0) - 6 * p1
         let d = p3 - p0 + 3 * (p1 - p2)
-        
+
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = other.p0.x - other.p1.x
-        
+
         let v0: Polynomial = [a.y, b.y, c.y, d.y]
         let v1 = other.p0.y - other.p1.y
-        
+
         let det = u1 * v0 - u0 * v1
         return det.allSatisfy { $0.almostZero() }
     }
-    
+
     @inlinable
     public func overlap(_ other: QuadBezier<Element>) -> Bool {
-        
+
         let a = p0 - other.p0
         let b = 3 * (p1 - p0)
         let c = 3 * (p2 + p0) - 6 * p1
         let d = p3 - p0 + 3 * (p1 - p2)
-        
+
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = 2 * (other.p0.x - other.p1.x)
         let u2 = 2 * other.p1.x - other.p0.x - other.p2.x
-        
+
         let v0: Polynomial = [a.y, b.y, c.y, d.y]
         let v1 = 2 * (other.p0.y - other.p1.y)
         let v2 = 2 * other.p1.y - other.p0.y - other.p2.y
-        
+
         // Bézout matrix
         let m00 = u2 * v1 - u1 * v2
         let m01 = u2 * v0 - u0 * v2
         let m10 = m01
         let m11 = u1 * v0 - u0 * v1
-        
+
         let det = m00 * m11 - m01 * m10
         return det.allSatisfy { $0.almostZero() }
     }
-    
+
     @inlinable
     public func overlap(_ other: CubicBezier) -> Bool {
-        
+
         let a = p0 - other.p0
         let b = 3 * (p1 - p0)
         let c = 3 * (p2 + p0) - 6 * p1
         let d = p3 - p0 + 3 * (p1 - p2)
-        
+
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = 3 * (other.p0.x - other.p1.x)
         let u2 = 6 * other.p1.x - 3 * (other.p2.x + other.p0.x)
         let u3 = other.p0.x - other.p3.x + 3 * (other.p2.x - other.p1.x)
-        
+
         let v0: Polynomial = [a.y, b.y, c.y, d.y]
         let v1 = 3 * (other.p0.y - other.p1.y)
         let v2 = 6 * other.p1.y - 3 * (other.p2.y + other.p0.y)
         let v3 = other.p0.y - other.p3.y + 3 * (other.p2.y - other.p1.y)
-        
+
         // Bézout matrix
         let m00 = u3 * v2 - u2 * v3
         let m01 = u3 * v1 - u1 * v3
@@ -412,7 +412,7 @@ extension CubicBezier where Element == Point {
         let m20 = m02
         let m21 = m12
         let m22 = u1 * v0 - u0 * v1
-        
+
         let _a = m11 * m22 - m12 * m21
         let _b = m12 * m20 - m10 * m22
         let _c = m10 * m21 - m11 * m20
@@ -422,69 +422,69 @@ extension CubicBezier where Element == Point {
         let det = _d + _e + _f
         return det.allSatisfy { $0.almostZero() }
     }
-    
+
     @inlinable
     public func intersect(_ other: LineSegment<Element>) -> [Double]? {
-        
+
         let a = p0 - other.p0
         let b = 3 * (p1 - p0)
         let c = 3 * (p2 + p0) - 6 * p1
         let d = p3 - p0 + 3 * (p1 - p2)
-        
+
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = other.p0.x - other.p1.x
-        
+
         let v0: Polynomial = [a.y, b.y, c.y, d.y]
         let v1 = other.p0.y - other.p1.y
-        
+
         let det = u1 * v0 - u0 * v1
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }
-    
+
     @inlinable
     public func intersect(_ other: QuadBezier<Element>) -> [Double]? {
-        
+
         let a = p0 - other.p0
         let b = 3 * (p1 - p0)
         let c = 3 * (p2 + p0) - 6 * p1
         let d = p3 - p0 + 3 * (p1 - p2)
-        
+
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = 2 * (other.p0.x - other.p1.x)
         let u2 = 2 * other.p1.x - other.p0.x - other.p2.x
-        
+
         let v0: Polynomial = [a.y, b.y, c.y, d.y]
         let v1 = 2 * (other.p0.y - other.p1.y)
         let v2 = 2 * other.p1.y - other.p0.y - other.p2.y
-        
+
         // Bézout matrix
         let m00 = u2 * v1 - u1 * v2
         let m01 = u2 * v0 - u0 * v2
         let m10 = m01
         let m11 = u1 * v0 - u0 * v1
-        
+
         let det = m00 * m11 - m01 * m10
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }
-    
+
     @inlinable
     public func intersect(_ other: CubicBezier) -> [Double]? {
-        
+
         let a = p0 - other.p0
         let b = 3 * (p1 - p0)
         let c = 3 * (p2 + p0) - 6 * p1
         let d = p3 - p0 + 3 * (p1 - p2)
-        
+
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = 3 * (other.p0.x - other.p1.x)
         let u2 = 6 * other.p1.x - 3 * (other.p2.x + other.p0.x)
         let u3 = other.p0.x - other.p3.x + 3 * (other.p2.x - other.p1.x)
-        
+
         let v0: Polynomial = [a.y, b.y, c.y, d.y]
         let v1 = 3 * (other.p0.y - other.p1.y)
         let v2 = 6 * other.p1.y - 3 * (other.p2.y + other.p0.y)
         let v3 = other.p0.y - other.p3.y + 3 * (other.p2.y - other.p1.y)
-        
+
         // Bézout matrix
         let m00 = u3 * v2 - u2 * v3
         let m01 = u3 * v1 - u1 * v3
@@ -495,7 +495,7 @@ extension CubicBezier where Element == Point {
         let m20 = m02
         let m21 = m12
         let m22 = u1 * v0 - u0 * v1
-        
+
         let _a = m11 * m22 - m12 * m21
         let _b = m12 * m20 - m10 * m22
         let _c = m10 * m21 - m11 * m20

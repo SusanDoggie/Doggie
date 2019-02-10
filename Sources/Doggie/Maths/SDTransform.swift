@@ -31,14 +31,14 @@
 ///     ⎝ c f 1 ⎠
 ///
 public struct SDTransform : Hashable {
-    
+
     public var a: Double
     public var b: Double
     public var c: Double
     public var d: Double
     public var e: Double
     public var f: Double
-    
+
     @inlinable
     @inline(__always)
     public init(a: Double, b: Double, c: Double, d: Double, e: Double, f: Double) {
@@ -52,7 +52,7 @@ public struct SDTransform : Hashable {
 }
 
 extension SDTransform : CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return "SDTransform(a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f))"
@@ -60,7 +60,7 @@ extension SDTransform : CustomStringConvertible {
 }
 
 extension SDTransform : Codable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -72,7 +72,7 @@ extension SDTransform : Codable {
         self.c  = try container.decode(Double.self)
         self.f  = try container.decode(Double.self)
     }
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -87,7 +87,7 @@ extension SDTransform : Codable {
 }
 
 extension SDTransform {
-    
+
     @_transparent
     public var determinant : Double {
         return a * e - b * d
@@ -95,7 +95,7 @@ extension SDTransform {
 }
 
 extension SDTransform {
-    
+
     @_transparent
     public var inverse : SDTransform {
         let det = self.determinant
@@ -104,7 +104,7 @@ extension SDTransform {
 }
 
 extension SDTransform {
-    
+
     @_transparent
     public var tx: Double {
         get {
@@ -114,7 +114,7 @@ extension SDTransform {
             c = newValue
         }
     }
-    
+
     @_transparent
     public var ty: Double {
         get {
@@ -127,7 +127,7 @@ extension SDTransform {
 }
 
 extension SDTransform {
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -137,11 +137,11 @@ extension SDTransform {
     ///
     @_transparent
     public static var identity : SDTransform {
-        
+
         return SDTransform(a: 1, b: 0, c: 0,
                            d: 0, e: 1, f: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -152,11 +152,11 @@ extension SDTransform {
     @inlinable
     @inline(__always)
     public static func rotate(_ angle: Double) -> SDTransform {
-        
+
         return SDTransform(a: cos(angle), b: -sin(angle), c: 0,
                            d: sin(angle), e: cos(angle), f: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -167,11 +167,11 @@ extension SDTransform {
     @inlinable
     @inline(__always)
     public static func skewX(_ angle: Double) -> SDTransform {
-        
+
         return SDTransform(a: 1, b: tan(angle), c: 0,
                            d: 0, e: 1, f: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -182,11 +182,11 @@ extension SDTransform {
     @inlinable
     @inline(__always)
     public static func skewY(_ angle: Double) -> SDTransform {
-        
+
         return SDTransform(a: 1, b: 0, c: 0,
                            d: tan(angle), e: 1, f: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -197,11 +197,11 @@ extension SDTransform {
     @inlinable
     @inline(__always)
     public static func scale(_ scale: Double) -> SDTransform {
-        
+
         return SDTransform(a: scale, b: 0, c: 0,
                            d: 0, e: scale, f: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -212,11 +212,11 @@ extension SDTransform {
     @inlinable
     @inline(__always)
     public static func scale(x: Double = 1, y: Double = 1) -> SDTransform {
-        
+
         return SDTransform(a: x, b: 0, c: 0,
                            d: 0, e: y, f: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -227,11 +227,11 @@ extension SDTransform {
     @inlinable
     @inline(__always)
     public static func translate(x: Double = 0, y: Double = 0) -> SDTransform {
-        
+
         return SDTransform(a: 1, b: 0, c: x,
                            d: 0, e: 1, f: y)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -242,11 +242,11 @@ extension SDTransform {
     @inlinable
     @inline(__always)
     public static func reflectX(_ x: Double = 0) -> SDTransform {
-        
+
         return SDTransform(a: -1, b: 0, c: 2 * x,
                            d: 0, e: 1, f: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -257,14 +257,14 @@ extension SDTransform {
     @inlinable
     @inline(__always)
     public static func reflectY(_ y: Double = 0) -> SDTransform {
-        
+
         return SDTransform(a: 1, b: 0, c: 0,
                            d: 0, e: -1, f: 2 * y)
     }
 }
 
 extension SDTransform : Multiplicative {
-    
+
 }
 
 @inlinable

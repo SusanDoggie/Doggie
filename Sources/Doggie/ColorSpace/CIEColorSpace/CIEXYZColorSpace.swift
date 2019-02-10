@@ -24,12 +24,12 @@
 //
 
 extension ColorSpace where Model == XYZColorModel {
-    
+
     @inlinable
     public static func cieXYZ<C>(from colorSpace: ColorSpace<C>) -> ColorSpace {
         return ColorSpace(base: colorSpace.base.cieXYZ)
     }
-    
+
     @inlinable
     public static func cieXYZ(white: Point) -> ColorSpace {
         return ColorSpace(base: CIEXYZColorSpace(white: white))
@@ -39,19 +39,19 @@ extension ColorSpace where Model == XYZColorModel {
 @_fixed_layout
 @usableFromInline
 struct CIEXYZColorSpace : ColorSpaceBaseProtocol {
-    
+
     @usableFromInline
     typealias Model = XYZColorModel
-    
+
     @usableFromInline
     let white: Model
-    
+
     @usableFromInline
     let black: Model
-    
+
     @usableFromInline
     let luminance: Double
-    
+
     @inlinable
     init(white: Model, black: Model = XYZColorModel(), luminance: Double = 1) {
         self.white = white
@@ -61,7 +61,7 @@ struct CIEXYZColorSpace : ColorSpaceBaseProtocol {
 }
 
 extension CIEXYZColorSpace {
-    
+
     @inlinable
     func hash(into hasher: inout Hasher) {
         hasher.combine("CIEXYZColorSpace")
@@ -72,12 +72,12 @@ extension CIEXYZColorSpace {
 }
 
 extension CIEXYZColorSpace {
-    
+
     @inlinable
     init(white: Point) {
         self.init(white: XYZColorModel(luminance: 1, point: white))
     }
-    
+
     @inlinable
     init(white: Point, luminance: Double, contrastRatio: Double) {
         self.init(white: XYZColorModel(luminance: 1, point: white), black: XYZColorModel(luminance: 1 / contrastRatio, point: white), luminance: luminance)
@@ -85,7 +85,7 @@ extension CIEXYZColorSpace {
 }
 
 extension CIEXYZColorSpace {
-    
+
     @inlinable
     var localizedName: String? {
         return "Doggie CIE XYZ Color Space (white = \(white.point))"
@@ -93,7 +93,7 @@ extension CIEXYZColorSpace {
 }
 
 extension CIEXYZColorSpace {
-    
+
     @inlinable
     var linearTone: CIEXYZColorSpace {
         return self
@@ -101,27 +101,27 @@ extension CIEXYZColorSpace {
 }
 
 extension CIEXYZColorSpace {
-    
+
     @inlinable
     var cieXYZ: CIEXYZColorSpace {
         return self
     }
-    
+
     @inlinable
     func convertToLinear(_ color: Model) -> Model {
         return color
     }
-    
+
     @inlinable
     func convertFromLinear(_ color: Model) -> Model {
         return color
     }
-    
+
     @inlinable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         return color
     }
-    
+
     @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         return color
@@ -129,7 +129,7 @@ extension CIEXYZColorSpace {
 }
 
 extension CIEXYZColorSpace {
-    
+
     @inlinable
     var normalizeMatrix: Matrix {
         return Matrix.translate(x: -black.x, y: -black.y, z: -black.z) * Matrix.scale(x: white.x / (white.y * (white.x - black.x)), y: 1 / (white.y - black.y), z: white.z / (white.y * (white.z - black.z)))

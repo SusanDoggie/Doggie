@@ -24,14 +24,14 @@
 //
 
 open class Trigger {
-    
+
     private let queue: DispatchQueue
     private let callback: (Trigger) -> Void
     private var flag: Int8
-    
+
     public var qos: DispatchQoS
     public var flags: DispatchWorkItemFlags
-    
+
     public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], callback: @escaping (Trigger) -> Void) {
         self.queue = queue
         self.callback = callback
@@ -42,13 +42,13 @@ open class Trigger {
 }
 
 extension Trigger {
-    
+
     public func signal() {
         if flag.fetchStore(2) == 0 {
             queue.async(qos: qos, flags: flags, execute: dispatchRunloop)
         }
     }
-    
+
     private func dispatchRunloop() {
         while true {
             flag = 1

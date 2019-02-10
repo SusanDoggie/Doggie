@@ -24,16 +24,16 @@
 //
 
 struct WOFFDecoder : FontDecoder {
-    
+
     var header: WOFFHeader
     var faces: [FontFaceBase]
-    
+
     init?(data: Data) throws {
         var _header = data
         guard let header = try? _header.decode(WOFFHeader.self), header.signature == "wOFF" else { return nil }
-        
+
         self.header = header
-        
+
         var table: [Signature<BEUInt32>: Data] = [:]
         for _ in 0..<Int(header.numTables) {
             let record = try _header.decode(WOFFTableRecord.self)
@@ -48,7 +48,7 @@ struct WOFFDecoder : FontDecoder {
 }
 
 struct WOFFHeader : ByteDecodable {
-    
+
     var signature: Signature<BEUInt32>
     var flavor: BEUInt32
     var length: BEUInt32
@@ -62,7 +62,7 @@ struct WOFFHeader : ByteDecodable {
     var metaOrigLength: BEUInt32
     var privOffset: BEUInt32
     var privLength: BEUInt32
-    
+
     init(from data: inout Data) throws {
         self.signature = try data.decode(Signature<BEUInt32>.self)
         self.flavor = try data.decode(BEUInt32.self)
@@ -81,13 +81,13 @@ struct WOFFHeader : ByteDecodable {
 }
 
 struct WOFFTableRecord : ByteDecodable {
-    
+
     var tag: Signature<BEUInt32>
     var offset: BEUInt32
     var compLength: BEUInt32
     var origLength: BEUInt32
     var origChecksum: BEUInt32
-    
+
     init(from data: inout Data) throws {
         self.tag = try data.decode(Signature<BEUInt32>.self)
         self.offset = try data.decode(BEUInt32.self)

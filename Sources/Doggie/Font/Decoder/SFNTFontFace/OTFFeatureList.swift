@@ -24,10 +24,10 @@
 //
 
 struct OTFFeatureList : ByteDecodable {
-    
+
     var featureCount: BEUInt16
     var records: [Record]
-    
+
     init(from data: inout Data) throws {
         let copy = data
         self.featureCount = try data.decode(BEUInt16.self)
@@ -36,24 +36,24 @@ struct OTFFeatureList : ByteDecodable {
         for _ in 0..<Int(featureCount) {
             let featureTag = try data.decode(Signature<BEUInt32>.self)
             let featureOffset = try data.decode(BEUInt16.self)
-            
+
             var record = copy.dropFirst(Int(featureOffset))
-            
+
             let featureParams = try record.decode(BEUInt16.self)
             let lookupIndexCount = try record.decode(BEUInt16.self)
             let lookupListIndices = try (0..<Int(lookupIndexCount)).map { _ in try record.decode(BEUInt16.self) }
-            
+
             self.records.append(Record(featureTag: featureTag, featureParams: featureParams, lookupIndexCount: lookupIndexCount, lookupListIndices: lookupListIndices))
         }
     }
-    
+
     struct Record {
-        
+
         var featureTag: Signature<BEUInt32>
-        
+
         var featureParams: BEUInt16
         var lookupIndexCount: BEUInt16
         var lookupListIndices: [BEUInt16]
-        
+
     }
 }

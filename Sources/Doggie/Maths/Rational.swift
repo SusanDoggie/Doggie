@@ -24,48 +24,48 @@
 //
 
 public struct Rational: Comparable, Hashable {
-    
+
     public let numerator: Int64
     public let denominator: Int64
-    
+
     @inlinable
     @inline(__always)
     public init<T: BinaryInteger>(_ numerator: T) {
         self.numerator = Int64(numerator)
         self.denominator = 1
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T: UnsignedInteger>(_ numerator: T, _ denominator: T) {
-        
+
         if numerator == 0 || denominator == 0 || numerator == 1 || denominator == 1 {
-            
+
             self.numerator = Int64(numerator)
             self.denominator = Int64(denominator)
-            
+
         } else {
-            
+
             let common = gcd(numerator, denominator)
-            
+
             self.numerator = Int64(numerator / common)
             self.denominator = Int64(denominator / common)
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T: SignedInteger>(_ numerator: T, _ denominator: T) {
-        
+
         if numerator == 0 || denominator == 0 || numerator == 1 || denominator == 1 {
-            
+
             self.numerator = Int64(numerator)
             self.denominator = Int64(denominator)
-            
+
         } else {
-            
+
             let common = gcd(Swift.abs(numerator), Swift.abs(denominator))
-            
+
             if denominator < 0 {
                 self.numerator = Int64(-numerator / common)
                 self.denominator = Int64(-denominator / common)
@@ -75,25 +75,25 @@ public struct Rational: Comparable, Hashable {
             }
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T: BinaryFloatingPoint>(_ value: T) {
-        
+
         if value.isZero {
-            
+
             self.init(0)
-            
+
         } else if value.isFinite {
-            
+
             let bias = 1 << T.significandBitCount
             let exponent = value.exponent
-            
+
             let n = Int(value.significandBitPattern) | bias
             self.init(value.sign == .plus ? n : -n, bias)
-            
+
             self *= exponent > 0 ? Rational(1 << exponent, 1) : Rational(1, 1 << -exponent)
-            
+
         } else {
             self.init(0, 0)
         }
@@ -101,13 +101,13 @@ public struct Rational: Comparable, Hashable {
 }
 
 extension Rational: ExpressibleByFloatLiteral {
-    
+
     @inlinable
     @inline(__always)
     public init(integerLiteral value: Int64) {
         self.init(value)
     }
-    
+
     @inlinable
     @inline(__always)
     public init(floatLiteral value: Double) {
@@ -116,7 +116,7 @@ extension Rational: ExpressibleByFloatLiteral {
 }
 
 extension Rational: CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return "\(doubleValue)"
@@ -124,22 +124,22 @@ extension Rational: CustomStringConvertible {
 }
 
 extension Rational: SignedNumeric {
-    
+
     @inlinable
     @inline(__always)
     public init?<T>(exactly source: T) where T : BinaryInteger {
         guard let value = Int64(exactly: source) else { return nil }
         self.init(value)
     }
-    
+
     public typealias Magnitude = Rational
-    
+
     @inlinable
     @inline(__always)
     public static func abs(_ x: Rational) -> Rational {
         return x.magnitude
     }
-    
+
     @_transparent
     public var magnitude: Rational {
         return Rational(Swift.abs(numerator), denominator)
@@ -147,12 +147,12 @@ extension Rational: SignedNumeric {
 }
 
 extension Rational {
-    
+
     @_transparent
     public var floatValue: Float {
         return Float(doubleValue)
     }
-    
+
     @_transparent
     public var doubleValue: Double {
         return Double(numerator) / Double(denominator)
@@ -160,13 +160,13 @@ extension Rational {
 }
 
 extension Rational {
-    
+
     @inlinable
     @inline(__always)
     public func distance(to other: Rational) -> Rational {
         return other - self
     }
-    
+
     @inlinable
     @inline(__always)
     public func advanced(by n: Rational) -> Rational {
@@ -175,9 +175,9 @@ extension Rational {
 }
 
 extension Rational : ScalarProtocol {
-    
+
     public typealias Scalar = Rational
-    
+
     @inlinable
     @inline(__always)
     public init() {

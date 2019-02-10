@@ -25,10 +25,10 @@
 
 @_fixed_layout
 public struct RangeSet<Bound : Comparable> : Equatable {
-    
+
     @usableFromInline
     let ranges: [Range<Bound>]
-    
+
     @inlinable
     public init() {
         self.ranges = []
@@ -41,7 +41,7 @@ public struct RangeSet<Bound : Comparable> : Equatable {
     public init<S : Sequence>(_ s: S) where S.Element == Range<Bound> {
         self = s.reduce(RangeSet()) { $0.union($1) }
     }
-    
+
     @inlinable
     init(ranges: [Range<Bound>]) {
         self.ranges = ranges
@@ -49,11 +49,11 @@ public struct RangeSet<Bound : Comparable> : Equatable {
 }
 
 extension RangeSet : RandomAccessCollection {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Index = Int
-    
+
     @inlinable
     public var startIndex: Int {
         return ranges.startIndex
@@ -62,7 +62,7 @@ extension RangeSet : RandomAccessCollection {
     public var endIndex: Int {
         return ranges.endIndex
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Range<Bound> {
         return ranges[position]
@@ -70,7 +70,7 @@ extension RangeSet : RandomAccessCollection {
 }
 
 extension RangeSet : Hashable where Bound : Hashable {
-    
+
     @inlinable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(ranges)
@@ -78,7 +78,7 @@ extension RangeSet : Hashable where Bound : Hashable {
 }
 
 extension RangeSet {
-    
+
     @inlinable
     public func contains(_ x: Bound) -> Bool {
         return ranges.contains { $0.contains(x) }
@@ -86,7 +86,7 @@ extension RangeSet {
 }
 
 extension RangeSet {
-    
+
     @inlinable
     public func union(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
@@ -101,7 +101,7 @@ extension RangeSet {
         collect.append(overlap)
         return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
-    
+
     @inlinable
     public func subtracting(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
@@ -121,7 +121,7 @@ extension RangeSet {
         }
         return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
-    
+
     @inlinable
     public func intersection(_ range: Range<Bound>) -> RangeSet {
         var collect: [Range<Bound>] = []
@@ -130,7 +130,7 @@ extension RangeSet {
         }
         return RangeSet(ranges: collect.sorted { $0.lowerBound < $1.lowerBound })
     }
-    
+
     @inlinable
     public func symmetricDifference(_ range: Range<Bound>) -> RangeSet {
         return self.subtracting(range).union(RangeSet([range]).subtracting(self))
@@ -138,7 +138,7 @@ extension RangeSet {
 }
 
 extension RangeSet {
-    
+
     @inlinable
     public func union(_ ranges: RangeSet) -> RangeSet {
         return ranges.ranges.reduce(self) { $0.union($1) }
@@ -158,17 +158,17 @@ extension RangeSet {
 }
 
 extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
-    
+
     @inlinable
     public func min() -> Bound? {
         return ranges.first?.min()
     }
-    
+
     @inlinable
     public func max() -> Bound? {
         return ranges.last?.max()
     }
-    
+
     @inlinable
     public var elements: LazyCollection<FlattenCollection<[Range<Bound>]>> {
         return ranges.lazy.joined()
@@ -176,7 +176,7 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
 }
 
 extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
-    
+
     @inlinable
     public init(_ ranges: ClosedRange<Bound> ... ) {
         self.init(ranges)
@@ -188,7 +188,7 @@ extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
 }
 
 extension RangeSet where Bound : Strideable, Bound.Stride : SignedInteger {
-    
+
     @inlinable
     public func union(_ ranges: ClosedRange<Bound>) -> RangeSet {
         return self.union(Range(ranges))

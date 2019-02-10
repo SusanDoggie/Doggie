@@ -24,51 +24,51 @@
 //
 
 public protocol SDAtomicProtocol {
-    
+
     associatedtype Atom
-    
+
     mutating func isLockFree() -> Bool
-    
+
     /// Atomic fetch the current value.
     mutating func fetchSelf() -> (current: Self, value: Atom)
-    
+
     /// Compare and set the value.
     mutating func compareSet(old: Self, new: Atom) -> Bool
-    
+
     /// Atomic fetch the current value.
     mutating func fetch() -> Atom
-    
+
     /// Atomic set the value.
     mutating func store(_ new: Atom)
-    
+
     /// Set the value, and returns the previous value.
     mutating func fetchStore(_ new: Atom) -> Atom
-    
+
     /// Set the value, and returns the previous value. `block` is called repeatedly until result accepted.
     @discardableResult
     mutating func fetchStore(block: (Atom) throws -> Atom) rethrows -> Atom
 }
 
 extension SDAtomicProtocol {
-    
+
     /// Atomic fetch the current value.
     @_transparent
     public mutating func fetch() -> Atom {
         return self.fetchSelf().value
     }
-    
+
     /// Atomic set the value.
     @_transparent
     public mutating func store(_ new: Atom) {
         self.fetchStore { _ in new }
     }
-    
+
     /// Set the value, and returns the previous value.
     @_transparent
     public mutating func fetchStore(_ new: Atom) -> Atom {
         return self.fetchStore { _ in new }
     }
-    
+
     /// Set the value, and returns the previous value. `block` is called repeatedly until result accepted.
     @_transparent
     @discardableResult
@@ -83,7 +83,7 @@ extension SDAtomicProtocol {
 }
 
 extension SDAtomicProtocol where Atom : Equatable {
-    
+
     /// Compare and set the value.
     @_transparent
     public mutating func compareSet(old: Atom, new: Atom) -> Bool {
@@ -93,31 +93,31 @@ extension SDAtomicProtocol where Atom : Equatable {
 }
 
 extension Bool : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _AtomicBoolIsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: Bool, value: Bool) {
         let val = _AtomicLoadBoolBarrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: Bool) {
         _AtomicStoreBoolBarrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: Bool, new: Bool) -> Bool {
         return _AtomicCompareAndSwapBoolBarrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: Bool) -> Bool {
@@ -126,37 +126,37 @@ extension Bool : SDAtomicProtocol {
 }
 
 extension Int8 : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _Atomic8IsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: Int8, value: Int8) {
         let val = _AtomicLoad8Barrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: Int8) {
         _AtomicStore8Barrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: Int8, new: Int8) -> Bool {
         return _AtomicCompareAndSwap8Barrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: Int8) -> Int8 {
         return _AtomicExchange8Barrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: Int8) -> Int8 {
@@ -185,37 +185,37 @@ extension Int8 : SDAtomicProtocol {
 }
 
 extension Int16 : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _Atomic16IsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: Int16, value: Int16) {
         let val = _AtomicLoad16Barrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: Int16) {
         _AtomicStore16Barrier(new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func compareSet(old: Int16, new: Int16) -> Bool {
         return _AtomicCompareAndSwap16Barrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: Int16) -> Int16 {
         return _AtomicExchange16Barrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: Int16) -> Int16 {
@@ -244,37 +244,37 @@ extension Int16 : SDAtomicProtocol {
 }
 
 extension Int32 : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _Atomic32IsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: Int32, value: Int32) {
         let val = _AtomicLoad32Barrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: Int32) {
         _AtomicStore32Barrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: Int32, new: Int32) -> Bool {
         return _AtomicCompareAndSwap32Barrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: Int32) -> Int32 {
         return _AtomicExchange32Barrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: Int32) -> Int32 {
@@ -303,37 +303,37 @@ extension Int32 : SDAtomicProtocol {
 }
 
 extension Int64 : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _Atomic64IsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: Int64, value: Int64) {
         let val = _AtomicLoad64Barrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: Int64) {
         _AtomicStore64Barrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: Int64, new: Int64) -> Bool {
         return _AtomicCompareAndSwap64Barrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: Int64) -> Int64 {
         return _AtomicExchange64Barrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: Int64) -> Int64 {
@@ -362,37 +362,37 @@ extension Int64 : SDAtomicProtocol {
 }
 
 extension Int : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _AtomicLongIsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: Int, value: Int) {
         let val = _AtomicLoadLongBarrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: Int) {
         _AtomicStoreLongBarrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: Int, new: Int) -> Bool {
         return _AtomicCompareAndSwapLongBarrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: Int) -> Int {
         return _AtomicExchangeLongBarrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: Int) -> Int {
@@ -421,37 +421,37 @@ extension Int : SDAtomicProtocol {
 }
 
 extension UInt8 : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _AtomicU8IsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: UInt8, value: UInt8) {
         let val = _AtomicLoadU8Barrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: UInt8) {
         _AtomicStoreU8Barrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: UInt8, new: UInt8) -> Bool {
         return _AtomicCompareAndSwapU8Barrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: UInt8) -> UInt8 {
         return _AtomicExchangeU8Barrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: UInt8) -> UInt8 {
@@ -480,37 +480,37 @@ extension UInt8 : SDAtomicProtocol {
 }
 
 extension UInt16 : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _AtomicU16IsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: UInt16, value: UInt16) {
         let val = _AtomicLoadU16Barrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: UInt16) {
         _AtomicStoreU16Barrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: UInt16, new: UInt16) -> Bool {
         return _AtomicCompareAndSwapU16Barrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: UInt16) -> UInt16 {
         return _AtomicExchangeU16Barrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: UInt16) -> UInt16 {
@@ -539,37 +539,37 @@ extension UInt16 : SDAtomicProtocol {
 }
 
 extension UInt32 : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _AtomicU32IsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: UInt32, value: UInt32) {
         let val = _AtomicLoadU32Barrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: UInt32) {
         _AtomicStoreU32Barrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: UInt32, new: UInt32) -> Bool {
         return _AtomicCompareAndSwapU32Barrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: UInt32) -> UInt32 {
         return _AtomicExchangeU32Barrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: UInt32) -> UInt32 {
@@ -598,37 +598,37 @@ extension UInt32 : SDAtomicProtocol {
 }
 
 extension UInt64 : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _AtomicU64IsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: UInt64, value: UInt64) {
         let val = _AtomicLoadU64Barrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: UInt64) {
         _AtomicStoreU64Barrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: UInt64, new: UInt64) -> Bool {
         return _AtomicCompareAndSwapU64Barrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: UInt64) -> UInt64 {
         return _AtomicExchangeU64Barrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: UInt64) -> UInt64 {
@@ -657,37 +657,37 @@ extension UInt64 : SDAtomicProtocol {
 }
 
 extension UInt : SDAtomicProtocol {
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return _AtomicULongIsLockFree(&self)
     }
-    
+
     /// Atomic fetch the current value with barrier.
     @_transparent
     public mutating func fetchSelf() -> (current: UInt, value: UInt) {
         let val = _AtomicLoadULongBarrier(&self)
         return (val, val)
     }
-    
+
     /// Atomic sets the value with barrier.
     @_transparent
     public mutating func store(_ new: UInt) {
         _AtomicStoreULongBarrier(new, &self)
     }
-    
+
     /// Compare and set value with barrier.
     @_transparent
     public mutating func compareSet(old: UInt, new: UInt) -> Bool {
         return _AtomicCompareAndSwapULongBarrier(old, new, &self)
     }
-    
+
     /// Set value with barrier.
     @_transparent
     public mutating func fetchStore(_ new: UInt) -> UInt {
         return _AtomicExchangeULongBarrier(new, &self)
     }
-    
+
     @_transparent
     @discardableResult
     public mutating func fetchAdd(_ value: UInt) -> UInt {
@@ -717,21 +717,21 @@ extension UInt : SDAtomicProtocol {
 
 @_fixed_layout
 public struct Atomic<Instance> {
-    
+
     @usableFromInline
     var base: Base
-    
+
     @_transparent
     @usableFromInline
     init(base: Base) {
         self.base = base
     }
-    
+
     @_transparent
     public init(value: Instance) {
         self.base = Base(value: value)
     }
-    
+
     @_transparent
     public var value : Instance {
         get {
@@ -744,14 +744,14 @@ public struct Atomic<Instance> {
 }
 
 extension Atomic {
-    
+
     @_fixed_layout
     @usableFromInline
     class Base {
-        
+
         @usableFromInline
         var value: Instance
-        
+
         @usableFromInline
         init(value: Instance) {
             self.value = value
@@ -760,31 +760,31 @@ extension Atomic {
 }
 
 extension Atomic : SDAtomicProtocol {
-    
+
     @_transparent
     @usableFromInline
     mutating func withBasePointer<Result, Raw>(_ body: (UnsafeMutablePointer<Raw>) -> Result) -> Result {
         return withUnsafeMutablePointer(to: &base) { $0.withMemoryRebound(to: Raw.self, capacity: 1) { body($0) } }
     }
-    
+
     @_transparent
     public mutating func isLockFree() -> Bool {
         return withBasePointer { _AtomicPtrIsLockFree($0) }
     }
-    
+
     /// Atomic fetch the current value.
     @_transparent
     public mutating func fetchSelf() -> (current: Atomic, value: Instance) {
         let _base = self.base
         return (Atomic(base: _base), _base.value)
     }
-    
+
     /// Atomic set the value.
     @_transparent
     public mutating func store(_ new: Instance) {
         self.base = Base(value: new)
     }
-    
+
     /// Compare and set the value.
     @_transparent
     public mutating func compareSet(old: Atomic, new: Instance) -> Bool {
@@ -798,7 +798,7 @@ extension Atomic : SDAtomicProtocol {
         }
         return result
     }
-    
+
     @_transparent
     @usableFromInline
     mutating func _compareSetWeak(old: Base, new: Base) -> Bool {
@@ -812,7 +812,7 @@ extension Atomic : SDAtomicProtocol {
         }
         return result
     }
-    
+
     /// Set the value.
     @_transparent
     @discardableResult
@@ -829,7 +829,7 @@ extension Atomic : SDAtomicProtocol {
 }
 
 extension Atomic: CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return "Atomic(\(base.value))"

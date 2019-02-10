@@ -24,11 +24,11 @@
 //
 
 public struct Vector : Hashable {
-    
+
     public var x: Double
     public var y: Double
     public var z: Double
-    
+
     @inlinable
     @inline(__always)
     public init() {
@@ -36,7 +36,7 @@ public struct Vector : Hashable {
         self.y = 0
         self.z = 0
     }
-    
+
     @inlinable
     @inline(__always)
     public init(x: Double, y: Double, z: Double) {
@@ -54,7 +54,7 @@ public struct Vector : Hashable {
 }
 
 extension Vector {
-    
+
     @_transparent
     public var magnitude: Double {
         get {
@@ -69,7 +69,7 @@ extension Vector {
 }
 
 extension Vector: CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return "Vector(x: \(x), y: \(y), z: \(z))"
@@ -77,7 +77,7 @@ extension Vector: CustomStringConvertible {
 }
 
 extension Vector : Codable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -86,7 +86,7 @@ extension Vector : Codable {
         self.y = try container.decode(Double.self)
         self.z = try container.decode(Double.self)
     }
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -98,7 +98,7 @@ extension Vector : Codable {
 }
 
 extension Vector {
-    
+
     @inlinable
     @inline(__always)
     public func offset(dx: Double, dy: Double, dz: Double) -> Vector {
@@ -107,16 +107,16 @@ extension Vector {
 }
 
 extension Vector : Tensor {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Scalar = Double
-    
+
     @_transparent
     public static var numberOfComponents: Int {
         return 3
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Double {
         get {
@@ -136,19 +136,19 @@ extension Vector : Tensor {
             }
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Vector {
         return Vector(x: transform(x), y: transform(y), z: transform(z))
     }
-    
+
     @inlinable
     @inline(__always)
     public func combined(_ other: Vector, _ transform: (Double, Double) -> Double) -> Vector {
         return Vector(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {

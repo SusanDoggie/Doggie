@@ -24,63 +24,63 @@
 //
 
 public protocol ImageProtocol {
-    
+
     associatedtype Color: ColorProtocol
-    
+
     typealias ColorSpace = Color.ColorSpace
-    
+
     init<P>(image: Image<P>, colorSpace: ColorSpace, intent: RenderingIntent)
-    
+
     init(image: AnyImage, colorSpace: ColorSpace, intent: RenderingIntent)
-    
+
     var colorSpace: ColorSpace { get }
-    
+
     var numberOfComponents: Int { get }
-    
+
     var width: Int { get }
-    
+
     var height: Int { get }
-    
+
     subscript(x: Int, y: Int) -> Color { get set }
-    
+
     var resolution: Resolution { get set }
-    
+
     var isOpaque: Bool { get }
-    
+
     var visibleRect: Rect { get }
-    
+
     var fileBacked: Bool { get set }
-    
+
     func setMemoryAdvise(_ advise: MemoryAdvise)
-    
+
     func memoryLock()
-    
+
     func memoryUnlock()
-    
+
     mutating func setOrientation(_ orientation: ImageOrientation)
-    
+
     func linearTone() -> Self
-    
+
     func transposed() -> Self
-    
+
     func verticalFlipped() -> Self
-    
+
     func horizontalFlipped() -> Self
-    
+
     mutating func setWhiteBalance(_ white: Point)
-    
+
     func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
-    
+
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyImage
 }
 
 extension Image {
-    
+
     @inlinable
     public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
         return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
     }
-    
+
     @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
         return AnyImage(image: self, colorSpace: colorSpace, intent: intent)
@@ -88,12 +88,12 @@ extension Image {
 }
 
 extension AnyImage {
-    
+
     @inlinable
     public func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
         return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
     }
-    
+
     @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
         return AnyImage(image: self, colorSpace: colorSpace, intent: intent)

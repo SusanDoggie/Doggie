@@ -31,25 +31,25 @@ let png_interlace_block_height = [8, 8, 4, 4, 2, 2, 1]
 let png_interlace_block_width = [8, 4, 4, 2, 2, 1, 1]
 
 struct png_interlace_state {
-    
+
     let width: Int
     let height: Int
     let bitsPerPixel: UInt8
-    
+
     private(set) var pass = -1
-    
+
     private(set) var starting_row = 0
     private(set) var starting_col = 0
     private(set) var row_increment = 0
     private(set) var col_increment = 0
     private(set) var block_height = 0
     private(set) var block_width = 0
-    
+
     private(set) var scanline_size = 0
     private(set) var scanline_offset = 0
-    
+
     private(set) var current_row = 0
-    
+
     init(width: Int, height: Int, bitsPerPixel: UInt8) {
         self.width = width
         self.height = height
@@ -59,50 +59,50 @@ struct png_interlace_state {
 }
 
 extension png_interlace_state {
-    
+
     mutating func scan(_ source: UnsafeBufferPointer<UInt8>, _ callback: (png_interlace_state, UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
-        
+
         guard pass < 7 else { return }
-        
+
         var source = source
-        
+
         while source.count != 0 {
-            
+
             if current_row >= height {
-                
+
                 while true {
-                    
+
                     pass += 1
                     guard pass < 7 else { return }
-                    
+
                     starting_row = png_interlace_starting_row[pass]
                     starting_col = png_interlace_starting_col[pass]
                     row_increment = png_interlace_row_increment[pass]
                     col_increment = png_interlace_col_increment[pass]
                     block_height = png_interlace_block_height[pass]
                     block_width = png_interlace_block_width[pass]
-                    
+
                     guard width > starting_col else { continue }
                     guard height > starting_row else { continue }
-                    
+
                     let scanline_count = (width - starting_col + (col_increment - 1)) / col_increment
                     scanline_size = (Int(bitsPerPixel) * scanline_count + 7) >> 3
                     scanline_offset = 0
-                    
+
                     current_row = starting_row
-                    
+
                     break
                 }
             }
-            
+
             let _scanline_size = scanline_size + 1
             let data = UnsafeBufferPointer(rebasing: source.prefix(_scanline_size - scanline_offset))
-            
+
             source = UnsafeBufferPointer(rebasing: source.dropFirst(data.count))
-            
+
             try callback(self, data)
             scanline_offset += data.count
-            
+
             if scanline_offset >= _scanline_size {
                 scanline_offset = 0
                 current_row += row_increment

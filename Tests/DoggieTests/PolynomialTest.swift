@@ -27,71 +27,71 @@ import Doggie
 import XCTest
 
 class PolynomialTest: XCTestCase {
-    
+
     func testPolynomialMulPerformance() {
-        
+
         var a: Polynomial = []
         var b: Polynomial = []
-        
+
         for _ in 0..<100 {
             a.append(Double((-10..<10).randomElement()!))
             b.append(Double((-10..<10).randomElement()!))
         }
-        
+
         self.measure() {
             _ = a * b
         }
     }
-    
+
     func testPolynomialDivPerformance() {
-        
+
         var a: Polynomial = []
         var b: Polynomial = []
-        
+
         for _ in 0..<100 {
             a.append(Double((-10..<10).randomElement()!))
             b.append(Double((-10..<10).randomElement()!))
         }
-        
+
         for _ in 0..<2 {
             a.append(Double((-10..<10).randomElement()!))
         }
-        
+
         self.measure() {
             _ = a / b
         }
     }
-    
+
     func testPolynomialModPerformance() {
-        
+
         var a: Polynomial = []
         var b: Polynomial = []
-        
+
         for _ in 0..<100 {
             a.append(Double((-10..<10).randomElement()!))
             b.append(Double((-10..<10).randomElement()!))
         }
-        
+
         for _ in 0..<2 {
             a.append(Double((-10..<10).randomElement()!))
         }
-        
+
         self.measure() {
             _ = a % b
         }
     }
-    
+
     func testPolynomialPowPerformance() {
-        
+
         var a: Polynomial = []
-        
+
         for _ in 0..<100 {
             a.append(Double((-10..<10).randomElement()!))
         }
-        
+
         self.measure() {
             _ = pow(a, 5)
         }
     }
-    
+
 }

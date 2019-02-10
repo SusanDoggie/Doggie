@@ -26,16 +26,16 @@
 @_fixed_layout
 @usableFromInline
 struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
-    
+
     @usableFromInline
     var stencil: UnsafeMutablePointer<Int16>
-    
+
     @usableFromInline
     var width: Int
-    
+
     @usableFromInline
     var height: Int
-    
+
     @inlinable
     @inline(__always)
     init(stencil: UnsafeMutablePointer<Int16>, width: Int, height: Int) {
@@ -43,13 +43,13 @@ struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
         self.width = width
         self.height = height
     }
-    
+
     @inlinable
     @inline(__always)
     static func + (lhs: ShapeRasterizeBuffer, rhs: Int) -> ShapeRasterizeBuffer {
         return ShapeRasterizeBuffer(stencil: lhs.stencil + rhs, width: lhs.width, height: lhs.height)
     }
-    
+
     @inlinable
     @inline(__always)
     static func += (lhs: inout ShapeRasterizeBuffer, rhs: Int) {
@@ -60,20 +60,20 @@ struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
 @inlinable
 @inline(__always)
 func _render(_ op: Shape.RenderOperation, width: Int, height: Int, stencil: UnsafeMutablePointer<Int16>) {
-    
+
     let rasterizer = ShapeRasterizeBuffer(stencil: stencil, width: width, height: height)
-    
+
     switch op {
     case let .triangle(p0, p1, p2):
-        
+
         if cross(p1 - p0, p2 - p0).sign == .plus {
             rasterizer.rasterize(p0, p1, p2) { pixel in pixel.stencil.pointee += 1 }
         } else {
             rasterizer.rasterize(p0, p1, p2) { pixel in pixel.stencil.pointee -= 1 }
         }
-        
+
     case let .quadratic(p0, p1, p2):
-        
+
         if cross(p1 - p0, p2 - p0).sign == .plus {
             rasterizer.rasterize(p0, p1, p2) { barycentric, _, pixel in
                 let s = 0.5 * barycentric.y + barycentric.z
@@ -89,9 +89,9 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, stencil: Unsa
                 }
             }
         }
-        
+
     case let .cubic(p0, p1, p2, v0, v1, v2):
-        
+
         if cross(p1 - p0, p2 - p0).sign == .plus {
             rasterizer.rasterize(p0, p1, p2) { barycentric, _, pixel in
                 let u0 = barycentric.x * v0
@@ -117,31 +117,31 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, stencil: Unsa
 }
 
 extension Shape {
-    
+
     @inlinable
     @inline(__always)
     func raster(width: Int, height: Int, stencil: inout MappedBuffer<Int16>) -> Rect {
-        
+
         assert(stencil.count == width * height, "incorrect size of stencil.")
-        
+
         if stencil.count == 0 {
             return Rect()
         }
-        
+
         let transform = self.transform
-        
+
         var bound: Rect?
-        
+
         stencil.withUnsafeMutableBufferPointer { stencil in
-            
+
             guard let ptr = stencil.baseAddress else { return }
-            
+
             self.render { op in
-                
+
                 let _op = op * transform
-                
+
                 _render(_op, width: width, height: height, stencil: ptr)
-                
+
                 switch _op {
                 case let .triangle(p0, p1, p2): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
                 case let .quadratic(p0, p1, p2): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
@@ -149,41 +149,41 @@ extension Shape {
                 }
             }
         }
-        
+
         return bound ?? Rect()
     }
 }
 
 extension ImageContext {
-    
+
     @inlinable
     @inline(__always)
     func _stencil(shape: Shape) -> (Rect, MappedBuffer<Int16>) {
-        
+
         let transform = shape.transform * self.transform
         let shouldAntialias = self.shouldAntialias
         let antialias = self.antialias
-        
+
         var shape = shape
-        
+
         if shouldAntialias && antialias > 1 {
-            
+
             shape.transform = transform * SDTransform.scale(Double(antialias))
-            
+
             var stencil = MappedBuffer<Int16>(repeating: 0, count: width * height * antialias * antialias)
-            
+
             let bound = shape.raster(width: width * antialias, height: height * antialias, stencil: &stencil)
-            
+
             return (bound / Double(antialias), stencil)
-            
+
         } else {
-            
+
             shape.transform = transform
-            
+
             var stencil = MappedBuffer<Int16>(repeating: 0, count: width * height)
-            
+
             let bound = shape.raster(width: width, height: height, stencil: &stencil)
-            
+
             return (bound, stencil)
         }
     }

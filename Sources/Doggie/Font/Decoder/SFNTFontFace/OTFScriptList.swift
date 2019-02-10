@@ -24,22 +24,22 @@
 //
 
 struct OTFScriptList : ByteDecodable {
-    
+
     var scriptCount: BEUInt16
     var records: [Record]
     var data: Data
-    
+
     init(from data: inout Data) throws {
         self.data = data
         self.scriptCount = try data.decode(BEUInt16.self)
         self.records = try (0..<Int(scriptCount)).map { _ in try data.decode(Record.self) }
     }
-    
+
     struct Record : ByteDecodable {
-        
+
         var scriptTag: Signature<BEUInt32>
         var scriptOffset: BEUInt16
-        
+
         init(from data: inout Data) throws {
             self.scriptTag = try data.decode(Signature<BEUInt32>.self)
             self.scriptOffset = try data.decode(BEUInt16.self)

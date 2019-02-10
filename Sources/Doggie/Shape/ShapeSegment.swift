@@ -24,31 +24,31 @@
 //
 
 extension Shape.Component {
-    
+
     public struct BezierCollection: RandomAccessCollection, MutableCollection {
-        
+
         public typealias Indices = Range<Int>
-        
+
         public typealias Index = Int
-        
+
         @usableFromInline
         var component: Shape.Component
-        
+
         @usableFromInline
         init(component: Shape.Component) {
             self.component = component
         }
-        
+
         @inlinable
         public var startIndex: Int {
             return component.startIndex
         }
-        
+
         @inlinable
         public var endIndex: Int {
             return component.endIndex
         }
-        
+
         @inlinable
         public subscript(position: Int) -> Element {
             get {
@@ -63,12 +63,12 @@ extension Shape.Component {
                 component[position] = newValue.segment
             }
         }
-        
+
         public struct Element {
-            
+
             public var start: Point
             public var segment: Shape.Segment
-            
+
             @inlinable
             public init(start: Point, segment: Shape.Segment) {
                 self.start = start
@@ -76,7 +76,7 @@ extension Shape.Component {
             }
         }
     }
-    
+
     @inlinable
     public var bezier: BezierCollection {
         get {
@@ -89,7 +89,7 @@ extension Shape.Component {
 }
 
 extension Bezier where Element == Point {
-    
+
     @inlinable
     public init(_ bezier: Shape.Component.BezierCollection.Element) {
         switch bezier.segment {
@@ -101,7 +101,7 @@ extension Bezier where Element == Point {
 }
 
 extension Shape.Component.BezierCollection.Element {
-    
+
     @inlinable
     public var boundary: Rect {
         switch self.segment {
@@ -113,7 +113,7 @@ extension Shape.Component.BezierCollection.Element {
 }
 
 extension Shape.Component.BezierCollection.Element {
-    
+
     @inlinable
     public var end: Point {
         get {
@@ -126,7 +126,7 @@ extension Shape.Component.BezierCollection.Element {
 }
 
 extension Shape.Component.BezierCollection.Element {
-    
+
     @inlinable
     public init(_ p0: Point, _ p1: Point) {
         self.init(start: p0, segment: .line(p1))
@@ -150,7 +150,7 @@ extension Shape.Component.BezierCollection.Element {
 }
 
 extension Shape.Component.BezierCollection.Element {
-    
+
     @inlinable
     public init(_ bezier: LineSegment<Point>) {
         self.init(bezier.p0, bezier.p1)
@@ -199,7 +199,7 @@ func split_check(_ t: (Double, Double?)) -> (Double, Double)? {
 }
 
 extension Shape.Component.BezierCollection.Element {
-    
+
     @inlinable
     public var isPoint: Bool {
         switch self.segment {
@@ -207,7 +207,7 @@ extension Shape.Component.BezierCollection.Element {
         default: return false
         }
     }
-    
+
     @inlinable
     public func point(_ t: Double) -> Point {
         switch self.segment {
@@ -216,7 +216,7 @@ extension Shape.Component.BezierCollection.Element {
         case let .cubic(p1, p2, p3): return CubicBezier(start, p1, p2, p3).eval(t)
         }
     }
-    
+
     @inlinable
     public func points(_ t: [Double]) -> [Point] {
         switch self.segment {
@@ -231,7 +231,7 @@ extension Shape.Component.BezierCollection.Element {
             return t.map { bezier.eval($0) }
         }
     }
-    
+
     @inlinable
     public func fromPoint(_ p: Point) -> Double? {
         switch self.segment {
@@ -243,7 +243,7 @@ extension Shape.Component.BezierCollection.Element {
             return CubicBezier(start, p1, p2, p3).closest(p).lazy.compactMap(split_check).first { p.almostEqual(self.point($0)) }
         }
     }
-    
+
     @inlinable
     public func split(_ t: Double) -> (Shape.Component.BezierCollection.Element, Shape.Component.BezierCollection.Element) {
         switch self.segment {
@@ -258,7 +258,7 @@ extension Shape.Component.BezierCollection.Element {
             return (Shape.Component.BezierCollection.Element(_split.0), Shape.Component.BezierCollection.Element(_split.1))
         }
     }
-    
+
     @inlinable
     public func split(_ t: [Double]) -> [Shape.Component.BezierCollection.Element] {
         switch self.segment {
@@ -267,31 +267,31 @@ extension Shape.Component.BezierCollection.Element {
         case let .cubic(p1, p2, p3): return CubicBezier(start, p1, p2, p3).split(t).map { Shape.Component.BezierCollection.Element($0) }
         }
     }
-    
+
     @inlinable
     func _overlap(_ other: Shape.Component.BezierCollection.Element) -> Bool {
-        
+
         guard !self.start.almostEqual(self.end) else { return false }
         guard !other.start.almostEqual(other.end) else { return false }
-        
+
         let check_1 = self.fromPoint(other.start)
         let check_2 = self.fromPoint(other.end)
         let check_3 = other.fromPoint(self.start)
         let check_4 = other.fromPoint(self.end)
-        
+
         var counter = 0
-        
+
         if check_1 != nil { counter += 1 }
         if check_2 != nil { counter += 1 }
         if check_3 != nil { counter += 1 }
         if check_4 != nil { counter += 1 }
-        
+
         return check_1 == 0 || check_1 == 1 || check_2 == 0 || check_2 == 1 || check_3 == 0 || check_3 == 1 || check_4 == 0 || check_4 == 1 ? counter > 2 : counter == 2
     }
-    
+
     @inlinable
     public func overlap(_ other: Shape.Component.BezierCollection.Element) -> Bool {
-        
+
         switch self.segment {
         case let .line(p1):
             switch other.segment {
@@ -339,10 +339,10 @@ extension Shape.Component.BezierCollection.Element {
                 }
             }
         }
-        
+
         return _overlap(other)
     }
-    
+
     @inlinable
     public func intersect(_ other: Shape.Component.BezierCollection.Element) -> [(Double, Double)]? {
         var result: [(Double, Double)]? = nil
@@ -393,7 +393,7 @@ extension Shape.Component.BezierCollection.Element {
                 }
             }
         }
-        
+
         return result == nil && _overlap(other) ? nil : result ?? []
     }
 }

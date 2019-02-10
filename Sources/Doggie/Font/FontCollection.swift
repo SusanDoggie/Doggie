@@ -25,25 +25,25 @@
 
 @_fixed_layout
 public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByArrayLiteral {
-    
+
     @usableFromInline
     var fonts: Set<Font>
-    
+
     @inlinable
     init(fonts: Set<Font>) {
         self.fonts = fonts
     }
-    
+
     @inlinable
     public init() {
         self.fonts = []
     }
-    
+
     @inlinable
     public init(arrayLiteral elements: Font ...) {
         self.fonts = Set(elements.map { $0.with(size: 0, features: [:]) })
     }
-    
+
     @inlinable
     public init<S : Sequence>(_ components: S) where S.Element == Font {
         self.fonts = Set(components.map { $0.with(size: 0, features: [:]) })
@@ -51,71 +51,71 @@ public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByAr
 }
 
 extension FontCollection {
-    
+
     @_fixed_layout
     public struct Index : Comparable, Hashable {
-        
+
         @usableFromInline
         let base: Set<Font>.Index
-        
+
         @inlinable
         init(base: Set<Font>.Index) {
             self.base = base
         }
-        
+
         @inlinable
         public static func <(lhs: Index, rhs: Index) -> Bool {
             return lhs.base < rhs.base
         }
     }
-    
+
     @_fixed_layout
     public struct Iterator : IteratorProtocol {
-        
+
         @usableFromInline
         var base: SetIterator<Font>
-        
+
         @inlinable
         init(base: SetIterator<Font>) {
             self.base = base
         }
-        
+
         @inlinable
         public mutating func next() -> Font? {
             return base.next()
         }
     }
-    
+
     @inlinable
     public var startIndex: Index {
         return Index(base: fonts.startIndex)
     }
-    
+
     @inlinable
     public var endIndex: Index {
         return Index(base: fonts.endIndex)
     }
-    
+
     @inlinable
     public var count: Int {
         return fonts.count
     }
-    
+
     @inlinable
     public var isEmpty: Bool {
         return fonts.isEmpty
     }
-    
+
     @inlinable
     public subscript(position: Index) -> Font {
         return fonts[position.base]
     }
-    
+
     @inlinable
     public func index(after i: Index) -> Index {
         return Index(base: fonts.index(after: i.base))
     }
-    
+
     @inlinable
     public func makeIterator() -> Iterator {
         return Iterator(base: fonts.makeIterator())
@@ -123,7 +123,7 @@ extension FontCollection {
 }
 
 extension FontCollection {
-    
+
     @inlinable
     public var familyNames: Set<String> {
         return Set(fonts.compactMap { $0.familyName })
@@ -131,60 +131,60 @@ extension FontCollection {
 }
 
 extension FontCollection {
-    
+
     @inlinable
     public func contains(_ member: Font) -> Bool {
         return fonts.contains(member.with(size: 0, features: [:]))
     }
-    
+
     @inlinable
     public func filter(_ isIncluded: (Font) throws -> Bool) rethrows -> FontCollection {
         return FontCollection(fonts: try fonts.filter { try isIncluded($0) })
     }
-    
+
     @inlinable
     public func union(_ other: FontCollection) -> FontCollection {
         return FontCollection(fonts: fonts.union(other.fonts))
     }
-    
+
     @inlinable
     public func intersection(_ other: FontCollection) -> FontCollection {
         return FontCollection(fonts: fonts.intersection(other.fonts))
     }
-    
+
     @inlinable
     public func symmetricDifference(_ other: FontCollection) -> FontCollection {
         return FontCollection(fonts: fonts.symmetricDifference(other.fonts))
     }
-    
+
     @inlinable
     @discardableResult
     public mutating func insert(_ newMember: Font) -> (inserted: Bool, memberAfterInsert: Font) {
         return fonts.insert(newMember.with(size: 0, features: [:]))
     }
-    
+
     @inlinable
     @discardableResult
     public mutating func remove(_ member: Font) -> Font? {
         return fonts.remove(member.with(size: 0, features: [:]))
     }
-    
+
     @inlinable
     @discardableResult
     public mutating func update(with newMember: Font) -> Font? {
         return fonts.update(with: newMember.with(size: 0, features: [:]))
     }
-    
+
     @inlinable
     public mutating func formUnion(_ other: FontCollection) {
         fonts.formUnion(other.fonts)
     }
-    
+
     @inlinable
     public mutating func formIntersection(_ other: FontCollection) {
         fonts.formIntersection(other.fonts)
     }
-    
+
     @inlinable
     public mutating func formSymmetricDifference(_ other: FontCollection) {
         fonts.formSymmetricDifference(other.fonts)
@@ -192,7 +192,7 @@ extension FontCollection {
 }
 
 extension FontCollection : CustomStringConvertible {
-    
+
     @inlinable
     public var description: String {
         return "FontCollection(count: \(fonts.count))"
@@ -200,53 +200,53 @@ extension FontCollection : CustomStringConvertible {
 }
 
 protocol FontCollectionBase {
-    
+
     var faces: [FontFaceBase] { get }
 }
 
 extension FontCollection {
-    
+
     public enum Error : Swift.Error {
-        
+
         case UnknownFormat
         case InvalidFormat(String)
         case Unsupported(String)
         case DecoderError(String)
     }
-    
+
     public init(data: Data) throws {
-        
+
         let decoders: [FontDecoder.Type] = [
             TTCDecoder.self,
             OpenTypeDecoder.self,
             WOFFDecoder.self,
             ]
-        
+
         for Decoder in decoders {
             if let decoder = try Decoder.init(data: data) {
                 self.init(decoder.faces.compactMap(Font.init))
                 return
             }
         }
-        
+
         throw Error.UnknownFormat
     }
 }
 
 extension FontCollection {
-    
+
     public init<S : Sequence>(urls: S) where S.Element == URL {
-        
+
         self.init()
-        
+
         for url in FileManager.default.fileUrls(urls) {
-            
+
             if let data = try? Data(contentsOf: url, options: .alwaysMapped), let fonts = try? FontCollection(data: data) {
                 self.formUnion(fonts)
             }
         }
     }
-    
+
     public init(url: URL) {
         self.init(urls: CollectionOfOne(url))
     }

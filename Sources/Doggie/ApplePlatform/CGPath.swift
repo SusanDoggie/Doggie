@@ -28,24 +28,24 @@
 fileprivate let ShapeCacheCGPathKey = "ShapeCacheCGPathKey"
 
 private protocol BezierPathConvertible {
-    
+
     var _currentPoint: Point { get }
-    
+
     mutating func _move(to p1: Point)
-    
+
     mutating func _line(to p1: Point)
-    
+
     mutating func _quad(to p2: Point, control p1: Point)
-    
+
     mutating func _curve(to p3: Point, control1 p1: Point, control2 p2: Point)
-    
+
     mutating func _close()
-    
+
     func _copy<Other: BezierPathConvertible>(to path: inout Other)
 }
 
 extension BezierPathConvertible {
-    
+
     mutating func _quad(to p2: Point, control p1: Point) {
         let cubic = QuadBezier(self._currentPoint, p1, p2).elevated()
         self._curve(to: cubic.p3, control1: cubic.p1, control2: cubic.p2)
@@ -53,33 +53,33 @@ extension BezierPathConvertible {
 }
 
 extension Shape: BezierPathConvertible {
-    
+
     fileprivate var _currentPoint: Point {
         return self.currentPoint
     }
-    
+
     fileprivate mutating func _move(to p1: Point) {
         self.move(to: p1)
     }
-    
+
     fileprivate mutating func _line(to p1: Point) {
         self.line(to: p1)
     }
-    
+
     fileprivate mutating func _quad(to p2: Point, control p1: Point) {
         self.quad(to: p2, control: p1)
     }
-    
+
     fileprivate mutating func _curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
         self.curve(to: p3, control1: p1, control2: p2)
     }
-    
+
     fileprivate mutating func _close() {
         self.close()
     }
-    
+
     fileprivate func _copy<Other: BezierPathConvertible>(to path: inout Other) {
-        
+
         for item in self {
             path._move(to: item.start)
             for segment in item {
@@ -97,44 +97,44 @@ extension Shape: BezierPathConvertible {
 }
 
 extension CGMutablePath: BezierPathConvertible {
-    
+
     fileprivate var _currentPoint: Point {
         return Point(currentPoint)
     }
-    
+
     fileprivate func _move(to p1: Point) {
         self.move(to: CGPoint(p1))
     }
-    
+
     fileprivate func _line(to p1: Point) {
         self.addLine(to: CGPoint(p1))
     }
-    
+
     fileprivate func _quad(to p2: Point, control p1: Point) {
         self.addQuadCurve(to: CGPoint(p2), control: CGPoint(p1))
     }
-    
+
     fileprivate func _curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
         self.addCurve(to: CGPoint(p3), control1: CGPoint(p1), control2: CGPoint(p2))
     }
-    
+
     fileprivate func _close() {
         self.closeSubpath()
     }
 }
 
 extension CGPath {
-    
+
     fileprivate func _copy<Other: BezierPathConvertible>(to path: inout Other) {
-        
+
         if #available(OSX 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
-            
+
             var _path = path
-            
+
             self.applyWithBlock { element in
-                
+
                 let points = element.pointee.points
-                
+
                 switch element.pointee.type {
                 case .moveToPoint: _path._move(to: Point(points[0]))
                 case .addLineToPoint: _path._line(to: Point(points[0]))
@@ -143,18 +143,18 @@ extension CGPath {
                 case .closeSubpath: _path._close()
                 }
             }
-            
+
             path = _path
-            
+
         } else {
-            
+
             var _path: BezierPathConvertible = path
-            
+
             self.apply(info: &_path) { info, element in
-                
+
                 let path = info!.assumingMemoryBound(to: BezierPathConvertible.self)
                 let points = element.pointee.points
-                
+
                 switch element.pointee.type {
                 case .moveToPoint: path.pointee._move(to: Point(points[0]))
                 case .addLineToPoint: path.pointee._line(to: Point(points[0]))
@@ -163,24 +163,24 @@ extension CGPath {
                 case .closeSubpath: path.pointee._close()
                 }
             }
-            
+
             path = _path as! Other
         }
     }
 }
 
 extension Shape {
-    
+
     public var cgPath : CGPath {
-        
+
         return self.identity.cache[ShapeCacheCGPathKey] {
-            
+
             let _path: CGPath = self.cache[ShapeCacheCGPathKey] {
                 var path = CGMutablePath()
                 self._copy(to: &path)
                 return path
             }
-            
+
             var _transform = CGAffineTransform(self.transform)
             return _path.copy(using: &_transform) ?? _path
         }
@@ -188,7 +188,7 @@ extension Shape {
 }
 
 extension Shape {
-    
+
     public init(_ path: CGPath) {
         self.init()
         path._copy(to: &self)
@@ -203,14 +203,14 @@ extension Shape {
 import UIKit
 
 extension UIBezierPath {
-    
+
     public convenience init(_ shape: Shape) {
         self.init(cgPath: shape.cgPath)
     }
 }
 
 extension Shape {
-    
+
     public init(_ path: UIBezierPath) {
         self.init(path.cgPath)
     }
@@ -223,29 +223,29 @@ extension Shape {
 import AppKit
 
 extension NSBezierPath: BezierPathConvertible {
-    
+
     fileprivate var _currentPoint: Point {
         return Point(currentPoint)
     }
-    
+
     fileprivate func _move(to p1: Point) {
         self.move(to: CGPoint(p1))
     }
-    
+
     fileprivate func _line(to p1: Point) {
         self.line(to: CGPoint(p1))
     }
-    
+
     fileprivate func _curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
         self.curve(to: CGPoint(p3), controlPoint1: CGPoint(p1), controlPoint2: CGPoint(p2))
     }
-    
+
     fileprivate func _close() {
         self.close()
     }
-    
+
     fileprivate func _copy<Other: BezierPathConvertible>(to path: inout Other) {
-        
+
         var points = [CGPoint](repeating: CGPoint(), count: 3)
         for i in 0..<self.elementCount {
             let type = self.element(at: i, associatedPoints: &points)
@@ -260,7 +260,7 @@ extension NSBezierPath: BezierPathConvertible {
 }
 
 extension NSBezierPath {
-    
+
     public var cgPath: CGPath {
         var path = CGMutablePath()
         self._copy(to: &path)
@@ -269,7 +269,7 @@ extension NSBezierPath {
 }
 
 extension NSBezierPath {
-    
+
     public convenience init(cgPath: CGPath) {
         self.init()
         var path = self
@@ -278,7 +278,7 @@ extension NSBezierPath {
 }
 
 extension NSBezierPath {
-    
+
     public convenience init(_ shape: Shape) {
         self.init()
         var path = self
@@ -288,7 +288,7 @@ extension NSBezierPath {
 }
 
 extension Shape {
-    
+
     public init(_ path: NSBezierPath) {
         self.init()
         path._copy(to: &self)

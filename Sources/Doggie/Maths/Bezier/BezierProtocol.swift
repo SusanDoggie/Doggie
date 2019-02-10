@@ -24,18 +24,18 @@
 //
 
 public protocol BezierProtocol : ScalarMultiplicative, MapReduceArithmetic, RandomAccessCollection, MutableCollection where Element : ScalarMultiplicative, Scalar == Element.Scalar {
-    
+
     init()
-    
+
     var degree: Int { get }
-    
+
     func split(_ t: Scalar) -> (Self, Self)
-    
+
     func eval(_ t: Scalar) -> Element
 }
 
 extension BezierProtocol {
-    
+
     @_transparent
     public static var zero: Self {
         return Self()
@@ -43,7 +43,7 @@ extension BezierProtocol {
 }
 
 extension BezierProtocol {
-    
+
     @_transparent
     public var degree: Int {
         return count - 1
@@ -51,7 +51,7 @@ extension BezierProtocol {
 }
 
 extension BezierProtocol {
-    
+
     @inlinable
     public func split(_ t: [Scalar]) -> [Self] {
         var result: [Self] = []

@@ -24,16 +24,16 @@
 //
 
 struct SFNTSBIX : RandomAccessCollection {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Index = Int
-    
+
     var version: BEUInt16
     var flags: BEUInt16
     var numStrikes: BEUInt32
     var data: Data
-    
+
     init(_ data: Data) throws {
         var data = data
         self.version = try data.decode(BEUInt16.self)
@@ -41,71 +41,71 @@ struct SFNTSBIX : RandomAccessCollection {
         self.numStrikes = try data.decode(BEUInt32.self)
         self.data = data
     }
-    
+
     var startIndex: Int {
         return 0
     }
-    
+
     var endIndex: Int {
         return Int(numStrikes)
     }
-    
+
     subscript(position: Int) -> Strike? {
         precondition(position < count, "Index out of range.")
-        
+
         guard self.data.count > position << 2 else { return nil }
         let offset = self.data.withUnsafeBytes { $0[position] as BEUInt32 }
-        
+
         guard offset >= 8 else { return nil }
         var data = self.data.dropFirst(Int(offset) - 8)
-        
+
         guard let ppem = try? data.decode(BEUInt16.self) else { return nil }
         guard let resolution = try? data.decode(BEUInt16.self) else { return nil }
-        
+
         return Strike(ppem: ppem, resolution: resolution, data: data)
     }
-    
+
 }
 
 extension SFNTSBIX {
-    
+
     struct Strike {
-        
+
         var ppem: BEUInt16
         var resolution: BEUInt16
-        
+
         var data: Data
     }
 }
 
 extension SFNTSBIX.Strike {
-    
+
     struct Record {
-        
+
         var originOffsetX: BEUInt16
         var originOffsetY: BEUInt16
         var graphicType: Signature<BEUInt32>
         var data: Data
     }
-    
+
     func glyph(glyph: Int) -> Record? {
-        
+
         guard self.data.count > (glyph + 1) << 2 else { return nil }
-        
+
         let startIndex = Int(self.data.withUnsafeBytes { $0[glyph] as BEUInt32 }) - 4
         let endIndex = Int(self.data.withUnsafeBytes { $0[glyph + 1] as BEUInt32 }) - 4
-        
+
         guard endIndex >= startIndex + 8 else { return nil }
-        
+
         let length = endIndex - startIndex
         var data = self.data.dropFirst(startIndex).prefix(length)
-        
+
         guard data.count == length else { return nil }
-        
+
         guard let originOffsetX = try? data.decode(BEUInt16.self) else { return nil }
         guard let originOffsetY = try? data.decode(BEUInt16.self) else { return nil }
         guard let graphicType = try? data.decode(Signature<BEUInt32>.self) else { return nil }
-        
+
         return Record(originOffsetX: originOffsetX, originOffsetY: originOffsetY, graphicType: graphicType, data: data)
     }
 }

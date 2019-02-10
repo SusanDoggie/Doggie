@@ -24,28 +24,28 @@
 //
 
 extension CGPoint {
-    
+
     public init(_ p: Point) {
         self.init(x: CGFloat(p.x), y: CGFloat(p.y))
     }
 }
 
 extension CGSize {
-    
+
     public init(_ s: Size) {
         self.init(width: CGFloat(s.width), height: CGFloat(s.height))
     }
 }
 
 extension CGRect {
-    
+
     public init(_ r: Rect) {
         self.init(origin: CGPoint(r.origin), size: CGSize(r.size))
     }
 }
 
 extension Point {
-    
+
     public init(_ p: CGPoint) {
         self.x = Double(p.x)
         self.y = Double(p.y)
@@ -57,7 +57,7 @@ extension Point {
 }
 
 extension Size {
-    
+
     public init(_ s: CGSize) {
         self.width = Double(s.width)
         self.height = Double(s.height)
@@ -69,7 +69,7 @@ extension Size {
 }
 
 extension Rect {
-    
+
     public init(_ r: CGRect) {
         self.origin = Point(r.origin)
         self.size = Size(r.size)
@@ -83,7 +83,7 @@ extension Rect {
 #if os(macOS)
 
 extension AffineTransform {
-    
+
     public init(_ transform: SDTransform) {
         self.init(
             m11: CGFloat(transform.a),
@@ -97,7 +97,7 @@ extension AffineTransform {
 }
 
 extension SDTransform {
-    
+
     public init(_ m: AffineTransform) {
         self.a = Double(m.m11)
         self.b = Double(m.m21)
@@ -114,7 +114,7 @@ extension SDTransform {
 
 
 extension CGAffineTransform {
-    
+
     public init(_ m: SDTransform) {
         self.init(
             a: CGFloat(m.a),
@@ -128,7 +128,7 @@ extension CGAffineTransform {
 }
 
 extension SDTransform {
-    
+
     public init(_ m: CGAffineTransform) {
         self.a = Double(m.a)
         self.b = Double(m.c)

@@ -24,25 +24,25 @@
 //
 
 struct OTFLookupList : ByteDecodable {
-    
+
     var lookupCount: BEUInt16
     var lookups: [Lookups]
-    
+
     init(from data: inout Data) throws {
         let copy = data
         self.lookupCount = try data.decode(BEUInt16.self)
         self.lookups = try (0..<Int(lookupCount)).map { _ in try Lookups(copy.dropFirst(Int(try data.decode(BEUInt16.self)))) }
     }
-    
+
     struct Lookups : ByteDecodable {
-        
+
         var lookupType: BEUInt16
         var lookupFlag: BEUInt16
         var subTableCount: BEUInt16
         var subtableOffsets: [BEUInt16]
         var markFilteringSet: BEUInt16
         var data: Data
-        
+
         init(from data: inout Data) throws {
             self.data = data
             self.lookupType = try data.decode(BEUInt16.self)

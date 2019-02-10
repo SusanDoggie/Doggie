@@ -27,15 +27,15 @@ import Doggie
 import XCTest
 
 class ColorSpaceTest: XCTestCase {
-    
+
     func testLoadingColorSpace() {
-        
+
         let availableColorSpaces = AnyColorSpace.availableColorSpaces
-        
+
         print("ColorSpaces:", availableColorSpaces.count)
         for colorSpace in availableColorSpaces {
             print(colorSpace.localizedName ?? colorSpace.description)
         }
     }
-    
+
 }

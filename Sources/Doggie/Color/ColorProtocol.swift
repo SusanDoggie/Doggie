@@ -24,40 +24,40 @@
 //
 
 public protocol ColorProtocol {
-    
+
     associatedtype ColorSpace: ColorSpaceProtocol
-    
+
     var colorSpace: ColorSpace { get }
-    
+
     func linearTone() -> Self
-    
+
     var cieXYZ: Color<XYZColorModel> { get }
-    
+
     func with(opacity: Double) -> Self
-    
+
     var numberOfComponents: Int { get }
-    
+
     func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
-    
+
     func component(_ index: Int) -> Double
-    
+
     mutating func setComponent(_ index: Int, _ value: Double)
-    
+
     func normalizedComponent(_ index: Int) -> Double
-    
+
     mutating func setNormalizedComponent(_ index: Int, _ value: Double)
-    
+
     var opacity: Double { get set }
-    
+
     var isOpaque: Bool { get }
-    
+
     func convert<Model>(to colorSpace: Doggie.ColorSpace<Model>, intent: RenderingIntent) -> Color<Model>
-    
+
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyColor
 }
 
 extension ColorProtocol {
-    
+
     @inlinable
     public func almostEqual<C: ColorProtocol>(_ other: C, intent: RenderingIntent = .default, epsilon: Double = 0.0001) -> Bool {
         let _cieXYZ = self.colorSpace.cieXYZ

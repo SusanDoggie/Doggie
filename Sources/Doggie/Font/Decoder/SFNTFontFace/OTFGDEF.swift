@@ -24,15 +24,15 @@
 //
 
 struct OTFGDEF : ByteDecodable {
-    
+
     var version: Fixed16Number<BEInt32>
     var glyphClassDefOffset: BEUInt16
     var attachListOffset: BEUInt16
     var ligCaretListOffset: BEUInt16
     var markAttachClassDefOffset: BEUInt16
-    
+
     var glyphClassDef: GlyphClassDef
-    
+
     init(from data: inout Data) throws {
         let copy = data
         self.version = try data.decode(Fixed16Number<BEInt32>.self)
@@ -42,47 +42,47 @@ struct OTFGDEF : ByteDecodable {
         self.markAttachClassDefOffset = try data.decode(BEUInt16.self)
         self.glyphClassDef = try GlyphClassDef(copy.dropFirst(Int(glyphClassDefOffset)))
     }
-    
+
     struct GlyphClassDef : ByteDecodable {
-        
+
         var classFormat: BEUInt16
-        
+
         var startGlyphID: BEUInt16
         var glyphCount: BEUInt16
         var classRangeCount: BEUInt16
         var data: Data
-        
+
         init(from data: inout Data) throws {
-            
+
             self.classFormat = try data.decode(BEUInt16.self)
-            
+
             self.startGlyphID = 0
             self.glyphCount = 0
             self.classRangeCount = 0
             self.data = Data()
-            
+
             switch classFormat {
             case 1:
-                
+
                 self.startGlyphID = try data.decode(BEUInt16.self)
                 self.glyphCount = try data.decode(BEUInt16.self)
                 self.data = data.popFirst(Int(glyphCount) << 1)
                 guard self.data.count == Int(glyphCount) << 1 else { throw ByteDecodeError.endOfData }
-                
+
             case 2:
-                
+
                 self.classRangeCount = try data.decode(BEUInt16.self)
                 self.data = data.popFirst(Int(classRangeCount) * 6)
                 guard self.data.count == Int(classRangeCount) * 6 else { throw ByteDecodeError.endOfData }
-                
+
             default: throw FontCollection.Error.InvalidFormat("Invalid GDEF format.")
             }
         }
-        
+
         func classOf(glyph: BEUInt16) -> BEUInt16 {
-            
+
             let glyph = UInt16(glyph)
-            
+
             switch classFormat {
             case 1:
                 let startGlyphID = UInt16(self.startGlyphID)
@@ -93,13 +93,13 @@ struct OTFGDEF : ByteDecodable {
                     }
                 }
             case 2:
-                
+
                 var range = 0..<Int(classRangeCount)
-                
+
                 return data.withUnsafeBytes { (record: UnsafePointer<ClassRangeRecord>) in
-                    
+
                     while range.count != 0 {
-                        
+
                         let mid = (range.lowerBound + range.upperBound) >> 1
                         let startGlyphID = UInt16(record[mid].startGlyphID)
                         let endGlyphID = UInt16(record[mid].endGlyphID)
@@ -108,16 +108,16 @@ struct OTFGDEF : ByteDecodable {
                         }
                         range = glyph < startGlyphID ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
                     }
-                    
+
                     return 0
                 }
             default: break
             }
             return 0
         }
-        
+
         struct ClassRangeRecord {
-            
+
             var startGlyphID: BEUInt16
             var endGlyphID: BEUInt16
             var _class: BEUInt16

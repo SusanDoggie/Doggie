@@ -25,18 +25,18 @@
 
 @_fixed_layout
 public struct IndexedIterator<C : Collection> : IteratorProtocol {
-    
+
     public let base: C
-    
+
     @usableFromInline
     var indices: C.Indices.Iterator
-    
+
     @inlinable
     init(base: C, indices: C.Indices.Iterator) {
         self.base = base
         self.indices = indices
     }
-    
+
     @inlinable
     public mutating func next() -> (index: C.Index, element: C.Element)? {
         if let index = indices.next() {
@@ -47,14 +47,14 @@ public struct IndexedIterator<C : Collection> : IteratorProtocol {
 }
 
 public struct IndexedCollection<C : Collection> : Collection {
-    
+
     public let base: C
-    
+
     @inlinable
     public init(base: C) {
         self.base = base
     }
-    
+
     @inlinable
     public var startIndex: C.Index {
         return base.startIndex
@@ -63,47 +63,47 @@ public struct IndexedCollection<C : Collection> : Collection {
     public var endIndex: C.Index {
         return base.endIndex
     }
-    
+
     @inlinable
     public var count : Int {
         return base.count
     }
-    
+
     @inlinable
     public func index(after i: C.Index) -> C.Index {
         return base.index(after: i)
     }
-    
+
     @inlinable
     public func index(_ i: C.Index, offsetBy n: Int) -> C.Index {
         return base.index(i, offsetBy: n)
     }
-    
+
     @inlinable
     public func index(_ i: C.Index, offsetBy n: Int, limitedBy limit: C.Index) -> C.Index? {
         return base.index(i, offsetBy: n, limitedBy: limit)
     }
-    
+
     @inlinable
     public func distance(from start: C.Index, to end: C.Index) -> Int {
         return base.distance(from: start, to: end)
     }
-    
+
     @inlinable
     public var indices: C.Indices {
         return base.indices
     }
-    
+
     @inlinable
     public subscript(i: C.Index) -> (index: C.Index, element: C.Element) {
         return (i, base[i])
     }
-    
+
     @inlinable
     public func makeIterator() -> IndexedIterator<C> {
         return IndexedIterator(base: base, indices: base.indices.makeIterator())
     }
-    
+
     @inlinable
     public var underestimatedCount: Int {
         return base.underestimatedCount
@@ -111,20 +111,20 @@ public struct IndexedCollection<C : Collection> : Collection {
 }
 
 extension IndexedCollection : BidirectionalCollection where C : BidirectionalCollection {
-    
+
     @inlinable
     public func index(before i: C.Index) -> C.Index {
         return base.index(before: i)
     }
-    
+
 }
 
 extension IndexedCollection : RandomAccessCollection where C : RandomAccessCollection {
-    
+
 }
 
 extension Collection {
-    
+
     @inlinable
     public func indexed() -> IndexedCollection<Self> {
         return IndexedCollection(base: self)

@@ -24,39 +24,39 @@
 //
 
 struct PNGDecoder : ImageRepDecoder {
-    
+
     let data: Data
-    
+
     let chunks: [PNGChunk]
-    
+
     init?(data: Data) throws {
-        
+
         guard data.count > 8 else { return nil }
-        
+
         let signature = data.withUnsafeBytes { $0.pointee as (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8) }
-        
+
         guard (signature.0, signature.1, signature.2, signature.3) == (0x89, 0x50, 0x4E, 0x47) else { return nil }
         guard (signature.4, signature.5, signature.6, signature.7) == (0x0D, 0x0A, 0x1A, 0x0A) else { return nil }
-        
+
         var _chunks = [PNGChunk]()
         var _data = data.dropFirst(8)
-        
+
         while _chunks.last?.signature != "IEND" {
             guard let chunk = PNGChunk(data: _data) else { break }
             _chunks.append(chunk)
             guard _data.count > 12 + chunk.data.count else { break }
             _data = _data.dropFirst(12 + chunk.data.count)
         }
-        
+
         guard let first = _chunks.first, first.data.count >= 13 && first.signature == "IHDR" else { return nil }
-        
+
         guard _chunks.contains(where: { $0.signature == "IDAT" }) else { return nil }
-        
+
         self.data = data
         self.chunks = _chunks
-        
+
         let ihdr = self.ihdr
-        
+
         switch ihdr.colour {
         case 0:
             switch ihdr.bitDepth {
@@ -86,47 +86,47 @@ struct PNGDecoder : ImageRepDecoder {
         default: throw ImageRep.Error.InvalidFormat("Unknown colour type.")
         }
     }
-    
+
     var width: Int {
         return Int(ihdr.width)
     }
-    
+
     var height: Int {
         return Int(ihdr.height)
     }
-    
+
     var resolution: Resolution {
-        
+
         if let phys = chunks.first(where: { $0.signature == "pHYs" }), phys.data.count >= 9 {
-            
+
             let horizontal = phys.data.withUnsafeBytes { $0.pointee as BEUInt32 }
             let vertical = phys.data.dropFirst(4).withUnsafeBytes { $0.pointee as BEUInt32 }
             let unit = phys.data.dropFirst(8).withUnsafeBytes { $0.pointee as UInt8 }
-            
+
             switch unit {
             case 1: return Resolution(horizontal: Double(horizontal), vertical: Double(vertical), unit: .meter)
             default: break
             }
         }
-        
+
         return Resolution(horizontal: 1, vertical: 1, unit: .point)
     }
-    
+
     var palette : [RGBA32ColorPixel]? {
-        
+
         guard let plte = chunks.first(where: { $0.signature == "PLTE" }), plte.data.count % 3 == 0 else { return nil }
-        
+
         let count = plte.data.count / 3
-        
+
         var palette = [RGBA32ColorPixel]()
         palette.reserveCapacity(count)
-        
+
         plte.data.withUnsafeBytes { (ptr: UnsafePointer<(UInt8, UInt8, UInt8)>) in
-            
+
             if let tRNS = chunks.first(where: { $0.signature == "tRNS" }) {
-                
+
                 var counter = tRNS.data.count
-                
+
                 tRNS.data.withUnsafeBytes { (ptr2: UnsafePointer<UInt8>) in
                     var ptr = ptr
                     var ptr2 = ptr2
@@ -138,7 +138,7 @@ struct PNGDecoder : ImageRepDecoder {
                         counter -= 1
                     }
                 }
-                
+
             } else {
                 var ptr = ptr
                 for _ in 0..<count {
@@ -148,24 +148,24 @@ struct PNGDecoder : ImageRepDecoder {
                 }
             }
         }
-        
+
         return palette
     }
-    
+
     var gAMA: Double {
-        
+
         guard let gama = chunks.first(where: { $0.signature == "gAMA" }), gama.data.count >= 4 else { return 100000.0 / 45455.0 }
-        
+
         let gamma = gama.data.withUnsafeBytes { $0.pointee as BEUInt32 }
         return 100000.0 / Double(gamma)
     }
-    
+
     var cHRM: (Point, Point, Point, Point) {
-        
+
         guard let chrm = chunks.first(where: { $0.signature == "cHRM" }), chrm.data.count >= 32 else {
             return (_D65, Point(x: 0.6400, y: 0.3300), Point(x: 0.3000, y: 0.6000), Point(x: 0.1500, y: 0.0600))
         }
-        
+
         let whiteX = chrm.data.withUnsafeBytes { $0.pointee as BEUInt32 }
         let whiteY = chrm.data.dropFirst(4).withUnsafeBytes { $0.pointee as BEUInt32 }
         let redX = chrm.data.dropFirst(8).withUnsafeBytes { $0.pointee as BEUInt32 }
@@ -174,58 +174,58 @@ struct PNGDecoder : ImageRepDecoder {
         let greenY = chrm.data.dropFirst(20).withUnsafeBytes { $0.pointee as BEUInt32 }
         let blueX = chrm.data.dropFirst(24).withUnsafeBytes { $0.pointee as BEUInt32 }
         let blueY = chrm.data.dropFirst(28).withUnsafeBytes { $0.pointee as BEUInt32 }
-        
+
         let white = Point(x: 0.00001 * Double(whiteX), y: 0.00001 * Double(whiteY))
         let red = Point(x: 0.00001 * Double(redX), y: 0.00001 * Double(redY))
         let green = Point(x: 0.00001 * Double(greenX), y: 0.00001 * Double(greenY))
         let blue = Point(x: 0.00001 * Double(blueX), y: 0.00001 * Double(blueY))
-        
+
         return (white, red, green, blue)
     }
-    
+
     var _GrayColorSpace: ColorSpace<GrayColorModel> {
-        
+
         let _colorSpace = ColorSpace.calibratedGray(white: _D65, gamma: gAMA)
-        
+
         guard let icc = chunks.first(where: { $0.signature == "iCCP" }) else { return _colorSpace }
-        
+
         guard let separator = icc.data.index(of: 0) else { return _colorSpace }
-        
+
         let _offset = separator - icc.data.startIndex
         guard 1...80 ~= _offset && icc.data.count > _offset + 2 else { return _colorSpace }
-        
+
         let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
-        
+
         guard let iccData = decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return _colorSpace }
         guard let iccColorSpace = try? AnyColorSpace(iccData: iccData) else { return _colorSpace }
-        
+
         return iccColorSpace.base as? ColorSpace<GrayColorModel> ?? _colorSpace
     }
-    
+
     var _RGBColorSpace: ColorSpace<RGBColorModel> {
-        
+
         if chunks.contains(where: { $0.signature == "sRGB" }) {
             return .sRGB
         }
-        
+
         let cHRM = self.cHRM
         let _colorSpace = ColorSpace.calibratedRGB(white: cHRM.0, red: cHRM.1, green: cHRM.2, blue: cHRM.3, gamma: gAMA)
-        
+
         guard let icc = chunks.first(where: { $0.signature == "iCCP" }) else { return _colorSpace }
-        
+
         guard let separator = icc.data.index(of: 0) else { return _colorSpace }
-        
+
         let _offset = separator - icc.data.startIndex
         guard 1...80 ~= _offset && icc.data.count > _offset + 2 else { return _colorSpace }
-        
+
         let compression = icc.data[separator + 1..<separator + 2].withUnsafeBytes { $0.pointee as UInt8 }
-        
+
         guard let iccData = decompress(data: icc.data.suffix(from: separator + 2), compression: compression) else { return _colorSpace }
         guard let iccColorSpace = try? AnyColorSpace(iccData: iccData) else { return _colorSpace }
-        
+
         return iccColorSpace.base as? ColorSpace<RGBColorModel> ?? _colorSpace
     }
-    
+
     var colorSpace: AnyColorSpace {
         switch ihdr.colour {
         case 0, 4: return AnyColorSpace(_GrayColorSpace)
@@ -233,11 +233,11 @@ struct PNGDecoder : ImageRepDecoder {
         default: fatalError()
         }
     }
-    
+
     var mediaType: ImageRep.MediaType {
         return .png
     }
-    
+
     func decompress(data: Data, compression: UInt8) -> Data? {
         do {
             return try self.decompressor(compression)?.process(data)
@@ -245,18 +245,18 @@ struct PNGDecoder : ImageRepDecoder {
             return nil
         }
     }
-    
+
     func decompressor(_ compression: UInt8) -> CompressionCodec? {
         switch compression {
         case 0: return try? Inflate()
         default: return nil
         }
     }
-    
+
     func filter(_ data: Data, _ ihdr: IHDR) -> Data? {
-        
+
         let bitsPerPixel: UInt8
-        
+
         switch ihdr.colour {
         case 0: bitsPerPixel = 1 * ihdr.bitDepth
         case 2: bitsPerPixel = 3 * ihdr.bitDepth
@@ -265,94 +265,94 @@ struct PNGDecoder : ImageRepDecoder {
         case 6: bitsPerPixel = 4 * ihdr.bitDepth
         default: fatalError()
         }
-        
+
         let width = Int(ihdr.width)
         let height = Int(ihdr.height)
-        
+
         guard let decompressor = self.decompressor(ihdr.compression) else { return nil }
-        
+
         if ihdr.interlace == 0 {
             switch ihdr.filter {
             case 0:
-                
+
                 let rowBits = Int(bitsPerPixel) * width
                 let row = (rowBits + 7) >> 3
                 var decoder = png_filter0_decoder(row_length: row, bitsPerPixel: bitsPerPixel)
                 var result = Data(capacity: row * height)
-                
+
                 do {
-                    
+
                     try decompressor.final(data) { decoder.decode($0) { result.append(contentsOf: $0) } }
                     decoder.final { result.append(contentsOf: $0) }
-                    
+
                 } catch {
                     return nil
                 }
-                
+
                 return result
-                
+
             default: break
             }
         } else {
             switch ihdr.filter {
             case 0:
-                
+
                 var result = Data(count: max(1, Int(bitsPerPixel >> 3)) * width * height)
-                
+
                 do {
-                    
+
                     try result.withUnsafeMutableBytes { (destination: UnsafeMutablePointer<UInt8>) in
-                        
+
                         func filling(_ value: UInt8, _ column: Int, _ row: Int, _ _width: Int, _ _height: Int) {
-                            
+
                             let position = row * width + column
                             var destination = destination + position
-                            
+
                             for _ in 0..<_height {
-                                
+
                                 var _destination = destination
-                                
+
                                 for _ in 0..<_width {
                                     _destination.pointee = value
                                     _destination += 1
                                 }
-                                
+
                                 destination += width
                             }
                         }
-                        
+
                         func filling2(_ offset: Int, _ value: UnsafePointer<UInt8>, _ column: Int, _ row: Int, _ _width: Int, _ _height: Int) {
-                            
+
                             let position = row * width + column
                             var destination = destination + position * offset
-                            
+
                             for _ in 0..<_height {
-                                
+
                                 var _destination = destination
-                                
+
                                 for _ in 0..<_width {
                                     memcpy(_destination, value, offset)
                                     _destination += offset
                                 }
-                                
+
                                 destination += width * offset
                             }
                         }
-                        
+
                         func filling3(_ state: png_interlace_state, _ scanline: UnsafeBufferPointer<UInt8>) {
-                            
+
                             guard var source = scanline.baseAddress else { return }
                             guard state.pass < 7 else { return }
-                            
+
                             let row = state.current_row
                             let starting_col = state.starting_col
                             let col_increment = state.col_increment
                             let block_width = state.block_width
                             let block_height = state.block_height
-                            
+
                             switch bitsPerPixel {
                             case 1:
-                                
+
                                 var _col = stride(from: starting_col, to: width, by: col_increment).makeIterator()
                                 for _ in 0..<scanline.count {
                                     var p = source.pointee
@@ -364,9 +364,9 @@ struct PNGDecoder : ImageRepDecoder {
                                     }
                                     source += 1
                                 }
-                                
+
                             case 2:
-                                
+
                                 var _col = stride(from: starting_col, to: width, by: col_increment).makeIterator()
                                 for _ in 0..<scanline.count {
                                     var p = source.pointee
@@ -378,9 +378,9 @@ struct PNGDecoder : ImageRepDecoder {
                                     }
                                     source += 1
                                 }
-                                
+
                             case 4:
-                                
+
                                 var _col = stride(from: starting_col, to: width, by: col_increment).makeIterator()
                                 for _ in 0..<scanline.count {
                                     var p = source.pointee
@@ -392,7 +392,7 @@ struct PNGDecoder : ImageRepDecoder {
                                     }
                                     source += 1
                                 }
-                                
+
                             default:
                                 var counter = 0
                                 let offset = Int(bitsPerPixel >> 3)
@@ -404,54 +404,54 @@ struct PNGDecoder : ImageRepDecoder {
                                 }
                             }
                         }
-                        
+
                         var interlace_state = png_interlace_state(width: width, height: height, bitsPerPixel: bitsPerPixel)
                         var decoder: png_filter0_decoder?
-                        
+
                         var pass: Int?
-                        
+
                         try decompressor.final(data) { data in
-                            
+
                             interlace_state.scan(data) { state, data in
-                                
+
                                 if pass != state.pass {
                                     decoder = png_filter0_decoder(row_length: state.scanline_size, bitsPerPixel: bitsPerPixel)
                                     pass = state.pass
                                 }
-                                
+
                                 decoder?.decode(data) { filling3(state, $0) }
                             }
                         }
-                        
+
                         decoder?.final { filling3(interlace_state, $0) }
                     }
-                    
+
                 } catch {
                     return nil
                 }
-                
+
                 return result
-                
+
             default: break
             }
         }
-        
+
         return nil
     }
-    
+
     func image(fileBacked: Bool) -> AnyImage {
-        
+
         let ihdr = self.ihdr
-        
+
         let width = Int(ihdr.width)
         let height = Int(ihdr.height)
-        
+
         let IDAT_data = Data(chunks.filter { $0.signature == "IDAT" }.flatMap { $0.data })
-        
+
         guard let pixels = filter(IDAT_data, ihdr) else { return AnyImage(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked) }
-        
+
         let bitsPerPixel: UInt8
-        
+
         switch ihdr.colour {
         case 0: bitsPerPixel = ihdr.interlace == 0 ? ihdr.bitDepth : max(8, ihdr.bitDepth)
         case 2: bitsPerPixel = 3 * ihdr.bitDepth
@@ -460,37 +460,37 @@ struct PNGDecoder : ImageRepDecoder {
         case 6: bitsPerPixel = 4 * ihdr.bitDepth
         default: fatalError()
         }
-        
+
         let pixels_count = (pixels.count << 3) / Int(bitsPerPixel)
-        
+
         switch ihdr.colour {
         case 0:
-            
+
             switch ihdr.bitDepth {
             case 1, 2, 4:
-                
+
                 var image = Image<Float64ColorPixel<GrayColorModel>>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
-                    
+
                     let start = source
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         if ihdr.interlace == 0 {
-                            
+
                             let rowBits = Int(bitsPerPixel) * width
                             let row = (rowBits + 7) >> 3
-                            
+
                             for _ in 0..<height {
-                                
+
                                 var _destination = destination
-                                
+
                                 let count: Int
-                                
+
                                 switch bitsPerPixel {
                                 case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
                                 case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
@@ -498,28 +498,28 @@ struct PNGDecoder : ImageRepDecoder {
                                 case 8: count = min(width, pixels.count - (source - start))
                                 default: fatalError()
                                 }
-                                
+
                                 guard count > 0 else { return }
-                                
+
                                 for value in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitsPerPixel)) {
-                                    
+
                                     let d: Double
-                                    
+
                                     switch bitsPerPixel {
                                     case 1: d = 1
                                     case 2: d = 3
                                     case 4: d = 15
                                     default: fatalError()
                                     }
-                                    
+
                                     _destination.pointee = Float64ColorPixel(white: Double(value) / d)
                                     _destination += 1
                                 }
-                                
+
                                 source += row
                                 destination += width
                             }
-                            
+
                         } else {
                             let d = Double(1 << ihdr.bitDepth - 1)
                             for _ in 0..<pixels_count {
@@ -530,20 +530,20 @@ struct PNGDecoder : ImageRepDecoder {
                         }
                     }
                 }
-                
+
                 return AnyImage(image)
-                
+
             case 8:
                 var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
-                    
+
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         for _ in 0..<pixels_count {
                             destination.pointee = Gray16ColorPixel(white: source.pointee)
                             source += 1
@@ -551,21 +551,21 @@ struct PNGDecoder : ImageRepDecoder {
                         }
                     }
                 }
-                
+
                 return AnyImage(image)
-                
+
             case 16:
-                
+
                 var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<BEUInt16>) in
-                    
+
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         for _ in 0..<pixels_count {
                             destination.pointee = Gray32ColorPixel(white: source.pointee.representingValue)
                             source += 1
@@ -573,26 +573,26 @@ struct PNGDecoder : ImageRepDecoder {
                         }
                     }
                 }
-                
+
                 return AnyImage(image)
-                
+
             default: fatalError()
             }
-            
+
         case 2:
-            
+
             switch ihdr.bitDepth {
             case 8:
                 var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, fileBacked: fileBacked)
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8)>) in
-                    
+
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         for _ in 0..<pixels_count {
                             let (r, g, b) = source.pointee
                             destination.pointee = RGBA32ColorPixel(red: r, green: g, blue: b)
@@ -601,20 +601,20 @@ struct PNGDecoder : ImageRepDecoder {
                         }
                     }
                 }
-                
+
                 return AnyImage(image)
-                
+
             case 16:
                 var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, fileBacked: fileBacked)
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16)>) in
-                    
+
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         for _ in 0..<pixels_count {
                             let (r, g, b) = source.pointee
                             destination.pointee = RGBA64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
@@ -623,40 +623,40 @@ struct PNGDecoder : ImageRepDecoder {
                         }
                     }
                 }
-                
+
                 return AnyImage(image)
-                
+
             default: fatalError()
             }
-            
+
         case 3:
-            
+
             var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, fileBacked: fileBacked)
-            
+
             guard let palette = self.palette else { return AnyImage(image) }
-            
+
             palette.withUnsafeBufferPointer { palette in
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
-                    
+
                     let start = source
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         if ihdr.interlace == 0 {
-                            
+
                             let rowBits = Int(bitsPerPixel) * width
                             let row = (rowBits + 7) >> 3
-                            
+
                             for _ in 0..<height {
-                                
+
                                 var _destination = destination
-                                
+
                                 let count: Int
-                                
+
                                 switch bitsPerPixel {
                                 case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
                                 case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
@@ -664,19 +664,19 @@ struct PNGDecoder : ImageRepDecoder {
                                 case 8: count = min(width, pixels.count - (source - start))
                                 default: fatalError()
                                 }
-                                
+
                                 guard count > 0 else { return }
-                                
+
                                 for index in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitsPerPixel)) {
-                                    
+
                                     _destination.pointee = index < palette.count ? palette[Int(index)] : RGBA32ColorPixel()
                                     _destination += 1
                                 }
-                                
+
                                 source += row
                                 destination += width
                             }
-                            
+
                         } else {
                             for _ in 0..<pixels_count {
                                 let index = source.pointee
@@ -688,22 +688,22 @@ struct PNGDecoder : ImageRepDecoder {
                     }
                 }
             }
-            
+
             return AnyImage(image)
-            
+
         case 4:
             switch ihdr.bitDepth {
             case 8:
                 var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8)>) in
-                    
+
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         for _ in 0..<pixels_count {
                             let (w, a) = source.pointee
                             destination.pointee = Gray16ColorPixel(white: w, opacity: a)
@@ -712,21 +712,21 @@ struct PNGDecoder : ImageRepDecoder {
                         }
                     }
                 }
-                
+
                 return AnyImage(image)
-                
+
             case 16:
-                
+
                 var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16)>) in
-                    
+
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         for _ in 0..<pixels_count {
                             let (w, a) = source.pointee
                             destination.pointee = Gray32ColorPixel(white: w.representingValue, opacity: a.representingValue)
@@ -735,25 +735,25 @@ struct PNGDecoder : ImageRepDecoder {
                         }
                     }
                 }
-                
+
                 return AnyImage(image)
-                
+
             default: fatalError()
             }
         case 6:
-            
+
             switch ihdr.bitDepth {
             case 8:
                 var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, fileBacked: fileBacked)
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<(UInt8, UInt8, UInt8, UInt8)>) in
-                    
+
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         for _ in 0..<pixels_count {
                             let (r, g, b, a) = source.pointee
                             destination.pointee = RGBA32ColorPixel(red: r, green: g, blue: b, opacity: a)
@@ -762,20 +762,20 @@ struct PNGDecoder : ImageRepDecoder {
                         }
                     }
                 }
-                
+
                 return AnyImage(image)
-                
+
             case 16:
                 var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, fileBacked: fileBacked)
-                
+
                 pixels.withUnsafeBytes { (source: UnsafePointer<(BEUInt16, BEUInt16, BEUInt16, BEUInt16)>) in
-                    
+
                     var source = source
-                    
+
                     image.withUnsafeMutableBufferPointer { destination in
-                        
+
                         guard var destination = destination.baseAddress else { return }
-                        
+
                         for _ in 0..<pixels_count {
                             let (r, g, b, a) = source.pointee
                             destination.pointee = RGBA64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue, opacity: a.representingValue)
@@ -784,25 +784,25 @@ struct PNGDecoder : ImageRepDecoder {
                         }
                     }
                 }
-                
+
                 return AnyImage(image)
-                
+
             default: fatalError()
             }
-            
+
         default: fatalError()
         }
     }
 }
 
 extension PNGDecoder {
-    
+
     var ihdr: IHDR {
         return IHDR(data: chunks.first!.data)
     }
-    
+
     struct IHDR {
-        
+
         var width: BEUInt32
         var height: BEUInt32
         var bitDepth: UInt8
@@ -810,7 +810,7 @@ extension PNGDecoder {
         var compression: UInt8
         var filter: UInt8
         var interlace: UInt8
-        
+
         init(data: Data) {
             self.width = data.withUnsafeBytes { $0.pointee }
             self.height = data.dropFirst(4).withUnsafeBytes { $0.pointee }
@@ -824,34 +824,34 @@ extension PNGDecoder {
 }
 
 struct PNGChunk {
-    
+
     var signature: Signature<BEUInt32>
     var data: Data
-    
+
     init(signature: Signature<BEUInt32>, data: Data) {
         self.signature = signature
         self.data = data
     }
-    
+
     init?(data: Data) {
-        
+
         guard data.count >= 12 else { return nil }
-        
+
         let length = data.withUnsafeBytes { $0.pointee as BEUInt32 }
         self.signature = data.dropFirst(4).withUnsafeBytes { $0.pointee }
-        
+
         guard signature.description.allSatisfy({ "a"..."z" ~= $0 || "A"..."Z" ~= $0 }) else { return nil }
-        
+
         self.data = data.dropFirst(8).prefix(Int(length))
     }
-    
+
     func calculateCRC() -> BEUInt32 {
         return BEUInt32(PNGCRC32(signature, data))
     }
 }
 
 func PNGCRC32(_ signature: Signature<BEUInt32>, _ data: Data) -> UInt32 {
-    
+
     let table: [UInt32] = [
         0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
         0x0eDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91,
@@ -886,12 +886,12 @@ func PNGCRC32(_ signature: Signature<BEUInt32>, _ data: Data) -> UInt32 {
         0xBDBDF21C, 0xCABAC28A, 0x53B39330, 0x24B4A3A6, 0xBAD03605, 0xCDD70693, 0x54DE5729, 0x23D967BF,
         0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D
     ]
-    
+
     var c: UInt32 = ~0
-    
+
     var _signature = Data()
     signature.write(to: &_signature)
-    
+
     for byte in _signature {
         c = table[Int(UInt8(truncatingIfNeeded: c) ^ byte)] ^ (c >> 8)
     }

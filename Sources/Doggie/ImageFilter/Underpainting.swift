@@ -32,43 +32,43 @@ public func Underpainting<Pixel>(_ image: Image<Pixel>, _ expand: Double, _ back
 @inlinable
 @inline(__always)
 public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ background_color: Pixel.Model, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture<Pixel> {
-    
+
     let width = texture.width
     let height = texture.height
     let fileBacked = texture.fileBacked
-    
+
     var result = texture
-    
+
     guard width > 0 && height > 0 else { return result }
-    
+
     func _filter(_ blur: Float) -> [Float] {
-        
+
         let t = 2 * blur * blur
         let _t = -1 / t
-        
+
         let s = Int(ceil(6 * blur)) >> 1
-        
+
         return (-s...s).map {
             let x = Float($0)
             return exp(x * x * _t)
         }
     }
-    
+
     let filter = _filter(Float(expand * 0.5))
     let stencil = StencilTexture<Float>(texture: texture).map { $0.almostZero() ? $0 : 1 }.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)
-    
+
     let half = filter.count >> 1
     let s_width = stencil.width
-    
+
     stencil.withUnsafeBufferPointer {
-        
+
         guard var stencil = $0.baseAddress else { return }
         stencil += half + s_width * half
-        
+
         result.withUnsafeMutableBufferPointer {
-            
+
             guard var output = $0.baseAddress else { return }
-            
+
             for _ in 0..<height {
                 var _stencil = stencil
                 for _ in 0..<width {
@@ -81,6 +81,6 @@ public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ 
             }
         }
     }
-    
+
     return result
 }

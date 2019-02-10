@@ -24,18 +24,18 @@
 //
 
 extension SDXMLDocument {
-    
+
     public func xml(prettyPrinted: Bool = false) -> String {
         var result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
         self._xml(prettyPrinted: prettyPrinted, &result)
         return result
     }
-    
+
     public func data(prettyPrinted: Bool = false) -> Data {
         let xml = self.xml(prettyPrinted: prettyPrinted)
         return xml.data(using: .utf8) ?? Data()
     }
-    
+
     private func _xml(prettyPrinted: Bool, _ output: inout String) {
         for element in self {
             element._xml(prettyPrinted ? "\n" : "", prefixMap: [:], &output)
@@ -44,14 +44,14 @@ extension SDXMLDocument {
 }
 
 extension SDXMLDocument : CustomStringConvertible {
-    
+
     public var description: String {
         return xml()
     }
 }
 
 extension SDXMLElement : CustomStringConvertible {
-    
+
     public var description: String {
         var result = ""
         self._xml("", prefixMap: [:], &result)
@@ -60,27 +60,27 @@ extension SDXMLElement : CustomStringConvertible {
 }
 
 extension SDXMLElement {
-    
+
     fileprivate func _xml(_ indent: String, prefixMap: [String: Substring], _ output: inout String) {
-        
+
         switch kind {
         case .node:
-            
+
             var prefixMap = prefixMap
-            
+
             for (key, value) in self._attributes.filter({ $0.key.attribute.hasPrefix("xmlns:") }) {
                 let substr = key.attribute.dropFirst(6)
                 if !substr.isEmpty && !substr.contains(":") {
                     prefixMap[value] = substr
                 }
             }
-            
+
             let name = prefixMap[self._namespace].map { "\($0):\(self._name)" } ?? self._name
-            
+
             indent.write(to: &output)
             "<".write(to: &output)
             name.write(to: &output)
-            
+
             for (attribute, value) in self._attributes {
                 " ".write(to: &output)
                 (prefixMap[attribute.namespace].map { "\($0):\(attribute.attribute)" } ?? attribute.attribute).write(to: &output)
@@ -88,7 +88,7 @@ extension SDXMLElement {
                 value.write(to: &output)
                 "\"".write(to: &output)
             }
-            
+
             if self.count == 0 {
                 " />".write(to: &output)
             } else {
@@ -105,17 +105,17 @@ extension SDXMLElement {
                 name.write(to: &output)
                 ">".write(to: &output)
             }
-            
+
         case .characters: _string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).write(to: &output)
         case .comment:
-            
+
             indent.write(to: &output)
             "<!--".write(to: &output)
             _string.write(to: &output)
             "-->".write(to: &output)
-            
+
         case .CDATA:
-            
+
             indent.write(to: &output)
             "<![CDATA[".write(to: &output)
             _string.write(to: &output)

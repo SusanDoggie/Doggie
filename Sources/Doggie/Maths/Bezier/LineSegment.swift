@@ -24,19 +24,19 @@
 //
 
 public struct LineSegment<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
-    
+
     public typealias Scalar = Double
-    
+
     public var p0: Element
     public var p1: Element
-    
+
     @inlinable
     @inline(__always)
     public init() {
         self.p0 = .zero
         self.p1 = .zero
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_ p0: Element, _ p1: Element) {
@@ -46,7 +46,7 @@ public struct LineSegment<Element : ScalarMultiplicative> : Equatable, BezierPro
 }
 
 extension Bezier {
-    
+
     @inlinable
     public init(_ bezier: LineSegment<Element>) {
         self.init(bezier.p0, bezier.p1)
@@ -54,11 +54,11 @@ extension Bezier {
 }
 
 extension LineSegment : Hashable where Element : Hashable {
-    
+
 }
 
 extension LineSegment: Decodable where Element : Decodable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -68,7 +68,7 @@ extension LineSegment: Decodable where Element : Decodable {
 }
 
 extension LineSegment: Encodable where Element : Encodable {
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -79,13 +79,13 @@ extension LineSegment: Encodable where Element : Encodable {
 }
 
 extension LineSegment {
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Element) -> Element) -> LineSegment {
         return LineSegment(transform(p0), transform(p1))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
@@ -97,11 +97,11 @@ extension LineSegment {
 }
 
 extension LineSegment {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Index = Int
-    
+
     @_transparent
     public var startIndex: Int {
         return 0
@@ -110,7 +110,7 @@ extension LineSegment {
     public var endIndex: Int {
         return 2
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Element {
         get {
@@ -131,7 +131,7 @@ extension LineSegment {
 }
 
 extension LineSegment {
-    
+
     @inlinable
     @inline(__always)
     public func eval(_ t: Double) -> Element {
@@ -140,7 +140,7 @@ extension LineSegment {
 }
 
 extension LineSegment where Element == Double {
-    
+
     @inlinable
     public var polynomial: Polynomial {
         let a = p0
@@ -150,7 +150,7 @@ extension LineSegment where Element == Double {
 }
 
 extension LineSegment {
-    
+
     @inlinable
     @inline(__always)
     public func elevated() -> QuadBezier<Element> {
@@ -159,7 +159,7 @@ extension LineSegment {
 }
 
 extension LineSegment {
-    
+
     @inlinable
     @inline(__always)
     public func split(_ t: Double) -> (LineSegment, LineSegment) {
@@ -169,7 +169,7 @@ extension LineSegment {
 }
 
 extension LineSegment where Element == Point {
-    
+
     @inlinable
     public func closest(_ point: Point) -> [Double] {
         let a = p0 - point
@@ -179,7 +179,7 @@ extension LineSegment where Element == Point {
 }
 
 extension LineSegment where Element == Point {
-    
+
     @_transparent
     public var area: Double {
         return 0.5 * (p0.x * p1.y - p0.y * p1.x)
@@ -187,13 +187,13 @@ extension LineSegment where Element == Point {
 }
 
 extension LineSegment where Element: Tensor {
-    
+
     @inlinable
     @inline(__always)
     public func length(_ t: Double) -> Double {
         return p0.distance(to: eval(t))
     }
-    
+
     @inlinable
     @inline(__always)
     public func inverseLength(_ length: Double) -> Double {
@@ -202,7 +202,7 @@ extension LineSegment where Element: Tensor {
 }
 
 extension LineSegment where Element == Point {
-    
+
     @_transparent
     public var boundary: Rect {
         let minX = Swift.min(p0.x, p1.x)
@@ -214,14 +214,14 @@ extension LineSegment where Element == Point {
 }
 
 extension LineSegment where Element == Point {
-    
+
     @inlinable
     @inline(__always)
     public func intersect(_ other: LineSegment) -> Point? {
-        
+
         let q0 = p0 - p1
         let q1 = other.p0 - other.p1
-        
+
         let d = q0.x * q1.y - q0.y * q1.x
         if d.almostZero() {
             return nil

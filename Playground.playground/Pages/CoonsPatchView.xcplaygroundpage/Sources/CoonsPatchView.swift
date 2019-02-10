@@ -3,13 +3,13 @@ import Cocoa
 import Doggie
 
 public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
-    
+
     public var shape: Shape? {
         didSet {
             self.setNeedsDisplay(frame)
         }
     }
-    
+
     public var p0: Point = Point() {
         didSet {
             self.setNeedsDisplay(frame)
@@ -70,49 +70,49 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
             self.setNeedsDisplay(frame)
         }
     }
-    
+
     var target: Int = -1
-    
+
     public override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        
+
         let pan = NSPanGestureRecognizer(target: self, action: #selector(handleGesture))
         pan.delegate = self
-        
+
         self.addGestureRecognizer(pan)
-        
+
         p0 = Point(x: frame.width * 0.1, y: frame.height * 0.1)
         p1 = Point(x: frame.width * 0.9, y: frame.height * 0.1)
         p2 = Point(x: frame.width * 0.1, y: frame.height * 0.9)
         p3 = Point(x: frame.width * 0.9, y: frame.height * 0.9)
-        
+
         p4 = Bezier(p0, p1).eval(1 / 3)
         p5 = Bezier(p0, p1).eval(2 / 3)
-        
+
         p6 = Bezier(p0, p2).eval(1 / 3)
         p7 = Bezier(p0, p2).eval(2 / 3)
-        
+
         p8 = Bezier(p1, p3).eval(1 / 3)
         p9 = Bezier(p1, p3).eval(2 / 3)
-        
+
         p10 = Bezier(p2, p3).eval(1 / 3)
         p11 = Bezier(p2, p3).eval(2 / 3)
     }
-    
+
     public func implement() -> Shape? {
-        
+
         if let shape = shape {
-            
+
             var path: [Shape.Component] = []
-            
+
             path.reserveCapacity(shape.count)
-            
+
             for item in shape.identity {
                 var flag = true
                 var component = Shape.Component()
-                
+
                 var last = item.start
-                
+
                 func addCurves(_ points: [Bezier<Point>]) {
                     if let first = points.first {
                         if flag {
@@ -129,7 +129,7 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
                         }
                     }
                 }
-                
+
                 for segment in item {
                     switch segment {
                     case let .line(p1):
@@ -143,7 +143,7 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
                         last = p3
                     }
                 }
-                
+
                 if item.isClosed {
                     let z = item.start - last
                     if !z.x.almostZero() || !z.y.almostZero() {
@@ -151,79 +151,79 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
                     }
                     component.isClosed = true
                 }
-                
+
                 path.append(component)
             }
-            
+
             return Shape(path)
         }
-        
+
         return nil
     }
-    
+
     public override func draw(_ dirtyRect: NSRect) {
-        
+
         NSColor.white.setFill()
         dirtyRect.fill()
-        
+
         func drawPoint(_ context: CGContext, _ point: Point) {
             context.strokeEllipse(in: CGRect(x: point.x - 2, y: point.y - 2, width: 4, height: 4))
         }
-        
+
         if let context = NSGraphicsContext.current?.cgContext {
-            
+
             context.setStrokeColor(NSColor(white: 0.9, alpha: 1).cgColor)
-            
+
             let n = 8
-            
+
             for _v in 0...n {
                 let v = Double(_v) / Double(n)
                 for _u in 0...n {
                     let u = Double(_u) / Double(n)
-                    
+
                     let q1 = Bezier(p0, p4, p5, p1)
                     let q2 = Bezier(p2, p10, p11, p3)
                     let q3 = Bezier(p0, p6, p7, p2)
                     let q4 = Bezier(p1, p8, p9, p3)
-                    
+
                     let q5 = Bezier((1 - v) * p0 + v * p2, (1 - v) * p1 + v * p3)
                     let q6 = Bezier((1 - u) * p0 + u * p1, (1 - u) * p2 + u * p3)
-                    
+
                     let l1 = (1 - v) * q1 + v * q2
                     let l2 = (1 - u) * q3 + u * q4
-                    
+
                     let b1 = l1 + Bezier(q3.eval(v), q4.eval(v)) - q5
                     let b2 = l2 + Bezier(q1.eval(u), q2.eval(u)) - q6
-                    
+
                     context.move(to: CGPoint(b1[0]))
                     context.addCurve(to: CGPoint(b1[3]), control1: CGPoint(b1[1]), control2: CGPoint(b1[2]))
-                    
+
                     context.move(to: CGPoint(b2[0]))
                     context.addCurve(to: CGPoint(b2[3]), control1: CGPoint(b2[1]), control2: CGPoint(b2[2]))
                 }
             }
-            
+
             context.strokePath()
-            
+
             context.strokePath()
-            
+
             context.setStrokeColor(NSColor.red.cgColor)
-            
+
             if let shape = implement() {
                 context.addPath(shape.cgPath)
             }
-            
+
             context.strokePath()
-            
+
             context.setStrokeColor(NSColor.blue.cgColor)
-            
+
             drawPoint(context, p0)
             drawPoint(context, p1)
             drawPoint(context, p2)
             drawPoint(context, p3)
-            
+
             context.setStrokeColor(NSColor.green.cgColor)
-            
+
             drawPoint(context, p4)
             drawPoint(context, p5)
             drawPoint(context, p6)
@@ -233,17 +233,17 @@ public class CoonsPatchView: NSView, NSGestureRecognizerDelegate {
             drawPoint(context, p10)
             drawPoint(context, p11)
         }
-        
+
         super.draw(dirtyRect)
     }
-    
+
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     @objc
     func handleGesture(_ sender: NSPanGestureRecognizer) {
-        
+
         switch sender.state {
         case .began:
             let location = sender.location(in: self)

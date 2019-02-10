@@ -26,13 +26,13 @@
 #if canImport(Darwin)
 
 extension FontCollection {
-    
+
     public static var availableFonts: FontCollection {
-        
+
         var files = FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithFileSystemRepresentation: "Fonts/", isDirectory: true, relativeTo: $0) }
-        
+
         #if os(iOS) || os(tvOS) || os(watchOS)
-        
+
         if let fonts = Bundle.main.object(forInfoDictionaryKey: "UIAppFonts") as? [String] {
             for font in fonts {
                 if let url = Bundle.main.url(forResource: font, withExtension: nil) {
@@ -40,26 +40,26 @@ extension FontCollection {
                 }
             }
         }
-        
+
         #endif
-        
+
         return FontCollection(urls: files)
     }
-    
+
 }
 
 #elseif os(Linux)
 
 extension FontCollection {
-    
+
     public static var availableFonts: FontCollection {
-        
+
         let urls = [
             URL(fileURLWithPath: "/usr/share/fonts", isDirectory: true),
             URL(fileURLWithPath: "/usr/local/share/fonts", isDirectory: true),
             URL(fileURLWithFileSystemRepresentation: ".fonts/", isDirectory: true, relativeTo: FileManager.default.homeDirectoryForCurrentUser),
             ]
-        
+
         return FontCollection(urls: urls)
     }
 }

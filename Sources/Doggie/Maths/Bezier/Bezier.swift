@@ -25,22 +25,22 @@
 
 @_fixed_layout
 public struct Bezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
-    
+
     public typealias Scalar = Double
-    
+
     @usableFromInline
     var points: [Element]
-    
+
     @inlinable
     public init() {
         self.init(.zero, .zero)
     }
-    
+
     @inlinable
     public init(_ p: Element ... ) {
         self.init(p)
     }
-    
+
     @inlinable
     public init<S : Sequence>(_ s: S) where S.Element == Element {
         self.points = Array(s)
@@ -51,7 +51,7 @@ public struct Bezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol
 }
 
 extension Bezier : ExpressibleByArrayLiteral {
-    
+
     @inlinable
     public init(arrayLiteral elements: Element ... ) {
         self.init(elements)
@@ -59,7 +59,7 @@ extension Bezier : ExpressibleByArrayLiteral {
 }
 
 extension Bezier : CustomStringConvertible {
-    
+
     @inlinable
     public var description: String {
         return "\(points)"
@@ -67,34 +67,34 @@ extension Bezier : CustomStringConvertible {
 }
 
 extension Bezier : Hashable where Element : Hashable {
-    
+
 }
 
 extension Bezier: Decodable where Element : Decodable {
-    
+
     @inlinable
     public init(from decoder: Decoder) throws {
-        
+
         var container = try decoder.unkeyedContainer()
         var points: [Element] = []
-        
+
         if let count = container.count {
             points.reserveCapacity(count)
             for _ in 0..<count {
                 points.append(try container.decode(Element.self))
             }
         }
-        
+
         while !container.isAtEnd {
             points.append(try container.decode(Element.self))
         }
-        
+
         self.init(points)
     }
 }
 
 extension Bezier: Encodable where Element : Encodable {
-    
+
     @inlinable
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
@@ -103,17 +103,17 @@ extension Bezier: Encodable where Element : Encodable {
 }
 
 extension Bezier {
-    
+
     @inlinable
     public func map(_ transform: (Element) -> Element) -> Bezier {
         return Bezier(points.map(transform))
     }
-    
+
     @inlinable
     public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result {
         return points.reduce(initialResult, nextPartialResult)
     }
-    
+
     @inlinable
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
         return points.reduce(into: initialResult, updateAccumulatingResult)
@@ -121,11 +121,11 @@ extension Bezier {
 }
 
 extension Bezier {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Index = Int
-    
+
     @inlinable
     public var startIndex: Int {
         return points.startIndex
@@ -134,7 +134,7 @@ extension Bezier {
     public var endIndex: Int {
         return points.endIndex
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Element {
         get {
@@ -147,7 +147,7 @@ extension Bezier {
 }
 
 extension Bezier {
-    
+
     @inlinable
     public func eval(_ t: Double) -> Element {
         switch points.count {
@@ -168,11 +168,11 @@ extension Bezier {
             return result!
         }
     }
-    
+
 }
 
 extension Bezier where Element == Double {
-    
+
     @inlinable
     public var polynomial: Polynomial {
         switch points.count {
@@ -196,7 +196,7 @@ extension Bezier where Element == Double {
             return Polynomial(result)
         }
     }
-    
+
     @inlinable
     public init(_ polynomial: Polynomial) {
         let de = (0..<Swift.max(1, polynomial.degree)).scan(polynomial) { p, _ in p.derivative / Double(p.degree) }
@@ -210,7 +210,7 @@ extension Bezier where Element == Double {
 }
 
 extension Bezier {
-    
+
     @inlinable
     public func elevated() -> Bezier {
         let p = self.points
@@ -227,7 +227,7 @@ extension Bezier {
 }
 
 extension Bezier {
-    
+
     @inlinable
     static func split(_ t: Double, _ p: [Element]) -> ([Element], [Element]) {
         switch p.count {
@@ -261,7 +261,7 @@ extension Bezier {
             return ([p[0]] + _split.0, _split.1 + [p.last!])
         }
     }
-    
+
     @inlinable
     public func split(_ t: Double) -> (Bezier, Bezier) {
         let points = self.points
@@ -277,7 +277,7 @@ extension Bezier {
 }
 
 extension Bezier {
-    
+
     @inlinable
     public func derivative() -> Bezier {
         let n = Double(points.count - 1)
@@ -286,7 +286,7 @@ extension Bezier {
 }
 
 extension Bezier where Element == Point {
-    
+
     @inlinable
     public func closest(_ point: Point) -> [Double] {
         switch points.count {
@@ -303,7 +303,7 @@ extension Bezier where Element == Point {
 }
 
 extension Bezier where Element : Tensor {
-    
+
     @inlinable
     public func closest(_ point: Element) -> [Double] {
         var dot: Polynomial = []
@@ -316,7 +316,7 @@ extension Bezier where Element : Tensor {
 }
 
 extension Bezier where Element == Point {
-    
+
     @inlinable
     public var area: Double {
         switch points.count {
@@ -333,7 +333,7 @@ extension Bezier where Element == Point {
 }
 
 extension Bezier where Element == Point {
-    
+
     @inlinable
     public var inflection: [Double] {
         switch points.count {
@@ -348,7 +348,7 @@ extension Bezier where Element == Point {
 }
 
 extension Bezier where Element == Double {
-    
+
     @inlinable
     public var stationary: [Double] {
         switch points.count {
@@ -361,50 +361,50 @@ extension Bezier where Element == Double {
 }
 
 extension Bezier where Element == Point {
-    
+
     @inlinable
     public var boundary: Rect {
         let points = self.points
-        
+
         let bx = Bezier<Double>(points.map { $0.x })
         let by = Bezier<Double>(points.map { $0.y })
-        
+
         let _x = bx.stationary.lazy.map { bx.eval($0.clamped(to: 0...1)) }
         let _y = by.stationary.lazy.map { by.eval($0.clamped(to: 0...1)) }
-        
+
         let first = points[0]
         let last = points[points.count - 1]
-        
+
         let minX = _x.min().map { Swift.min(first.x, last.x, $0) } ?? Swift.min(first.x, last.x)
         let minY = _y.min().map { Swift.min(first.y, last.y, $0) } ?? Swift.min(first.y, last.y)
         let maxX = _x.max().map { Swift.max(first.x, last.x, $0) } ?? Swift.max(first.x, last.x)
         let maxY = _y.max().map { Swift.max(first.y, last.y, $0) } ?? Swift.max(first.y, last.y)
-        
+
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
 }
 
 extension Bezier where Element == Point {
-    
+
     private enum BézoutElement {
-        
+
         case number(Double)
         case polynomial(Polynomial)
-        
+
         var polynomial: Polynomial {
             switch self {
             case let .number(x): return [x]
             case let .polynomial(x): return x
             }
         }
-        
+
         static prefix func -(x: BézoutElement) -> BézoutElement {
             switch x {
             case let .number(x): return .number(-x)
             case let .polynomial(x): return .polynomial(-x)
             }
         }
-        
+
         static func +(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
             switch lhs {
             case let .number(lhs):
@@ -419,7 +419,7 @@ extension Bezier where Element == Point {
                 }
             }
         }
-        
+
         static func -(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
             switch lhs {
             case let .number(lhs):
@@ -434,7 +434,7 @@ extension Bezier where Element == Point {
                 }
             }
         }
-        
+
         static func *(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
             switch lhs {
             case let .number(lhs):
@@ -450,21 +450,21 @@ extension Bezier where Element == Point {
             }
         }
     }
-    
+
     private func _resultant(_ other: Bezier) -> Polynomial {
-        
+
         let p1_x = Bezier<Double>(self.points.map { $0.x }).polynomial
         let p1_y = Bezier<Double>(self.points.map { $0.y }).polynomial
         let p2_x = Bezier<Double>(other.points.map { $0.x }).polynomial
         let p2_y = Bezier<Double>(other.points.map { $0.y }).polynomial
-        
+
         let u = [BézoutElement.polynomial(p1_x - p2_x[0])] + p2_x.dropFirst().map { BézoutElement.number(-$0) }
         let v = [BézoutElement.polynomial(p1_y - p2_y[0])] + p2_y.dropFirst().map { BézoutElement.number(-$0) }
-        
+
         let n = other.degree
         var bézout: [BézoutElement] = []
         bézout.reserveCapacity(n * n)
-        
+
         for j in 1...n {
             for i in 1...n {
                 let m = Swift.min(i, n + 1 - j)
@@ -478,14 +478,14 @@ extension Bezier where Element == Point {
                 bézout.append(b!)
             }
         }
-        
+
         func det(_ n: Int, _ matrix: UnsafePointer<BézoutElement>) -> BézoutElement {
-            
+
             guard n != 1 else { return matrix.pointee }
-            
+
             let _n = n - 1
             var result: BézoutElement?
-            
+
             for k in 0..<n {
                 var matrix = matrix
                 let c = matrix[k]
@@ -502,14 +502,14 @@ extension Bezier where Element == Point {
             }
             return result!
         }
-        
+
         return det(n, bézout).polynomial
     }
-    
+
     public func overlap(_ other: Bezier) -> Bool {
         return _resultant(other).allSatisfy { $0.almostZero() }
     }
-    
+
     public func intersect(_ other: Bezier) -> [Double]? {
         let resultant = _resultant(other)
         return resultant.allSatisfy { $0.almostZero() } ? nil : resultant.roots

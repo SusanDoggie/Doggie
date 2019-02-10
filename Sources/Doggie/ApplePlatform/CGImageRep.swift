@@ -26,45 +26,45 @@
 #if canImport(CoreGraphics) && canImport(ImageIO)
 
 protocol CGImageRepBase {
-    
+
     var width: Int { get }
-    
+
     var height: Int { get }
-    
+
     var resolution: Resolution { get }
-    
+
     var mediaType: CGImageRep.MediaType? { get }
-    
+
     var numberOfPages: Int { get }
-    
+
     var properties: [CFString : Any] { get }
-    
+
     func page(_ index: Int) -> CGImageRepBase
-    
+
     var cgImage: CGImage? { get }
 }
 
 public struct CGImageRep {
-    
+
     private let base: CGImageRepBase
-    
+
     private let cache = Cache()
-    
+
     private init(base: CGImageRepBase) {
         self.base = base
     }
 }
 
 extension CGImageRep {
-    
+
     @usableFromInline
     class Cache {
-        
+
         let lck = SDLock()
-        
+
         var image: CGImage?
         var pages: [Int: CGImageRep]
-        
+
         @usableFromInline
         init() {
             self.pages = [:]
@@ -73,7 +73,7 @@ extension CGImageRep {
 }
 
 extension CGImageRep {
-    
+
     public init?(data: Data) {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
         self.base = source
@@ -81,11 +81,11 @@ extension CGImageRep {
 }
 
 extension CGImageRep {
-    
+
     public var numberOfPages: Int {
         return base.numberOfPages
     }
-    
+
     public func page(_ index: Int) -> CGImageRep {
         return cache.lck.synchronized {
             if cache.pages[index] == nil {
@@ -94,7 +94,7 @@ extension CGImageRep {
             return cache.pages[index]!
         }
     }
-    
+
     public var cgImage: CGImage? {
         return cache.lck.synchronized {
             if cache.image == nil {
@@ -106,117 +106,117 @@ extension CGImageRep {
 }
 
 extension CGImageRep {
-    
+
     public var width: Int {
         return base.width
     }
-    
+
     public var height: Int {
         return base.height
     }
-    
+
     public var resolution: Resolution {
         return base.resolution
     }
 }
 
 extension CGImageRep {
-    
+
     public var properties: [CFString : Any] {
         return base.properties
     }
 }
 
 extension CGImageRep {
-    
+
     public enum MediaType {
-        
+
         case image
-        
+
         case pict
-        
+
         case bmp
-        
+
         case gif
-        
+
         case jpeg
-        
+
         case jpeg2000
-        
+
         case png
-        
+
         case tiff
-        
+
         case quickTimeImage
-        
+
         case appleICNS
-        
+
         case icon
     }
-    
+
     public var mediaType: MediaType? {
         return base.mediaType
     }
 }
 
 struct _CGImageSourceImageRepBase : CGImageRepBase {
-    
+
     let source: CGImageSource
     let index: Int
     let numberOfPages: Int
-    
+
     init(source: CGImageSource, index: Int, numberOfPages: Int) {
         self.source = source
         self.index = index
         self.numberOfPages = numberOfPages
     }
-    
+
     init(source: CGImageSource) {
         self.source = source
         self.index = 0
         self.numberOfPages = CGImageSourceGetCount(source)
     }
-    
+
     var properties: [CFString : Any] {
         return CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [CFString : Any] ?? [:]
     }
-    
+
     var orientation: Int {
         let orientation = properties[kCGImagePropertyOrientation] as? NSNumber
         return orientation?.intValue ?? 1
     }
-    
+
     var _width: Int {
         let width = properties[kCGImagePropertyPixelWidth] as? NSNumber
         return width?.intValue ?? 0
     }
-    
+
     var _height: Int {
         let height = properties[kCGImagePropertyPixelHeight] as? NSNumber
         return height?.intValue ?? 0
     }
-    
+
     var width: Int {
         return 1...4 ~= orientation ? _width : _height
     }
-    
+
     var height: Int {
         return 1...4 ~= orientation ? _height : _width
     }
-    
+
     var _resolution: Resolution {
-        
+
         if let resolutionX = properties[kCGImagePropertyDPIWidth] as? NSNumber, let resolutionY = properties[kCGImagePropertyDPIHeight] as? NSNumber {
-            
+
             return Resolution(horizontal: resolutionX.doubleValue, vertical: resolutionY.doubleValue, unit: .inch)
-            
+
         } else if let properties = self.properties[kCGImagePropertyTIFFDictionary] as? [CFString : Any] {
-            
+
             if let resolutionUnit = (properties[kCGImagePropertyTIFFResolutionUnit] as? NSNumber)?.intValue {
-                
+
                 let resolutionX = properties[kCGImagePropertyTIFFXResolution] as? NSNumber
                 let resolutionY = properties[kCGImagePropertyTIFFYResolution] as? NSNumber
-                
+
                 switch resolutionUnit {
                 case 1: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .point)
                 case 2: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .inch)
@@ -225,12 +225,12 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
                 }
             }
         } else if let properties = self.properties[kCGImagePropertyJFIFDictionary] as? [CFString : Any] {
-            
+
             if let resolutionUnit = (properties[kCGImagePropertyJFIFDensityUnit] as? NSNumber)?.intValue {
-                
+
                 let resolutionX = properties[kCGImagePropertyJFIFXDensity] as? NSNumber
                 let resolutionY = properties[kCGImagePropertyJFIFYDensity] as? NSNumber
-                
+
                 switch resolutionUnit {
                 case 1: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .point)
                 case 2: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .inch)
@@ -239,21 +239,21 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
                 }
             }
         } else if let properties = self.properties[kCGImagePropertyPNGDictionary] as? [CFString : Any] {
-            
+
             let resolutionX = properties[kCGImagePropertyPNGXPixelsPerMeter] as? NSNumber
             let resolutionY = properties[kCGImagePropertyPNGYPixelsPerMeter] as? NSNumber
-            
+
             return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .meter)
         }
-        
+
         return Resolution(resolution: 1, unit: .point)
     }
-    
+
     var resolution: Resolution {
         let resolution = self._resolution
         return 1...4 ~= orientation ? resolution : Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit)
     }
-    
+
     var mediaType: CGImageRep.MediaType? {
         switch CGImageSourceGetType(source) {
         case kUTTypeImage: return .image
@@ -270,11 +270,11 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         default: return nil
         }
     }
-    
+
     func page(_ index: Int) -> CGImageRepBase {
         return _CGImageSourceImageRepBase(source: source, index: index, numberOfPages: 1)
     }
-    
+
     var cgImage: CGImage? {
         return CGImageSourceCreateImageAtIndex(source, index, nil)
     }

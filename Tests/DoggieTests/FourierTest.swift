@@ -27,25 +27,25 @@ import Doggie
 import XCTest
 
 class FourierTest: XCTestCase {
-    
+
     let accuracy = 0.00000001
-    
+
     func testRadix2CooleyTukeyA() {
-        
+
         for i in 0...10 {
             let n = 1 << i
-            
+
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Complex]()
             DiscreteFourier(sample, &answer)
-            
+
             var result = [Complex]()
             Radix2CooleyTukey(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -53,20 +53,20 @@ class FourierTest: XCTestCase {
         }
     }
     func testRadix2CooleyTukeyComplexA() {
-        
+
         for i in 0...10 {
             let n = 1 << i
-            
+
             var sample = [Complex](repeating: Complex(0), count: n)
             for i in sample.indices {
                 sample[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
-            
+
             var answer = [Complex]()
             DiscreteFourier(sample, &answer)
-            
+
             let result = Radix2CooleyTukey(sample)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -74,21 +74,21 @@ class FourierTest: XCTestCase {
         }
     }
     func testInverseRadix2CooleyTukeyA() {
-        
+
         for i in 0...10 {
             let n = 1 << i
-            
+
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Complex]()
             InverseDiscreteFourier(sample, &answer)
-            
+
             var result = [Complex]()
             InverseRadix2CooleyTukey(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -96,20 +96,20 @@ class FourierTest: XCTestCase {
         }
     }
     func testInverseRadix2CooleyTukeyComplexA() {
-        
+
         for i in 0...10 {
             let n = 1 << i
-            
+
             var sample = [Complex](repeating: Complex(0), count: n)
             for i in sample.indices {
                 sample[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
-            
+
             var answer = [Complex]()
             InverseDiscreteFourier(sample, &answer)
-            
+
             let result = InverseRadix2CooleyTukey(sample)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -117,19 +117,19 @@ class FourierTest: XCTestCase {
         }
     }
     func testRadix2CooleyTukeyB() {
-        
+
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Complex]()
             DiscreteFourier(sample, &answer)
-            
+
             var result = [Complex]()
             Fourier(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -137,19 +137,19 @@ class FourierTest: XCTestCase {
         }
     }
     func testRadix2CooleyTukeyComplexB() {
-        
+
         for n in 2...11 {
             var sample = [Complex](repeating: Complex(0), count: n)
             for i in sample.indices {
                 sample[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
-            
+
             var answer = [Complex]()
             DiscreteFourier(sample, &answer)
-            
+
             var result = [Complex]()
             Fourier(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -157,19 +157,19 @@ class FourierTest: XCTestCase {
         }
     }
     func testInverseRadix2CooleyTukeyB() {
-        
+
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Complex]()
             InverseDiscreteFourier(sample, &answer)
-            
+
             var result = [Complex]()
             InverseFourier(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -177,19 +177,19 @@ class FourierTest: XCTestCase {
         }
     }
     func testInverseRadix2CooleyTukeyComplexB() {
-        
+
         for n in 2...11 {
             var sample = [Complex](repeating: Complex(0), count: n)
             for i in sample.indices {
                 sample[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
-            
+
             var answer = [Complex]()
             InverseDiscreteFourier(sample, &answer)
-            
+
             var result = [Complex]()
             InverseFourier(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -197,7 +197,7 @@ class FourierTest: XCTestCase {
         }
     }
     func testConvolve() {
-        
+
         for n in 2...11 {
             var a = [Double](repeating: 0, count: n)
             var b = [Double](repeating: 0, count: n)
@@ -207,20 +207,20 @@ class FourierTest: XCTestCase {
             for i in 0..<a.count {
                 b[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Double]()
             DirectConvolve(a, b, &answer)
-            
+
             var result = [Double]()
             Convolve(a, b, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
     func testConvolveComplex() {
-        
+
         for n in 2...11 {
             var a = [Complex](repeating: Complex(0), count: n)
             var b = [Complex](repeating: Complex(0), count: n)
@@ -230,13 +230,13 @@ class FourierTest: XCTestCase {
             for i in 0..<a.count {
                 b[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
-            
+
             var answer = [Complex]()
             DirectConvolve(a, b, &answer)
-            
+
             var result = [Complex]()
             Convolve(a, b, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -244,7 +244,7 @@ class FourierTest: XCTestCase {
         }
     }
     func testCircularConvolve() {
-        
+
         for n in 2...11 {
             var a = [Double](repeating: 0, count: n)
             var b = [Double](repeating: 0, count: n)
@@ -254,7 +254,7 @@ class FourierTest: XCTestCase {
             for i in 0..<a.count {
                 b[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Double]()
             DirectConvolve(a, b, &answer)
             let part = answer[a.count..<answer.count]
@@ -262,17 +262,17 @@ class FourierTest: XCTestCase {
             for i in 0..<part.count {
                 answer[i] += part[i + part.startIndex]
             }
-            
+
             var result = [Double]()
             CircularConvolve(a, b, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
     func testCircularConvolveComplex() {
-        
+
         for n in 2...11 {
             var a = [Complex](repeating: Complex(0), count: n)
             var b = [Complex](repeating: Complex(0), count: n)
@@ -282,7 +282,7 @@ class FourierTest: XCTestCase {
             for i in 0..<a.count {
                 b[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
-            
+
             var answer = [Complex]()
             DirectConvolve(a, b, &answer)
             let part = answer[a.count..<answer.count]
@@ -290,10 +290,10 @@ class FourierTest: XCTestCase {
             for i in 0..<part.count {
                 answer[i] += part[i + part.startIndex]
             }
-            
+
             var result = [Complex]()
             CircularConvolve(a, b, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
@@ -301,7 +301,7 @@ class FourierTest: XCTestCase {
         }
     }
     func testNegacyclicConvolve() {
-        
+
         for n in 2...11 {
             var a = [Double](repeating: 0, count: n)
             var b = [Double](repeating: 0, count: n)
@@ -311,7 +311,7 @@ class FourierTest: XCTestCase {
             for i in 0..<a.count {
                 b[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Double]()
             DirectConvolve(a, b, &answer)
             let part = answer[a.count..<answer.count]
@@ -319,17 +319,17 @@ class FourierTest: XCTestCase {
             for i in 0..<part.count {
                 answer[i] -= part[i + part.startIndex]
             }
-            
+
             var result = [Double]()
             NegacyclicConvolve(a, b, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
     func testNegacyclicConvolveComplex() {
-        
+
         for n in 2...11 {
             var a = [Complex](repeating: Complex(0), count: n)
             var b = [Complex](repeating: Complex(0), count: n)
@@ -339,7 +339,7 @@ class FourierTest: XCTestCase {
             for i in 0..<a.count {
                 b[i] = Complex(real: Double.random(in: 0..<1), imag: Double.random(in: 0..<1))
             }
-            
+
             var answer = [Complex]()
             DirectConvolve(a, b, &answer)
             let part = answer[a.count..<answer.count]
@@ -347,209 +347,209 @@ class FourierTest: XCTestCase {
             for i in 0..<part.count {
                 answer[i] -= part[i + part.startIndex]
             }
-            
+
             var result = [Complex]()
             NegacyclicConvolve(a, b, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i].real, result[i].real, accuracy: accuracy)
                 XCTAssertEqual(answer[i].imag, result[i].imag, accuracy: accuracy)
             }
         }
     }
-    
+
     func testDCTII() {
-        
+
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Double]()
             _DCTII(sample, result: &answer)
-            
+
             var result = [Double]()
             DCTII(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
     func testDCTIII() {
-        
+
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Double]()
             _DCTIII(sample, result: &answer)
-            
+
             var result = [Double]()
             DCTIII(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
     func testDCTIV() {
-        
+
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Double]()
             _DCTIV(sample, result: &answer)
-            
+
             var result = [Double]()
             DCTIV(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
     func testDSTII() {
-        
+
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Double]()
             _DSTII(sample, result: &answer)
-            
+
             var result = [Double]()
             DSTII(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
     func testDSTIII() {
-        
+
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Double]()
             _DSTIII(sample, result: &answer)
-            
+
             var result = [Double]()
             DSTIII(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
     func testDSTIV() {
-        
+
         for n in 2...11 {
             var sample = [Double](repeating: 0, count: n)
             for i in sample.indices {
                 sample[i] = Double.random(in: 0..<1)
             }
-            
+
             var answer = [Double]()
             _DSTIV(sample, result: &answer)
-            
+
             var result = [Double]()
             DSTIV(sample, &result)
-            
+
             for i in 0..<answer.count {
                 XCTAssertEqual(answer[i], result[i], accuracy: accuracy)
             }
         }
     }
-    
+
     func testFourierBPerformance() {
-        
+
         let sample = [Double](repeating: 0, count: 32700)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            
+
             Fourier(sample, &result)
         }
     }
     func testFourierCPerformance() {
-        
+
         let sample = [Double](repeating: 0, count: 32768)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            
+
             Fourier(sample, &result)
         }
     }
     func testFourierBPerformanceX2() {
-        
+
         let sample = [Double](repeating: 0, count: 65500)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            
+
             Fourier(sample, &result)
         }
     }
     func testFourierCPerformanceX2() {
-        
+
         let sample = [Double](repeating: 0, count: 65536)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            
+
             Fourier(sample, &result)
         }
     }
     func testFourierCPerformanceX3() {
-        
+
         let sample = [Double](repeating: 0, count: 131072)
         var result = [Complex]()
         Fourier(sample, &result)
         self.measure() {
-            
+
             Fourier(sample, &result)
         }
     }
     func testCircularConvolvePerformance() {
-        
+
         let sample = [Double](repeating: 0, count: 44100)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
         self.measure() {
-            
+
             CircularConvolve(sample, sample, &result)
         }
     }
     func testCircularConvolvePerformanceX2() {
-        
+
         let sample = [Double](repeating: 0, count: 96000)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
         self.measure() {
-            
+
             CircularConvolve(sample, sample, &result)
         }
     }
     func testCircularConvolvePerformanceX3() {
-        
+
         let sample = [Double](repeating: 0, count: 192000)
         var result = [Double]()
         CircularConvolve(sample, sample, &result)
         self.measure() {
-            
+
             CircularConvolve(sample, sample, &result)
         }
     }

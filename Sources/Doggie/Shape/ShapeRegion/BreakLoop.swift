@@ -24,9 +24,9 @@
 //
 
 extension Shape.Component {
-    
+
     func breakLoop() -> [ShapeRegion.Solid] {
-        
+
         var intersects: [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)] = []
         for (index1, segment1) in bezier.enumerated() {
             for (index2, segment2) in bezier.suffix(from: index1 + 1).indexed() {
@@ -86,19 +86,19 @@ extension Shape.Component {
         }
         return breakLoop(intersects.filter { !$0.0.almostEqual($0.1) })
     }
-    
+
     func breakLoop(_ points: [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]) -> [ShapeRegion.Solid] {
-        
+
         if points.count == 0 {
             return ShapeRegion.Solid(segments: self.bezier).map { [$0] } ?? []
         }
-        
+
         var result: [ShapeRegion.Solid] = []
-        
+
         var graph = Graph<Int, [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]>()
-        
+
         let _points = points.enumerated().flatMap { [($0.0, $0.1.0), ($0.0, $0.1.1)] }.sorted { $0.1 < $1.1 }
-        
+
         for (left, right) in _points.rotateZip() {
             if left.0 == right.0 {
                 if let solid = ShapeRegion.Solid(segments: self.splitPath(left.1, right.1)) {
@@ -142,53 +142,53 @@ extension Shape.Component {
 }
 
 extension Shape {
-    
+
     func breakLoop() -> [ShapeRegion.Solid] {
-        
+
         var solids: [ShapeRegion.Solid] = []
-        
+
         for item in self {
             var path: [ShapeRegion.Solid.Segment] = []
             for segment in item.bezier {
-                
+
                 switch segment.segment {
                 case let .cubic(p1, p2, p3):
-                    
+
                     if segment.start.almostEqual(p3) {
                         if let loop = ShapeRegion.Solid(segments: CollectionOfOne(segment)) {
                             solids.append(loop)
                         }
                     } else {
-                        
+
                         var segment = segment
                         if let (_a, _b) = CubicBezier(segment.start, p1, p2, p3).selfIntersect() {
-                            
+
                             let a = Swift.min(_a, _b)
                             let b = Swift.max(_a, _b)
-                            
+
                             let check_1 = a.almostZero()
                             let check_2 = !check_1 && a > 0
                             let check_3 = (b - 1).almostZero()
                             let check_4 = !check_3 && b < 1
-                            
+
                             if check_1 && check_4 {
-                                
+
                                 let split = segment.split(b)
                                 if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.0)) {
                                     solids.append(loop)
                                 }
                                 segment = split.1
-                                
+
                             } else if check_2 && check_3 {
-                                
+
                                 let split = segment.split(a)
                                 if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.1)) {
                                     solids.append(loop)
                                 }
                                 segment = split.0
-                                
+
                             } else if check_2 && check_4 {
-                                
+
                                 let split = segment.split([a, b])
                                 if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split[1])) {
                                     solids.append(loop)
@@ -199,7 +199,7 @@ extension Shape {
                         }
                         path.append(segment)
                     }
-                    
+
                 default: path.append(segment)
                 }
             }
@@ -209,7 +209,7 @@ extension Shape {
                 }
             }
         }
-        
+
         return solids.flatMap { $0.solid.breakLoop() }
     }
 }

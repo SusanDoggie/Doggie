@@ -27,7 +27,7 @@
 let _D65 = Point(x: 0.31271, y: 0.32902)
 
 extension ColorSpace where Model == XYZColorModel {
-    
+
     @inlinable
     public static var `default`: ColorSpace {
         return .cieXYZ(white: _D65)
@@ -35,7 +35,7 @@ extension ColorSpace where Model == XYZColorModel {
 }
 
 extension ColorSpace where Model == YxyColorModel {
-    
+
     @inlinable
     public static var `default`: ColorSpace {
         return .cieYxy(white: _D65)
@@ -43,7 +43,7 @@ extension ColorSpace where Model == YxyColorModel {
 }
 
 extension ColorSpace where Model == LabColorModel {
-    
+
     @inlinable
     public static var `default`: ColorSpace {
         return .cieLab(white: _D65)
@@ -51,7 +51,7 @@ extension ColorSpace where Model == LabColorModel {
 }
 
 extension ColorSpace where Model == LuvColorModel {
-    
+
     @inlinable
     public static var `default`: ColorSpace {
         return .cieLuv(white: _D65)
@@ -59,7 +59,7 @@ extension ColorSpace where Model == LuvColorModel {
 }
 
 extension ColorSpace where Model == GrayColorModel {
-    
+
     @inlinable
     public static var `default`: ColorSpace {
         return .genericGamma22Gray
@@ -67,7 +67,7 @@ extension ColorSpace where Model == GrayColorModel {
 }
 
 extension ColorSpace where Model == RGBColorModel {
-    
+
     @inlinable
     public static var `default`: ColorSpace {
         return .sRGB
@@ -75,77 +75,77 @@ extension ColorSpace where Model == RGBColorModel {
 }
 
 extension AnyColor {
-    
+
     @inlinable
     public static var black: AnyColor  {
         return AnyColor(white: 0.0)
     }
-    
+
     @inlinable
     public static var blue: AnyColor  {
         return AnyColor(red: 0.0, green: 0.0, blue: 1.0)
     }
-    
+
     @inlinable
     public static var brown: AnyColor  {
         return AnyColor(red: 0.6, green: 0.4, blue: 0.2)
     }
-    
+
     @inlinable
     public static var clear: AnyColor  {
         return AnyColor(white: 0.0, opacity: 0.0)
     }
-    
+
     @inlinable
     public static var cyan: AnyColor  {
         return AnyColor(red: 0.0, green: 1.0, blue: 1.0)
     }
-    
+
     @inlinable
     public static var darkGray: AnyColor  {
         return AnyColor(white: 1.0 / 3.0)
     }
-    
+
     @inlinable
     public static var gray: AnyColor  {
         return AnyColor(white: 0.5)
     }
-    
+
     @inlinable
     public static var green: AnyColor  {
         return AnyColor(red: 0.0, green: 1.0, blue: 0.0)
     }
-    
+
     @inlinable
     public static var lightGray: AnyColor  {
         return AnyColor(white: 2.0 / 3.0)
     }
-    
+
     @inlinable
     public static var magenta: AnyColor  {
         return AnyColor(red: 1.0, green: 0.0, blue: 1.0)
     }
-    
+
     @inlinable
     public static var orange: AnyColor  {
         return AnyColor(red: 1.0, green: 0.5, blue: 0.0)
     }
-    
+
     @inlinable
     public static var purple: AnyColor  {
         return AnyColor(red: 0.5, green: 0.0, blue: 0.5)
     }
-    
+
     @inlinable
     public static var red: AnyColor  {
         return AnyColor(red: 1.0, green: 0.0, blue: 0.0)
     }
-    
+
     @inlinable
     public static var white: AnyColor  {
         return AnyColor(white: 1.0)
     }
-    
+
     @inlinable
     public static var yellow: AnyColor  {
         return AnyColor(red: 1.0, green: 1.0, blue: 0.0)

@@ -24,30 +24,30 @@
 //
 
 public protocol _FloatComponentPixel : ColorPixelProtocol, ScalarMultiplicative where Scalar : BinaryFloatingPoint {
-    
+
     associatedtype ColorComponents : Tensor where ColorComponents.Scalar == Scalar
-    
+
     init(color: ColorComponents, opacity: Scalar)
-    
+
     var _color: ColorComponents { get set }
-    
+
     var _opacity: Scalar { get set }
-    
+
     var magnitude: Scalar { get set }
-    
+
     var unit: Self { get }
-    
+
     func distance(to: Self) -> Scalar
 }
 
 extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
-    
+
     @inlinable
     @inline(__always)
     public init() {
         self.init(color: ColorComponents(), opacity: 0)
     }
-    
+
     @inlinable
     @inline(__always)
     public init<C : ColorPixelProtocol>(_ color: C) where C.Model == Model {
@@ -56,7 +56,7 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
 }
 
 extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
-    
+
     @_transparent
     public var opacity: Double {
         get {
@@ -66,7 +66,7 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
             self._opacity = Scalar(newValue)
         }
     }
-    
+
     @_transparent
     public var isOpaque: Bool {
         return _opacity >= 1
@@ -74,7 +74,7 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
 }
 
 extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
-    
+
     @inlinable
     @inline(__always)
     public func component(_ index: Int) -> Double {
@@ -86,7 +86,7 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
             fatalError()
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public mutating func setComponent(_ index: Int, _ value: Double) {
@@ -98,7 +98,7 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
             fatalError()
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public func normalizedComponent(_ index: Int) -> Double {
@@ -111,7 +111,7 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
             fatalError()
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
@@ -127,7 +127,7 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
 }
 
 extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.Scalar : FloatingMathProtocol {
-    
+
     @_transparent
     public var magnitude: Scalar {
         get {
@@ -139,13 +139,13 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.Scalar : Fl
             self *= scale
         }
     }
-    
+
     @_transparent
     public var unit: Self {
         let m = self.magnitude
         return m == 0 ? Self() : self / m
     }
-    
+
     @inlinable
     @inline(__always)
     public func distance(to: Self) -> Scalar {

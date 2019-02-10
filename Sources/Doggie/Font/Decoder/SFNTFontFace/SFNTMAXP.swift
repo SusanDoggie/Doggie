@@ -24,10 +24,10 @@
 //
 
 struct SFNTMAXP : ByteDecodable {
-    
+
     var version: Fixed16Number<BEInt32>
     var numGlyphs: BEUInt16
-    
+
     init(from data: inout Data) throws {
         self.version = try data.decode(Fixed16Number<BEInt32>.self)
         self.numGlyphs = try data.decode(BEUInt16.self)

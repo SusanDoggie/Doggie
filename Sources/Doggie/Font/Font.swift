@@ -24,39 +24,39 @@
 //
 
 protocol FontFaceBase {
-    
+
     var isVariationSelectors: Bool { get }
     var isGraphic: Bool { get }
-    
+
     func shape(forGlyph glyph: Int) -> [Shape.Component]
     func graphic(forGlyph glyph: Int) -> [Font.Graphic]?
-    
+
     func glyph(with unicode: UnicodeScalar) -> Int
     func glyph(with unicode: UnicodeScalar, _ uvs: UnicodeScalar) -> Int?
     func substitution(glyphs: [Int], layout: Font.LayoutSetting, features: [FontFeature: Int]) -> [Int]
-    
+
     func availableFeatures() -> Set<FontFeature>
-    
+
     func metric(glyph: Int) -> Font.Metric
     func verticalMetric(glyph: Int) -> Font.Metric
-    
+
     var isVertical: Bool { get }
-    
+
     var numberOfGlyphs: Int { get }
-    
+
     var coveredCharacterSet: CharacterSet { get }
-    
+
     var ascender: Double { get }
     var descender: Double { get }
     var lineGap: Double { get }
-    
+
     var verticalAscender: Double? { get }
     var verticalDescender: Double? { get }
     var verticalLineGap: Double? { get }
-    
+
     var unitsPerEm: Double { get }
     var boundingRectForFont: Rect { get }
-    
+
     var italicAngle: Double { get }
     var weight: Int? { get }
     var stretch: Int? { get }
@@ -71,19 +71,19 @@ protocol FontFaceBase {
     var strikeoutThickness: Double? { get }
     var underlinePosition: Double { get }
     var underlineThickness: Double { get }
-    
+
     var fontName: String? { get }
     var displayName: String? { get }
     var uniqueName: String? { get }
     var familyName: String? { get }
     var faceName: String? { get }
-    
+
     var familyClass: Font.FamilyClass? { get }
-    
+
     var designer: String? { get }
-    
+
     var version: String? { get }
-    
+
     var trademark: String? { get }
     var manufacturer: String? { get }
     var license: String? { get }
@@ -91,15 +91,15 @@ protocol FontFaceBase {
 }
 
 public struct Font {
-    
+
     private let details: Details
     private let base: FontFaceBase
-    
+
     public var pointSize: Double
     public var features: [FontFeature: Int]
-    
+
     private let cache: Cache
-    
+
     init?(_ base: FontFaceBase) {
         guard base.numberOfGlyphs > 0 else { return nil }
         guard let details = Details(base) else { return nil }
@@ -109,7 +109,7 @@ public struct Font {
         self.features = [:]
         self.cache = Cache()
     }
-    
+
     public init(font: Font, size: Double, features: [FontFeature: Int] = [:]) {
         self.details = font.details
         self.base = font.base
@@ -120,40 +120,40 @@ public struct Font {
 }
 
 extension Font : Hashable {
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(pointSize)
         hasher.combine(features)
         hasher.combine(fontName)
     }
-    
+
     public static func ==(lhs: Font, rhs: Font) -> Bool {
         return lhs.pointSize == rhs.pointSize && lhs.features == rhs.features && lhs.fontName == rhs.fontName
     }
 }
 
 extension Font {
-    
+
     private class Cache {
-        
+
         let lck = SDLock()
-        
+
         var coveredCharacterSet: CharacterSet?
         var glyphs: [Int: [Shape.Component]] = [:]
     }
 }
 
 extension Font {
-    
+
     private struct Details {
-        
+
         let fontName: String
         let displayName: String?
         let uniqueName: String?
         let familyName: String?
         let faceName: String?
         let familyClass: FamilyClass?
-        
+
         init?(_ base: FontFaceBase) {
             guard let fontName = base.fontName else { return nil }
             self.fontName = fontName
@@ -167,9 +167,9 @@ extension Font {
 }
 
 extension Font {
-    
+
     public enum FamilyClass {
-        
+
         case oldStyleSerifs
         case transitionalSerifs
         case modernSerifs
@@ -184,55 +184,55 @@ extension Font {
 }
 
 extension Font : CustomStringConvertible {
-    
+
     public var description: String {
         return "Font(name: \(self.fontName), pointSize: \(self.pointSize))"
     }
 }
 
 extension Font {
-    
+
     public func with(size pointSize: Double) -> Font {
         return Font(font: self, size: pointSize, features: features)
     }
-    
+
     public func with(features: [FontFeature: Int]) -> Font {
         return Font(font: self, size: pointSize, features: features)
     }
-    
+
     public func with(size pointSize: Double, features: [FontFeature: Int]) -> Font {
         return Font(font: self, size: pointSize, features: features)
     }
 }
 
 extension Font {
-    
+
     public struct GraphicType: SignatureProtocol {
-        
+
         public var rawValue: BEUInt32
-        
+
         public init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
-        
+
         public static let jpeg: GraphicType    = "jpg "
         public static let png: GraphicType     = "png "
         public static let tiff: GraphicType    = "tiff"
         public static let pdf: GraphicType     = "pdf "
         public static let svg: GraphicType     = "svg "
     }
-    
+
     public struct Graphic {
-        
+
         public var type: GraphicType
-        
+
         public var unitsPerEm: Double
         public var resolution: Double
         public var origin: Point
-        
+
         public var data: Data
     }
-    
+
     private func _shape(glyph: Int) -> [Shape.Component] {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         return cache.lck.synchronized {
@@ -244,11 +244,11 @@ extension Font {
             return cache.glyphs[glyph]!
         }
     }
-    
+
     public func shape(forGlyph glyph: Int) -> Shape {
         return Shape(self._shape(glyph: glyph).map { $0 * SDTransform.scale(_pointScale) })
     }
-    
+
     public func graphic(forGlyph glyph: Int) -> [Font.Graphic]? {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         return base.graphic(forGlyph: glyph)
@@ -256,97 +256,97 @@ extension Font {
 }
 
 protocol FontFeatureBase : PolymorphicHashable, CustomStringConvertible {
-    
+
     var defaultSetting: Int { get }
-    
+
     var availableSettings: Set<Int> { get }
-    
+
     func name(for setting: Int) -> String?
 }
 
 public struct FontFeature : Hashable, CustomStringConvertible {
-    
+
     var base: FontFeatureBase
-    
+
     init(_ base: FontFeatureBase) {
         self.base = base
     }
-    
+
     public var defaultSetting: Int {
         return base.defaultSetting
     }
-    
+
     public var availableSettings: Set<Int> {
         return base.availableSettings
     }
-    
+
     public var description: String {
         return base.description
     }
-    
+
     public func name(for setting: Int) -> String? {
         return base.name(for: setting)
     }
 }
 
 extension FontFeature {
-    
+
     public func hash(into hasher: inout Hasher) {
         base.hash(into: &hasher)
     }
-    
+
     public static func ==(lhs: FontFeature, rhs: FontFeature) -> Bool {
         return lhs.base.isEqual(rhs.base)
     }
 }
 
 extension Font {
-    
+
     public func availableFeatures() -> Set<FontFeature> {
         return base.availableFeatures()
     }
 }
 
 extension Font {
-    
+
     public enum LayoutDirection {
-        
+
         case leftToRight
         case rightToLeft
     }
-    
+
     public struct LayoutSetting {
-        
+
         public var direction: LayoutDirection
         public var isVertical: Bool
-        
+
         public init(direction: LayoutDirection = .leftToRight, vertical: Bool = false) {
             self.direction = direction
             self.isVertical = vertical
         }
     }
-    
+
     public var numberOfGlyphs: Int {
         return base.numberOfGlyphs
     }
-    
+
     public func glyph(with unicode: UnicodeScalar) -> Int {
         let glyph = base.glyph(with: unicode)
         return 0..<numberOfGlyphs ~= glyph ? glyph : 0
     }
-    
+
     public func glyphs<S: Sequence>(with unicodes: S, layout: LayoutSetting = LayoutSetting()) -> [Int] where S.Element == UnicodeScalar {
-        
+
         var result: [Int] = []
-        
+
         if base.isVariationSelectors {
-            
+
             result.reserveCapacity(unicodes.underestimatedCount)
-            
+
             var last: UnicodeScalar?
-            
+
             for unicode in unicodes {
-                
+
                 if let _last = last {
                     if let glyph = base.glyph(with: _last, unicode) {
                         result.append(0..<numberOfGlyphs ~= glyph ? glyph : 0)
@@ -359,59 +359,59 @@ extension Font {
                     last = unicode
                 }
             }
-            
+
             if let last = last {
                 result.append(self.glyph(with: last))
             }
-            
+
         } else {
             result = unicodes.map { self.glyph(with: $0) }
         }
-        
+
         return base.substitution(glyphs: result, layout: layout, features: features)
     }
-    
+
     public func glyphs<S: StringProtocol>(with string: S, layout: LayoutSetting = LayoutSetting()) -> [Int] {
         return self.glyphs(with: string.unicodeScalars, layout: layout)
     }
 }
 
 extension Font {
-    
+
     public struct Metric {
-        
+
         public var advance: Double
         public var bearing: Double
     }
-    
+
     public func metric(forGlyph glyph: Int) -> Metric {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         let metric = base.metric(glyph: glyph)
         return Metric(advance: metric.advance * _pointScale, bearing: metric.bearing * _pointScale)
     }
-    
+
     public func verticalMetric(forGlyph glyph: Int) -> Metric {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         let metric = base.verticalMetric(glyph: glyph)
         return Metric(advance: metric.advance * _pointScale, bearing: metric.bearing * _pointScale)
     }
-    
+
     public func advance(forGlyph glyph: Int) -> Double {
         return metric(forGlyph: glyph).advance
     }
-    
+
     public func verticalAdvance(forGlyph glyph: Int) -> Double {
         return verticalMetric(forGlyph: glyph).advance
     }
-    
+
     public func bearing(forGlyph glyph: Int) -> Double {
         return metric(forGlyph: glyph).bearing
     }
-    
+
     public func verticalBearing(forGlyph glyph: Int) -> Double {
         return verticalMetric(forGlyph: glyph).bearing
     }
-    
+
     public var coveredCharacterSet: CharacterSet {
         return cache.lck.synchronized {
             if cache.coveredCharacterSet == nil {
@@ -423,19 +423,19 @@ extension Font {
 }
 
 extension Font {
-    
+
     private var _pointScale: Double {
         return pointSize / unitsPerEm
     }
-    
+
     public var isVariationSelectors: Bool {
         return base.isVariationSelectors
     }
-    
+
     public var isGraphic: Bool {
         return base.isGraphic
     }
-    
+
     public var ascender: Double {
         return base.ascender * _pointScale
     }
@@ -445,7 +445,7 @@ extension Font {
     public var lineGap: Double {
         return base.lineGap * _pointScale
     }
-    
+
     public var verticalAscender: Double? {
         return base.verticalAscender.map { $0 * _pointScale }
     }
@@ -455,17 +455,17 @@ extension Font {
     public var verticalLineGap: Double? {
         return base.verticalLineGap.map { $0 * _pointScale }
     }
-    
+
     public var unitsPerEm: Double {
         return base.unitsPerEm
     }
-    
+
     public var boundingRectForFont: Rect {
         let _pointScale = self._pointScale
         let bound = base.boundingRectForFont
         return bound * _pointScale
     }
-    
+
     public var italicAngle: Double {
         return base.italicAngle
     }
@@ -481,11 +481,11 @@ extension Font {
     public var capHeight: Double? {
         return base.capHeight.map { $0 * _pointScale }
     }
-    
+
     public var isVertical: Bool {
         return base.isVertical
     }
-    
+
     public var isFixedPitch: Bool {
         return base.isFixedPitch
     }
@@ -516,7 +516,7 @@ extension Font {
 }
 
 extension Font {
-    
+
     public var fontName: String {
         return details.fontName
     }
@@ -532,19 +532,19 @@ extension Font {
     public var faceName: String? {
         return details.faceName
     }
-    
+
     public var familyClass: FamilyClass? {
         return details.familyClass
     }
-    
+
     public var designer: String? {
         return base.designer
     }
-    
+
     public var version: String? {
         return base.version
     }
-    
+
     public var trademark: String? {
         return base.trademark
     }
@@ -557,5 +557,5 @@ extension Font {
     public var copyright: String? {
         return base.copyright
     }
-    
+
 }

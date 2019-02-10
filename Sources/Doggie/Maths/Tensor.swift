@@ -24,22 +24,22 @@
 //
 
 public protocol Tensor : ScalarMultiplicative, MapReduceArithmetic, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
-    
+
     init()
-    
+
     static var numberOfComponents: Int { get }
-    
+
     var magnitude: Scalar { get set }
-    
+
     var unit: Self { get }
-    
+
     func distance(to: Self) -> Scalar
-    
+
     func combined(_ other: Self, _ transform: (Scalar, Scalar) -> Scalar) -> Self
 }
 
 extension Tensor {
-    
+
     @_transparent
     public static var zero: Self {
         return Self()
@@ -47,22 +47,22 @@ extension Tensor {
 }
 
 extension Tensor {
-    
+
     @_transparent
     public var numberOfComponents: Int {
         return Self.numberOfComponents
     }
-    
+
     @_transparent
     public var count: Int {
         return Self.numberOfComponents
     }
-    
+
     @_transparent
     public var startIndex: Int {
         return 0
     }
-    
+
     @_transparent
     public var endIndex: Int {
         return Self.numberOfComponents
@@ -70,7 +70,7 @@ extension Tensor {
 }
 
 extension Tensor where Scalar : FloatingPoint {
-    
+
     @_transparent
     public var magnitude: Scalar {
         get {
@@ -82,13 +82,13 @@ extension Tensor where Scalar : FloatingPoint {
             self *= scale
         }
     }
-    
+
     @_transparent
     public var unit: Self {
         let m = self.magnitude
         return m == 0 ? Self() : self / m
     }
-    
+
     @inlinable
     @inline(__always)
     public func distance(to: Self) -> Scalar {
@@ -109,7 +109,7 @@ public func dot<T : Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
 }
 
 extension Tensor {
-    
+
     @inlinable
     @inline(__always)
     public static func + (lhs: Self, rhs: Self) -> Self {

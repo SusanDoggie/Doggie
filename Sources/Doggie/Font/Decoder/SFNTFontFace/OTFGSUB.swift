@@ -24,16 +24,16 @@
 //
 
 struct OTFGSUB : ByteDecodable {
-    
+
     var version: Fixed16Number<BEInt32>
     var scriptListOffset: BEUInt16
     var featureListOffset: BEUInt16
     var lookupListOffset: BEUInt16
-    
+
     var scriptList: OTFScriptList
     var featureList: OTFFeatureList
     var lookupList: OTFLookupList
-    
+
     init(from data: inout Data) throws {
         let copy = data
         self.version = try data.decode(Fixed16Number<BEInt32>.self)

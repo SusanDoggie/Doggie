@@ -104,13 +104,13 @@ public func InverseFourier(_ buffer: [Complex], _ result: inout [Complex]) {
 @inlinable
 @inline(__always)
 public func BluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
-    
+
     if kernel.count != count {
         kernel.replace(with: repeatElement(Complex(0), count: count))
     }
     kernel[0].real = 1
     kernel[0].imag = 0
-    
+
     let angle = Double.pi / Double(count)
     var twiddle = cis(angle)
     let twiddleBasis = twiddle * twiddle
@@ -130,13 +130,13 @@ public func BluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
 @inlinable
 @inline(__always)
 public func InverseBluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
-    
+
     if kernel.count != count {
         kernel.replace(with: repeatElement(Complex(0), count: count))
     }
     kernel[0].real = 1
     kernel[0].imag = 0
-    
+
     let angle = -Double.pi / Double(count)
     var twiddle = cis(angle)
     let twiddleBasis = twiddle * twiddle
@@ -158,18 +158,18 @@ public func InverseBluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
 public func Bluestein(_ buffer: [Double], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     BluesteinKernel(buffer.count, &_kernel)
-    
+
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     vec_op(buffer.count, _kernel, 1, buffer, 1, &result, 1) { conj($0) * $1 }
-    
+
     if buffer.count & 1 == 0 {
         CircularConvolve(result, _kernel, &result)
     } else {
         NegacyclicConvolve(result, _kernel, &result)
     }
-    
+
     vec_op(buffer.count, _kernel, 1, result, 1, &result, 1) { conj($0) * $1 }
     let _sqrt = 1 / sqrt(Double(buffer.count))
     vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
@@ -179,18 +179,18 @@ public func Bluestein(_ buffer: [Double], _ result: inout [Complex]) {
 public func Bluestein(_ buffer: [Complex], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     BluesteinKernel(buffer.count, &_kernel)
-    
+
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     vec_op(buffer.count, _kernel, 1, buffer, 1, &result, 1) { conj($0) * $1 }
-    
+
     if buffer.count & 1 == 0 {
         CircularConvolve(result, _kernel, &result)
     } else {
         NegacyclicConvolve(result, _kernel, &result)
     }
-    
+
     vec_op(buffer.count, _kernel, 1, result, 1, &result, 1) { conj($0) * $1 }
     let _sqrt = 1 / sqrt(Double(buffer.count))
     vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
@@ -200,18 +200,18 @@ public func Bluestein(_ buffer: [Complex], _ result: inout [Complex]) {
 public func InverseBluestein(_ buffer: [Double], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     InverseBluesteinKernel(buffer.count, &_kernel)
-    
+
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     vec_op(buffer.count, _kernel, 1, buffer, 1, &result, 1) { conj($0) * $1 }
-    
+
     if buffer.count & 1 == 0 {
         CircularConvolve(result, _kernel, &result)
     } else {
         NegacyclicConvolve(result, _kernel, &result)
     }
-    
+
     vec_op(buffer.count, _kernel, 1, result, 1, &result, 1) { conj($0) * $1 }
     let _sqrt = 1 / sqrt(Double(buffer.count))
     vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
@@ -221,18 +221,18 @@ public func InverseBluestein(_ buffer: [Double], _ result: inout [Complex]) {
 public func InverseBluestein(_ buffer: [Complex], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     InverseBluesteinKernel(buffer.count, &_kernel)
-    
+
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
     vec_op(buffer.count, _kernel, 1, buffer, 1, &result, 1) { conj($0) * $1 }
-    
+
     if buffer.count & 1 == 0 {
         CircularConvolve(result, _kernel, &result)
     } else {
         NegacyclicConvolve(result, _kernel, &result)
     }
-    
+
     vec_op(buffer.count, _kernel, 1, result, 1, &result, 1) { conj($0) * $1 }
     let _sqrt = 1 / sqrt(Double(buffer.count))
     vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
@@ -296,21 +296,21 @@ public func CircularConvolve(_ signal: [Double], _ kernel: [Double], _ result: i
         result.removeAll(keepingCapacity: true)
     }
     if signal.count >= kernel.count && signal.count.isPower2 {
-        
+
         var temp = [Double](repeating: 0, count: signal.count)
-        
+
         if result.count != signal.count {
             result.replace(with: repeatElement(0, count: signal.count))
         }
-        
+
         let lv = log2(signal.count)
-        
+
         if signal.count == kernel.count {
             Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
         } else {
             Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
         }
-        
+
     } else {
         Convolve(signal, kernel, &result)
         let block = signal.count
@@ -329,21 +329,21 @@ public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex], _ result:
         result.removeAll(keepingCapacity: true)
     }
     if signal.count >= kernel.count && signal.count.isPower2 {
-        
+
         var temp = [Complex](repeating: Complex(0), count: signal.count)
-        
+
         if result.count != signal.count {
             result.replace(with: repeatElement(Complex(0), count: signal.count))
         }
-        
+
         let lv = log2(signal.count)
-        
+
         if signal.count == kernel.count {
             Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
         } else {
             Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, &result, 1, &temp, 1)
         }
-        
+
     } else {
         Convolve(signal, kernel, &result)
         let block = signal.count
@@ -380,35 +380,35 @@ public func NegacyclicConvolve(_ signal: [Complex], _ kernel: [Complex], _ resul
 @inlinable
 @inline(__always)
 public func FFTConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
-    
+
     let convolve_length = signal.count + kernel.count - 1
     let fft_length = Radix2CircularConvolveLength(signal.count, kernel.count)
     let lv = log2(fft_length)
-    
+
     var buffer = [Double](repeating: 0, count: fft_length << 1)
     buffer.withUnsafeMutableBufferPointer { _buffer in
         let _output = _buffer.baseAddress!
         let _temp = _output + fft_length
         Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, _output, 1, _temp, 1)
     }
-    
+
     result.replace(with: buffer.prefix(convolve_length))
 }
 @inlinable
 @inline(__always)
 public func FFTConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
-    
+
     let convolve_length = signal.count + kernel.count - 1
     let fft_length = Radix2CircularConvolveLength(signal.count, kernel.count)
     let lv = log2(fft_length)
-    
+
     var buffer = [Complex](repeating: Complex(0), count: fft_length << 1)
     buffer.withUnsafeMutableBufferPointer { _buffer in
         let _output = _buffer.baseAddress!
         let _temp = _output + fft_length
         Radix2CircularConvolve(lv, signal, 1, signal.count, kernel, 1, kernel.count, _output, 1, _temp, 1)
     }
-    
+
     result.replace(with: buffer.prefix(convolve_length))
 }
 @inlinable

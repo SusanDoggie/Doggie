@@ -26,18 +26,18 @@
 #if canImport(CoreGraphics)
 
 extension AnyColorSpace {
-    
+
     public static var availableColorSpaces: [AnyColorSpace] {
-        
+
         var availableColorSpaces: [AnyColorSpace] = []
-        
+
         for url in FileManager.default.fileUrls(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithFileSystemRepresentation: "ColorSync/Profiles/", isDirectory: true, relativeTo: $0) }) {
-            
+
             if let data = try? Data(contentsOf: url, options: .alwaysMapped), let colorSpace = try? AnyColorSpace(iccData: data) {
                 availableColorSpaces.append(colorSpace)
             }
         }
-        
+
         return availableColorSpaces
     }
 }
@@ -45,24 +45,24 @@ extension AnyColorSpace {
 #elseif os(Linux)
 
 extension AnyColorSpace {
-    
+
     public static var availableColorSpaces: [AnyColorSpace] {
-        
+
         let urls = [
             URL(fileURLWithPath: "/usr/share/color/icc", isDirectory: true),
             URL(fileURLWithPath: "/usr/local/share/color/icc", isDirectory: true),
             URL(fileURLWithFileSystemRepresentation: ".color/icc/", isDirectory: true, relativeTo: FileManager.default.homeDirectoryForCurrentUser),
             ]
-        
+
         var availableColorSpaces: [AnyColorSpace] = []
-        
+
         for url in FileManager.default.fileUrls(urls) {
-            
+
             if let data = try? Data(contentsOf: url, options: .alwaysMapped), let colorSpace = try? AnyColorSpace(iccData: data) {
                 availableColorSpaces.append(colorSpace)
             }
         }
-        
+
         return availableColorSpaces
     }
 }

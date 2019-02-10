@@ -32,38 +32,38 @@ public func DisplacementMap<S, T>(_ source: Image<S>, _ displacement: Image<T>, 
 @inlinable
 @inline(__always)
 public func DisplacementMap<S, T>(_ texture: Texture<S>, _ displacement: Texture<T>, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Double) -> Texture<S> {
-    
+
     let width = displacement.width
     let height = displacement.height
     let resamplingAlgorithm = texture.resamplingAlgorithm
     let fileBacked = texture.fileBacked
-    
+
     var result = Texture<S>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, fileBacked: fileBacked)
-    
+
     result.withUnsafeMutableBufferPointer {
-        
+
         guard var result = $0.baseAddress else { return }
-        
+
         displacement.withUnsafeBufferPointer {
-            
+
             guard var displacement = $0.baseAddress else { return }
-            
+
             for y in 0..<height {
                 for x in 0..<width {
-                    
+
                     let d = displacement.pointee
-                    
+
                     let _x = Double(x) + scale * (d.component(xChannelSelector) - 0.5)
                     let _y = Double(y) + scale * (d.component(yChannelSelector) - 0.5)
-                    
+
                     result.pointee = S(texture.pixel(Point(x: _x, y: _y)))
-                    
+
                     displacement += 1
                     result += 1
                 }
             }
         }
     }
-    
+
     return result
 }

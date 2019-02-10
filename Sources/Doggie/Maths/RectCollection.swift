@@ -24,13 +24,13 @@
 //
 
 public struct RectCollection {
-    
+
     private let bounds: [Rect]
     private let minX: [(Int, Double)]
     private let maxX: [(Int, Double)]
     private let minY: [(Int, Double)]
     private let maxY: [(Int, Double)]
-    
+
     public init() {
         self.bounds = []
         self.minX = []
@@ -38,7 +38,7 @@ public struct RectCollection {
         self.minY = []
         self.maxY = []
     }
-    
+
     public init<S : Sequence>(_ bounds: S) where S.Element == Rect {
         let bounds = Array(bounds)
         self.bounds = bounds
@@ -50,26 +50,26 @@ public struct RectCollection {
 }
 
 extension RectCollection : RandomAccessCollection {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Index = Int
-    
+
     public var startIndex: Int {
         return bounds.startIndex
     }
-    
+
     public var endIndex: Int {
         return bounds.endIndex
     }
-    
+
     public subscript(position : Int) -> Rect {
         return bounds[position]
     }
 }
 
 extension RectCollection {
-    
+
     private func search(_ target: Double, _ elements: UnsafePointer<(Int, Double)>, _ indices: Range<Int>) -> Int {
         switch indices.count {
         case 0: return indices.lowerBound
@@ -90,39 +90,39 @@ extension RectCollection {
             }
         }
     }
-    
+
     public func search(x: Double) -> Set<Int> {
         let a = minX.indices.prefix(upTo: search(x, minX, minX.indices)).map { minX[$0].0 }
         let b = maxX.indices.suffix(from: search(x, maxX, maxX.indices)).map { maxX[$0].0 }
         return Set(a).intersection(b)
     }
-    
+
     public func search(y: Double) -> Set<Int> {
         let a = minY.indices.prefix(upTo: search(y, minY, minY.indices)).map { minY[$0].0 }
         let b = maxY.indices.suffix(from: search(y, maxY, maxY.indices)).map { maxY[$0].0 }
         return Set(a).intersection(b)
     }
-    
+
     public func search(x: ClosedRange<Double>) -> Set<Int> {
         let a = minX.indices.prefix(upTo: search(x.upperBound, minX, minX.indices)).map { minX[$0].0 }
         let b = maxX.indices.suffix(from: search(x.lowerBound, maxX, maxX.indices)).map { maxX[$0].0 }
         return Set(a).intersection(b)
     }
-    
+
     public func search(y: ClosedRange<Double>) -> Set<Int> {
         let a = minY.indices.prefix(upTo: search(y.upperBound, minY, minY.indices)).map { minY[$0].0 }
         let b = maxY.indices.suffix(from: search(y.lowerBound, maxY, maxY.indices)).map { maxY[$0].0 }
         return Set(a).intersection(b)
     }
-    
+
     public func search(_ point: Point) -> Set<Int> {
         return Set(search(x: point.x)).intersection(search(y: point.y))
     }
-    
+
     public func search(contains rect: Rect) -> Set<Int> {
         return Set(search(Point(x: rect.minX, y: rect.minY))).intersection(search(Point(x: rect.maxX, y: rect.maxY)))
     }
-    
+
     public func search(overlap rect: Rect) -> Set<Int> {
         return search(x: rect.minX...rect.maxX).intersection(search(y: rect.minY...rect.maxY))
     }

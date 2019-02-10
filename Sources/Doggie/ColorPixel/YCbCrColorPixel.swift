@@ -24,12 +24,12 @@
 //
 
 public struct YCbCrColorPixel : ColorPixelProtocol {
-    
+
     public var a: UInt8
     public var y: UInt8
     public var cb: UInt8
     public var cr: UInt8
-    
+
     @inlinable
     @inline(__always)
     public init() {
@@ -46,7 +46,7 @@ public struct YCbCrColorPixel : ColorPixelProtocol {
         self.cb = UInt8((color.cb * 255).clamped(to: 0...255).rounded())
         self.cr = UInt8((color.cr * 255).clamped(to: 0...255).rounded())
     }
-    
+
     @_transparent
     public var color: YCbCrColorModel {
         get {
@@ -67,12 +67,12 @@ public struct YCbCrColorPixel : ColorPixelProtocol {
             self.a = UInt8((newValue * 255).clamped(to: 0...255).rounded())
         }
     }
-    
+
     @_transparent
     public var isOpaque: Bool {
         return a == 255
     }
-    
+
     @inlinable
     @inline(__always)
     public func with(opacity: Double) -> YCbCrColorPixel {

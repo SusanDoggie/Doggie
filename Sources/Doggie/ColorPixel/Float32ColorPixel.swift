@@ -25,27 +25,27 @@
 
 @_fixed_layout
 public struct Float32ColorPixel<Model : ColorModelProtocol> : _FloatComponentPixel {
-    
+
     public typealias Scalar = Float
-    
+
     public var _color: Model.Float32Components
-    
+
     public var _opacity: Float
-    
+
     @inlinable
     @inline(__always)
     public init(color: Model, opacity: Double = 1) {
         self._color = color.float32Components
         self._opacity = Float(opacity)
     }
-    
+
     @inlinable
     @inline(__always)
     public init(color: Model.Float32Components, opacity: Float = 1) {
         self._color = color
         self._opacity = opacity
     }
-    
+
     @_transparent
     public var color: Model {
         get {

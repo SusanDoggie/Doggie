@@ -24,12 +24,12 @@
 //
 
 public protocol ByteOutputStream {
-    
+
     mutating func write(_ bytes: UnsafeRawBufferPointer)
 }
 
 extension ByteOutputStream {
-    
+
     @inlinable
     mutating func write<Buffer: UnsafeBufferProtocol>(_ buffer: Buffer) where Buffer.Element == UInt8 {
         buffer.withUnsafeBufferPointer { self.write(UnsafeRawBufferPointer($0)) }
@@ -37,21 +37,21 @@ extension ByteOutputStream {
 }
 
 public protocol ByteOutputStreamable {
-    
+
     func write<Target: ByteOutputStream>(to stream: inout Target)
 }
 
 @usableFromInline
 struct _ByteOutputStream: ByteOutputStream {
-    
+
     @usableFromInline
     let sink: (UnsafeRawBufferPointer) -> Void
-    
+
     @inlinable
     init(sink: @escaping (UnsafeRawBufferPointer) -> Void) {
         self.sink = sink
     }
-    
+
     @inlinable
     func write(_ bytes: UnsafeRawBufferPointer) {
         sink(bytes)
@@ -59,7 +59,7 @@ struct _ByteOutputStream: ByteOutputStream {
 }
 
 extension ByteOutputStreamable {
-    
+
     @inlinable
     public func enumerateBytes(_ body: (UnsafeRawBufferPointer) -> Void) {
         withoutActuallyEscaping(body) {
@@ -67,7 +67,7 @@ extension ByteOutputStreamable {
             self.write(to: &stream)
         }
     }
-    
+
     @inlinable
     public func write<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         self.enumerateBytes { data.append(contentsOf: $0) }
@@ -75,7 +75,7 @@ extension ByteOutputStreamable {
 }
 
 extension RangeReplaceableCollection where Element == UInt8 {
-    
+
     @inlinable
     public mutating func encode<T: ByteOutputStreamable>(_ value: T) {
         value.write(to: &self)
@@ -83,7 +83,7 @@ extension RangeReplaceableCollection where Element == UInt8 {
 }
 
 extension ByteOutputStream {
-    
+
     @inlinable
     public mutating func encode<T: ByteOutputStreamable>(_ value: T) {
         value.write(to: &self)

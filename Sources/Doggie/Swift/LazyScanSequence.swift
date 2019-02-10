@@ -50,23 +50,23 @@ extension Sequence {
 
 @_fixed_layout
 public struct LazyScanIterator<Base: IteratorProtocol, Element> : IteratorProtocol, Sequence {
-    
+
     @usableFromInline
     var nextElement: Element?
-    
+
     @usableFromInline
     var base: Base
-    
+
     @usableFromInline
     let combine: (Element, Base.Element) -> Element
-    
+
     @inlinable
     init(nextElement: Element?, base: Base, combine: @escaping (Element, Base.Element) -> Element) {
         self.nextElement = nextElement
         self.base = base
         self.combine = combine
     }
-    
+
     @inlinable
     public mutating func next() -> Element? {
         return nextElement.map { result in
@@ -77,25 +77,25 @@ public struct LazyScanIterator<Base: IteratorProtocol, Element> : IteratorProtoc
 }
 
 public struct LazyScanSequence<Base: Sequence, Element> : LazySequenceProtocol {
-    
+
     public let initial: Element
-    
+
     public let base: Base
-    
+
     public let combine: (Element, Base.Element) -> Element
-    
+
     @inlinable
     public init(initial: Element, base: Base, combine: @escaping (Element, Base.Element) -> Element) {
         self.initial = initial
         self.base = base
         self.combine = combine
     }
-    
+
     @inlinable
     public func makeIterator() -> LazyScanIterator<Base.Iterator, Element> {
         return LazyScanIterator(nextElement: initial, base: base.makeIterator(), combine: combine)
     }
-    
+
     @inlinable
     public var underestimatedCount: Int {
         return base.underestimatedCount + 1

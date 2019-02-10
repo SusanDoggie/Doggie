@@ -24,17 +24,17 @@
 //
 
 public struct Point: Hashable {
-    
+
     public var x: Double
     public var y: Double
-    
+
     @inlinable
     @inline(__always)
     public init() {
         self.x = 0
         self.y = 0
     }
-    
+
     @inlinable
     @inline(__always)
     public init(x: Double, y: Double) {
@@ -50,14 +50,14 @@ public struct Point: Hashable {
 }
 
 extension Point {
-    
+
     @inlinable
     @inline(__always)
     public init(magnitude: Double, phase: Double) {
         self.x = magnitude * cos(phase)
         self.y = magnitude * sin(phase)
     }
-    
+
     @_transparent
     public var phase: Double {
         get {
@@ -67,7 +67,7 @@ extension Point {
             self = Point(magnitude: magnitude, phase: newValue)
         }
     }
-    
+
     @_transparent
     public var magnitude: Double {
         get {
@@ -80,7 +80,7 @@ extension Point {
 }
 
 extension Point {
-    
+
     @inlinable
     @inline(__always)
     public func offset(dx: Double, dy: Double) -> Point {
@@ -89,7 +89,7 @@ extension Point {
 }
 
 extension Point: CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return "Point(x: \(x), y: \(y))"
@@ -97,7 +97,7 @@ extension Point: CustomStringConvertible {
 }
 
 extension Point : Codable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -105,7 +105,7 @@ extension Point : Codable {
         self.x = try container.decode(Double.self)
         self.y = try container.decode(Double.self)
     }
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -116,16 +116,16 @@ extension Point : Codable {
 }
 
 extension Point : Tensor {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Scalar = Double
-    
+
     @_transparent
     public static var numberOfComponents: Int {
         return 2
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Double {
         get {
@@ -143,19 +143,19 @@ extension Point : Tensor {
             }
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Point {
         return Point(x: transform(x), y: transform(y))
     }
-    
+
     @inlinable
     @inline(__always)
     public func combined(_ other: Point, _ transform: (Double, Double) -> Double) -> Point {
         return Point(x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {

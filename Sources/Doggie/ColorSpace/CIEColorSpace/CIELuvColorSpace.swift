@@ -24,12 +24,12 @@
 //
 
 extension ColorSpace where Model == LuvColorModel {
-    
+
     @inlinable
     public static func cieLuv<C>(from colorSpace: ColorSpace<C>) -> ColorSpace {
         return ColorSpace(base: CIELuvColorSpace(colorSpace.base.cieXYZ))
     }
-    
+
     @inlinable
     public static func cieLuv(white: Point) -> ColorSpace {
         return ColorSpace(base: CIELuvColorSpace(CIEXYZColorSpace(white: white)))
@@ -39,13 +39,13 @@ extension ColorSpace where Model == LuvColorModel {
 @_fixed_layout
 @usableFromInline
 struct CIELuvColorSpace : ColorSpaceBaseProtocol {
-    
+
     @usableFromInline
     typealias Model = LuvColorModel
-    
+
     @usableFromInline
     let cieXYZ: CIEXYZColorSpace
-    
+
     @inlinable
     init(_ cieXYZ: CIEXYZColorSpace) {
         self.cieXYZ = cieXYZ
@@ -53,7 +53,7 @@ struct CIELuvColorSpace : ColorSpaceBaseProtocol {
 }
 
 extension CIELuvColorSpace {
-    
+
     @inlinable
     func hash(into hasher: inout Hasher) {
         hasher.combine("CIELuvColorSpace")
@@ -62,7 +62,7 @@ extension CIELuvColorSpace {
 }
 
 extension CIELuvColorSpace {
-    
+
     @inlinable
     var localizedName: String? {
         return "Doggie CIE Luv Color Space (white = \(cieXYZ.white.point))"
@@ -70,7 +70,7 @@ extension CIELuvColorSpace {
 }
 
 extension CIELuvColorSpace {
-    
+
     @inlinable
     var linearTone: CIELuvColorSpace {
         return self
@@ -78,17 +78,17 @@ extension CIELuvColorSpace {
 }
 
 extension CIELuvColorSpace {
-    
+
     @inlinable
     func convertToLinear(_ color: Model) -> Model {
         return color
     }
-    
+
     @inlinable
     func convertFromLinear(_ color: Model) -> Model {
         return color
     }
-    
+
     @inlinable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let normalizeMatrix = cieXYZ.normalizeMatrix
@@ -106,7 +106,7 @@ extension CIELuvColorSpace {
         let x = (d - b) / (a + 1)
         return XYZColorModel(x: 3 * x, y: y, z: x * a + b) * normalizeMatrix.inverse
     }
-    
+
     @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let normalizeMatrix = cieXYZ.normalizeMatrix

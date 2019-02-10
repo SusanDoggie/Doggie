@@ -27,34 +27,34 @@ import Doggie
 import XCTest
 
 class AtomicTest: XCTestCase {
-    
+
     func testAtomicA() {
-        
+
         let queue = DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)
         let group = DispatchGroup()
-        
+
         var atom = Atomic(value: 0)
-        
+
         for _ in 0..<10 {
             queue.async(group: group) {
                 sleep(1)
                 atom.fetchStore { $0 + 1 }
             }
         }
-        
+
         group.wait()
-        
+
         XCTAssertEqual(atom.value, 10)
     }
-    
+
     func testAtomicQueueA() {
-        
+
         let queue = AtomicQueue<Int>()
-        
+
         for i in 1...10 {
             queue.push(i)
         }
-        
+
         XCTAssertEqual(queue.next(), 1)
         XCTAssertEqual(queue.next(), 2)
         XCTAssertEqual(queue.next(), 3)
@@ -68,13 +68,13 @@ class AtomicTest: XCTestCase {
         XCTAssertEqual(queue.next(), nil)
     }
     func testAtomicStackA() {
-        
+
         let stack = AtomicStack<Int>()
-        
+
         for i in 1...10 {
             stack.push(i)
         }
-        
+
         XCTAssertEqual(stack.next(), 10)
         XCTAssertEqual(stack.next(), 9)
         XCTAssertEqual(stack.next(), 8)
@@ -88,27 +88,27 @@ class AtomicTest: XCTestCase {
         XCTAssertEqual(stack.next(), nil)
     }
     func testAtomicQueueB() {
-        
+
         let queue = AtomicQueue<Int>()
-        
+
         DispatchQueue.concurrentPerform(iterations: 10) {
             queue.push($0)
         }
-        
+
         let result = Set(AnyIterator(queue.next))
-        
+
         XCTAssertEqual(result, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     }
     func testAtomicStackB() {
-        
+
         let stack = AtomicStack<Int>()
-        
+
         DispatchQueue.concurrentPerform(iterations: 10) {
             stack.push($0)
         }
-        
+
         let result = Set(AnyIterator(stack.next))
-        
+
         XCTAssertEqual(result, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     }
 }

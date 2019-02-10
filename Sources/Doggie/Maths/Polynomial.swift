@@ -25,16 +25,16 @@
 
 @_fixed_layout
 public struct Polynomial : Hashable {
-    
+
     @usableFromInline
     var coeffs: [Double]
-    
+
     /// a + b x + c x^2 + d x^3 + ...
     @inlinable
     public init() {
         self.coeffs = []
     }
-    
+
     /// a + b x + c x^2 + d x^3 + ...
     @inlinable
     public init(_ coeffs: Double ... ) {
@@ -52,7 +52,7 @@ public struct Polynomial : Hashable {
 }
 
 extension Polynomial : ExpressibleByArrayLiteral {
-    
+
     @inlinable
     public init(arrayLiteral elements: Double ... ) {
         self.init(elements)
@@ -60,7 +60,7 @@ extension Polynomial : ExpressibleByArrayLiteral {
 }
 
 extension Polynomial : CustomStringConvertible {
-    
+
     @inlinable
     public var description: String {
         return coeffs.description
@@ -68,27 +68,27 @@ extension Polynomial : CustomStringConvertible {
 }
 
 extension Polynomial : Codable {
-    
+
     @inlinable
     public init(from decoder: Decoder) throws {
-        
+
         var container = try decoder.unkeyedContainer()
         var coeffs: [Double] = []
-        
+
         if let count = container.count {
             coeffs.reserveCapacity(count)
             for _ in 0..<count {
                 coeffs.append(try container.decode(Double.self))
             }
         }
-        
+
         while !container.isAtEnd {
             coeffs.append(try container.decode(Double.self))
         }
-        
+
         self.init(coeffs)
     }
-    
+
     @inlinable
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
@@ -97,11 +97,11 @@ extension Polynomial : Codable {
 }
 
 extension Polynomial : RandomAccessCollection, MutableCollection {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Index = Int
-    
+
     @inlinable
     public var startIndex : Int {
         return coeffs.startIndex
@@ -110,7 +110,7 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
     public var endIndex : Int {
         return coeffs.endIndex
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Double {
         get {
@@ -131,14 +131,14 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
 }
 
 extension Polynomial : RangeReplaceableCollection {
-    
+
     @inlinable
     public mutating func append(_ newElement: Double) {
         if newElement != 0 {
             coeffs.append(newElement)
         }
     }
-    
+
     @inlinable
     public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Double {
         coeffs.append(contentsOf: newElements)
@@ -146,12 +146,12 @@ extension Polynomial : RangeReplaceableCollection {
             coeffs.removeLast()
         }
     }
-    
+
     @inlinable
     public mutating func reserveCapacity(_ minimumCapacity: Int) {
         coeffs.reserveCapacity(minimumCapacity)
     }
-    
+
     @inlinable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Double {
         coeffs.replaceSubrange(subRange, with: newElements)
@@ -162,7 +162,7 @@ extension Polynomial : RangeReplaceableCollection {
 }
 
 extension Polynomial {
-    
+
     @inlinable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(coeffs)
@@ -170,12 +170,12 @@ extension Polynomial {
 }
 
 extension Polynomial {
-    
+
     @inlinable
     public var degree : Int {
         return Swift.max(coeffs.count - 1, 0)
     }
-    
+
     @inlinable
     public func eval(_ x: Double) -> Double {
         switch x {
@@ -187,10 +187,10 @@ extension Polynomial {
 }
 
 extension Polynomial {
-    
+
     @inlinable
     public var roots : [Double] {
-        
+
         if degree == 0 {
             return []
         }
@@ -213,15 +213,15 @@ extension Polynomial {
 
 @usableFromInline
 func _root(_ p: Polynomial) -> [Double] {
-    
+
     var extrema = p.derivative.roots.sorted()
-    
+
     var probe = max(extrema.last ?? 1, 1)
     while p.eval(probe) < 0 {
         probe *= 2
     }
     extrema.append(probe)
-    
+
     probe = min(extrema.first!, -1)
     if p.coeffs.count & 1 == 0 {
         while p.eval(probe) > 0 {
@@ -233,19 +233,19 @@ func _root(_ p: Polynomial) -> [Double] {
         }
     }
     extrema.insert(probe, at: 0)
-    
+
     var result = [Double]()
-    
+
     for idx in extrema.indices.dropLast() {
-        
+
         let left = p.eval(extrema[idx])
         let right = p.eval(extrema[idx + 1])
-        
+
         if left.almostZero(reference: extrema[idx]) {
             if !result.contains(extrema[idx]) {
                 result.append(extrema[idx])
             }
-            
+
         } else if !right.almostZero(reference: extrema[idx + 1]) && left.sign != right.sign {
             var neg: Double
             var pos: Double
@@ -256,14 +256,14 @@ func _root(_ p: Polynomial) -> [Double] {
                 neg = extrema[idx]
                 pos = extrema[idx + 1]
             }
-            
+
             var negVal = p.eval(neg)
             var posVal = p.eval(pos)
             var previous = extrema[idx + 1]
-            
+
             var eps = 1e-14
             var iter = 0
-            
+
             while true {
                 var mid = (pos * negVal - neg * posVal) / (negVal - posVal)
                 let u = 3.0 * abs(mid - previous)
@@ -284,7 +284,7 @@ func _root(_ p: Polynomial) -> [Double] {
                     pos = mid
                     posVal = midVal
                 }
-                
+
                 iter += 1
                 if iter % 5000 == 0 {
                     eps *= 2
@@ -299,12 +299,12 @@ func _root(_ p: Polynomial) -> [Double] {
 }
 
 extension Polynomial {
-    
+
     @inlinable
     public var derivative : Polynomial {
         return count > 1 ? Polynomial(coeffs.enumerated().dropFirst().map { Double($0) * $1 }) : Polynomial()
     }
-    
+
     @inlinable
     public var integral : Polynomial {
         let _coeffs = coeffs.enumerated().lazy.map { $1 / Double($0 + 1) }
@@ -313,9 +313,9 @@ extension Polynomial {
 }
 
 extension Polynomial : Multiplicative, ScalarMultiplicative {
-    
+
     public typealias Scalar = Double
-    
+
     @_transparent
     public static var zero: Polynomial {
         return Polynomial()

@@ -24,17 +24,17 @@
 //
 
 public protocol Lockable : AnyObject {
-    
+
     func lock()
     func unlock()
     func trylock() -> Bool
-    
+
     @discardableResult
     func synchronized<R>(block: () throws -> R) rethrows -> R
 }
 
 extension Lockable {
-    
+
     @inlinable
     @discardableResult
     public func synchronized<R>(block: () throws -> R) rethrows -> R {
@@ -82,9 +82,9 @@ public func synchronized<R>(_ lcks: Lockable ... , block: () throws -> R) rethro
 // MARK: Lock
 
 public class SDLock {
-    
+
     fileprivate var _mtx = pthread_mutex_t()
-    
+
     public init() {
         var attr = pthread_mutexattr_t()
         pthread_mutexattr_init(&attr)
@@ -92,14 +92,14 @@ public class SDLock {
         pthread_mutex_init(&_mtx, &attr)
         pthread_mutexattr_destroy(&attr)
     }
-    
+
     deinit {
         pthread_mutex_destroy(&_mtx)
     }
 }
 
 extension SDLock : Lockable {
-    
+
     public func lock() {
         pthread_mutex_lock(&_mtx)
     }
@@ -114,20 +114,20 @@ extension SDLock : Lockable {
 // MARK: Condition
 
 public class SDCondition {
-    
+
     fileprivate var _cond = pthread_cond_t()
-    
+
     public init() {
         pthread_cond_init(&_cond, nil)
     }
-    
+
     deinit {
         pthread_cond_destroy(&_cond)
     }
 }
 
 extension SDCondition {
-    
+
     public func signal() {
         pthread_cond_signal(&_cond)
     }
@@ -137,7 +137,7 @@ extension SDCondition {
 }
 
 extension SDLock {
-    
+
     fileprivate func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
         while !predicate() {
             pthread_cond_wait(&cond._cond, &_mtx)
@@ -158,7 +158,7 @@ extension SDLock {
 }
 
 extension SDLock {
-    
+
     public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
         self.synchronized {
             self._wait(cond, for: predicate)
@@ -173,7 +173,7 @@ extension SDLock {
 }
 
 extension SDLock {
-    
+
     public func lock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
         self.lock()
         self._wait(cond, for: predicate)
@@ -200,7 +200,7 @@ extension SDLock {
 }
 
 extension SDLock {
-    
+
     @inlinable
     @discardableResult
     public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, block: () throws -> R) rethrows -> R {
@@ -208,7 +208,7 @@ extension SDLock {
         defer { self.unlock() }
         return try block()
     }
-    
+
     @inlinable
     @discardableResult
     public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime, block: () throws -> R) rethrows -> R? {
@@ -223,12 +223,12 @@ extension SDLock {
 // MARK: Condition Lock
 
 public class SDConditionLock : SDLock {
-    
+
     fileprivate var cond = SDCondition()
 }
 
 extension SDConditionLock {
-    
+
     public func signal() {
         super.synchronized {
             cond.signal()
@@ -249,7 +249,7 @@ extension SDConditionLock {
 }
 
 extension SDConditionLock {
-    
+
     public func lock(for predicate: @autoclosure () -> Bool) {
         self.lock(cond, for: predicate)
     }
@@ -264,7 +264,7 @@ extension SDConditionLock {
 }
 
 extension SDConditionLock {
-    
+
     @discardableResult
     public func synchronized<R>(for predicate: @autoclosure () -> Bool, block: () throws -> R) rethrows -> R {
         return try self.synchronized(cond, for: predicate, block: block)

@@ -24,21 +24,21 @@
 //
 
 extension Shape {
-    
+
     public enum LineCap {
         case butt
         case round
         case square
     }
-    
+
     public enum LineJoin : Hashable {
         case miter(limit: Double)
         case round
         case bevel
     }
-    
+
     fileprivate struct StrokeBuffer {
-        
+
         enum Segment {
             case line(Point, Point)
             case quad(Point, Point, Point)
@@ -47,27 +47,27 @@ extension Shape {
         var width: Double
         var cap: LineCap
         var join: LineJoin
-        
+
         var path: [Shape.Component] = []
-        
+
         var buffer1: [Shape.Segment] = []
         var buffer2: [Shape.Segment] = []
         var first: Segment?
         var last: Segment?
         var start = Point()
         var reverse_start = Point()
-        
+
         init(width: Double, cap: LineCap, join: LineJoin) {
             self.width = width
             self.cap = cap
             self.join = join
         }
-        
+
     }
 }
 
 extension Shape.StrokeBuffer.Segment {
-    
+
     var isPoint: Bool {
         switch self {
         case let .line(p0, p1):
@@ -84,7 +84,7 @@ extension Shape.StrokeBuffer.Segment {
             return z0.x.almostZero() && z0.y.almostZero() && z1.x.almostZero() && z1.y.almostZero() && z2.x.almostZero() && z2.y.almostZero()
         }
     }
-    
+
     var start: Point {
         switch self {
         case let .line(p, _): return p
@@ -92,7 +92,7 @@ extension Shape.StrokeBuffer.Segment {
         case let .cubic(p, _, _, _): return p
         }
     }
-    
+
     var end: Point {
         switch self {
         case let .line(_, p): return p
@@ -100,7 +100,7 @@ extension Shape.StrokeBuffer.Segment {
         case let .cubic(_, _, _, p): return p
         }
     }
-    
+
     var startDirection: Point {
         switch self {
         case let .line(p0, p1): return p1 - p0
@@ -122,7 +122,7 @@ extension Shape.StrokeBuffer.Segment {
             return z0
         }
     }
-    
+
     var endDirection: Point {
         switch self {
         case let .line(p0, p1): return p1 - p0
@@ -147,9 +147,9 @@ extension Shape.StrokeBuffer.Segment {
 }
 
 extension Shape.StrokeBuffer {
-    
+
     mutating func flush() {
-        
+
         if first != nil {
             var cap_buffer: [Shape.Segment] = []
             switch cap {
@@ -191,21 +191,21 @@ extension Shape.StrokeBuffer {
                     cap_buffer.append(.line(start))
                 }
             }
-            
+
             var component = Shape.Component(start: start, closed: true, segments: buffer1)
             component.append(contentsOf: buffer2.reversed())
             component.append(contentsOf: cap_buffer)
             path.append(component)
-            
+
             buffer1.removeAll(keepingCapacity: true)
             buffer2.removeAll(keepingCapacity: true)
             first = nil
             last = nil
         }
     }
-    
+
     mutating func addJoin(_ segment: Segment) {
-        
+
         let ph0 = last!.endDirection.phase
         let ph1 = segment.startDirection.phase
         let angle = (ph1 - ph0).remainder(dividingBy: 2 * Double.pi)
@@ -228,12 +228,12 @@ extension Shape.StrokeBuffer {
                             let m0 = d0.magnitude
                             let u0 = width * 0.5 * d0.y / m0
                             let v0 = -width * 0.5 * d0.x / m0
-                            
+
                             let d1 = segment.startDirection
                             let m1 = d1.magnitude
                             let u1 = width * 0.5 * d1.y / m1
                             let v1 = -width * 0.5 * d1.x / m1
-                            
+
                             let p0 = last!.end + Point(x: u0, y: v0)
                             let p1 = p0 + Point(x: -v0, y: u0)
                             let q0 = segment.start + Point(x: u1, y: v1)
@@ -256,12 +256,12 @@ extension Shape.StrokeBuffer {
                             let m0 = d0.magnitude
                             let u0 = -width * 0.5 * d0.y / m0
                             let v0 = width * 0.5 * d0.x / m0
-                            
+
                             let d1 = last!.endDirection
                             let m1 = d1.magnitude
                             let u1 = -width * 0.5 * d1.y / m1
                             let v1 = width * 0.5 * d1.x / m1
-                            
+
                             let p0 = segment.start + Point(x: u0, y: v0)
                             let p1 = p0 + Point(x: -v0, y: u0)
                             let q0 = last!.end + Point(x: u1, y: v1)
@@ -306,33 +306,33 @@ extension Shape.StrokeBuffer {
             }
         }
     }
-    
+
     mutating func closePath() {
-        
+
         if first != nil {
             switch join {
             case .bevel: break
             default: self.addJoin(first!)
             }
-            
+
             path.append(Shape.Component(start: start, closed: true, segments: buffer1))
             path.append(Shape.Component(start: reverse_start, closed: true, segments: buffer2.reversed()))
-            
+
             buffer1.removeAll(keepingCapacity: true)
             buffer2.removeAll(keepingCapacity: true)
             first = nil
             last = nil
         }
     }
-    
+
     mutating func addSegment(_ segment: Segment) {
-        
+
         if segment.isPoint {
             return
         }
-        
+
         var flag = false
-        
+
         if first == nil {
             flag = true
             first = segment
@@ -351,7 +351,7 @@ extension Shape.StrokeBuffer {
             }
         }
         last = segment
-        
+
         switch segment {
         case let .line(p0, p1):
             if let (q0, q1) = BezierOffset(p0, p1, width * 0.5) {
@@ -433,13 +433,13 @@ extension Shape.StrokeBuffer {
                 }
             }
         }
-        
+
     }
-    
+
 }
 
 extension Shape {
-    
+
     public func strokePath(width: Double, cap: LineCap, join: LineJoin) -> Shape {
         var buffer = StrokeBuffer(width: width, cap: cap, join: join)
         buffer.path.reserveCapacity(self.count << 1)
@@ -469,5 +469,5 @@ extension Shape {
         }
         return Shape(buffer.path)
     }
-    
+
 }

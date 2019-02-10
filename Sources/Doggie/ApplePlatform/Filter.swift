@@ -26,7 +26,7 @@
 #if canImport(CoreImage) || canImport(QuartzCore)
 
 extension CIFilter {
-    
+
     public subscript(key: String) -> Any? {
         get {
             return self.value(forKey: key)
@@ -35,14 +35,14 @@ extension CIFilter {
             self.setValue(newValue, forKey: key)
         }
     }
-    
+
     public var keys: [String] {
         return self.inputKeys as [String]
     }
 }
 
 extension CIFilter {
-    
+
     public static var EffectInvert: CIFilter {
         let filter = CIFilter(name: "CIColorInvert")!
         filter.setDefaults()
@@ -210,7 +210,7 @@ extension CIFilter {
 }
 
 extension CIImage {
-    
+
     public func applying(_ filter: CIFilter) -> CIImage {
         var parameters: [String: Any] = [:]
         for key in filter.inputKeys {
@@ -221,11 +221,11 @@ extension CIImage {
 }
 
 extension CGImage {
-    
+
     public func applying(_ filter: CIFilter) -> CIImage {
         return CIImage(cgImage: self).applying(filter)
     }
-    
+
     public func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
         return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
     }

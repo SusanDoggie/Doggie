@@ -24,27 +24,27 @@
 //
 
 public struct CMYColorModel : ColorModelProtocol {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Scalar = Double
-    
+
     @_transparent
     public static var numberOfComponents: Int {
         return 3
     }
-    
+
     @inlinable
     @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
     }
-    
+
     public var cyan: Double
     public var magenta: Double
     public var yellow: Double
-    
+
     @inlinable
     @inline(__always)
     public init(cyan: Double, magenta: Double, yellow: Double) {
@@ -52,7 +52,7 @@ public struct CMYColorModel : ColorModelProtocol {
         self.magenta = magenta
         self.yellow = yellow
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Double {
         get {
@@ -75,7 +75,7 @@ public struct CMYColorModel : ColorModelProtocol {
 }
 
 extension CMYColorModel {
-    
+
     @inlinable
     @inline(__always)
     public init() {
@@ -86,21 +86,21 @@ extension CMYColorModel {
 }
 
 extension CMYColorModel {
-    
+
     @inlinable
     public init(_ gray: GrayColorModel) {
         self.cyan = 1 - gray.white
         self.magenta = 1 - gray.white
         self.yellow = 1 - gray.white
     }
-    
+
     @inlinable
     public init(_ rgb: RGBColorModel) {
         self.cyan = 1 - rgb.red
         self.magenta = 1 - rgb.green
         self.yellow = 1 - rgb.blue
     }
-    
+
     @inlinable
     public init(_ cmyk: CMYKColorModel) {
         let _k = 1 - cmyk.black
@@ -111,42 +111,42 @@ extension CMYColorModel {
 }
 
 extension CMYColorModel {
-    
+
     @_transparent
     public static var black: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 1, yellow: 1)
     }
-    
+
     @_transparent
     public static var white: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 0, yellow: 0)
     }
-    
+
     @_transparent
     public static var red: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 1, yellow: 1)
     }
-    
+
     @_transparent
     public static var green: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 0, yellow: 1)
     }
-    
+
     @_transparent
     public static var blue: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 1, yellow: 0)
     }
-    
+
     @_transparent
     public static var cyan: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 0, yellow: 0)
     }
-    
+
     @_transparent
     public static var magenta: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 1, yellow: 0)
     }
-    
+
     @_transparent
     public static var yellow: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 0, yellow: 1)
@@ -154,13 +154,13 @@ extension CMYColorModel {
 }
 
 extension CMYColorModel {
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Double) -> Double) -> CMYColorModel {
         return CMYColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
@@ -170,7 +170,7 @@ extension CMYColorModel {
         updateAccumulatingResult(&accumulator, yellow)
         return accumulator
     }
-    
+
     @inlinable
     @inline(__always)
     public func combined(_ other: CMYColorModel, _ transform: (Double, Double) -> Double) -> CMYColorModel {
@@ -179,9 +179,9 @@ extension CMYColorModel {
 }
 
 extension CMYColorModel {
-    
+
     public typealias Float32Components = FloatComponents<Float>
-    
+
     @inlinable
     @inline(__always)
     public init<T>(floatComponents: FloatComponents<T>) {
@@ -189,7 +189,7 @@ extension CMYColorModel {
         self.magenta = Double(floatComponents.magenta)
         self.yellow = Double(floatComponents.yellow)
     }
-    
+
     @_transparent
     public var float32Components: Float32Components {
         get {
@@ -199,34 +199,34 @@ extension CMYColorModel {
             self = CMYColorModel(floatComponents: newValue)
         }
     }
-    
+
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
-        
+
         public typealias Indices = Range<Int>
-        
+
         @_transparent
         public static var numberOfComponents: Int {
             return 3
         }
-        
+
         public var cyan: Scalar
         public var magenta: Scalar
         public var yellow: Scalar
-        
+
         @inline(__always)
         public init() {
             self.cyan = 0
             self.magenta = 0
             self.yellow = 0
         }
-        
+
         @inline(__always)
         public init(cyan: Scalar, magenta: Scalar, yellow: Scalar) {
             self.cyan = cyan
             self.magenta = magenta
             self.yellow = yellow
         }
-        
+
         @inlinable
         @inline(__always)
         public init(_ color: CMYColorModel) {
@@ -234,7 +234,7 @@ extension CMYColorModel {
             self.magenta = Scalar(color.magenta)
             self.yellow = Scalar(color.yellow)
         }
-        
+
         @inlinable
         @inline(__always)
         public init<T>(floatComponents: FloatComponents<T>) {
@@ -242,7 +242,7 @@ extension CMYColorModel {
             self.magenta = Scalar(floatComponents.magenta)
             self.yellow = Scalar(floatComponents.yellow)
         }
-        
+
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
@@ -266,13 +266,13 @@ extension CMYColorModel {
 }
 
 extension CMYColorModel.FloatComponents {
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> CMYColorModel.FloatComponents<Scalar> {
         return CMYColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
@@ -282,7 +282,7 @@ extension CMYColorModel.FloatComponents {
         updateAccumulatingResult(&accumulator, yellow)
         return accumulator
     }
-    
+
     @inlinable
     @inline(__always)
     public func combined(_ other: CMYColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> CMYColorModel.FloatComponents<Scalar> {

@@ -26,24 +26,24 @@
 @inlinable
 @inline(__always)
 public func LaplacianOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] where T: FloatingMathProtocol {
-    
+
     precondition(sd > 0, "sd is less than or equal to zero.")
-    
+
     let t = 2 * sd * sd
     let c = -1 / (.pi * sd * sd)
     let _t = -1 / t
-    
+
     let s = Int(ceil(6 * sd)) >> 1
-    
+
     var filter: [T] = []
-    
+
     for y in -s...s {
         for x in -s...s {
             let k = _t * T(x * x + y * y)
             filter.append(c * (1 + k) * T.exp(k))
         }
     }
-    
+
     return filter
 }
 

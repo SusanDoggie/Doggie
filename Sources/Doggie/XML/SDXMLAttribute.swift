@@ -24,7 +24,7 @@
 //
 
 public struct SDXMLAttribute : Hashable {
-    
+
     public var attribute: String {
         didSet {
             precondition(attribute.rangeOfCharacter(from: .whitespacesAndNewlines) == nil, "Invalid whitespaces.")
@@ -35,7 +35,7 @@ public struct SDXMLAttribute : Hashable {
             precondition(namespace.rangeOfCharacter(from: .whitespacesAndNewlines) == nil, "Invalid whitespaces.")
         }
     }
-    
+
     public init(attribute: String, namespace: String = "") {
         precondition(attribute.rangeOfCharacter(from: .whitespacesAndNewlines) == nil, "Invalid whitespaces.")
         precondition(namespace.rangeOfCharacter(from: .whitespacesAndNewlines) == nil, "Invalid whitespaces.")
@@ -45,7 +45,7 @@ public struct SDXMLAttribute : Hashable {
 }
 
 extension SDXMLAttribute: ExpressibleByStringLiteral {
-    
+
     public init(stringLiteral value: StringLiteralType) {
         self.init(attribute: value)
     }

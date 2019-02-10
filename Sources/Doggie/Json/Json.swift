@@ -24,13 +24,13 @@
 //
 
 public struct Json {
-    
+
     private let value: Any
-    
+
     private init(value: Any?) {
         self.value = value ?? NSNull()
     }
-    
+
     private static func unwrap(_ value: Any) -> Any? {
         switch value {
         case is NSNull: return nil
@@ -45,7 +45,7 @@ public struct Json {
 }
 
 extension Json {
-    
+
     public init(_ value: Bool) {
         self.value = value
     }
@@ -70,56 +70,56 @@ extension Json {
 }
 
 extension Json: ExpressibleByNilLiteral {
-    
+
     public init(nilLiteral value: Void) {
         self.value = NSNull()
     }
 }
 
 extension Json: ExpressibleByBooleanLiteral {
-    
+
     public init(booleanLiteral value: BooleanLiteralType) {
         self.init(value)
     }
 }
 
 extension Json: ExpressibleByIntegerLiteral {
-    
+
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
     }
 }
 
 extension Json: ExpressibleByFloatLiteral {
-    
+
     public init(floatLiteral value: FloatLiteralType) {
         self.init(value)
     }
 }
 
 extension Json: ExpressibleByStringLiteral {
-    
+
     public init(stringLiteral value: StringLiteralType) {
         self.init(value)
     }
 }
 
 extension Json: ExpressibleByArrayLiteral {
-    
+
     public init(arrayLiteral elements: Json ...) {
         self.init(value: elements.map { Json.unwrap($0) })
     }
 }
 
 extension Json: ExpressibleByDictionaryLiteral {
-    
+
     public init(dictionaryLiteral elements: (String, Json) ...) {
         self.init(value: Json.unwrap(Dictionary(uniqueKeysWithValues: elements)))
     }
 }
 
 extension Json: CustomStringConvertible {
-    
+
     public var description: String {
         switch self.value {
         case is NSNull: return "nil"
@@ -172,26 +172,26 @@ extension Json: CustomStringConvertible {
 }
 
 extension Json {
-    
+
     public static func Parse(data: Data) throws -> Json {
         return Json(value: try JSONSerialization.jsonObject(with: data, options: []))
     }
-    
+
     public static func Parse(stream: InputStream) throws -> Json {
         return Json(value: try JSONSerialization.jsonObject(with: stream, options: []))
     }
 }
 
 extension Json {
-    
+
     public var isNil : Bool {
         return self.value is NSNull
     }
-    
+
     public var isBool : Bool {
         return self.value is Bool
     }
-    
+
     public var isNumber : Bool {
         switch self.value {
         case is NSNumber: return true
@@ -210,22 +210,22 @@ extension Json {
         default: return false
         }
     }
-    
+
     public var isString : Bool {
         return self.value is String
     }
-    
+
     public var isArray : Bool {
         return self.value is [Any]
     }
-    
+
     public var isObject : Bool {
         return self.value is [String:Any]
     }
 }
 
 extension Json {
-    
+
     private var numberValue: NSNumber? {
         switch value {
         case let number as NSNumber: return number
@@ -247,51 +247,51 @@ extension Json {
     public var boolValue: Bool? {
         return value as? Bool
     }
-    
+
     public var int8Value: Int8? {
         return self.numberValue?.int8Value
     }
-    
+
     public var uint8Value: UInt8? {
         return self.numberValue?.uint8Value
     }
-    
+
     public var int16Value: Int16? {
         return self.numberValue?.int16Value
     }
-    
+
     public var uint16Value: UInt16? {
         return self.numberValue?.uint16Value
     }
-    
+
     public var int32Value: Int32? {
         return self.numberValue?.int32Value
     }
-    
+
     public var uint32Value: UInt32? {
         return self.numberValue?.uint32Value
     }
-    
+
     public var int64Value: Int64? {
         return self.numberValue?.int64Value
     }
-    
+
     public var uint64Value: UInt64? {
         return self.numberValue?.uint64Value
     }
-    
+
     public var floatValue: Float? {
         return self.numberValue?.floatValue
     }
-    
+
     public var doubleValue: Double? {
         return self.numberValue?.doubleValue
     }
-    
+
     public var intValue: Int? {
         return self.numberValue?.intValue
     }
-    
+
     public var uintValue: UInt? {
         return self.numberValue?.uintValue
     }
@@ -316,7 +316,7 @@ extension Json {
 }
 
 extension Json {
-    
+
     public var count: Int {
         switch self.value {
         case let array as [Any]: return array.count
@@ -324,7 +324,7 @@ extension Json {
         default: fatalError("Not an array or object.")
         }
     }
-    
+
     public subscript(index: Int) -> Json {
         get {
             if case let array as [Any] = self.value {
@@ -345,14 +345,14 @@ extension Json {
             }
         }
     }
-    
+
     public var keys: Dictionary<String, Any>.Keys {
         switch self.value {
         case let dictionary as [String: Any]: return dictionary.keys
         default: fatalError("Not an object.")
         }
     }
-    
+
     public subscript(key: String) -> Json {
         get {
             if case let dictionary as [String: Any] = self.value {
@@ -375,7 +375,7 @@ extension Json {
 }
 
 extension Json {
-    
+
     public func data(prettyPrinted: Bool = false) -> Data? {
         if JSONSerialization.isValidJSONObject(self.value) {
             return try? JSONSerialization.data(withJSONObject: self.value, options: prettyPrinted ? [.prettyPrinted] : [])

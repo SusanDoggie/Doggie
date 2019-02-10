@@ -24,11 +24,11 @@
 //
 
 extension iccProfile {
-    
+
     struct Header : ByteCodable {
-        
+
         static let MagicNumber: Signature<BEUInt32> = "acsp"
-        
+
         var size: BEUInt32                                                     /* Profile size in bytes */
         var cmmId: Signature<BEUInt32>                                         /* CMM for this profile */
         var version: BEUInt32                                                  /* Format version number */
@@ -47,7 +47,7 @@ extension iccProfile {
         var creator: Signature<BEUInt32>                                       /* Profile creator */
         var profileID: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Profile ID using RFC 1321 MD5 128bit fingerprinting */
         var reserved: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Reserved for future use */
-        
+
         init(cmmId: Signature<BEUInt32>,
              version: BEUInt32,
              deviceClass: ClassSignature,
@@ -62,7 +62,7 @@ extension iccProfile {
              renderingIntent: BEUInt32,
              illuminant: iccXYZNumber,
              creator: Signature<BEUInt32>) {
-            
+
             self.size = 0
             self.cmmId = cmmId
             self.version = version
@@ -82,7 +82,7 @@ extension iccProfile {
             self.profileID = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
             self.reserved = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         }
-        
+
         init(from data: inout Data) throws {
             self.size = try data.decode(BEUInt32.self)
             self.cmmId = try data.decode(Signature.self)
@@ -112,7 +112,7 @@ extension iccProfile {
                              try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
                              try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
         }
-        
+
         func write<Target: ByteOutputStream>(to stream: inout Target) {
             stream.encode(size)
             stream.encode(cmmId)
@@ -179,15 +179,15 @@ extension iccProfile {
 }
 
 extension iccProfile.Header {
-    
+
     struct ClassSignature: SignatureProtocol {
-        
+
         var rawValue: BEUInt32
-        
+
         init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
-        
+
         static let input: ClassSignature                     = "scnr"
         static let display: ClassSignature                   = "mntr"
         static let output: ClassSignature                    = "prtr"
@@ -196,15 +196,15 @@ extension iccProfile.Header {
         static let colorSpace: ClassSignature                = "spac"
         static let namedColor: ClassSignature                = "nmcl"
     }
-    
+
     struct ColorSpaceSignature: SignatureProtocol {
-        
+
         var rawValue: BEUInt32
-        
+
         init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
-        
+
         static let XYZ: ColorSpaceSignature                        = "XYZ "
         static let Lab: ColorSpaceSignature                        = "Lab "
         static let Luv: ColorSpaceSignature                        = "Luv "
@@ -216,9 +216,9 @@ extension iccProfile.Header {
         static let Hls: ColorSpaceSignature                        = "HLS "
         static let Cmyk: ColorSpaceSignature                       = "CMYK"
         static let Cmy: ColorSpaceSignature                        = "CMY "
-        
+
         static let Named: ColorSpaceSignature                      = "nmcl"
-        
+
         static let color2: ColorSpaceSignature                     = "2CLR"
         static let color3: ColorSpaceSignature                     = "3CLR"
         static let color4: ColorSpaceSignature                     = "4CLR"
@@ -237,15 +237,15 @@ extension iccProfile.Header {
 }
 
 extension iccProfile {
-    
+
     struct TagSignature : SignatureProtocol {
-        
+
         var rawValue: BEUInt32
-        
+
         init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
-        
+
         static let AToB0: TagSignature                                = "A2B0"
         static let AToB1: TagSignature                                = "A2B1"
         static let AToB2: TagSignature                                = "A2B2"
@@ -315,15 +315,15 @@ extension iccProfile {
 }
 
 extension iccProfile {
-    
+
     struct TagType : SignatureProtocol {
-        
+
         var rawValue: BEUInt32
-        
+
         init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
-        
+
         static let chromaticity: TagType               = "chrm"
         static let colorantOrder: TagType              = "clro"
         static let colorantTable: TagType              = "clrt"

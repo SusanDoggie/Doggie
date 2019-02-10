@@ -27,9 +27,9 @@ import Doggie
 import XCTest
 
 class XMLTest: XCTestCase {
-    
+
     func testXMLA() {
-        
+
         let xmlString = """
         <?xml version="1.0" encoding="utf-8" standalone="yes"?>
         <D:propfind xmlns:D="DAV:">
@@ -41,40 +41,40 @@ class XMLTest: XCTestCase {
             </D:prop>
         </D:propfind>
         """
-        
+
         do {
-            
+
             let doc = try SDXMLDocument(xml: xmlString)
-            
+
             XCTAssertEqual(doc.count, 1)
-            
+
             XCTAssertEqual(doc[0].name, "propfind")
             XCTAssertEqual(doc[0].namespace, "DAV:")
             XCTAssertEqual(doc[0].count, 1)
-            
+
             XCTAssertEqual(doc[0][0].name, "prop")
             XCTAssertEqual(doc[0][0].namespace, "DAV:")
             XCTAssertEqual(doc[0][0].count, 4)
-            
+
             XCTAssertEqual(doc[0][0][0].name, "getlastmodified")
             XCTAssertEqual(doc[0][0][0].namespace, "DAV:")
             XCTAssertEqual(doc[0][0][0].count, 0)
-            
+
             XCTAssertEqual(doc[0][0][1].name, "getcontentlength")
             XCTAssertEqual(doc[0][0][1].namespace, "DAV:")
             XCTAssertEqual(doc[0][0][1].count, 0)
-            
+
             XCTAssertEqual(doc[0][0][2].name, "creationdate")
             XCTAssertEqual(doc[0][0][2].namespace, "DAV:")
             XCTAssertEqual(doc[0][0][2].count, 0)
-            
+
             XCTAssertEqual(doc[0][0][3].name, "resourcetype")
             XCTAssertEqual(doc[0][0][3].namespace, "DAV:")
             XCTAssertEqual(doc[0][0][3].count, 0)
-            
+
         } catch let error {
             XCTFail("XML parser error: \(error)")
         }
     }
-    
+
 }

@@ -24,7 +24,7 @@
 //
 
 extension DispatchQueue {
-    
+
     @inlinable
     @inline(__always)
     public class func concurrentPerform(iterations: Int, threads: Int, execute work: (Int) -> Void) {
@@ -33,7 +33,7 @@ extension DispatchQueue {
 }
 
 extension RandomAccessCollection {
-    
+
     /// Call `body` on each element in `self` in parallel
     ///
     /// - Note: You cannot use the `break` or `continue` statement to exit the
@@ -46,13 +46,13 @@ extension RandomAccessCollection {
     public func parallelEach(body: (Element) -> ()) {
         DispatchQueue.concurrentPerform(iterations: self.count) { body(self[self.index(startIndex, offsetBy: $0)]) }
     }
-    
+
     @inlinable
     @inline(__always)
     public func parallelEach(threads: Int, body: (Element) -> ()) {
         DispatchQueue.concurrentPerform(iterations: self.count, threads: threads) { body(self[self.index(startIndex, offsetBy: $0)]) }
     }
-    
+
     /// Returns an array containing the results of mapping the given closure
     /// over the sequence's elements. The elements of the result are computed
     /// in parallel.
@@ -83,7 +83,7 @@ extension RandomAccessCollection {
         buffer.deallocate()
         return Array(result)
     }
-    
+
     @inlinable
     public func parallelMap<T>(threads: Int, _ transform: (Element) -> T) -> [T] {
         let count = self.count

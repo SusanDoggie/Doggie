@@ -36,20 +36,20 @@ public func synchronized<R>(object: AnyObject, block: () throws -> R) rethrows -
 }
 
 private class _ValueBindingTableValue {
-    
+
     let observer: NSKeyValueObservation
-    
+
     init(observer: NSKeyValueObservation) {
         self.observer = observer
     }
-    
+
     deinit {
         observer.invalidate()
     }
 }
 
 extension WeakDictionary where Key == AnyObject, Value == [AnyKeyPath: _ValueBindingTableValue] {
-    
+
     fileprivate subscript(target: AnyObject, keyPath: AnyKeyPath) -> _ValueBindingTableValue? {
         get {
             return self[target]?[keyPath]
@@ -63,7 +63,7 @@ extension WeakDictionary where Key == AnyObject, Value == [AnyKeyPath: _ValueBin
 private var NSObjectValueBindingKey = "NSObjectValueBindingKey"
 
 extension NSObjectProtocol where Self: NSObject {
-    
+
     private var _observers: WeakDictionary<AnyObject, [AnyKeyPath: _ValueBindingTableValue]> {
         get {
             return objc_getAssociatedObject(self, &NSObjectValueBindingKey) as? WeakDictionary ?? WeakDictionary()
@@ -72,7 +72,7 @@ extension NSObjectProtocol where Self: NSObject {
             objc_setAssociatedObject(self, &NSObjectValueBindingKey, newValue, .OBJC_ASSOCIATION_RETAIN)
         }
     }
-    
+
     public func bindValue<Value, Target: AnyObject>(_ sourceKeyPath: KeyPath<Self, Value>,
                                                     to target: Target,
                                                     at targetKeyPath: ReferenceWritableKeyPath<Target, Value>)
@@ -81,7 +81,7 @@ extension NSObjectProtocol where Self: NSObject {
             guard let newValue = change.newValue else { return }
             target?[keyPath: targetKeyPath] = newValue
         }
-        
+
         synchronized(object: self) { _observers[target, targetKeyPath] = _ValueBindingTableValue(observer: observer) }
     }
 }

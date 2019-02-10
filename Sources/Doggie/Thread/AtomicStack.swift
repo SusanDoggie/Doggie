@@ -24,27 +24,27 @@
 //
 
 private class AtomicStackContainerBox<Instance> {
-    
+
     var base: AtomicStackContainer<Instance>!
-    
+
     init(base: AtomicStackContainer<Instance>! = nil) {
         self.base = base
     }
 }
 private struct AtomicStackContainer<Instance> {
-    
+
     let next: AtomicStackContainerBox<Instance>?
     let value: Instance
 }
 
 open class AtomicStack<Instance> {
-    
+
     private var head: Atomic<AtomicStackContainer<Instance>?>
-    
+
     public init() {
         self.head = Atomic(value: nil)
     }
-    
+
     public func push(_ newElement: Instance) {
         let box = AtomicStackContainerBox<Instance>()
         head.fetchStore {
@@ -56,7 +56,7 @@ open class AtomicStack<Instance> {
             }
         }
     }
-    
+
     public func next() -> Instance? {
         return head.fetchStore { $0?.next?.base }?.value
     }

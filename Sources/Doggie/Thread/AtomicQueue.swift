@@ -24,10 +24,10 @@
 //
 
 private class AtomicQueueContainer<Instance> {
-    
+
     var next: Atomic<AtomicQueueContainer<Instance>?>
     var value: Instance?
-    
+
     init(next: AtomicQueueContainer<Instance>? = nil, value: Instance? = nil) {
         self.next = Atomic(value: next)
         self.value = value
@@ -35,16 +35,16 @@ private class AtomicQueueContainer<Instance> {
 }
 
 open class AtomicQueue<Instance> {
-    
+
     private var head: Atomic<AtomicQueueContainer<Instance>>
     private var tail: AtomicQueueContainer<Instance>
-    
+
     public init() {
         let telomere = AtomicQueueContainer<Instance>()
         self.head = Atomic(value: telomere)
         self.tail = telomere
     }
-    
+
     public func push(_ newElement: Instance) {
         let new = AtomicQueueContainer(next: nil, value: newElement)
         var cachedTail = tail
@@ -58,7 +58,7 @@ open class AtomicQueue<Instance> {
             }
         }
     }
-    
+
     public func next() -> Instance? {
         while true {
             let _head = head.fetchSelf()

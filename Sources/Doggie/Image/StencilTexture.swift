@@ -24,22 +24,22 @@
 //
 
 public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: ScalarProtocol, T.Scalar: FloatingMathProtocol {
-    
+
     public typealias RawPixel = T
-    
+
     public typealias Pixel = T
-    
+
     public let width: Int
-    
+
     public let height: Int
-    
+
     public private(set) var pixels: MappedBuffer<T>
-    
+
     public var resamplingAlgorithm: ResamplingAlgorithm
-    
+
     public var horizontalWrappingMode: WrappingMode = .none
     public var verticalWrappingMode: WrappingMode = .none
-    
+
     @inlinable
     @inline(__always)
     init(width: Int, height: Int, pixels: MappedBuffer<T>, resamplingAlgorithm: ResamplingAlgorithm) {
@@ -51,7 +51,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
         self.pixels = pixels
         self.resamplingAlgorithm = resamplingAlgorithm
     }
-    
+
     @inlinable
     @inline(__always)
     public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: T = 0, fileBacked: Bool = false) {
@@ -62,7 +62,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
         self.pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
         self.resamplingAlgorithm = resamplingAlgorithm
     }
-    
+
     @inlinable
     @inline(__always)
     public init<P>(texture: Texture<P>) {
@@ -76,7 +76,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
 }
 
 extension StencilTexture {
-    
+
     @inlinable
     @inline(__always)
     public init<P>(image: Image<P>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
@@ -85,7 +85,7 @@ extension StencilTexture {
 }
 
 extension StencilTexture : CustomStringConvertible {
-    
+
     @inlinable
     public var description: String {
         return "StencilTexture(width: \(width), height: \(height))"
@@ -93,7 +93,7 @@ extension StencilTexture : CustomStringConvertible {
 }
 
 extension StencilTexture {
-    
+
     @inlinable
     public var numberOfComponents: Int {
         return 1
@@ -101,7 +101,7 @@ extension StencilTexture {
 }
 
 extension StencilTexture {
-    
+
     @inlinable
     public var fileBacked: Bool {
         get {
@@ -111,17 +111,17 @@ extension StencilTexture {
             pixels.fileBacked = newValue
         }
     }
-    
+
     @inlinable
     public func setMemoryAdvise(_ advise: MemoryAdvise) {
         pixels.setMemoryAdvise(advise)
     }
-    
+
     @inlinable
     public func memoryLock() {
         pixels.memoryLock()
     }
-    
+
     @inlinable
     public func memoryUnlock() {
         pixels.memoryUnlock()
@@ -129,51 +129,51 @@ extension StencilTexture {
 }
 
 extension StencilTexture {
-    
+
     @inlinable
     @inline(__always)
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
-        
+
         return try pixels.withUnsafeBufferPointer(body)
     }
-    
+
     @inlinable
     @inline(__always)
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
-        
+
         return try pixels.withUnsafeMutableBufferPointer(body)
     }
-    
+
     @inlinable
     @inline(__always)
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
-        
+
         return try pixels.withUnsafeBytes(body)
     }
-    
+
     @inlinable
     @inline(__always)
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
-        
+
         return try pixels.withUnsafeMutableBytes(body)
     }
 }
 
 extension StencilTexture: _TextureProtocolImplement {
-    
+
 }
 
 extension StencilTexture: _ResamplingImplement {
-    
+
     @inlinable
     @inline(__always)
     func read_source(_ x: Int, _ y: Int) -> T {
-        
+
         guard width != 0 && height != 0 else { return 0 }
-        
+
         let (x_flag, _x) = horizontalWrappingMode.addressing(x, width)
         let (y_flag, _y) = verticalWrappingMode.addressing(y, height)
-        
+
         let pixel = pixels[_y * width + _x]
         return x_flag && y_flag ? pixel : 0
     }

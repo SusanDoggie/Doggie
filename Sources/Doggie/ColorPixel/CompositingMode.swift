@@ -24,33 +24,33 @@
 //
 
 public enum ColorCompositingMode {
-    
+
     case clear /* R = 0 */
-    
+
     case copy /* R = S */
-    
+
     case sourceOver /* R = S + D * (1 - Sa) */
-    
+
     case sourceIn /* R = S * Da */
-    
+
     case sourceOut /* R = S * (1 - Da) */
-    
+
     case sourceAtop /* R = S * Da + D * (1 - Sa) */
-    
+
     case destinationOver /* R = S * (1 - Da) + D */
-    
+
     case destinationIn /* R = D * Sa */
-    
+
     case destinationOut /* R = D * (1 - Sa) */
-    
+
     case destinationAtop /* R = S * (1 - Da) + D * Sa */
-    
+
     case xor /* R = S * (1 - Da) + D * (1 - Sa) */
-    
+
 }
 
 extension ColorCompositingMode {
-    
+
     @inlinable
     public static var `default` : ColorCompositingMode {
         return .sourceOver
@@ -58,11 +58,11 @@ extension ColorCompositingMode {
 }
 
 extension ColorCompositingMode {
-    
+
     @inlinable
     @inline(__always)
     func mix<T : ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
-        
+
         switch self {
         case .clear: return .zero
         case .copy: return source
@@ -83,20 +83,20 @@ extension ColorCompositingMode {
 }
 
 extension ColorPixelProtocol {
-    
+
     @inlinable
     @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model {
-        
+
         switch compositingMode {
         case .clear: return Self()
         default:
-            
+
             let d_alpha = self.opacity
             let s_alpha = source.opacity
-            
+
             let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-            
+
             if r_alpha > 0 {
                 let _source = source.color
                 let _destination = self.color
@@ -107,21 +107,21 @@ extension ColorPixelProtocol {
             }
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
-        
+
         switch (compositingMode, blendMode) {
         case (.clear, _): return Self()
         case (.copy, .normal): return Self(source)
         default:
-            
+
             let d_alpha = self.opacity
             let s_alpha = source.opacity
-            
+
             let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-            
+
             if r_alpha > 0 {
                 let _source = source.color
                 let _destination = self.color
@@ -135,40 +135,40 @@ extension ColorPixelProtocol {
 }
 
 extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
-    
+
     @inlinable
     @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Double, Double) -> Double) -> Self where C.Model == Model {
         return _blended(source: source, compositingMode: compositingMode, blending: { Scalar(blending(Double($0), Double($1))) })
     }
-    
+
     @inlinable
     @inline(__always)
     public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blending: (Scalar, Scalar) -> Scalar) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blending: blending)
     }
-    
+
     @inlinable
     @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Scalar, Scalar) -> Scalar) -> Self where C.Model == Model {
         return self._blended(source: source, compositingMode: compositingMode, blending: blending)
     }
-    
+
     @inlinable
     @inline(__always)
     func _blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blending: (Scalar, Scalar) -> Scalar) -> Self where C.Model == Model {
-        
+
         switch compositingMode {
         case .clear: return Self()
         default:
-            
+
             let source = Self(source)
-            
+
             let d_alpha = self._opacity
             let s_alpha = source._opacity
-            
+
             let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-            
+
             if r_alpha > 0 {
                 let _source = source._color
                 let _destination = self._color
@@ -179,29 +179,29 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
             }
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
         return _blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
-    
+
     @inlinable
     @inline(__always)
     func _blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self where C.Model == Model {
-        
+
         switch (compositingMode, blendMode) {
         case (.clear, _): return Self()
         case (.copy, .normal): return Self(source)
         default:
-            
+
             let source = Self(source)
-            
+
             let d_alpha = self._opacity
             let s_alpha = source._opacity
-            
+
             let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-            
+
             if r_alpha > 0 {
                 let _source = source._color
                 let _destination = self._color

@@ -28,16 +28,16 @@
 import AppKit
 
 extension NSImage {
-    
+
     public convenience init(cgImage image: CGImage) {
         self.init(cgImage: image, size: NSZeroSize)
     }
-    
+
     @available(OSX 10.11, *)
     public convenience init(ciImage image: CoreImage.CIImage) {
         self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
     }
-    
+
     public var cgImage: CGImage? {
         return cgImage(forProposedRect: nil, context: nil, hints: nil)
     }
@@ -50,7 +50,7 @@ extension NSImage {
 }
 
 extension NSImage {
-    
+
     public func fileBacked() -> NSImage? {
         guard let cgImage = self.cgImage?.fileBacked() else { return nil }
         return NSImage(cgImage: cgImage)

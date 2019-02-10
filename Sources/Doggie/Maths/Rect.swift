@@ -24,17 +24,17 @@
 //
 
 public struct Size: Hashable {
-    
+
     public var width: Double
     public var height: Double
-    
+
     @inlinable
     @inline(__always)
     public init() {
         self.width = 0
         self.height = 0
     }
-    
+
     @inlinable
     @inline(__always)
     public init(width: Double, height: Double) {
@@ -50,7 +50,7 @@ public struct Size: Hashable {
 }
 
 extension Size: CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return "Size(width: \(width), height: \(height))"
@@ -58,7 +58,7 @@ extension Size: CustomStringConvertible {
 }
 
 extension Size : Codable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -66,7 +66,7 @@ extension Size : Codable {
         self.width = try container.decode(Double.self)
         self.height = try container.decode(Double.self)
     }
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -77,7 +77,7 @@ extension Size : Codable {
 }
 
 extension Size {
-    
+
     @inlinable
     @inline(__always)
     public func aspectFit(_ bound: Size) -> Size {
@@ -89,7 +89,7 @@ extension Size {
             return Size(width: bound.width, height: v / width)
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public func aspectFill(_ bound: Size) -> Size {
@@ -104,9 +104,9 @@ extension Size {
 }
 
 extension Size : ScalarMultiplicative {
-    
+
     public typealias Scalar = Double
-    
+
     @_transparent
     public static var zero: Size {
         return Size()
@@ -177,31 +177,31 @@ public func -= (lhs: inout Size, rhs: Size) {
 }
 
 public struct Rect: Hashable {
-    
+
     public var origin : Point
     public var size : Size
-    
+
     @inlinable
     @inline(__always)
     public init() {
         self.origin = Point()
         self.size = Size()
     }
-    
+
     @inlinable
     @inline(__always)
     public init(origin: Point, size: Size) {
         self.origin = origin
         self.size = size
     }
-    
+
     @inlinable
     @inline(__always)
     public init(x: Double, y: Double, width: Double, height: Double) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
-    
+
     @inlinable
     @inline(__always)
     public init(x: Int, y: Int, width: Int, height: Int) {
@@ -211,7 +211,7 @@ public struct Rect: Hashable {
 }
 
 extension Rect: CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return "Rect(x: \(x), y: \(y), width: \(width), height: \(height))"
@@ -219,7 +219,7 @@ extension Rect: CustomStringConvertible {
 }
 
 extension Rect : Codable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -227,7 +227,7 @@ extension Rect : Codable {
         self.origin = try container.decode(Point.self)
         self.size = try container.decode(Size.self)
     }
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -238,7 +238,7 @@ extension Rect : Codable {
 }
 
 extension Rect {
-    
+
     @_transparent
     public var x : Double {
         get {
@@ -248,7 +248,7 @@ extension Rect {
             origin.x = newValue
         }
     }
-    
+
     @_transparent
     public var y : Double {
         get {
@@ -258,7 +258,7 @@ extension Rect {
             origin.y = newValue
         }
     }
-    
+
     @_transparent
     public var width : Double {
         get {
@@ -268,7 +268,7 @@ extension Rect {
             size.width = newValue
         }
     }
-    
+
     @_transparent
     public var height : Double {
         get {
@@ -281,7 +281,7 @@ extension Rect {
 }
 
 extension Rect {
-    
+
     @_transparent
     public var minX : Double {
         return width < 0 ? x + width : x
@@ -329,7 +329,7 @@ extension Rect {
 }
 
 extension Rect {
-    
+
     @_transparent
     public var standardized: Rect {
         return Rect(x: minX, y: minY, width: abs(width), height: abs(height))
@@ -337,7 +337,7 @@ extension Rect {
 }
 
 extension Rect {
-    
+
     @inlinable
     @inline(__always)
     public func aspectFit(bound: Rect) -> Rect {
@@ -345,7 +345,7 @@ extension Rect {
         rect.center = bound.center
         return rect
     }
-    
+
     @inlinable
     @inline(__always)
     public func aspectFill(bound: Rect) -> Rect {
@@ -356,7 +356,7 @@ extension Rect {
 }
 
 extension Rect {
-    
+
     @_transparent
     public var points : [Point] {
         let minX = self.minX
@@ -369,16 +369,16 @@ extension Rect {
         let d = Point(x: minX, y: minY)
         return [a, b, c, d]
     }
-    
+
     @inlinable
     @inline(__always)
     public static func bound<S : Sequence>(_ points: S) -> Rect where S.Element == Point {
-        
+
         var minX = 0.0
         var maxX = 0.0
         var minY = 0.0
         var maxY = 0.0
-        
+
         for (i, p) in points.enumerated() {
             if i == 0 {
                 minX = p.x
@@ -397,7 +397,7 @@ extension Rect {
 }
 
 extension Rect {
-    
+
     @inlinable
     @inline(__always)
     public func union(_ other : Rect) -> Rect {
@@ -453,41 +453,41 @@ extension Rect {
 }
 
 extension Rect {
-    
+
     @inlinable
     @inline(__always)
     public func apply(_ transform: SDTransform) -> Rect? {
-        
+
         let minX = self.minX
         let maxX = self.maxX
         let minY = self.minY
         let maxY = self.maxY
-        
+
         let a = Point(x: maxX, y: minY) * transform
         let b = Point(x: maxX, y: maxY) * transform
         let c = Point(x: minX, y: maxY) * transform
         let d = Point(x: minX, y: minY) * transform
-        
+
         if a.x == b.x && c.x == d.x && b.y == c.y && d.y == a.y {
-            
+
             let minX = min(a.x, c.x)
             let maxX = max(a.x, c.x)
             let minY = min(a.y, c.y)
             let maxY = max(a.y, c.y)
-            
+
             return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
         }
-        
+
         if b.x == c.x && d.x == a.x && a.y == b.y && c.y == d.y {
-            
+
             let minX = min(a.x, c.x)
             let maxX = max(a.x, c.x)
             let minY = min(a.y, c.y)
             let maxY = max(a.y, c.y)
-            
+
             return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
         }
-        
+
         return nil
     }
 }

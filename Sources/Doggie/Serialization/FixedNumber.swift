@@ -24,17 +24,17 @@
 //
 
 struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
-    
+
     typealias RepresentingValue = Double
-    
+
     var bitPattern: BitPattern
-    
+
     @inlinable
     @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
-    
+
     @_transparent
     static var fractionBitCount: Int {
         return 8
@@ -42,21 +42,21 @@ struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedP
 }
 
 extension Fixed8Number : SignedNumeric where BitPattern : SignedNumeric {
-    
+
 }
 
 struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
-    
+
     typealias RepresentingValue = Double
-    
+
     var bitPattern: BitPattern
-    
+
     @inlinable
     @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
-    
+
     @_transparent
     static var fractionBitCount: Int {
         return 14
@@ -64,21 +64,21 @@ struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
 }
 
 extension Fixed14Number : SignedNumeric where BitPattern : SignedNumeric {
-    
+
 }
 
 struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
-    
+
     typealias RepresentingValue = Double
-    
+
     var bitPattern: BitPattern
-    
+
     @inlinable
     @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
-    
+
     @_transparent
     static var fractionBitCount: Int {
         return 16
@@ -86,21 +86,21 @@ struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
 }
 
 extension Fixed16Number : SignedNumeric where BitPattern : SignedNumeric {
-    
+
 }
 
 struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
-    
+
     typealias RepresentingValue = Double
-    
+
     var bitPattern: BitPattern
-    
+
     @inlinable
     @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
-    
+
     @_transparent
     static var fractionBitCount: Int {
         return 30
@@ -108,6 +108,6 @@ struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
 }
 
 extension Fixed30Number : SignedNumeric where BitPattern : SignedNumeric {
-    
+
 }
 

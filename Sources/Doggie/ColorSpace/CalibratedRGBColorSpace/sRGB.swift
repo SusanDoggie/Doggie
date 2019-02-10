@@ -26,15 +26,15 @@
 @_fixed_layout
 @usableFromInline
 class _sRGB: CalibratedRGBColorSpace {
-    
+
     @inlinable
     init() {
         super.init(CIEXYZColorSpace(white: _D65), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600))
     }
-    
+
     @inlinable
     override func convertToLinear(_ color: RGBColorModel) -> RGBColorModel {
-        
+
         func toLinear(_ x: Double) -> Double {
             if x > 0.04045 {
                 return pow((x + 0.055) / 1.055, 2.4)
@@ -43,10 +43,10 @@ class _sRGB: CalibratedRGBColorSpace {
         }
         return RGBColorModel(red: exteneded(color.red, toLinear), green: exteneded(color.green, toLinear), blue: exteneded(color.blue, toLinear))
     }
-    
+
     @inlinable
     override func convertFromLinear(_ color: RGBColorModel) -> RGBColorModel {
-        
+
         func toGamma(_ x: Double) -> Double {
             if x > 0.0031308 {
                 return 1.055 * pow(x, 1 / 2.4) - 0.055
@@ -55,22 +55,22 @@ class _sRGB: CalibratedRGBColorSpace {
         }
         return RGBColorModel(red: exteneded(color.red, toGamma), green: exteneded(color.green, toGamma), blue: exteneded(color.blue, toGamma))
     }
-    
+
     @inlinable
     override func iccCurve(_ index: Int) -> iccCurve {
         return .parametric3(2.4, 1 / 1.055, 0.055 / 1.055, 1 / 12.92, 0.04045)
     }
-    
+
     @inlinable
     override var localizedName: String? {
         return "Doggie Calibrated RGB Color Space (sRGB)"
     }
-    
+
     @inlinable
     override func __equalTo(_ other: CalibratedRGBColorSpace) -> Bool {
         return type(of: other) == _sRGB.self
     }
-    
+
     @inlinable
     override func hash(into hasher: inout Hasher) {
         hasher.combine("CalibratedRGBColorSpace")
@@ -79,6 +79,6 @@ class _sRGB: CalibratedRGBColorSpace {
 }
 
 extension ColorSpace where Model == RGBColorModel {
-    
+
     public static let sRGB = ColorSpace(base: _sRGB())
 }

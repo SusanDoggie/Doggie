@@ -24,9 +24,9 @@
 //
 
 open class Actor<Message> : Trigger {
-    
+
     private let messages: AtomicQueue<(Actor) -> Void>
-    
+
     public init(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) {
         self.messages = AtomicQueue()
         super.init(queue: queue, qos: qos, flags: flags) {
@@ -36,19 +36,19 @@ open class Actor<Message> : Trigger {
             }
         }
     }
-    
+
     open func callback(_ message: Message) {
-        
+
     }
 }
 
 extension Actor {
-    
+
     public func send(_ message: Message) {
         messages.push { $0.callback(message) }
         self.signal()
     }
-    
+
     public func send<OtherMessage>(to other: Actor<OtherMessage>, callback: @escaping (Actor<Message>) -> OtherMessage) {
         messages.push { other.send(callback($0)) }
         self.signal()

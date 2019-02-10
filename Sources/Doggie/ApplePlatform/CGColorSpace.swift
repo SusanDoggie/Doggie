@@ -28,17 +28,17 @@
 fileprivate let ColorSpaceCacheCGColorSpaceKey = "ColorSpaceCacheCGColorSpaceKey"
 
 extension ColorSpace {
-    
+
     public var cgColorSpace : CGColorSpace? {
-        
+
         return self.cache[ColorSpaceCacheCGColorSpaceKey] {
-            
+
             if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-                
+
                 return self.iccData.map { CGColorSpace(iccData: $0 as CFData) }
-                
+
             } else {
-                
+
                 return self.iccData.flatMap { CGColorSpace(iccProfileData: $0 as CFData) }
             }
         }
@@ -46,35 +46,35 @@ extension ColorSpace {
 }
 
 extension AnyColorSpace {
-    
+
     public init?(cgColorSpace: CGColorSpace) {
-        
+
         if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-            
+
             guard let iccData = cgColorSpace.copyICCData() as Data? else { return nil }
-            
+
             try? self.init(iccData: iccData)
-            
+
         } else {
-            
+
             guard let iccData = cgColorSpace.iccData as Data? else { return nil }
-            
+
             try? self.init(iccData: iccData)
         }
     }
 }
 
 protocol CGColorSpaceConvertibleProtocol {
-    
+
     var cgColorSpace: CGColorSpace? { get }
 }
 
 extension ColorSpace : CGColorSpaceConvertibleProtocol {
-    
+
 }
 
 extension AnyColorSpace {
-    
+
     public var cgColorSpace: CGColorSpace? {
         if let base = _base as? CGColorSpaceConvertibleProtocol {
             return base.cgColorSpace

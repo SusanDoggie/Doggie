@@ -24,68 +24,68 @@
 //
 
 extension ImageContext {
-    
+
     @inlinable
     @inline(__always)
     func draw(shape: Shape, color: Float64ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
-        
+
         if shape.reduce(0, { $0 + $1.count }) == 0 {
             return
         }
-        
+
         let width = self.width
         let height = self.height
         let transform = shape.transform * self.transform
         let shouldAntialias = self.shouldAntialias
         let antialias = self.antialias
-        
+
         if width == 0 || height == 0 || transform.determinant.almostZero() {
             return
         }
-        
+
         let (bound, stencil) = self._stencil(shape: shape)
-        
+
         let _min_x = max(0, Int(floor(bound.minX)))
         let _min_y = max(0, Int(floor(bound.minY)))
         let _max_x = min(width, Int(ceil(bound.maxX)))
         let _max_y = min(height, Int(ceil(bound.maxY)))
-        
+
         guard _max_x > _min_x && _max_y > _min_y else { return }
-        
+
         if shouldAntialias && antialias > 1 {
-            
+
             stencil.withUnsafeBufferPointer { stencil in
-                
+
                 guard var _stencil = stencil.baseAddress else { return }
-                
+
                 if isShadow {
-                    
+
                     var buf = MappedBuffer<Float>(repeating: 0, count: width * height, fileBacked: image.fileBacked)
-                    
+
                     buf.withUnsafeMutableBufferPointer {
-                        
+
                         guard var buf = $0.baseAddress else { return }
-                        
+
                         let _stencil_width = antialias * width
                         let _stencil_width2 = antialias * _stencil_width
-                        
+
                         buf += _min_x + _min_y * width
                         _stencil += antialias * _min_x + _min_y * _stencil_width2
-                        
+
                         let _antialias2 = antialias * antialias
                         let div = 1 / Float(_antialias2)
-                        
+
                         for _ in _min_y..<_max_y {
-                            
+
                             var _buf = buf
                             var __stencil = _stencil
-                            
+
                             for _ in _min_x..<_max_x {
-                                
+
                                 var _p: UInt8 = 0
-                                
+
                                 var _s = __stencil
-                                
+
                                 for _ in 0..<antialias {
                                     var __s = _s
                                     for _ in 0..<antialias {
@@ -96,48 +96,48 @@ extension ImageContext {
                                     }
                                     _s += _stencil_width
                                 }
-                                
+
                                 if _p != 0 {
                                     _buf.pointee = _p == _antialias2 ? 1 : div * Float(_p)
                                 }
-                                
+
                                 _buf += 1
                                 __stencil += antialias
                             }
-                            
+
                             buf += width
                             _stencil += _stencil_width2
                         }
                     }
-                    
+
                     self._drawWithShadow(stencil: buf, color: color)
-                    
+
                 } else {
-                    
+
                     self._withUnsafePixelBlender { blender in
-                        
+
                         let _stencil_width = antialias * width
                         let _stencil_width2 = antialias * _stencil_width
-                        
+
                         var blender = blender + _min_x + _min_y * width
                         _stencil += antialias * _min_x + _min_y * _stencil_width2
-                        
+
                         let _antialias2 = antialias * antialias
                         let div = 1 / Double(_antialias2)
-                        
+
                         for _ in _min_y..<_max_y {
-                            
+
                             var _blender = blender
                             var __stencil = _stencil
-                            
+
                             for _ in _min_x..<_max_x {
-                                
+
                                 _blender.draw { () -> Float64ColorPixel<Pixel.Model>? in
-                                    
+
                                     var _p: UInt8 = 0
-                                    
+
                                     var _s = __stencil
-                                    
+
                                     for _ in 0..<antialias {
                                         var __s = _s
                                         for _ in 0..<antialias {
@@ -148,7 +148,7 @@ extension ImageContext {
                                         }
                                         _s += _stencil_width
                                     }
-                                    
+
                                     if _p != 0 {
                                         var color = color
                                         if _p != _antialias2 {
@@ -156,53 +156,53 @@ extension ImageContext {
                                         }
                                         return color
                                     }
-                                    
+
                                     return nil
                                 }
-                                
+
                                 _blender += 1
                                 __stencil += antialias
                             }
-                            
+
                             blender += width
                             _stencil += _stencil_width2
                         }
                     }
                 }
             }
-            
+
         } else {
-            
+
             if isShadow {
-                
+
                 self._drawWithShadow(stencil: stencil.map { winding($0) ? 1.0 : 0.0 }, color: color)
-                
+
             } else {
-                
+
                 stencil.withUnsafeBufferPointer { stencil in
-                    
+
                     guard var _stencil = stencil.baseAddress else { return }
-                    
+
                     self._withUnsafePixelBlender { blender in
-                        
+
                         var blender = blender + _min_x + _min_y * width
                         _stencil += _min_x + _min_y * width
-                        
+
                         for _ in _min_y..<_max_y {
-                            
+
                             var _blender = blender
                             var __stencil = _stencil
-                            
+
                             for _ in _min_x..<_max_x {
-                                
+
                                 if winding(__stencil.pointee) {
                                     _blender.draw { color }
                                 }
-                                
+
                                 _blender += 1
                                 __stencil += 1
                             }
-                            
+
                             blender += width
                             _stencil += width
                         }
@@ -214,7 +214,7 @@ extension ImageContext {
 }
 
 extension ImageContext {
-    
+
     @inlinable
     @inline(__always)
     public func draw(shape: Shape, winding: Shape.WindingRule, color: Pixel.Model, opacity: Double = 1) {

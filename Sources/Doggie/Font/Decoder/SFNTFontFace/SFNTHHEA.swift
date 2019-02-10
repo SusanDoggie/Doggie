@@ -24,7 +24,7 @@
 //
 
 struct SFNTHHEA : ByteDecodable {
-    
+
     var version: Fixed16Number<BEInt32>
     var ascent: BEInt16
     var descent: BEInt16
@@ -42,7 +42,7 @@ struct SFNTHHEA : ByteDecodable {
     var reserved4: BEInt16
     var metricDataFormat: BEInt16
     var numOfLongHorMetrics: BEUInt16
-    
+
     init(from data: inout Data) throws {
         self.version = try data.decode(Fixed16Number<BEInt32>.self)
         self.ascent = try data.decode(BEInt16.self)

@@ -24,105 +24,105 @@
 //
 
 public protocol RawPixelProtocol {
-    
+
     associatedtype RawPixel
-    
+
     var numberOfComponents: Int { get }
-    
+
     var width: Int { get }
-    
+
     var height: Int { get }
-    
+
     var pixels: MappedBuffer<RawPixel> { get }
-    
+
     var fileBacked: Bool { get set }
-    
+
     func setMemoryAdvise(_ advise: MemoryAdvise)
-    
+
     func memoryLock()
-    
+
     func memoryUnlock()
-    
+
     mutating func setOrientation(_ orientation: ImageOrientation)
-    
+
     func transposed() -> Self
-    
+
     func verticalFlipped() -> Self
-    
+
     func horizontalFlipped() -> Self
-    
+
     func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<RawPixel>) throws -> R) rethrows -> R
-    
+
     mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<RawPixel>) throws -> R) rethrows -> R
-    
+
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
-    
+
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
 }
 
 extension RawPixelProtocol {
-    
+
     @inlinable
     @inline(__always)
     public mutating func setOrientation(_ orientation: ImageOrientation) {
-        
+
         switch orientation {
         case .leftMirrored, .left, .rightMirrored, .right: self = self.transposed()
         default: break
         }
-        
+
         let width = self.width
         let height = self.height
-        
+
         guard width != 0 && height != 0 else { return }
-        
+
         switch orientation {
         case .right, .upMirrored:
-            
+
             self.withUnsafeMutableBufferPointer {
-                
+
                 guard let buffer = $0.baseAddress else { return }
-                
+
                 var buf1 = buffer
                 var buf2 = buffer + width - 1
-                
+
                 for _ in 0..<width >> 1 {
                     Swap(height, buf1, width, buf2, width)
                     buf1 += 1
                     buf2 -= 1
                 }
             }
-            
+
         case .left, .downMirrored:
-            
+
             self.withUnsafeMutableBufferPointer {
-                
+
                 guard let buffer = $0.baseAddress else { return }
-                
+
                 var buf1 = buffer
                 var buf2 = buffer + width * (height - 1)
-                
+
                 for _ in 0..<height >> 1 {
                     Swap(width, buf1, 1, buf2, 1)
                     buf1 += width
                     buf2 -= width
                 }
             }
-            
+
         case .down, .rightMirrored:
-            
+
             self.withUnsafeMutableBufferPointer {
                 guard let buffer = $0.baseAddress else { return }
                 Swap($0.count >> 1, buffer, 1, buffer + $0.count - 1, -1)
             }
-            
+
         default: break
         }
     }
 }
 
 extension RawPixelProtocol {
-    
+
     @inlinable
     @inline(__always)
     public func verticalFlipped() -> Self {
@@ -130,7 +130,7 @@ extension RawPixelProtocol {
         copy.setOrientation(.downMirrored)
         return copy
     }
-    
+
     @inlinable
     @inline(__always)
     public func horizontalFlipped() -> Self {

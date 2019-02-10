@@ -24,10 +24,10 @@
 //
 
 struct CFF2Decoder {
-    
+
     var header: CFF2Header
     var DICT: CFFDICT
-    
+
     init(_ data: Data) throws {
         self.header = try CFF2Header(data)
         self.DICT = try CFFDICT(data.dropFirst(Int(header.headerSize)).prefix(Int(header.topDictLength)))
@@ -35,12 +35,12 @@ struct CFF2Decoder {
 }
 
 struct CFF2Header : ByteDecodable {
-    
+
     var majorVersion: UInt8
     var minorVersion: UInt8
     var headerSize: UInt8
     var topDictLength: BEUInt16
-    
+
     init(from data: inout Data) throws {
         self.majorVersion = try data.decode(UInt8.self)
         self.minorVersion = try data.decode(UInt8.self)

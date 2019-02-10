@@ -24,7 +24,7 @@
 //
 
 struct SFNTHEAD : ByteDecodable {
-    
+
     var version: Fixed16Number<BEInt32>
     var fontRevision: Fixed16Number<BEInt32>
     var checkSumAdjustment: BEUInt32
@@ -42,7 +42,7 @@ struct SFNTHEAD : ByteDecodable {
     var fontDirectionHint: BEInt16
     var indexToLocFormat: BEInt16
     var glyphDataFormat: BEInt16
-    
+
     init(from data: inout Data) throws {
         self.version = try data.decode(Fixed16Number<BEInt32>.self)
         self.fontRevision = try data.decode(Fixed16Number<BEInt32>.self)

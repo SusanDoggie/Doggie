@@ -24,7 +24,7 @@
 //
 
 public enum WrappingMode {
-    
+
     case none
     case clamp
     case `repeat`
@@ -32,30 +32,30 @@ public enum WrappingMode {
 }
 
 public protocol TextureProtocol: RawPixelProtocol {
-    
+
     associatedtype Pixel : ScalarMultiplicative where Pixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol
-    
+
     var resamplingAlgorithm: ResamplingAlgorithm { get set }
-    
+
     var horizontalWrappingMode: WrappingMode { get set }
-    
+
     var verticalWrappingMode: WrappingMode { get set }
-    
+
     func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P>
-    
+
     func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> StencilTexture<P>
-    
+
     func pixel(_ point: Point) -> Pixel
 }
 
 @usableFromInline
 protocol _TextureProtocolImplement: TextureProtocol {
-    
+
     init(width: Int, height: Int, pixels: MappedBuffer<RawPixel>, resamplingAlgorithm: ResamplingAlgorithm)
 }
 
 extension _TextureProtocolImplement {
-    
+
     @inlinable
     @inline(__always)
     public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, pixel: RawPixel, fileBacked: Bool) {
@@ -67,62 +67,62 @@ extension _TextureProtocolImplement {
 }
 
 extension _TextureProtocolImplement {
-    
+
     @inlinable
     @inline(__always)
     public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P> {
-        
+
         var texture = try Texture<P>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
-        
+
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode
-        
+
         return texture
     }
-    
+
     @inlinable
     @inline(__always)
     public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> StencilTexture<P> {
-        
+
         var texture = try StencilTexture<P>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
-        
+
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode
-        
+
         return texture
     }
 }
 
 extension _TextureProtocolImplement {
-    
+
     @inlinable
     @inline(__always)
     public func transposed() -> Self {
-        
+
         if pixels.count == 0 {
-            
+
             var texture = Self(width: height, height: width, pixels: [], resamplingAlgorithm: resamplingAlgorithm)
-            
+
             texture.horizontalWrappingMode = self.horizontalWrappingMode
             texture.verticalWrappingMode = self.verticalWrappingMode
-            
+
             return texture
         }
-        
+
         var copy = pixels
         pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(height, width, source.baseAddress!, 1, destination.baseAddress!, 1) } }
-        
+
         var texture = Self(width: height, height: width, pixels: copy, resamplingAlgorithm: resamplingAlgorithm)
-        
+
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode
-        
+
         return texture
     }
 }
 
 extension WrappingMode {
-    
+
     @inlinable
     @inline(__always)
     func addressing(_ x: Int, _ upperbound: Int) -> (Bool, Int) {

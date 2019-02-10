@@ -24,13 +24,13 @@
 //
 
 public protocol PolymorphicEquatable {
-    
+
     func isEqual(_ other: PolymorphicEquatable) -> Bool
-    
+
 }
 
 extension PolymorphicEquatable where Self : Equatable {
-    
+
     @inlinable
     public func isEqual(_ other: PolymorphicEquatable) -> Bool {
         guard let other = other as? Self else { return false }
@@ -39,7 +39,7 @@ extension PolymorphicEquatable where Self : Equatable {
 }
 
 public protocol PolymorphicHashable: PolymorphicEquatable {
-    
+
     func hash(into hasher: inout Hasher)
-    
+
 }

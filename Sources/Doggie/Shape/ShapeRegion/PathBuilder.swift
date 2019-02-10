@@ -26,28 +26,28 @@
 private let ShapeCacheConstructiveSolidResultKey = "ShapeCacheConstructiveSolidResultKey"
 
 enum ConstructiveSolidResult {
-    
+
     case overlap(Overlap)
     case regions(ShapeRegion, ShapeRegion)
     case segments([ShapeRegion.Solid], [ShapeRegion.Solid])
 }
 
 extension ConstructiveSolidResult {
-    
+
     enum Overlap {
         case none, equal, superset, subset
     }
 }
 
 extension ConstructiveSolidResult {
-    
+
     struct Split {
         let index: Int
         let split: Double
     }
-    
+
     fileprivate struct Table {
-        
+
         var l_graph: [Int: (Int, Split, Split)] = [:]
         var r_graph: [Int: (Int, Split, Split)] = [:]
         var overlap: Overlap = .none
@@ -57,18 +57,18 @@ extension ConstructiveSolidResult {
 }
 
 extension ConstructiveSolidResult.Table {
-    
+
     fileprivate init(_ left: Shape.Component, _ right: Shape.Component) {
-        
+
         struct SplitData {
             fileprivate let left: ConstructiveSolidResult.Split
             fileprivate let right: ConstructiveSolidResult.Split
             let point: Point
         }
-        
+
         let left_spaces = left.spaces
         let right_spaces = right.spaces
-        
+
         var data: [SplitData] = []
         var overlap_r_index: Set<Int> = []
         var overlap_l_index: Set<Int> = []
@@ -101,7 +101,7 @@ extension ConstructiveSolidResult.Table {
             overlap = .equal
             return
         }
-        
+
         for (index, item) in data.enumerated() {
             looping_left.append(contentsOf: data.suffix(from: index + 1).filter { item.right.almostEqual($0.right) }.map { (item.left, $0.left) })
             looping_right.append(contentsOf: data.suffix(from: index + 1).filter { item.left.almostEqual($0.left) }.map { (item.right, $0.right) })
@@ -117,12 +117,12 @@ extension ConstructiveSolidResult.Table {
             }
             return
         }
-        
+
         let _l_list = data.enumerated().sorted { $0.1.left < $1.1.left }
-        
+
         var _winding: [((Int, SplitData), (Int, SplitData), Bool?, Bool?)] = []
         _winding.reserveCapacity(data.count)
-        
+
         for (s0, s1) in _l_list.rotateZip() {
             if let overlap = overlap_l.first(where: { $0.0.almostEqual(s0.1.left) }) {
                 _winding.append((s0, s1, nil, overlap.1))
@@ -130,9 +130,9 @@ extension ConstructiveSolidResult.Table {
                 _winding.append((s0, s1, right.winding(left.mid_point(s0.1.left, s1.1.left)) != 0, nil))
             }
         }
-        
+
         guard let check = _winding.lazy.compactMap({ $0.2 }).first, _winding.contains(where: { $2 == nil ? $3 == false : $2 != check }) else {
-            
+
             if left._contains(right, hint: Set(0..<right.count).subtracting(overlap_r_index)) {
                 overlap = .superset
             } else if right._contains(left, hint: Set(0..<left.count).subtracting(overlap_l_index)) {
@@ -140,13 +140,13 @@ extension ConstructiveSolidResult.Table {
             }
             return
         }
-        
+
         for (i, t0) in _winding.enumerated() {
             if t0.2 == nil && t0.3 == true {
                 _winding[i].2 = _winding.rotated(i).lazy.compactMap({ $0.2 }).first
             }
         }
-        
+
         var begin: Int?
         var last: Int?
         var record: Bool?
@@ -166,7 +166,7 @@ extension ConstructiveSolidResult.Table {
                 l_graph[last!] = (i1.0, data[last!].left, i1.1.left)
             }
         }
-        
+
         let _r_list = data.enumerated().sorted { $0.1.right < $1.1.right }
         for (s0, s1) in _r_list.filter({ _r_index, _ in l_graph.keys.contains(_r_index) || l_graph.values.contains { $0.0 == _r_index } }).rotateZip() {
             r_graph[s0.0] = (s1.0, s0.1.right, s1.1.right)
@@ -175,24 +175,24 @@ extension ConstructiveSolidResult.Table {
 }
 
 extension ConstructiveSolidResult.Split : Comparable {
-    
+
     func almostEqual(_ other: ConstructiveSolidResult.Split) -> Bool {
         return self.index == other.index && self.split.almostEqual(other.split)
     }
-    
+
     static func ==(lhs: ConstructiveSolidResult.Split, rhs: ConstructiveSolidResult.Split) -> Bool {
         return (lhs.index, lhs.split) == (rhs.index, rhs.split)
     }
-    
+
     static func <(lhs: ConstructiveSolidResult.Split, rhs: ConstructiveSolidResult.Split) -> Bool {
         return (lhs.index, lhs.split) < (rhs.index, rhs.split)
     }
 }
 
 extension Shape.Component {
-    
+
     fileprivate func mid_point(_ start: ConstructiveSolidResult.Split, _ end: ConstructiveSolidResult.Split) -> Point {
-        
+
         if start.index == end.index {
             if start.split < end.split {
                 return self.bezier[start.index].point(0.5 * (start.split + end.split))
@@ -202,9 +202,9 @@ extension Shape.Component {
         }
         return self.bezier[start.index].end
     }
-    
+
     func splitPath(_ start: ConstructiveSolidResult.Split, _ end: ConstructiveSolidResult.Split) -> [ShapeRegion.Solid.Segment] {
-        
+
         if start.index == end.index && start.split.almostEqual(end.split) {
             return []
         }
@@ -235,23 +235,23 @@ extension Shape.Component {
 }
 
 extension Shape.Component {
-    
+
     func _contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
-        
+
         if !self.boundary.isIntersect(other.boundary) {
             return false
         }
         if abs(self.area) < abs(other.area) {
             return false
         }
-        
+
         var hint = hint
-        
+
         if hint.count == 0 {
-            
+
             let self_spaces = self.spaces
             let other_spaces = other.spaces
-            
+
             for index in 0..<other.count {
                 let overlap = self_spaces.search(overlap: other_spaces[index].inset(dx: -1e-8, dy: -1e-8))
                 if overlap.allSatisfy({ !self.bezier[$0].overlap(other.bezier[index]) }) {
@@ -259,22 +259,22 @@ extension Shape.Component {
                 }
             }
         }
-        
+
         func _length(_ bezier: Shape.Component.BezierCollection.Element) -> Double {
             let points = bezier.points([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
             return zip(points, points.dropFirst()).reduce(0) { $0 + $1.0.distance(to: $1.1) }
         }
-        
+
         if let index = hint.max(by: { _length(other.bezier[$0]) }) {
             return self.winding(other.bezier[index].point(0.5)) != 0
         }
-        
+
         return false
     }
 }
 
 extension WeakDictionary where Key == Shape.Component.CacheArray, Value == [Int: ConstructiveSolidResult] {
-    
+
     fileprivate subscript(key: Shape.Component.Cache) -> ConstructiveSolidResult? {
         get {
             return self[key.list]?[key.index]
@@ -286,7 +286,7 @@ extension WeakDictionary where Key == Shape.Component.CacheArray, Value == [Int:
 }
 
 extension Shape.Component {
-    
+
     private var constructiveSolidResultCache: WeakDictionary<Shape.Component.CacheArray, [Int: ConstructiveSolidResult]> {
         get {
             return cache[ShapeCacheConstructiveSolidResultKey, default: WeakDictionary()]
@@ -295,22 +295,22 @@ extension Shape.Component {
             cache[ShapeCacheConstructiveSolidResultKey] = newValue
         }
     }
-    
+
     private func create_solids(_ other: Shape.Component, _ l_graph: [Int: (Int, ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)], _ r_graph: [Int: (Int, ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]) -> [ShapeRegion.Solid] {
-        
+
         var result: [ShapeRegion.Solid] = []
-        
+
         var l_graph = l_graph
         var r_graph = r_graph
-        
+
         while let (first_from, (first_to, first_s0, first_s1)) = l_graph.first {
-            
+
             var segments: [ShapeRegion.Solid.Segment] = self.splitPath(first_s0, first_s1)
             var last_idx = first_to
             var flag = true
-            
+
             l_graph[first_from] = nil
-            
+
             while last_idx != first_from {
                 if flag {
                     if let (next, s0, s1) = r_graph[last_idx] {
@@ -331,23 +331,23 @@ extension Shape.Component {
                 }
                 flag = !flag
             }
-            
+
             if let solid = ShapeRegion.Solid(segments: segments) {
                 result.append(solid)
             }
         }
-        
+
         return result
     }
-    
+
     private func _breakLoop(_ points: [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]) -> ShapeRegion {
         let area = self.area
         let loops = self.breakLoop(points)
         return ShapeRegion(solids: loops.filter { $0.area.sign == area.sign }).subtracting(ShapeRegion(solids: loops.filter { $0.area.sign != area.sign }))
     }
-    
+
     func process(_ other: Shape.Component) -> ConstructiveSolidResult {
-        
+
         if constructiveSolidResultCache[other.cache] == nil {
             if let result = other.constructiveSolidResultCache[self.cache] {
                 switch result {
@@ -366,7 +366,7 @@ extension Shape.Component {
                 if intersectTable.looping_left.count != 0 || intersectTable.looping_right.count != 0 {
                     constructiveSolidResultCache[other.cache] = .regions(self._breakLoop(intersectTable.looping_left), other._breakLoop(intersectTable.looping_right))
                 } else {
-                    
+
                     if intersectTable.l_graph.count == 0 {
                         constructiveSolidResultCache[other.cache] = .overlap(intersectTable.overlap)
                     } else {

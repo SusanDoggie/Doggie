@@ -32,21 +32,21 @@ public let SDDefaultDispatchQueue: DispatchQueue = {
 }()
 
 public class SDTask<Result> {
-    
+
     private let queue: DispatchQueue
     private var worker: DispatchWorkItem!
-    
+
     private let lck = SDConditionLock()
-    
+
     private var storage = Atomic<Result?>(value: nil)
-    
+
     private init(queue: DispatchQueue) {
         self.queue = queue
     }
 }
 
 extension SDTask {
-    
+
     private func createWorker(qos: DispatchQoS, flags: DispatchWorkItemFlags, block: @escaping () -> Result?) -> DispatchWorkItem {
         return DispatchWorkItem(qos: qos, flags: flags) { [weak self] in
             let value = block()
@@ -56,7 +56,7 @@ extension SDTask {
             }
         }
     }
-    
+
     /// Create a SDTask and compute block.
     @discardableResult
     public static func async(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping () -> Result) -> SDTask {
@@ -65,7 +65,7 @@ extension SDTask {
         task.queue.async(execute: task.worker)
         return task
     }
-    
+
     @discardableResult
     public static func capture(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], completeHandler: (@escaping (Result) -> Void) -> Void) -> SDTask {
         var storage: Result?
@@ -80,7 +80,7 @@ extension SDTask {
 }
 
 extension SDTask where Result == Void {
-    
+
     @discardableResult
     public static func capture(queue: DispatchQueue = SDDefaultDispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], completeHandler: (@escaping () -> Void) -> Void) -> SDTask {
         let task = SDTask(queue: queue)
@@ -91,17 +91,17 @@ extension SDTask where Result == Void {
 }
 
 extension SDTask {
-    
+
     /// Return `true` iff task is completed.
     public var completed: Bool {
         return storage.value != nil
     }
-    
+
     @discardableResult
     public func wait(until time: DispatchWallTime) -> Bool {
         return lck.wait(for: completed, until: time)
     }
-    
+
     /// Result of task.
     public var result: Result {
         if let value = storage.value {
@@ -113,13 +113,13 @@ extension SDTask {
 }
 
 extension SDTask {
-    
+
     /// Run `block` after `self` is completed.
     @discardableResult
     public func then<R>(qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (Result) -> R) -> SDTask<R> {
         return self.then(queue: queue, qos: qos, flags: flags, block: block)
     }
-    
+
     /// Run `block` after `self` is completed with specific queue.
     @discardableResult
     public func then<R>(queue: DispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], block: @escaping (Result) -> R) -> SDTask<R> {
@@ -136,12 +136,12 @@ extension SDTask {
 }
 
 extension SDTask {
-    
+
     @discardableResult
     public func wait(deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         return self.wait(queue: queue, deadline: deadline, qos: qos, flags: flags)
     }
-    
+
     @discardableResult
     public func wait(queue: DispatchQueue, deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         var storage: Result?
@@ -154,12 +154,12 @@ extension SDTask {
         }
         return result
     }
-    
+
     @discardableResult
     public func wait(wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         return self.wait(queue: queue, wallDeadline: wallDeadline, qos: qos, flags: flags)
     }
-    
+
     @discardableResult
     public func wait(queue: DispatchQueue, wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
         var storage: Result?
@@ -175,13 +175,13 @@ extension SDTask {
 }
 
 extension SDTask {
-    
+
     /// Suspend if `result` satisfies `predicate`.
     @discardableResult
     public func suspend(qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
         return self.suspend(queue: queue, qos: qos, flags: flags, where: predicate)
     }
-    
+
     /// Suspend if `result` satisfies `predicate` with specific queue.
     @discardableResult
     public func suspend(queue: DispatchQueue, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {

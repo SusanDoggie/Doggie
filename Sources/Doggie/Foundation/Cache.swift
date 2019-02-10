@@ -25,33 +25,33 @@
 
 @_fixed_layout
 public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral {
-    
+
     public typealias Index = Dictionary<Key, Any>.Index
     public typealias Element = (Key, Any)
-    
+
     @usableFromInline
     var base: Base
-    
+
     @inlinable
     public init() {
         self.base = Base(table: Dictionary())
     }
-    
+
     @inlinable
     public init(minimumCapacity: Int) {
         self.base = Base(table: Dictionary(minimumCapacity: minimumCapacity))
     }
-    
+
     @inlinable
     public init<S : Sequence>(uniqueKeysWithValues keysAndValues: S) where S.Element == Element {
         self.base = Base(table: Dictionary(uniqueKeysWithValues: keysAndValues))
     }
-    
+
     @inlinable
     public init<S : Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Any, Any) throws -> Any) rethrows where S.Element == Element {
         self.base = Base(table: try Dictionary(keysAndValues, uniquingKeysWith: combine))
     }
-    
+
     @inlinable
     public init(dictionaryLiteral elements: (Key, Any)...) {
         self.base = Base(table: Dictionary(uniqueKeysWithValues: elements))
@@ -59,23 +59,23 @@ public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral 
 }
 
 extension Cache {
-    
+
     @_fixed_layout
     @usableFromInline
     class Base {
-        
+
         @usableFromInline
         let lck = SDLock()
-        
+
         @usableFromInline
         var table: [Key: Any]
-        
+
         @inlinable
         init(table: [Key: Any]) {
             self.table = table
         }
     }
-    
+
     @inlinable
     public var identifier: ObjectIdentifier {
         return ObjectIdentifier(base)
@@ -83,32 +83,32 @@ extension Cache {
 }
 
 extension Cache {
-    
+
     @inlinable
     public var startIndex: Index {
         return base.lck.synchronized { base.table.startIndex }
     }
-    
+
     @inlinable
     public var endIndex: Index {
         return base.lck.synchronized { base.table.endIndex }
     }
-    
+
     @inlinable
     public var count: Int {
         return base.lck.synchronized { base.table.count }
     }
-    
+
     @inlinable
     public var isEmpty: Bool {
         return base.lck.synchronized { base.table.isEmpty }
     }
-    
+
     @inlinable
     public func index(after i: Index) -> Index {
         return base.lck.synchronized { base.table.index(after: i) }
     }
-    
+
     @inlinable
     public subscript(position: Index) -> Element {
         return base.lck.synchronized { base.table[position] }
@@ -116,12 +116,12 @@ extension Cache {
 }
 
 extension Cache {
-    
+
     @inlinable
     public var keys: Dictionary<Key, Any>.Keys {
         return base.lck.synchronized { base.table.keys }
     }
-    
+
     @inlinable
     public var values: Dictionary<Key, Any>.Values {
         get {
@@ -140,7 +140,7 @@ extension Cache {
 }
 
 extension Cache {
-    
+
     @inlinable
     public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
         if isKnownUniquelyReferenced(&base) {
@@ -155,7 +155,7 @@ extension Cache {
             }
         }
     }
-    
+
     @inlinable
     public subscript<Value>(key: Key) -> Value? {
         get {
@@ -171,7 +171,7 @@ extension Cache {
             }
         }
     }
-    
+
     @inlinable
     public subscript<Value>(key: Key, default defaultValue: @autoclosure () -> Value) -> Value {
         get {
@@ -181,12 +181,12 @@ extension Cache {
             self[key] = newValue
         }
     }
-    
+
     @inlinable
     public subscript<Value>(key: Key, body: () -> Value) -> Value {
-        
+
         return base.lck.synchronized {
-            
+
             if let object = base.table[key], let value = object as? Value {
                 return value
             }

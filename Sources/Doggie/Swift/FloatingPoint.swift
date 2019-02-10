@@ -24,7 +24,7 @@
 //
 
 public protocol FloatingMathProtocol : FloatingPoint, ExpressibleByFloatLiteral {
-    
+
     static func exp(_ x: Self) -> Self
     static func exp2(_ x: Self) -> Self
     static func expm1(_ x: Self) -> Self
@@ -51,11 +51,11 @@ public protocol FloatingMathProtocol : FloatingPoint, ExpressibleByFloatLiteral 
     static func erf(_ x: Self) -> Self
     static func erfc(_ x: Self) -> Self
     static func tgamma(_ x: Self) -> Self
-    
+
 }
 
 extension Float : FloatingMathProtocol {
-    
+
     @inlinable
     @inline(__always)
     public static func exp(_ x: Float) -> Float {
@@ -186,11 +186,11 @@ extension Float : FloatingMathProtocol {
     public static func tgamma(_ x: Float) -> Float {
         return Foundation.tgamma(x)
     }
-    
+
 }
 
 extension Double : FloatingMathProtocol {
-    
+
     @inlinable
     @inline(__always)
     public static func exp(_ x: Double) -> Double {
@@ -321,13 +321,13 @@ extension Double : FloatingMathProtocol {
     public static func tgamma(_ x: Double) -> Double {
         return Foundation.tgamma(x)
     }
-    
+
 }
 
 extension CGFloat : FloatingMathProtocol {
-    
+
     #if canImport(CoreGraphics)
-    
+
     @inlinable
     @inline(__always)
     public static func exp(_ x: CGFloat) -> CGFloat {
@@ -458,9 +458,9 @@ extension CGFloat : FloatingMathProtocol {
     public static func tgamma(_ x: CGFloat) -> CGFloat {
         return CoreGraphics.tgamma(x)
     }
-    
+
     #else
-    
+
     @inlinable
     @inline(__always)
     public static func exp(_ x: CGFloat) -> CGFloat {
@@ -591,9 +591,9 @@ extension CGFloat : FloatingMathProtocol {
     public static func tgamma(_ x: CGFloat) -> CGFloat {
         return Foundation.tgamma(x)
     }
-    
+
     #endif
-    
+
 }
 
 @inlinable
@@ -604,18 +604,18 @@ public func positive_mod<T: FloatingPoint>(_ x: T, _ m: T) -> T {
 }
 
 extension FloatingPoint {
-    
+
     @_transparent
     public static var defaultAlmostEqualEpsilon: Self {
         return Self(sign: .plus, exponent: Self.ulpOfOne.exponent / 2, significand: 1)
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostZero(epsilon: Self = Self.defaultAlmostEqualEpsilon, reference: Self = 0) -> Bool {
         return self == 0 || abs(self) < abs(epsilon) * max(1, abs(reference))
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: Self, epsilon: Self = Self.defaultAlmostEqualEpsilon) -> Bool {

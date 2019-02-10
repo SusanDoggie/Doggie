@@ -24,18 +24,18 @@
 //
 
 public struct Resolution : Hashable {
-    
+
     public var horizontal: Double
     public var vertical: Double
     public var unit: Unit
-    
+
     @inlinable
     public init(horizontal: Double, vertical: Double, unit: Unit) {
         self.horizontal = horizontal
         self.vertical = vertical
         self.unit = unit
     }
-    
+
     @inlinable
     public init(resolution: Double, unit: Unit) {
         self.horizontal = resolution
@@ -45,9 +45,9 @@ public struct Resolution : Hashable {
 }
 
 extension Resolution {
-    
+
     public enum Unit {
-        
+
         case point
         case pica
         case meter
@@ -58,7 +58,7 @@ extension Resolution {
 }
 
 extension Resolution.Unit {
-    
+
     @usableFromInline
     var inchScale : Double {
         switch self {
@@ -73,7 +73,7 @@ extension Resolution.Unit {
 }
 
 extension Resolution {
-    
+
     @inlinable
     public func convert(to toUnit: Resolution.Unit) -> Resolution {
         let scale = unit.inchScale / toUnit.inchScale
@@ -82,45 +82,45 @@ extension Resolution {
 }
 
 extension Resolution.Unit {
-    
+
     @inlinable
     public func convert(length: Double, from fromUnit: Resolution.Unit) -> Double {
         return fromUnit.convert(length: length, to: self)
     }
-    
+
     @inlinable
     public func convert(point: Point, from fromUnit: Resolution.Unit) -> Point {
         return fromUnit.convert(point: point, to: self)
     }
-    
+
     @inlinable
     public func convert(size: Size, from fromUnit: Resolution.Unit) -> Size {
         return fromUnit.convert(size: size, to: self)
     }
-    
+
     @inlinable
     public func convert(rect: Rect, from fromUnit: Resolution.Unit) -> Rect {
         return fromUnit.convert(rect: rect, to: self)
     }
-    
+
     @inlinable
     public func convert(length: Double, to toUnit: Resolution.Unit) -> Double {
         let scale = toUnit.inchScale / self.inchScale
         return length * scale
     }
-    
+
     @inlinable
     public func convert(point: Point, to toUnit: Resolution.Unit) -> Point {
         let scale = toUnit.inchScale / self.inchScale
         return point * scale
     }
-    
+
     @inlinable
     public func convert(size: Size, to toUnit: Resolution.Unit) -> Size {
         let scale = toUnit.inchScale / self.inchScale
         return size * scale
     }
-    
+
     @inlinable
     public func convert(rect: Rect, to toUnit: Resolution.Unit) -> Rect {
         let scale = toUnit.inchScale / self.inchScale
@@ -129,7 +129,7 @@ extension Resolution.Unit {
 }
 
 extension Resolution : CustomStringConvertible {
-    
+
     @inlinable
     public var description: String {
         return "Resolution(horizontal: \(horizontal), vertical: \(vertical), unit: \(unit))"

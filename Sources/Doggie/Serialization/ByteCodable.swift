@@ -24,12 +24,12 @@
 //
 
 public protocol ByteDecodable {
-    
+
     init(from: inout Data) throws
 }
 
 extension ByteDecodable {
-    
+
     @inlinable
     public init(_ data: Data) throws {
         var data = data
@@ -40,12 +40,12 @@ extension ByteDecodable {
 public typealias ByteCodable = ByteOutputStreamable & ByteDecodable
 
 public enum ByteDecodeError : Error {
-    
+
     case endOfData
 }
 
 extension Data {
-    
+
     @inlinable
     public mutating func decode<T : ByteDecodable>(_ type: T.Type) throws -> T {
         return try T(from: &self)
@@ -53,14 +53,14 @@ extension Data {
 }
 
 extension FixedWidthInteger {
-    
+
     @inlinable
     public init(from data: inout Data) throws {
         let size = Self.bitWidth >> 3
         guard data.count >= size else { throw ByteDecodeError.endOfData }
         self = data.popFirst(size).withUnsafeBytes { $0.pointee }
     }
-    
+
     @inlinable
     public func write<Target: ByteOutputStream>(to stream: inout Target) {
         withUnsafeBytes(of: self) { stream.write($0) }
@@ -68,49 +68,49 @@ extension FixedWidthInteger {
 }
 
 extension UInt : ByteCodable {
-    
+
 }
 
 extension UInt8 : ByteCodable {
-    
+
 }
 
 extension UInt16 : ByteCodable {
-    
+
 }
 
 extension UInt32 : ByteCodable {
-    
+
 }
 
 extension UInt64 : ByteCodable {
-    
+
 }
 
 extension Int : ByteCodable {
-    
+
 }
 
 extension Int8 : ByteCodable {
-    
+
 }
 
 extension Int16 : ByteCodable {
-    
+
 }
 
 extension Int32 : ByteCodable {
-    
+
 }
 
 extension Int64 : ByteCodable {
-    
+
 }
 
 extension BEInteger : ByteCodable {
-    
+
 }
 
 extension LEInteger : ByteCodable {
-    
+
 }

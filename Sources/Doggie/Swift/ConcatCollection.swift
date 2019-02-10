@@ -25,23 +25,23 @@
 
 @_fixed_layout
 public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : IteratorProtocol, Sequence where G1.Element == G2.Element {
-    
+
     @usableFromInline
     var base1: G1
-    
+
     @usableFromInline
     var base2: G2
-    
+
     @usableFromInline
     var flag: Int
-    
+
     @inlinable
     init(base1: G1, base2: G2, flag: Int) {
         self.base1 = base1
         self.base2 = base2
         self.flag = flag
     }
-    
+
     @inlinable
     public mutating func next() -> G1.Element? {
         while true {
@@ -64,61 +64,61 @@ public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : Itera
 
 @_fixed_layout
 public struct ConcatSequence<S1 : Sequence, S2 : Sequence> : Sequence where S1.Element == S2.Element {
-    
+
     @usableFromInline
     let base1: S1
-    
+
     @usableFromInline
     let base2: S2
-    
+
     @inlinable
     init(base1: S1, base2: S2) {
         self.base1 = base1
         self.base2 = base2
     }
-    
+
     @inlinable
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
         return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
     }
-    
+
     @inlinable
     public var underestimatedCount: Int {
         return base1.underestimatedCount + base2.underestimatedCount
     }
-    
+
     @inlinable
     public func _copyToContiguousArray() -> ContiguousArray<S1.Element> {
         var result = ContiguousArray<Element>()
         result.reserveCapacity(underestimatedCount)
-        
+
         result.append(contentsOf: base1)
         result.append(contentsOf: base2)
-        
+
         return result
     }
-    
+
 }
 
 @_fixed_layout
 public struct ConcatCollectionIndex<I1 : Comparable, I2 : Comparable> : Comparable {
-    
+
     @usableFromInline
     let currect1: I1
-    
+
     @usableFromInline
     let currect2: I2
-    
+
     @inlinable
     init(currect1: I1, currect2: I2) {
         self.currect1 = currect1
         self.currect2 = currect2
     }
-    
+
 }
 
 extension ConcatCollectionIndex : Hashable where I1 : Hashable, I2 : Hashable {
-    
+
     @inlinable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(currect1)
@@ -133,38 +133,38 @@ public func < <I1, I2>(lhs: ConcatCollectionIndex<I1, I2>, rhs: ConcatCollection
 
 @_fixed_layout
 public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection where S1.Element == S2.Element {
-    
+
     public typealias Iterator = ConcatIterator<S1.Iterator, S2.Iterator>
-    
+
     public typealias Index = ConcatCollectionIndex<S1.Index, S2.Index>
-    
+
     @usableFromInline
     let base1: S1
-    
+
     @usableFromInline
     let base2: S2
-    
+
     @inlinable
     init(base1: S1, base2: S2) {
         self.base1 = base1
         self.base2 = base2
     }
-    
+
     @inlinable
     public var startIndex : Index {
         return ConcatCollectionIndex(currect1: base1.startIndex, currect2: base2.startIndex)
     }
-    
+
     @inlinable
     public var endIndex : Index {
         return ConcatCollectionIndex(currect1: base1.endIndex, currect2: base2.endIndex)
     }
-    
+
     @inlinable
     public var count : Int {
         return base1.count + base2.count
     }
-    
+
     @inlinable
     public func index(after i: Index) -> Index {
         if i.currect1 != base1.endIndex {
@@ -172,28 +172,28 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection wh
         }
         return ConcatCollectionIndex(currect1: i.currect1, currect2: base2.index(after: i.currect2))
     }
-    
+
     @inlinable
     public subscript(position: Index) -> S1.Element {
         return position.currect1 != base1.endIndex ? base1[position.currect1] : base2[position.currect2]
     }
-    
+
     @inlinable
     public func makeIterator() -> ConcatIterator<S1.Iterator, S2.Iterator> {
         return ConcatIterator(base1: base1.makeIterator(), base2: base2.makeIterator(), flag: 0)
     }
-    
+
     @inlinable
     public func _copyToContiguousArray() -> ContiguousArray<S1.Element> {
         var result = ContiguousArray<Element>()
         result.reserveCapacity(underestimatedCount)
-        
+
         result.append(contentsOf: base1)
         result.append(contentsOf: base2)
-        
+
         return result
     }
-    
+
     @inlinable
     public var underestimatedCount: Int {
         return base1.underestimatedCount + base2.underestimatedCount
@@ -201,7 +201,7 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection wh
 }
 
 extension ConcatCollection : BidirectionalCollection where S1 : BidirectionalCollection, S2 : BidirectionalCollection {
-    
+
     @inlinable
     public func index(before i: Index) -> Index {
         if i.currect2 != base2.startIndex {
@@ -209,11 +209,11 @@ extension ConcatCollection : BidirectionalCollection where S1 : BidirectionalCol
         }
         return ConcatCollectionIndex(currect1: base1.index(before: i.currect1), currect2: i.currect2)
     }
-    
+
 }
 
 extension Sequence {
-    
+
     @inlinable
     public func concat<S>(_ with: S) -> ConcatSequence<Self, S> {
         return ConcatSequence(base1: self, base2: with)
@@ -221,7 +221,7 @@ extension Sequence {
 }
 
 extension Collection {
-    
+
     @inlinable
     public func concat<S>(_ with: S) -> ConcatCollection<Self, S> {
         return ConcatCollection(base1: self, base2: with)
@@ -229,7 +229,7 @@ extension Collection {
 }
 
 extension LazySequenceProtocol {
-    
+
     @inlinable
     public func concat<S>(_ with: S) -> LazySequence<ConcatSequence<Elements, S>> {
         return ConcatSequence(base1: self.elements, base2: with).lazy
@@ -237,7 +237,7 @@ extension LazySequenceProtocol {
 }
 
 extension LazyCollectionProtocol {
-    
+
     @inlinable
     public func concat<S>(_ with: S) -> LazyCollection<ConcatCollection<Elements, S>> {
         return ConcatCollection(base1: self.elements, base2: with).lazy

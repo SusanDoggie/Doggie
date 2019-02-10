@@ -24,51 +24,51 @@
 //
 
 extension FileManager {
-    
+
     func fileUrls<S : Sequence>(_ urls: S) -> Set<URL> where S.Element == URL {
-        
+
         var result: Set<URL> = []
-        
+
         var checked: Set<URL> = []
         var searchPaths = Array(urls)
-        
+
         while let url = searchPaths.popLast()?.standardized {
-            
+
             guard !checked.contains(url) else { continue }
             checked.insert(url)
-            
+
             #if canImport(Darwin)
-            
+
             if let _url = try? URL(resolvingAliasFileAt: url).standardized, _url != url {
                 searchPaths.append(_url)
                 continue
             }
-            
+
             #endif
-            
+
             let _url = url.resolvingSymlinksInPath().standardized
             if _url != url {
                 searchPaths.append(_url)
                 continue
             }
-            
+
             var directory: ObjCBool = false
             guard self.fileExists(atPath: url.path, isDirectory: &directory) else { continue }
-            
+
             if directory.boolValue {
-                
+
                 guard let enumerator = self.enumerator(at: url, includingPropertiesForKeys: nil, options: [], errorHandler: nil) else { continue }
-                
+
                 for url in enumerator {
                     guard let url = url as? URL else { continue }
                     searchPaths.append(url)
                 }
-                
+
             } else {
                 result.insert(url)
             }
         }
-        
+
         return result
     }
 }

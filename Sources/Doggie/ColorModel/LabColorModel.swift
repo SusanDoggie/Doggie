@@ -24,16 +24,16 @@
 //
 
 public struct LabColorModel : ColorModelProtocol {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Scalar = Double
-    
+
     @_transparent
     public static var numberOfComponents: Int {
         return 3
     }
-    
+
     @inlinable
     @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
@@ -43,14 +43,14 @@ public struct LabColorModel : ColorModelProtocol {
         default: return -128...128
         }
     }
-    
+
     /// The lightness dimension.
     public var lightness: Double
     /// The a color component.
     public var a: Double
     /// The b color component.
     public var b: Double
-    
+
     @inlinable
     @inline(__always)
     public init() {
@@ -58,7 +58,7 @@ public struct LabColorModel : ColorModelProtocol {
         self.a = 0
         self.b = 0
     }
-    
+
     @inlinable
     @inline(__always)
     public init(lightness: Double, a: Double, b: Double) {
@@ -73,7 +73,7 @@ public struct LabColorModel : ColorModelProtocol {
         self.a = chroma * cos(2 * Double.pi * hue)
         self.b = chroma * sin(2 * Double.pi * hue)
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Double {
         get {
@@ -96,7 +96,7 @@ public struct LabColorModel : ColorModelProtocol {
 }
 
 extension LabColorModel {
-    
+
     @_transparent
     public static var black: LabColorModel {
         return LabColorModel()
@@ -104,7 +104,7 @@ extension LabColorModel {
 }
 
 extension LabColorModel {
-    
+
     @_transparent
     public var hue: Double {
         get {
@@ -114,7 +114,7 @@ extension LabColorModel {
             self = LabColorModel(lightness: lightness, chroma: chroma, hue: newValue)
         }
     }
-    
+
     @_transparent
     public var chroma: Double {
         get {
@@ -127,13 +127,13 @@ extension LabColorModel {
 }
 
 extension LabColorModel {
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Double) -> Double) -> LabColorModel {
         return LabColorModel(lightness: transform(lightness), a: transform(a), b: transform(b))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
@@ -143,7 +143,7 @@ extension LabColorModel {
         updateAccumulatingResult(&accumulator, b)
         return accumulator
     }
-    
+
     @inlinable
     @inline(__always)
     public func combined(_ other: LabColorModel, _ transform: (Double, Double) -> Double) -> LabColorModel {
@@ -152,9 +152,9 @@ extension LabColorModel {
 }
 
 extension LabColorModel {
-    
+
     public typealias Float32Components = FloatComponents<Float>
-    
+
     @inlinable
     @inline(__always)
     public init<T>(floatComponents: FloatComponents<T>) {
@@ -162,7 +162,7 @@ extension LabColorModel {
         self.a = Double(floatComponents.a)
         self.b = Double(floatComponents.b)
     }
-    
+
     @_transparent
     public var float32Components: Float32Components {
         get {
@@ -172,34 +172,34 @@ extension LabColorModel {
             self = LabColorModel(floatComponents: newValue)
         }
     }
-    
+
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
-        
+
         public typealias Indices = Range<Int>
-        
+
         @_transparent
         public static var numberOfComponents: Int {
             return 3
         }
-        
+
         public var lightness: Scalar
         public var a: Scalar
         public var b: Scalar
-        
+
         @inline(__always)
         public init() {
             self.lightness = 0
             self.a = 0
             self.b = 0
         }
-        
+
         @inline(__always)
         public init(lightness: Scalar, a: Scalar, b: Scalar) {
             self.lightness = lightness
             self.a = a
             self.b = b
         }
-        
+
         @inlinable
         @inline(__always)
         public init(_ color: LabColorModel) {
@@ -207,7 +207,7 @@ extension LabColorModel {
             self.a = Scalar(color.a)
             self.b = Scalar(color.b)
         }
-        
+
         @inlinable
         @inline(__always)
         public init<T>(floatComponents: FloatComponents<T>) {
@@ -215,7 +215,7 @@ extension LabColorModel {
             self.a = Scalar(floatComponents.a)
             self.b = Scalar(floatComponents.b)
         }
-        
+
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
@@ -239,13 +239,13 @@ extension LabColorModel {
 }
 
 extension LabColorModel.FloatComponents {
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> LabColorModel.FloatComponents<Scalar> {
         return LabColorModel.FloatComponents(lightness: transform(lightness), a: transform(a), b: transform(b))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
@@ -255,7 +255,7 @@ extension LabColorModel.FloatComponents {
         updateAccumulatingResult(&accumulator, b)
         return accumulator
     }
-    
+
     @inlinable
     @inline(__always)
     public func combined(_ other: LabColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> LabColorModel.FloatComponents<Scalar> {

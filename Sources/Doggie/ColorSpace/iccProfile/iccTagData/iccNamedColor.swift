@@ -26,69 +26,69 @@
 @_fixed_layout
 @usableFromInline
 struct iccNamedColor : ByteDecodable {
-    
+
     @usableFromInline
     var flag: BEUInt32
-    
+
     @usableFromInline
     var prefix: String
-    
+
     @usableFromInline
     var suffix: String
-    
+
     @usableFromInline
     var named: [String] = []
-    
+
     @usableFromInline
     var pcs: [(Double, Double, Double)] = []
-    
+
     @usableFromInline
     var device: [Double] = []
-    
+
     init(from data: inout Data) throws {
-        
+
         guard data.count > 8 else { throw AnyColorSpace.ICCError.endOfData }
-        
+
         guard try data.decode(iccProfile.TagType.self) == .namedColor2 else { throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid namedColor2.") }
-        
+
         data.removeFirst(4)
-        
+
         self.flag = try data.decode(BEUInt32.self)
-        
+
         let count = Int(try data.decode(BEUInt32.self))
         let deviceCoords = Int(try data.decode(BEUInt32.self))
-        
+
         let _prefix = data.popFirst(32)
         let _suffix = data.popFirst(32)
-        
+
         guard _prefix.count == 32 else { throw AnyColorSpace.ICCError.endOfData }
         guard _suffix.count == 32 else { throw AnyColorSpace.ICCError.endOfData }
-        
+
         self.prefix = String(bytes: _prefix, encoding: .ascii) ?? ""
         self.suffix = String(bytes: _suffix, encoding: .ascii) ?? ""
-        
+
         self.named.reserveCapacity(count)
         self.pcs.reserveCapacity(count)
         self.device.reserveCapacity(count * deviceCoords)
-        
+
         for _ in 0..<count {
-            
+
             let _named = data.popFirst(32)
-            
+
             guard _named.count == 32 else { throw AnyColorSpace.ICCError.endOfData }
-            
+
             named.append(String(bytes: _prefix, encoding: .ascii) ?? "")
-            
+
             let x = Double(try data.decode(BEUInt16.self)) / 65535
             let y = Double(try data.decode(BEUInt16.self)) / 65535
             let z = Double(try data.decode(BEUInt16.self)) / 65535
-            
+
             pcs.append((x, y, z))
-            
+
             for _ in 0..<deviceCoords {
                 device.append(Double(try data.decode(BEUInt16.self)) / 65535)
             }
         }
     }
-    
+
 }

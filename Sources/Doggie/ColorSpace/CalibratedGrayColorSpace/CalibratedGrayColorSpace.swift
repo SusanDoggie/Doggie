@@ -24,12 +24,12 @@
 //
 
 extension ColorSpace where Model == GrayColorModel {
-    
+
     @inlinable
     public static func calibratedGray<C>(from colorSpace: ColorSpace<C>, gamma: Double = 1) -> ColorSpace {
         return ColorSpace(base: CalibratedGrayColorSpace(colorSpace.base.cieXYZ, gamma: gamma))
     }
-    
+
     @inlinable
     public static func calibratedGray(white: Point, gamma: Double = 1) -> ColorSpace {
         return ColorSpace(base: CalibratedGrayColorSpace(CIEXYZColorSpace(white: white), gamma: gamma))
@@ -37,7 +37,7 @@ extension ColorSpace where Model == GrayColorModel {
 }
 
 extension ColorSpace where Model == GrayColorModel {
-    
+
     @inlinable
     public static var genericGamma22Gray: ColorSpace {
         return .calibratedGray(white: _D65, gamma: 2.2)
@@ -47,16 +47,16 @@ extension ColorSpace where Model == GrayColorModel {
 @_fixed_layout
 @usableFromInline
 struct CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
-    
+
     @usableFromInline
     typealias Model = GrayColorModel
-    
+
     @usableFromInline
     let cieXYZ: CIEXYZColorSpace
-    
+
     @usableFromInline
     let gamma: Double
-    
+
     @inlinable
     init(_ cieXYZ: CIEXYZColorSpace, gamma: Double) {
         self.cieXYZ = cieXYZ
@@ -65,7 +65,7 @@ struct CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
 }
 
 extension CalibratedGrayColorSpace {
-    
+
     @inlinable
     func iccCurve() -> iccCurve {
         return .gamma(gamma)
@@ -73,7 +73,7 @@ extension CalibratedGrayColorSpace {
 }
 
 extension CalibratedGrayColorSpace {
-    
+
     @inlinable
     var localizedName: String? {
         return "Doggie Calibrated Gray Color Space (white = \(cieXYZ.white.point), gamma = \(gamma))"
@@ -81,7 +81,7 @@ extension CalibratedGrayColorSpace {
 }
 
 extension CalibratedGrayColorSpace {
-    
+
     @inlinable
     func hash(into hasher: inout Hasher) {
         hasher.combine("CalibratedGrayColorSpace")
@@ -91,7 +91,7 @@ extension CalibratedGrayColorSpace {
 }
 
 extension CalibratedGrayColorSpace {
-    
+
     @inlinable
     var linearTone: CalibratedGrayColorSpace {
         return CalibratedGrayColorSpace(cieXYZ, gamma: 1)
@@ -99,24 +99,24 @@ extension CalibratedGrayColorSpace {
 }
 
 extension CalibratedGrayColorSpace {
-    
+
     @inlinable
     func convertToLinear(_ color: GrayColorModel) -> GrayColorModel {
         return GrayColorModel(white: exteneded(color.white) { pow($0, gamma) })
     }
-    
+
     @inlinable
     func convertFromLinear(_ color: GrayColorModel) -> GrayColorModel {
         return GrayColorModel(white: exteneded(color.white) { pow($0, 1 / gamma) })
     }
-    
+
     @inlinable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         let normalizeMatrix = cieXYZ.normalizeMatrix
         let _white = cieXYZ.white * normalizeMatrix
         return XYZColorModel(luminance: color.white, point: _white.point) * normalizeMatrix.inverse
     }
-    
+
     @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         let normalized = color * cieXYZ.normalizeMatrix

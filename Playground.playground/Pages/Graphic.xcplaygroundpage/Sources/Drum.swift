@@ -7,27 +7,27 @@ private let path = try! Shape(code: "M83.426 0.439c0.368-0.038 0.564-0.068 0.806
 
 
 public func drum(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
-    
+
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
-    
+
     context.transform = SDTransform.scale(x: Double(width) / 100, y: Double(height) / 100)
-    
+
     context.draw(shape: path, winding: .nonZero, color: RGBColorModel(red: 0/255, green: 0/255, blue: 0/255))
-    
+
     return context.image
 }
 
 
 public func drum_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
-    
+
     let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
-    
+
     context.transform = SDTransform.scale(x: Double(width) / 100, y: Double(height) / 100)
-    
+
     context.draw(shape: path, winding: .nonZero, color: RGBColorModel(red: 0/255, green: 0/255, blue: 0/255))
-    
+
     try context.render()
-    
+
     return context.image
 }
 

@@ -24,28 +24,28 @@
 //
 
 public protocol KeyValueCollection : Collection where Element == (key: Key, value: Value) {
-    
+
     associatedtype Key
-    
+
     associatedtype Value
-    
+
     associatedtype Keys: Collection = DefaultKeysCollection<Self> where Keys.Element == Key
-    
+
     associatedtype Values: Collection = DefaultValuesCollection<Self> where Values.Element == Value
-    
+
     var keys: Keys { get }
-    
+
     var values: Values { get }
-    
+
     func index(forKey key: Key) -> Index?
-    
+
     subscript(key: Key) -> Value? { get }
-    
+
     subscript(key: Key, default defaultValue: @autoclosure () -> Value) -> Value { get }
 }
 
 extension KeyValueCollection where Keys == DefaultKeysCollection<Self> {
-    
+
     @inlinable
     public var keys: Keys {
         return DefaultKeysCollection(self)
@@ -53,7 +53,7 @@ extension KeyValueCollection where Keys == DefaultKeysCollection<Self> {
 }
 
 extension KeyValueCollection where Values == DefaultValuesCollection<Self> {
-    
+
     @inlinable
     public var values: Values {
         return DefaultValuesCollection(self)
@@ -61,13 +61,13 @@ extension KeyValueCollection where Values == DefaultValuesCollection<Self> {
 }
 
 extension KeyValueCollection {
-    
+
     @inlinable
     public subscript(key: Key) -> Value? {
         guard let index = self.index(forKey: key) else { return nil }
         return self[index].value
     }
-    
+
     @inlinable
     public subscript(key: Key, default defaultValue: @autoclosure () -> Value) -> Value {
         return self[key] ?? defaultValue()
@@ -75,69 +75,69 @@ extension KeyValueCollection {
 }
 
 extension Dictionary: KeyValueCollection {
-    
+
 }
 
 @_fixed_layout
 public struct DefaultKeysCollection<Base: KeyValueCollection> : Collection {
-    
+
     public typealias Index = Base.Index
-    
+
     public typealias Element = Base.Key
-    
+
     @usableFromInline
     internal var base: Base
-    
+
     @inlinable
     internal init(_ base: Base) {
         self.base = base
     }
-    
+
     @inlinable
     public var startIndex: Index {
         return base.startIndex
     }
-    
+
     @inlinable
     public var endIndex: Index {
         return base.endIndex
     }
-    
+
     @inlinable
     public var count: Int {
         return base.count
     }
-    
+
     @inlinable
     public subscript(position: Index) -> Element {
         return base[position].key
     }
-    
+
     @inlinable
     public func index(after i: Index) -> Index {
         return base.index(after: i)
     }
-    
+
     @inlinable
     public func index(_ i: Index, offsetBy n: Int) -> Index {
         return base.index(i, offsetBy: n)
     }
-    
+
     @inlinable
     public func index(_ i: Index, offsetBy n: Int, limitedBy limit: Index) -> Index? {
         return base.index(i, offsetBy: n, limitedBy: limit)
     }
-    
+
     @inlinable
     public func distance(from start: Index, to end: Index) -> Int {
         return base.distance(from: start, to: end)
     }
-    
+
     @inlinable
     public var indices: Base.Indices {
         return base.indices
     }
-    
+
     @inlinable
     public func contains(_ element: Base.Key) -> Bool {
         return base.index(forKey: element) != nil
@@ -145,7 +145,7 @@ public struct DefaultKeysCollection<Base: KeyValueCollection> : Collection {
 }
 
 extension DefaultKeysCollection : BidirectionalCollection where Base : BidirectionalCollection {
-    
+
     @inlinable
     public func index(before i: Index) -> Index {
         return base.index(before: i)
@@ -153,64 +153,64 @@ extension DefaultKeysCollection : BidirectionalCollection where Base : Bidirecti
 }
 
 extension DefaultKeysCollection : RandomAccessCollection where Base : RandomAccessCollection {
-    
+
 }
 
 @_fixed_layout
 public struct DefaultValuesCollection<Base: KeyValueCollection> : Collection {
-    
+
     public typealias Index = Base.Index
-    
+
     public typealias Element = Base.Value
-    
+
     @usableFromInline
     internal var base: Base
-    
+
     @inlinable
     internal init(_ base: Base) {
         self.base = base
     }
-    
+
     @inlinable
     public var startIndex: Index {
         return base.startIndex
     }
-    
+
     @inlinable
     public var endIndex: Index {
         return base.endIndex
     }
-    
+
     @inlinable
     public var count: Int {
         return base.count
     }
-    
+
     @inlinable
     public subscript(position: Index) -> Element {
         return base[position].value
     }
-    
+
     @inlinable
     public func index(after i: Index) -> Index {
         return base.index(after: i)
     }
-    
+
     @inlinable
     public func index(_ i: Index, offsetBy n: Int) -> Index {
         return base.index(i, offsetBy: n)
     }
-    
+
     @inlinable
     public func index(_ i: Index, offsetBy n: Int, limitedBy limit: Index) -> Index? {
         return base.index(i, offsetBy: n, limitedBy: limit)
     }
-    
+
     @inlinable
     public func distance(from start: Index, to end: Index) -> Int {
         return base.distance(from: start, to: end)
     }
-    
+
     @inlinable
     public var indices: Base.Indices {
         return base.indices
@@ -218,7 +218,7 @@ public struct DefaultValuesCollection<Base: KeyValueCollection> : Collection {
 }
 
 extension DefaultValuesCollection : BidirectionalCollection where Base : BidirectionalCollection {
-    
+
     @inlinable
     public func index(before i: Index) -> Index {
         return base.index(before: i)
@@ -226,5 +226,5 @@ extension DefaultValuesCollection : BidirectionalCollection where Base : Bidirec
 }
 
 extension DefaultValuesCollection : RandomAccessCollection where Base : RandomAccessCollection {
-    
+
 }

@@ -24,16 +24,16 @@
 //
 
 public struct OptionOneCollection<T> : RandomAccessCollection {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public let value: T?
-    
+
     @inlinable
     public init(_ value: T?) {
         self.value = value
     }
-    
+
     @inlinable
     public var startIndex : Int {
         return 0
@@ -46,12 +46,12 @@ public struct OptionOneCollection<T> : RandomAccessCollection {
     public var count : Int {
         return value == nil ? 0 : 1
     }
-    
+
     @inlinable
     public subscript(position: Int) -> T {
         return value!
     }
-    
+
     @inlinable
     public var underestimatedCount: Int {
         return value == nil ? 0 : 1

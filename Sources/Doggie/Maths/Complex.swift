@@ -24,10 +24,10 @@
 //
 
 public struct Complex : Hashable {
-    
+
     public var real: Double
     public var imag: Double
-    
+
     @inlinable
     @inline(__always)
     public init() {
@@ -61,14 +61,14 @@ public struct Complex : Hashable {
 }
 
 extension Complex {
-    
+
     @inlinable
     @inline(__always)
     public init(magnitude: Double, phase: Double) {
         self.real = magnitude * cos(phase)
         self.imag = magnitude * sin(phase)
     }
-    
+
     @_transparent
     public var magnitude: Double {
         get {
@@ -78,7 +78,7 @@ extension Complex {
             self = Complex(magnitude: newValue, phase: phase)
         }
     }
-    
+
     @_transparent
     public var phase: Double {
         get {
@@ -91,19 +91,19 @@ extension Complex {
 }
 
 extension Complex: CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
-        
+
         var print = ""
-        
+
         switch real {
         case 0: break
         case 1: "1.0".write(to: &print)
         case -1: "-1.0".write(to: &print)
         default: String(format: "%.2f", real).write(to: &print)
         }
-        
+
         if imag != 0 {
             if !print.isEmpty && imag.sign == .plus {
                 "+".write(to: &print)
@@ -114,7 +114,7 @@ extension Complex: CustomStringConvertible {
             default: String(format: "%.2f𝒊", imag).write(to: &print)
             }
         }
-        
+
         if print.isEmpty {
             print = "0.0"
         }
@@ -123,7 +123,7 @@ extension Complex: CustomStringConvertible {
 }
 
 extension Complex : Codable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -131,7 +131,7 @@ extension Complex : Codable {
         self.real = try container.decode(Double.self)
         self.imag = try container.decode(Double.self)
     }
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -142,9 +142,9 @@ extension Complex : Codable {
 }
 
 extension Complex : Multiplicative, ScalarMultiplicative {
-    
+
     public typealias Scalar = Double
-    
+
     @_transparent
     public static var zero: Complex {
         return Complex()

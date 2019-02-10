@@ -24,24 +24,24 @@
 //
 
 public struct Color<Model : ColorModelProtocol> : ColorProtocol, Hashable {
-    
+
     public var colorSpace: Doggie.ColorSpace<Model>
-    
+
     public var color: Model
-    
+
     public var opacity: Double {
         didSet {
             opacity = opacity.clamped(to: 0...1)
         }
     }
-    
+
     @inlinable
     public init<P : ColorPixelProtocol>(colorSpace: Doggie.ColorSpace<Model>, color: P) where P.Model == Model {
         self.colorSpace = colorSpace
         self.color = color.color
         self.opacity = color.opacity
     }
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model>, color: Model, opacity: Double = 1) {
         self.colorSpace = colorSpace
@@ -51,17 +51,17 @@ public struct Color<Model : ColorModelProtocol> : ColorProtocol, Hashable {
 }
 
 extension Color where Model == XYZColorModel {
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, x: Double, y: Double, z: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: XYZColorModel(x: x, y: y, z: z), opacity: opacity)
     }
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, luminance: Double, point: Point, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: XYZColorModel(luminance: luminance, point: point), opacity: opacity)
     }
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, luminance: Double, x: Double, y: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: XYZColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
@@ -69,12 +69,12 @@ extension Color where Model == XYZColorModel {
 }
 
 extension Color where Model == YxyColorModel {
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, luminance: Double, point: Point, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: YxyColorModel(luminance: luminance, point: point), opacity: opacity)
     }
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, luminance: Double, x: Double, y: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: YxyColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
@@ -82,12 +82,12 @@ extension Color where Model == YxyColorModel {
 }
 
 extension Color where Model == LabColorModel {
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, lightness: Double, a: Double, b: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: LabColorModel(lightness: lightness, a: a, b: b), opacity: opacity)
     }
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: LabColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
@@ -95,12 +95,12 @@ extension Color where Model == LabColorModel {
 }
 
 extension Color where Model == LuvColorModel {
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, lightness: Double, u: Double, v: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: LuvColorModel(lightness: lightness, u: u, v: v), opacity: opacity)
     }
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: LuvColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
@@ -108,7 +108,7 @@ extension Color where Model == LuvColorModel {
 }
 
 extension Color where Model == GrayColorModel {
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, white: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
@@ -116,12 +116,12 @@ extension Color where Model == GrayColorModel {
 }
 
 extension Color where Model == RGBColorModel {
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model> = .default, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
@@ -129,7 +129,7 @@ extension Color where Model == RGBColorModel {
 }
 
 extension Color where Model == CMYColorModel {
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
@@ -137,7 +137,7 @@ extension Color where Model == CMYColorModel {
 }
 
 extension Color where Model == CMYKColorModel {
-    
+
     @inlinable
     public init(colorSpace: Doggie.ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
@@ -145,7 +145,7 @@ extension Color where Model == CMYKColorModel {
 }
 
 extension Color where Model == GrayColorModel {
-    
+
     @inlinable
     public var white: Double {
         get {
@@ -158,7 +158,7 @@ extension Color where Model == GrayColorModel {
 }
 
 extension Color where Model == RGBColorModel {
-    
+
     @inlinable
     public var red: Double {
         get {
@@ -168,7 +168,7 @@ extension Color where Model == RGBColorModel {
             color.red = newValue
         }
     }
-    
+
     @inlinable
     public var green: Double {
         get {
@@ -178,7 +178,7 @@ extension Color where Model == RGBColorModel {
             color.green = newValue
         }
     }
-    
+
     @inlinable
     public var blue: Double {
         get {
@@ -191,7 +191,7 @@ extension Color where Model == RGBColorModel {
 }
 
 extension Color where Model == RGBColorModel {
-    
+
     @inlinable
     public var hue: Double {
         get {
@@ -201,7 +201,7 @@ extension Color where Model == RGBColorModel {
             color.hue = newValue
         }
     }
-    
+
     @inlinable
     public var saturation: Double {
         get {
@@ -211,7 +211,7 @@ extension Color where Model == RGBColorModel {
             color.saturation = newValue
         }
     }
-    
+
     @inlinable
     public var brightness: Double {
         get {
@@ -224,7 +224,7 @@ extension Color where Model == RGBColorModel {
 }
 
 extension Color where Model == CMYColorModel {
-    
+
     @inlinable
     public var cyan: Double {
         get {
@@ -234,7 +234,7 @@ extension Color where Model == CMYColorModel {
             color.cyan = newValue
         }
     }
-    
+
     @inlinable
     public var magenta: Double {
         get {
@@ -244,7 +244,7 @@ extension Color where Model == CMYColorModel {
             color.magenta = newValue
         }
     }
-    
+
     @inlinable
     public var yellow: Double {
         get {
@@ -257,7 +257,7 @@ extension Color where Model == CMYColorModel {
 }
 
 extension Color where Model == CMYKColorModel {
-    
+
     @inlinable
     public var cyan: Double {
         get {
@@ -267,7 +267,7 @@ extension Color where Model == CMYKColorModel {
             color.cyan = newValue
         }
     }
-    
+
     @inlinable
     public var magenta: Double {
         get {
@@ -277,7 +277,7 @@ extension Color where Model == CMYKColorModel {
             color.magenta = newValue
         }
     }
-    
+
     @inlinable
     public var yellow: Double {
         get {
@@ -287,7 +287,7 @@ extension Color where Model == CMYKColorModel {
             color.yellow = newValue
         }
     }
-    
+
     @inlinable
     public var black: Double {
         get {
@@ -300,7 +300,7 @@ extension Color where Model == CMYKColorModel {
 }
 
 extension Color {
-    
+
     @inlinable
     public func with(opacity: Double) -> Color {
         return Color(colorSpace: colorSpace, color: color, opacity: opacity)
@@ -308,17 +308,17 @@ extension Color {
 }
 
 extension Color {
-    
+
     @inlinable
     public static var numberOfComponents: Int {
         return Model.numberOfComponents + 1
     }
-    
+
     @inlinable
     public var numberOfComponents: Int {
         return Color.numberOfComponents
     }
-    
+
     @inlinable
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         if i < Model.numberOfComponents {
@@ -329,12 +329,12 @@ extension Color {
             fatalError()
         }
     }
-    
+
     @inlinable
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         return Color.rangeOfComponent(i)
     }
-    
+
     @inlinable
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
@@ -345,7 +345,7 @@ extension Color {
             fatalError()
         }
     }
-    
+
     @inlinable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
@@ -359,7 +359,7 @@ extension Color {
 }
 
 extension Color {
-    
+
     @inlinable
     public func normalizedComponent(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
@@ -370,7 +370,7 @@ extension Color {
             fatalError()
         }
     }
-    
+
     @inlinable
     public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
@@ -384,7 +384,7 @@ extension Color {
 }
 
 extension Color {
-    
+
     @inlinable
     public var cieXYZ: Color<XYZColorModel> {
         return Color<XYZColorModel>(colorSpace: colorSpace.cieXYZ, color: colorSpace.convertToXYZ(color), opacity: opacity)
@@ -392,7 +392,7 @@ extension Color {
 }
 
 extension Color {
-    
+
     @inlinable
     public func linearTone() -> Color {
         return Color(colorSpace: colorSpace.linearTone, color: colorSpace.convertToLinear(color), opacity: opacity)
@@ -400,7 +400,7 @@ extension Color {
 }
 
 extension Color {
-    
+
     @inlinable
     public var isOpaque: Bool {
         return opacity >= 1
@@ -408,7 +408,7 @@ extension Color {
 }
 
 extension Color {
-    
+
     @inlinable
     public func convert<Model>(to colorSpace: Doggie.ColorSpace<Model>, intent: RenderingIntent = .default) -> Color<Model> {
         return Color<Model>(colorSpace: colorSpace, color: self.colorSpace.convert(self.color, to: colorSpace, intent: intent), opacity: self.opacity)
@@ -416,14 +416,14 @@ extension Color {
 }
 
 extension Color {
-    
+
     @inlinable
     public func blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Color {
         let source = source.convert(to: colorSpace, intent: .default)
         let color = Float64ColorPixel(color: self.color, opacity: self.opacity).blended(source: Float64ColorPixel(color: source.color, opacity: source.opacity), compositingMode: compositingMode, blendMode: blendMode)
         return Color(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
     }
-    
+
     @inlinable
     public mutating func blend<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) {
         self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)

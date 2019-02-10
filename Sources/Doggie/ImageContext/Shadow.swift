@@ -24,45 +24,45 @@
 //
 
 extension ImageContext {
-    
+
     @_transparent
     @usableFromInline
     var isShadow: Bool {
         return shadowColor.opacity > 0 && shadowBlur > 0
     }
-    
+
     @inlinable
     @inline(__always)
     func _drawWithShadow(stencil: MappedBuffer<Float>, color: Float64ColorPixel<Pixel.Model>) {
-        
+
         let width = self.width
         let height = self.height
         let convolutionAlgorithm = self.convolutionAlgorithm
-        
+
         let shadowColor = Float64ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
         let shadowOffset = self.shadowOffset
         let shadowBlur = self.shadowBlur
-        
+
         let filter = GaussianBlurFilter(Float(0.5 * shadowBlur))
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
-        
+
         let shadow_layer = StencilTexture(width: width, height: height, pixels: stencil, resamplingAlgorithm: .linear).convolution(horizontal: filter, vertical: filter, algorithm: convolutionAlgorithm)
-        
+
         stencil.withUnsafeBufferPointer { stencil in
-            
+
             guard var stencil = stencil.baseAddress else { return }
-            
+
             self._withUnsafePixelBlender { blender in
-                
+
                 var blender = blender
-                
+
                 for y in 0..<height {
                     for x in 0..<width {
                         blender.draw { () -> Float64ColorPixel<Pixel.Model>? in
-                            
+
                             let _shadow = shadow_layer.pixel(Point(x: x, y: y) + _offset)
                             guard _shadow > 0 else { return nil }
-                            
+
                             var shadowColor = shadowColor
                             shadowColor.opacity *= Double(_shadow)
                             return shadowColor
@@ -79,40 +79,40 @@ extension ImageContext {
             }
         }
     }
-    
+
     @inlinable
     @inline(__always)
     func _drawWithShadow(texture: Texture<Pixel>) {
-        
+
         let width = self.width
         let height = self.height
         let convolutionAlgorithm = self.convolutionAlgorithm
-        
+
         let shadowColor = Float64ColorPixel(self.shadowColor.convert(to: colorSpace, intent: renderingIntent))
         let shadowOffset = self.shadowOffset
         let shadowBlur = self.shadowBlur
-        
+
         let filter = GaussianBlurFilter(Float(0.5 * shadowBlur))
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
-        
+
         var shadow_layer = StencilTexture<Float>(texture: texture).convolution(horizontal: filter, vertical: filter, algorithm: convolutionAlgorithm)
         shadow_layer.resamplingAlgorithm = .linear
-        
+
         texture.withUnsafeBufferPointer { source in
-            
+
             guard var source = source.baseAddress else { return }
-            
+
             self._withUnsafePixelBlender { blender in
-                
+
                 var blender = blender
-                
+
                 for y in 0..<height {
                     for x in 0..<width {
                         blender.draw { () -> Float64ColorPixel<Pixel.Model>? in
-                            
+
                             let _shadow = shadow_layer.pixel(Point(x: x, y: y) + _offset)
                             guard _shadow > 0 else { return nil }
-                            
+
                             var shadowColor = shadowColor
                             shadowColor.opacity *= Double(_shadow)
                             return shadowColor

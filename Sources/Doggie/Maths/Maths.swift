@@ -106,27 +106,27 @@ public func isPrime(_ n: UInt) -> Bool {
 // MARK: Polynomial
 
 public struct Degree2Roots : Sequence, IteratorProtocol {
-    
+
     public var values: (Double?, Double?)
-    
+
     @inlinable
     @inline(__always)
     public init() {
         self.values = (nil, nil)
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_ a: Double) {
         self.values = (a, nil)
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_ a: Double, _ b: Double) {
         self.values = (a, b)
     }
-    
+
     @inlinable
     @inline(__always)
     public mutating func next() -> Double? {
@@ -172,7 +172,7 @@ public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, 
     let de0 = b2 - 3 * c
     let de1 = 2 * b3 - 9 * c * b + 27 * d
     let de2 = de1 * de1 - 4 * de0 * de0 * de0
-    
+
     if de2.sign == .minus { // delta > 0, three real roots
         let m = b / 3
         let p = -de0 / 3
@@ -190,7 +190,7 @@ public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, 
         let k = m - s_cos1 - s_cos3
         return (s_cos2 - m, (m + k, s_cos1 * s_cos3 + m * k))
     }
-    
+
     let c1 = cbrt(0.5 * (de1 + sqrt(de2)))
     let c2 = cbrt(0.5 * (de1 - sqrt(de2)))
     let c3 = c1 + c2
@@ -256,7 +256,7 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     let de0 = b2 - 3 * c
     let de1 = 2 * b3 - 9 * c * b + 27 * d
     let de2 = de1 * de1 - 4 * de0 * de0 * de0
-    
+
     if de2.sign == .minus { // delta > 0, three real roots
         let m = b / 3
         let p = -de0 / 3
@@ -267,7 +267,7 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
         let u = Double.pi * 2 / 3
         return [s * cos(t) - m, s * cos(t - u) - m, s * cos(t - 2 * u) - m]
     }
-    
+
     let c1 = cbrt(0.5 * (de1 + sqrt(de2)))
     let c2 = cbrt(0.5 * (de1 - sqrt(de2)))
     let c3 = c1 + c2
@@ -295,7 +295,7 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
         }
         return result
     }
-    
+
     let _d2 = degree4decompose(b, c, d, e)
     return Array(Set(degree2roots(_d2.0.0, _d2.0.1).concat(degree2roots(_d2.1.0, _d2.1.1))))
 }

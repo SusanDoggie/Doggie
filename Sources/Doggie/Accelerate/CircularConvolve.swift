@@ -32,10 +32,10 @@ public func Radix2CircularConvolveLength<T: FixedWidthInteger>(_ x: T, _ y: T) -
 @inlinable
 @inline(__always)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
-    
+
     let length = 1 << level
     let half = length >> 1
-    
+
     if _slowPath(signal_count == 0 || kernel_count == 0) {
         var output = output
         for _ in 0..<length {
@@ -44,18 +44,18 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signa
         }
         return
     }
-    
+
     var _sreal = temp
     var _simag = temp + temp_stride
     var _kreal = output
     var _kimag = output + out_stride
-    
+
     let s_stride = temp_stride << 1
     let k_stride = out_stride << 1
-    
+
     HalfRadix2CooleyTukey(level, signal, signal_stride, signal_count, _sreal, _simag, s_stride)
     HalfRadix2CooleyTukey(level, kernel, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
-    
+
     let m = 1 / T(length)
     _kreal.pointee *= m * _sreal.pointee
     _kimag.pointee *= m * _simag.pointee
@@ -71,16 +71,16 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signa
         _kreal.pointee = _sr * _kr - _si * _ki
         _kimag.pointee = _sr * _ki + _si * _kr
     }
-    
+
     HalfInverseRadix2CooleyTukey(level, output, out_stride)
 }
 
 @inlinable
 @inline(__always)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
-    
+
     let length = 1 << level
-    
+
     if _slowPath(signal_count == 0 || kernel_count == 0) {
         var _real = _real
         var _imag = _imag
@@ -92,18 +92,18 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal
         }
         return
     }
-    
+
     var _sreal = treal
     var _simag = timag
     var _kreal = _real
     var _kimag = _imag
-    
+
     let s_stride = temp_stride
     let k_stride = out_stride
-    
+
     Radix2CooleyTukey(level, sreal, simag, signal_stride, signal_count, _sreal, _simag, s_stride)
     Radix2CooleyTukey(level, kreal, kimag, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
-    
+
     let m = 1 / T(length)
     for _ in 0..<length {
         let _sr = _sreal.pointee
@@ -117,17 +117,17 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal
         _kreal += k_stride
         _kimag += k_stride
     }
-    
+
     InverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
 }
 
 @inlinable
 @inline(__always)
 public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ n: T, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
-    
+
     let length = 1 << level
     let half = length >> 1
-    
+
     if _slowPath(in_count == 0) {
         var output = output
         for _ in 0..<length {
@@ -136,12 +136,12 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
         }
         return
     }
-    
+
     var _treal = output
     var _timag = output + out_stride
     let t_stride = out_stride << 1
     HalfRadix2CooleyTukey(level, input, in_stride, in_count, _treal, _timag, t_stride)
-    
+
     let m = 1 / T(length)
     _treal.pointee = m * T.pow(_treal.pointee, n)
     _timag.pointee = m * T.pow(_timag.pointee, n)
@@ -155,16 +155,16 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
         _treal.pointee = _pow * T.cos(_arg)
         _timag.pointee = _pow * T.sin(_arg)
     }
-    
+
     HalfInverseRadix2CooleyTukey(level, output, out_stride)
 }
 
 @inlinable
 @inline(__always)
 public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ n: T, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
-    
+
     let length = 1 << level
-    
+
     if _slowPath(in_count == 0) {
         var _real = _real
         var _imag = _imag
@@ -176,9 +176,9 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
         }
         return
     }
-    
+
     Radix2CooleyTukey(level, real, imag, in_stride, in_count, _real, _imag, out_stride)
-    
+
     var _treal = _real
     var _timag = _imag
     let m = 1 / T(length)
@@ -192,17 +192,17 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
         _treal += out_stride
         _timag += out_stride
     }
-    
+
     InverseRadix2CooleyTukey(level, _real, _imag, out_stride)
 }
 
 @inlinable
 @inline(__always)
 public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
-    
+
     let length = 1 << level
     let half = length >> 1
-    
+
     if _slowPath(signal_count == 0) {
         var output = output
         for _ in 0..<length {
@@ -211,16 +211,16 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ si
         }
         return
     }
-    
+
     var _treal = output
     var _timag = output + out_stride
     var _kreal = kreal
     var _kimag = kimag
-    
+
     let t_stride = out_stride << 1
-    
+
     HalfRadix2CooleyTukey(level, signal, signal_stride, signal_count, _treal, _timag, t_stride)
-    
+
     _treal.pointee *= _kreal.pointee
     _timag.pointee *= _kimag.pointee
     for _ in 1..<half {
@@ -235,16 +235,16 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ si
         _treal.pointee = _tr * _kr - _ti * _ki
         _timag.pointee = _tr * _ki + _ti * _kr
     }
-    
+
     HalfInverseRadix2CooleyTukey(level, output, out_stride)
 }
 
 @inlinable
 @inline(__always)
 public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
-    
+
     let length = 1 << level
-    
+
     if _slowPath(signal_count == 0) {
         var _real = _real
         var _imag = _imag
@@ -256,14 +256,14 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ sr
         }
         return
     }
-    
+
     Radix2CooleyTukey(level, sreal, simag, signal_stride, signal_count, _real, _imag, out_stride)
-    
+
     var _oreal = _real
     var _oimag = _imag
     var _kreal = kreal
     var _kimag = kimag
-    
+
     for _ in 0..<length {
         let _tr = _oreal.pointee
         let _ti = _oimag.pointee
@@ -276,6 +276,6 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ sr
         _kreal += kernel_stride
         _kimag += kernel_stride
     }
-    
+
     InverseRadix2CooleyTukey(level, _real, _imag, out_stride)
 }

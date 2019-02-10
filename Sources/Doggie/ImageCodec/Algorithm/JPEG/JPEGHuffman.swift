@@ -24,16 +24,16 @@
 //
 
 struct JPEGHuffmanTable : ByteCodable {
-    
+
     var tables: [Table]
-    
+
     init(from data: inout Data) throws {
         self.tables = []
         while data.count != 0 {
             tables.append(try data.decode(Table.self))
         }
     }
-    
+
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         for table in tables {
             stream.encode(table)
@@ -42,30 +42,30 @@ struct JPEGHuffmanTable : ByteCodable {
 }
 
 extension JPEGHuffmanTable {
-    
+
     struct Table : ByteCodable {
-        
+
         var info: UInt8
-        
+
         var table: [Key: UInt8] = [:]
-        
+
         init(from data: inout Data) throws {
-            
+
             self.info = try data.decode(UInt8.self)
-            
+
             let count = (
                 try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
                 try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
                 try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self),
                 try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self)
             )
-            
+
             try withUnsafeBytes(of: count) { count in
-                
+
                 guard count.reduce(0, { $0 + Int($1) }) <= 256 else { throw ImageRep.Error.InvalidFormat("Invalid Huffman table.") }
-                
+
                 var code: UInt16 = 0
-                
+
                 for (i, _count) in count.enumerated() {
                     for _ in 0..<_count {
                         table[Key(length: UInt8(i + 1), code: code)] = try data.decode(UInt8.self)
@@ -75,13 +75,13 @@ extension JPEGHuffmanTable {
                 }
             }
         }
-        
+
         func write<Target: ByteOutputStream>(to stream: inout Target) {
-            
+
             stream.encode(info)
-            
+
             let group = Dictionary(grouping: table) { $0.key.length }
-            
+
             let b1 = group[1]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
             let b2 = group[2]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
             let b3 = group[3]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
@@ -98,7 +98,7 @@ extension JPEGHuffmanTable {
             let b14 = group[14]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
             let b15 = group[15]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
             let b16 = group[16]?.sorted(by: { $0.key.code }).map { $0.value } ?? []
-            
+
             stream.encode(UInt8(b1.count))
             stream.encode(UInt8(b2.count))
             stream.encode(UInt8(b3.count))
@@ -115,7 +115,7 @@ extension JPEGHuffmanTable {
             stream.encode(UInt8(b14.count))
             stream.encode(UInt8(b15.count))
             stream.encode(UInt8(b16.count))
-            
+
             stream.write(b1)
             stream.write(b2)
             stream.write(b3)
@@ -132,22 +132,22 @@ extension JPEGHuffmanTable {
             stream.write(b14)
             stream.write(b15)
             stream.write(b16)
-            
+
         }
     }
 }
 
 extension JPEGHuffmanTable {
-    
+
     struct Key : Hashable {
-        
+
         var length: UInt8
         var code: UInt16
     }
 }
 
 extension JPEGHuffmanTable.Key : CustomStringConvertible {
-    
+
     var description: String {
         let str = String(code, radix: 2)
         return repeatElement("0", count: Int(length) - str.count).joined() + str
@@ -155,7 +155,7 @@ extension JPEGHuffmanTable.Key : CustomStringConvertible {
 }
 
 extension JPEGHuffmanTable.Table : CustomStringConvertible {
-    
+
     var description: String {
         return "JPEGHuffmanTable(info: \(info), table: [\(table.map { "\($0): \(String($1, radix: 16))" }.joined(separator: ", "))])"
     }

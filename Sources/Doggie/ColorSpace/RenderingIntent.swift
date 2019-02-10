@@ -24,14 +24,14 @@
 //
 
 public enum RenderingIntent {
-    
+
     case perceptual
     case absoluteColorimetric
     case relativeColorimetric
 }
 
 extension RenderingIntent {
-    
+
     @inlinable
     public static var `default` : RenderingIntent {
         return .perceptual

@@ -24,28 +24,28 @@
 //
 
 protocol ImageRepBase {
-    
+
     var width: Int { get }
-    
+
     var height: Int { get }
-    
+
     var resolution: Resolution { get }
-    
+
     var colorSpace: AnyColorSpace { get }
-    
+
     var numberOfPages: Int { get }
-    
+
     func page(_ index: Int) -> ImageRepBase
-    
+
     func image(fileBacked: Bool) -> AnyImage
 }
 
 extension ImageRepBase {
-    
+
     var numberOfPages: Int {
         return 1
     }
-    
+
     func page(_ index: Int) -> ImageRepBase {
         precondition(index == 0, "Index out of range.")
         return self
@@ -53,26 +53,26 @@ extension ImageRepBase {
 }
 
 public struct ImageRep {
-    
+
     private let base: ImageRepBase
-    
+
     private let cache = Cache()
-    
+
     private init(base: ImageRepBase) {
         self.base = base
     }
 }
 
 extension ImageRep {
-    
+
     @usableFromInline
     class Cache {
-        
+
         let lck = SDLock()
-        
+
         var image: AnyImage?
         var pages: [Int: ImageRep]
-        
+
         @usableFromInline
         init() {
             self.image = nil
@@ -82,48 +82,48 @@ extension ImageRep {
 }
 
 extension ImageRep {
-    
+
     public enum Error : Swift.Error {
-        
+
         case UnknownFormat
         case InvalidFormat(String)
         case Unsupported(String)
         case DecoderError(String)
     }
-    
+
     public init(data: Data) throws {
-        
+
         let decoders: [ImageRepDecoder.Type] = [
             BMPDecoder.self,
             TIFFDecoder.self,
             PNGDecoder.self,
             //JPEGDecoder.self,
             ]
-        
+
         for Decoder in decoders {
             if let decoder = try Decoder.init(data: data) {
                 self.base = decoder
                 return
             }
         }
-        
+
         throw Error.UnknownFormat
     }
 }
 
 extension ImageRep {
-    
+
     public init<Pixel>(image: Image<Pixel>) {
         self.base = AnyImage(image)
     }
-    
+
     public init(image: AnyImage) {
         self.base = image
     }
 }
 
 extension AnyImage : ImageRepBase {
-    
+
     func image(fileBacked: Bool) -> AnyImage {
         var copy = self
         copy.fileBacked = fileBacked
@@ -132,11 +132,11 @@ extension AnyImage : ImageRepBase {
 }
 
 extension ImageRep {
-    
+
     public var numberOfPages: Int {
         return base.numberOfPages
     }
-    
+
     public func page(_ index: Int) -> ImageRep {
         return cache.lck.synchronized {
             if cache.pages[index] == nil {
@@ -145,7 +145,7 @@ extension ImageRep {
             return cache.pages[index]!
         }
     }
-    
+
     fileprivate func image(fileBacked: Bool) -> AnyImage {
         return cache.lck.synchronized {
             if cache.image == nil {
@@ -157,41 +157,41 @@ extension ImageRep {
 }
 
 extension ImageRep {
-    
+
     public var width: Int {
         return base.width
     }
-    
+
     public var height: Int {
         return base.height
     }
-    
+
     public var resolution: Resolution {
         return base.resolution
     }
-    
+
     public var colorSpace: AnyColorSpace {
         return base.colorSpace
     }
 }
 
 extension ImageRep {
-    
+
     public enum MediaType {
-        
+
         case bmp
-        
+
         case gif
-        
+
         case jpeg
-        
+
         case jpeg2000
-        
+
         case png
-        
+
         case tiff
     }
-    
+
     public var mediaType: MediaType? {
         guard let decoder = base as? ImageRepDecoder else { return nil }
         return decoder.mediaType
@@ -199,30 +199,30 @@ extension ImageRep {
 }
 
 extension ImageRep {
-    
+
     public enum PropertyKey {
-        
+
         case compression
-        
+
         case compressionQuality
-        
+
         case interlaced
     }
-    
+
     public enum TIFFCompressionScheme {
-        
+
         case none
-        
+
         case deflate
     }
-    
+
     public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
-        
+
         let image = base as? AnyImage ?? self.image(fileBacked: true)
         guard image.width > 0 && image.height > 0 else { return nil }
-        
+
         let Encoder: ImageRepEncoder.Type
-        
+
         switch storageType {
         case .bmp: Encoder = BMPEncoder.self
         case .gif: Encoder = GIFEncoder.self
@@ -231,60 +231,60 @@ extension ImageRep {
         case .png: Encoder = PNGEncoder.self
         case .tiff: Encoder = TIFFEncoder.self
         }
-        
+
         return Encoder.encode(image: image, properties: properties)
     }
 }
 
 extension ImageRep : CustomStringConvertible {
-    
+
     public var description: String {
         return "ImageRep(width: \(width), height: \(height), colorSpace: \(colorSpace), resolution: \(resolution), base: \(base))"
     }
 }
 
 extension AnyImage {
-    
+
     public init(imageRep: ImageRep, fileBacked: Bool = false) {
         self = imageRep.image(fileBacked: fileBacked)
     }
-    
+
     public init(data: Data, fileBacked: Bool = false) throws {
         self = try ImageRep(data: data).image(fileBacked: fileBacked)
     }
 }
 
 extension Image {
-    
+
     public func representation(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         return ImageRep(image: self).representation(using: storageType, properties: properties)
     }
 }
 
 extension AnyImage {
-    
+
     public func representation(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         return ImageRep(image: self).representation(using: storageType, properties: properties)
     }
 }
 
 extension Image {
-    
+
     public func tiffRepresentation(compression: ImageRep.TIFFCompressionScheme = .none) -> Data? {
         return self.representation(using: .tiff, properties: [.compression: compression])
     }
-    
+
     public func pngRepresentation(interlaced: Bool = false) -> Data? {
         return self.representation(using: .png, properties: [.interlaced: interlaced])
     }
 }
 
 extension AnyImage {
-    
+
     public func tiffRepresentation(compression: ImageRep.TIFFCompressionScheme = .none) -> Data? {
         return self.representation(using: .tiff, properties: [.compression: compression])
     }
-    
+
     public func pngRepresentation(interlaced: Bool = false) -> Data? {
         return self.representation(using: .png, properties: [.interlaced: interlaced])
     }

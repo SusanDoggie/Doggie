@@ -24,100 +24,100 @@
 //
 
 struct JPEGDecoder : ImageRepDecoder {
-    
+
     static var defaultColorSpace: ColorSpace<RGBColorModel> {
         return ColorSpace.sRGB
     }
-    
+
     var APP0: JPEGAPP0
-    
+
     var frame: [JPEGFrame] = []
-    
+
     var _colorSpace: ColorSpace<RGBColorModel> = JPEGDecoder.defaultColorSpace
-    
+
     init?(data: Data) throws {
-        
+
         var data = data
-        
+
         guard (try? data.decode(JPEGSegment.self).marker) == .SOI else { return nil }
-        
+
         guard let _APP0 = try? data.decode(JPEGSegment.self) else { return nil }
         guard _APP0.marker == .APP0, let APP0 = try? JPEGAPP0(_APP0) else { return nil }
-        
+
         self.APP0 = APP0
-        
+
         var tables: [JPEGSegment.Marker: JPEGSegment] = [:]
-        
+
         loop: while let segment = try? data.decode(JPEGSegment.self) {
-            
+
             switch segment.marker {
-                
+
             case .APP2:
-                
+
                 guard segment.data.prefix(12).elementsEqual("ICC_PROFILE".utf8CString.lazy.map { UInt8(bitPattern: $0) }) else { continue }
                 guard let colorSpace = try? AnyColorSpace(iccData: segment.data.dropFirst(12)) else { continue }
                 guard let rgb = colorSpace.base as? ColorSpace<RGBColorModel> else { continue }
-                
+
                 _colorSpace = rgb
-                
+
             case .SOF0 ... .SOF3, .SOF5 ... .SOF7, .SOF9 ... .SOF11, .SOF13 ... .SOF15: // Start Of Frame
-                
+
                 self.frame.append(JPEGFrame(SOF: try JPEGSOF(segment), tables: tables, scan: []))
-                
+
             case .SOS: // Start Of Scan
-                
+
                 guard self.frame.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid SOS.") }
-                
+
                 self.frame.mutableLast.scan.append(JPEGScan(SOS: try JPEGSOS(segment), tables: tables, ECS: []))
                 tables = self.frame.last!.tables
-                
+
                 fallthrough
-                
+
             case .RST0 ... .RST7: // Restart
-                
+
                 guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid RST.") }
-                
+
                 let offset = zip(data, data.dropFirst()).enumerated().first { $0.1.0 == 0xFF && $0.1.1 != 0x00 }?.offset
-                
+
                 if let offset = offset {
                     self.frame.mutableLast.scan.mutableLast.ECS.append(data.popFirst(offset))
                 } else {
                     self.frame.mutableLast.scan.mutableLast.ECS.append(data)
                     break loop
                 }
-                
+
             case .DHT, .DAC, .DQT:
-                
+
                 tables[segment.marker] = segment
-                
+
             case .DNL: // Define Number of Lines
-                
+
                 guard segment.data.count == 2 else { throw ImageRep.Error.InvalidFormat("Invalid DNL.") }
                 guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid DNL.") }
-                
+
                 self.frame.mutableLast.SOF.lines = segment.data.withUnsafeBytes { $0.pointee as BEUInt16 }
-                
+
             case .EOI:
-                
+
                 break loop
-                
+
             default: break
             }
         }
-        
+
         guard frame.count == 1 else { return nil }
         // guard frame.count != 0 else { return nil }
-        
+
     }
-    
+
     var width: Int {
         return Int(self.frame[0].SOF.samplesPerLine)
     }
-    
+
     var height: Int {
         return Int(self.frame[0].SOF.lines)
     }
-    
+
     var resolution: Resolution {
         let _x = APP0.Xdensity.representingValue == 0 ? 0 : 1 / Double(APP0.Xdensity)
         let _y = APP0.Ydensity.representingValue == 0 ? 0 : 1 / Double(APP0.Ydensity)
@@ -128,15 +128,15 @@ struct JPEGDecoder : ImageRepDecoder {
         default: return Resolution(resolution: 1, unit: .point)
         }
     }
-    
+
     var colorSpace: AnyColorSpace {
         return AnyColorSpace(_colorSpace)
     }
-    
+
     var mediaType: ImageRep.MediaType {
         return .jpeg
     }
-    
+
     var differential: Bool {
         switch self.frame[0].SOF.marker {
         case .SOF0 ... .SOF3, .SOF9 ... .SOF11: return false
@@ -144,16 +144,16 @@ struct JPEGDecoder : ImageRepDecoder {
         default: fatalError()
         }
     }
-    
+
     enum Encoding {
         case baseline
         case extended
         case progressive
         case lossless
     }
-    
+
     var encoding: Encoding {
-        
+
         switch self.frame[0].SOF.marker {
         case .SOF0: return .baseline
         case .SOF1, .SOF5, .SOF9, .SOF13: return .extended
@@ -162,12 +162,12 @@ struct JPEGDecoder : ImageRepDecoder {
         default: fatalError()
         }
     }
-    
+
     enum Compression {
         case huffman
         case arithmetic
     }
-    
+
     var compression: Compression {
         switch self.frame[0].SOF.marker {
         case .SOF0 ... .SOF3, .SOF5 ... .SOF7: return .huffman
@@ -175,47 +175,47 @@ struct JPEGDecoder : ImageRepDecoder {
         default: fatalError()
         }
     }
-    
+
     func image(fileBacked: Bool) -> AnyImage {
-        
+
         let differential = self.differential
         let encoding = self.encoding
         let compression = self.compression
-        
+
         print(differential)
         print(encoding)
         print(compression)
-        
+
         let frame = self.frame[0]
-        
+
         let width = Int(frame.SOF.samplesPerLine)
         let height = Int(frame.SOF.lines)
-        
+
         let pixels = MappedBuffer<YCbCrColorPixel>(repeating: YCbCrColorPixel(), count: width * height, fileBacked: fileBacked)
-        
+
         for scan in frame.scan {
-            
+
             var tables = frame.tables
             for (key, value) in scan.tables {
                 tables[key] = value
             }
-            
+
             if let huffman = tables[.DHT].flatMap({ try? JPEGHuffmanTable($0.data) }) {
                 print(huffman)
             }
-            
+
             if let quantization = tables[.DQT].flatMap({ try? JPEGQuantizationTable($0.data) }) {
                 print(quantization)
             }
         }
-        
+
         let rgb = pixels.map { ARGB32ColorPixel(color: RGBColorModel(jpeg: $0.color), opacity: $0.opacity) }
         return AnyImage(Image(width: width, height: height, resolution: resolution, pixels: rgb, colorSpace: _colorSpace))
     }
 }
 
 extension YCbCrColorModel {
-    
+
     @inlinable
     @inline(__always)
     init(jpeg color: RGBColorModel) {
@@ -226,7 +226,7 @@ extension YCbCrColorModel {
 }
 
 extension RGBColorModel {
-    
+
     @inlinable
     @inline(__always)
     init(jpeg color: YCbCrColorModel) {
@@ -240,26 +240,26 @@ extension RGBColorModel {
 }
 
 struct JPEGAPP0 {
-    
+
     var version: (UInt8, UInt8)
     var units: UInt8
     var Xdensity: BEUInt16
     var Ydensity: BEUInt16
     var Xthumbnail: UInt8
     var Ythumbnail: UInt8
-    
+
     init(_ segment: JPEGSegment) throws {
-        
+
         var data = segment.data
-        
+
         let i0 = try data.decode(UInt8.self)
         let i1 = try data.decode(UInt8.self)
         let i2 = try data.decode(UInt8.self)
         let i3 = try data.decode(UInt8.self)
         let i4 = try data.decode(UInt8.self)
-        
+
         guard (i0, i1, i2, i3, i4) == (0x4A, 0x46, 0x49, 0x46, 0x00) else { throw ImageRep.Error.InvalidFormat("Invalid header.") }
-        
+
         self.version = (try data.decode(UInt8.self), try data.decode(UInt8.self))
         self.units = try data.decode(UInt8.self)
         self.Xdensity = try data.decode(BEUInt16.self)
@@ -267,44 +267,44 @@ struct JPEGAPP0 {
         self.Xthumbnail = try data.decode(UInt8.self)
         self.Ythumbnail = try data.decode(UInt8.self)
     }
-    
+
 }
 
 struct JPEGFrame {
-    
+
     var SOF: JPEGSOF
     var tables: [JPEGSegment.Marker: JPEGSegment]
     var scan: [JPEGScan]
 }
 
 struct JPEGScan {
-    
+
     var SOS: JPEGSOS
     var tables: [JPEGSegment.Marker: JPEGSegment]
     var ECS: [Data]
 }
 
 struct JPEGSOF {
-    
+
     var marker: JPEGSegment.Marker
     var precision: UInt8
     var lines: BEUInt16
     var samplesPerLine: BEUInt16
     var components: UInt8
     var sampling: [(UInt8, UInt8, UInt8)] = []
-    
+
     init(_ segment: JPEGSegment) throws {
-        
+
         self.marker = segment.marker
         var data = segment.data
-        
+
         self.precision = try data.decode(UInt8.self)
         self.lines = try data.decode(BEUInt16.self)
         self.samplesPerLine = try data.decode(BEUInt16.self)
         self.components = try data.decode(UInt8.self)
-        
+
         guard components == 1 || components == 3 else { throw ImageRep.Error.InvalidFormat("Invalid components count.") }
-        
+
         for _ in 0..<components {
             self.sampling.append((try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self)))
         }
@@ -312,33 +312,33 @@ struct JPEGSOF {
 }
 
 struct JPEGSOS {
-    
+
     var components: UInt8
     var selector: [(UInt8, UInt8)]
     var spectralSelection: (UInt8, UInt8)
     var successiveApproximation: UInt8
-    
+
     init(_ segment: JPEGSegment) throws {
-        
+
         var data = segment.data
-        
+
         self.components = try data.decode(UInt8.self)
-        
+
         self.selector = []
         for _ in 0..<self.components {
             self.selector.append((try data.decode(UInt8.self), try data.decode(UInt8.self)))
         }
-        
+
         self.spectralSelection = (try data.decode(UInt8.self), try data.decode(UInt8.self))
         self.successiveApproximation = try data.decode(UInt8.self)
     }
 }
 
 struct JPEGSegment : ByteCodable {
-    
+
     var marker: Marker
     var data: Data
-    
+
     init(from data: inout Data) throws {
         var byte = try data.decode(UInt8.self)
         guard byte == 0xFF else { throw ImageRep.Error.InvalidFormat("Invalid marker.") }
@@ -351,7 +351,7 @@ struct JPEGSegment : ByteCodable {
         default: self.data = data.popFirst(Int(try data.decode(BEUInt16.self)) - 2)
         }
     }
-    
+
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(0xFF as UInt8)
         stream.encode(marker)
@@ -365,23 +365,23 @@ struct JPEGSegment : ByteCodable {
 }
 
 extension JPEGSegment {
-    
+
     struct Marker: RawRepresentable, Hashable, Comparable, ExpressibleByIntegerLiteral {
-        
+
         var rawValue: UInt8
-        
+
         init(rawValue: UInt8) {
             self.rawValue = rawValue
         }
-        
+
         init(integerLiteral value: UInt8) {
             self.init(rawValue: value)
         }
-        
+
         static func < (lhs: Marker, rhs: Marker) -> Bool {
             return lhs.rawValue < rhs.rawValue
         }
-        
+
         static var SOF0: Marker { return 0xC0 }
         static var SOF1: Marker { return 0xC1 }
         static var SOF2: Marker { return 0xC2 }
@@ -448,18 +448,18 @@ extension JPEGSegment {
 }
 
 extension JPEGSegment.Marker: ByteCodable {
-    
+
     init(from data: inout Data) throws {
         self.init(rawValue: try data.decode(UInt8.self))
     }
-    
+
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(rawValue)
     }
 }
 
 extension JPEGSegment.Marker : CustomStringConvertible {
-    
+
     var description: String {
         return "0x\(String(rawValue, radix: 16).uppercased())"
     }

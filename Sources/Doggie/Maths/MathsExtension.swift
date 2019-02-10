@@ -24,144 +24,144 @@
 //
 
 extension Int8 : AdditiveArithmetic, Multiplicative {
-    
+
 }
 
 extension Int16 : AdditiveArithmetic, Multiplicative {
-    
+
 }
 
 extension Int32 : AdditiveArithmetic, Multiplicative {
-    
+
 }
 
 extension Int64 : AdditiveArithmetic, Multiplicative {
-    
+
 }
 
 extension Int : AdditiveArithmetic, Multiplicative {
-    
+
 }
 
 extension Float : ScalarProtocol {
-    
+
     public typealias Scalar = Float
-    
+
 }
 
 extension Double : ScalarProtocol {
-    
+
     public typealias Scalar = Double
-    
+
 }
 
 extension CGFloat : ScalarProtocol {
-    
+
     public typealias Scalar = CGFloat
-    
+
 }
 
 extension Complex {
-    
+
     @inlinable
     @inline(__always)
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
-        
+
         return self.real.almostZero(epsilon: epsilon, reference: reference) && self.imag.almostZero(epsilon: epsilon, reference: reference)
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: Complex, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
-        
+
         return self.real.almostEqual(other.real, epsilon: epsilon) && self.imag.almostEqual(other.imag, epsilon: epsilon)
     }
 }
 
 extension Point {
-    
+
     @inlinable
     @inline(__always)
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
-        
+
         return self.x.almostZero(epsilon: epsilon, reference: reference) && self.y.almostZero(epsilon: epsilon, reference: reference)
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: Point, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
-        
+
         return self.x.almostEqual(other.x, epsilon: epsilon) && self.y.almostEqual(other.y, epsilon: epsilon)
     }
 }
 
 extension Vector {
-    
+
     @inlinable
     @inline(__always)
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
-        
+
         return self.x.almostZero(epsilon: epsilon, reference: reference) && self.y.almostZero(epsilon: epsilon, reference: reference) && self.z.almostZero(epsilon: epsilon, reference: reference)
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: Vector, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
-        
+
         return self.x.almostEqual(other.x, epsilon: epsilon) && self.y.almostEqual(other.y, epsilon: epsilon) && self.z.almostEqual(other.z, epsilon: epsilon)
     }
 }
 
 extension Size {
-    
+
     @inlinable
     @inline(__always)
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
-        
+
         return self.width.almostZero(epsilon: epsilon, reference: reference) && self.height.almostZero(epsilon: epsilon, reference: reference)
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: Size, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
-        
+
         return self.width.almostEqual(other.width, epsilon: epsilon) && self.height.almostEqual(other.height, epsilon: epsilon)
     }
 }
 
 extension Rect {
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: Rect, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
-        
+
         return self.origin.almostEqual(other.origin, epsilon: epsilon) && self.size.almostEqual(other.size, epsilon: epsilon)
     }
 }
 
 extension Radius {
-    
+
     @inlinable
     @inline(__always)
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
-        
+
         return self.x.almostZero(epsilon: epsilon, reference: reference) && self.y.almostZero(epsilon: epsilon, reference: reference)
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: Radius, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
-        
+
         return self.x.almostEqual(other.x, epsilon: epsilon) && self.y.almostEqual(other.y, epsilon: epsilon)
     }
 }
 
 extension SDTransform {
-    
+
     @inlinable
     @inline(__always)
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
-        
+
         return self.a.almostZero(epsilon: epsilon, reference: reference)
             && self.b.almostZero(epsilon: epsilon, reference: reference)
             && self.c.almostZero(epsilon: epsilon, reference: reference)
@@ -169,11 +169,11 @@ extension SDTransform {
             && self.e.almostZero(epsilon: epsilon, reference: reference)
             && self.f.almostZero(epsilon: epsilon, reference: reference)
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: SDTransform, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
-        
+
         return self.a.almostEqual(other.a, epsilon: epsilon)
             && self.b.almostEqual(other.b, epsilon: epsilon)
             && self.c.almostEqual(other.c, epsilon: epsilon)
@@ -184,11 +184,11 @@ extension SDTransform {
 }
 
 extension Matrix {
-    
+
     @inlinable
     @inline(__always)
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
-        
+
         return self.a.almostZero(epsilon: epsilon, reference: reference)
             && self.b.almostZero(epsilon: epsilon, reference: reference)
             && self.c.almostZero(epsilon: epsilon, reference: reference)
@@ -202,11 +202,11 @@ extension Matrix {
             && self.k.almostZero(epsilon: epsilon, reference: reference)
             && self.l.almostZero(epsilon: epsilon, reference: reference)
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: Matrix, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
-        
+
         return self.a.almostEqual(other.a, epsilon: epsilon)
             && self.b.almostEqual(other.b, epsilon: epsilon)
             && self.c.almostEqual(other.c, epsilon: epsilon)
@@ -223,18 +223,18 @@ extension Matrix {
 }
 
 extension Polynomial {
-    
+
     @inlinable
     @inline(__always)
     public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
-        
+
         return self.allSatisfy { $0.almostZero(epsilon: epsilon, reference: reference) }
     }
-    
+
     @inlinable
     @inline(__always)
     public func almostEqual(_ other: Polynomial, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
-        
+
         return (0..<Swift.max(self.count, other.count)).allSatisfy { self[$0].almostEqual(other[$0], epsilon: epsilon) }
     }
 }

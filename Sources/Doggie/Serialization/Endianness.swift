@@ -24,21 +24,21 @@
 //
 
 public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
-    
+
     public var bitPattern: Base
-    
+
     @inlinable
     @inline(__always)
     public init(bitPattern: Base) {
         self.bitPattern = bitPattern
     }
-    
+
     @inlinable
     @inline(__always)
     init(representingValue: Base) {
         self.bitPattern = representingValue.bigEndian
     }
-    
+
     @_transparent
     @usableFromInline
     var representingValue: Base {
@@ -49,24 +49,24 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
             bitPattern = newValue.bigEndian
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public init(bigEndian value: BEInteger) {
         self.bitPattern = value.bitPattern
     }
-    
+
     @inlinable
     @inline(__always)
     public init(littleEndian value: BEInteger) {
         self.bitPattern = value.bitPattern.byteSwapped
     }
-    
+
     @_transparent
     public var bigEndian: BEInteger {
         return self
     }
-    
+
     @_transparent
     public var littleEndian: BEInteger {
         return BEInteger(littleEndian: self)
@@ -74,7 +74,7 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
 }
 
 extension BEInteger : CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return representingValue.description
@@ -82,7 +82,7 @@ extension BEInteger : CustomStringConvertible {
 }
 
 extension BEInteger: Decodable where Base : Decodable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -92,7 +92,7 @@ extension BEInteger: Decodable where Base : Decodable {
 }
 
 extension BEInteger: Encodable where Base : Encodable {
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -102,13 +102,13 @@ extension BEInteger: Encodable where Base : Encodable {
 }
 
 extension BEInteger: SignedNumeric where Base : SignedNumeric {
-    
+
     @inlinable
     @inline(__always)
     public static prefix func -(x: BEInteger) -> BEInteger {
         return BEInteger(representingValue: -x.representingValue)
     }
-    
+
     @inlinable
     @inline(__always)
     public mutating func negate() {
@@ -117,65 +117,65 @@ extension BEInteger: SignedNumeric where Base : SignedNumeric {
 }
 
 extension BEInteger: SignedInteger where Base : SignedInteger {
-    
+
 }
 
 extension BEInteger: UnsignedInteger where Base : UnsignedInteger {
-    
+
 }
 
 extension BEInteger {
-    
+
     @inlinable
     @inline(__always)
     public init(integerLiteral value: Base.IntegerLiteralType) {
         self.init(representingValue: Base(integerLiteral: value))
     }
-    
+
     @inlinable
     @inline(__always)
     public init?<T : BinaryInteger>(exactly source: T) {
         guard let value = Base(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
-    
+
     @inlinable
     @inline(__always)
     public init?<T : BinaryFloatingPoint>(exactly source: T) {
         guard let value = Base(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_ value: Base) {
         self.init(representingValue: value)
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T : BinaryInteger>(_ source: T) {
         self.init(representingValue: Base(source))
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T : BinaryFloatingPoint>(_ source: T) {
         self.init(representingValue: Base(source))
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T : BinaryInteger>(truncatingIfNeeded source: T) {
         self.init(representingValue: Base(truncatingIfNeeded: source))
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T : BinaryInteger>(clamping source: T) {
         self.init(representingValue: Base(clamping: source))
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_truncatingBits bits: UInt) {
@@ -184,22 +184,22 @@ extension BEInteger {
 }
 
 extension BEInteger {
-    
+
     @_transparent
     public static var isSigned: Bool {
         return Base.isSigned
     }
-    
+
     @_transparent
     public static var bitWidth: Int {
         return Base.bitWidth
     }
-    
+
     @_transparent
     public static var max: BEInteger {
         return BEInteger(representingValue: Base.max)
     }
-    
+
     @_transparent
     public static var min: BEInteger {
         return BEInteger(representingValue: Base.min)
@@ -207,32 +207,32 @@ extension BEInteger {
 }
 
 extension BEInteger {
-    
+
     @_transparent
     public var bitWidth: Int {
         return representingValue.bitWidth
     }
-    
+
     @_transparent
     public var magnitude: Base.Magnitude {
         return representingValue.magnitude
     }
-    
+
     @_transparent
     public var trailingZeroBitCount: Int {
         return representingValue.trailingZeroBitCount
     }
-    
+
     @_transparent
     public var nonzeroBitCount: Int {
         return representingValue.nonzeroBitCount
     }
-    
+
     @_transparent
     public var leadingZeroBitCount: Int {
         return representingValue.leadingZeroBitCount
     }
-    
+
     @_transparent
     public var byteSwapped: BEInteger {
         return BEInteger(representingValue: representingValue.byteSwapped)
@@ -240,66 +240,66 @@ extension BEInteger {
 }
 
 extension BEInteger {
-    
+
     @_transparent
     public var words: Base.Words {
         return self.representingValue.words
     }
-    
+
     @inlinable
     @inline(__always)
     public func distance(to other: BEInteger) -> Base.Stride {
         return self.representingValue.distance(to: other.representingValue)
     }
-    
+
     @inlinable
     @inline(__always)
     public func advanced(by n: Base.Stride) -> BEInteger {
         return BEInteger(representingValue: self.representingValue.advanced(by: n))
     }
-    
+
     @inlinable
     @inline(__always)
     public func addingReportingOverflow(_ rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.addingReportingOverflow(rhs.representingValue)
         return (BEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func subtractingReportingOverflow(_ rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.subtractingReportingOverflow(rhs.representingValue)
         return (BEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func multipliedReportingOverflow(by rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.multipliedReportingOverflow(by: rhs.representingValue)
         return (BEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func dividedReportingOverflow(by rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.dividedReportingOverflow(by: rhs.representingValue)
         return (BEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func remainderReportingOverflow(dividingBy rhs: BEInteger) -> (partialValue: BEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.remainderReportingOverflow(dividingBy: rhs.representingValue)
         return (BEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func multipliedFullWidth(by other: BEInteger) -> (high: BEInteger, low: Base.Magnitude) {
         let (high, low) = representingValue.multipliedFullWidth(by: other.representingValue)
         return (BEInteger(representingValue: high), low)
     }
-    
+
     @inlinable
     @inline(__always)
     public func dividingFullWidth(_ dividend: (high: BEInteger, low: Base.Magnitude)) -> (quotient: BEInteger, remainder: BEInteger) {
@@ -309,7 +309,7 @@ extension BEInteger {
 }
 
 extension BEInteger {
-    
+
     @inlinable
     @inline(__always)
     public static prefix func + (x: BEInteger) -> BEInteger {
@@ -433,21 +433,21 @@ extension BEInteger {
 }
 
 public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
-    
+
     public var bitPattern: Base
-    
+
     @inlinable
     @inline(__always)
     public init(bitPattern: Base) {
         self.bitPattern = bitPattern
     }
-    
+
     @inlinable
     @inline(__always)
     init(representingValue: Base) {
         self.bitPattern = representingValue.littleEndian
     }
-    
+
     @_transparent
     @usableFromInline
     var representingValue: Base {
@@ -458,24 +458,24 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
             bitPattern = newValue.littleEndian
         }
     }
-    
+
     @inlinable
     @inline(__always)
     public init(bigEndian value: LEInteger) {
         self.bitPattern = value.bitPattern.byteSwapped
     }
-    
+
     @inlinable
     @inline(__always)
     public init(littleEndian value: LEInteger) {
         self.bitPattern = value.bitPattern
     }
-    
+
     @_transparent
     public var bigEndian: LEInteger {
         return LEInteger(bigEndian: self)
     }
-    
+
     @_transparent
     public var littleEndian: LEInteger {
         return self
@@ -483,7 +483,7 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
 }
 
 extension LEInteger : CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return representingValue.description
@@ -491,7 +491,7 @@ extension LEInteger : CustomStringConvertible {
 }
 
 extension LEInteger: Decodable where Base : Decodable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -501,7 +501,7 @@ extension LEInteger: Decodable where Base : Decodable {
 }
 
 extension LEInteger: Encodable where Base : Encodable {
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -511,13 +511,13 @@ extension LEInteger: Encodable where Base : Encodable {
 }
 
 extension LEInteger: SignedNumeric where Base : SignedNumeric {
-    
+
     @inlinable
     @inline(__always)
     public static prefix func -(x: LEInteger) -> LEInteger {
         return LEInteger(representingValue: -x.representingValue)
     }
-    
+
     @inlinable
     @inline(__always)
     public mutating func negate() {
@@ -526,65 +526,65 @@ extension LEInteger: SignedNumeric where Base : SignedNumeric {
 }
 
 extension LEInteger: SignedInteger where Base : SignedInteger {
-    
+
 }
 
 extension LEInteger: UnsignedInteger where Base : UnsignedInteger {
-    
+
 }
 
 extension LEInteger {
-    
+
     @inlinable
     @inline(__always)
     public init(integerLiteral value: Base.IntegerLiteralType) {
         self.init(representingValue: Base(integerLiteral: value))
     }
-    
+
     @inlinable
     @inline(__always)
     public init?<T : BinaryInteger>(exactly source: T) {
         guard let value = Base(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
-    
+
     @inlinable
     @inline(__always)
     public init?<T : BinaryFloatingPoint>(exactly source: T) {
         guard let value = Base(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_ value: Base) {
         self.init(representingValue: value)
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T : BinaryInteger>(_ source: T) {
         self.init(representingValue: Base(source))
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T : BinaryFloatingPoint>(_ source: T) {
         self.init(representingValue: Base(source))
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T : BinaryInteger>(truncatingIfNeeded source: T) {
         self.init(representingValue: Base(truncatingIfNeeded: source))
     }
-    
+
     @inlinable
     @inline(__always)
     public init<T : BinaryInteger>(clamping source: T) {
         self.init(representingValue: Base(clamping: source))
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_truncatingBits bits: UInt) {
@@ -593,22 +593,22 @@ extension LEInteger {
 }
 
 extension LEInteger {
-    
+
     @_transparent
     public static var isSigned: Bool {
         return Base.isSigned
     }
-    
+
     @_transparent
     public static var bitWidth: Int {
         return Base.bitWidth
     }
-    
+
     @_transparent
     public static var max: LEInteger {
         return LEInteger(representingValue: Base.max)
     }
-    
+
     @_transparent
     public static var min: LEInteger {
         return LEInteger(representingValue: Base.min)
@@ -616,32 +616,32 @@ extension LEInteger {
 }
 
 extension LEInteger {
-    
+
     @_transparent
     public var bitWidth: Int {
         return representingValue.bitWidth
     }
-    
+
     @_transparent
     public var magnitude: Base.Magnitude {
         return representingValue.magnitude
     }
-    
+
     @_transparent
     public var trailingZeroBitCount: Int {
         return representingValue.trailingZeroBitCount
     }
-    
+
     @_transparent
     public var nonzeroBitCount: Int {
         return representingValue.nonzeroBitCount
     }
-    
+
     @_transparent
     public var leadingZeroBitCount: Int {
         return representingValue.leadingZeroBitCount
     }
-    
+
     @_transparent
     public var byteSwapped: LEInteger {
         return LEInteger(representingValue: representingValue.byteSwapped)
@@ -649,66 +649,66 @@ extension LEInteger {
 }
 
 extension LEInteger {
-    
+
     @_transparent
     public var words: Base.Words {
         return self.representingValue.words
     }
-    
+
     @inlinable
     @inline(__always)
     public func distance(to other: LEInteger) -> Base.Stride {
         return self.representingValue.distance(to: other.representingValue)
     }
-    
+
     @inlinable
     @inline(__always)
     public func advanced(by n: Base.Stride) -> LEInteger {
         return LEInteger(representingValue: self.representingValue.advanced(by: n))
     }
-    
+
     @inlinable
     @inline(__always)
     public func addingReportingOverflow(_ rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.addingReportingOverflow(rhs.representingValue)
         return (LEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func subtractingReportingOverflow(_ rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.subtractingReportingOverflow(rhs.representingValue)
         return (LEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func multipliedReportingOverflow(by rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.multipliedReportingOverflow(by: rhs.representingValue)
         return (LEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func dividedReportingOverflow(by rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.dividedReportingOverflow(by: rhs.representingValue)
         return (LEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func remainderReportingOverflow(dividingBy rhs: LEInteger) -> (partialValue: LEInteger, overflow: Bool) {
         let (partialValue, overflow) = representingValue.remainderReportingOverflow(dividingBy: rhs.representingValue)
         return (LEInteger(representingValue: partialValue), overflow)
     }
-    
+
     @inlinable
     @inline(__always)
     public func multipliedFullWidth(by other: LEInteger) -> (high: LEInteger, low: Base.Magnitude) {
         let (high, low) = representingValue.multipliedFullWidth(by: other.representingValue)
         return (LEInteger(representingValue: high), low)
     }
-    
+
     @inlinable
     @inline(__always)
     public func dividingFullWidth(_ dividend: (high: LEInteger, low: Base.Magnitude)) -> (quotient: LEInteger, remainder: LEInteger) {
@@ -718,7 +718,7 @@ extension LEInteger {
 }
 
 extension LEInteger {
-    
+
     @inlinable
     @inline(__always)
     public static prefix func + (x: LEInteger) -> LEInteger {
@@ -842,13 +842,13 @@ extension LEInteger {
 }
 
 extension FixedWidthInteger {
-    
+
     @inlinable
     @inline(__always)
     public init(_ value: BEInteger<Self>) {
         self = value.representingValue
     }
-    
+
     @inlinable
     @inline(__always)
     public init(_ value: LEInteger<Self>) {
@@ -878,7 +878,7 @@ public typealias LEUInt32 = LEInteger<UInt32>
 public typealias LEUInt64 = LEInteger<UInt64>
 
 extension FloatingPoint {
-    
+
     @inlinable
     @inline(__always)
     public init(_ value: BEUInt) {

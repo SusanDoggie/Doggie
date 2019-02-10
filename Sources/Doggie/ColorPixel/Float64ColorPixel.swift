@@ -25,21 +25,21 @@
 
 @_fixed_layout
 public struct Float64ColorPixel<Model : ColorModelProtocol> : _FloatComponentPixel {
-    
+
     public typealias ColorComponents = Model
-    
+
     public typealias Scalar = Double
-    
+
     public var color: Model
     public var opacity: Double
-    
+
     @inlinable
     @inline(__always)
     public init(color: Model, opacity: Double = 1) {
         self.color = color
         self.opacity = opacity
     }
-    
+
     @inlinable
     @inline(__always)
     public init<C : ColorPixelProtocol>(_ color: C) where C.Model == Model {
@@ -49,7 +49,7 @@ public struct Float64ColorPixel<Model : ColorModelProtocol> : _FloatComponentPix
 }
 
 extension Float64ColorPixel {
-    
+
     @_transparent
     public var _color: Model {
         get {
@@ -59,7 +59,7 @@ extension Float64ColorPixel {
             color = newValue
         }
     }
-    
+
     @_transparent
     public var _opacity: Double {
         get {

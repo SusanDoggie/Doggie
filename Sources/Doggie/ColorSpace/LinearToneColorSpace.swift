@@ -26,40 +26,40 @@
 @_fixed_layout
 @usableFromInline
 struct LinearToneColorSpace<ColorSpace: ColorSpaceBaseProtocol> : ColorSpaceBaseProtocol {
-    
+
     @usableFromInline
     let base: ColorSpace
-    
+
     @inlinable
     init(_ base: ColorSpace) {
         self.base = base
     }
-    
+
     @inlinable
     var cieXYZ: CIEXYZColorSpace {
         return base.cieXYZ
     }
-    
+
     @inlinable
     func convertToLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
         return color
     }
-    
+
     @inlinable
     func convertFromLinear(_ color: ColorSpace.Model) -> ColorSpace.Model {
         return color
     }
-    
+
     @inlinable
     func convertLinearToXYZ(_ color: ColorSpace.Model) -> XYZColorModel {
         return base.convertLinearToXYZ(color)
     }
-    
+
     @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> ColorSpace.Model {
         return base.convertLinearFromXYZ(color)
     }
-    
+
     @inlinable
     var linearTone: LinearToneColorSpace {
         return self
@@ -67,7 +67,7 @@ struct LinearToneColorSpace<ColorSpace: ColorSpaceBaseProtocol> : ColorSpaceBase
 }
 
 extension LinearToneColorSpace {
-    
+
     @inlinable
     func hash(into hasher: inout Hasher) {
         hasher.combine("LinearToneColorSpace")
@@ -76,7 +76,7 @@ extension LinearToneColorSpace {
 }
 
 extension LinearToneColorSpace {
-    
+
     @inlinable
     var localizedName: String? {
         return base.localizedName.map { "LinearToneColorSpace<\($0)>" }
@@ -84,7 +84,7 @@ extension LinearToneColorSpace {
 }
 
 extension ColorSpaceBaseProtocol where LinearTone == LinearToneColorSpace<Self> {
-    
+
     @inlinable
     var linearTone: LinearToneColorSpace<Self> {
         return LinearToneColorSpace(self)

@@ -24,31 +24,31 @@
 //
 
 extension Data : ExpressibleByArrayLiteral {
-    
+
     public init(arrayLiteral elements: UInt8 ...) {
         self.init(elements)
     }
 }
 
 extension Data {
-    
+
     public func fileBacked() -> Data {
         return self.withUnsafeBufferPointer { MappedBuffer(bytes: UnsafeRawBufferPointer($0), fileBacked: true).data }
     }
 }
 
 extension Data {
-    
+
     public func write(to url: URL, withIntermediateDirectories createIntermediates: Bool, options: Data.WritingOptions = []) throws {
-        
+
         let manager = FileManager.default
-        
+
         let directory = url.deletingLastPathComponent()
-        
+
         if !manager.fileExists(atPath: directory.path) {
             try manager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
         }
-        
+
         try self.write(to: url, options: options)
     }
 }

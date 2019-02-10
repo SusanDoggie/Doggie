@@ -26,22 +26,22 @@
 @inlinable
 @inline(__always)
 public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ level: (Int, Int), _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
-    
+
     let width = 1 << level.0
     let height = 1 << level.1
     let half_width = width >> 1
-    
+
     let in_width = in_count.0
     let in_height = in_count.1
-    
+
     let in_row_stride = in_stride * in_width
     let out_row_stride = out_stride * half_width
-    
+
     do {
         var input = input
         var _real = _real
         var _imag = _imag
-        
+
         for _ in 0..<in_height {
             HalfRadix2CooleyTukey(level.0, input, in_stride, in_width, _real, _imag, out_stride)
             input += in_row_stride
@@ -61,14 +61,14 @@ public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ level: (Int, Int),
             _imag += out_row_stride
         }
     }
-    
+
     do {
         var _real = _real
         var _imag = _imag
-        
+
         HalfRadix2CooleyTukey(level.1, _real, out_row_stride)
         HalfRadix2CooleyTukey(level.1, _imag, out_row_stride)
-        
+
         for _ in 1..<half_width {
             _real += out_stride
             _imag += out_stride
@@ -80,27 +80,27 @@ public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ level: (Int, Int),
 @inlinable
 @inline(__always)
 public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ level: (Int, Int), _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
-    
+
     let width = 1 << level.0
     let height = 1 << level.1
     let half_width = width >> 1
-    
+
     let _real = output
     let _imag = output + out_stride
     let _out_stride = out_stride << 1
-    
+
     do {
         var real = real
         var imag = imag
         var _real = _real
         var _imag = _imag
-        
+
         let in_row_stride = in_stride * half_width
         let out_row_stride = _out_stride * half_width
-        
+
         HalfInverseRadix2CooleyTukey(level.1, real, real + in_row_stride, in_row_stride << 1, _real, out_row_stride)
         HalfInverseRadix2CooleyTukey(level.1, imag, imag + in_row_stride, in_row_stride << 1, _imag, out_row_stride)
-        
+
         for _ in 1..<half_width {
             real += in_stride
             imag += in_stride
@@ -109,12 +109,12 @@ public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ level: (Int
             InverseRadix2CooleyTukey(level.1, real, imag, in_row_stride, height, _real, _imag, out_row_stride)
         }
     }
-    
+
     do {
         var output = output
-        
+
         let out_row_stride = out_stride * width
-        
+
         for _ in 0..<height {
             HalfInverseRadix2CooleyTukey(level.0, output, out_stride)
             output += out_row_stride
@@ -125,48 +125,48 @@ public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ level: (Int
 @inlinable
 @inline(__always)
 public func separate_convolution_filter<T: BinaryFloatingPoint>(_ filter: [T], _ width: Int, _ height: Int) -> ([T], [T])? {
-    
+
     var horizontal = [T](repeating: 0, count: width)
     var vertical = [T](repeating: 0, count: height)
-    
+
     filter.withUnsafeBufferPointer {
-        
+
         guard let filter = $0.baseAddress else { return }
-        
+
         return horizontal.withUnsafeMutableBufferPointer {
-            
+
             guard let horizontal = $0.baseAddress else { return }
-            
+
             return vertical.withUnsafeMutableBufferPointer {
-                
+
                 guard let vertical = $0.baseAddress else { return }
-                
+
                 var (i, m) = UnsafeBufferPointer(start: filter, count: width * height).enumerated().max { abs($0.element) < abs($1.element) }!
-                
+
                 guard m != 0 else { return }
-                
+
                 let j = i % width
                 i /= width
                 m = 1 / sqrt(abs(m))
-                
+
                 do {
-                    
+
                     var _filter = filter + i * width
                     var _horizontal = horizontal
-                    
+
                     for _ in 0..<width {
                         _horizontal.pointee = _filter.pointee * m
                         _filter += 1
                         _horizontal += 1
                     }
                 }
-                
+
                 do {
-                    
+
                     var _filter = filter + j
                     let _horizontal = horizontal + j
                     var _vertical = vertical
-                    
+
                     for _ in 0..<height {
                         _vertical.pointee = _filter.pointee / _horizontal.pointee
                         _filter += width
@@ -176,8 +176,8 @@ public func separate_convolution_filter<T: BinaryFloatingPoint>(_ filter: [T], _
             }
         }
     }
-    
+
     let is_equal = zip(filter, vertical.flatMap { a in horizontal.map { a * $0 } }).allSatisfy { $0.almostEqual($1) }
-    
+
     return is_equal ? (horizontal, vertical) : nil
 }

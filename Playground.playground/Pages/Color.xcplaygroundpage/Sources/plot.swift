@@ -5,9 +5,9 @@ import Doggie
 let lab = ColorSpace.cieLab(white: Point(x: 0.34567, y: 0.35850))
 
 public func showLab(size: Int, x: ClosedRange<Double>, y: ClosedRange<Double>, z: Double, colorSpace: ColorSpace<RGBColorModel>) -> Image<ARGB32ColorPixel> {
-    
+
     var image = Image<ARGB32ColorPixel>(width: size, height: size, colorSpace: colorSpace)
-    
+
     for j in 0..<size {
         for i in 0..<size {
             let x = (x.upperBound - x.lowerBound) * Double(i) / Double(size) + x.lowerBound
@@ -20,7 +20,7 @@ public func showLab(size: Int, x: ClosedRange<Double>, y: ClosedRange<Double>, z
             }
         }
     }
-    
+
     return image
 }
 

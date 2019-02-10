@@ -24,27 +24,27 @@
 //
 
 struct iccTextDescription : ByteDecodable {
-    
+
     var ascii: String?
     var unicode: String?
-    
+
     init(from data: inout Data) throws {
-        
+
         guard data.count > 8 else { throw AnyColorSpace.ICCError.endOfData }
-        
+
         guard try data.decode(iccProfile.TagType.self) == .textDescription else { throw AnyColorSpace.ICCError.invalidFormat(message: "Invalid textDescription.") }
-        
+
         data.removeFirst(4)
-        
+
         let asciiCount = Int(try data.decode(BEUInt32.self))
         if asciiCount != 0 {
             self.ascii = String(data: data.popFirst(asciiCount), encoding: .ascii)
         }
-        
+
         let unicodeCount = Int(try data.decode(BEUInt32.self))
         if unicodeCount != 0 {
             self.unicode = String(data: data.popFirst(unicodeCount), encoding: .utf16BigEndian)
         }
     }
-    
+
 }

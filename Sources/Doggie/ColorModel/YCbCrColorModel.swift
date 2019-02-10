@@ -24,27 +24,27 @@
 //
 
 public struct YCbCrColorModel : ColorModelProtocol {
-    
+
     public typealias Indices = Range<Int>
-    
+
     public typealias Scalar = Double
-    
+
     @_transparent
     public static var numberOfComponents: Int {
         return 3
     }
-    
+
     @inlinable
     @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
     }
-    
+
     public var y: Double
     public var cb: Double
     public var cr: Double
-    
+
     @inlinable
     @inline(__always)
     public init() {
@@ -52,7 +52,7 @@ public struct YCbCrColorModel : ColorModelProtocol {
         self.cb = 0
         self.cr = 0
     }
-    
+
     @inlinable
     @inline(__always)
     public init(y: Double, cb: Double, cr: Double) {
@@ -60,7 +60,7 @@ public struct YCbCrColorModel : ColorModelProtocol {
         self.cb = cb
         self.cr = cr
     }
-    
+
     @inlinable
     public subscript(position: Int) -> Double {
         get {
@@ -83,13 +83,13 @@ public struct YCbCrColorModel : ColorModelProtocol {
 }
 
 extension YCbCrColorModel {
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Double) -> Double) -> YCbCrColorModel {
         return YCbCrColorModel(y: transform(y), cb: transform(cb), cr: transform(cr))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
@@ -99,7 +99,7 @@ extension YCbCrColorModel {
         updateAccumulatingResult(&accumulator, cr)
         return accumulator
     }
-    
+
     @inlinable
     @inline(__always)
     public func combined(_ other: YCbCrColorModel, _ transform: (Double, Double) -> Double) -> YCbCrColorModel {
@@ -108,9 +108,9 @@ extension YCbCrColorModel {
 }
 
 extension YCbCrColorModel {
-    
+
     public typealias Float32Components = FloatComponents<Float>
-    
+
     @inlinable
     @inline(__always)
     public init<T>(floatComponents: FloatComponents<T>) {
@@ -118,7 +118,7 @@ extension YCbCrColorModel {
         self.cb = Double(floatComponents.cb)
         self.cr = Double(floatComponents.cr)
     }
-    
+
     @_transparent
     public var float32Components: Float32Components {
         get {
@@ -128,34 +128,34 @@ extension YCbCrColorModel {
             self = YCbCrColorModel(floatComponents: newValue)
         }
     }
-    
+
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
-        
+
         public typealias Indices = Range<Int>
-        
+
         @_transparent
         public static var numberOfComponents: Int {
             return 3
         }
-        
+
         public var y: Scalar
         public var cb: Scalar
         public var cr: Scalar
-        
+
         @inline(__always)
         public init() {
             self.y = 0
             self.cb = 0
             self.cr = 0
         }
-        
+
         @inline(__always)
         public init(y: Scalar, cb: Scalar, cr: Scalar) {
             self.y = y
             self.cb = cb
             self.cr = cr
         }
-        
+
         @inlinable
         @inline(__always)
         public init(_ color: YCbCrColorModel) {
@@ -163,7 +163,7 @@ extension YCbCrColorModel {
             self.cb = Scalar(color.cb)
             self.cr = Scalar(color.cr)
         }
-        
+
         @inlinable
         @inline(__always)
         public init<T>(floatComponents: FloatComponents<T>) {
@@ -171,7 +171,7 @@ extension YCbCrColorModel {
             self.cb = Scalar(floatComponents.cb)
             self.cr = Scalar(floatComponents.cr)
         }
-        
+
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
@@ -195,13 +195,13 @@ extension YCbCrColorModel {
 }
 
 extension YCbCrColorModel.FloatComponents {
-    
+
     @inlinable
     @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> YCbCrColorModel.FloatComponents<Scalar> {
         return YCbCrColorModel.FloatComponents(y: transform(y), cb: transform(cb), cr: transform(cr))
     }
-    
+
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
@@ -211,7 +211,7 @@ extension YCbCrColorModel.FloatComponents {
         updateAccumulatingResult(&accumulator, cr)
         return accumulator
     }
-    
+
     @inlinable
     @inline(__always)
     public func combined(_ other: YCbCrColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> YCbCrColorModel.FloatComponents<Scalar> {

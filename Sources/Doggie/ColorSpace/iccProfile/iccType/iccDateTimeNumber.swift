@@ -24,14 +24,14 @@
 //
 
 struct iccDateTimeNumber : ByteCodable {
-    
+
     var year: BEUInt16
     var month: BEUInt16
     var day: BEUInt16
     var hours: BEUInt16
     var minutes: BEUInt16
     var seconds: BEUInt16
-    
+
     init(year: BEUInt16, month: BEUInt16, day: BEUInt16, hours: BEUInt16, minutes: BEUInt16, seconds: BEUInt16) {
         self.year = year
         self.month = month
@@ -40,7 +40,7 @@ struct iccDateTimeNumber : ByteCodable {
         self.minutes = minutes
         self.seconds = seconds
     }
-    
+
     init(from data: inout Data) throws {
         self.year = try data.decode(BEUInt16.self)
         self.month = try data.decode(BEUInt16.self)
@@ -49,7 +49,7 @@ struct iccDateTimeNumber : ByteCodable {
         self.minutes = try data.decode(BEUInt16.self)
         self.seconds = try data.decode(BEUInt16.self)
     }
-    
+
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(year)
         stream.encode(month)

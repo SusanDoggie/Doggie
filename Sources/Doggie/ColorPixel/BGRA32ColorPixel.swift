@@ -24,12 +24,12 @@
 //
 
 public struct BGRA32ColorPixel : ColorPixelProtocol {
-    
+
     public var b: UInt8
     public var g: UInt8
     public var r: UInt8
     public var a: UInt8
-    
+
     @inlinable
     @inline(__always)
     public init() {
@@ -54,7 +54,7 @@ public struct BGRA32ColorPixel : ColorPixelProtocol {
         self.b = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
         self.a = UInt8((opacity * 255).clamped(to: 0...255).rounded())
     }
-    
+
     @_transparent
     public var color: RGBColorModel {
         get {
@@ -75,12 +75,12 @@ public struct BGRA32ColorPixel : ColorPixelProtocol {
             self.a = UInt8((newValue * 255).clamped(to: 0...255).rounded())
         }
     }
-    
+
     @_transparent
     public var isOpaque: Bool {
         return a == 255
     }
-    
+
     @inlinable
     @inline(__always)
     public func with(opacity: Double) -> BGRA32ColorPixel {

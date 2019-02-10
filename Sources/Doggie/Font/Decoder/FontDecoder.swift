@@ -24,6 +24,6 @@
 //
 
 protocol FontDecoder : FontCollectionBase {
-    
+
     init?(data: Data) throws
 }

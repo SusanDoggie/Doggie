@@ -32,7 +32,7 @@
 ///     ⎝ d h l 1 ⎠
 ///
 public struct Matrix : Hashable {
-    
+
     public var a: Double
     public var b: Double
     public var c: Double
@@ -45,7 +45,7 @@ public struct Matrix : Hashable {
     public var j: Double
     public var k: Double
     public var l: Double
-    
+
     @inlinable
     @inline(__always)
     public init(a: Double, b: Double, c: Double, d: Double, e: Double, f: Double, g: Double, h: Double, i: Double, j: Double, k: Double, l: Double) {
@@ -65,7 +65,7 @@ public struct Matrix : Hashable {
 }
 
 extension Matrix : CustomStringConvertible {
-    
+
     @_transparent
     public var description: String {
         return "Matrix(a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f), g: \(g), h: \(h), i: \(i), j: \(j), k: \(k), l: \(l))"
@@ -73,7 +73,7 @@ extension Matrix : CustomStringConvertible {
 }
 
 extension Matrix : Codable {
-    
+
     @inlinable
     @inline(__always)
     public init(from decoder: Decoder) throws {
@@ -91,7 +91,7 @@ extension Matrix : Codable {
         self.h  = try container.decode(Double.self)
         self.l  = try container.decode(Double.self)
     }
-    
+
     @inlinable
     @inline(__always)
     public func encode(to encoder: Encoder) throws {
@@ -112,7 +112,7 @@ extension Matrix : Codable {
 }
 
 extension Matrix {
-    
+
     @_transparent
     public var inverse : Matrix {
         let _a = g * j - f * k
@@ -135,7 +135,7 @@ extension Matrix {
 }
 
 extension Matrix {
-    
+
     @_transparent
     public var tx: Double {
         get {
@@ -145,7 +145,7 @@ extension Matrix {
             d = newValue
         }
     }
-    
+
     @_transparent
     public var ty: Double {
         get {
@@ -155,7 +155,7 @@ extension Matrix {
             h = newValue
         }
     }
-    
+
     @_transparent
     public var tz: Double {
         get {
@@ -168,7 +168,7 @@ extension Matrix {
 }
 
 extension Matrix {
-    
+
     @_transparent
     public var determinant : Double {
         let _c = c * f - b * g
@@ -179,7 +179,7 @@ extension Matrix {
 }
 
 extension Matrix {
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -190,12 +190,12 @@ extension Matrix {
     ///
     @_transparent
     public static var identity : Matrix {
-        
+
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: 1, g: 0, h: 0,
                       i: 0, j: 0, k: 1, l: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -207,12 +207,12 @@ extension Matrix {
     @inlinable
     @inline(__always)
     public static func rotateX(_ angle: Double) -> Matrix {
-        
+
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: cos(angle), g: -sin(angle), h: 0,
                       i: 0, j: sin(angle), k: cos(angle), l: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -224,12 +224,12 @@ extension Matrix {
     @inlinable
     @inline(__always)
     public static func rotateY(_ angle: Double) -> Matrix {
-        
+
         return Matrix(a: cos(angle), b: 0, c: sin(angle), d: 0,
                       e: 0, f: 1, g: 0, h: 0,
                       i: -sin(angle), j: 0, k: cos(angle), l: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -241,12 +241,12 @@ extension Matrix {
     @inlinable
     @inline(__always)
     public static func rotateZ(_ angle: Double) -> Matrix {
-        
+
         return Matrix(a: cos(angle), b: -sin(angle), c: 0, d: 0,
                       e: sin(angle), f: cos(angle), g: 0, h: 0,
                       i: 0, j: 0, k: 1, l: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -258,12 +258,12 @@ extension Matrix {
     @inlinable
     @inline(__always)
     public static func scale(_ scale: Double) -> Matrix {
-        
+
         return Matrix(a: scale, b: 0, c: 0, d: 0,
                       e: 0, f: scale, g: 0, h: 0,
                       i: 0, j: 0, k: scale, l: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -275,12 +275,12 @@ extension Matrix {
     @inlinable
     @inline(__always)
     public static func scale(x: Double = 1, y: Double = 1, z: Double = 1) -> Matrix {
-        
+
         return Matrix(a: x, b: 0, c: 0, d: 0,
                       e: 0, f: y, g: 0, h: 0,
                       i: 0, j: 0, k: z, l: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -292,12 +292,12 @@ extension Matrix {
     @inlinable
     @inline(__always)
     public static func translate(x: Double = 0, y: Double = 0, z: Double = 0) -> Matrix {
-        
+
         return Matrix(a: 1, b: 0, c: 0, d: x,
                       e: 0, f: 1, g: 0, h: y,
                       i: 0, j: 0, k: 1, l: z)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -309,12 +309,12 @@ extension Matrix {
     @inlinable
     @inline(__always)
     public static func reflectX(_ x: Double = 0) -> Matrix {
-        
+
         return Matrix(a: -1, b: 0, c: 0, d: 2 * x,
                       e: 0, f: 1, g: 0, h: 0,
                       i: 0, j: 0, k: 1, l: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -326,12 +326,12 @@ extension Matrix {
     @inlinable
     @inline(__always)
     public static func reflectY(_ y: Double = 0) -> Matrix {
-        
+
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: -1, g: 0, h: 2 * y,
                       i: 0, j: 0, k: 1, l: 0)
     }
-    
+
     ///
     /// Transformation Matrix:
     ///
@@ -343,12 +343,12 @@ extension Matrix {
     @inlinable
     @inline(__always)
     public static func reflectZ(_ z: Double = 0) -> Matrix {
-        
+
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: 1, g: 0, h: 0,
                       i: 0, j: 0, k: -1, l: 2 * z)
     }
-    
+
     @inlinable
     @inline(__always)
     public static func rotate(roll x: Double, pitch y: Double, yaw z: Double) -> Matrix {
@@ -377,7 +377,7 @@ extension Matrix {
                       k: _cos + _cosp * vz * vz,
                       l: 0.0)
     }
-    
+
     @inlinable
     @inline(__always)
     public static func camera(position tx: Double, _ ty: Double, _ tz: Double, rotate ax: Double, _ ay: Double, _ az: Double) -> Matrix {
@@ -386,7 +386,7 @@ extension Matrix {
 }
 
 extension Matrix : Multiplicative {
-    
+
 }
 
 @inlinable
