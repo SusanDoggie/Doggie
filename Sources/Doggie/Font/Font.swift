@@ -331,8 +331,7 @@ extension Font {
     }
     
     public func glyph(with unicode: UnicodeScalar) -> Int {
-        let glyph = base.glyph(with: unicode)
-        return 0..<numberOfGlyphs ~= glyph ? glyph : 0
+        return base.glyph(with: unicode)
     }
     
     public func glyphs<S: Sequence>(with unicodes: S, layout: LayoutSetting = LayoutSetting()) -> [Int] where S.Element == UnicodeScalar {
@@ -349,10 +348,10 @@ extension Font {
                 
                 if let _last = last {
                     if let glyph = base.glyph(with: _last, unicode) {
-                        result.append(0..<numberOfGlyphs ~= glyph ? glyph : 0)
+                        result.append(glyph)
                         last = nil
                     } else {
-                        result.append(self.glyph(with: _last))
+                        result.append(base.glyph(with: _last))
                         last = unicode
                     }
                 } else {
@@ -361,11 +360,11 @@ extension Font {
             }
             
             if let last = last {
-                result.append(self.glyph(with: last))
+                result.append(base.glyph(with: last))
             }
             
         } else {
-            result = unicodes.map { self.glyph(with: $0) }
+            result = unicodes.map { base.glyph(with: $0) }
         }
         
         return base.substitution(glyphs: result, layout: layout, features: features)
