@@ -24,8 +24,10 @@ matrix:
 
 before_install:
   - git clone https://github.com/IBM-Swift/Package-Builder.git
-  - echo "swift build -c release" | cat >./.swift-build-macOS
-  - echo "swift test -c release" | cat >./.swift-test-macOS
+  - echo | cat >./.swift-xcodeproj
+  - echo "xcodebuild -project Doggie.xcodeproj -scheme Doggie -configuration Release -sdk macosx" | cat >./.swift-build-macOS
+  - echo "xcodebuild test -project Doggie.xcodeproj -scheme Doggie -configuration Release -sdk macosx" | cat >./.swift-test-macOS
+  - echo "xcodebuild test -project Doggie.xcodeproj -scheme Doggie -configuration Release -sdk macosx -quiet -enableCodeCoverage YES -skipUnavailableActions" | cat >./.swift-codecov
   - echo "swift build -c release" | cat >./.swift-build-linux
   - echo "swift test -c release" | cat >./.swift-test-linux
   - |
