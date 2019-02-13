@@ -1,5 +1,4 @@
-language: generic		 
-dist: trusty
+language: generic
 sudo: required
 notifications: never
 env:
@@ -19,8 +18,17 @@ matrix:
       services: docker
       env: DOCKER_IMAGE=ubuntu:18.04
     - os: osx
-      osx_image: xcode10
-      env: CODECOV_ELIGIBLE=true
+      osx_image: xcode10.1
+      env: SDK=macosx CODECOV_ELIGIBLE=true
+    - os: osx
+      osx_image: xcode10.1
+      env: SDK=iphoneos
+    - os: osx
+      osx_image: xcode10.1
+      env: SDK=appletvos
+    - os: osx
+      osx_image: xcode10.1
+      env: SDK=watchos
 
 script:
   - ./.travis-build.sh
