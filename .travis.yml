@@ -22,26 +22,5 @@ matrix:
       osx_image: xcode10
       env: CODECOV_ELIGIBLE=true
 
-before_install:
-  - git clone https://github.com/IBM-Swift/Package-Builder.git
-  - echo | cat >./.swift-xcodeproj
-  - echo "xcodebuild -project Doggie.xcodeproj -scheme Doggie -configuration Release -sdk macosx" | cat >./.swift-build-macOS
-  - echo "xcodebuild test -project Doggie.xcodeproj -scheme Doggie -configuration Release -sdk macosx" | cat >./.swift-test-macOS
-  - echo "xcodebuild test -project Doggie.xcodeproj -scheme Doggie -configuration Release -sdk macosx -quiet -enableCodeCoverage YES -skipUnavailableActions" | cat >./.swift-codecov
-  - echo "swift build -c release" | cat >./.swift-build-linux
-  - echo "swift test -c release" | cat >./.swift-test-linux
-  - |
-    cat <<"EOF" > build.sh
-    set -e
-    if [ -n "${DOCKER_IMAGE}" ]; then
-        docker pull ${DOCKER_IMAGE}
-        docker run --env SWIFT_SNAPSHOT -v ${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR} ${DOCKER_IMAGE} /bin/bash -c "apt-get update && apt-get install -y git sudo lsb-release wget libxml2 && cd $TRAVIS_BUILD_DIR && ./build.sh"
-    else
-        while true; do echo "..."; sleep 60; done &
-        ./Package-Builder/build-package.sh -projectDir $(pwd)
-        kill %1
-    fi
-  - chmod +x build.sh
-
 script:
-  - ./build.sh
+  - ./.travis-build.sh
