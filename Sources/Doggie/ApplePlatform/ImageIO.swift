@@ -123,8 +123,18 @@ extension CGImage {
             }
             
         case .heic:
+            
             guard #available(OSX 10.13, iOS 11.0, tvOS 11.0, *) else { return nil }
+            
+            #if os(watchOS)
+            
+            return nil
+            
+            #else
+            
             type = AVFileType.heic as CFString
+            
+            #endif
         }
         
         if let resolution = properties[.resolution] as? Resolution {
