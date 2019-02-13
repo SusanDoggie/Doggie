@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 if [ -n "${DOCKER_IMAGE}" ]; then
@@ -30,9 +29,6 @@ export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-conte
 echo "available scheme: ${SCHEMES}"
 echo
 
-echo | cat >./.swift-xcodeproj
-echo | cat >./.swift-codecov
-
 cat <<"EOF" > ./.swift-build-macOS
 #!/bin/bash
 set -e
@@ -46,9 +42,48 @@ cat <<"EOF" > ./.swift-test-macOS
 #!/bin/bash
 set -e
 for SCHEME in ${SCHEMES}; do
-echo "Testing scheme ${SCHEME}"
-xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions
+  echo "Testing scheme ${SCHEME}"
+  xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions
 done
+EOF
+
+cat <<"EOF" > ./.swift-codecov
+#!/bin/bash
+
+if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "develop" && $TRAVIS_EVENT_TYPE != "cron" ]]; then
+  echo "Not master, develop or cron build. Skipping code coverage generation."
+  exit 0
+fi
+
+echo ">> Starting code coverage analysis..."
+uname -a
+
+(( MODULE_COUNT = 0 ))
+BASH_BASE="bash <(curl -s https://codecov.io/bash)"
+for module in $(ls -F Sources/ 2>/dev/null | grep '/$'); do   # get only directories in "Sources/"
+module=${module%/}                                        # remove trailing slash
+BASH_CMD="$BASH_BASE -J '^${module}\$' -F '${module}'"
+(( MODULE_COUNT++ ))
+
+echo ">> Running: $BASH_CMD"
+eval "$BASH_CMD"
+if [[ $? != 0 ]]; then
+  echo ">> Error running: $BASH_CMD"
+  exit 1
+fi
+done
+
+if (( MODULE_COUNT == 0 )); then
+  echo ">> Running: $BASH_BASE"
+  eval "$BASH_BASE"
+  if [[ $? != 0 ]]; then
+    echo ">> Error running: $BASH_BASE"
+    exit 1
+  fi
+fi
+
+echo ">> Finished code coverage analysis."
+
 EOF
 
 else
