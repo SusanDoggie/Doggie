@@ -19,9 +19,9 @@ export SDK=macosx
 fi
 
 if [ -n "${CODECOV_ELIGIBLE}" ]; then
-export CODECOV_ELIGIBLE=YES
+export ENABLE_CODECOV=YES
 else
-export CODECOV_ELIGIBLE=NO
+export ENABLE_CODECOV=NO
 fi
 
 export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -sdk ${SDK}"
@@ -47,7 +47,7 @@ cat <<"EOF" > ./.swift-test-macOS
 set -e
 for SCHEME in ${SCHEMES}; do
 echo "Testing scheme ${SCHEME}"
-xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${CODECOV_ELIGIBLE} -skipUnavailableActions
+xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions
 done
 EOF
 
