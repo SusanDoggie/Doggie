@@ -55,9 +55,6 @@ if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "develop" && $TRAVIS_EVENT
   exit 0
 fi
 
-echo ">> Starting code coverage analysis..."
-uname -a
-
 (( MODULE_COUNT = 0 ))
 BASH_BASE="bash <(curl -s https://codecov.io/bash)"
 for module in $(ls -F Sources/ 2>/dev/null | grep '/$'); do   # get only directories in "Sources/"
@@ -81,8 +78,6 @@ if (( MODULE_COUNT == 0 )); then
     exit 1
   fi
 fi
-
-echo ">> Finished code coverage analysis."
 
 EOF
 
