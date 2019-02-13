@@ -19,16 +19,7 @@ matrix:
       env: DOCKER_IMAGE=ubuntu:18.04
     - os: osx
       osx_image: xcode10.1
-      env: SDK=macosx CODECOV_ELIGIBLE=true
-    - os: osx
-      osx_image: xcode10.1
-      env: SDK=iphoneos
-    - os: osx
-      osx_image: xcode10.1
-      env: SDK=appletvos
-    - os: osx
-      osx_image: xcode10.1
-      env: SDK=watchos
+      env: CODECOV_ELIGIBLE=true
 
 script:
   - ./.travis-build.sh
