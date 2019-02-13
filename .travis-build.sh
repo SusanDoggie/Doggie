@@ -27,6 +27,9 @@ fi
 export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -sdk ${SDK}"
 export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
 
+echo "available scheme: ${SCHEMES}"
+echo
+
 echo | cat >./.swift-xcodeproj
 echo | cat >./.swift-codecov
 
