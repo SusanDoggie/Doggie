@@ -1,12 +1,5 @@
 # Doggie - A Cross-platform Library for Swift
 
-[![Build Status](https://travis-ci.org/SusanDoggie/Doggie.svg?branch=master)](https://travis-ci.org/SusanDoggie/Doggie)
-[![codecov](https://codecov.io/gh/SusanDoggie/Doggie/branch/master/graph/badge.svg)](https://codecov.io/gh/SusanDoggie/Doggie)
-![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS%20%7C%20Linux-lightgrey.svg?style=flat)
-[![GitHub release](https://img.shields.io/github/release/SusanDoggie/Doggie.svg?style=flat&maxAge=2592000)](https://github.com/SusanDoggie/Doggie/releases)
-[![Swift](https://img.shields.io/badge/swift-4.2-orange.svg?style=flat)](https://swift.org)
-[![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
-
 | | **Build Tool** | **Master** |
 |---|:---:|:---:|
 | **macOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/6)](https://travis-ci.org/SusanDoggie/Doggie)|
@@ -14,6 +7,15 @@
 | **Ubuntu 14.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/2)](https://travis-ci.org/SusanDoggie/Doggie)|
 | **Ubuntu 16.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/3)](https://travis-ci.org/SusanDoggie/Doggie)|
 | **Ubuntu 18.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/4)](https://travis-ci.org/SusanDoggie/Doggie)|
+
+## Welcome
+
+[![Build Status](https://travis-ci.org/SusanDoggie/Doggie.svg?branch=master)](https://travis-ci.org/SusanDoggie/Doggie)
+[![codecov](https://codecov.io/gh/SusanDoggie/Doggie/branch/master/graph/badge.svg)](https://codecov.io/gh/SusanDoggie/Doggie)
+![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS%20%7C%20Linux-lightgrey.svg?style=flat)
+[![GitHub release](https://img.shields.io/github/release/SusanDoggie/Doggie.svg?style=flat&maxAge=2592000)](https://github.com/SusanDoggie/Doggie/releases)
+[![Swift](https://img.shields.io/badge/swift-4.2-orange.svg?style=flat)](https://swift.org)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 Doggie is a foundational library for Apple's swift. It includes mathematics, accelerate, signal processing and graphic functions.
 
