@@ -83,6 +83,8 @@ EOF
 
 else
 
+echo "swift build -c release" | cat >./.swift-build-macOS
+echo "swift test -c release" | cat >./.swift-test-macOS
 echo "swift build -c release" | cat >./.swift-build-linux
 echo "swift test -c release" | cat >./.swift-test-linux
 
