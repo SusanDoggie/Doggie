@@ -11,7 +11,7 @@ fi
 
 git clone https://github.com/IBM-Swift/Package-Builder.git
 
-if [ "$(uname)" == "Darwin" ]; then
+if [ "$(uname)" == "Darwin" -a -n "${USE_XCODEBUILD}" ]; then
 
 if [ -z "${SDK}" ]; then
 export SDK=macosx
