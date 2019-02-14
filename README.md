@@ -7,6 +7,14 @@
 [![Swift](https://img.shields.io/badge/swift-4.2-orange.svg?style=flat)](https://swift.org)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
+| | **Build Tool** | **Master** |
+|---|:---:|:---:|
+| **macOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/6)](https://travis-ci.org/SusanDoggie/Doggie)|
+| **macOS**        | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/5)](https://travis-ci.org/SusanDoggie/Doggie)|
+| **Ubuntu 14.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/2)](https://travis-ci.org/SusanDoggie/Doggie)|
+| **Ubuntu 16.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/3)](https://travis-ci.org/SusanDoggie/Doggie)|
+| **Ubuntu 18.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/4)](https://travis-ci.org/SusanDoggie/Doggie)|
+
 Doggie is a foundational library for Apple's swift. It includes mathematics, accelerate, signal processing and graphic functions.
 
 ## Features
