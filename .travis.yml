@@ -19,7 +19,9 @@ matrix:
       env: DOCKER_IMAGE=ubuntu:18.04
     - os: osx
       osx_image: xcode10.1
-      env: CODECOV_ELIGIBLE=true
+    - os: osx
+      osx_image: xcode10.1
+      env: USE_XCODEBUILD=true CODECOV_ELIGIBLE=true
 
 script:
   - ./.travis-build.sh
