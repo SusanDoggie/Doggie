@@ -425,7 +425,7 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
         switch (filter_width, filter_height) {
         case (1, 1):
             let k = filter[0]
-            result = Self(width: width, height: height, pixels: pixels.map { $0 * k }, resamplingAlgorithm: resamplingAlgorithm)
+            result = Self(width: width, height: height, pixels: k == 1 ? pixels : pixels.map { $0 * k }, resamplingAlgorithm: resamplingAlgorithm)
         case (1, _):
             switch algorithm {
             case .direct: result = _direct_convolution_vertical(filter)
@@ -462,18 +462,18 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
         switch (horizontal_filter.count, vertical_filter.count) {
         case (1, 1):
             let k = horizontal_filter[0] * vertical_filter[0]
-            result = Self(width: width, height: height, pixels: pixels.map { $0 * k }, resamplingAlgorithm: resamplingAlgorithm)
+            result = Self(width: width, height: height, pixels: k == 1 ? pixels : pixels.map { $0 * k }, resamplingAlgorithm: resamplingAlgorithm)
         case (1, _):
             let k = horizontal_filter[0]
             switch algorithm {
-            case .direct: result = _direct_convolution_vertical(vertical_filter.map { $0 * k })
-            case .cooleyTukey: result = _cooleyTukey_convolution_vertical(vertical_filter.map { $0 * k })
+            case .direct: result = _direct_convolution_vertical(k == 1 ? vertical_filter : vertical_filter.map { $0 * k })
+            case .cooleyTukey: result = _cooleyTukey_convolution_vertical(k == 1 ? vertical_filter : vertical_filter.map { $0 * k })
             }
         case (_, 1):
             let k = vertical_filter[0]
             switch algorithm {
-            case .direct: result = _direct_convolution_horizontal(horizontal_filter.map { $0 * k })
-            case .cooleyTukey: result = _cooleyTukey_convolution_horizontal(horizontal_filter.map { $0 * k })
+            case .direct: result = _direct_convolution_horizontal(k == 1 ? horizontal_filter : horizontal_filter.map { $0 * k })
+            case .cooleyTukey: result = _cooleyTukey_convolution_horizontal(k == 1 ? horizontal_filter : horizontal_filter.map { $0 * k })
             }
         default:
             switch algorithm {
