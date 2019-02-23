@@ -666,11 +666,11 @@ extension MappedBuffer {
                     
                     #if canImport(Darwin)
                     
-                    fd = open(path, O_RDWR | O_CREAT | O_EXCL | O_EXLOCK, S_IRUSR | S_IWUSR)
+                    fd = open(path, O_RDWR | O_CREAT | O_EXCL | O_CLOEXEC | O_EXLOCK, S_IRUSR | S_IWUSR)
                     
                     #else
                     
-                    fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR)
+                    fd = open(path, O_RDWR | O_CREAT | O_EXCL | O_CLOEXEC, S_IRUSR | S_IWUSR)
                     
                     #endif
                     
