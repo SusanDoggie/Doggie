@@ -75,30 +75,47 @@ extension MTLDevice {
 extension MTLDevice {
     
     private func makeTexture<T>(_ buffer: MappedBuffer<T>, descriptor: MTLTextureDescriptor, options: MTLResourceOptions) -> MTLTexture? {
+        
+        let bytesPerRow = descriptor.width * MemoryLayout<T>.stride
+        let alignment = self.minimumLinearTextureAlignment(for: descriptor.pixelFormat)
+        
+        guard bytesPerRow % alignment == 0 else { return nil }
         guard let buffer = self.makeBuffer(buffer, options: options) else { return nil }
-        return buffer.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: descriptor.width * MemoryLayout<T>.stride)
+        
+        return buffer.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: bytesPerRow)
     }
     
-    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA32ColorPixel {
+    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA32ColorPixel {
+        
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: image.width, height: image.height, mipmapped: false)
+        descriptor.usage = usage
+        
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == BGRA32ColorPixel {
+    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == BGRA32ColorPixel {
+        
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm, width: image.width, height: image.height, mipmapped: false)
+        descriptor.usage = usage
+        
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA64ColorPixel {
+    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA64ColorPixel {
+        
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Unorm, width: image.width, height: image.height, mipmapped: false)
+        descriptor.usage = usage
+        
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == Float32ColorPixel<RGBColorModel> {
+    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == Float32ColorPixel<RGBColorModel> {
+        
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: image.width, height: image.height, mipmapped: false)
+        descriptor.usage = usage
+        
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
 }
 
 #endif
-
