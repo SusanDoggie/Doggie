@@ -71,7 +71,7 @@ extension MTLDevice {
     }
 }
 
-@available(OSX 10.13, iOS 8.0, tvOS 9.0, *)
+@available(OSX 10.13, iOS 11.0, tvOS 11.0, *)
 extension MTLDevice {
     
     private func makeTexture<T>(_ buffer: MappedBuffer<T>, descriptor: MTLTextureDescriptor, options: MTLResourceOptions) -> MTLTexture? {
