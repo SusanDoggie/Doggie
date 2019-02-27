@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct RGBColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -293,6 +294,7 @@ extension RGBColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>

@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct RectCollection {
     
     private let bounds: [Rect]

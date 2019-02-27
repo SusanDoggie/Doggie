@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct Vector : Hashable {
     
     public var x: Double

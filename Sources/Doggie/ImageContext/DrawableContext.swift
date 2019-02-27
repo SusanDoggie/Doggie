@@ -288,6 +288,7 @@ public enum GradientSpreadMode {
     case `repeat`
 }
 
+@_fixed_layout
 public struct GradientStop<Color: ColorProtocol> {
     
     public var offset: Double

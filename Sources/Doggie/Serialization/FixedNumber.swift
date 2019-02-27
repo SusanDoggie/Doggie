@@ -23,10 +23,13 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
+@usableFromInline
 struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
     
+    @usableFromInline
     var bitPattern: BitPattern
     
     @inlinable
@@ -45,10 +48,13 @@ extension Fixed8Number : SignedNumeric where BitPattern : SignedNumeric {
     
 }
 
+@_fixed_layout
+@usableFromInline
 struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
     
+    @usableFromInline
     var bitPattern: BitPattern
     
     @inlinable
@@ -67,10 +73,13 @@ extension Fixed14Number : SignedNumeric where BitPattern : SignedNumeric {
     
 }
 
+@_fixed_layout
+@usableFromInline
 struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
     
+    @usableFromInline
     var bitPattern: BitPattern
     
     @inlinable
@@ -89,10 +98,13 @@ extension Fixed16Number : SignedNumeric where BitPattern : SignedNumeric {
     
 }
 
+@_fixed_layout
+@usableFromInline
 struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
     typealias RepresentingValue = Double
     
+    @usableFromInline
     var bitPattern: BitPattern
     
     @inlinable

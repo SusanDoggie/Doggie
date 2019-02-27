@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct Device2ColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -105,6 +106,7 @@ extension Device2ColorModel {
     }
 }
 
+@_fixed_layout
 public struct Device3ColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -195,6 +197,7 @@ extension Device3ColorModel {
     }
 }
 
+@_fixed_layout
 public struct Device4ColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -293,6 +296,7 @@ extension Device4ColorModel {
     }
 }
 
+@_fixed_layout
 public struct Device5ColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -406,6 +410,7 @@ extension Device5ColorModel {
     }
 }
 
+@_fixed_layout
 public struct Device6ColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -527,6 +532,7 @@ extension Device6ColorModel {
     }
 }
 
+@_fixed_layout
 public struct Device7ColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -659,6 +665,7 @@ extension Device7ColorModel {
     }
 }
 
+@_fixed_layout
 public struct Device8ColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -799,6 +806,7 @@ extension Device8ColorModel {
     }
 }
 
+@_fixed_layout
 public struct Device9ColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -947,6 +955,7 @@ extension Device9ColorModel {
     }
 }
 
+@_fixed_layout
 public struct DeviceAColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -1106,6 +1115,7 @@ extension DeviceAColorModel {
     }
 }
 
+@_fixed_layout
 public struct DeviceBColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -1273,6 +1283,7 @@ extension DeviceBColorModel {
     }
 }
 
+@_fixed_layout
 public struct DeviceCColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -1448,6 +1459,7 @@ extension DeviceCColorModel {
     }
 }
 
+@_fixed_layout
 public struct DeviceDColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -1634,6 +1646,7 @@ extension DeviceDColorModel {
     }
 }
 
+@_fixed_layout
 public struct DeviceEColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -1828,6 +1841,7 @@ extension DeviceEColorModel {
     }
 }
 
+@_fixed_layout
 public struct DeviceFColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -2053,6 +2067,7 @@ extension Device2ColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -2161,6 +2176,7 @@ extension Device3ColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -2280,6 +2296,7 @@ extension Device4ColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -2410,6 +2427,7 @@ extension Device5ColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -2558,6 +2576,7 @@ extension Device6ColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -2717,6 +2736,7 @@ extension Device7ColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -2890,6 +2910,7 @@ extension Device8ColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -3074,6 +3095,7 @@ extension Device9ColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -3269,6 +3291,7 @@ extension DeviceAColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -3478,6 +3501,7 @@ extension DeviceBColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -3698,6 +3722,7 @@ extension DeviceCColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -3929,6 +3954,7 @@ extension DeviceDColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -4174,6 +4200,7 @@ extension DeviceEColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
@@ -4430,6 +4457,7 @@ extension DeviceFColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>

@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct OptionOneCollection<T> : RandomAccessCollection {
     
     public typealias Indices = Range<Int>

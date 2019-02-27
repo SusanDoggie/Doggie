@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: ScalarProtocol, T.Scalar: FloatingMathProtocol {
     
     public typealias RawPixel = T

@@ -30,6 +30,7 @@
 ///     ⎜ b e 0 ⎟
 ///     ⎝ c f 1 ⎠
 ///
+@_fixed_layout
 public struct SDTransform : Hashable {
     
     public var a: Double

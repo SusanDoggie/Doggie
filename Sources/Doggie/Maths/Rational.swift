@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct Rational: Comparable, Hashable {
     
     public let numerator: Int64

@@ -86,10 +86,10 @@ public struct DefaultKeysCollection<Base: KeyValueCollection> : Collection {
     public typealias Element = Base.Key
     
     @usableFromInline
-    internal var base: Base
+    var base: Base
     
     @inlinable
-    internal init(_ base: Base) {
+    init(_ base: Base) {
         self.base = base
     }
     
@@ -164,10 +164,10 @@ public struct DefaultValuesCollection<Base: KeyValueCollection> : Collection {
     public typealias Element = Base.Value
     
     @usableFromInline
-    internal var base: Base
+    var base: Base
     
     @inlinable
-    internal init(_ base: Base) {
+    init(_ base: Base) {
         self.base = base
     }
     

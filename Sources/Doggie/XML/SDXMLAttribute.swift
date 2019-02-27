@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct SDXMLAttribute : Hashable {
     
     public var attribute: String {

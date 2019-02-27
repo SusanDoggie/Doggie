@@ -32,6 +32,7 @@ public enum MemoryAdvise {
     case dontNeed
 }
 
+@_fixed_layout
 public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     public typealias Indices = Range<Int>

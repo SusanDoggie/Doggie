@@ -76,6 +76,7 @@ public struct LazyScanIterator<Base: IteratorProtocol, Element> : IteratorProtoc
     }
 }
 
+@_fixed_layout
 public struct LazyScanSequence<Base: Sequence, Element> : LazySequenceProtocol {
     
     public let initial: Element

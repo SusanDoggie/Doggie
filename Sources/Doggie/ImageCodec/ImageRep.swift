@@ -52,6 +52,7 @@ extension ImageRepBase {
     }
 }
 
+@_fixed_layout
 public struct ImageRep {
     
     private let base: ImageRepBase

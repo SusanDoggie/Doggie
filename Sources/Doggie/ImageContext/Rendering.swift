@@ -73,6 +73,7 @@ public protocol ImageContextRenderVertex {
     static func * (lhs: Double, rhs: Self) -> Self
 }
 
+@_fixed_layout
 public struct ImageContextRenderStageIn<Vertex : ImageContextRenderVertex> {
     
     public var vertex: Vertex
@@ -131,6 +132,7 @@ public protocol ImageContextRenderPipelineShader {
     func render(projection: (StageIn.Position) -> Point, stageIn: (StageIn, StageIn, StageIn), stageOut: (StageOut, StageOut, StageOut) -> Void)
 }
 
+@_fixed_layout
 public struct ImageContextRenderPipeline<Generator: ImageContextRenderTriangleGenerator, Shader: ImageContextRenderPipelineShader> : ImageContextRenderTriangleGenerator where Generator.Vertex == Shader.StageIn {
     
     public typealias Vertex = Shader.StageOut
@@ -320,6 +322,7 @@ extension ImageContext {
     }
 }
 
+@_fixed_layout
 public struct OrthographicProjectMatrix {
     
     public var nearZ: Double
@@ -346,6 +349,7 @@ extension ImageContext {
     }
 }
 
+@_fixed_layout
 public struct PerspectiveProjectMatrix {
     
     public var angle: Double
