@@ -23,10 +23,17 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
+@usableFromInline
 struct iccXYZNumber : ByteCodable {
     
+    @usableFromInline
     var x: Fixed16Number<BEInt32>
+    
+    @usableFromInline
     var y: Fixed16Number<BEInt32>
+    
+    @usableFromInline
     var z: Fixed16Number<BEInt32>
     
     init(x: Fixed16Number<BEInt32>, y: Fixed16Number<BEInt32>, z: Fixed16Number<BEInt32>) {
@@ -41,12 +48,14 @@ struct iccXYZNumber : ByteCodable {
         self.z = Fixed16Number(xyz.z)
     }
     
+    @usableFromInline
     init(from data: inout Data) throws {
         self.x = try data.decode(Fixed16Number.self)
         self.y = try data.decode(Fixed16Number.self)
         self.z = try data.decode(Fixed16Number.self)
     }
     
+    @usableFromInline
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(x)
         stream.encode(y)

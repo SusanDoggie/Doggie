@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/SusanDoggie/Doggie/branch/master/graph/badge.svg)](https://codecov.io/gh/SusanDoggie/Doggie)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS%20%7C%20Linux-lightgrey.svg?style=flat)
 [![GitHub release](https://img.shields.io/github/release/SusanDoggie/Doggie.svg)](https://github.com/SusanDoggie/Doggie/releases)
-[![Swift](https://img.shields.io/badge/swift-4.2-orange.svg?style=flat)](https://swift.org)
+[![Swift](https://img.shields.io/badge/swift-5.0-orange.svg?style=flat)](https://swift.org)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 Doggie is a foundational library for Apple's swift. It includes mathematics, accelerate, signal processing and graphic functions.

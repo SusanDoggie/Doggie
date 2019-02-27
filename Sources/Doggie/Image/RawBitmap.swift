@@ -157,10 +157,10 @@ extension Image {
                     let _length = min(bitmap.bytesPerRow, data.count)
                     guard _length != 0 else { return }
                     
-                    data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafePointer<UInt8>) in
+                    data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                         
+                        guard var source = bytes.baseAddress else { return }
                         var destination = dest
-                        var source = UnsafeRawPointer(bytes)
                         let source_end = source + _length
                         
                         for _ in 0..<width {
@@ -235,10 +235,10 @@ extension Image {
                 let _length = min(bitmap.bytesPerRow, data.count)
                 guard _length != 0 else { return }
                 
-                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafePointer<UInt8>) in
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                     
+                    guard var source = bytes.baseAddress else { return }
                     var destination = dest
-                    var source = UnsafeRawPointer(bytes)
                     let source_end = source + _length
                     
                     var tiff_predictor_record: T = 0
@@ -313,10 +313,10 @@ extension Image {
                 let _length = min(bitmap.bytesPerRow, data.count)
                 guard _length != 0 else { return }
                 
-                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafePointer<UInt8>) in
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                     
+                    guard var source = bytes.baseAddress else { return }
                     var destination = dest
-                    var source = UnsafeRawPointer(bytes)
                     let source_end = source + _length
                     
                     var tiff_predictor_record: T = 0
@@ -394,10 +394,10 @@ extension Image {
                 let _length = min(bitmap.bytesPerRow, data.count)
                 guard _length != 0 else { return }
                 
-                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafePointer<UInt8>) in
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                     
+                    guard var source = bytes.baseAddress else { return }
                     var destination = dest
-                    var source = UnsafeRawPointer(bytes)
                     let source_end = source + _length
                     
                     for _ in 0..<width {
@@ -477,8 +477,9 @@ extension Image {
                 let _length = min(bitmap.bytesPerRow, data.count)
                 guard _length != 0 else { return }
                 
-                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                     
+                    guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
                     var destination = dest
                     let dataBitSize = _length << 3
                     
@@ -580,8 +581,9 @@ extension Image {
                 let _length = min(bitmap.bytesPerRow, data.count)
                 guard _length != 0 else { return }
                 
-                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                     
+                    guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
                     var destination = dest
                     let dataBitSize = _length << 3
                     
@@ -685,8 +687,9 @@ extension Image {
                     let _length = min(bitmap.bytesPerRow, data.count)
                     guard _length != 0 else { return }
                     
-                    data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                    data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                         
+                        guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
                         var destination = dest
                         let dataBitSize = _length << 3
                         

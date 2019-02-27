@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol BezierProtocol : ScalarMultiplicative, MapReduceArithmetic, RandomAccessCollection, MutableCollection where Element : ScalarMultiplicative, Scalar == Element.Scalar {
+public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, MutableCollection {
     
     init()
     

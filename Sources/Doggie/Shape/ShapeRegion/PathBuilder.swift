@@ -150,7 +150,7 @@ extension ConstructiveSolidResult.Table {
         var begin: Int?
         var last: Int?
         var record: Bool?
-        for (i0, i1, winding, _) in _winding.rotated(_winding.index { $0.2 != _winding[0].2 } ?? 0) {
+        for (i0, i1, winding, _) in _winding.rotated(_winding.firstIndex { $0.2 != _winding[0].2 } ?? 0) {
             if begin == nil {
                 begin = i0.0
                 last = i0.0

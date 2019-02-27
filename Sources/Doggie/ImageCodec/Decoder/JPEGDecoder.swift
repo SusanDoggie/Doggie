@@ -95,7 +95,7 @@ struct JPEGDecoder : ImageRepDecoder {
                 guard segment.data.count == 2 else { throw ImageRep.Error.InvalidFormat("Invalid DNL.") }
                 guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid DNL.") }
                 
-                self.frame.mutableLast.SOF.lines = segment.data.withUnsafeBytes { $0.pointee as BEUInt16 }
+                self.frame.mutableLast.SOF.lines = segment.data.load(as: BEUInt16.self)
                 
             case .EOI:
                 

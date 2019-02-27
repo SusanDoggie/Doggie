@@ -299,6 +299,11 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
     
     @inlinable
+    public func compactMapValues<T>(_ transform: (Link) throws -> T?) rethrows -> Graph<Node, T> {
+        return try Graph<Node, T>(table: table.mapValues { try $0.compactMapValues(transform) })
+    }
+    
+    @inlinable
     public mutating func merge<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Link, Link) throws -> Link) rethrows where S.Element == (Node, Node, Link) {
         for (key, list) in Dictionary(grouping: keysAndValues, by: { $0.0 }) {
             try table[key, default: [:]].merge(list.lazy.map { ($0.1, $0.2) }, uniquingKeysWith: combine)

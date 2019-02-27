@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: ScalarProtocol, T.Scalar: FloatingMathProtocol {
     
     public typealias RawPixel = T
@@ -33,7 +34,13 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     
     public let height: Int
     
-    public private(set) var pixels: MappedBuffer<T>
+    @usableFromInline
+    var _pixels: MappedBuffer<T>
+    
+    @_transparent
+    public var pixels: MappedBuffer<T> {
+        return _pixels
+    }
     
     public var resamplingAlgorithm: ResamplingAlgorithm
     
@@ -48,7 +55,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
         precondition(width * height == pixels.count, "mismatch pixels count.")
         self.width = width
         self.height = height
-        self.pixels = pixels
+        self._pixels = pixels
         self.resamplingAlgorithm = resamplingAlgorithm
     }
     
@@ -59,7 +66,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
-        self.pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
+        self._pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
         self.resamplingAlgorithm = resamplingAlgorithm
     }
     
@@ -71,7 +78,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
         self.resamplingAlgorithm = texture.resamplingAlgorithm
         self.horizontalWrappingMode = texture.horizontalWrappingMode
         self.verticalWrappingMode = texture.verticalWrappingMode
-        self.pixels = texture.pixels.map { T($0.opacity) }
+        self._pixels = texture.pixels.map { T($0.opacity) }
     }
 }
 
@@ -108,7 +115,7 @@ extension StencilTexture {
             return pixels.fileBacked
         }
         set {
-            pixels.fileBacked = newValue
+            _pixels.fileBacked = newValue
         }
     }
     
@@ -141,7 +148,7 @@ extension StencilTexture {
     @inline(__always)
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
         
-        return try pixels.withUnsafeMutableBufferPointer(body)
+        return try _pixels.withUnsafeMutableBufferPointer(body)
     }
     
     @inlinable
@@ -155,7 +162,7 @@ extension StencilTexture {
     @inline(__always)
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         
-        return try pixels.withUnsafeMutableBytes(body)
+        return try _pixels.withUnsafeMutableBytes(body)
     }
 }
 

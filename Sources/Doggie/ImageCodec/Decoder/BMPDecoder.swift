@@ -124,10 +124,10 @@ struct BMPDecoder : ImageRepDecoder {
             guard (bMax + 1).isPower2 else { return image }
             guard (aMax + 1).isPower2 else { return image }
             
-            pixels.withUnsafeBytes { (source: UnsafePointer<LEInteger<Pixel>>) in
+            pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                 
+                guard var source = bytes.baseAddress?.assumingMemoryBound(to: LEInteger<Pixel>.self) else { return }
                 let endOfData = pixels.count + Int(bitPattern: source)
-                var source = source
                 
                 image.withUnsafeMutableBufferPointer { destination in
                     
@@ -198,10 +198,10 @@ struct BMPDecoder : ImageRepDecoder {
             
             var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
             
-            pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+            pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                 
+                guard var source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
                 let endOfData = pixels.count + Int(bitPattern: source)
-                var source = source
                 
                 image.withUnsafeMutableBufferPointer { destination in
                     
@@ -264,7 +264,7 @@ struct BMPDecoder : ImageRepDecoder {
                     var red: UInt8
                 }
                 
-                palette = data.dropFirst(header.paletteOffset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<Palette>, count: paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
+                palette = data.dropFirst(header.paletteOffset).withUnsafeBytes { $0.bindMemory(to: Palette.self).prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
                 
             } else {
                 
@@ -276,7 +276,7 @@ struct BMPDecoder : ImageRepDecoder {
                     var reserved: UInt8
                 }
                 
-                palette = data.dropFirst(header.paletteOffset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<Palette>, count: paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
+                palette = data.dropFirst(header.paletteOffset).withUnsafeBytes { $0.bindMemory(to: Palette.self).prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
             }
             
             func UncompressedPixelReader() -> Image<ARGB32ColorPixel> {
@@ -287,10 +287,10 @@ struct BMPDecoder : ImageRepDecoder {
                 
                 palette.withUnsafeBufferPointer { palette in
                     
-                    pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                    pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                         
+                        guard var source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
                         let start = source
-                        var source = source
                         
                         image.withUnsafeMutableBufferPointer { destination in
                             
@@ -345,8 +345,9 @@ struct BMPDecoder : ImageRepDecoder {
                     
                     palette.withUnsafeBufferPointer { palette in
                         
-                        pixels.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                        pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                             
+                            guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
                             var stream = UnsafeBufferPointer(start: source, count: pixels.count)[...]
                             
                             image.withUnsafeMutableBufferPointer { destination in
@@ -496,15 +497,15 @@ struct BMPHeader {
     
     init?(data: Data) {
         
-        self.signature = data.withUnsafeBytes { $0.pointee }
-        self.size = data.dropFirst(2).withUnsafeBytes { $0.pointee }
-        self.reserved1 = data.dropFirst(6).withUnsafeBytes { $0.pointee }
-        self.reserved2 = data.dropFirst(8).withUnsafeBytes { $0.pointee }
-        self.offset = data.dropFirst(10).withUnsafeBytes { $0.pointee }
+        self.signature = data.load(as: Signature<BEUInt16>.self)
+        self.size = data.load(fromByteOffset: 2, as: LEUInt32.self)
+        self.reserved1 = data.load(fromByteOffset: 6, as: LEUInt16.self)
+        self.reserved2 = data.load(fromByteOffset: 8, as: LEUInt16.self)
+        self.offset = data.load(fromByteOffset: 10, as: LEUInt32.self)
         
         guard data.count > 18 else { return nil }
         
-        let DIBSize: LEUInt32 = data.dropFirst(14).withUnsafeBytes { $0.pointee }
+        let DIBSize = data.load(fromByteOffset: 14, as: LEUInt32.self)
         
         if DIBSize == 12 {
             
@@ -628,14 +629,14 @@ struct BITMAPCOREHEADER : DIBHeader {
     
     init?(data: Data) {
         
-        self.size = data.withUnsafeBytes { $0.pointee }
+        self.size = data.load(as: LEUInt32.self)
         
         guard self.size <= data.count else { return nil }
         
-        self.width = data.dropFirst(4).withUnsafeBytes { $0.pointee }
-        self.height = data.dropFirst(6).withUnsafeBytes { $0.pointee }
-        self.planes = data.dropFirst(8).withUnsafeBytes { $0.pointee }
-        self.bitsPerPixel = data.dropFirst(10).withUnsafeBytes { $0.pointee }
+        self.width = data.load(fromByteOffset: 4, as: LEUInt16.self)
+        self.height = data.load(fromByteOffset: 6, as: LEUInt16.self)
+        self.planes = data.load(fromByteOffset: 8, as: LEUInt16.self)
+        self.bitsPerPixel = data.load(fromByteOffset: 10, as: LEUInt16.self)
     }
     
     var _width: Int {
@@ -743,7 +744,7 @@ struct BITMAPINFOHEADER : DIBHeader {
     
     init?(data: Data) {
         
-        self.size = data.prefix(4).withUnsafeBytes { $0.pointee }
+        self.size = data.prefix(4).load(as: LEUInt32.self)
         
         guard self.size <= data.count else { return nil }
         
@@ -752,17 +753,17 @@ struct BITMAPINFOHEADER : DIBHeader {
         default: return nil
         }
         
-        self.width = data.dropFirst(4).withUnsafeBytes { $0.pointee }
-        self.height = data.dropFirst(8).withUnsafeBytes { $0.pointee }
-        self.planes = data.dropFirst(12).withUnsafeBytes { $0.pointee }
-        self.bitsPerPixel = data.dropFirst(14).withUnsafeBytes { $0.pointee }
+        self.width = data.load(fromByteOffset: 4, as: LEInt32.self)
+        self.height = data.load(fromByteOffset: 8, as: LEInt32.self)
+        self.planes = data.load(fromByteOffset: 12, as: LEUInt16.self)
+        self.bitsPerPixel = data.load(fromByteOffset: 14, as: LEUInt16.self)
         
-        self.compression = data.dropFirst(16).withUnsafeBytes { $0.pointee }
-        self.imageSize = data.dropFirst(20).withUnsafeBytes { $0.pointee }
-        self.hResolution = data.dropFirst(24).withUnsafeBytes { $0.pointee }
-        self.vResolution = data.dropFirst(28).withUnsafeBytes { $0.pointee }
-        self.paletteCount = data.dropFirst(32).withUnsafeBytes { $0.pointee }
-        self.importantColorCount = data.dropFirst(36).withUnsafeBytes { $0.pointee }
+        self.compression = data.load(fromByteOffset: 16, as: CompressionType.self)
+        self.imageSize = data.load(fromByteOffset: 20, as: LEUInt32.self)
+        self.hResolution = data.load(fromByteOffset: 24, as: LEUInt32.self)
+        self.vResolution = data.load(fromByteOffset: 28, as: LEUInt32.self)
+        self.paletteCount = data.load(fromByteOffset: 32, as: LEUInt32.self)
+        self.importantColorCount = data.load(fromByteOffset: 36, as: LEUInt32.self)
         
         if self.size == 40 {
             if self.bitsPerPixel == 16 || self.bitsPerPixel == 32 {
@@ -776,36 +777,36 @@ struct BITMAPINFOHEADER : DIBHeader {
         }
         
         if self.size >= 52 {
-            self.redBitmask = data.dropFirst(40).withUnsafeBytes { $0.pointee }
-            self.greenBitmask = data.dropFirst(44).withUnsafeBytes { $0.pointee }
-            self.blueBitmask = data.dropFirst(48).withUnsafeBytes { $0.pointee }
+            self.redBitmask = data.load(fromByteOffset: 40, as: LEUInt32.self)
+            self.greenBitmask = data.load(fromByteOffset: 44, as: LEUInt32.self)
+            self.blueBitmask = data.load(fromByteOffset: 48, as: LEUInt32.self)
         }
         
         if self.size >= 56 {
-            self.alphaBitmask = data.dropFirst(52).withUnsafeBytes { $0.pointee }
+            self.alphaBitmask = data.load(fromByteOffset: 52, as: LEUInt32.self)
         }
         
         if self.size >= 108 {
-            self.colorSpaceType = data.dropFirst(56).withUnsafeBytes { $0.pointee }
-            self.redX = data.dropFirst(60).withUnsafeBytes { $0.pointee }
-            self.redY = data.dropFirst(64).withUnsafeBytes { $0.pointee }
-            self.redZ = data.dropFirst(68).withUnsafeBytes { $0.pointee }
-            self.greenX = data.dropFirst(72).withUnsafeBytes { $0.pointee }
-            self.greenY = data.dropFirst(76).withUnsafeBytes { $0.pointee }
-            self.greenZ = data.dropFirst(80).withUnsafeBytes { $0.pointee }
-            self.blueX = data.dropFirst(84).withUnsafeBytes { $0.pointee }
-            self.blueY = data.dropFirst(88).withUnsafeBytes { $0.pointee }
-            self.blueZ = data.dropFirst(92).withUnsafeBytes { $0.pointee }
-            self.redGamma = data.dropFirst(96).withUnsafeBytes { $0.pointee }
-            self.greenGamma = data.dropFirst(100).withUnsafeBytes { $0.pointee }
-            self.blueGamma = data.dropFirst(104).withUnsafeBytes { $0.pointee }
+            self.colorSpaceType = data.load(fromByteOffset: 56, as: ColorSpaceType.self)
+            self.redX = data.load(fromByteOffset: 60, as: Fixed30Number<LEUInt32>.self)
+            self.redY = data.load(fromByteOffset: 64, as: Fixed30Number<LEUInt32>.self)
+            self.redZ = data.load(fromByteOffset: 68, as: Fixed30Number<LEUInt32>.self)
+            self.greenX = data.load(fromByteOffset: 72, as: Fixed30Number<LEUInt32>.self)
+            self.greenY = data.load(fromByteOffset: 76, as: Fixed30Number<LEUInt32>.self)
+            self.greenZ = data.load(fromByteOffset: 80, as: Fixed30Number<LEUInt32>.self)
+            self.blueX = data.load(fromByteOffset: 84, as: Fixed30Number<LEUInt32>.self)
+            self.blueY = data.load(fromByteOffset: 88, as: Fixed30Number<LEUInt32>.self)
+            self.blueZ = data.load(fromByteOffset: 92, as: Fixed30Number<LEUInt32>.self)
+            self.redGamma = data.load(fromByteOffset: 96, as: Fixed16Number<LEUInt32>.self)
+            self.greenGamma = data.load(fromByteOffset: 100, as: Fixed16Number<LEUInt32>.self)
+            self.blueGamma = data.load(fromByteOffset: 104, as: Fixed16Number<LEUInt32>.self)
         }
         
         if self.size >= 124 {
-            self.intent = data.dropFirst(108).withUnsafeBytes { $0.pointee }
-            self.profileData = data.dropFirst(112).withUnsafeBytes { $0.pointee }
-            self.profileSize = data.dropFirst(116).withUnsafeBytes { $0.pointee }
-            self.reserved = data.dropFirst(120).withUnsafeBytes { $0.pointee }
+            self.intent = data.load(fromByteOffset: 108, as: IntentType.self)
+            self.profileData = data.load(fromByteOffset: 112, as: LEUInt32.self)
+            self.profileSize = data.load(fromByteOffset: 116, as: LEUInt32.self)
+            self.reserved = data.load(fromByteOffset: 120, as: LEUInt32.self)
         }
     }
     

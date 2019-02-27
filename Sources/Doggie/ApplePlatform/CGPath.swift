@@ -141,6 +141,7 @@ extension CGPath {
                 case .addQuadCurveToPoint: _path._quad(to: Point(points[1]), control: Point(points[0]))
                 case .addCurveToPoint: _path._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
                 case .closeSubpath: _path._close()
+                @unknown default: break
                 }
             }
             
@@ -161,6 +162,7 @@ extension CGPath {
                 case .addQuadCurveToPoint: path.pointee._quad(to: Point(points[1]), control: Point(points[0]))
                 case .addCurveToPoint: path.pointee._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
                 case .closeSubpath: path.pointee._close()
+                @unknown default: break
                 }
             }
             
@@ -254,6 +256,7 @@ extension NSBezierPath: BezierPathConvertible {
             case .lineTo: path._line(to: Point(points[0]))
             case .curveTo: path._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
             case .closePath: path._close()
+            @unknown default: break
             }
         }
     }

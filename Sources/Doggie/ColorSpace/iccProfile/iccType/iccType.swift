@@ -25,29 +25,67 @@
 
 extension iccProfile {
     
+    @_fixed_layout
+    @usableFromInline
     struct Header : ByteCodable {
         
         static let MagicNumber: Signature<BEUInt32> = "acsp"
         
+        @usableFromInline
         var size: BEUInt32                                                     /* Profile size in bytes */
+        
+        @usableFromInline
         var cmmId: Signature<BEUInt32>                                         /* CMM for this profile */
+        
+        @usableFromInline
         var version: BEUInt32                                                  /* Format version number */
+        
+        @usableFromInline
         var deviceClass: ClassSignature                                        /* Type of profile */
+        
+        @usableFromInline
         var colorSpace: ColorSpaceSignature                                    /* Color space of data */
+        
+        @usableFromInline
         var pcs: ColorSpaceSignature                                           /* PCS, XYZ or Lab only */
+        
+        @usableFromInline
         var date: iccDateTimeNumber                                            /* Date profile was created */
+        
+        @usableFromInline
         var magic: Signature<BEUInt32>                                         /* icMagicNumber */
+        
+        @usableFromInline
         var platform: Signature<BEUInt32>                                      /* Primary Platform */
+        
+        @usableFromInline
         var flags: BEUInt32                                                    /* Various bit settings */
+        
+        @usableFromInline
         var manufacturer: Signature<BEUInt32>                                  /* Device manufacturer */
+        
+        @usableFromInline
         var model: Signature<BEUInt32>                                         /* Device model number */
+        
+        @usableFromInline
         var attributes: BEUInt64                                               /* Device attributes */
+        
+        @usableFromInline
         var renderingIntent: BEUInt32                                          /* Rendering intent */
+        
+        @usableFromInline
         var illuminant: iccXYZNumber                                           /* Profile illuminant */
+        
+        @usableFromInline
         var creator: Signature<BEUInt32>                                       /* Profile creator */
+        
+        @usableFromInline
         var profileID: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Profile ID using RFC 1321 MD5 128bit fingerprinting */
+        
+        @usableFromInline
         var reserved: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)   /* Reserved for future use */
         
+        @usableFromInline
         init(cmmId: Signature<BEUInt32>,
              version: BEUInt32,
              deviceClass: ClassSignature,
@@ -83,6 +121,7 @@ extension iccProfile {
             self.reserved = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         }
         
+        @usableFromInline
         init(from data: inout Data) throws {
             self.size = try data.decode(BEUInt32.self)
             self.cmmId = try data.decode(Signature.self)
@@ -113,6 +152,7 @@ extension iccProfile {
                              try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self), try data.decode(UInt8.self))
         }
         
+        @usableFromInline
         func write<Target: ByteOutputStream>(to stream: inout Target) {
             stream.encode(size)
             stream.encode(cmmId)
@@ -180,10 +220,14 @@ extension iccProfile {
 
 extension iccProfile.Header {
     
+    @_fixed_layout
+    @usableFromInline
     struct ClassSignature: SignatureProtocol {
         
+        @usableFromInline
         var rawValue: BEUInt32
         
+        @usableFromInline
         init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
@@ -197,10 +241,14 @@ extension iccProfile.Header {
         static let namedColor: ClassSignature                = "nmcl"
     }
     
+    @_fixed_layout
+    @usableFromInline
     struct ColorSpaceSignature: SignatureProtocol {
         
+        @usableFromInline
         var rawValue: BEUInt32
         
+        @usableFromInline
         init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
@@ -238,10 +286,14 @@ extension iccProfile.Header {
 
 extension iccProfile {
     
+    @_fixed_layout
+    @usableFromInline
     struct TagSignature : SignatureProtocol {
         
+        @usableFromInline
         var rawValue: BEUInt32
         
+        @usableFromInline
         init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }
@@ -316,10 +368,14 @@ extension iccProfile {
 
 extension iccProfile {
     
+    @_fixed_layout
+    @usableFromInline
     struct TagType : SignatureProtocol {
         
+        @usableFromInline
         var rawValue: BEUInt32
         
+        @usableFromInline
         init(rawValue: BEUInt32) {
             self.rawValue = rawValue
         }

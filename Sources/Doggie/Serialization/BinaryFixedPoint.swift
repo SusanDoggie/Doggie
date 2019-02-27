@@ -278,6 +278,7 @@ extension BinaryFixedPoint {
         case .awayFromZero: return bitPattern < 0 ? floor : ceil
         case .up: return ceil
         case .down: return floor
+        @unknown default: return round
         }
     }
     

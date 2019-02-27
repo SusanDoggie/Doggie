@@ -59,7 +59,7 @@ extension AppleCompression {
 @available(OSX 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)
 extension AppleCompression {
     
-    private static let empty = Data()
+    private static let empty = [UInt8](repeating: 0, count: 4096)
     
     private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
@@ -94,9 +94,9 @@ extension AppleCompression {
     
     public func final(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
-        try AppleCompression.empty.withUnsafeBytes { (empty: UnsafePointer<UInt8>) in
+        try AppleCompression.empty.withUnsafeBufferPointer { empty in
             
-            stream.pointee.src_ptr = empty
+            stream.pointee.src_ptr = empty.baseAddress!
             stream.pointee.src_size = 0
             
             try _process(Int32(COMPRESSION_STREAM_FINALIZE.rawValue), callback)

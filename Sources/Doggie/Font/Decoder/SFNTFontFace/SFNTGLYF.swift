@@ -47,11 +47,11 @@ extension SFNTGLYF {
         let endIndex: Int
         
         if format == 0 {
-            startIndex = Int(loca.withUnsafeBytes { $0[glyph] as BEUInt16 }) << 1
-            endIndex = Int(loca.withUnsafeBytes { $0[glyph + 1] as BEUInt16 }) << 1
+            startIndex = Int(loca.withUnsafeBytes { $0.bindMemory(to: BEUInt16.self)[glyph] }) << 1
+            endIndex = Int(loca.withUnsafeBytes { $0.bindMemory(to: BEUInt16.self)[glyph + 1] }) << 1
         } else {
-            startIndex = Int(loca.withUnsafeBytes { $0[glyph] as BEUInt32 })
-            endIndex = Int(loca.withUnsafeBytes { $0[glyph + 1] as BEUInt32 })
+            startIndex = Int(loca.withUnsafeBytes { $0.bindMemory(to: BEUInt32.self)[glyph] })
+            endIndex = Int(loca.withUnsafeBytes { $0.bindMemory(to: BEUInt32.self)[glyph + 1] })
         }
         
         return endIndex > startIndex ? glyf.dropFirst(startIndex).prefix(endIndex - startIndex) : nil

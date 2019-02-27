@@ -89,14 +89,16 @@ struct OTFGDEF : ByteDecodable {
                 if glyph >= startGlyphID {
                     let offset = Int(glyph - startGlyphID)
                     if offset < glyphCount {
-                        return data.withUnsafeBytes { $0[offset] }
+                        return data.withUnsafeBytes { $0.bindMemory(to: BEUInt16.self)[offset] }
                     }
                 }
             case 2:
                 
                 var range = 0..<Int(classRangeCount)
                 
-                return data.withUnsafeBytes { (record: UnsafePointer<ClassRangeRecord>) in
+                return data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                    
+                    guard let record = bytes.baseAddress?.assumingMemoryBound(to: ClassRangeRecord.self) else { return 0 }
                     
                     while range.count != 0 {
                         

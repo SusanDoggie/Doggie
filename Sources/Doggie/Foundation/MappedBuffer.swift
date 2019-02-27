@@ -481,6 +481,18 @@ extension MappedBuffer {
         
         return try body(UnsafeMutableRawBufferPointer(start: base.address, count: base.count * MemoryLayout<Element>.stride))
     }
+    
+    @inlinable
+    @inline(__always)
+    public func withContiguousStorageIfAvailable<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R) rethrows -> R? {
+        return try withUnsafeBufferPointer { try body($0) }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public mutating func withContiguousMutableStorageIfAvailable<R>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws -> R) rethrows -> R? {
+        return try withUnsafeMutableBufferPointer { try body(&$0) }
+    }
 }
 
 extension MappedBuffer : Equatable where Element : Equatable {

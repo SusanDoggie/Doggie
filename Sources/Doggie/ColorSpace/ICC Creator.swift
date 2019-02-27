@@ -72,7 +72,7 @@ extension iccProfile {
         
         var header = Data(count: header_size)
         
-        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagType.lutAtoB, 0 as BEUInt32, iccLUTTransform.LutAtoB(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)) }
+        header.storeBytes(of: (iccProfile.TagType.lutAtoB, 0 as BEUInt32, iccLUTTransform.LutAtoB(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)))
         
         self[tag] = TagData(rawData: header + B_data)
     }
@@ -90,7 +90,7 @@ extension iccProfile {
         
         var header = Data(count: header_size)
         
-        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagType.lutBtoA, 0 as BEUInt32, iccLUTTransform.LutBtoA(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)) }
+        header.storeBytes(of: (iccProfile.TagType.lutBtoA, 0 as BEUInt32, iccLUTTransform.LutBtoA(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)))
         
         self[tag] = TagData(rawData: header + B_data)
     }
@@ -105,7 +105,7 @@ extension iccProfile {
         }
         
         var matrix_data = Data(count: MemoryLayout<iccMatrix3x4>.stride)
-        matrix_data.withUnsafeMutableBytes { $0.pointee = iccMatrix3x4(matrix) }
+        matrix_data.storeBytes(of: iccMatrix3x4(matrix))
         
         var M_data = Data()
         
@@ -118,7 +118,7 @@ extension iccProfile {
         
         var header = Data(count: header_size)
         
-        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagType.lutAtoB, 0 as BEUInt32, iccLUTTransform.LutAtoB(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)) }
+        header.storeBytes(of: (iccProfile.TagType.lutAtoB, 0 as BEUInt32, iccLUTTransform.LutAtoB(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)))
         
         self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
     }
@@ -133,7 +133,7 @@ extension iccProfile {
         }
         
         var matrix_data = Data(count: MemoryLayout<iccMatrix3x4>.stride)
-        matrix_data.withUnsafeMutableBytes { $0.pointee = iccMatrix3x4(matrix) }
+        matrix_data.storeBytes(of: iccMatrix3x4(matrix))
         
         var M_data = Data()
         
@@ -146,7 +146,7 @@ extension iccProfile {
         
         var header = Data(count: header_size)
         
-        header.withUnsafeMutableBytes { $0.pointee = (iccProfile.TagType.lutBtoA, 0 as BEUInt32, iccLUTTransform.LutBtoA(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)) }
+        header.storeBytes(of: (iccProfile.TagType.lutBtoA, 0 as BEUInt32, iccLUTTransform.LutBtoA(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)))
         
         self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
     }

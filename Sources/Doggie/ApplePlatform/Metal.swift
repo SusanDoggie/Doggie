@@ -32,7 +32,7 @@ extension MTLComputeCommandEncoder {
     
     public func setBuffer(_ buffer: Data, index: Int) {
         let count = buffer.count
-        buffer.withUnsafeBytes { (ptr: UnsafePointer<Int8>) in self.setBytes(ptr, length: count, index: index) }
+        buffer.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) in self.setBytes(ptr.baseAddress!, length: count, index: index) }
     }
     
     public func setBuffer<T>(_ buffer: [T], index: Int) {

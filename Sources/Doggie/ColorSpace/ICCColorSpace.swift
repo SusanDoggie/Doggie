@@ -70,6 +70,7 @@ struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProt
     @usableFromInline
     let _iccData: Data
     
+    @usableFromInline
     let profile: iccProfile
     
     @usableFromInline

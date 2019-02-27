@@ -37,6 +37,7 @@ enum iccCurve {
 
 extension iccCurve : ByteCodable {
     
+    @usableFromInline
     init(from data: inout Data) throws {
         
         guard data.count > 8 else { throw AnyColorSpace.ICCError.endOfData }
@@ -79,6 +80,7 @@ extension iccCurve : ByteCodable {
         }
     }
     
+    @usableFromInline
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         
         switch self {

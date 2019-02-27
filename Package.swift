@@ -1,4 +1,4 @@
-// swift-tools-version:4.2
+// swift-tools-version:5.0
 //
 //  Package.swift
 //
@@ -28,6 +28,9 @@ import PackageDescription
 
 let package = Package(
     name: "Doggie",
+    platforms: [
+        .macOS(.v10_10), .iOS(.v8), .tvOS(.v9), .watchOS(.v2)
+    ],
     products: [
         .library(name: "Doggie", targets: ["Doggie"]),
         .library(name: "DoggieGP", targets: ["DoggieGP"]),

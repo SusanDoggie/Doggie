@@ -45,6 +45,7 @@ struct iccNamedColor : ByteDecodable {
     @usableFromInline
     var device: [Double] = []
     
+    @usableFromInline
     init(from data: inout Data) throws {
         
         guard data.count > 8 else { throw AnyColorSpace.ICCError.endOfData }

@@ -718,10 +718,10 @@ struct SDUndecodedObject {
     var int64Value: Int64? {
         guard type == .signed else { return nil }
         switch data.count {
-        case 1: return data.withUnsafeBytes { Int64($0.pointee as Int8) }
-        case 2: return data.withUnsafeBytes { Int64(Int16(bigEndian: $0.pointee)) }
-        case 4: return data.withUnsafeBytes { Int64(Int32(bigEndian: $0.pointee)) }
-        case 8: return data.withUnsafeBytes { Int64(bigEndian: $0.pointee) }
+        case 1: return Int64(data.load(as: Int8.self))
+        case 2: return Int64(Int16(bigEndian: data.load(as: Int16.self)))
+        case 4: return Int64(Int32(bigEndian: data.load(as: Int32.self)))
+        case 8: return Int64(bigEndian: data.load(as: Int64.self))
         default: return nil
         }
     }
@@ -730,10 +730,10 @@ struct SDUndecodedObject {
     var uint64Value: UInt64? {
         guard type == .unsigned else { return nil }
         switch data.count {
-        case 1: return data.withUnsafeBytes { UInt64($0.pointee as UInt8) }
-        case 2: return data.withUnsafeBytes { UInt64(UInt16(bigEndian: $0.pointee)) }
-        case 4: return data.withUnsafeBytes { UInt64(UInt32(bigEndian: $0.pointee)) }
-        case 8: return data.withUnsafeBytes { UInt64(bigEndian: $0.pointee) }
+        case 1: return UInt64(data.load(as: UInt8.self))
+        case 2: return UInt64(UInt16(bigEndian: data.load(as: UInt16.self)))
+        case 4: return UInt64(UInt32(bigEndian: data.load(as: UInt32.self)))
+        case 8: return UInt64(bigEndian: data.load(as: UInt64.self))
         default: return nil
         }
     }
@@ -741,7 +741,7 @@ struct SDUndecodedObject {
     @inlinable
     var doubleValue: Double? {
         guard data.count == 8 && type == .number else { return nil }
-        return data.withUnsafeBytes { Double(bitPattern: UInt64(bigEndian: $0.pointee)) }
+        return Double(bitPattern: UInt64(bigEndian: data.load(as: UInt64.self)))
     }
     
     @inlinable
@@ -762,7 +762,7 @@ struct SDUndecodedObject {
     @inlinable
     var uuid: UUID? {
         guard data.count == 16 && type == .uuid else { return nil }
-        return UUID(uuid: data.withUnsafeBytes { $0.pointee as uuid_t })
+        return UUID(uuid: data.load(as: uuid_t.self))
     }
     
     @inlinable
@@ -780,7 +780,7 @@ struct SDUndecodedObject {
     @inlinable
     var count: Int {
         guard data.count >= 8 && (type == .array || type == .dictionary) else { return 0 }
-        return data.prefix(8).withUnsafeBytes { Int(UInt64(bigEndian: $0.pointee)) }
+        return Int(UInt64(bigEndian: data.prefix(8).load(as: UInt64.self)))
     }
     
     @inlinable
@@ -794,7 +794,8 @@ struct SDUndecodedObject {
         
         guard data.count > table_size else { return nil }
         
-        return data.prefix(table_size).withUnsafeBytes { (offsets: UnsafePointer<UInt64>) in
+        return data.prefix(table_size).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+            guard let offsets = bytes.baseAddress?.assumingMemoryBound(to: UInt64.self) else { return nil }
             let from = Int(UInt64(bigEndian: offsets[index]))
             let to = Int(UInt64(bigEndian: offsets[index + 1]))
             guard to > from && data.count >= table_size + to else { return nil }
@@ -813,8 +814,9 @@ struct SDUndecodedObject {
         
         guard data.count > table_size else { return nil }
         
-        return data.prefix(table_size).withUnsafeBytes { (offsets: UnsafePointer<(UInt64, UInt64)>) in
+        return data.prefix(table_size).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
             
+            guard let offsets = bytes.baseAddress?.assumingMemoryBound(to: (UInt64, UInt64).self) else { return nil }
             let from = Int(UInt64(bigEndian: offsets[index].1))
             
             let offset_0 = Int(UInt64(bigEndian: offsets[index + 1].0))

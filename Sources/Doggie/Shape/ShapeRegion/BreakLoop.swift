@@ -111,7 +111,7 @@ extension Shape.Component {
         while let graph_first = graph.first {
             var path: [Int] = [graph_first.from, graph_first.to]
             while let last = path.last, let node = graph.nodes(from: last).first?.0 {
-                if let i = path.index(where: { $0 == node }) {
+                if let i = path.firstIndex(where: { $0 == node }) {
                     let loop = path.suffix(from: i)
                     var segments: [ShapeRegion.Solid.Segment] = []
                     for (left, right) in loop.rotateZip() {

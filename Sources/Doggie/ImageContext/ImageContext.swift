@@ -74,7 +74,12 @@ private struct GraphicState {
 
 public class ImageContext<Pixel: ColorPixelProtocol> : TypedDrawableContext {
     
-    public private(set) var image: Image<Pixel>
+    @usableFromInline
+    var _image: Image<Pixel>
+    
+    public var image: Image<Pixel> {
+        return _image
+    }
     
     @usableFromInline
     var clip: MappedBuffer<Double>?
@@ -93,11 +98,11 @@ public class ImageContext<Pixel: ColorPixelProtocol> : TypedDrawableContext {
     private var graphicStateStack: [GraphicState] = []
     
     public init(image: Image<Pixel>) {
-        self.image = image
+        self._image = image
     }
     
     public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, fileBacked: Bool = false) {
-        self.image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+        self._image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
     }
 }
 
@@ -113,7 +118,7 @@ extension ImageContext {
         self.styles.shadowBlur = 0
         self.styles.compositingMode = .default
         self.styles.blendMode = .default
-        self.image.colorSpace.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
+        self._image.colorSpace.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
     }
 }
 
@@ -130,7 +135,7 @@ extension ImageContext {
     public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         let current = self.current
         current.isDirty = true
-        return try current.image.withUnsafeMutableBufferPointer(body)
+        return try current._image.withUnsafeMutableBufferPointer(body)
     }
     
     public func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
@@ -337,7 +342,7 @@ extension ImageContext {
             return current.image.colorSpace.chromaticAdaptationAlgorithm
         }
         set {
-            current.image.colorSpace.chromaticAdaptationAlgorithm = newValue
+            current._image.colorSpace.chromaticAdaptationAlgorithm = newValue
         }
     }
 }

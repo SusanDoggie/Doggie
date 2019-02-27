@@ -64,6 +64,7 @@ enum iccLUTTransform {
 
 extension iccLUTTransform : ByteDecodable {
     
+    @usableFromInline
     init(from data: inout Data) throws {
         
         let _data = data

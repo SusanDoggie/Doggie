@@ -23,10 +23,14 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
+@usableFromInline
 struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
+    @usableFromInline
     typealias RepresentingValue = Double
     
+    @usableFromInline
     var bitPattern: BitPattern
     
     @inlinable
@@ -36,6 +40,7 @@ struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedP
     }
     
     @_transparent
+    @usableFromInline
     static var fractionBitCount: Int {
         return 8
     }
@@ -45,10 +50,14 @@ extension Fixed8Number : SignedNumeric where BitPattern : SignedNumeric {
     
 }
 
+@_fixed_layout
+@usableFromInline
 struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
+    @usableFromInline
     typealias RepresentingValue = Double
     
+    @usableFromInline
     var bitPattern: BitPattern
     
     @inlinable
@@ -58,6 +67,7 @@ struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     }
     
     @_transparent
+    @usableFromInline
     static var fractionBitCount: Int {
         return 14
     }
@@ -67,10 +77,14 @@ extension Fixed14Number : SignedNumeric where BitPattern : SignedNumeric {
     
 }
 
+@_fixed_layout
+@usableFromInline
 struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
+    @usableFromInline
     typealias RepresentingValue = Double
     
+    @usableFromInline
     var bitPattern: BitPattern
     
     @inlinable
@@ -80,6 +94,7 @@ struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     }
     
     @_transparent
+    @usableFromInline
     static var fractionBitCount: Int {
         return 16
     }
@@ -89,10 +104,14 @@ extension Fixed16Number : SignedNumeric where BitPattern : SignedNumeric {
     
 }
 
+@_fixed_layout
+@usableFromInline
 struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
+    @usableFromInline
     typealias RepresentingValue = Double
     
+    @usableFromInline
     var bitPattern: BitPattern
     
     @inlinable
@@ -102,6 +121,7 @@ struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     }
     
     @_transparent
+    @usableFromInline
     static var fractionBitCount: Int {
         return 30
     }

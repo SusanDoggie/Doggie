@@ -39,7 +39,7 @@ public struct SDXMLDocument : ExpressibleByArrayLiteral {
 extension SDXMLDocument {
     
     public var root: SDXMLElement? {
-        guard let index = elements.index(where: { $0.isNode }) else { return nil }
+        guard let index = elements.firstIndex(where: { $0.isNode }) else { return nil }
         var element = elements[index]
         element._tree = SDXMLElement._Tree(root: self, parent: nil, level: 1, index: index)
         return element

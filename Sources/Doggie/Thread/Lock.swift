@@ -161,13 +161,13 @@ extension SDLock {
     
     public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
         self.synchronized {
-            self._wait(cond, for: predicate)
+            self._wait(cond, for: predicate())
         }
     }
     @discardableResult
     public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
         return self.synchronized {
-            self._wait(cond, for: predicate, until: time)
+            self._wait(cond, for: predicate(), until: time)
         }
     }
 }
@@ -176,12 +176,12 @@ extension SDLock {
     
     public func lock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
         self.lock()
-        self._wait(cond, for: predicate)
+        self._wait(cond, for: predicate())
     }
     @discardableResult
     public func lock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
         self.lock()
-        if self._wait(cond, for: predicate, until: time) {
+        if self._wait(cond, for: predicate(), until: time) {
             return true
         }
         self.unlock()
@@ -190,7 +190,7 @@ extension SDLock {
     @discardableResult
     public func trylock(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) -> Bool {
         if self.trylock() {
-            if self._wait(cond, for: predicate, until: .distantFuture) {
+            if self._wait(cond, for: predicate(), until: .distantFuture) {
                 return true
             }
             self.unlock()
@@ -204,7 +204,7 @@ extension SDLock {
     @inlinable
     @discardableResult
     public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, block: () throws -> R) rethrows -> R {
-        self.lock(cond, for: predicate)
+        self.lock(cond, for: predicate())
         defer { self.unlock() }
         return try block()
     }
@@ -212,7 +212,7 @@ extension SDLock {
     @inlinable
     @discardableResult
     public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime, block: () throws -> R) rethrows -> R? {
-        if self.lock(cond, for: predicate, until: time) {
+        if self.lock(cond, for: predicate(), until: time) {
             defer { self.unlock() }
             return try block()
         }
@@ -240,26 +240,26 @@ extension SDConditionLock {
         }
     }
     public func wait(for predicate: @autoclosure () -> Bool) {
-        self.wait(cond, for: predicate)
+        self.wait(cond, for: predicate())
     }
     @discardableResult
     public func wait(for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
-        return self.wait(cond, for: predicate, until: time)
+        return self.wait(cond, for: predicate(), until: time)
     }
 }
 
 extension SDConditionLock {
     
     public func lock(for predicate: @autoclosure () -> Bool) {
-        self.lock(cond, for: predicate)
+        self.lock(cond, for: predicate())
     }
     @discardableResult
     public func lock(for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
-        return self.lock(cond, for: predicate, until: time)
+        return self.lock(cond, for: predicate(), until: time)
     }
     @discardableResult
     public func trylock(for predicate: @autoclosure () -> Bool) -> Bool {
-        return self.trylock(cond, for: predicate)
+        return self.trylock(cond, for: predicate())
     }
 }
 
@@ -267,10 +267,10 @@ extension SDConditionLock {
     
     @discardableResult
     public func synchronized<R>(for predicate: @autoclosure () -> Bool, block: () throws -> R) rethrows -> R {
-        return try self.synchronized(cond, for: predicate, block: block)
+        return try self.synchronized(cond, for: predicate(), block: block)
     }
     @discardableResult
     public func synchronized<R>(for predicate: @autoclosure () -> Bool, until time: DispatchWallTime, block: () throws -> R) rethrows -> R? {
-        return try self.synchronized(cond, for: predicate, until: time, block: block)
+        return try self.synchronized(cond, for: predicate(), until: time, block: block)
     }
 }

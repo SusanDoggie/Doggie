@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
     
     public typealias Pixel = Float64ColorPixel<RawPixel.Model>
@@ -31,7 +32,13 @@ public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
     
     public let height: Int
     
-    public private(set) var pixels: MappedBuffer<RawPixel>
+    @usableFromInline
+    var _pixels: MappedBuffer<RawPixel>
+    
+    @_transparent
+    public var pixels: MappedBuffer<RawPixel> {
+        return _pixels
+    }
     
     public var resamplingAlgorithm: ResamplingAlgorithm
     
@@ -46,7 +53,7 @@ public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
         precondition(width * height == pixels.count, "mismatch pixels count.")
         self.width = width
         self.height = height
-        self.pixels = pixels
+        self._pixels = pixels
         self.resamplingAlgorithm = resamplingAlgorithm
     }
     
@@ -57,7 +64,7 @@ public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
-        self.pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
+        self._pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
         self.resamplingAlgorithm = resamplingAlgorithm
     }
     
@@ -69,7 +76,7 @@ public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
         self.resamplingAlgorithm = texture.resamplingAlgorithm
         self.horizontalWrappingMode = texture.horizontalWrappingMode
         self.verticalWrappingMode = texture.verticalWrappingMode
-        self.pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
+        self._pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
     }
 }
 
@@ -115,7 +122,7 @@ extension Texture {
             return pixels.fileBacked
         }
         set {
-            pixels.fileBacked = newValue
+            _pixels.fileBacked = newValue
         }
     }
     
@@ -206,7 +213,7 @@ extension Texture {
     @inline(__always)
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<RawPixel>) throws -> R) rethrows -> R {
         
-        return try pixels.withUnsafeMutableBufferPointer(body)
+        return try _pixels.withUnsafeMutableBufferPointer(body)
     }
     
     @inlinable
@@ -220,7 +227,7 @@ extension Texture {
     @inline(__always)
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         
-        return try pixels.withUnsafeMutableBytes(body)
+        return try _pixels.withUnsafeMutableBytes(body)
     }
 }
 

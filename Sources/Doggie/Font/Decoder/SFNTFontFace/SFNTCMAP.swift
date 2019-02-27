@@ -128,7 +128,7 @@ extension SFNTCMAP {
         
         subscript(code: UInt32) -> Int {
             guard code < 256 else { return 0 }
-            return Int(data.withUnsafeBytes { $0[Int(code)] as UInt8 })
+            return Int(data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in bytes[Int(code)] })
         }
         
         var coveredCharacterSet: CharacterSet {
@@ -205,14 +205,14 @@ extension SFNTCMAP {
                 
                 let glyphIndex: Int
                 
-                let _idRangeOffset: BEUInt16 = self.idRangeOffset.withUnsafeBytes { $0[i] }
+                let _idRangeOffset = self.idRangeOffset.withUnsafeBytes { $0.bindMemory(to: BEUInt16.self)[i] }
                 
                 if _idRangeOffset == 0 {
                     glyphIndex = Int(code)
                 } else {
                     let offset = i + (Int(_idRangeOffset) >> 1) + (Int(code) - Int(startCode[i]))
                     guard offset < idRangeOffset.count >> 1 else { return 0 }
-                    glyphIndex = Int(self.idRangeOffset.withUnsafeBytes { $0[offset] as BEUInt16 })
+                    glyphIndex = Int(self.idRangeOffset.withUnsafeBytes { $0.bindMemory(to: BEUInt16.self)[offset] })
                 }
                 
                 return glyphIndex == 0 ? 0 : (Int(idDelta[i]) + glyphIndex) % 0xFFFF
@@ -275,14 +275,16 @@ extension SFNTCMAP {
         }
         
         subscript(code: UInt32) -> Int {
-            return groups.withUnsafeBytes { search(code, $0, 0..<Int(self.nGroups)) }
+            return groups.withUnsafeBytes { search(code, $0.bindMemory(to: Group.self).baseAddress!, 0..<Int(self.nGroups)) }
         }
         
         var coveredCharacterSet: CharacterSet {
             
             var result = CharacterSet()
             
-            groups.withUnsafeBytes { (groups: UnsafePointer<Group>) in
+            groups.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                
+                guard let groups = bytes.baseAddress?.assumingMemoryBound(to: Group.self) else { return }
                 
                 for group in UnsafeBufferPointer(start: groups, count: Int(self.nGroups)) {
                     
@@ -345,7 +347,9 @@ extension SFNTCMAP {
         
         func search(_ varSelector: UInt32, _ range: Range<Int>) -> VariationSelector? {
             
-            return varSelectorRecords.withUnsafeBytes { (buf: UnsafePointer<VariationSelector>) -> VariationSelector? in
+            return varSelectorRecords.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) -> VariationSelector? in
+                
+                guard let buf = bytes.baseAddress?.assumingMemoryBound(to: VariationSelector.self) else { return nil }
                 
                 var range = range
                 
@@ -382,7 +386,9 @@ extension SFNTCMAP {
                 
                 guard let count = try? data.decode(BEInt32.self) else { return .none }
                 
-                let result = data.withUnsafeBytes { (buf: UnsafePointer<UnicodeValueRange>) -> UnicodeValueRange? in
+                let result = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) -> UnicodeValueRange? in
+                    
+                    guard let buf = bytes.baseAddress?.assumingMemoryBound(to: UnicodeValueRange.self) else { return nil }
                     
                     var range = 0..<Int(count)
                     
@@ -411,7 +417,9 @@ extension SFNTCMAP {
                 
                 guard let count = try? data.decode(BEInt32.self) else { return .none }
                 
-                let result = data.withUnsafeBytes { (buf: UnsafePointer<UVSMapping>) -> UVSMapping? in
+                let result = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) -> UVSMapping? in
+                    
+                    guard let buf = bytes.baseAddress?.assumingMemoryBound(to: UVSMapping.self) else { return nil }
                     
                     var range = 0..<Int(count)
                     

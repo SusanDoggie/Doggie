@@ -603,6 +603,31 @@ extension Shape.Component {
     }
 }
 
+extension Shape.Component {
+    
+    @inlinable
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Shape.Segment>) throws -> R) rethrows -> R {
+        return try segments.withUnsafeBufferPointer(body)
+    }
+    
+    @inlinable
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Shape.Segment>) throws -> R) rethrows -> R {
+        self.resetCache()
+        return try segments.withUnsafeMutableBufferPointer(body)
+    }
+    
+    @inlinable
+    public func withContiguousStorageIfAvailable<R>(_ body: (UnsafeBufferPointer<Shape.Segment>) throws -> R) rethrows -> R? {
+        return try segments.withContiguousStorageIfAvailable(body)
+    }
+    
+    @inlinable
+    public mutating func withContiguousMutableStorageIfAvailable<R>(_ body: (inout UnsafeMutableBufferPointer<Shape.Segment>) throws -> R) rethrows -> R? {
+        self.resetCache()
+        return try segments.withContiguousMutableStorageIfAvailable(body)
+    }
+}
+
 extension Shape.Component : RangeReplaceableCollection {
     
     @inlinable
@@ -675,7 +700,11 @@ extension Shape {
     public static func Polygon(center: Point, radius: Double, edges: Int) -> Shape {
         precondition(edges >= 3, "Edges is less than 3")
         let _n = 2 * Double.pi / Double(edges)
-        let segments: [Shape.Segment] = (1..<edges).map { .line(Point(x: center.x + radius * cos(_n * Double($0)), y: center.y + radius * sin(_n * Double($0)))) }
+        var segments: [Shape.Segment] = []
+        for i in 1..<edges {
+            let p = Point(x: cos(_n * Double(i)), y: sin(_n * Double(i)))
+            segments.append(.line(center + radius * p))
+        }
         return [Component(start: Point(x: center.x + radius, y: center.y), closed: true, segments: segments)]
     }
     
@@ -737,6 +766,31 @@ extension Shape {
     @inlinable
     public var area: Double {
         return identity.originalArea
+    }
+}
+
+extension Shape {
+    
+    @inlinable
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Component>) throws -> R) rethrows -> R {
+        return try components.withUnsafeBufferPointer(body)
+    }
+    
+    @inlinable
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Component>) throws -> R) rethrows -> R {
+        self.resetCache()
+        return try components.withUnsafeMutableBufferPointer(body)
+    }
+    
+    @inlinable
+    public func withContiguousStorageIfAvailable<R>(_ body: (UnsafeBufferPointer<Component>) throws -> R) rethrows -> R? {
+        return try components.withContiguousStorageIfAvailable(body)
+    }
+    
+    @inlinable
+    public mutating func withContiguousMutableStorageIfAvailable<R>(_ body: (inout UnsafeMutableBufferPointer<Component>) throws -> R) rethrows -> R? {
+        self.resetCache()
+        return try components.withContiguousMutableStorageIfAvailable(body)
     }
 }
 

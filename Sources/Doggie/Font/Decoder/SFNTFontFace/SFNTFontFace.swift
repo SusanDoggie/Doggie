@@ -140,7 +140,7 @@ extension SFNTFontFace {
                 guard let record = strike.glyph(glyph: glyph) else { return nil }
                 
                 switch record.graphicType {
-                case "dupe": return record.data.count == 2 ? fetch(strike, glyph: Int(record.data.withUnsafeBytes { $0.pointee as BEUInt16 })) : nil
+                case "dupe": return record.data.count == 2 ? fetch(strike, glyph: Int(record.data.load(as: BEUInt16.self))) : nil
                 case "mask": return nil
                 default: break
                 }
@@ -318,13 +318,13 @@ extension SFNTFontFace {
     
     func metric(glyph: Int) -> Font.Metric {
         let hMetricCount = Int(hhea.numOfLongHorMetrics)
-        return hmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in metrics[glyph < hMetricCount ? glyph : hMetricCount - 1]._font_metric() }
+        return hmtx.withUnsafeBytes { $0.bindMemory(to: Metric.self)[glyph < hMetricCount ? glyph : hMetricCount - 1]._font_metric() }
     }
     
     func verticalMetric(glyph: Int) -> Font.Metric {
         if let vhea = self.vhea, let vmtx = self.vmtx {
             let vMetricCount = Int(vhea.numOfLongVerMetrics)
-            return vmtx.withUnsafeBytes { (metrics: UnsafePointer<Metric>) in metrics[glyph < vMetricCount ? glyph : vMetricCount - 1]._font_metric() }
+            return vmtx.withUnsafeBytes { $0.bindMemory(to: Metric.self)[glyph < vMetricCount ? glyph : vMetricCount - 1]._font_metric() }
         }
         return Font.Metric(advance: 0, bearing: 0)
     }
@@ -435,10 +435,10 @@ extension SFNTFontFace {
     
     func queryName(_ id: Int) -> String? {
         
-        if let macOSRoman = name.record.index(where: { $0.platform.platform == 1 && $0.platform.specific == 0 && $0.name == id }) {
+        if let macOSRoman = name.record.firstIndex(where: { $0.platform.platform == 1 && $0.platform.specific == 0 && $0.name == id }) {
             return self.name[macOSRoman]
         }
-        if let unicode = name.record.index(where: { $0.platform.platform == 0 && $0.name == id }) {
+        if let unicode = name.record.firstIndex(where: { $0.platform.platform == 0 && $0.name == id }) {
             return self.name[unicode]
         }
         return nil

@@ -155,7 +155,9 @@ extension ColorBlendMode {
     @inlinable
     @inline(__always)
     static func PlusDarker<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
-        return max(0, 1 - ((1 - destination) + (1 - source)))
+        let u = 1 - destination
+        let v = 1 - source
+        return max(0, 1 - (u + v))
     }
     
     @inlinable

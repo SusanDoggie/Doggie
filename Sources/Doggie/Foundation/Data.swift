@@ -25,6 +25,8 @@
 
 extension Data : ExpressibleByArrayLiteral {
     
+    @inlinable
+    @inline(__always)
     public init(arrayLiteral elements: UInt8 ...) {
         self.init(elements)
     }
@@ -32,8 +34,25 @@ extension Data : ExpressibleByArrayLiteral {
 
 extension Data {
     
+    @inlinable
+    @inline(__always)
     public func fileBacked() -> Data {
         return self.withUnsafeBufferPointer { MappedBuffer(bytes: UnsafeRawBufferPointer($0), fileBacked: true).data }
+    }
+}
+
+extension Data {
+    
+    @inlinable
+    @inline(__always)
+    public func load<T>(fromByteOffset offset: Int = 0, as type: T.Type) -> T {
+        return self.withUnsafeBytes { $0.load(fromByteOffset: offset, as: type) }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public mutating func storeBytes<T>(of value: T, toByteOffset offset: Int = 0) {
+        return self.withUnsafeMutableBytes { $0.storeBytes(of: value, toByteOffset: offset, as: T.self) }
     }
 }
 

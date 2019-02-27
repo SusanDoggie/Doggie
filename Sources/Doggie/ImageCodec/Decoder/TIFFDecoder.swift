@@ -311,11 +311,12 @@ struct TIFFPage : ImageRepBase {
                 
                 switch self.endianness {
                 case .BIG:
-                    _red.withUnsafeBytes { (_red: UnsafePointer<BEUInt16>) in _green.withUnsafeBytes { (_green: UnsafePointer<BEUInt16>) in _blue.withUnsafeBytes { (_blue: UnsafePointer<BEUInt16>) in
+                    _red.withUnsafeBytes { (_red: UnsafeRawBufferPointer) in _green.withUnsafeBytes { (_green: UnsafeRawBufferPointer) in _blue.withUnsafeBytes { (_blue: UnsafeRawBufferPointer) in
                         
-                        var _red = _red
-                        var _green = _green
-                        var _blue = _blue
+                        guard var _red = _red.baseAddress?.assumingMemoryBound(to: BEUInt16.self) else { return }
+                        guard var _green = _green.baseAddress?.assumingMemoryBound(to: BEUInt16.self) else { return }
+                        guard var _blue = _blue.baseAddress?.assumingMemoryBound(to: BEUInt16.self) else { return }
+                        
                         for _ in 0..<_count {
                             self.palette.append((_red.pointee.representingValue, _green.pointee.representingValue, _blue.pointee.representingValue))
                             _red += 1
@@ -325,11 +326,12 @@ struct TIFFPage : ImageRepBase {
                         
                         } } }
                 case .LITTLE:
-                    _red.withUnsafeBytes { (_red: UnsafePointer<LEUInt16>) in _green.withUnsafeBytes { (_green: UnsafePointer<LEUInt16>) in _blue.withUnsafeBytes { (_blue: UnsafePointer<LEUInt16>) in
+                    _red.withUnsafeBytes { (_red: UnsafeRawBufferPointer) in _green.withUnsafeBytes { (_green: UnsafeRawBufferPointer) in _blue.withUnsafeBytes { (_blue: UnsafeRawBufferPointer) in
                         
-                        var _red = _red
-                        var _green = _green
-                        var _blue = _blue
+                        guard var _red = _red.baseAddress?.assumingMemoryBound(to: LEUInt16.self) else { return }
+                        guard var _green = _green.baseAddress?.assumingMemoryBound(to: LEUInt16.self) else { return }
+                        guard var _blue = _blue.baseAddress?.assumingMemoryBound(to: LEUInt16.self) else { return }
+                        
                         for _ in 0..<_count {
                             self.palette.append((_red.pointee.representingValue, _green.pointee.representingValue, _blue.pointee.representingValue))
                             _red += 1
@@ -612,7 +614,7 @@ struct TIFFPage : ImageRepBase {
                 
                 let dataBitSize = strip.count << 3
                 
-                strip.withUnsafeBytes { (source: UnsafePointer<UInt8>) in
+                strip.withUnsafeBytes { (source: UnsafeRawBufferPointer) in
                     
                     var bitsOffset = 0
                     
@@ -738,8 +740,8 @@ extension TIFFTag {
     
     var offset: Int {
         switch self.endianness {
-        case .BIG: return Int(self.data.withUnsafeBytes { $0.pointee as BEUInt32 })
-        case .LITTLE: return Int(self.data.withUnsafeBytes { $0.pointee as LEUInt32 })
+        case .BIG: return Int(self.data.load(as: BEUInt32.self))
+        case .LITTLE: return Int(self.data.load(as: LEUInt32.self))
         default: fatalError()
         }
     }
@@ -749,16 +751,16 @@ extension TIFFTag {
         switch self.endianness {
         case .BIG:
             switch self.type {
-            case 1: return Int(self.data.withUnsafeBytes { $0.pointee as UInt8 })
-            case 3: return Int(self.data.withUnsafeBytes { $0.pointee as BEUInt16 })
-            case 4: return Int(self.data.withUnsafeBytes { $0.pointee as BEUInt32 })
+            case 1: return Int(self.data.load(as: UInt8.self))
+            case 3: return Int(self.data.load(as: BEUInt16.self))
+            case 4: return Int(self.data.load(as: BEUInt32.self))
             default: throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)")
             }
         case .LITTLE:
             switch self.type {
-            case 1: return Int(self.data.withUnsafeBytes { $0.pointee as UInt8 })
-            case 3: return Int(self.data.withUnsafeBytes { $0.pointee as LEUInt16 })
-            case 4: return Int(self.data.withUnsafeBytes { $0.pointee as LEUInt32 })
+            case 1: return Int(self.data.load(as: UInt8.self))
+            case 3: return Int(self.data.load(as: LEUInt16.self))
+            case 4: return Int(self.data.load(as: LEUInt32.self))
             default: throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)")
             }
         default: fatalError()
@@ -777,21 +779,21 @@ extension TIFFTag {
             case 1:
                 switch self.count {
                 case 2, 3, 4:
-                    return self.data.withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                    return self.data.withUnsafeBytes { $0.bindMemory(to: UInt8.self).prefix(Int(self.count)).map(Int.init) }
                 default:
                     guard offset + Int(self.count) <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-                    return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                    return data.dropFirst(offset).withUnsafeBytes { $0.bindMemory(to: UInt8.self).prefix(Int(self.count)).map(Int.init) }
                 }
             case 3:
                 if self.count == 2 {
-                    return self.data.withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<BEUInt16>, count: Int(self.count)).map(Int.init) }
+                    return self.data.withUnsafeBytes { $0.bindMemory(to: BEUInt16.self).prefix(Int(self.count)).map(Int.init) }
                 } else {
                     guard offset + Int(self.count) << 1 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-                    return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<BEUInt16>, count: Int(self.count)).map(Int.init) }
+                    return data.dropFirst(offset).withUnsafeBytes { $0.bindMemory(to: BEUInt16.self).prefix(Int(self.count)).map(Int.init) }
                 }
             case 4:
                 guard offset + Int(self.count) << 2 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-                return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<BEUInt32>, count: Int(self.count)).map(Int.init) }
+                return data.dropFirst(offset).withUnsafeBytes { $0.bindMemory(to: BEUInt32.self).prefix(Int(self.count)).map(Int.init) }
             default: throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)")
             }
         case .LITTLE:
@@ -801,21 +803,21 @@ extension TIFFTag {
             case 1:
                 switch self.count {
                 case 2, 3, 4:
-                    return self.data.withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                    return self.data.withUnsafeBytes { $0.bindMemory(to: UInt8.self).prefix(Int(self.count)).map(Int.init) }
                 default:
                     guard offset + Int(self.count) <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-                    return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<UInt8>, count: Int(self.count)).map(Int.init) }
+                    return data.dropFirst(offset).withUnsafeBytes { $0.bindMemory(to: UInt8.self).prefix(Int(self.count)).map(Int.init) }
                 }
             case 3:
                 if self.count == 2 {
-                    return self.data.withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<LEUInt16>, count: Int(self.count)).map(Int.init) }
+                    return self.data.withUnsafeBytes { $0.bindMemory(to: LEUInt16.self).prefix(Int(self.count)).map(Int.init) }
                 } else {
                     guard offset + Int(self.count) << 1 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-                    return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<LEUInt16>, count: Int(self.count)).map(Int.init) }
+                    return data.dropFirst(offset).withUnsafeBytes { $0.bindMemory(to: LEUInt16.self).prefix(Int(self.count)).map(Int.init) }
                 }
             case 4:
                 guard offset + Int(self.count) << 2 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-                return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<LEUInt32>, count: Int(self.count)).map(Int.init) }
+                return data.dropFirst(offset).withUnsafeBytes { $0.bindMemory(to: LEUInt32.self).prefix(Int(self.count)).map(Int.init) }
             default: throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)")
             }
         default: fatalError()
@@ -828,12 +830,12 @@ extension TIFFTag {
         case .BIG:
             let offset = self.offset
             guard offset + 8 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-            let (numerator, denominator) = data.dropFirst(offset).withUnsafeBytes { $0.pointee as (BEUInt32, BEUInt32) }
+            let (numerator, denominator) = data.load(fromByteOffset: offset, as: (BEUInt32, BEUInt32).self)
             return Double(numerator) / Double(denominator)
         case .LITTLE:
             let offset = self.offset
             guard offset + 8 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-            let (numerator, denominator) = data.dropFirst(offset).withUnsafeBytes { $0.pointee as (LEUInt32, LEUInt32) }
+            let (numerator, denominator) = data.load(fromByteOffset: offset, as: (LEUInt32, LEUInt32).self)
             return Double(numerator) / Double(denominator)
         default: fatalError()
         }
@@ -848,11 +850,11 @@ extension TIFFTag {
         case .BIG:
             let offset = self.offset
             guard offset + Int(self.count) << 3 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(BEUInt32, BEUInt32)>, count: Int(self.count)).map { Double($0) / Double($1) } }
+            return data.dropFirst(offset).withUnsafeBytes { $0.bindMemory(to: (BEUInt32, BEUInt32).self).prefix(Int(self.count)).map { Double($0) / Double($1) } }
         case .LITTLE:
             let offset = self.offset
             guard offset + Int(self.count) << 3 <= data.count else { throw ImageRep.Error.InvalidFormat("Invalid tag type: \(self)") }
-            return data.dropFirst(offset).withUnsafeBytes { UnsafeBufferPointer(start: $0 as UnsafePointer<(LEUInt32, LEUInt32)>, count: Int(self.count)).map { Double($0) / Double($1) } }
+            return data.dropFirst(offset).withUnsafeBytes { $0.bindMemory(to: (LEUInt32, LEUInt32).self).prefix(Int(self.count)).map { Double($0) / Double($1) } }
         default: fatalError()
         }
     }

@@ -23,13 +23,17 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
+@usableFromInline
 struct iccProfile {
     
     typealias TagList = (TagSignature, BEUInt32, BEUInt32)
     
+    @usableFromInline
     var header: Header
     
-    fileprivate var table: [TagSignature: TagData] = [:] {
+    @usableFromInline
+    var table: [TagSignature: TagData] = [:] {
         didSet {
             header.size = BEUInt32(132 + MemoryLayout<TagList>.stride * Int(table.count) + table.values.reduce(0) { $0 + $1.rawData.count })
         }
@@ -97,14 +101,17 @@ extension iccProfile {
 
 extension iccProfile : Collection {
     
+    @usableFromInline
     var startIndex: Dictionary<TagSignature, TagData>.Index {
         return table.startIndex
     }
     
+    @usableFromInline
     var endIndex: Dictionary<TagSignature, TagData>.Index {
         return table.endIndex
     }
     
+    @usableFromInline
     subscript(position: Dictionary<TagSignature, TagData>.Index) -> (TagSignature, TagData) {
         return table[position]
     }
@@ -118,6 +125,7 @@ extension iccProfile : Collection {
         }
     }
     
+    @usableFromInline
     func index(after i: Dictionary<TagSignature, TagData>.Index) -> Dictionary<TagSignature, TagData>.Index {
         return table.index(after: i)
     }

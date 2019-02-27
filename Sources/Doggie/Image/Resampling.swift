@@ -139,7 +139,8 @@ extension _ResamplingImplement {
                 }
                 if x < a {
                     let _x = .pi * x
-                    let u = .sin(_x) * .sin(_x * _a)
+                    let _ax = _x * _a
+                    let u = Pixel.Scalar.sin(_x) * Pixel.Scalar.sin(_ax)
                     let v = _x * _x
                     return a * u / v
                 }

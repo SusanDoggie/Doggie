@@ -58,7 +58,7 @@ extension FixedWidthInteger {
     public init(from data: inout Data) throws {
         let size = Self.bitWidth >> 3
         guard data.count >= size else { throw ByteDecodeError.endOfData }
-        self = data.popFirst(size).withUnsafeBytes { $0.pointee }
+        self = data.popFirst(size).load(as: Self.self)
     }
     
     @inlinable

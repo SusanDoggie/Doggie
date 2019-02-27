@@ -25,16 +25,20 @@
 
 extension iccProfile {
     
+    @_fixed_layout
+    @usableFromInline
     struct TagData {
         
+        @usableFromInline
         let rawData: Data
         
+        @usableFromInline
         init(rawData: Data) {
             self.rawData = rawData
         }
         
         var type: TagType {
-            return rawData.withUnsafeBytes { $0.pointee }
+            return rawData.withUnsafeBytes { $0.load(as: TagType.self) }
         }
         
         var data: Data {
@@ -69,22 +73,22 @@ extension iccProfile.TagData {
     
     var uInt16Array: [BEUInt16]? {
         
-        return type == .uInt16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<BEUInt16>.stride)) } : nil
+        return type == .uInt16Array ? data.withUnsafeBytes { Array($0.bindMemory(to: BEUInt16.self)) } : nil
     }
     
     var uInt32Array: [BEUInt32]? {
         
-        return type == .uInt32Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<BEUInt32>.stride)) } : nil
+        return type == .uInt32Array ? data.withUnsafeBytes { Array($0.bindMemory(to: BEUInt32.self)) } : nil
     }
     
     var uInt64Array: [BEUInt64]? {
         
-        return type == .uInt64Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<BEUInt64>.stride)) } : nil
+        return type == .uInt64Array ? data.withUnsafeBytes { Array($0.bindMemory(to: BEUInt64.self)) } : nil
     }
     
     var uInt8Array: [UInt8]? {
         
-        return type == .uInt8Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<UInt8>.stride)) } : nil
+        return type == .uInt8Array ? data.withUnsafeBytes { Array($0.bindMemory(to: UInt8.self)) } : nil
     }
 }
 
@@ -92,12 +96,12 @@ extension iccProfile.TagData {
     
     var s15Fixed16Array: [Fixed16Number<BEInt32>]? {
         
-        return type == .s15Fixed16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<Fixed16Number<BEInt32>>.stride)) } : nil
+        return type == .s15Fixed16Array ? data.withUnsafeBytes { Array($0.bindMemory(to: Fixed16Number<BEInt32>.self)) } : nil
     }
     
     var u16Fixed16Array: [Fixed16Number<BEUInt32>]? {
         
-        return type == .u16Fixed16Array ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<Fixed16Number<BEUInt32>>.stride)) } : nil
+        return type == .u16Fixed16Array ? data.withUnsafeBytes { Array($0.bindMemory(to: Fixed16Number<BEUInt32>.self)) } : nil
     }
 }
 
@@ -105,7 +109,7 @@ extension iccProfile.TagData {
     
     var XYZArray: [iccXYZNumber]? {
         
-        return type == .XYZArray ? data.withUnsafeBytes { Array(UnsafeBufferPointer(start: $0, count: data.count / MemoryLayout<iccXYZNumber>.stride)) } : nil
+        return type == .XYZArray ? data.withUnsafeBytes { Array($0.bindMemory(to: iccXYZNumber.self)) } : nil
     }
 }
 

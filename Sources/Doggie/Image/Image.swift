@@ -31,7 +31,13 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
     
     public var resolution: Resolution
     
-    public private(set) var pixels: MappedBuffer<Pixel>
+    @usableFromInline
+    var _pixels: MappedBuffer<Pixel>
+    
+    @_transparent
+    public var pixels: MappedBuffer<Pixel> {
+        return _pixels
+    }
     
     public var colorSpace: ColorSpace<Pixel.Model> {
         didSet {
@@ -51,7 +57,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
         self.width = width
         self.height = height
         self.resolution = resolution
-        self.pixels = pixels
+        self._pixels = pixels
         self.colorSpace = colorSpace
     }
     
@@ -64,7 +70,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
         self.height = height
         self.resolution = resolution
         self.colorSpace = colorSpace
-        self.pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
+        self._pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
     }
     
     @inlinable
@@ -74,7 +80,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
         self.height = image.height
         self.resolution = image.resolution
         self.colorSpace = image.colorSpace
-        self.pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
+        self._pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
     }
     
     @inlinable
@@ -87,7 +93,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
             self.height = image.height
             self.resolution = image.resolution
             self.colorSpace = colorSpace
-            self.pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }
+            self._pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }
             
         } else {
             
@@ -103,7 +109,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
                 self.height = image.height
                 self.resolution = image.resolution
                 self.colorSpace = colorSpace
-                self.pixels = image.colorSpace.convert(image.pixels, to: colorSpace, intent: intent)
+                self._pixels = image.colorSpace.convert(image.pixels, to: colorSpace, intent: intent)
                 
                 let _self = self
                 image.cache.lck.synchronized { image.cache.color_conversion[key] = _self }
@@ -239,7 +245,7 @@ extension Image {
             return pixels.fileBacked
         }
         set {
-            pixels.fileBacked = newValue
+            _pixels.fileBacked = newValue
         }
     }
     
@@ -280,7 +286,7 @@ extension Image {
     public mutating func setColor<C: ColorProtocol>(x: Int, y: Int, color: C) {
         cache = ImageCache()
         precondition(0..<width ~= x && 0..<height ~= y)
-        pixels[width * y + x] = Pixel(color.convert(to: colorSpace, intent: .default))
+        _pixels[width * y + x] = Pixel(color.convert(to: colorSpace, intent: .default))
     }
 }
 
@@ -318,7 +324,7 @@ extension Image {
         
         let matrix = m1 * m2
         
-        pixels.withUnsafeMutableBufferPointer {
+        _pixels.withUnsafeMutableBufferPointer {
             
             guard var buffer = $0.baseAddress else { return }
             
@@ -433,7 +439,7 @@ extension Image {
     @inline(__always)
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         cache = ImageCache()
-        return try pixels.withUnsafeMutableBufferPointer(body)
+        return try _pixels.withUnsafeMutableBufferPointer(body)
     }
     
     @inlinable
@@ -446,7 +452,7 @@ extension Image {
     @inline(__always)
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         cache = ImageCache()
-        return try pixels.withUnsafeMutableBytes(body)
+        return try _pixels.withUnsafeMutableBytes(body)
     }
 }
 

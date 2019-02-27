@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol Tensor : ScalarMultiplicative, MapReduceArithmetic, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
+public protocol Tensor : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Index == Int {
     
     init()
     

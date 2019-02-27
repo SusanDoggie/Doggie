@@ -57,18 +57,6 @@ extension MutableCollection where Self : BidirectionalCollection {
     }
 }
 
-extension Collection {
-    
-    @inlinable
-    public func count(where predicate: (Element) throws -> Bool) rethrows -> Int {
-        var counter = 0
-        for item in self where try predicate(item) {
-            counter = counter + 1
-        }
-        return counter
-    }
-}
-
 extension Collection where SubSequence == Self {
     
     @inlinable
@@ -95,7 +83,7 @@ extension BidirectionalCollection {
     
     @inlinable
     public func suffix(while predicate: (Element) throws -> Bool) rethrows -> SubSequence {
-        return self.suffix(from: try self.reversed().index { try !predicate($0) }?.base ?? self.startIndex)
+        return self.suffix(from: try self.reversed().firstIndex { try !predicate($0) }?.base ?? self.startIndex)
     }
 }
 
@@ -120,7 +108,7 @@ extension RandomAccessCollection {
                 return strat..<end
             }
             let notMatchValue = self[not_match.0]
-            if let pos = try reverse_pattern.dropFirst().index(where: { try isEquivalent(notMatchValue, $0) }) {
+            if let pos = try reverse_pattern.dropFirst().firstIndex(where: { try isEquivalent(notMatchValue, $0) }) {
                 cursor = self.index(not_match.0, offsetBy: reverse_pattern.distance(from: reverse_pattern.startIndex, to: pos), limitedBy: endIndex) ?? endIndex
             } else {
                 cursor = self.index(not_match.0, offsetBy: pattern_count, limitedBy: endIndex) ?? endIndex
@@ -220,7 +208,7 @@ extension LazyCollectionProtocol where Elements.SubSequence : Collection {
     }
 }
 
-extension Sequence where Element : Comparable {
+extension Collection where Element : Comparable {
     
     /// Returns the maximal `SubSequence`s of `self`, in order, around elements
     /// match in `separator`.

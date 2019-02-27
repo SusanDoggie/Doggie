@@ -23,13 +23,26 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
+@usableFromInline
 struct iccDateTimeNumber : ByteCodable {
     
+    @usableFromInline
     var year: BEUInt16
+    
+    @usableFromInline
     var month: BEUInt16
+    
+    @usableFromInline
     var day: BEUInt16
+    
+    @usableFromInline
     var hours: BEUInt16
+    
+    @usableFromInline
     var minutes: BEUInt16
+    
+    @usableFromInline
     var seconds: BEUInt16
     
     init(year: BEUInt16, month: BEUInt16, day: BEUInt16, hours: BEUInt16, minutes: BEUInt16, seconds: BEUInt16) {
@@ -41,6 +54,7 @@ struct iccDateTimeNumber : ByteCodable {
         self.seconds = seconds
     }
     
+    @usableFromInline
     init(from data: inout Data) throws {
         self.year = try data.decode(BEUInt16.self)
         self.month = try data.decode(BEUInt16.self)
@@ -50,6 +64,7 @@ struct iccDateTimeNumber : ByteCodable {
         self.seconds = try data.decode(BEUInt16.self)
     }
     
+    @usableFromInline
     func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(year)
         stream.encode(month)
