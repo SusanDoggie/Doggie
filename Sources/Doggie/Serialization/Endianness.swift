@@ -40,8 +40,8 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
         self.bitPattern = representingValue.bigEndian
     }
     
-    @_transparent
-    @usableFromInline
+    @inlinable
+    @inline(__always)
     var representingValue: Base {
         get {
             return Base(bigEndian: bitPattern)
@@ -464,8 +464,8 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
         self.bitPattern = representingValue.littleEndian
     }
     
-    @_transparent
-    @usableFromInline
+    @inlinable
+    @inline(__always)
     var representingValue: Base {
         get {
             return Base(littleEndian: bitPattern)

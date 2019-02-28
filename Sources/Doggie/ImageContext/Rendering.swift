@@ -409,40 +409,40 @@ extension _PerspectiveProjectTriangleGenerator {
         @usableFromInline
         var w: Double
         
+        @inlinable
         @inline(__always)
-        @usableFromInline
         init(v: Base.Vertex, w: Double) {
             self.v = v
             self.w = w
         }
         
+        @inlinable
         @inline(__always)
-        @usableFromInline
         init(vertex: Base.Vertex) {
             self.w = 1 / vertex.position.z
             self.v = w * vertex
         }
         
-        @_transparent
-        @usableFromInline
+        @inlinable
+        @inline(__always)
         var vertex: Base.Vertex {
             return (1 / w) * v
         }
         
-        @_transparent
-        @usableFromInline
+        @inlinable
+        @inline(__always)
         var position: Base.Vertex.Position {
             return vertex.position
         }
         
+        @inlinable
         @inline(__always)
-        @usableFromInline
         static func + (lhs: _Vertex, rhs: _Vertex) -> _Vertex {
             return _Vertex(v: lhs.v + rhs.v, w: lhs.w + rhs.w)
         }
         
+        @inlinable
         @inline(__always)
-        @usableFromInline
         static func * (lhs: Double, rhs: _Vertex) -> _Vertex {
             return _Vertex(v: lhs * rhs.v, w: lhs * rhs.w)
         }

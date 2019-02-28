@@ -25,8 +25,8 @@
 
 extension ImageContext {
     
-    @_transparent
-    @usableFromInline
+    @inlinable
+    @inline(__always)
     var isShadow: Bool {
         return shadowColor.opacity > 0 && shadowBlur > 0
     }

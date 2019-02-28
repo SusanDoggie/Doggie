@@ -39,8 +39,8 @@ struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedP
         self.bitPattern = bitPattern
     }
     
-    @_transparent
-    @usableFromInline
+    @inlinable
+    @inline(__always)
     static var fractionBitCount: Int {
         return 8
     }
@@ -66,8 +66,8 @@ struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
         self.bitPattern = bitPattern
     }
     
-    @_transparent
-    @usableFromInline
+    @inlinable
+    @inline(__always)
     static var fractionBitCount: Int {
         return 14
     }
@@ -93,8 +93,8 @@ struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
         self.bitPattern = bitPattern
     }
     
-    @_transparent
-    @usableFromInline
+    @inlinable
+    @inline(__always)
     static var fractionBitCount: Int {
         return 16
     }
@@ -120,8 +120,8 @@ struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
         self.bitPattern = bitPattern
     }
     
-    @_transparent
-    @usableFromInline
+    @inlinable
+    @inline(__always)
     static var fractionBitCount: Int {
         return 30
     }
