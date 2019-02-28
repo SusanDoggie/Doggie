@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ScalarProtocol: ScalarMultiplicative where Scalar == Self {
+public protocol ScalarProtocol: ScalarMultiplicative, Multiplicative, SignedNumeric, Strideable, ExpressibleByFloatLiteral where Scalar == Self {
     
     static func * (lhs: Self, rhs: Self) -> Self
     
@@ -32,7 +32,7 @@ public protocol ScalarProtocol: ScalarMultiplicative where Scalar == Self {
 
 public protocol ScalarMultiplicative : AdditiveArithmetic {
     
-    associatedtype Scalar : SignedNumeric, Strideable, ExpressibleByFloatLiteral, Multiplicative, ScalarMultiplicative where Scalar == Scalar.Scalar
+    associatedtype Scalar : ScalarMultiplicative where Scalar == Scalar.Scalar
     
     static prefix func - (x: Self) -> Self
     
