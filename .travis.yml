@@ -3,15 +3,15 @@ sudo: required
 notifications: never
 env:
   global:
-    - SWIFT_SNAPSHOT="4.2.1"
+    - SWIFT_SNAPSHOT="swift-5.0-DEVELOPMENT-SNAPSHOT-2019-02-26-a"
 
 matrix:
   include:
     - os: osx
-      osx_image: xcode10.1
+      osx_image: xcode10.2
       env: USE_XCODEBUILD=true CODECOV_ELIGIBLE=true
     - os: osx
-      osx_image: xcode10.1
+      osx_image: xcode10.2
     - os: linux
     - os: linux
       services: docker
