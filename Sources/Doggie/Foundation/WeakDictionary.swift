@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct WeakDictionary<Key: AnyObject, Value> : KeyValueCollection {
+public struct WeakDictionary<Key: AnyObject, Value> : Collection {
     
     public typealias Element = (key: Key, value: Value)
     
