@@ -91,7 +91,7 @@ extension WeakDictionary {
     
     @inlinable
     public var count: Int {
-        return base.values.count { $0.key !== nil }
+        return base.values.count(where: { $0.key !== nil })
     }
     
     @inlinable
