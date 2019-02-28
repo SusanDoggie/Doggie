@@ -31,7 +31,7 @@ public struct WeakDictionary<Key: AnyObject, Value> : KeyValueCollection {
     @usableFromInline
     var base: [ObjectIdentifier: ValueContainer] {
         didSet {
-            base = base.filter { $0.value.key != nil }
+            base = base.filter { $0.value.key !== nil }
         }
     }
     
@@ -91,7 +91,7 @@ extension WeakDictionary {
     
     @inlinable
     public var count: Int {
-        return base.values.count { $0.key != nil }
+        return base.values.count { $0.key !== nil }
     }
     
     @inlinable
