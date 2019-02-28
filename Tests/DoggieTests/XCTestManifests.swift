@@ -172,8 +172,10 @@ extension MappedBufferTest {
         ("testMappedBufferAlloc", testMappedBufferAlloc),
         ("testMappedBufferAppend", testMappedBufferAppend),
         ("testMappedBufferAppend2", testMappedBufferAppend2),
+        ("testMappedBufferAppend3", testMappedBufferAppend3),
         ("testMappedBufferReplaceSubrange", testMappedBufferReplaceSubrange),
         ("testMappedBufferReplaceSubrange2", testMappedBufferReplaceSubrange2),
+        ("testMappedBufferReplaceSubrange3", testMappedBufferReplaceSubrange3),
     ]
 }
 

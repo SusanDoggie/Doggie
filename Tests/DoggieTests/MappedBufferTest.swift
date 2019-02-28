@@ -61,6 +61,24 @@ class MappedBufferTest: XCTestCase {
         XCTAssertTrue(array.elementsEqual(mapped))
     }
     
+    func testMappedBufferAppend3() {
+        
+        var mapped: MappedBuffer<Int> = []
+        var array: [Int] = []
+        
+        let shared = mapped
+        let shared_array = array
+        
+        mapped.append(contentsOf: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array.append(contentsOf: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        
+        XCTAssertEqual(array.count, mapped.count)
+        XCTAssertTrue(array.elementsEqual(mapped))
+        
+        XCTAssertEqual(shared_array.count, shared.count)
+        XCTAssertTrue(shared_array.elementsEqual(shared))
+    }
+    
     func testMappedBufferReplaceSubrange() {
         
         var mapped: MappedBuffer<Int> = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -83,6 +101,24 @@ class MappedBufferTest: XCTestCase {
         
         XCTAssertEqual(array.count, mapped.count)
         XCTAssertTrue(array.elementsEqual(mapped))
+    }
+    
+    func testMappedBufferReplaceSubrange3() {
+        
+        var mapped: MappedBuffer<Int> = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        var array: [Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        
+        let shared = mapped
+        let shared_array = array
+        
+        mapped.replaceSubrange(3..<6, with: [5, 6, 7, 8, 9])
+        array.replaceSubrange(3..<6, with: [5, 6, 7, 8, 9])
+        
+        XCTAssertEqual(array.count, mapped.count)
+        XCTAssertTrue(array.elementsEqual(mapped))
+        
+        XCTAssertEqual(shared_array.count, shared.count)
+        XCTAssertTrue(shared_array.elementsEqual(shared))
     }
     
 }
