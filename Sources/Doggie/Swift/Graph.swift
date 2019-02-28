@@ -124,7 +124,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     }
     
     @inlinable
-    public subscript(from fromNode: Node, to toNode: Node, default defaultValue: @autoclosure () -> Link) -> Link {
+    public subscript(from fromNode: Node, to toNode: Node, default defaultValue: () -> Link) -> Link {
         get {
             return self[from: fromNode, to: toNode] ?? defaultValue()
         }
