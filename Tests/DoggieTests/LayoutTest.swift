@@ -28,7 +28,7 @@ import XCTest
 
 class LayoutTest: XCTestCase {
     
-    func _testLayout<T: Tensor>(_: T.Type) -> Bool where T.Scalar : BinaryFloatingPoint {
+    func _testLayout<T: Tensor>(_: T.Type) -> Bool {
         
         guard MemoryLayout<T>.size == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }
         guard MemoryLayout<T>.stride == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }

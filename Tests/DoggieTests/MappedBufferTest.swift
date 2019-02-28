@@ -30,59 +30,59 @@ class MappedBufferTest: XCTestCase {
     
     func testMappedBufferAlloc() {
         
-        let mapped = [1, 2, 3, 4, 5, 6, 7, 8, 9] as MappedBuffer
-        let array = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        let mapped: MappedBuffer<Int> = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        let array: [Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         
         XCTAssertEqual(array.count, mapped.count)
-        XCTAssertEqual(array, mapped)
+        XCTAssertTrue(array.elementsEqual(mapped))
     }
     
     func testMappedBufferAppend() {
         
-        var mapped = [] as MappedBuffer
-        var array = []
+        var mapped: MappedBuffer<Int> = []
+        var array: [Int] = []
         
         mapped.append(contentsOf: 0..<9)
         array.append(contentsOf: 0..<9)
         
         XCTAssertEqual(array.count, mapped.count)
-        XCTAssertEqual(array, mapped)
+        XCTAssertTrue(array.elementsEqual(mapped))
     }
     
     func testMappedBufferAppend2() {
         
-        var mapped = [] as MappedBuffer
-        var array = []
+        var mapped: MappedBuffer<Int> = []
+        var array: [Int] = []
         
         mapped.append(contentsOf: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
         array.append(contentsOf: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
         
         XCTAssertEqual(array.count, mapped.count)
-        XCTAssertEqual(array, mapped)
+        XCTAssertTrue(array.elementsEqual(mapped))
     }
     
     func testMappedBufferReplaceSubrange() {
         
-        var mapped = [1, 2, 3, 4, 5, 6, 7, 8, 9] as MappedBuffer
-        var array = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        var mapped: MappedBuffer<Int> = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        var array: [Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         
         mapped.replaceSubrange(3..<6, with: 5...9)
         array.replaceSubrange(3..<6, with: 5...9)
         
         XCTAssertEqual(array.count, mapped.count)
-        XCTAssertEqual(array, mapped)
+        XCTAssertTrue(array.elementsEqual(mapped))
     }
     
     func testMappedBufferReplaceSubrange2() {
         
-        var mapped = [1, 2, 3, 4, 5, 6, 7, 8, 9] as MappedBuffer
-        var array = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        var mapped: MappedBuffer<Int> = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        var array: [Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         
         mapped.replaceSubrange(3..<6, with: [5, 6, 7, 8, 9])
         array.replaceSubrange(3..<6, with: [5, 6, 7, 8, 9])
         
         XCTAssertEqual(array.count, mapped.count)
-        XCTAssertEqual(array, mapped)
+        XCTAssertTrue(array.elementsEqual(mapped))
     }
     
 }
