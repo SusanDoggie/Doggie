@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ScalarProtocol: ScalarMultiplicative, Multiplicative, SignedNumeric, Strideable, ExpressibleByFloatLiteral where Scalar == Self {
+public protocol ScalarProtocol: SignedNumeric, Strideable, ExpressibleByFloatLiteral, Multiplicative, ScalarMultiplicative where Self == Scalar {
     
     static func * (lhs: Self, rhs: Self) -> Self
     
@@ -32,7 +32,7 @@ public protocol ScalarProtocol: ScalarMultiplicative, Multiplicative, SignedNume
 
 public protocol ScalarMultiplicative : AdditiveArithmetic {
     
-    associatedtype Scalar : ScalarMultiplicative where Scalar == Scalar.Scalar
+    associatedtype Scalar : ScalarProtocol
     
     static prefix func - (x: Self) -> Self
     
@@ -54,7 +54,9 @@ public protocol Multiplicative : Equatable {
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol MapReduceArithmetic : ScalarMultiplicative, Collection where Element : ScalarMultiplicative, Element.Scalar == Scalar {
+public protocol MapReduceArithmetic : ScalarMultiplicative {
+    
+    associatedtype Element : ScalarMultiplicative
     
     func map(_ transform: (Element) -> Element) -> Self
     
@@ -121,27 +123,27 @@ extension MapReduceArithmetic {
     
     @inlinable
     @inline(__always)
-    public static func * (lhs: Scalar, rhs: Self) -> Self {
+    public static func * (lhs: Element.Scalar, rhs: Self) -> Self {
         return rhs.map { lhs * $0 }
     }
     @inlinable
     @inline(__always)
-    public static func * (lhs: Self, rhs: Scalar) -> Self {
+    public static func * (lhs: Self, rhs: Element.Scalar) -> Self {
         return lhs.map { $0 * rhs }
     }
     @inlinable
     @inline(__always)
-    public static func / (lhs: Self, rhs: Scalar) -> Self {
+    public static func / (lhs: Self, rhs: Element.Scalar) -> Self {
         return lhs.map { $0 / rhs }
     }
     @inlinable
     @inline(__always)
-    public static func *= (lhs: inout Self, rhs: Scalar) {
+    public static func *= (lhs: inout Self, rhs: Element.Scalar) {
         lhs = lhs * rhs
     }
     @inlinable
     @inline(__always)
-    public static func /= (lhs: inout Self, rhs: Scalar) {
+    public static func /= (lhs: inout Self, rhs: Element.Scalar) {
         lhs = lhs / rhs
     }
 }
