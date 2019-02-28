@@ -90,11 +90,6 @@ extension WeakDictionary {
 extension WeakDictionary {
     
     @inlinable
-    public var count: Int {
-        return base.values.count(where: { $0.key !== nil })
-    }
-    
-    @inlinable
     public var startIndex: Index {
         for (index, (key: _, value: container)) in base.indexed() {
             if let key = container.key {
