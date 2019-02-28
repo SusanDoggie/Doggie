@@ -86,31 +86,11 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     @inlinable
     @inline(__always)
     public init<S : Sequence>(_ elements: S, fileBacked: Bool = false) where S.Element == Element {
-        if let elements = elements as? MappedBuffer {
-            self = elements.fileBacked == fileBacked ? elements : elements.withUnsafeBufferPointer { MappedBuffer(buffer: $0, fileBacked: fileBacked) }
+        if let elements = elements as? MappedBuffer, elements.fileBacked == fileBacked {
+            self = elements
         } else {
             self.base = Base(capacity: elements.underestimatedCount, fileBacked: fileBacked)
             self.append(contentsOf: elements)
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public init(buffer: UnsafeBufferPointer<Element>, fileBacked: Bool = false) {
-        self.base = Base(capacity: buffer.count, fileBacked: fileBacked)
-        if let bytes = buffer.baseAddress, buffer.count != 0 {
-            self.base.count = buffer.count
-            self.base.address.initialize(from: bytes, count: buffer.count)
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public init(buffer: UnsafeMutableBufferPointer<Element>, fileBacked: Bool = false) {
-        self.base = Base(capacity: buffer.count, fileBacked: fileBacked)
-        if let bytes = buffer.baseAddress, buffer.count != 0 {
-            self.base.count = buffer.count
-            self.base.address.initialize(from: bytes, count: buffer.count)
         }
     }
 }
@@ -297,13 +277,19 @@ extension MappedBuffer : RangeReplaceableCollection {
             self.base = new_base
         }
         
-        let buffer = UnsafeMutableBufferPointer(start: base.address + old_count, count: underestimatedCount - old_count)
-        var (remainders, written) = buffer.initialize(from: newElements)
-        base.count = old_count + written
-        
-        while let item = remainders.next() {
-            self.append(item)
+        @inline(__always)
+        func _append<S : Sequence>(_ newElements: S) where S.Element == Element {
+            
+            let buffer = UnsafeMutableBufferPointer(start: base.address + old_count, count: underestimatedCount - old_count)
+            var (remainders, written) = buffer.initialize(from: newElements)
+            base.count = old_count + written
+            
+            while let item = remainders.next() {
+                self.append(item)
+            }
         }
+        
+        newElements.withContiguousStorageIfAvailable(_append) ?? _append(newElements)
     }
     
     @inlinable
@@ -379,11 +365,17 @@ extension MappedBuffer : RangeReplaceableCollection {
                 move_to.moveInitialize(from: move_from, count: move_count)
             }
             
-            let buffer = UnsafeMutableBufferPointer(start: base.address + subRange.lowerBound, count: newElements_count)
-            var (remainders, written) = buffer.initialize(from: newElements)
+            @inline(__always)
+            func _append<C : Collection>(_ newElements: C) where C.Element == Element {
+                
+                let buffer = UnsafeMutableBufferPointer(start: base.address + subRange.lowerBound, count: newElements_count)
+                var (remainders, written) = buffer.initialize(from: newElements)
+                
+                precondition(remainders.next() == nil, "newElements underreported its count")
+                precondition(written == buffer.endIndex, "newElements overreported its count")
+            }
             
-            precondition(remainders.next() == nil, "newElements underreported its count")
-            precondition(written == buffer.endIndex, "newElements overreported its count")
+            newElements.withContiguousStorageIfAvailable(_append) ?? _append(newElements)
             
             base.count = new_count
             
@@ -400,13 +392,19 @@ extension MappedBuffer : RangeReplaceableCollection {
                 address += subRange.lowerBound
             }
             
-            let buffer = UnsafeMutableBufferPointer(start: address, count: newElements_count)
-            var (remainders, written) = buffer.initialize(from: newElements)
+            @inline(__always)
+            func _append<C : Collection>(_ newElements: C) where C.Element == Element {
+                
+                let buffer = UnsafeMutableBufferPointer(start: address, count: newElements_count)
+                var (remainders, written) = buffer.initialize(from: newElements)
+                
+                precondition(remainders.next() == nil, "newElements underreported its count")
+                precondition(written == buffer.endIndex, "newElements overreported its count")
+                
+                address += written
+            }
             
-            precondition(remainders.next() == nil, "newElements underreported its count")
-            precondition(written == buffer.endIndex, "newElements overreported its count")
-            
-            address += written
+            newElements.withContiguousStorageIfAvailable(_append) ?? _append(newElements)
             
             if subRange.upperBound != base.count {
                 address.initialize(from: base.address + subRange.upperBound, count: base.count - subRange.upperBound)

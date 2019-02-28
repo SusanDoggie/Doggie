@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@usableFromInline
 protocol ImageRepBase {
     
     var width: Int { get }
@@ -55,9 +56,11 @@ extension ImageRepBase {
 @_fixed_layout
 public struct ImageRep {
     
-    private let base: ImageRepBase
+    @usableFromInline
+    let base: ImageRepBase
     
-    private let cache = Cache()
+    @usableFromInline
+    let cache = Cache()
     
     private init(base: ImageRepBase) {
         self.base = base

@@ -54,9 +54,7 @@ public protocol Multiplicative : Equatable {
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol MapReduceArithmetic : ScalarMultiplicative {
-    
-    associatedtype Element : ScalarMultiplicative where Element.Scalar == Scalar
+public protocol MapReduceArithmetic : ScalarMultiplicative, Collection where Element : ScalarMultiplicative, Element.Scalar == Scalar {
     
     func map(_ transform: (Element) -> Element) -> Self
     
@@ -67,7 +65,7 @@ public protocol MapReduceArithmetic : ScalarMultiplicative {
     func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result
 }
 
-extension MapReduceArithmetic {
+extension Collection where Self : MapReduceArithmetic {
     
     @inlinable
     @inline(__always)

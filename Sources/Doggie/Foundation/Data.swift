@@ -46,13 +46,17 @@ extension Data {
     @inlinable
     @inline(__always)
     public func load<T>(fromByteOffset offset: Int = 0, as type: T.Type) -> T {
-        return self.withUnsafeBytes { $0.load(fromByteOffset: offset, as: type) }
+        precondition(offset >= 0, "Data.load with negative offset")
+        precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.load out of bounds")
+        return self.withUnsafeBytes { UnsafeRawBufferPointer(rebasing: $0.dropFirst(offset)).baseAddress!.assumingMemoryBound(to: type).pointee }
     }
     
     @inlinable
     @inline(__always)
     public mutating func storeBytes<T>(of value: T, toByteOffset offset: Int = 0) {
-        return self.withUnsafeMutableBytes { $0.storeBytes(of: value, toByteOffset: offset, as: T.self) }
+        precondition(offset >= 0, "Data.storeBytes with negative offset")
+        precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.storeBytes out of bounds")
+        return self.withUnsafeMutableBytes { UnsafeMutableRawBufferPointer(rebasing: $0.dropFirst(offset)).baseAddress!.assumingMemoryBound(to: T.self).pointee = value }
     }
 }
 

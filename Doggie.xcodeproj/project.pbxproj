@@ -231,6 +231,7 @@
 		0A9F99441F56734A0008D36D /* SFNTNAME.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99431F56734A0008D36D /* SFNTNAME.swift */; };
 		0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9F99461F568FD40008D36D /* SFNTPlatform.swift */; };
 		0AA33B6020942B5900317F54 /* SimplexNoise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA33B5F20942B5800317F54 /* SimplexNoise.swift */; };
+		0AA4575922277EBA00080404 /* MappedBufferTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4575822277EBA00080404 /* MappedBufferTest.swift */; };
 		0AA4D8451F63908200AFF16B /* AvailableFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA4D8441F63908200AFF16B /* AvailableFonts.swift */; };
 		0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6C73A20E6190400682EFA /* RGBA32ColorPixel.swift */; };
 		0AA6C73D20E6190400682EFA /* RGBA64ColorPixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA6C73B20E6190400682EFA /* RGBA64ColorPixel.swift */; };
@@ -531,6 +532,7 @@
 		0A9F99431F56734A0008D36D /* SFNTNAME.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTNAME.swift; sourceTree = "<group>"; };
 		0A9F99461F568FD40008D36D /* SFNTPlatform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTPlatform.swift; sourceTree = "<group>"; };
 		0AA33B5F20942B5800317F54 /* SimplexNoise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimplexNoise.swift; sourceTree = "<group>"; };
+		0AA4575822277EBA00080404 /* MappedBufferTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MappedBufferTest.swift; sourceTree = "<group>"; };
 		0AA4D8441F63908200AFF16B /* AvailableFonts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AvailableFonts.swift; sourceTree = "<group>"; };
 		0AA6C73A20E6190400682EFA /* RGBA32ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RGBA32ColorPixel.swift; sourceTree = "<group>"; };
 		0AA6C73B20E6190400682EFA /* RGBA64ColorPixel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RGBA64ColorPixel.swift; sourceTree = "<group>"; };
@@ -778,6 +780,7 @@
 				0A4C4DA121952B16002E40DE /* ArithmeticTest.swift */,
 				0AE9683121F575F000FCA4C1 /* LayoutTest.swift */,
 				0AE4CA2B21C773C2009883C0 /* CollectionTest.swift */,
+				0AA4575822277EBA00080404 /* MappedBufferTest.swift */,
 				0A26A0901FA98994008BEADB /* CompressionTest.swift */,
 				08BFF9B91B0715ED00EC88CB /* FourierTest.swift */,
 				0AEB4E0621758C0600939383 /* PolynomialTest.swift */,
@@ -1744,6 +1747,7 @@
 				0AE4CA2C21C773C2009883C0 /* CollectionTest.swift in Sources */,
 				0A4A752E21B8D61500AF0CB6 /* ColorSpaceTest.swift in Sources */,
 				0A4C4DA221952B16002E40DE /* ArithmeticTest.swift in Sources */,
+				0AA4575922277EBA00080404 /* MappedBufferTest.swift in Sources */,
 				0A4101A521BF72AD00CD9CB7 /* ImageCodecTest.swift in Sources */,
 				0AE9683221F575F000FCA4C1 /* LayoutTest.swift in Sources */,
 				0A7A4C001F738D18005F44CD /* XMLTest.swift in Sources */,
