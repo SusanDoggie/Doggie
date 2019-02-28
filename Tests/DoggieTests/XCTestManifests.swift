@@ -167,6 +167,16 @@ extension LayoutTest {
     ]
 }
 
+extension MappedBufferTest {
+    static let __allTests = [
+        ("testMappedBufferAlloc", testMappedBufferAlloc),
+        ("testMappedBufferAppend", testMappedBufferAppend),
+        ("testMappedBufferAppend2", testMappedBufferAppend2),
+        ("testMappedBufferReplaceSubrange", testMappedBufferReplaceSubrange),
+        ("testMappedBufferReplaceSubrange2", testMappedBufferReplaceSubrange2),
+    ]
+}
+
 extension PolynomialTest {
     static let __allTests = [
         ("testPolynomialDivPerformance", testPolynomialDivPerformance),
@@ -206,6 +216,7 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(ImageCodecTest.__allTests),
         testCase(ImageTest.__allTests),
         testCase(LayoutTest.__allTests),
+        testCase(MappedBufferTest.__allTests),
         testCase(PolynomialTest.__allTests),
         testCase(ShapeRegionTest.__allTests),
         testCase(XMLTest.__allTests),
