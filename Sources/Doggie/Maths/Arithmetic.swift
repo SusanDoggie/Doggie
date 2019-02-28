@@ -54,9 +54,7 @@ public protocol Multiplicative : Equatable {
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol MapReduceArithmetic : ScalarMultiplicative {
-    
-    associatedtype Element : ScalarMultiplicative
+public protocol MapReduceArithmetic : ScalarMultiplicative, Collection where Element : ScalarMultiplicative {
     
     func map(_ transform: (Element) -> Element) -> Self
     
