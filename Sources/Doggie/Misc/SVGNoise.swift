@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct SVGNoise {
     
     private var uLatticeSelector: [Int]

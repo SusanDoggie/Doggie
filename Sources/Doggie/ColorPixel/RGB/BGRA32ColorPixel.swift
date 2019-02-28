@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct BGRA32ColorPixel : ColorPixelProtocol {
     
     public var b: UInt8

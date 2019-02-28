@@ -207,6 +207,7 @@ extension Font {
 
 extension Font {
     
+    @_fixed_layout
     public struct GraphicType: SignatureProtocol {
         
         public var rawValue: BEUInt32

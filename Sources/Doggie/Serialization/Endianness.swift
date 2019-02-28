@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     
     public var bitPattern: Base
@@ -432,6 +433,7 @@ extension BEInteger {
     }
 }
 
+@_fixed_layout
 public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     
     public var bitPattern: Base

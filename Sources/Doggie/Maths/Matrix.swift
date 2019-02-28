@@ -31,6 +31,7 @@
 ///     ⎜ c g k 0 ⎟
 ///     ⎝ d h l 1 ⎠
 ///
+@_fixed_layout
 public struct Matrix : Hashable {
     
     public var a: Double

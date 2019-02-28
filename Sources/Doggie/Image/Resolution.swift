@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct Resolution : Hashable {
     
     public var horizontal: Double

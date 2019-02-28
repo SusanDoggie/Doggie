@@ -131,6 +131,7 @@ private var DGImageContextCache: [AnyHashable: Any] = [:]
 
 extension DGImageContext {
     
+    @_fixed_layout
     public struct Error: Swift.Error, CustomStringConvertible {
         
         public var description: String

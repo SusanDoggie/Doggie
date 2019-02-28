@@ -89,6 +89,7 @@ extension SignatureProtocol where Bytes : ByteDecodable {
     }
 }
 
+@_fixed_layout
 public struct Signature<Bytes : FixedWidthInteger & ByteCodable> : SignatureProtocol {
     
     public var rawValue: Bytes

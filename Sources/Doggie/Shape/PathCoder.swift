@@ -53,6 +53,7 @@ private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?(\\d+\\.?\\d*|
 
 extension Shape {
     
+    @_fixed_layout
     public struct ParserError : Error {
         
         var command: String?

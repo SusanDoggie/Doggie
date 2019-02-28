@@ -46,6 +46,7 @@ public struct IndexedIterator<C : Collection> : IteratorProtocol {
     }
 }
 
+@_fixed_layout
 public struct IndexedCollection<C : Collection> : Collection {
     
     public let base: C

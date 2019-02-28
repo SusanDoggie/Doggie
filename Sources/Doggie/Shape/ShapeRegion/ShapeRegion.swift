@@ -45,6 +45,7 @@ extension Collection where SubSequence : Collection {
     }
 }
 
+@_fixed_layout
 public struct ShapeRegion {
     
     fileprivate let solids: [Solid]
@@ -74,6 +75,7 @@ public struct ShapeRegion {
         self.cache = Cache()
     }
     
+    @_fixed_layout
     public struct Solid {
         
         public let solid: Shape.Component

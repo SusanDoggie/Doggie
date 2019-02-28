@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_fixed_layout
 public struct YxyColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
@@ -168,6 +169,7 @@ extension YxyColorModel {
         }
     }
     
+    @_fixed_layout
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
         public typealias Indices = Range<Int>
