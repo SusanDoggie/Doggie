@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct LineSegment<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
+public struct LineSegment<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
     
     public typealias Scalar = Double
     
@@ -94,6 +94,12 @@ extension LineSegment {
         updateAccumulatingResult(&accumulator, p0)
         updateAccumulatingResult(&accumulator, p1)
         return accumulator
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func combined(_ other: LineSegment, _ transform: (Element, Element) -> Element) -> LineSegment {
+        return LineSegment(transform(p0, other.p0), transform(p1, other.p1))
     }
 }
 
@@ -231,15 +237,4 @@ extension LineSegment where Element == Point {
         let b = (other.p0.x * other.p1.y - other.p0.y * other.p1.x) / d
         return Point(x: q1.x * a - q0.x * b, y: q1.y * a - q0.y * b)
     }
-}
-
-@inlinable
-@inline(__always)
-public func + <Element>(lhs: LineSegment<Element>, rhs: LineSegment<Element>) -> LineSegment<Element> {
-    return LineSegment(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1)
-}
-@inlinable
-@inline(__always)
-public func - <Element>(lhs: LineSegment<Element>, rhs: LineSegment<Element>) -> LineSegment<Element> {
-    return LineSegment(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1)
 }

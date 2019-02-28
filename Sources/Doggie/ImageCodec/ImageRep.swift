@@ -43,10 +43,12 @@ protocol ImageRepBase {
 
 extension ImageRepBase {
     
+    @usableFromInline
     var numberOfPages: Int {
         return 1
     }
     
+    @usableFromInline
     func page(_ index: Int) -> ImageRepBase {
         precondition(index == 0, "Index out of range.")
         return self
@@ -56,11 +58,9 @@ extension ImageRepBase {
 @_fixed_layout
 public struct ImageRep {
     
-    @usableFromInline
-    let base: ImageRepBase
+    private let base: ImageRepBase
     
-    @usableFromInline
-    let cache = Cache()
+    private let cache = Cache()
     
     private init(base: ImageRepBase) {
         self.base = base
@@ -128,6 +128,7 @@ extension ImageRep {
 
 extension AnyImage : ImageRepBase {
     
+    @usableFromInline
     func image(fileBacked: Bool) -> AnyImage {
         var copy = self
         copy.fileBacked = fileBacked

@@ -614,7 +614,9 @@ struct TIFFPage : ImageRepBase {
                 
                 let dataBitSize = strip.count << 3
                 
-                strip.withUnsafeBytes { (source: UnsafeRawBufferPointer) in
+                strip.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                    
+                    guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
                     
                     var bitsOffset = 0
                     

@@ -95,7 +95,8 @@ public struct ShapeRegion {
 
 extension ShapeRegion {
     
-    fileprivate class Cache {
+    @usableFromInline
+    class Cache {
         
         let lck = SDLock()
         

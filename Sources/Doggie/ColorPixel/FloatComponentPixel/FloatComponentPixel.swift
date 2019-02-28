@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol _FloatComponentPixel : ColorPixelProtocol, ScalarMultiplicative where Scalar : BinaryFloatingPoint {
+public protocol _FloatComponentPixel : ColorPixelProtocol, ScalarMultiplicative {
     
     associatedtype ColorComponents : Tensor where ColorComponents.Scalar == Scalar
     

@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct CubicBezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
+public struct CubicBezier<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
     
     public typealias Scalar = Double
     
@@ -107,6 +107,12 @@ extension CubicBezier {
         updateAccumulatingResult(&accumulator, p2)
         updateAccumulatingResult(&accumulator, p3)
         return accumulator
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func combined(_ other: CubicBezier, _ transform: (Element, Element) -> Element) -> CubicBezier {
+        return CubicBezier(transform(p0, other.p0), transform(p1, other.p1), transform(p2, other.p2), transform(p3, other.p3))
     }
 }
 
@@ -506,15 +512,4 @@ extension CubicBezier where Element == Point {
         let det = _d + _e + _f
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }
-}
-
-@inlinable
-@inline(__always)
-public func + <Element>(lhs: CubicBezier<Element>, rhs: CubicBezier<Element>) -> CubicBezier<Element> {
-    return CubicBezier(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1, lhs.p2 + rhs.p2, lhs.p3 + rhs.p3)
-}
-@inlinable
-@inline(__always)
-public func - <Element>(lhs: CubicBezier<Element>, rhs: CubicBezier<Element>) -> CubicBezier<Element> {
-    return CubicBezier(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1, lhs.p2 - rhs.p2, lhs.p3 - rhs.p3)
 }

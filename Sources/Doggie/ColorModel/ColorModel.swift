@@ -34,7 +34,7 @@ public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
     var float32Components: Float32Components { get set }
 }
 
-public protocol _FloatColorComponents : Hashable, Tensor where Scalar : BinaryFloatingPoint {
+public protocol _FloatColorComponents : Hashable, Tensor {
     
 }
 

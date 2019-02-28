@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct Bezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
+public struct Bezier<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
     
     public typealias Scalar = Double
     
@@ -117,6 +117,24 @@ extension Bezier {
     @inlinable
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
         return points.reduce(into: initialResult, updateAccumulatingResult)
+    }
+    
+    @inlinable
+    public func combined(_ other: Bezier, _ transform: (Element, Element) -> Element) -> Bezier {
+        
+        var lhs = self
+        var rhs = other
+        
+        let degree = Swift.max(lhs.degree, rhs.degree)
+        
+        while lhs.degree != degree {
+            lhs = lhs.elevated()
+        }
+        while rhs.degree != degree {
+            rhs = rhs.elevated()
+        }
+        
+        return Bezier(zip(lhs.points, rhs.points).map(transform))
     }
 }
 
@@ -514,31 +532,4 @@ extension Bezier where Element == Point {
         let resultant = _resultant(other)
         return resultant.allSatisfy { $0.almostZero() } ? nil : resultant.roots
     }
-}
-
-@inlinable
-public func + <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
-    var lhs = lhs
-    var rhs = rhs
-    let degree = max(lhs.degree, rhs.degree)
-    while lhs.degree != degree {
-        lhs = lhs.elevated()
-    }
-    while rhs.degree != degree {
-        rhs = rhs.elevated()
-    }
-    return Bezier(zip(lhs.points, rhs.points).map(+))
-}
-@inlinable
-public func - <Element>(lhs: Bezier<Element>, rhs: Bezier<Element>) -> Bezier<Element> {
-    var lhs = lhs
-    var rhs = rhs
-    let degree = max(lhs.degree, rhs.degree)
-    while lhs.degree != degree {
-        lhs = lhs.elevated()
-    }
-    while rhs.degree != degree {
-        rhs = rhs.elevated()
-    }
-    return Bezier(zip(lhs.points, rhs.points).map(-))
 }

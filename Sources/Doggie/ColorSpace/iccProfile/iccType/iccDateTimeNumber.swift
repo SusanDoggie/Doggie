@@ -27,22 +27,11 @@
 @usableFromInline
 struct iccDateTimeNumber : ByteCodable {
     
-    @usableFromInline
     var year: BEUInt16
-    
-    @usableFromInline
     var month: BEUInt16
-    
-    @usableFromInline
     var day: BEUInt16
-    
-    @usableFromInline
     var hours: BEUInt16
-    
-    @usableFromInline
     var minutes: BEUInt16
-    
-    @usableFromInline
     var seconds: BEUInt16
     
     init(year: BEUInt16, month: BEUInt16, day: BEUInt16, hours: BEUInt16, minutes: BEUInt16, seconds: BEUInt16) {

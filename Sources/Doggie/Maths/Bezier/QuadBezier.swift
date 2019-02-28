@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct QuadBezier<Element : ScalarMultiplicative> : Equatable, BezierProtocol where Element.Scalar == Double {
+public struct QuadBezier<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
     
     public typealias Scalar = Double
     
@@ -101,6 +101,12 @@ extension QuadBezier {
         updateAccumulatingResult(&accumulator, p1)
         updateAccumulatingResult(&accumulator, p2)
         return accumulator
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func combined(_ other: QuadBezier, _ transform: (Element, Element) -> Element) -> QuadBezier {
+        return QuadBezier(transform(p0, other.p0), transform(p1, other.p1), transform(p2, other.p2))
     }
 }
 
@@ -439,15 +445,4 @@ extension QuadBezier where Element == Point {
         let det = m00 * m11 - m01 * m10
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }
-}
-
-@inlinable
-@inline(__always)
-public func + <Element>(lhs: QuadBezier<Element>, rhs: QuadBezier<Element>) -> QuadBezier<Element> {
-    return QuadBezier(lhs.p0 + rhs.p0, lhs.p1 + rhs.p1, lhs.p2 + rhs.p2)
-}
-@inlinable
-@inline(__always)
-public func - <Element>(lhs: QuadBezier<Element>, rhs: QuadBezier<Element>) -> QuadBezier<Element> {
-    return QuadBezier(lhs.p0 - rhs.p0, lhs.p1 - rhs.p1, lhs.p2 - rhs.p2)
 }

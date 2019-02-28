@@ -27,13 +27,8 @@
 @usableFromInline
 struct iccXYZNumber : ByteCodable {
     
-    @usableFromInline
     var x: Fixed16Number<BEInt32>
-    
-    @usableFromInline
     var y: Fixed16Number<BEInt32>
-    
-    @usableFromInline
     var z: Fixed16Number<BEInt32>
     
     init(x: Fixed16Number<BEInt32>, y: Fixed16Number<BEInt32>, z: Fixed16Number<BEInt32>) {

@@ -29,10 +29,8 @@ extension iccProfile {
     @usableFromInline
     struct TagData {
         
-        @usableFromInline
         let rawData: Data
         
-        @usableFromInline
         init(rawData: Data) {
             self.rawData = rawData
         }

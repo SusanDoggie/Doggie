@@ -54,7 +54,7 @@ public protocol Multiplicative : Equatable {
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol MapReduceArithmetic : ScalarMultiplicative, Collection where Element : ScalarMultiplicative, Element.Scalar == Scalar {
+public protocol ScalarMultiplicativeCollection : Collection where Element : ScalarMultiplicative {
     
     func map(_ transform: (Element) -> Element) -> Self
     
@@ -63,9 +63,11 @@ public protocol MapReduceArithmetic : ScalarMultiplicative, Collection where Ele
     func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result
     
     func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result
+    
+    func combined(_ other: Self, _ transform: (Element, Element) -> Element) -> Self
 }
 
-extension Collection where Self : MapReduceArithmetic {
+extension Collection where Self : ScalarMultiplicativeCollection {
     
     @inlinable
     @inline(__always)
@@ -80,6 +82,10 @@ extension Collection where Self : MapReduceArithmetic {
     }
 }
 
+public protocol MapReduceArithmetic : ScalarMultiplicative, ScalarMultiplicativeCollection where Element.Scalar == Scalar {
+    
+}
+
 extension MapReduceArithmetic {
     
     @inlinable
@@ -92,6 +98,17 @@ extension MapReduceArithmetic {
     @inline(__always)
     public static prefix func - (val: Self) -> Self {
         return val.map { -$0 }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func + (lhs: Self, rhs: Self) -> Self {
+        return lhs.combined(rhs) { $0 + $1 }
+    }
+    @inlinable
+    @inline(__always)
+    public static func - (lhs: Self, rhs: Self) -> Self {
+        return lhs.combined(rhs) { $0 - $1 }
     }
     
     @inlinable
@@ -133,7 +150,7 @@ extension MapReduceArithmetic {
     }
 }
 
-extension MapReduceArithmetic where Element == Point {
+extension ScalarMultiplicativeCollection where Element == Point {
     
     @inlinable
     @inline(__always)
@@ -148,7 +165,7 @@ extension MapReduceArithmetic where Element == Point {
     }
 }
 
-extension MapReduceArithmetic where Element == Vector {
+extension ScalarMultiplicativeCollection where Element == Vector {
     
     @inlinable
     @inline(__always)

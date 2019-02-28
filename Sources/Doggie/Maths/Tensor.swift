@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol Tensor : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Element == Scalar, Index == Int {
+public protocol Tensor : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar : BinaryFloatingPoint, Element == Scalar, Index == Int {
     
     init()
     
@@ -34,8 +34,6 @@ public protocol Tensor : MapReduceArithmetic, RandomAccessCollection, MutableCol
     var unit: Self { get }
     
     func distance(to: Self) -> Scalar
-    
-    func combined(_ other: Self, _ transform: (Scalar, Scalar) -> Scalar) -> Self
 }
 
 extension Tensor {
@@ -69,7 +67,7 @@ extension Tensor {
     }
 }
 
-extension Tensor where Scalar : FloatingPoint {
+extension Tensor {
     
     @_transparent
     public var magnitude: Scalar {
@@ -98,7 +96,7 @@ extension Tensor where Scalar : FloatingPoint {
 
 @inlinable
 @inline(__always)
-public func abs<T : Tensor>(_ x: T) -> T.Scalar where T.Scalar : FloatingPoint {
+public func abs<T : Tensor>(_ x: T) -> T.Scalar {
     return x.magnitude
 }
 
@@ -106,18 +104,4 @@ public func abs<T : Tensor>(_ x: T) -> T.Scalar where T.Scalar : FloatingPoint {
 @inline(__always)
 public func dot<T : Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
     return lhs.combined(rhs) { $0 * $1 }.reduce(0) { $0 + $1 }
-}
-
-extension Tensor {
-    
-    @inlinable
-    @inline(__always)
-    public static func + (lhs: Self, rhs: Self) -> Self {
-        return lhs.combined(rhs) { $0 + $1 }
-    }
-    @inlinable
-    @inline(__always)
-    public static func - (lhs: Self, rhs: Self) -> Self {
-        return lhs.combined(rhs) { $0 - $1 }
-    }
 }

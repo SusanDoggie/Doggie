@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, MutableCollection {
+public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar : BinaryFloatingPoint, Index == Int {
     
     init()
     
