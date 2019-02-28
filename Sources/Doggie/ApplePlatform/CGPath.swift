@@ -175,9 +175,9 @@ extension Shape {
     
     public var cgPath : CGPath {
         
-        return self.identity.cache[ShapeCacheCGPathKey] {
+        return self.identity.cache.load(for: ShapeCacheCGPathKey) {
             
-            let _path: CGPath = self.cache[ShapeCacheCGPathKey] {
+            let _path: CGPath = self.cache.load(for: ShapeCacheCGPathKey) {
                 var path = CGMutablePath()
                 self._copy(to: &path)
                 return path
@@ -194,7 +194,7 @@ extension Shape {
     public init(_ path: CGPath) {
         self.init()
         path._copy(to: &self)
-        self.cache[ShapeCacheCGPathKey] = path.copy()
+        self.cache.store(value: path.copy(), for: ShapeCacheCGPathKey)
     }
 }
 

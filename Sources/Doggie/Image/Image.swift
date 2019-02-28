@@ -166,25 +166,11 @@ struct ImageCacheColorConversionKey<Pixel: ColorPixelProtocol> : Hashable {
 
 extension ImageCache {
     
-    subscript<Value>(key: String) -> Value? {
-        get {
-            return lck.synchronized { table[key] as? Value }
-        }
-        set {
-            lck.synchronized { table[key] = newValue }
-        }
+    func load<Value>(for key: String) -> Value? {
+        return lck.synchronized { table[key] as? Value }
     }
     
-    subscript<Value>(key: String, default defaultValue: @autoclosure () -> Value) -> Value {
-        get {
-            return self[key] ?? defaultValue()
-        }
-        set {
-            self[key] = newValue
-        }
-    }
-    
-    subscript<Value>(key: String, body: () -> Value) -> Value {
+    func load<Value>(for key: String, body: () -> Value) -> Value {
         
         return lck.synchronized {
             
@@ -195,6 +181,10 @@ extension ImageCache {
             table[key] = value
             return value
         }
+    }
+    
+    func store<Value>(value: Value, for key: String) {
+        lck.synchronized { table[key] = value }
     }
 }
 

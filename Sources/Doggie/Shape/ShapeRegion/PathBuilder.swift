@@ -289,10 +289,10 @@ extension Shape.Component {
     
     private var constructiveSolidResultCache: WeakDictionary<Shape.Component.CacheArray, [Int: ConstructiveSolidResult]> {
         get {
-            return cache[ShapeCacheConstructiveSolidResultKey, default: WeakDictionary()]
+            return cache.load(for: ShapeCacheConstructiveSolidResultKey) ?? WeakDictionary()
         }
         nonmutating set {
-            cache[ShapeCacheConstructiveSolidResultKey] = newValue
+            cache.store(value: newValue, for: ShapeCacheConstructiveSolidResultKey)
         }
     }
     

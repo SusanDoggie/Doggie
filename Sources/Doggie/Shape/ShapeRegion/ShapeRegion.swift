@@ -135,8 +135,8 @@ extension ShapeRegion {
     
     public var shape: Shape {
         let _path = Shape(components(.plus))
-        _path.cache[ShapeCacheNonZeroRegionKey] = self
-        _path.cache[ShapeCacheEvenOddRegionKey] = self
+        _path.cache.store(value: self, for: ShapeCacheNonZeroRegionKey)
+        _path.cache.store(value: self, for: ShapeCacheEvenOddRegionKey)
         return _path
     }
 }
@@ -186,8 +186,8 @@ extension ShapeRegion.Solid {
     
     public var shape: Shape {
         let _path = Shape(components(.plus))
-        _path.cache[ShapeCacheNonZeroRegionKey] = ShapeRegion(solid: self)
-        _path.cache[ShapeCacheEvenOddRegionKey] = ShapeRegion(solid: self)
+        _path.cache.store(value: ShapeRegion(solid: self), for: ShapeCacheNonZeroRegionKey)
+        _path.cache.store(value: ShapeRegion(solid: self), for: ShapeCacheEvenOddRegionKey)
         return _path
     }
 }
@@ -532,9 +532,9 @@ extension ShapeRegion {
         case .evenOdd: cacheKey = ShapeCacheEvenOddRegionKey
         }
         
-        self = path.identity.cache[cacheKey] {
+        self = path.identity.cache.load(for: cacheKey) {
             
-            var region: ShapeRegion = path.cache[cacheKey] {
+            var region: ShapeRegion = path.cache.load(for: cacheKey) {
                 
                 var region = ShapeRegion()
                 

@@ -155,35 +155,17 @@ extension Cache {
             }
         }
     }
+}
+
+extension Cache {
     
     @inlinable
-    public subscript<Value>(key: Key) -> Value? {
-        get {
-            return base.lck.synchronized { base.table[key] as? Value }
-        }
-        set {
-            if isKnownUniquelyReferenced(&base) {
-                base.lck.synchronized { base.table[key] = newValue }
-            } else {
-                var table = base.lck.synchronized { base.table }
-                table[key] = newValue
-                base = Base(table: table)
-            }
-        }
+    public func load<Value>(for key: Key) -> Value? {
+        return base.lck.synchronized { base.table[key] as? Value }
     }
     
     @inlinable
-    public subscript<Value>(key: Key, default defaultValue: @autoclosure () -> Value) -> Value {
-        get {
-            return self[key] ?? defaultValue()
-        }
-        set {
-            self[key] = newValue
-        }
-    }
-    
-    @inlinable
-    public subscript<Value>(key: Key, body: () -> Value) -> Value {
+    public func load<Value>(for key: Key, body: () -> Value) -> Value {
         
         return base.lck.synchronized {
             
@@ -193,6 +175,18 @@ extension Cache {
             let value = body()
             base.table[key] = value
             return value
+        }
+    }
+    
+    @inlinable
+    public mutating func store<Value>(value: Value, for key: Key) {
+        
+        if isKnownUniquelyReferenced(&base) {
+            base.lck.synchronized { base.table[key] = value }
+        } else {
+            var table = base.lck.synchronized { base.table }
+            table[key] = value
+            base = Base(table: table)
         }
     }
 }

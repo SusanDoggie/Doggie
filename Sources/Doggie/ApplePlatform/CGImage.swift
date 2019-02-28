@@ -87,7 +87,7 @@ extension Image {
     
     public var cgImage: CGImage? {
         
-        return self.cache[ImageCacheCGImageKey] {
+        return self.cache.load(for: ImageCacheCGImageKey) {
             
             let width = self.width
             let height = self.height

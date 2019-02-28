@@ -31,7 +31,7 @@ extension ColorSpace {
     
     public var cgColorSpace : CGColorSpace? {
         
-        return self.cache[ColorSpaceCacheCGColorSpaceKey] {
+        return self.cache.load(for: ColorSpaceCacheCGColorSpaceKey) {
             
             if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
                 
