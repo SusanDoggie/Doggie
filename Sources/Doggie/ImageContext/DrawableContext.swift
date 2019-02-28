@@ -365,8 +365,8 @@ public struct Gradient<Color: ColorProtocol> {
     public var start: Point
     public var end: Point
     
-    @_transparent
-    @usableFromInline
+    @inlinable
+    @inline(__always)
     var rawCenter: Point {
         switch type {
         case .linear: return 0.5 * (start + end)
@@ -374,7 +374,8 @@ public struct Gradient<Color: ColorProtocol> {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var center: Point {
         get {
             return rawCenter * transform

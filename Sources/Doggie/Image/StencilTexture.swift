@@ -37,7 +37,8 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     @usableFromInline
     var _pixels: MappedBuffer<T>
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var pixels: MappedBuffer<T> {
         return _pixels
     }
@@ -94,6 +95,7 @@ extension StencilTexture {
 extension StencilTexture : CustomStringConvertible {
     
     @inlinable
+    @inline(__always)
     public var description: String {
         return "StencilTexture(width: \(width), height: \(height))"
     }
@@ -102,6 +104,7 @@ extension StencilTexture : CustomStringConvertible {
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     public var numberOfComponents: Int {
         return 1
     }
@@ -110,6 +113,7 @@ extension StencilTexture {
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     public var fileBacked: Bool {
         get {
             return pixels.fileBacked

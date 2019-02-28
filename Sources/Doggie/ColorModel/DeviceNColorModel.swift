@@ -30,7 +30,8 @@ public struct Device2ColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 2
     }
@@ -113,7 +114,8 @@ public struct Device3ColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
@@ -204,7 +206,8 @@ public struct Device4ColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 4
     }
@@ -303,7 +306,8 @@ public struct Device5ColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 5
     }
@@ -417,7 +421,8 @@ public struct Device6ColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 6
     }
@@ -539,7 +544,8 @@ public struct Device7ColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 7
     }
@@ -672,7 +678,8 @@ public struct Device8ColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 8
     }
@@ -813,7 +820,8 @@ public struct Device9ColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 9
     }
@@ -962,7 +970,8 @@ public struct DeviceAColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 10
     }
@@ -1122,7 +1131,8 @@ public struct DeviceBColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 11
     }
@@ -1290,7 +1300,8 @@ public struct DeviceCColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 12
     }
@@ -1466,7 +1477,8 @@ public struct DeviceDColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 13
     }
@@ -1653,7 +1665,8 @@ public struct DeviceEColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 14
     }
@@ -1848,7 +1861,8 @@ public struct DeviceFColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 15
     }
@@ -2057,7 +2071,8 @@ extension Device2ColorModel {
         self.component_1 = Double(floatComponents.component_1)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -2072,7 +2087,8 @@ extension Device2ColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 2
         }
@@ -2166,7 +2182,8 @@ extension Device3ColorModel {
         self.component_2 = Double(floatComponents.component_2)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -2181,7 +2198,8 @@ extension Device3ColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }
@@ -2286,7 +2304,8 @@ extension Device4ColorModel {
         self.component_3 = Double(floatComponents.component_3)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -2301,7 +2320,8 @@ extension Device4ColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 4
         }
@@ -2417,7 +2437,8 @@ extension Device5ColorModel {
         self.component_4 = Double(floatComponents.component_4)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -2432,7 +2453,8 @@ extension Device5ColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 5
         }
@@ -2566,7 +2588,8 @@ extension Device6ColorModel {
         self.component_5 = Double(floatComponents.component_5)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -2581,7 +2604,8 @@ extension Device6ColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 6
         }
@@ -2726,7 +2750,8 @@ extension Device7ColorModel {
         self.component_6 = Double(floatComponents.component_6)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -2741,7 +2766,8 @@ extension Device7ColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 7
         }
@@ -2900,7 +2926,8 @@ extension Device8ColorModel {
         self.component_7 = Double(floatComponents.component_7)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -2915,7 +2942,8 @@ extension Device8ColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 8
         }
@@ -3085,7 +3113,8 @@ extension Device9ColorModel {
         self.component_8 = Double(floatComponents.component_8)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -3100,7 +3129,8 @@ extension Device9ColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 9
         }
@@ -3281,7 +3311,8 @@ extension DeviceAColorModel {
         self.component_9 = Double(floatComponents.component_9)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -3296,7 +3327,8 @@ extension DeviceAColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 10
         }
@@ -3491,7 +3523,8 @@ extension DeviceBColorModel {
         self.component_10 = Double(floatComponents.component_10)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -3506,7 +3539,8 @@ extension DeviceBColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 11
         }
@@ -3712,7 +3746,8 @@ extension DeviceCColorModel {
         self.component_11 = Double(floatComponents.component_11)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -3727,7 +3762,8 @@ extension DeviceCColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 12
         }
@@ -3944,7 +3980,8 @@ extension DeviceDColorModel {
         self.component_12 = Double(floatComponents.component_12)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -3959,7 +3996,8 @@ extension DeviceDColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 13
         }
@@ -4190,7 +4228,8 @@ extension DeviceEColorModel {
         self.component_13 = Double(floatComponents.component_13)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -4205,7 +4244,8 @@ extension DeviceEColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 14
         }
@@ -4447,7 +4487,8 @@ extension DeviceFColorModel {
         self.component_14 = Double(floatComponents.component_14)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -4462,7 +4503,8 @@ extension DeviceFColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 15
         }

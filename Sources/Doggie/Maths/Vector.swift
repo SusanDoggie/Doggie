@@ -56,7 +56,8 @@ public struct Vector : Hashable {
 
 extension Vector {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magnitude: Double {
         get {
             return hypot(hypot(x, y), z)
@@ -71,7 +72,8 @@ extension Vector {
 
 extension Vector: CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return "Vector(x: \(x), y: \(y), z: \(z))"
     }
@@ -113,7 +115,8 @@ extension Vector : Tensor {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }

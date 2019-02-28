@@ -37,6 +37,7 @@ public enum ResamplingAlgorithm {
 extension ResamplingAlgorithm {
     
     @inlinable
+    @inline(__always)
     public static var `default` : ResamplingAlgorithm {
         return .linear
     }

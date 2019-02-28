@@ -150,13 +150,12 @@ extension WeakDictionary {
     }
     
     @inlinable
-    public subscript(key: Key, default defaultValue: @autoclosure () -> Value) -> Value {
+    public subscript(key: Key, default defaultValue: () -> Value) -> Value {
         get {
-            guard let element = base[ObjectIdentifier(key)], element.key === key else { return defaultValue() }
-            return element.value
+            return self[key] ?? defaultValue()
         }
         set {
-            base[ObjectIdentifier(key)] = ValueContainer(key: key, value: newValue)
+            self[key] = newValue
         }
     }
 }

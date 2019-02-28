@@ -38,7 +38,8 @@ public protocol Tensor : MapReduceArithmetic, RandomAccessCollection, MutableCol
 
 extension Tensor {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var zero: Self {
         return Self()
     }
@@ -46,22 +47,26 @@ extension Tensor {
 
 extension Tensor {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var numberOfComponents: Int {
         return Self.numberOfComponents
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var count: Int {
         return Self.numberOfComponents
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var startIndex: Int {
         return 0
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var endIndex: Int {
         return Self.numberOfComponents
     }
@@ -69,7 +74,8 @@ extension Tensor {
 
 extension Tensor {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magnitude: Scalar {
         get {
             return self.reduce(0) { $0 + $1 * $1 }.squareRoot()
@@ -81,7 +87,8 @@ extension Tensor {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var unit: Self {
         let m = self.magnitude
         return m == 0 ? Self() : self / m

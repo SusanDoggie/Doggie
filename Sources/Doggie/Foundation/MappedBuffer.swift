@@ -111,6 +111,7 @@ extension MappedBuffer where Element == UInt8 {
 extension MappedBuffer {
     
     @inlinable
+    @inline(__always)
     public var fileBacked: Bool {
         get {
             return base.fileBacked
@@ -123,16 +124,19 @@ extension MappedBuffer {
     }
     
     @inlinable
+    @inline(__always)
     public func setMemoryAdvise(_ advise: MemoryAdvise) {
         base.set_memory_advise(advise)
     }
     
     @inlinable
+    @inline(__always)
     public func memoryLock() {
         base.memory_lock()
     }
     
     @inlinable
+    @inline(__always)
     public func memoryUnlock() {
         base.memory_unlock()
     }
@@ -141,6 +145,7 @@ extension MappedBuffer {
 extension MappedBuffer {
     
     @inlinable
+    @inline(__always)
     public var capacity: Int {
         return base.capacity
     }
@@ -149,6 +154,7 @@ extension MappedBuffer {
 extension MappedBuffer : CustomStringConvertible {
     
     @inlinable
+    @inline(__always)
     public var description: String {
         return self.withUnsafeBufferPointer { "[\($0.lazy.map { "\($0)" }.joined(separator: ", "))]" }
     }
@@ -211,11 +217,13 @@ extension MappedBuffer {
     }
     
     @inlinable
+    @inline(__always)
     public var startIndex: Int {
         return 0
     }
     
     @inlinable
+    @inline(__always)
     public var endIndex: Int {
         return base.count
     }
@@ -418,6 +426,7 @@ extension MappedBuffer : RangeReplaceableCollection {
 extension MappedBuffer {
     
     @inlinable
+    @inline(__always)
     public var underestimatedCount: Int {
         return self.count
     }

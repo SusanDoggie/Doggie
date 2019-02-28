@@ -102,7 +102,8 @@ public struct ImageContextRenderStageIn<Vertex : ImageContextRenderVertex> {
 
 extension ImageContextRenderStageIn {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var position: Vertex.Position {
         return vertex.position
     }
@@ -110,7 +111,8 @@ extension ImageContextRenderStageIn {
 
 extension ImageContextRenderStageIn where Vertex.Position == Vector {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var normal: Vector {
         return cross(triangle.1 - triangle.0, triangle.2 - triangle.0)
     }

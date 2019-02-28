@@ -67,7 +67,8 @@ public struct Matrix : Hashable {
 
 extension Matrix : CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return "Matrix(a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f), g: \(g), h: \(h), i: \(i), j: \(j), k: \(k), l: \(l))"
     }
@@ -114,7 +115,8 @@ extension Matrix : Codable {
 
 extension Matrix {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var inverse : Matrix {
         let _a = g * j - f * k
         let _b = c * j - b * k
@@ -137,7 +139,8 @@ extension Matrix {
 
 extension Matrix {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var tx: Double {
         get {
             return d
@@ -147,7 +150,8 @@ extension Matrix {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var ty: Double {
         get {
             return h
@@ -157,7 +161,8 @@ extension Matrix {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var tz: Double {
         get {
             return l
@@ -170,7 +175,8 @@ extension Matrix {
 
 extension Matrix {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var determinant : Double {
         let _c = c * f - b * g
         let _g = c * e - a * g
@@ -189,7 +195,8 @@ extension Matrix {
     ///     ⎜ 0 0 1 0 ⎟
     ///     ⎝ 0 0 0 1 ⎠
     ///
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var identity : Matrix {
         
         return Matrix(a: 1, b: 0, c: 0, d: 0,

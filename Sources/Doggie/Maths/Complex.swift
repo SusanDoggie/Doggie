@@ -70,7 +70,8 @@ extension Complex {
         self.imag = magnitude * sin(phase)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magnitude: Double {
         get {
             return hypot(real, imag)
@@ -80,7 +81,8 @@ extension Complex {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var phase: Double {
         get {
             return atan2(imag, real)
@@ -93,7 +95,8 @@ extension Complex {
 
 extension Complex: CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         
         var print = ""
@@ -146,7 +149,8 @@ extension Complex : Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var zero: Complex {
         return Complex()
     }

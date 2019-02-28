@@ -316,7 +316,7 @@ extension Polynomial : Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
     public static var zero: Polynomial {
         return Polynomial()
     }

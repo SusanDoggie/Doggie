@@ -59,7 +59,8 @@ extension Point {
         self.y = magnitude * sin(phase)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var phase: Double {
         get {
             return atan2(y, x)
@@ -69,7 +70,8 @@ extension Point {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magnitude: Double {
         get {
             return hypot(x, y)
@@ -91,7 +93,8 @@ extension Point {
 
 extension Point: CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return "Point(x: \(x), y: \(y))"
     }
@@ -122,12 +125,14 @@ extension Point : Tensor {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 2
     }
     
     @inlinable
+    @inline(__always)
     public subscript(position: Int) -> Double {
         get {
             switch position {

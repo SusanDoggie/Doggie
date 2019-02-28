@@ -280,7 +280,7 @@ extension WeakDictionary where Key == Shape.Component.CacheArray, Value == [Int:
             return self[key.list]?[key.index]
         }
         set {
-            self[key.list, default: [:]][key.index] = newValue
+            self[key.list, default: Dictionary.init][key.index] = newValue
         }
     }
 }

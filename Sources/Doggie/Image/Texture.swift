@@ -35,7 +35,8 @@ public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
     @usableFromInline
     var _pixels: MappedBuffer<RawPixel>
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var pixels: MappedBuffer<RawPixel> {
         return _pixels
     }
@@ -101,6 +102,7 @@ extension Image {
 extension Texture : CustomStringConvertible {
     
     @inlinable
+    @inline(__always)
     public var description: String {
         return "Texture<\(RawPixel.self)>(width: \(width), height: \(height))"
     }
@@ -109,6 +111,7 @@ extension Texture : CustomStringConvertible {
 extension Texture {
     
     @inlinable
+    @inline(__always)
     public var numberOfComponents: Int {
         return Pixel.numberOfComponents
     }
@@ -117,6 +120,7 @@ extension Texture {
 extension Texture {
     
     @inlinable
+    @inline(__always)
     public var fileBacked: Bool {
         get {
             return pixels.fileBacked
@@ -145,6 +149,7 @@ extension Texture {
 extension Texture {
     
     @inlinable
+    @inline(__always)
     public var isOpaque: Bool {
         return pixels.allSatisfy { $0.isOpaque }
     }

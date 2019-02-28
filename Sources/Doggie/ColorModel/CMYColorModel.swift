@@ -30,7 +30,8 @@ public struct CMYColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
@@ -113,42 +114,50 @@ extension CMYColorModel {
 
 extension CMYColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var black: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 1, yellow: 1)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var white: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 0, yellow: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var red: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 1, yellow: 1)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var green: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 0, yellow: 1)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var blue: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 1, yellow: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var cyan: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 0, yellow: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var magenta: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 1, yellow: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var yellow: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 0, yellow: 1)
     }
@@ -191,7 +200,8 @@ extension CMYColorModel {
         self.yellow = Double(floatComponents.yellow)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -206,7 +216,8 @@ extension CMYColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }

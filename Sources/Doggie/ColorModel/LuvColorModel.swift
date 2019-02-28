@@ -30,7 +30,8 @@ public struct LuvColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
@@ -97,7 +98,8 @@ public struct LuvColorModel : ColorModelProtocol {
 
 extension LuvColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var black: LuvColorModel {
         return LuvColorModel()
     }
@@ -105,7 +107,8 @@ extension LuvColorModel {
 
 extension LuvColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var hue: Double {
         get {
             return positive_mod(0.5 * atan2(v, u) / Double.pi, 1)
@@ -115,7 +118,8 @@ extension LuvColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var chroma: Double {
         get {
             return hypot(u, v)
@@ -163,7 +167,8 @@ extension LuvColorModel {
         self.v = Double(floatComponents.v)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -178,7 +183,8 @@ extension LuvColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }

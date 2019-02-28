@@ -50,7 +50,8 @@ public struct Float64ColorPixel<Model : ColorModelProtocol> : _FloatComponentPix
 
 extension Float64ColorPixel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var _color: Model {
         get {
             return color
@@ -60,7 +61,8 @@ extension Float64ColorPixel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var _opacity: Double {
         get {
             return opacity

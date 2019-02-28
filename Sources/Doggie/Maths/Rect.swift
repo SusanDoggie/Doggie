@@ -52,7 +52,8 @@ public struct Size: Hashable {
 
 extension Size: CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return "Size(width: \(width), height: \(height))"
     }
@@ -108,7 +109,8 @@ extension Size : ScalarMultiplicative {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var zero: Size {
         return Size()
     }
@@ -214,7 +216,8 @@ public struct Rect: Hashable {
 
 extension Rect: CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return "Rect(x: \(x), y: \(y), width: \(width), height: \(height))"
     }
@@ -241,7 +244,8 @@ extension Rect : Codable {
 
 extension Rect {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var x : Double {
         get {
             return origin.x
@@ -251,7 +255,8 @@ extension Rect {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var y : Double {
         get {
             return origin.y
@@ -261,7 +266,8 @@ extension Rect {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var width : Double {
         get {
             return size.width
@@ -271,7 +277,8 @@ extension Rect {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var height : Double {
         get {
             return size.height
@@ -284,23 +291,28 @@ extension Rect {
 
 extension Rect {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var minX : Double {
         return width < 0 ? x + width : x
     }
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var minY : Double {
         return height < 0 ? y + height : y
     }
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var maxX : Double {
         return width < 0 ? x : x + width
     }
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var maxY : Double {
         return height < 0 ? y : y + height
     }
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var midX : Double {
         get {
             return 0.5 * width + x
@@ -309,7 +321,8 @@ extension Rect {
             x = newValue - 0.5 * width
         }
     }
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var midY : Double {
         get {
             return 0.5 * height + y
@@ -318,7 +331,8 @@ extension Rect {
             y = newValue - 0.5 * height
         }
     }
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var center : Point {
         get {
             return Point(x: midX, y: midY)
@@ -332,7 +346,8 @@ extension Rect {
 
 extension Rect {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var standardized: Rect {
         return Rect(x: minX, y: minY, width: abs(width), height: abs(height))
     }
@@ -359,7 +374,8 @@ extension Rect {
 
 extension Rect {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var points : [Point] {
         let minX = self.minX
         let maxX = self.maxX

@@ -118,7 +118,8 @@ extension Rational: ExpressibleByFloatLiteral {
 
 extension Rational: CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return "\(doubleValue)"
     }
@@ -141,7 +142,8 @@ extension Rational: SignedNumeric {
         return x.magnitude
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magnitude: Rational {
         return Rational(Swift.abs(numerator), denominator)
     }
@@ -149,12 +151,14 @@ extension Rational: SignedNumeric {
 
 extension Rational {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var floatValue: Float {
         return Float(doubleValue)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var doubleValue: Double {
         return Double(numerator) / Double(denominator)
     }

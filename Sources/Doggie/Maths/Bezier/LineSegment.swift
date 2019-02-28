@@ -109,11 +109,11 @@ extension LineSegment {
     
     public typealias Index = Int
     
-    @_transparent
+    @inlinable
     public var startIndex: Int {
         return 0
     }
-    @_transparent
+    @inlinable
     public var endIndex: Int {
         return 2
     }
@@ -187,7 +187,7 @@ extension LineSegment where Element == Point {
 
 extension LineSegment where Element == Point {
     
-    @_transparent
+    @inlinable
     public var area: Double {
         return 0.5 * (p0.x * p1.y - p0.y * p1.x)
     }
@@ -210,7 +210,7 @@ extension LineSegment where Element: Tensor {
 
 extension LineSegment where Element == Point {
     
-    @_transparent
+    @inlinable
     public var boundary: Rect {
         let minX = Swift.min(p0.x, p1.x)
         let minY = Swift.min(p0.y, p1.y)

@@ -57,7 +57,8 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
 
 extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var opacity: Double {
         get {
             return Double(_opacity)
@@ -67,7 +68,8 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var isOpaque: Bool {
         return _opacity >= 1
     }
@@ -128,7 +130,8 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
 
 extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.Scalar : FloatingMathProtocol {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magnitude: Scalar {
         get {
             return Scalar.hypot(_color.magnitude, _opacity)
@@ -140,7 +143,8 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.Scalar : Fl
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var unit: Self {
         let m = self.magnitude
         return m == 0 ? Self() : self / m

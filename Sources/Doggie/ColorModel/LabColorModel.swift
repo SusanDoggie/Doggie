@@ -30,7 +30,8 @@ public struct LabColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
@@ -98,7 +99,8 @@ public struct LabColorModel : ColorModelProtocol {
 
 extension LabColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var black: LabColorModel {
         return LabColorModel()
     }
@@ -106,7 +108,8 @@ extension LabColorModel {
 
 extension LabColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var hue: Double {
         get {
             return positive_mod(0.5 * atan2(b, a) / Double.pi, 1)
@@ -116,7 +119,8 @@ extension LabColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var chroma: Double {
         get {
             return hypot(a, b)
@@ -164,7 +168,8 @@ extension LabColorModel {
         self.b = Double(floatComponents.b)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -179,7 +184,8 @@ extension LabColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }

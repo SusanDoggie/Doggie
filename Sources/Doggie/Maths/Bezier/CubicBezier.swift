@@ -122,11 +122,13 @@ extension CubicBezier {
     
     public typealias Index = Int
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var startIndex: Int {
         return 0
     }
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var endIndex: Int {
         return 4
     }
@@ -157,7 +159,6 @@ extension CubicBezier {
 extension CubicBezier {
     
     @inlinable
-    @inline(__always)
     public func eval(_ t: Double) -> Element {
         let t2 = t * t
         let _t = 1 - t
@@ -193,7 +194,6 @@ extension CubicBezier {
 extension CubicBezier {
     
     @inlinable
-    @inline(__always)
     public func split(_ t: Double) -> (CubicBezier, CubicBezier) {
         let q0 = p0 + t * (p1 - p0)
         let q1 = p1 + t * (p2 - p1)
@@ -208,7 +208,6 @@ extension CubicBezier {
 extension CubicBezier {
     
     @inlinable
-    @inline(__always)
     public func derivative() -> QuadBezier<Element> {
         return QuadBezier<Element>(3 * (p1 - p0), 3 * (p2 - p1), 3 * (p3 - p2))
     }
@@ -231,7 +230,7 @@ extension CubicBezier where Element == Point {
 
 extension CubicBezier where Element == Point {
     
-    @_transparent
+    @inlinable
     public var area: Double {
         let a = p3.x - p0.x + 3 * (p1.x - p2.x)
         let b = 3 * (p2.x + p0.x) - 6 * p1.x
@@ -320,7 +319,6 @@ extension CubicBezier where Element == Point {
 extension CubicBezier where Element == Point {
     
     @inlinable
-    @inline(__always)
     public func selfIntersect() -> (Double, Double)? {
         
         let q1 = 3 * (p1 - p0)

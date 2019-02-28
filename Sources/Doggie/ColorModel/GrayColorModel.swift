@@ -29,7 +29,8 @@ public struct GrayColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 1
     }
@@ -77,12 +78,14 @@ extension GrayColorModel {
 
 extension GrayColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var black: GrayColorModel {
         return GrayColorModel()
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var white: GrayColorModel {
         return GrayColorModel(white: 1)
     }
@@ -121,7 +124,8 @@ extension GrayColorModel {
         self.white = Double(floatComponents.white)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -133,7 +137,8 @@ extension GrayColorModel {
     
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 1
         }

@@ -30,7 +30,8 @@ public struct YxyColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
@@ -102,7 +103,8 @@ extension YxyColorModel {
 
 extension YxyColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var point: Point {
         get {
             return Point(x: x, y: y)
@@ -116,7 +118,8 @@ extension YxyColorModel {
 
 extension YxyColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var black: YxyColorModel {
         return YxyColorModel()
     }
@@ -159,7 +162,8 @@ extension YxyColorModel {
         self.y = Double(floatComponents.y)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -174,7 +178,8 @@ extension YxyColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }

@@ -52,6 +52,7 @@ public enum ColorCompositingMode {
 extension ColorCompositingMode {
     
     @inlinable
+    @inline(__always)
     public static var `default` : ColorCompositingMode {
         return .sourceOver
     }

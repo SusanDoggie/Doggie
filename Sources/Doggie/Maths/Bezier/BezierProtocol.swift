@@ -36,7 +36,7 @@ public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, Mu
 
 extension BezierProtocol {
     
-    @_transparent
+    @inlinable
     public static var zero: Self {
         return Self()
     }
@@ -44,7 +44,7 @@ extension BezierProtocol {
 
 extension BezierProtocol {
     
-    @_transparent
+    @inlinable
     public var degree: Int {
         return count - 1
     }

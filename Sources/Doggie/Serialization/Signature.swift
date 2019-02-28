@@ -56,7 +56,8 @@ extension SignatureProtocol {
         self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return String(self)
     }

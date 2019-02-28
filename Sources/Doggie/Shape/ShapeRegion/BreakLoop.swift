@@ -105,7 +105,7 @@ extension Shape.Component {
                     result.append(solid)
                 }
             } else {
-                graph[from: left.0, to: right.0, default: []].append((left.1, right.1))
+                graph[from: left.0, to: right.0, default: Array.init].append((left.1, right.1))
             }
         }
         while let graph_first = graph.first {

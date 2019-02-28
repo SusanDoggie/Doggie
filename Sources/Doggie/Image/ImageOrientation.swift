@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_frozen
 public enum ImageOrientation {
     
     /// original

@@ -64,7 +64,8 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         self.b = UInt16((color.blue * 65535).clamped(to: 0...65535).rounded())
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var color: RGBColorModel {
         get {
             return RGBColorModel(red: Double(r) / 65535, green: Double(g) / 65535, blue: Double(b) / 65535)
@@ -75,7 +76,8 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
             self.b = UInt16((newValue.blue * 65535).clamped(to: 0...65535).rounded())
         }
     }
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var opacity: Double {
         get {
             return Double(a) / 65535
@@ -85,7 +87,8 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var hex: UInt64 {
         let _a = UInt64(a) << 48
         let _r = UInt64(r) << 32
@@ -94,7 +97,8 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
         return _a | _r | _g | _b
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var isOpaque: Bool {
         return a == 65535
     }

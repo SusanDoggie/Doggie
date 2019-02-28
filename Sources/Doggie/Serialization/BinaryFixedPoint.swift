@@ -137,7 +137,8 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var representingValue : RepresentingValue {
         get {
             if bitPattern == 0 {
@@ -164,7 +165,8 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
 
 extension BinaryFixedPoint {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var isSigned: Bool {
         return BitPattern.isSigned
     }
@@ -172,22 +174,26 @@ extension BinaryFixedPoint {
 
 extension BinaryFixedPoint {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return "\(representingValue)"
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magnitude: Self {
         return Self(bitPattern: BitPattern(exactly: bitPattern.magnitude) ?? .max)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var min: Self {
         return Self(bitPattern: BitPattern.min)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var max: Self {
         return Self(bitPattern: BitPattern.max)
     }

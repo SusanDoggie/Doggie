@@ -52,7 +52,8 @@ public struct Radius : Hashable {
 
 extension Radius: CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return "Radius(x: \(x), y: \(y))"
     }

@@ -57,6 +57,7 @@ public enum ColorBlendMode {
 extension ColorBlendMode {
     
     @inlinable
+    @inline(__always)
     public static var `default` : ColorBlendMode {
         return .normal
     }

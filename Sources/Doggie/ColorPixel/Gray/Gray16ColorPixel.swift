@@ -48,7 +48,8 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
         self.a = UInt8((opacity * 255).clamped(to: 0...255).rounded())
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var color: GrayColorModel {
         get {
             return GrayColorModel(white: Double(w) / 255)
@@ -57,7 +58,8 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
             self.w = UInt8((newValue.white * 255).clamped(to: 0...255).rounded())
         }
     }
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var opacity: Double {
         get {
             return Double(a) / 255
@@ -67,7 +69,8 @@ public struct Gray16ColorPixel : ColorPixelProtocol {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var isOpaque: Bool {
         return a == 255
     }

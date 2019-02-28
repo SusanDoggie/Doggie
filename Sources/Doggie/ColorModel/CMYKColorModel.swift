@@ -30,7 +30,8 @@ public struct CMYKColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 4
     }
@@ -124,42 +125,50 @@ extension CMYKColorModel {
 
 extension CMYKColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var black: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 1)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var white: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var red: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 1, yellow: 1, black: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var green: CMYKColorModel {
         return CMYKColorModel(cyan: 1, magenta: 0, yellow: 1, black: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var blue: CMYKColorModel {
         return CMYKColorModel(cyan: 1, magenta: 1, yellow: 0, black: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var cyan: CMYKColorModel {
         return CMYKColorModel(cyan: 1, magenta: 0, yellow: 0, black: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var magenta: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 1, yellow: 0, black: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var yellow: CMYKColorModel {
         return CMYKColorModel(cyan: 0, magenta: 0, yellow: 1, black: 0)
     }
@@ -204,7 +213,8 @@ extension CMYKColorModel {
         self.black = Double(floatComponents.black)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -219,7 +229,8 @@ extension CMYKColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 4
         }

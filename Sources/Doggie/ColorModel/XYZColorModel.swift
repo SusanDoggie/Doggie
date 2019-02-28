@@ -30,7 +30,8 @@ public struct XYZColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
@@ -110,6 +111,7 @@ public struct XYZColorModel : ColorModelProtocol {
 extension XYZColorModel {
     
     @inlinable
+    @inline(__always)
     public init(_ Yxy: YxyColorModel) {
         self.init(luminance: Yxy.luminance, x: Yxy.x, y: Yxy.y)
     }
@@ -117,7 +119,8 @@ extension XYZColorModel {
 
 extension XYZColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var luminance: Double {
         get {
             return y
@@ -127,7 +130,8 @@ extension XYZColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var point: Point {
         get {
             return Point(x: x, y: y) / (x + y + z)
@@ -140,7 +144,8 @@ extension XYZColorModel {
 
 extension XYZColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var black: XYZColorModel {
         return XYZColorModel()
     }
@@ -183,7 +188,8 @@ extension XYZColorModel {
         self.z = Double(floatComponents.z)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -198,7 +204,8 @@ extension XYZColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }

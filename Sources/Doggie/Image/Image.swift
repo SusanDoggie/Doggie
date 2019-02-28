@@ -34,7 +34,8 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
     @usableFromInline
     var _pixels: MappedBuffer<Pixel>
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var pixels: MappedBuffer<Pixel> {
         return _pixels
     }
@@ -214,6 +215,7 @@ extension Image {
 extension Image : CustomStringConvertible {
     
     @inlinable
+    @inline(__always)
     public var description: String {
         return "Image<\(Pixel.self)>(width: \(width), height: \(height), colorSpace: \(colorSpace), resolution: \(resolution))"
     }
@@ -222,6 +224,7 @@ extension Image : CustomStringConvertible {
 extension Image {
     
     @inlinable
+    @inline(__always)
     public var numberOfComponents: Int {
         return Pixel.numberOfComponents
     }
@@ -230,6 +233,7 @@ extension Image {
 extension Image {
     
     @inlinable
+    @inline(__always)
     public var fileBacked: Bool {
         get {
             return pixels.fileBacked

@@ -54,7 +54,8 @@ public struct SDTransform : Hashable {
 
 extension SDTransform : CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return "SDTransform(a: \(a), b: \(b), c: \(c), d: \(d), e: \(e), f: \(f))"
     }
@@ -89,7 +90,8 @@ extension SDTransform : Codable {
 
 extension SDTransform {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var determinant : Double {
         return a * e - b * d
     }
@@ -97,7 +99,8 @@ extension SDTransform {
 
 extension SDTransform {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var inverse : SDTransform {
         let det = self.determinant
         return SDTransform(a: e / det, b: -b / det, c: (b * f - c * e) / det, d: -d / det, e: a / det, f: (c * d - a * f) / det)
@@ -106,7 +109,8 @@ extension SDTransform {
 
 extension SDTransform {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var tx: Double {
         get {
             return c
@@ -116,7 +120,8 @@ extension SDTransform {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var ty: Double {
         get {
             return f
@@ -136,7 +141,8 @@ extension SDTransform {
     ///     ⎜ 0 1 0 ⎟
     ///     ⎝ 0 0 1 ⎠
     ///
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var identity : SDTransform {
         
         return SDTransform(a: 1, b: 0, c: 0,

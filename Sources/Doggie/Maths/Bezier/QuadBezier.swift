@@ -116,11 +116,11 @@ extension QuadBezier {
     
     public typealias Index = Int
     
-    @_transparent
+    @inlinable
     public var startIndex: Int {
         return 0
     }
-    @_transparent
+    @inlinable
     public var endIndex: Int {
         return 3
     }
@@ -219,7 +219,7 @@ extension QuadBezier where Element == Point {
 
 extension QuadBezier where Element == Point {
     
-    @_transparent
+    @inlinable
     public var area: Double {
         let a = p0.x - 2 * p1.x + p2.x
         let b = 2 * (p1.x - p0.x)
@@ -330,7 +330,7 @@ extension QuadBezier where Element == Point {
 
 extension QuadBezier where Element == Double {
     
-    @_transparent
+    @inlinable
     public var stationary: OptionOneCollection<Double> {
         let d = p0 + p2 - 2 * p1
         if d.almostZero() {
@@ -342,7 +342,7 @@ extension QuadBezier where Element == Double {
 
 extension QuadBezier where Element == Point {
     
-    @_transparent
+    @inlinable
     public var boundary: Rect {
         
         let bx = QuadBezier<Double>(p0.x, p1.x, p2.x)

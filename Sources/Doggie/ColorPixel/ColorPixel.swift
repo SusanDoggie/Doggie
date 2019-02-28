@@ -60,7 +60,8 @@ public protocol ColorPixelProtocol : Hashable {
 
 extension ColorPixelProtocol where Self : ScalarMultiplicative {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var zero: Self {
         return Self()
     }
@@ -101,12 +102,14 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return Model.numberOfComponents + 1
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var numberOfComponents: Int {
         return Self.numberOfComponents
     }
@@ -183,7 +186,8 @@ extension ColorPixelProtocol {
 
 extension ColorPixelProtocol {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var isOpaque: Bool {
         return opacity >= 1
     }
@@ -314,7 +318,8 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
 
 extension ColorPixelProtocol where Model == GrayColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var white: Double {
         get {
             return color.white
@@ -327,7 +332,8 @@ extension ColorPixelProtocol where Model == GrayColorModel {
 
 extension ColorPixelProtocol where Model == RGBColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var red: Double {
         get {
             return color.red
@@ -337,7 +343,8 @@ extension ColorPixelProtocol where Model == RGBColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var green: Double {
         get {
             return color.green
@@ -347,7 +354,8 @@ extension ColorPixelProtocol where Model == RGBColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var blue: Double {
         get {
             return color.blue
@@ -360,7 +368,8 @@ extension ColorPixelProtocol where Model == RGBColorModel {
 
 extension ColorPixelProtocol where Model == RGBColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var hue: Double {
         get {
             return color.hue
@@ -370,7 +379,8 @@ extension ColorPixelProtocol where Model == RGBColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var saturation: Double {
         get {
             return color.saturation
@@ -380,7 +390,8 @@ extension ColorPixelProtocol where Model == RGBColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var brightness: Double {
         get {
             return color.brightness
@@ -393,7 +404,8 @@ extension ColorPixelProtocol where Model == RGBColorModel {
 
 extension ColorPixelProtocol where Model == CMYColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var cyan: Double {
         get {
             return color.cyan
@@ -403,7 +415,8 @@ extension ColorPixelProtocol where Model == CMYColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magenta: Double {
         get {
             return color.magenta
@@ -413,7 +426,8 @@ extension ColorPixelProtocol where Model == CMYColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var yellow: Double {
         get {
             return color.yellow
@@ -426,7 +440,8 @@ extension ColorPixelProtocol where Model == CMYColorModel {
 
 extension ColorPixelProtocol where Model == CMYKColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var cyan: Double {
         get {
             return color.cyan
@@ -436,7 +451,8 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magenta: Double {
         get {
             return color.magenta
@@ -446,7 +462,8 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var yellow: Double {
         get {
             return color.yellow
@@ -456,7 +473,8 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var black: Double {
         get {
             return color.black

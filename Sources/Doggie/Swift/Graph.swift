@@ -23,6 +23,7 @@
 //  THE SOFTWARE.
 //
 
+@_frozen
 @usableFromInline
 enum GraphError : Error {
     case keyCollision

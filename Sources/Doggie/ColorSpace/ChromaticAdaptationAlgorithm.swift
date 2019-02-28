@@ -33,6 +33,7 @@ public enum ChromaticAdaptationAlgorithm : Hashable {
 extension ChromaticAdaptationAlgorithm {
     
     @inlinable
+    @inline(__always)
     public static var `default` : ChromaticAdaptationAlgorithm {
         return .bradford
     }

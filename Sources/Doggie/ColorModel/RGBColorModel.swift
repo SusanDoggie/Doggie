@@ -30,7 +30,8 @@ public struct RGBColorModel : ColorModelProtocol {
     
     public typealias Scalar = Double
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
@@ -85,42 +86,50 @@ public struct RGBColorModel : ColorModelProtocol {
 
 extension RGBColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var black: RGBColorModel {
         return RGBColorModel()
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var white: RGBColorModel {
         return RGBColorModel(red: 1, green: 1, blue: 1)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var red: RGBColorModel {
         return RGBColorModel(red: 1, green: 0, blue: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var green: RGBColorModel {
         return RGBColorModel(red: 0, green: 1, blue: 0)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var blue: RGBColorModel {
         return RGBColorModel(red: 0, green: 0, blue: 1)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var cyan: RGBColorModel {
         return RGBColorModel(red: 0, green: 1, blue: 1)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var magenta: RGBColorModel {
         return RGBColorModel(red: 1, green: 0, blue: 1)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var yellow: RGBColorModel {
         return RGBColorModel(red: 1, green: 1, blue: 0)
     }
@@ -201,7 +210,8 @@ extension RGBColorModel {
 
 extension RGBColorModel {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var hue: Double {
         get {
             let _max = Swift.max(red, green, blue)
@@ -224,7 +234,8 @@ extension RGBColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var saturation: Double {
         get {
             let _max = Swift.max(red, green, blue)
@@ -236,7 +247,8 @@ extension RGBColorModel {
         }
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var brightness: Double {
         get {
             return Swift.max(red, green, blue)
@@ -284,7 +296,8 @@ extension RGBColorModel {
         self.blue = Double(floatComponents.blue)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -299,7 +312,8 @@ extension RGBColorModel {
         
         public typealias Indices = Range<Int>
         
-        @_transparent
+        @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }

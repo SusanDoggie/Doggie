@@ -63,12 +63,14 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
         self.bitPattern = value.bitPattern.byteSwapped
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var bigEndian: BEInteger {
         return self
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var littleEndian: BEInteger {
         return BEInteger(littleEndian: self)
     }
@@ -76,7 +78,8 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
 
 extension BEInteger : CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return representingValue.description
     }
@@ -186,22 +189,26 @@ extension BEInteger {
 
 extension BEInteger {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var isSigned: Bool {
         return Base.isSigned
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var bitWidth: Int {
         return Base.bitWidth
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var max: BEInteger {
         return BEInteger(representingValue: Base.max)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var min: BEInteger {
         return BEInteger(representingValue: Base.min)
     }
@@ -209,32 +216,38 @@ extension BEInteger {
 
 extension BEInteger {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var bitWidth: Int {
         return representingValue.bitWidth
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magnitude: Base.Magnitude {
         return representingValue.magnitude
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var trailingZeroBitCount: Int {
         return representingValue.trailingZeroBitCount
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var nonzeroBitCount: Int {
         return representingValue.nonzeroBitCount
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var leadingZeroBitCount: Int {
         return representingValue.leadingZeroBitCount
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var byteSwapped: BEInteger {
         return BEInteger(representingValue: representingValue.byteSwapped)
     }
@@ -242,7 +255,8 @@ extension BEInteger {
 
 extension BEInteger {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var words: Base.Words {
         return self.representingValue.words
     }
@@ -473,12 +487,14 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
         self.bitPattern = value.bitPattern
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var bigEndian: LEInteger {
         return LEInteger(bigEndian: self)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var littleEndian: LEInteger {
         return self
     }
@@ -486,7 +502,8 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
 
 extension LEInteger : CustomStringConvertible {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var description: String {
         return representingValue.description
     }
@@ -596,22 +613,26 @@ extension LEInteger {
 
 extension LEInteger {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var isSigned: Bool {
         return Base.isSigned
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var bitWidth: Int {
         return Base.bitWidth
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var max: LEInteger {
         return LEInteger(representingValue: Base.max)
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public static var min: LEInteger {
         return LEInteger(representingValue: Base.min)
     }
@@ -619,32 +640,38 @@ extension LEInteger {
 
 extension LEInteger {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var bitWidth: Int {
         return representingValue.bitWidth
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var magnitude: Base.Magnitude {
         return representingValue.magnitude
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var trailingZeroBitCount: Int {
         return representingValue.trailingZeroBitCount
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var nonzeroBitCount: Int {
         return representingValue.nonzeroBitCount
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var leadingZeroBitCount: Int {
         return representingValue.leadingZeroBitCount
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var byteSwapped: LEInteger {
         return LEInteger(representingValue: representingValue.byteSwapped)
     }
@@ -652,7 +679,8 @@ extension LEInteger {
 
 extension LEInteger {
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var words: Base.Words {
         return self.representingValue.words
     }

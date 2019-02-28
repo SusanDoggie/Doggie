@@ -26,6 +26,7 @@
 extension FixedWidthInteger {
     
     @inlinable
+    @inline(__always)
     public var reverse: Self {
         
         var m1: Self = 0
@@ -65,6 +66,7 @@ public func log2<T: FixedWidthInteger>(_ x: T) -> T {
 extension FixedWidthInteger {
     
     @inlinable
+    @inline(__always)
     public var hibit: Self {
         return 1 << log2(self)
     }
@@ -73,6 +75,7 @@ extension FixedWidthInteger {
 extension FixedWidthInteger {
     
     @inlinable
+    @inline(__always)
     public var lowbit: Self {
         return 1 << self.trailingZeroBitCount
     }
@@ -81,6 +84,7 @@ extension FixedWidthInteger {
 extension BinaryInteger {
     
     @inlinable
+    @inline(__always)
     public var isPower2 : Bool {
         return 0 < self && self & (self - 1) == 0
     }

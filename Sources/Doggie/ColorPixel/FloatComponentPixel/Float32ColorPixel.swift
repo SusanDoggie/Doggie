@@ -46,7 +46,8 @@ public struct Float32ColorPixel<Model : ColorModelProtocol> : _FloatComponentPix
         self._opacity = opacity
     }
     
-    @_transparent
+    @inlinable
+    @inline(__always)
     public var color: Model {
         get {
             return Model(floatComponents: _color)
