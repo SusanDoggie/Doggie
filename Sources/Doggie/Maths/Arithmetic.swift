@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ScalarProtocol: SignedNumeric, Strideable, ExpressibleByFloatLiteral, Multiplicative, ScalarMultiplicative where Scalar == Self {
+public protocol ScalarProtocol: ScalarMultiplicative where Scalar == Self {
     
     static func * (lhs: Self, rhs: Self) -> Self
     
@@ -32,7 +32,7 @@ public protocol ScalarProtocol: SignedNumeric, Strideable, ExpressibleByFloatLit
 
 public protocol ScalarMultiplicative : AdditiveArithmetic {
     
-    associatedtype Scalar : ScalarProtocol
+    associatedtype Scalar : SignedNumeric, Strideable, ExpressibleByFloatLiteral, Multiplicative, ScalarMultiplicative where Scalar == Scalar.Scalar
     
     static prefix func - (x: Self) -> Self
     
@@ -54,7 +54,7 @@ public protocol Multiplicative : Equatable {
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol ScalarMultiplicativeCollection : Collection where Element : ScalarMultiplicative {
+public protocol MapReduceArithmetic : ScalarMultiplicative, Collection where Element : ScalarMultiplicative, Element.Scalar == Scalar {
     
     func map(_ transform: (Element) -> Element) -> Self
     
@@ -67,7 +67,7 @@ public protocol ScalarMultiplicativeCollection : Collection where Element : Scal
     func combined(_ other: Self, _ transform: (Element, Element) -> Element) -> Self
 }
 
-extension Collection where Self : ScalarMultiplicativeCollection {
+extension Collection where Self : MapReduceArithmetic {
     
     @inlinable
     @inline(__always)
@@ -80,10 +80,6 @@ extension Collection where Self : ScalarMultiplicativeCollection {
     public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result {
         return self.reduce(into: initialResult) { $0 = nextPartialResult($0, $1) }
     }
-}
-
-public protocol MapReduceArithmetic : ScalarMultiplicative, ScalarMultiplicativeCollection where Element.Scalar == Scalar {
-    
 }
 
 extension MapReduceArithmetic {
@@ -150,7 +146,7 @@ extension MapReduceArithmetic {
     }
 }
 
-extension ScalarMultiplicativeCollection where Element == Point {
+extension MapReduceArithmetic where Element == Point {
     
     @inlinable
     @inline(__always)
@@ -165,7 +161,7 @@ extension ScalarMultiplicativeCollection where Element == Point {
     }
 }
 
-extension ScalarMultiplicativeCollection where Element == Vector {
+extension MapReduceArithmetic where Element == Vector {
     
     @inlinable
     @inline(__always)
