@@ -1,6 +1,6 @@
 # Doggie - A Cross-platform Library for Swift
 
-[![Build Status](https://travis-ci.org/SusanDoggie/Doggie.svg?branch=master)](https://travis-ci.org/SusanDoggie/Doggie)
+[![Build Status](https://travis-ci.org/SusanDoggie/Doggie.svg?branch=swift-5)](https://travis-ci.org/SusanDoggie/Doggie)
 [![codecov](https://codecov.io/gh/SusanDoggie/Doggie/branch/master/graph/badge.svg)](https://codecov.io/gh/SusanDoggie/Doggie)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS%20%7C%20Linux-lightgrey.svg?style=flat)
 [![GitHub release](https://img.shields.io/github/release/SusanDoggie/Doggie.svg)](https://github.com/SusanDoggie/Doggie/releases)
@@ -11,13 +11,13 @@ Doggie is a foundational library for Apple's swift. It includes mathematics, acc
 
 ## Build Status
 
-| | **Build Tool** | **Master** |
+| | **Build Tool** | **Swift 5** |
 |---|:---:|:---:|
-| **macOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/1)](https://travis-ci.org/SusanDoggie/Doggie)|
-| **macOS**        | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/2)](https://travis-ci.org/SusanDoggie/Doggie)|
-| **Ubuntu 14.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/4)](https://travis-ci.org/SusanDoggie/Doggie)|
-| **Ubuntu 16.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/5)](https://travis-ci.org/SusanDoggie/Doggie)|
-| **Ubuntu 18.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/6)](https://travis-ci.org/SusanDoggie/Doggie)|
+| **macOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/swift-5/1)](https://travis-ci.org/SusanDoggie/Doggie)|
+| **macOS**        | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/swift-5/2)](https://travis-ci.org/SusanDoggie/Doggie)|
+| **Ubuntu 14.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/swift-5/4)](https://travis-ci.org/SusanDoggie/Doggie)|
+| **Ubuntu 16.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/swift-5/5)](https://travis-ci.org/SusanDoggie/Doggie)|
+| **Ubuntu 18.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/swift-5/6)](https://travis-ci.org/SusanDoggie/Doggie)|
 
 ## Features
 
