@@ -23,15 +23,6 @@
 //  THE SOFTWARE.
 //
 
-extension Data : ExpressibleByArrayLiteral {
-    
-    @inlinable
-    @inline(__always)
-    public init(arrayLiteral elements: UInt8 ...) {
-        self.init(elements)
-    }
-}
-
 extension Data {
     
     @inlinable

@@ -774,7 +774,7 @@ struct SDUndecodedObject {
     @inlinable
     var dictionary: [String: SDObject]? {
         guard type == .dictionary else { return nil }
-        return Dictionary((0..<count).lazy.compactMap { self[keyValuePairs: $0] }.filter { !$0.1.isNil }) { lhs, _ in lhs }
+        return Dictionary((0..<count).lazy.compactMap { self[keyValuePairs: $0] }) { lhs, _ in lhs }
     }
     
     @inlinable
@@ -829,7 +829,8 @@ struct SDUndecodedObject {
             
             guard let key = String(bytes: _key, encoding: .utf8) else { return nil }
             
-            return (key, SDObject(decode: _value))
+            let value = SDObject(decode: _value)
+            return value.isNil ? nil : (key, value)
         }
     }
     
