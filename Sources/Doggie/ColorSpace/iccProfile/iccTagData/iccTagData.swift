@@ -36,7 +36,7 @@ extension iccProfile {
         }
         
         var type: TagType {
-            return rawData.withUnsafeBytes { $0.load(as: TagType.self) }
+            return rawData.load(as: TagType.self)
         }
         
         var data: Data {
