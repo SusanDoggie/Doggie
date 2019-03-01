@@ -402,72 +402,72 @@ extension Bezier where Element == Point {
     }
 }
 
-extension Bezier where Element == Point {
+private enum BézoutElement {
     
-    private enum BézoutElement {
-        
-        case number(Double)
-        case polynomial(Polynomial)
-        
-        var polynomial: Polynomial {
-            switch self {
-            case let .number(x): return [x]
-            case let .polynomial(x): return x
-            }
+    case number(Double)
+    case polynomial(Polynomial)
+    
+    var polynomial: Polynomial {
+        switch self {
+        case let .number(x): return [x]
+        case let .polynomial(x): return x
         }
-        
-        static prefix func -(x: BézoutElement) -> BézoutElement {
-            switch x {
-            case let .number(x): return .number(-x)
-            case let .polynomial(x): return .polynomial(-x)
-            }
+    }
+    
+    static prefix func -(x: BézoutElement) -> BézoutElement {
+        switch x {
+        case let .number(x): return .number(-x)
+        case let .polynomial(x): return .polynomial(-x)
         }
-        
-        static func +(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
-            switch lhs {
-            case let .number(lhs):
-                switch rhs {
-                case let .number(rhs): return .number(lhs + rhs)
-                case let .polynomial(rhs): return .polynomial(lhs + rhs)
-                }
-            case let .polynomial(lhs):
-                switch rhs {
-                case let .number(rhs): return .polynomial(lhs + rhs)
-                case let .polynomial(rhs): return .polynomial(lhs + rhs)
-                }
+    }
+    
+    static func +(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
+        switch lhs {
+        case let .number(lhs):
+            switch rhs {
+            case let .number(rhs): return .number(lhs + rhs)
+            case let .polynomial(rhs): return .polynomial(lhs + rhs)
             }
-        }
-        
-        static func -(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
-            switch lhs {
-            case let .number(lhs):
-                switch rhs {
-                case let .number(rhs): return .number(lhs - rhs)
-                case let .polynomial(rhs): return .polynomial(lhs - rhs)
-                }
-            case let .polynomial(lhs):
-                switch rhs {
-                case let .number(rhs): return .polynomial(lhs - rhs)
-                case let .polynomial(rhs): return .polynomial(lhs - rhs)
-                }
-            }
-        }
-        
-        static func *(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
-            switch lhs {
-            case let .number(lhs):
-                switch rhs {
-                case let .number(rhs): return .number(lhs * rhs)
-                case let .polynomial(rhs): return .polynomial(lhs * rhs)
-                }
-            case let .polynomial(lhs):
-                switch rhs {
-                case let .number(rhs): return .polynomial(lhs * rhs)
-                case let .polynomial(rhs): return .polynomial(lhs * rhs)
-                }
+        case let .polynomial(lhs):
+            switch rhs {
+            case let .number(rhs): return .polynomial(lhs + rhs)
+            case let .polynomial(rhs): return .polynomial(lhs + rhs)
             }
         }
     }
+    
+    static func -(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
+        switch lhs {
+        case let .number(lhs):
+            switch rhs {
+            case let .number(rhs): return .number(lhs - rhs)
+            case let .polynomial(rhs): return .polynomial(lhs - rhs)
+            }
+        case let .polynomial(lhs):
+            switch rhs {
+            case let .number(rhs): return .polynomial(lhs - rhs)
+            case let .polynomial(rhs): return .polynomial(lhs - rhs)
+            }
+        }
+    }
+    
+    static func *(lhs: BézoutElement, rhs: BézoutElement) -> BézoutElement {
+        switch lhs {
+        case let .number(lhs):
+            switch rhs {
+            case let .number(rhs): return .number(lhs * rhs)
+            case let .polynomial(rhs): return .polynomial(lhs * rhs)
+            }
+        case let .polynomial(lhs):
+            switch rhs {
+            case let .number(rhs): return .polynomial(lhs * rhs)
+            case let .polynomial(rhs): return .polynomial(lhs * rhs)
+            }
+        }
+    }
+}
+
+extension Bezier where Element == Point {
     
     private func _resultant(_ other: Bezier) -> Polynomial {
         
