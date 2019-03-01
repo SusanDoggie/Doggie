@@ -28,14 +28,14 @@ import XCTest
 
 class ArithmeticTest: XCTestCase {
 
-    func _testTensorOperation_1<T: Tensor>(_: T.Type, _ operation: (T, T) -> T, _ check: (Double, Double) -> Double) where T.Scalar == Double {
+    func _testTensorOperation_1<T: Tensor>(_: T.Type, _ operation: (T, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
         
         var a = T()
         var b = T()
         
         for i in 0..<T.numberOfComponents {
-            a[i] = Double.random(in: -200..<200)
-            b[i] = Double.random(in: -200..<200)
+            a[i] = T.Scalar.random(in: -200..<200)
+            b[i] = T.Scalar.random(in: -200..<200)
         }
         
         let result = operation(a, b)
@@ -45,13 +45,13 @@ class ArithmeticTest: XCTestCase {
         }
     }
     
-    func _testTensorOperation_2<T: Tensor>(_: T.Type, _ operation: (Double, T) -> T, _ check: (Double, Double) -> Double) where T.Scalar == Double {
+    func _testTensorOperation_2<T: Tensor>(_: T.Type, _ operation: (T.Scalar, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
         
-        let a = Double.random(in: -200..<200)
+        let a = T.Scalar.random(in: -200..<200)
         var b = T()
         
         for i in 0..<T.numberOfComponents {
-            b[i] = Double.random(in: -200..<200)
+            b[i] = T.Scalar.random(in: -200..<200)
         }
         
         let result = operation(a, b)
@@ -61,13 +61,13 @@ class ArithmeticTest: XCTestCase {
         }
     }
     
-    func _testTensorOperation_3<T: Tensor>(_: T.Type, _ operation: (T, Double) -> T, _ check: (Double, Double) -> Double) where T.Scalar == Double {
+    func _testTensorOperation_3<T: Tensor>(_: T.Type, _ operation: (T, T.Scalar) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
         
         var a = T()
-        let b = Double.random(in: -200..<200)
+        let b = T.Scalar.random(in: -200..<200)
         
         for i in 0..<T.numberOfComponents {
-            a[i] = Double.random(in: -200..<200)
+            a[i] = T.Scalar.random(in: -200..<200)
         }
         
         let result = operation(a, b)
@@ -77,7 +77,7 @@ class ArithmeticTest: XCTestCase {
         }
     }
     
-    func _testTensorOperation<T: Tensor>(_: T.Type) where T.Scalar == Double {
+    func _testTensorOperation<T: Tensor>(_: T.Type) where T.Scalar.RawSignificand : FixedWidthInteger {
         
         _testTensorOperation_1(T.self, +, +)
         _testTensorOperation_1(T.self, -, -)
@@ -122,90 +122,59 @@ class ArithmeticTest: XCTestCase {
         
     }
     
-    func _testFloatComponentsOperation_1<T: Tensor>(_: T.Type, _ operation: (T, T) -> T, _ check: (Float, Float) -> Float) where T.Scalar == Float {
+    func testFloat32ComponentsOperation() {
         
-        var a = T()
-        var b = T()
-        
-        for i in 0..<T.numberOfComponents {
-            a[i] = Float.random(in: -200..<200)
-            b[i] = Float.random(in: -200..<200)
-        }
-        
-        let result = operation(a, b)
-        
-        for i in 0..<T.numberOfComponents {
-            XCTAssertEqual(check(a[i], b[i]), result[i])
-        }
-    }
-    
-    func _testFloatComponentsOperation_2<T: Tensor>(_: T.Type, _ operation: (Float, T) -> T, _ check: (Float, Float) -> Float) where T.Scalar == Float {
-        
-        let a = Float.random(in: -200..<200)
-        var b = T()
-        
-        for i in 0..<T.numberOfComponents {
-            b[i] = Float.random(in: -200..<200)
-        }
-        
-        let result = operation(a, b)
-        
-        for i in 0..<T.numberOfComponents {
-            XCTAssertEqual(check(a, b[i]), result[i])
-        }
-    }
-    
-    func _testFloatComponentsOperation_3<T: Tensor>(_: T.Type, _ operation: (T, Float) -> T, _ check: (Float, Float) -> Float) where T.Scalar == Float {
-        
-        var a = T()
-        let b = Float.random(in: -200..<200)
-        
-        for i in 0..<T.numberOfComponents {
-            a[i] = Float.random(in: -200..<200)
-        }
-        
-        let result = operation(a, b)
-        
-        for i in 0..<T.numberOfComponents {
-            XCTAssertEqual(check(a[i], b), result[i])
-        }
-    }
-    
-    func _testFloatComponentsOperation<T: ColorModelProtocol>(_: T.Type) {
-        
-        _testFloatComponentsOperation_1(T.Float32Components.self, +, +)
-        _testFloatComponentsOperation_1(T.Float32Components.self, -, -)
-        _testFloatComponentsOperation_2(T.Float32Components.self, *, *)
-        _testFloatComponentsOperation_3(T.Float32Components.self, *, *)
-        _testFloatComponentsOperation_3(T.Float32Components.self, /, /)
+        _testTensorOperation(GrayColorModel.Float32Components.self)
+        _testTensorOperation(XYZColorModel.Float32Components.self)
+        _testTensorOperation(YxyColorModel.Float32Components.self)
+        _testTensorOperation(LabColorModel.Float32Components.self)
+        _testTensorOperation(LuvColorModel.Float32Components.self)
+        _testTensorOperation(YCbCrColorModel.Float32Components.self)
+        _testTensorOperation(CMYColorModel.Float32Components.self)
+        _testTensorOperation(CMYKColorModel.Float32Components.self)
+        _testTensorOperation(RGBColorModel.Float32Components.self)
+        _testTensorOperation(Device2ColorModel.Float32Components.self)
+        _testTensorOperation(Device3ColorModel.Float32Components.self)
+        _testTensorOperation(Device4ColorModel.Float32Components.self)
+        _testTensorOperation(Device5ColorModel.Float32Components.self)
+        _testTensorOperation(Device6ColorModel.Float32Components.self)
+        _testTensorOperation(Device7ColorModel.Float32Components.self)
+        _testTensorOperation(Device8ColorModel.Float32Components.self)
+        _testTensorOperation(Device9ColorModel.Float32Components.self)
+        _testTensorOperation(DeviceAColorModel.Float32Components.self)
+        _testTensorOperation(DeviceBColorModel.Float32Components.self)
+        _testTensorOperation(DeviceCColorModel.Float32Components.self)
+        _testTensorOperation(DeviceDColorModel.Float32Components.self)
+        _testTensorOperation(DeviceEColorModel.Float32Components.self)
+        _testTensorOperation(DeviceFColorModel.Float32Components.self)
         
     }
     
-    func testFloatComponentsOperation() {
+    func testFloat64ComponentsOperation() {
         
-        _testFloatComponentsOperation(GrayColorModel.self)
-        _testFloatComponentsOperation(XYZColorModel.self)
-        _testFloatComponentsOperation(YxyColorModel.self)
-        _testFloatComponentsOperation(LabColorModel.self)
-        _testFloatComponentsOperation(LuvColorModel.self)
-        _testFloatComponentsOperation(YCbCrColorModel.self)
-        _testFloatComponentsOperation(CMYColorModel.self)
-        _testFloatComponentsOperation(CMYKColorModel.self)
-        _testFloatComponentsOperation(RGBColorModel.self)
-        _testFloatComponentsOperation(Device2ColorModel.self)
-        _testFloatComponentsOperation(Device3ColorModel.self)
-        _testFloatComponentsOperation(Device4ColorModel.self)
-        _testFloatComponentsOperation(Device5ColorModel.self)
-        _testFloatComponentsOperation(Device6ColorModel.self)
-        _testFloatComponentsOperation(Device7ColorModel.self)
-        _testFloatComponentsOperation(Device8ColorModel.self)
-        _testFloatComponentsOperation(Device9ColorModel.self)
-        _testFloatComponentsOperation(DeviceAColorModel.self)
-        _testFloatComponentsOperation(DeviceBColorModel.self)
-        _testFloatComponentsOperation(DeviceCColorModel.self)
-        _testFloatComponentsOperation(DeviceDColorModel.self)
-        _testFloatComponentsOperation(DeviceEColorModel.self)
-        _testFloatComponentsOperation(DeviceFColorModel.self)
+        _testTensorOperation(GrayColorModel.self)
+        _testTensorOperation(XYZColorModel.self)
+        _testTensorOperation(YxyColorModel.self)
+        _testTensorOperation(LabColorModel.self)
+        _testTensorOperation(LuvColorModel.self)
+        _testTensorOperation(YCbCrColorModel.self)
+        _testTensorOperation(CMYColorModel.self)
+        _testTensorOperation(CMYKColorModel.self)
+        _testTensorOperation(RGBColorModel.self)
+        _testTensorOperation(Device2ColorModel.self)
+        _testTensorOperation(Device3ColorModel.self)
+        _testTensorOperation(Device4ColorModel.self)
+        _testTensorOperation(Device5ColorModel.self)
+        _testTensorOperation(Device6ColorModel.self)
+        _testTensorOperation(Device7ColorModel.self)
+        _testTensorOperation(Device8ColorModel.self)
+        _testTensorOperation(Device9ColorModel.self)
+        _testTensorOperation(DeviceAColorModel.self)
+        _testTensorOperation(DeviceBColorModel.self)
+        _testTensorOperation(DeviceCColorModel.self)
+        _testTensorOperation(DeviceDColorModel.self)
+        _testTensorOperation(DeviceEColorModel.self)
+        _testTensorOperation(DeviceFColorModel.self)
         
     }
 }

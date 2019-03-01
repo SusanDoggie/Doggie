@@ -3,7 +3,8 @@ import XCTest
 extension ArithmeticTest {
     static let __allTests = [
         ("testColorOperation", testColorOperation),
-        ("testFloatComponentsOperation", testFloatComponentsOperation),
+        ("testFloat32ComponentsOperation", testFloat32ComponentsOperation),
+        ("testFloat64ComponentsOperation", testFloat64ComponentsOperation),
         ("testTensorOperation", testTensorOperation),
     ]
 }
