@@ -42,11 +42,11 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
         
         self.withUnsafeBytes {
             
-            guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+            guard var source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
             
             result.withUnsafeMutableBytes {
                 
-                guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                 
                 for _ in 0..<numberOfComponents {
                     
@@ -83,11 +83,11 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
         
         self.withUnsafeBytes {
             
-            guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+            guard var source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
             
             result.withUnsafeMutableBytes {
                 
-                guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                 
                 for _ in 0..<numberOfComponents {
                     
@@ -128,11 +128,11 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
         
         self.withUnsafeBytes {
             
-            guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+            guard var source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
             
             result.withUnsafeMutableBytes {
                 
-                guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                 
                 let row = width * numberOfComponents
                 for _ in 0..<row {
@@ -192,11 +192,11 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
             
             self.withUnsafeBytes {
                 
-                guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                guard var source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                 
                 result.withUnsafeMutableBytes {
                     
-                    guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                    guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                     
                     let level1 = log2(length1)
                     let level2 = log2(length2)
@@ -251,11 +251,11 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
             
             self.withUnsafeBytes {
                 
-                guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                guard var source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                 
                 result.withUnsafeMutableBytes {
                     
-                    guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                    guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                     
                     let level1 = log2(length1)
                     let level2 = log2(length2)
@@ -316,11 +316,11 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
             
             self.withUnsafeBytes {
                 
-                guard var source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                guard var source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                 
                 result.withUnsafeMutableBytes {
                     
-                    guard var output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                    guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                     
                     let level = log2(length)
                     
@@ -381,11 +381,11 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
             
             self.withUnsafeBytes {
                 
-                guard let source = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                guard let source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                 
                 result.withUnsafeMutableBytes {
                     
-                    guard let output = $0.baseAddress?.assumingMemoryBound(to: RawPixel.Scalar.self) else { return }
+                    guard let output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                     
                     let level = log2(length)
                     

@@ -42,7 +42,7 @@ class LayoutTest: XCTestCase {
         
         return withUnsafeBytes(of: x) {
             
-            guard let ptr = $0.baseAddress?.assumingMemoryBound(to: T.Scalar.self) else { return false }
+            guard let ptr = $0.bindMemory(to: T.Scalar.self).baseAddress else { return false }
             
             for i in 0..<T.numberOfComponents {
                 guard ptr[i] == T.Scalar(i + 1) else { return false }
@@ -64,7 +64,7 @@ class LayoutTest: XCTestCase {
         
         withUnsafeBytes(of: c) {
             
-            guard let ptr = $0.baseAddress?.assumingMemoryBound(to: Double.self) else { XCTFail(); return }
+            guard let ptr = $0.bindMemory(to: Double.self).baseAddress else { XCTFail(); return }
             
             XCTAssertEqual(ptr[0], 1.0)
             XCTAssertEqual(ptr[1], 2.0)
@@ -154,7 +154,7 @@ class LayoutTest: XCTestCase {
         
         return withUnsafeBytes(of: x) {
             
-            guard let ptr = $0.baseAddress?.assumingMemoryBound(to: T.Scalar.self) else { return false }
+            guard let ptr = $0.bindMemory(to: T.Scalar.self).baseAddress else { return false }
             
             for i in 0..<T.numberOfComponents {
                 guard ptr[i] == T.Scalar(i + 1) else { return false }

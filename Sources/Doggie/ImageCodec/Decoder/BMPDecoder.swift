@@ -126,7 +126,7 @@ struct BMPDecoder : ImageRepDecoder {
             
             pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                 
-                guard var source = bytes.baseAddress?.assumingMemoryBound(to: LEInteger<Pixel>.self) else { return }
+                guard var source = bytes.bindMemory(to: LEInteger<Pixel>.self).baseAddress else { return }
                 let endOfData = pixels.count + Int(bitPattern: source)
                 
                 image.withUnsafeMutableBufferPointer { destination in
@@ -200,7 +200,7 @@ struct BMPDecoder : ImageRepDecoder {
             
             pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                 
-                guard var source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
+                guard var source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
                 let endOfData = pixels.count + Int(bitPattern: source)
                 
                 image.withUnsafeMutableBufferPointer { destination in
@@ -289,7 +289,7 @@ struct BMPDecoder : ImageRepDecoder {
                     
                     pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                         
-                        guard var source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
+                        guard var source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
                         let start = source
                         
                         image.withUnsafeMutableBufferPointer { destination in
@@ -347,7 +347,7 @@ struct BMPDecoder : ImageRepDecoder {
                         
                         pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                             
-                            guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
+                            guard let source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
                             var stream = UnsafeBufferPointer(start: source, count: pixels.count)[...]
                             
                             image.withUnsafeMutableBufferPointer { destination in

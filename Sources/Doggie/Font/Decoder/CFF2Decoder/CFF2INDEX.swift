@@ -58,7 +58,7 @@ struct CFF2INDEX : ByteDecodable, RandomAccessCollection {
         
         return offset.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
             
-            guard let offset = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return 0..<0 }
+            guard let offset = bytes.bindMemory(to: UInt8.self).baseAddress else { return 0..<0 }
             let offSize = Int(offSize)
             
             var start = offset + index * offSize

@@ -795,7 +795,7 @@ struct SDUndecodedObject {
         guard data.count > table_size else { return nil }
         
         return data.prefix(table_size).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
-            guard let offsets = bytes.baseAddress?.assumingMemoryBound(to: UInt64.self) else { return nil }
+            guard let offsets = bytes.bindMemory(to: UInt64.self).baseAddress else { return nil }
             let from = Int(UInt64(bigEndian: offsets[index]))
             let to = Int(UInt64(bigEndian: offsets[index + 1]))
             guard to > from && data.count >= table_size + to else { return nil }
@@ -816,7 +816,7 @@ struct SDUndecodedObject {
         
         return data.prefix(table_size).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
             
-            guard let offsets = bytes.baseAddress?.assumingMemoryBound(to: (UInt64, UInt64).self) else { return nil }
+            guard let offsets = bytes.bindMemory(to: (UInt64, UInt64).self).baseAddress else { return nil }
             let from = Int(UInt64(bigEndian: offsets[index].1))
             
             let offset_0 = Int(UInt64(bigEndian: offsets[index + 1].0))

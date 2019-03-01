@@ -98,7 +98,7 @@ struct OTFGDEF : ByteDecodable {
                 
                 return data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                     
-                    guard let record = bytes.baseAddress?.assumingMemoryBound(to: ClassRangeRecord.self) else { return 0 }
+                    guard let record = bytes.bindMemory(to: ClassRangeRecord.self).baseAddress else { return 0 }
                     
                     while range.count != 0 {
                         

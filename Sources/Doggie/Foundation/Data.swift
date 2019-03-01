@@ -48,7 +48,7 @@ extension Data {
     public func load<T>(fromByteOffset offset: Int = 0, as type: T.Type) -> T {
         precondition(offset >= 0, "Data.load with negative offset")
         precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.load out of bounds")
-        return self.withUnsafeBytes { UnsafeRawBufferPointer(rebasing: $0.dropFirst(offset)).baseAddress!.assumingMemoryBound(to: type).pointee }
+        return self.withUnsafeBytes { ($0.baseAddress! + offset).bindMemory(to: T.self, capacity: 1).pointee }
     }
     
     @inlinable
@@ -56,7 +56,7 @@ extension Data {
     public mutating func storeBytes<T>(of value: T, toByteOffset offset: Int = 0) {
         precondition(offset >= 0, "Data.storeBytes with negative offset")
         precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.storeBytes out of bounds")
-        return self.withUnsafeMutableBytes { UnsafeMutableRawBufferPointer(rebasing: $0.dropFirst(offset)).baseAddress!.assumingMemoryBound(to: T.self).pointee = value }
+        self.withUnsafeMutableBytes { ($0.baseAddress! + offset).bindMemory(to: T.self, capacity: 1).pointee = value }
     }
 }
 

@@ -86,9 +86,10 @@ extension Data: UnsafeMutableBufferProtocol {
         return try self.withUnsafeMutableBytes { (bytes: UnsafeMutableRawBufferPointer) in
             
             var buf = bytes.bindMemory(to: UInt8.self)
+            let copy = buf
             
-            defer { precondition(buf.baseAddress == bytes.baseAddress?.assumingMemoryBound(to: UInt8.self)) }
-            defer { precondition(buf.count == bytes.count) }
+            defer { precondition(buf.baseAddress == copy.baseAddress) }
+            defer { precondition(buf.count == copy.count) }
             
             return try body(&buf)
         }

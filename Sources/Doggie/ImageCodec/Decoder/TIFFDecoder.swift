@@ -313,9 +313,9 @@ struct TIFFPage : ImageRepBase {
                 case .BIG:
                     _red.withUnsafeBytes { (_red: UnsafeRawBufferPointer) in _green.withUnsafeBytes { (_green: UnsafeRawBufferPointer) in _blue.withUnsafeBytes { (_blue: UnsafeRawBufferPointer) in
                         
-                        guard var _red = _red.baseAddress?.assumingMemoryBound(to: BEUInt16.self) else { return }
-                        guard var _green = _green.baseAddress?.assumingMemoryBound(to: BEUInt16.self) else { return }
-                        guard var _blue = _blue.baseAddress?.assumingMemoryBound(to: BEUInt16.self) else { return }
+                        guard var _red = _red.bindMemory(to: BEUInt16.self).baseAddress else { return }
+                        guard var _green = _green.bindMemory(to: BEUInt16.self).baseAddress else { return }
+                        guard var _blue = _blue.bindMemory(to: BEUInt16.self).baseAddress else { return }
                         
                         for _ in 0..<_count {
                             self.palette.append((_red.pointee.representingValue, _green.pointee.representingValue, _blue.pointee.representingValue))
@@ -328,9 +328,9 @@ struct TIFFPage : ImageRepBase {
                 case .LITTLE:
                     _red.withUnsafeBytes { (_red: UnsafeRawBufferPointer) in _green.withUnsafeBytes { (_green: UnsafeRawBufferPointer) in _blue.withUnsafeBytes { (_blue: UnsafeRawBufferPointer) in
                         
-                        guard var _red = _red.baseAddress?.assumingMemoryBound(to: LEUInt16.self) else { return }
-                        guard var _green = _green.baseAddress?.assumingMemoryBound(to: LEUInt16.self) else { return }
-                        guard var _blue = _blue.baseAddress?.assumingMemoryBound(to: LEUInt16.self) else { return }
+                        guard var _red = _red.bindMemory(to: LEUInt16.self).baseAddress else { return }
+                        guard var _green = _green.bindMemory(to: LEUInt16.self).baseAddress else { return }
+                        guard var _blue = _blue.bindMemory(to: LEUInt16.self).baseAddress else { return }
                         
                         for _ in 0..<_count {
                             self.palette.append((_red.pointee.representingValue, _green.pointee.representingValue, _blue.pointee.representingValue))
@@ -616,7 +616,7 @@ struct TIFFPage : ImageRepBase {
                 
                 strip.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                     
-                    guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
+                    guard let source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
                     
                     var bitsOffset = 0
                     

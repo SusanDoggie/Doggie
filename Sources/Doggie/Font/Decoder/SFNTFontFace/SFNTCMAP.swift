@@ -284,7 +284,7 @@ extension SFNTCMAP {
             
             groups.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                 
-                guard let groups = bytes.baseAddress?.assumingMemoryBound(to: Group.self) else { return }
+                guard let groups = bytes.bindMemory(to: Group.self).baseAddress else { return }
                 
                 for group in UnsafeBufferPointer(start: groups, count: Int(self.nGroups)) {
                     
@@ -349,7 +349,7 @@ extension SFNTCMAP {
             
             return varSelectorRecords.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) -> VariationSelector? in
                 
-                guard let buf = bytes.baseAddress?.assumingMemoryBound(to: VariationSelector.self) else { return nil }
+                guard let buf = bytes.bindMemory(to: VariationSelector.self).baseAddress else { return nil }
                 
                 var range = range
                 
@@ -388,7 +388,7 @@ extension SFNTCMAP {
                 
                 let result = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) -> UnicodeValueRange? in
                     
-                    guard let buf = bytes.baseAddress?.assumingMemoryBound(to: UnicodeValueRange.self) else { return nil }
+                    guard let buf = bytes.bindMemory(to: UnicodeValueRange.self).baseAddress else { return nil }
                     
                     var range = 0..<Int(count)
                     
@@ -419,7 +419,7 @@ extension SFNTCMAP {
                 
                 let result = data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) -> UVSMapping? in
                     
-                    guard let buf = bytes.baseAddress?.assumingMemoryBound(to: UVSMapping.self) else { return nil }
+                    guard let buf = bytes.bindMemory(to: UVSMapping.self).baseAddress else { return nil }
                     
                     var range = 0..<Int(count)
                     

@@ -481,7 +481,7 @@ extension Image {
                 
                 data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                     
-                    guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
+                    guard let source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
                     var destination = dest
                     let dataBitSize = _length << 3
                     
@@ -585,7 +585,7 @@ extension Image {
                 
                 data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                     
-                    guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
+                    guard let source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
                     var destination = dest
                     let dataBitSize = _length << 3
                     
@@ -691,7 +691,7 @@ extension Image {
                     
                     data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                         
-                        guard let source = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
+                        guard let source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
                         var destination = dest
                         let dataBitSize = _length << 3
                         
