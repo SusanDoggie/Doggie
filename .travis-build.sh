@@ -50,11 +50,6 @@ EOF
 cat <<"EOF" > ./.swift-codecov
 #!/bin/bash
 
-if [[ $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "develop" && $TRAVIS_EVENT_TYPE != "cron" ]]; then
-  echo "Not master, develop or cron build. Skipping code coverage generation."
-  exit 0
-fi
-
 (( MODULE_COUNT = 0 ))
 BASH_BASE="bash <(curl -s https://codecov.io/bash)"
 for module in $(ls -F Sources/ 2>/dev/null | grep '/$'); do   # get only directories in "Sources/"
