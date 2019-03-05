@@ -21,10 +21,12 @@ else
 export ENABLE_CODECOV=NO
 fi
 
-export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release"
+export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -destination "
 
 if [ -n "${PLATFORM}" ]; then
-export XCODEBUILD_CONFIG+=" -destination platform='${PLATFORM}'"
+export XCODEBUILD_CONFIG+="platform='${PLATFORM}'"
+else
+export XCODEBUILD_CONFIG+="platform=macOS"
 fi
 
 if [ -n "${OS}" ]; then
