@@ -13,6 +13,8 @@ git clone https://github.com/IBM-Swift/Package-Builder.git
 
 if [ "$(uname)" == "Darwin" -a -n "${USE_XCODEBUILD}" ]; then
 
+gem install xcpretty xcpretty-travis-formatter
+
 if [ -z "${SDK}" ]; then
 export SDK=macosx
 fi
@@ -34,7 +36,7 @@ cat <<"EOF" > ./.swift-build-macOS
 set -e
 for SCHEME in ${SCHEMES}; do
 echo "Building scheme ${SCHEME}"
-xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME
+xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
 
@@ -43,7 +45,7 @@ cat <<"EOF" > ./.swift-test-macOS
 set -e
 for SCHEME in ${SCHEMES}; do
   echo "Testing scheme ${SCHEME}"
-  xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions
+  xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
 
