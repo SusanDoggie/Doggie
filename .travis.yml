@@ -12,6 +12,12 @@ matrix:
       env: USE_XCODEBUILD=true CODECOV_ELIGIBLE=true
     - os: osx
       osx_image: xcode10.1
+      env: PLATFORM="platform=iOS Simulator,OS=12.1,name=iPhone XS"
+    - os: osx
+      osx_image: xcode10.1
+      env: PLATFORM="platform=tvOS Simulator,OS=12.1,name=Apple TV 4K"
+    - os: osx
+      osx_image: xcode10.1
     - os: linux
     - os: linux
       services: docker
