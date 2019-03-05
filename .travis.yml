@@ -3,7 +3,7 @@ sudo: required
 notifications: never
 env:
   global:
-    - SWIFT_SNAPSHOT="swift-5.0-DEVELOPMENT-SNAPSHOT-2019-02-26-a"
+    - SWIFT_SNAPSHOT="swift-5.0-DEVELOPMENT-SNAPSHOT-2019-03-04-a"
 
 matrix:
   include:
