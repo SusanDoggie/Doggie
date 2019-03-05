@@ -29,7 +29,9 @@ export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-conte
 echo "available scheme: ${SCHEMES}"
 echo
 
+travis_start "xctool_install"
 brew install xctool
+travis_end
 
 cat <<"EOF" > ./.swift-build-macOS
 #!/bin/bash
