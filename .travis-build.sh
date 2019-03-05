@@ -15,8 +15,8 @@ if [ "$(uname)" == "Darwin" -a -n "${USE_XCODEBUILD}" ]; then
 
 gem install xcpretty xcpretty-travis-formatter
 
-if [ -z "${SDK}" ]; then
-export SDK=macosx
+if [ -z "${PLATFORM}" ]; then
+export PLATFORM=macOS
 fi
 
 if [ -n "${CODECOV_ELIGIBLE}" ]; then
@@ -25,7 +25,7 @@ else
 export ENABLE_CODECOV=NO
 fi
 
-export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -sdk ${SDK}"
+export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -destination \"${PLATFORM}\""
 export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
 
 echo "available scheme: ${SCHEMES}"
@@ -35,8 +35,8 @@ cat <<"EOF" > ./.swift-build-macOS
 #!/bin/bash
 set -e
 for SCHEME in ${SCHEMES}; do
-echo "Building scheme ${SCHEME}"
-xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME | xcpretty -f `xcpretty-travis-formatter`
+  echo "Building scheme ${SCHEME}"
+  xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
 
@@ -55,16 +55,16 @@ cat <<"EOF" > ./.swift-codecov
 (( MODULE_COUNT = 0 ))
 BASH_BASE="bash <(curl -s https://codecov.io/bash)"
 for module in $(ls -F Sources/ 2>/dev/null | grep '/$'); do   # get only directories in "Sources/"
-module=${module%/}                                        # remove trailing slash
-BASH_CMD="$BASH_BASE -J '^${module}\$' -F '${module}'"
-(( MODULE_COUNT++ ))
+  module=${module%/}                                        # remove trailing slash
+  BASH_CMD="$BASH_BASE -J '^${module}\$' -F '${module}'"
+  (( MODULE_COUNT++ ))
 
-echo ">> Running: $BASH_CMD"
-eval "$BASH_CMD"
-if [[ $? != 0 ]]; then
-  echo ">> Error running: $BASH_CMD"
-  exit 1
-fi
+  echo ">> Running: $BASH_CMD"
+  eval "$BASH_CMD"
+  if [[ $? != 0 ]]; then
+    echo ">> Error running: $BASH_CMD"
+    exit 1
+  fi
 done
 
 if (( MODULE_COUNT == 0 )); then
