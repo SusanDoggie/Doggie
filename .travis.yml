@@ -12,10 +12,10 @@ matrix:
       env: USE_XCODEBUILD=true CODECOV_ELIGIBLE=true
     - os: osx
       osx_image: xcode10.1
-      env: USE_XCODEBUILD=true DESTINATION="platform=iOS Simulator,OS=12.1,name=iPhone XS"
+      env: DESTINATION="platform=iOS Simulator,OS=12.1,name=iPhone XS" SDK=iphonesimulator USE_XCODEBUILD=true
     - os: osx
       osx_image: xcode10.1
-      env: USE_XCODEBUILD=true DESTINATION="platform=tvOS Simulator,OS=12.1,name=Apple TV 4K"
+      env: DESTINATION="platform=tvOS Simulator,OS=12.1,name=Apple TV 4K" SDK=appletvsimulator USE_XCODEBUILD=true
     - os: osx
       osx_image: xcode10.1
     - os: linux
