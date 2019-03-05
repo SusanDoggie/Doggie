@@ -11,6 +11,17 @@ fi
 
 git clone https://github.com/IBM-Swift/Package-Builder.git
 
+function travis_start () {
+  export TRAVIS_CURRENT_SECTION=$1
+  travis_fold start ${TRAVIS_CURRENT_SECTION}
+  travis_time_start
+}
+
+function travis_end () {
+  travis_time_finish
+  travis_fold end ${TRAVIS_CURRENT_SECTION}
+}
+
 if [ "$(uname)" == "Darwin" -a -n "${USE_XCODEBUILD}" ]; then
 
 if [ -z "${SDK}" ]; then
