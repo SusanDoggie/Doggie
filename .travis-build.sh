@@ -29,12 +29,14 @@ export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-conte
 echo "available scheme: ${SCHEMES}"
 echo
 
+brew install xctool
+
 cat <<"EOF" > ./.swift-build-macOS
 #!/bin/bash
 set -e
 for SCHEME in ${SCHEMES}; do
 echo "Building scheme ${SCHEME}"
-xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME
+xctool $XCODEBUILD_CONFIG -scheme $SCHEME
 done
 EOF
 
@@ -43,7 +45,7 @@ cat <<"EOF" > ./.swift-test-macOS
 set -e
 for SCHEME in ${SCHEMES}; do
   echo "Testing scheme ${SCHEME}"
-  xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions
+  xctool $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions
 done
 EOF
 
