@@ -25,7 +25,7 @@ else
 export ENABLE_CODECOV=NO
 fi
 
-export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -destination platform=\"${PLATFORM}\""
+export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -destination platform='${PLATFORM}'"
 export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
 
 echo "available scheme: ${SCHEMES}"
