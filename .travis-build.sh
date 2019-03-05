@@ -11,24 +11,6 @@ fi
 
 git clone https://github.com/IBM-Swift/Package-Builder.git
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-source ${SCRIPT_DIR}/lib/travis_fold.bash
-source ${SCRIPT_DIR}/lib/travis_nanoseconds.bash
-source ${SCRIPT_DIR}/lib/travis_time_start.bash
-source ${SCRIPT_DIR}/lib/travis_time_finish.bash
-
-function travis_start () {
-  export TRAVIS_CURRENT_SECTION=$1
-  travis_fold start ${TRAVIS_CURRENT_SECTION}
-  travis_time_start
-}
-
-function travis_end () {
-  travis_time_finish
-  travis_fold end ${TRAVIS_CURRENT_SECTION}
-}
-
 if [ "$(uname)" == "Darwin" -a -n "${USE_XCODEBUILD}" ]; then
 
 if [ -z "${SDK}" ]; then
@@ -47,9 +29,7 @@ export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-conte
 echo "available scheme: ${SCHEMES}"
 echo
 
-travis_start "xctool_install"
 brew install xctool
-travis_end
 
 cat <<"EOF" > ./.swift-build-macOS
 #!/bin/bash
