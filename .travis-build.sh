@@ -37,6 +37,7 @@ cat <<"EOF" > ./.swift-build-macOS
 set -e
 for SCHEME in ${SCHEMES}; do
   echo "Building scheme ${SCHEME}"
+  echo "destination ${DESTINATION}"
   xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
@@ -46,6 +47,7 @@ cat <<"EOF" > ./.swift-test-macOS
 set -e
 for SCHEME in ${SCHEMES}; do
   echo "Testing scheme ${SCHEME}"
+  echo "destination ${DESTINATION}"
   xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
