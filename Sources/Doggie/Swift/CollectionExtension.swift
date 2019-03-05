@@ -31,6 +31,14 @@ extension Sequence {
     }
 }
 
+extension Sequence {
+    
+    @inlinable
+    public func count(where predicate: (Element) throws -> Bool) rethrows -> Int {
+        return try self.reduce(0) { try predicate($1) ? $0 + 1 : $0 }
+    }
+}
+
 extension MutableCollection {
     
     @inlinable

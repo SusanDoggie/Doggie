@@ -55,7 +55,7 @@ extension WeakDictionary where Key == AnyObject, Value == [AnyKeyPath: _ValueBin
             return self[target]?[keyPath]
         }
         set {
-            self[target, default: Dictionary.init][keyPath] = newValue
+            self[target, default: [:]][keyPath] = newValue
         }
     }
 }

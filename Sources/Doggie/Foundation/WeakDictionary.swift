@@ -90,6 +90,11 @@ extension WeakDictionary {
 extension WeakDictionary {
     
     @inlinable
+    public var count: Int {
+        return base.values.count { $0.key !== nil }
+    }
+    
+    @inlinable
     public var startIndex: Index {
         for (index, (key: _, value: container)) in base.indexed() {
             if let key = container.key {
@@ -145,7 +150,7 @@ extension WeakDictionary {
     }
     
     @inlinable
-    public subscript(key: Key, default defaultValue: () -> Value) -> Value {
+    public subscript(key: Key, default defaultValue: @autoclosure () -> Value) -> Value {
         get {
             return self[key] ?? defaultValue()
         }
