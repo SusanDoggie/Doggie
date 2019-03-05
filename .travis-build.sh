@@ -15,17 +15,26 @@ if [ "$(uname)" == "Darwin" -a -n "${USE_XCODEBUILD}" ]; then
 
 gem install xcpretty xcpretty-travis-formatter
 
-if [ -z "${PLATFORM}" ]; then
-export PLATFORM=macOS
-fi
-
 if [ -n "${CODECOV_ELIGIBLE}" ]; then
 export ENABLE_CODECOV=YES
 else
 export ENABLE_CODECOV=NO
 fi
 
-export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -destination platform='${PLATFORM}'"
+export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release"
+
+if [ -n "${PLATFORM}" ]; then
+export XCODEBUILD_CONFIG+=" -destination platform='${PLATFORM}'"
+fi
+
+if [ -n "${OS}" ]; then
+export XCODEBUILD_CONFIG+="OS='${OS}'"
+fi
+
+if [ -n "${DESTINATION_NAME}" ]; then
+export XCODEBUILD_CONFIG+="name='${DESTINATION_NAME}'"
+fi
+
 export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
 
 echo "available scheme: ${SCHEMES}"
