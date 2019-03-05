@@ -19,14 +19,17 @@ if [ -z "${DESTINATION}" ]; then
 export DESTINATION="platform=macOS"
 fi
 
+if [ -z "${SDK}" ]; then
+export SDK=macosx
+fi
+
 if [ -n "${CODECOV_ELIGIBLE}" ]; then
 export ENABLE_CODECOV=YES
 else
 export ENABLE_CODECOV=NO
 fi
 
-export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release"
-
+export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -sdk ${SDK}"
 export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
 
 echo "available scheme: ${SCHEMES}"
