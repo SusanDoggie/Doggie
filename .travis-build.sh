@@ -15,27 +15,17 @@ if [ "$(uname)" == "Darwin" -a -n "${USE_XCODEBUILD}" ]; then
 
 gem install xcpretty xcpretty-travis-formatter
 
+if [ -z "${DESTINATION}" ]; then
+export DESTINATION="platform=macOS"
+fi
+
 if [ -n "${CODECOV_ELIGIBLE}" ]; then
 export ENABLE_CODECOV=YES
 else
 export ENABLE_CODECOV=NO
 fi
 
-export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -destination "
-
-if [ -n "${PLATFORM}" ]; then
-export XCODEBUILD_CONFIG+="platform='${PLATFORM}'"
-else
-export XCODEBUILD_CONFIG+="platform=macOS"
-fi
-
-if [ -n "${OS}" ]; then
-export XCODEBUILD_CONFIG+="OS='${OS}'"
-fi
-
-if [ -n "${DESTINATION_NAME}" ]; then
-export XCODEBUILD_CONFIG+="name='${DESTINATION_NAME}'"
-fi
+export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release"
 
 export SCHEMES=$(xcodebuild -list -project Doggie.xcodeproj | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
 
@@ -47,7 +37,7 @@ cat <<"EOF" > ./.swift-build-macOS
 set -e
 for SCHEME in ${SCHEMES}; do
   echo "Building scheme ${SCHEME}"
-  xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME | xcpretty -f `xcpretty-travis-formatter`
+  xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
 
@@ -56,7 +46,7 @@ cat <<"EOF" > ./.swift-test-macOS
 set -e
 for SCHEME in ${SCHEMES}; do
   echo "Testing scheme ${SCHEME}"
-  xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
+  xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
 
