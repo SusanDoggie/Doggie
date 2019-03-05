@@ -41,7 +41,7 @@ set -e
 for SCHEME in ${SCHEMES}; do
   echo "Building scheme ${SCHEME}"
   echo "destination ${DESTINATION}"
-  xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" | xcpretty -f `xcpretty-travis-formatter`
+  xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
 
