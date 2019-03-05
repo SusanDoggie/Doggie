@@ -11,6 +11,13 @@ fi
 
 git clone https://github.com/IBM-Swift/Package-Builder.git
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source ${SCRIPT_DIR}/lib/travis_fold.bash
+source ${SCRIPT_DIR}/lib/travis_nanoseconds.bash
+source ${SCRIPT_DIR}/lib/travis_time_start.bash
+source ${SCRIPT_DIR}/lib/travis_time_finish.bash
+
 function travis_start () {
   export TRAVIS_CURRENT_SECTION=$1
   travis_fold start ${TRAVIS_CURRENT_SECTION}
