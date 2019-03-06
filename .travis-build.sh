@@ -15,6 +15,10 @@ if [ "$(uname)" == "Darwin" -a -n "${USE_XCODEBUILD}" ]; then
 
 gem install xcpretty xcpretty-travis-formatter
 
+if [ -z "${DESTINATION}" ]; then
+export DESTINATION="platform=macOS"
+fi
+
 if [ -z "${SDK}" ]; then
 export SDK=macosx
 fi
@@ -35,8 +39,8 @@ cat <<"EOF" > ./.swift-build-macOS
 #!/bin/bash
 set -e
 for SCHEME in ${SCHEMES}; do
-echo "Building scheme ${SCHEME}"
-xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME | xcpretty -f `xcpretty-travis-formatter`
+  echo "Building scheme ${SCHEME}"
+  xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
 
@@ -45,7 +49,9 @@ cat <<"EOF" > ./.swift-test-macOS
 set -e
 for SCHEME in ${SCHEMES}; do
   echo "Testing scheme ${SCHEME}"
-  xcodebuild $XCODEBUILD_CONFIG -scheme $SCHEME test -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
+  echo "destination ${DESTINATION}"
+  xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} build-for-testing -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
+  xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" test-without-building -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
 done
 EOF
 
@@ -55,16 +61,16 @@ cat <<"EOF" > ./.swift-codecov
 (( MODULE_COUNT = 0 ))
 BASH_BASE="bash <(curl -s https://codecov.io/bash)"
 for module in $(ls -F Sources/ 2>/dev/null | grep '/$'); do   # get only directories in "Sources/"
-module=${module%/}                                        # remove trailing slash
-BASH_CMD="$BASH_BASE -J '^${module}\$' -F '${module}'"
-(( MODULE_COUNT++ ))
+  module=${module%/}                                        # remove trailing slash
+  BASH_CMD="$BASH_BASE -J '^${module}\$' -F '${module}'"
+  (( MODULE_COUNT++ ))
 
-echo ">> Running: $BASH_CMD"
-eval "$BASH_CMD"
-if [[ $? != 0 ]]; then
-  echo ">> Error running: $BASH_CMD"
-  exit 1
-fi
+  echo ">> Running: $BASH_CMD"
+  eval "$BASH_CMD"
+  if [[ $? != 0 ]]; then
+    echo ">> Error running: $BASH_CMD"
+    exit 1
+  fi
 done
 
 if (( MODULE_COUNT == 0 )); then

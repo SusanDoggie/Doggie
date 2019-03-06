@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(Metal)
+#if os(macOS) || os(iOS)
 
 import Doggie
 import Metal
