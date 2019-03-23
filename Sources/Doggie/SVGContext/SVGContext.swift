@@ -537,16 +537,10 @@ extension SVGContext {
         case .evenOdd: element.setAttribute(for: "fill-rule", value: "evenodd")
         }
         
-        if color.opacity > 0 {
-            
-            element.setAttribute(for: "fill", value: create_color(color))
-            
-            if color.opacity < 1 {
-                element.setAttribute(for: "fill-opacity", value: "\(color.opacity)")
-            }
-            
-        } else {
-            element.setAttribute(for: "fill", value: "none")
+        element.setAttribute(for: "fill", value: create_color(color))
+        
+        if color.opacity < 1 {
+            element.setAttribute(for: "fill-opacity", value: "\(color.opacity)")
         }
         
         self.append(element)
@@ -662,16 +656,10 @@ extension SVGContext {
         case .evenOdd: element.setAttribute(for: "fill-rule", value: "evenodd")
         }
         
-        if gradient.opacity > 0 {
-            
-            element.setAttribute(for: "fill", value: create_gradient(gradient))
-            
-            if gradient.opacity < 1 {
-                element.setAttribute(for: "fill-opacity", value: "\(gradient.opacity)")
-            }
-            
-        } else {
-            element.setAttribute(for: "fill", value: "none")
+        element.setAttribute(for: "fill", value: create_gradient(gradient))
+        
+        if gradient.opacity < 1 {
+            element.setAttribute(for: "fill-opacity", value: "\(gradient.opacity)")
         }
         
         self.append(element)
@@ -726,13 +714,7 @@ extension SVGContext {
             "height": dataFormatter.string(from: NSNumber(value: viewBox.height)) ?? "0",
             ])
         
-        if self.opacity > 0 {
-            if self.opacity < 1 {
-                rect.setAttribute(for: "fill-opacity", value: "\(self.opacity)")
-            }
-        } else {
-            rect.setAttribute(for: "fill", value: "none")
-        }
+        self.apply_style(&rect)
         
         self.append(rect)
     }
@@ -789,13 +771,7 @@ extension SVGContext {
             "height": dataFormatter.string(from: NSNumber(value: viewBox.height)) ?? "0",
             ])
         
-        if self.opacity > 0 {
-            if self.opacity < 1 {
-                rect.setAttribute(for: "fill-opacity", value: "\(self.opacity)")
-            }
-        } else {
-            rect.setAttribute(for: "fill", value: "none")
-        }
+        self.apply_style(&rect)
         
         self.append(rect)
     }
