@@ -87,7 +87,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    public init(texture: Texture<Pixel>, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>) {
+    public init(texture: Texture<Pixel>, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>) {
         self.init(width: texture.width, height: texture.height, resolution: resolution, pixels: texture.pixels, colorSpace: colorSpace)
     }
 }

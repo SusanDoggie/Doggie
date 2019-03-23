@@ -47,6 +47,14 @@ public struct Resolution : Hashable {
 
 extension Resolution {
     
+    @inlinable
+    public static var `default` : Resolution {
+        return Resolution(resolution: 1, unit: .point)
+    }
+}
+
+extension Resolution {
+    
     public enum Unit {
         
         case point

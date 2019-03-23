@@ -221,7 +221,7 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
                 case 1: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .point)
                 case 2: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .inch)
                 case 3: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .centimeter)
-                default: return Resolution(resolution: 1, unit: .point)
+                default: return .default
                 }
             }
         } else if let properties = self.properties[kCGImagePropertyJFIFDictionary] as? [CFString : Any] {
@@ -235,7 +235,7 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
                 case 1: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .point)
                 case 2: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .inch)
                 case 3: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .centimeter)
-                default: return Resolution(resolution: 1, unit: .point)
+                default: return .default
                 }
             }
         } else if let properties = self.properties[kCGImagePropertyPNGDictionary] as? [CFString : Any] {
@@ -246,7 +246,7 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
             return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .meter)
         }
         
-        return Resolution(resolution: 1, unit: .point)
+        return .default
     }
     
     var resolution: Resolution {
