@@ -345,12 +345,11 @@ extension DGImageContext {
             return
         }
         
-        var shape = shape
-        shape.transform *= self.transform
-        
         if shape.reduce(0, { $0 + $1.count }) == 0 {
             return
         }
+        
+        let shape = shape * self.transform
         
         if width == 0 || height == 0 || shape.transform.determinant.almostZero() {
             return

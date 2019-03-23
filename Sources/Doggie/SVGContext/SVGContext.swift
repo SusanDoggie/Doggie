@@ -114,8 +114,8 @@ extension SVGContext {
 extension SVGContext {
     
     fileprivate enum Clip {
-        case shape(Shape, Shape.WindingRule)
-        case image(AnyImage, SDTransform)
+        case clip(String)
+        case mask(String)
     }
 }
 
@@ -437,28 +437,8 @@ extension SVGContext {
         if let clip = self.current.clip {
             
             switch clip {
-            case let .shape(shape, winding):
-                
-                guard shape.count != 0 else { break }
-                
-                let id = new_name("CLIP")
-                
-                let clipRule: String
-                
-                switch winding {
-                case .nonZero: clipRule = "nonzero"
-                case .evenOdd: clipRule = "evenodd"
-                }
-                
-                let clipPath = SDXMLElement(name: "clipPath", attributes: ["id": id], elements: [SDXMLElement(name: "path", attributes: ["d": shape.identity.encode(), "clip-rule": clipRule])])
-                
-                defs.append(clipPath)
-                
-                element.setAttribute(for: "clip-path", value: "url(#\(id))")
-                
-            case .image:
-                
-                break
+            case let .clip(id): element.setAttribute(for: "clip-path", value: "url(#\(id))")
+            case let .mask(id): element.setAttribute(for: "mask", value: "url(#\(id))")
             }
         }
     }
@@ -525,9 +505,7 @@ extension SVGContext {
     
     public func draw<C : ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
-        var shape = shape
-        shape.transform *= self.transform
-        
+        let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
         
         self.apply_style(&element)
@@ -547,10 +525,57 @@ extension SVGContext {
     }
 }
 
+private protocol SVGImageProtocol {
+    
+    var base64: String? { get }
+}
+
+extension Image: SVGImageProtocol {
+    
+    fileprivate var base64: String? {
+        guard let base64 = self.pngRepresentation()?.base64EncodedString() else { return nil }
+        return "data:image/png;base64," + base64
+    }
+}
+
+extension AnyImage: SVGImageProtocol {
+    
+    fileprivate var base64: String? {
+        guard let base64 = self.pngRepresentation()?.base64EncodedString() else { return nil }
+        return "data:image/png;base64," + base64
+    }
+}
+
 extension SVGContext {
     
     public func draw<Image>(image: Image, transform: SDTransform) where Image : ImageProtocol {
         
+        let base64: String
+        
+        if let image = image as? SVGImageProtocol {
+            
+            guard let _base64 = image.base64 else { return }
+            base64 = _base64
+            
+        } else {
+            
+            let _image = image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
+            guard let _base64 = _image.pngRepresentation()?.base64EncodedString() else { return }
+            base64 = "data:image/png;base64," + _base64
+        }
+        
+        var element = SDXMLElement(name: "image", attributes: [
+            "width": "\(image.width)",
+            "height": "\(image.height)",
+            "xlink:href": base64,
+            ])
+        
+        let transform = transform * self.transform
+        element.setAttribute(for: "transform", value: transform.attributeStr())
+        
+        self.apply_style(&element)
+        
+        self.append(element)
     }
 }
 
@@ -562,18 +587,54 @@ extension SVGContext {
     
     public func setClip(shape: Shape, winding: Shape.WindingRule) {
         
-        var shape = shape
-        shape.transform *= self.transform
+        guard shape.count != 0 else {
+            current.clip = nil
+            return
+        }
         
-        current.clip = .shape(shape, winding)
+        let id = new_name("CLIP")
+        
+        let clipRule: String
+        
+        switch winding {
+        case .nonZero: clipRule = "nonzero"
+        case .evenOdd: clipRule = "evenodd"
+        }
+        
+        let shape = shape * self.transform
+        let clipPath = SDXMLElement(name: "clipPath", attributes: ["id": id], elements: [SDXMLElement(name: "path", attributes: ["d": shape.identity.encode(), "clip-rule": clipRule])])
+        
+        defs.append(clipPath)
+        
+        current.clip = .clip(id)
     }
     
+    public func drawClip(body: (SVGContext) throws -> Void) rethrows {
+        
+        let mask_context = SVGContext(copyStates: self)
+        mask_context.global = self
+        
+        try body(mask_context)
+        
+        let id = new_name("MASK")
+        
+        let mask = SDXMLElement(name: "mask", attributes: ["id": id], elements: mask_context.elements)
+        
+        defs.append(mask)
+        
+        current.clip = .mask(id)
+    }
+}
+
+extension SVGContext {
+    
     public func setClip<Image>(image: Image, transform: SDTransform) where Image : ImageProtocol {
-        self.setClip(texture: Texture<Gray16ColorPixel>(image: image.convert(to: .genericGamma22Gray, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
+        self.drawClip { context in context.draw(image: image, transform: transform) }
     }
     
     public func setClip<P>(texture: Texture<P>, transform: SDTransform) where P : ColorPixelProtocol, P.Model == GrayColorModel {
-        
+        let image = Image(texture: texture, colorSpace: .genericGamma22Gray)
+        self.setClip(image: image, transform: transform)
     }
 }
 
@@ -644,9 +705,7 @@ extension SVGContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
         
-        var shape = shape
-        shape.transform *= self.transform
-        
+        let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
         
         self.apply_style(&element)
