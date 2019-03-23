@@ -58,6 +58,7 @@
 		0A13DB36218AF88200BD05F8 /* gradient.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A13DB35218AF88200BD05F8 /* gradient.metal */; };
 		0A1A68B12171A16C00EFF088 /* SFNTSBIX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A68B02171A16C00EFF088 /* SFNTSBIX.swift */; };
 		0A1C14281EF3C5A5001ADB7F /* ICCColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A95A59D1EF3906000D030D5 /* ICCColorSpace.swift */; };
+		0A1D45392244E968001A4967 /* SVGContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1D45382244E968001A4967 /* SVGContext.swift */; };
 		0A1DC92121DCB866007DCFC7 /* CooleyTukey2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DC92021DCB866007DCFC7 /* CooleyTukey2D.swift */; };
 		0A1DC92321DCB885007DCFC7 /* CircularConvolve2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DC92221DCB885007DCFC7 /* CircularConvolve2D.swift */; };
 		0A20DD5020C91C570067558F /* BezierProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A20DD4F20C91C570067558F /* BezierProtocol.swift */; };
@@ -357,6 +358,7 @@
 		0A13DB33218AE99200BD05F8 /* clip.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = clip.metal; sourceTree = "<group>"; };
 		0A13DB35218AF88200BD05F8 /* gradient.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = gradient.metal; sourceTree = "<group>"; };
 		0A1A68B02171A16C00EFF088 /* SFNTSBIX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTSBIX.swift; sourceTree = "<group>"; };
+		0A1D45382244E968001A4967 /* SVGContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVGContext.swift; sourceTree = "<group>"; };
 		0A1DC92021DCB866007DCFC7 /* CooleyTukey2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CooleyTukey2D.swift; sourceTree = "<group>"; };
 		0A1DC92221DCB885007DCFC7 /* CircularConvolve2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularConvolve2D.swift; sourceTree = "<group>"; };
 		0A20DD4F20C91C570067558F /* BezierProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierProtocol.swift; sourceTree = "<group>"; };
@@ -741,6 +743,7 @@
 				08458ACE1E2E627600D01813 /* Image */,
 				0A94BE9E1F108E8100F1BCD2 /* ImageCodec */,
 				0A39A6B31ED9342C00804004 /* ImageContext */,
+				0A1D45372244E951001A4967 /* SVGContext */,
 				0A74D68620047B7000330C86 /* ImageFilter */,
 				0AA33B6120942BD600317F54 /* Misc */,
 				08458AD41E2E627600D01813 /* Maths */,
@@ -842,6 +845,14 @@
 				0A11968B212A74DD00B2D4DB /* Metal.swift */,
 			);
 			path = ApplePlatform;
+			sourceTree = "<group>";
+		};
+		0A1D45372244E951001A4967 /* SVGContext */ = {
+			isa = PBXGroup;
+			children = (
+				0A1D45382244E968001A4967 /* SVGContext.swift */,
+			);
+			path = SVGContext;
 			sourceTree = "<group>";
 		};
 		0A2107071E5BEEBB00F1E00E /* Shape */ = {
@@ -1689,6 +1700,7 @@
 				0A0697591E4D6659005CF664 /* Graphic.swift in Sources */,
 				0AA8D463204E486700ED0175 /* SwiftPlayground.swift in Sources */,
 				0A89938E1EFA488900E9CDD9 /* ICC Creator.swift in Sources */,
+				0A1D45392244E968001A4967 /* SVGContext.swift in Sources */,
 				0AC621CB20EDFBA500E5FF15 /* Gradient.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
 				0AABCC6320F9982F00D7BD78 /* ImageIO.swift in Sources */,

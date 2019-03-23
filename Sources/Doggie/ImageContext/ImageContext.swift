@@ -101,7 +101,7 @@ public class ImageContext<Pixel: ColorPixelProtocol> : TypedDrawableContext {
         self._image = image
     }
     
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, fileBacked: Bool = false) {
+    public init(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, fileBacked: Bool = false) {
         self._image = Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
     }
 }

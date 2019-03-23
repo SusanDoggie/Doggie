@@ -125,7 +125,7 @@ struct JPEGDecoder : ImageRepDecoder {
         case 0: return Resolution(horizontal: _x, vertical: _y, unit: .point)
         case 1: return Resolution(horizontal: _x, vertical: _y, unit: .inch)
         case 2: return Resolution(horizontal: _x, vertical: _y, unit: .centimeter)
-        default: return Resolution(resolution: 1, unit: .point)
+        default: return .default
         }
     }
     

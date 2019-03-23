@@ -441,7 +441,7 @@ struct TIFFPage : ImageRepBase {
         case 1: return Resolution(horizontal: resolutionX, vertical: resolutionY, unit: .point)
         case 2: return Resolution(horizontal: resolutionX, vertical: resolutionY, unit: .inch)
         case 3: return Resolution(horizontal: resolutionX, vertical: resolutionY, unit: .centimeter)
-        default: return Resolution(resolution: 1, unit: .point)
+        default: return .default
         }
     }
     

@@ -92,7 +92,7 @@ public class DGImageContext<Model: ColorModelProtocol> : TypedDrawableContext {
         self._image = TextureLayer(Texture(image: image))
     }
     
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Model>) {
+    public init(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Model>) {
         self.width = width
         self.height = height
         self.resolution = resolution

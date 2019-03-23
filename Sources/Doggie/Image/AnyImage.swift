@@ -145,12 +145,12 @@ extension AnyImage {
     }
     
     @inlinable
-    public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), fileBacked: Bool = false) {
+    public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), fileBacked: Bool = false) {
         self._base = Image<Pixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixel: pixel, fileBacked: fileBacked)
     }
     
     @inlinable
-    public init(width: Int, height: Int, resolution: Resolution = Resolution(resolution: 1, unit: .point), colorSpace: AnyColorSpace, fileBacked: Bool = false) {
+    public init(width: Int, height: Int, resolution: Resolution = .default, colorSpace: AnyColorSpace, fileBacked: Bool = false) {
         self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, fileBacked: fileBacked))
     }
 }

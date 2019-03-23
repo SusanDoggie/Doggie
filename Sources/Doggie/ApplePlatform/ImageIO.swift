@@ -150,15 +150,15 @@ extension CGImage {
         return CGImage.withImageDestination(type, 1) { CGImageDestinationAddImage($0, self, _properties as CFDictionary) }
     }
     
-    public func tiffRepresentation(compression: TIFFCompressionScheme = .none, resolution: Resolution = Resolution(resolution: 1, unit: .point)) -> Data? {
+    public func tiffRepresentation(compression: TIFFCompressionScheme = .none, resolution: Resolution = .default) -> Data? {
         return self.representation(using: .tiff, properties: [.compression: compression, .resolution: resolution])
     }
     
-    public func pngRepresentation(interlaced: Bool = false, resolution: Resolution = Resolution(resolution: 1, unit: .point)) -> Data? {
+    public func pngRepresentation(interlaced: Bool = false, resolution: Resolution = .default) -> Data? {
         return self.representation(using: .png, properties: [.interlaced: interlaced, .resolution: resolution])
     }
     
-    public func jpegRepresentation(compressionQuality: Double, resolution: Resolution = Resolution(resolution: 1, unit: .point)) -> Data? {
+    public func jpegRepresentation(compressionQuality: Double, resolution: Resolution = .default) -> Data? {
         return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality, .resolution: resolution])
     }
 }
