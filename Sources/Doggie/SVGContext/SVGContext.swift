@@ -30,23 +30,16 @@ private struct SVGContextStyles {
     var opacity: Double = 1
     var transform: SDTransform = SDTransform.identity
     
-    var shouldAntialias: Bool = true
-    var antialias: Int = 5
-    
     var shadowColor: AnyColor = SVGContextStyles.defaultShadowColor
     var shadowOffset: Size = Size()
     var shadowBlur: Double = 0
-    var convolutionAlgorithm: ImageConvolutionAlgorithm = .cooleyTukey
     
     var compositingMode: ColorCompositingMode = .default
     var blendMode: ColorBlendMode = .default
     
     var resamplingAlgorithm: ResamplingAlgorithm = .default
     
-    var renderCullingMode: ImageContextRenderCullMode = .none
-    var renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
     var renderingIntent: RenderingIntent = .default
-    
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default
 }
 
@@ -188,23 +181,6 @@ extension SVGContext {
         }
     }
     
-    public var shouldAntialias: Bool {
-        get {
-            return current.styles.shouldAntialias
-        }
-        set {
-            current.styles.shouldAntialias = newValue
-        }
-    }
-    public var antialias: Int {
-        get {
-            return current.styles.antialias
-        }
-        set {
-            current.styles.antialias = max(1, newValue)
-        }
-    }
-    
     public var shadowColor: AnyColor {
         get {
             return current.styles.shadowColor
@@ -229,15 +205,6 @@ extension SVGContext {
         }
         set {
             current.styles.shadowBlur = newValue
-        }
-    }
-    
-    public var convolutionAlgorithm: ImageConvolutionAlgorithm {
-        get {
-            return current.styles.convolutionAlgorithm
-        }
-        set {
-            current.styles.convolutionAlgorithm = newValue
         }
     }
     
@@ -608,7 +575,7 @@ extension SVGContext {
     }
     
     public func setClip<Image>(image: Image, transform: SDTransform) where Image : ImageProtocol {
-        
+        self.setClip(texture: Texture<Gray16ColorPixel>(image: image.convert(to: .genericGamma22Gray, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
     }
     
     public func setClip<P>(texture: Texture<P>, transform: SDTransform) where P : ColorPixelProtocol, P.Model == GrayColorModel {

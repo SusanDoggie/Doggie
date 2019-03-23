@@ -36,6 +36,7 @@ private struct ImageContextStyles {
     var shadowColor: AnyColor = ImageContextStyles.defaultShadowColor
     var shadowOffset: Size = Size()
     var shadowBlur: Double = 0
+    
     var convolutionAlgorithm: ImageConvolutionAlgorithm = .cooleyTukey
     
     var compositingMode: ColorCompositingMode = .default
@@ -45,6 +46,7 @@ private struct ImageContextStyles {
     
     var renderCullingMode: ImageContextRenderCullMode = .none
     var renderDepthCompareMode: ImageContextRenderDepthCompareMode = .always
+    
     var renderingIntent: RenderingIntent = .default
     
 }
