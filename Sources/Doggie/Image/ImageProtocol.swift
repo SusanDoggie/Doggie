@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ImageProtocol {
+public protocol ImageProtocol : Hashable {
     
     associatedtype Color: ColorProtocol
     
@@ -72,6 +72,8 @@ public protocol ImageProtocol {
     func convert<P>(to colorSpace: Doggie.ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
     
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyImage
+    
+    func isFastEqual(_ other: Self) -> Bool
 }
 
 extension Image {

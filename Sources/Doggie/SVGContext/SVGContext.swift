@@ -74,6 +74,7 @@ public class SVGContext : DrawableContext {
     private var elements: [SDXMLElement] = []
     
     private var _defs: [SDXMLElement] = []
+    private var _imageTable: [ImageTableKey: String] = [:]
     public private(set) var all_names: Set<String> = []
     
     public let viewBox: Rect
@@ -117,6 +118,15 @@ extension SVGContext {
         case clip(String)
         case mask(String)
     }
+    
+    fileprivate struct ImageTableKey: Hashable {
+        
+        var image: AnyImage
+        
+        static func ==(lhs: ImageTableKey, rhs: ImageTableKey) -> Bool {
+            return lhs.image.isFastEqual(rhs.image)
+        }
+    }
 }
 
 extension SVGContext {
@@ -134,6 +144,19 @@ extension SVGContext {
                 global._defs = newValue
             } else {
                 self._defs = newValue
+            }
+        }
+    }
+    
+    private var imageTable: [ImageTableKey: String] {
+        get {
+            return global?.imageTable ?? _imageTable
+        }
+        set {
+            if let global = self.global {
+                global._imageTable = newValue
+            } else {
+                self._imageTable = newValue
             }
         }
     }
@@ -430,16 +453,16 @@ extension SVGContext {
         default: break
         }
         
-        if style.count != 0 {
-            element.setAttribute(for: "style", value: style.map { "\($0): \($1)" }.joined(separator: "; "))
-        }
-        
         if let clip = self.current.clip {
             
             switch clip {
             case let .clip(id): element.setAttribute(for: "clip-path", value: "url(#\(id))")
             case let .mask(id): element.setAttribute(for: "mask", value: "url(#\(id))")
             }
+        }
+        
+        if style.count != 0 {
+            element.setAttribute(for: "style", value: style.map { "\($0): \($1)" }.joined(separator: "; "))
         }
     }
 }
@@ -527,10 +550,19 @@ extension SVGContext {
 
 private protocol SVGImageProtocol {
     
+    var width: Int { get }
+    var height: Int { get }
+    
+    var imageTableKey: SVGContext.ImageTableKey { get }
+    
     var base64: String? { get }
 }
 
 extension Image: SVGImageProtocol {
+    
+    fileprivate var imageTableKey: SVGContext.ImageTableKey {
+        return SVGContext.ImageTableKey(image: AnyImage(self))
+    }
     
     fileprivate var base64: String? {
         guard let base64 = self.pngRepresentation()?.base64EncodedString() else { return nil }
@@ -540,7 +572,16 @@ extension Image: SVGImageProtocol {
 
 extension AnyImage: SVGImageProtocol {
     
+    fileprivate var imageTableKey: SVGContext.ImageTableKey {
+        return SVGContext.ImageTableKey(image: self)
+    }
+    
     fileprivate var base64: String? {
+        
+        if let image = self.base as? SVGImageProtocol {
+            return image.base64
+        }
+        
         guard let base64 = self.pngRepresentation()?.base64EncodedString() else { return nil }
         return "data:image/png;base64," + base64
     }
@@ -550,25 +591,36 @@ extension SVGContext {
     
     public func draw<Image>(image: Image, transform: SDTransform) where Image : ImageProtocol {
         
-        let base64: String
+        let image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
+        let key = image.imageTableKey
         
-        if let image = image as? SVGImageProtocol {
+        let id: String
+        
+        if let _id = imageTable[key] {
             
-            guard let _base64 = image.base64 else { return }
-            base64 = _base64
+            id = _id
             
         } else {
             
-            let _image = image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
-            guard let _base64 = _image.pngRepresentation()?.base64EncodedString() else { return }
-            base64 = "data:image/png;base64," + _base64
+            id = new_name("IMAGE")
+            
+            var _image = SDXMLElement(name: "image", attributes: [
+                "id": id,
+                "width": "\(image.width)",
+                "height": "\(image.height)",
+                ])
+            
+            guard let base64 = image.base64 else { return }
+            _image.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: base64)
+            
+            defs.append(_image)
+            
+            imageTable[key] = id
         }
         
-        var element = SDXMLElement(name: "image", attributes: [
-            "width": "\(image.width)",
-            "height": "\(image.height)",
-            "xlink:href": base64,
-            ])
+        var element = SDXMLElement(name: "use")
+        
+        element.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: "#\(id)")
         
         let transform = transform * self.transform
         element.setAttribute(for: "transform", value: transform.attributeStr())

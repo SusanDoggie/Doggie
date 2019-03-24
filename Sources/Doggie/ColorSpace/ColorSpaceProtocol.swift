@@ -44,5 +44,7 @@ public protocol ColorSpaceProtocol {
     var luminance: Double { get }
     
     var linearTone: Self { get }
+    
+    func isFastEqual(_ other: Self) -> Bool
 }
 
