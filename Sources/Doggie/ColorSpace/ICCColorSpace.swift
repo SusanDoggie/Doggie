@@ -115,7 +115,7 @@ extension ICCColorSpace {
     @inlinable
     func isFastEqual(_ other: _ColorSpaceBaseProtocol) -> Bool {
         guard let other = other as? ICCColorSpace else { return false }
-        return self._iccData.count == other._iccData.count && self._iccData.withUnsafeBytes { (lhs: UnsafePointer<UInt8>) in other._iccData.withUnsafeBytes { (rhs: UnsafePointer<UInt8>) in lhs == rhs } }
+        return self._iccData.count == other._iccData.count && self._iccData.withUnsafeBytes { lhs in other._iccData.withUnsafeBytes { rhs in lhs.count == rhs.count && lhs.baseAddress == rhs.baseAddress } }
     }
 }
 
