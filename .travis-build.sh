@@ -4,7 +4,7 @@ set -e
 if [ -n "${DOCKER_IMAGE}" ]; then
 
 docker pull ${DOCKER_IMAGE}
-docker run --env SWIFT_SNAPSHOT -v ${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR} ${DOCKER_IMAGE} /bin/bash -c "apt-get update && apt-get install -y git sudo lsb-release wget libxml2 && cd $TRAVIS_BUILD_DIR && ./.travis-build.sh"
+docker run --env SWIFT_SNAPSHOT -v ${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR} ${DOCKER_IMAGE} /bin/bash -c "cd $TRAVIS_BUILD_DIR && ./.travis-build.sh"
 exit $?
 
 fi
