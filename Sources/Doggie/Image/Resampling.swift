@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum ResamplingAlgorithm {
+public enum ResamplingAlgorithm : Hashable {
     
     case none
     case linear

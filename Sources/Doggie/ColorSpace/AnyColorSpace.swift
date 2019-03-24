@@ -57,6 +57,8 @@ protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
     func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol
     
     func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
+    
+    func _isFastEqual(_ other: AnyColorSpaceBaseProtocol) -> Bool
 }
 
 extension ColorSpace : AnyColorSpaceBaseProtocol {
@@ -98,6 +100,12 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol {
         return color.convert(to: self, intent: intent)
     }
+    
+    @inlinable
+    func _isFastEqual(_ other: AnyColorSpaceBaseProtocol) -> Bool {
+        guard let other = other as? ColorSpace else { return false }
+        return self.isFastEqual(other)
+    }
 }
 
 @_fixed_layout
@@ -127,6 +135,11 @@ extension AnyColorSpace {
     @inlinable
     public static func ==(lhs: AnyColorSpace, rhs: AnyColorSpace) -> Bool {
         return lhs._base.isEqual(rhs._base)
+    }
+    
+    @inlinable
+    public func isFastEqual(_ other: AnyColorSpace) -> Bool {
+        return _base._isFastEqual(other._base)
     }
 }
 

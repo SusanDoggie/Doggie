@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol RawPixelProtocol {
+public protocol RawPixelProtocol : Hashable {
     
     associatedtype RawPixel
     
@@ -58,6 +58,8 @@ public protocol RawPixelProtocol {
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
     
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
+    
+    func isFastEqual(_ other: Self) -> Bool
 }
 
 extension RawPixelProtocol {

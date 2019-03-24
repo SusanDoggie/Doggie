@@ -85,6 +85,36 @@ extension StencilTexture {
     }
 }
 
+extension StencilTexture {
+    
+    @inlinable
+    @inline(__always)
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(width)
+        hasher.combine(height)
+        hasher.combine(resamplingAlgorithm)
+        hasher.combine(horizontalWrappingMode)
+        hasher.combine(verticalWrappingMode)
+        withUnsafeBufferPointer {
+            for element in $0.prefix(16) {
+                hasher.combine(element)
+            }
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func ==(lhs: StencilTexture, rhs: StencilTexture) -> Bool {
+        return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resamplingAlgorithm == rhs.resamplingAlgorithm && lhs.horizontalWrappingMode == rhs.horizontalWrappingMode && lhs.verticalWrappingMode == rhs.verticalWrappingMode && lhs.pixels == rhs.pixels
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func isFastEqual(_ other: StencilTexture) -> Bool {
+        return self.width == other.width && self.height == other.height && self.resamplingAlgorithm == other.resamplingAlgorithm && self.horizontalWrappingMode == other.horizontalWrappingMode && self.verticalWrappingMode == other.verticalWrappingMode && self.pixels.withUnsafeBufferPointer { lhs in other.pixels.withUnsafeBufferPointer { rhs in lhs.count == rhs.count && lhs.baseAddress == rhs.baseAddress } }
+    }
+}
+
 extension StencilTexture : CustomStringConvertible {
     
     @inlinable
