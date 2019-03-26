@@ -170,7 +170,7 @@ extension ColorSpace {
     
     @inlinable
     public static func ==(lhs: ColorSpace<Model>, rhs: ColorSpace<Model>) -> Bool {
-        return lhs.chromaticAdaptationAlgorithm == rhs.chromaticAdaptationAlgorithm && (lhs.cache.identifier == rhs.cache.identifier || lhs.base.isEqual(rhs.base))
+        return lhs.chromaticAdaptationAlgorithm == rhs.chromaticAdaptationAlgorithm && lhs.base.isEqual(rhs.base)
     }
     
     @inlinable
