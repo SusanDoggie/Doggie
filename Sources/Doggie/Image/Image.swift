@@ -208,7 +208,7 @@ extension Image {
     @inlinable
     @inline(__always)
     public static func ==(lhs: Image, rhs: Image) -> Bool {
-        return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resolution == rhs.resolution && lhs.colorSpace == rhs.colorSpace && (lhs.cache === rhs.cache || lhs.pixels == rhs.pixels)
+        return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resolution == rhs.resolution && lhs.colorSpace == rhs.colorSpace && lhs.pixels == rhs.pixels
     }
     
     @inlinable
