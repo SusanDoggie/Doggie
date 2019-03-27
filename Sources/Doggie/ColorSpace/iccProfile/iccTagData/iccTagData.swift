@@ -71,22 +71,22 @@ extension iccProfile.TagData {
     
     var uInt16Array: [BEUInt16]? {
         
-        return type == .uInt16Array ? data.withUnsafeBytes { Array($0.bindMemory(to: BEUInt16.self)) } : nil
+        return type == .uInt16Array ? data.withUnsafeBufferPointer(as: BEUInt16.self) { Array($0) } : nil
     }
     
     var uInt32Array: [BEUInt32]? {
         
-        return type == .uInt32Array ? data.withUnsafeBytes { Array($0.bindMemory(to: BEUInt32.self)) } : nil
+        return type == .uInt32Array ? data.withUnsafeBufferPointer(as: BEUInt32.self) { Array($0) } : nil
     }
     
     var uInt64Array: [BEUInt64]? {
         
-        return type == .uInt64Array ? data.withUnsafeBytes { Array($0.bindMemory(to: BEUInt64.self)) } : nil
+        return type == .uInt64Array ? data.withUnsafeBufferPointer(as: BEUInt64.self) { Array($0) } : nil
     }
     
     var uInt8Array: [UInt8]? {
         
-        return type == .uInt8Array ? data.withUnsafeBytes { Array($0.bindMemory(to: UInt8.self)) } : nil
+        return type == .uInt8Array ? data.withUnsafeBufferPointer(as: UInt8.self) { Array($0) } : nil
     }
 }
 
@@ -94,12 +94,12 @@ extension iccProfile.TagData {
     
     var s15Fixed16Array: [Fixed16Number<BEInt32>]? {
         
-        return type == .s15Fixed16Array ? data.withUnsafeBytes { Array($0.bindMemory(to: Fixed16Number<BEInt32>.self)) } : nil
+        return type == .s15Fixed16Array ? data.withUnsafeBufferPointer(as: Fixed16Number<BEInt32>.self) { Array($0) } : nil
     }
     
     var u16Fixed16Array: [Fixed16Number<BEUInt32>]? {
         
-        return type == .u16Fixed16Array ? data.withUnsafeBytes { Array($0.bindMemory(to: Fixed16Number<BEUInt32>.self)) } : nil
+        return type == .u16Fixed16Array ? data.withUnsafeBufferPointer(as: Fixed16Number<BEUInt32>.self) { Array($0) } : nil
     }
 }
 
@@ -107,7 +107,7 @@ extension iccProfile.TagData {
     
     var XYZArray: [iccXYZNumber]? {
         
-        return type == .XYZArray ? data.withUnsafeBytes { Array($0.bindMemory(to: iccXYZNumber.self)) } : nil
+        return type == .XYZArray ? data.withUnsafeBufferPointer(as: iccXYZNumber.self) { Array($0) } : nil
     }
 }
 

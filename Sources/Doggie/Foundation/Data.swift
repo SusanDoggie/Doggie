@@ -35,6 +35,29 @@ extension Data {
 extension Data {
     
     @inlinable
+    public func withUnsafeBufferPointer<T, R>(as type: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
+        return try self.withUnsafeBytes { try body($0.bindMemory(to: T.self)) }
+    }
+    
+    @inlinable
+    public mutating func withUnsafeMutableBufferPointer<T, R>(as type: T.Type, _ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
+        
+        return try self.withUnsafeMutableBytes { (bytes: UnsafeMutableRawBufferPointer) in
+            
+            var buf = bytes.bindMemory(to: T.self)
+            let copy = buf
+            
+            defer { precondition(buf.baseAddress == copy.baseAddress) }
+            defer { precondition(buf.count == copy.count) }
+            
+            return try body(&buf)
+        }
+    }
+}
+
+extension Data {
+    
+    @inlinable
     @inline(__always)
     public func load<T>(fromByteOffset offset: Int = 0, as type: T.Type) -> T {
         precondition(offset >= 0, "Data.load with negative offset")

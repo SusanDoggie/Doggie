@@ -124,9 +124,9 @@ struct BMPDecoder : ImageRepDecoder {
             guard (bMax + 1).isPower2 else { return image }
             guard (aMax + 1).isPower2 else { return image }
             
-            pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+            pixels.withUnsafeBufferPointer(as: LEInteger<Pixel>.self) { _source in
                 
-                guard var source = bytes.bindMemory(to: LEInteger<Pixel>.self).baseAddress else { return }
+                guard var source = _source.baseAddress else { return }
                 let endOfData = pixels.count + Int(bitPattern: source)
                 
                 image.withUnsafeMutableBufferPointer { destination in
@@ -198,9 +198,9 @@ struct BMPDecoder : ImageRepDecoder {
             
             var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
             
-            pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+            pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
                 
-                guard var source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                guard var source = _source.baseAddress else { return }
                 let endOfData = pixels.count + Int(bitPattern: source)
                 
                 image.withUnsafeMutableBufferPointer { destination in
@@ -264,7 +264,7 @@ struct BMPDecoder : ImageRepDecoder {
                     var red: UInt8
                 }
                 
-                palette = data.dropFirst(header.paletteOffset).withUnsafeBytes { $0.bindMemory(to: Palette.self).prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
+                palette = data.dropFirst(header.paletteOffset).withUnsafeBufferPointer(as: Palette.self) { $0.prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
                 
             } else {
                 
@@ -276,7 +276,7 @@ struct BMPDecoder : ImageRepDecoder {
                     var reserved: UInt8
                 }
                 
-                palette = data.dropFirst(header.paletteOffset).withUnsafeBytes { $0.bindMemory(to: Palette.self).prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
+                palette = data.dropFirst(header.paletteOffset).withUnsafeBufferPointer(as: Palette.self) { $0.prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
             }
             
             func UncompressedPixelReader() -> Image<ARGB32ColorPixel> {
@@ -287,9 +287,9 @@ struct BMPDecoder : ImageRepDecoder {
                 
                 palette.withUnsafeBufferPointer { palette in
                     
-                    pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                    pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
                         
-                        guard var source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                        guard var source = _source.baseAddress else { return }
                         let start = source
                         
                         image.withUnsafeMutableBufferPointer { destination in
@@ -345,9 +345,9 @@ struct BMPDecoder : ImageRepDecoder {
                     
                     palette.withUnsafeBufferPointer { palette in
                         
-                        pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                        pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
                             
-                            guard let source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                            guard let source = _source.baseAddress else { return }
                             var stream = UnsafeBufferPointer(start: source, count: pixels.count)[...]
                             
                             image.withUnsafeMutableBufferPointer { destination in

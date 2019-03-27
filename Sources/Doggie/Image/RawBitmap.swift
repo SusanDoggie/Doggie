@@ -479,9 +479,9 @@ extension Image {
                 let _length = min(bitmap.bytesPerRow, data.count)
                 guard _length != 0 else { return }
                 
-                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBufferPointer(as: UInt8.self) { _source in
                     
-                    guard let source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                    guard let source = _source.baseAddress else { return }
                     var destination = dest
                     let dataBitSize = _length << 3
                     
@@ -583,9 +583,9 @@ extension Image {
                 let _length = min(bitmap.bytesPerRow, data.count)
                 guard _length != 0 else { return }
                 
-                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                data.popFirst(bitmap.bytesPerRow).withUnsafeBufferPointer(as: UInt8.self) { _source in
                     
-                    guard let source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                    guard let source = _source.baseAddress else { return }
                     var destination = dest
                     let dataBitSize = _length << 3
                     
@@ -689,9 +689,9 @@ extension Image {
                     let _length = min(bitmap.bytesPerRow, data.count)
                     guard _length != 0 else { return }
                     
-                    data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                    data.popFirst(bitmap.bytesPerRow).withUnsafeBufferPointer(as: UInt8.self) { _source in
                         
-                        guard let source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                        guard let source = _source.baseAddress else { return }
                         var destination = dest
                         let dataBitSize = _length << 3
                         

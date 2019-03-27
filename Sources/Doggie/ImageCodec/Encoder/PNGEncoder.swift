@@ -147,7 +147,7 @@ struct PNGEncoder : ImageRepEncoder {
                                 body(&scanline, destination.pointee)
                             }
                             
-                            try scanline.withUnsafeBytes { try encoder.encode($0.bindMemory(to: UInt8.self)) { try deflate.process($0) { compressed.append(contentsOf: $0) } } }
+                            try scanline.withUnsafeBufferPointer(as: UInt8.self) { try encoder.encode($0) { try deflate.process($0) { compressed.append(contentsOf: $0) } } }
                         }
                         
                         try encoder.final { try deflate.process($0) { compressed.append(contentsOf: $0) } }
@@ -175,7 +175,7 @@ struct PNGEncoder : ImageRepEncoder {
                             buffer += 1
                         }
                         
-                        try scanline.withUnsafeBytes { try encoder.encode($0.bindMemory(to: UInt8.self)) { try deflate.process($0) { compressed.append(contentsOf: $0) } } }
+                        try scanline.withUnsafeBufferPointer(as: UInt8.self) { try encoder.encode($0) { try deflate.process($0) { compressed.append(contentsOf: $0) } } }
                         
                     }
                     

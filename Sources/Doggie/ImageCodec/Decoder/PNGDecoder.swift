@@ -121,17 +121,17 @@ struct PNGDecoder : ImageRepDecoder {
         var palette = [RGBA32ColorPixel]()
         palette.reserveCapacity(count)
         
-        plte.data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+        plte.data.withUnsafeBufferPointer(as: (UInt8, UInt8, UInt8).self) { _ptr in
             
-            guard let ptr = bytes.bindMemory(to: (UInt8, UInt8, UInt8).self).baseAddress else { return }
+            guard let ptr = _ptr.baseAddress else { return }
             
             if let tRNS = chunks.first(where: { $0.signature == "tRNS" }) {
                 
                 var counter = tRNS.data.count
                 
-                tRNS.data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                tRNS.data.withUnsafeBufferPointer(as: UInt8.self) { _ptr2 in
                     
-                    guard var ptr2 = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                    guard var ptr2 = _ptr2.baseAddress else { return }
                     
                     var ptr = ptr
                     for _ in 0..<count {
@@ -477,9 +477,9 @@ struct PNGDecoder : ImageRepDecoder {
                 
                 var image = Image<Float64ColorPixel<GrayColorModel>>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     let start = source
                     
@@ -543,9 +543,9 @@ struct PNGDecoder : ImageRepDecoder {
             case 8:
                 var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
@@ -565,9 +565,9 @@ struct PNGDecoder : ImageRepDecoder {
                 
                 var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: BEUInt16.self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: BEUInt16.self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
@@ -592,9 +592,9 @@ struct PNGDecoder : ImageRepDecoder {
             case 8:
                 var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: (UInt8, UInt8, UInt8).self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: (UInt8, UInt8, UInt8).self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
@@ -614,9 +614,9 @@ struct PNGDecoder : ImageRepDecoder {
             case 16:
                 var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: (BEUInt16, BEUInt16, BEUInt16).self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: (BEUInt16, BEUInt16, BEUInt16).self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
@@ -644,9 +644,9 @@ struct PNGDecoder : ImageRepDecoder {
             
             palette.withUnsafeBufferPointer { palette in
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     let start = source
                     
@@ -704,9 +704,9 @@ struct PNGDecoder : ImageRepDecoder {
             case 8:
                 var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: (UInt8, UInt8).self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: (UInt8, UInt8).self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
@@ -727,9 +727,9 @@ struct PNGDecoder : ImageRepDecoder {
                 
                 var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: (BEUInt16, BEUInt16).self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: (BEUInt16, BEUInt16).self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
@@ -754,9 +754,9 @@ struct PNGDecoder : ImageRepDecoder {
             case 8:
                 var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: (UInt8, UInt8, UInt8, UInt8).self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: (UInt8, UInt8, UInt8, UInt8).self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         
@@ -776,9 +776,9 @@ struct PNGDecoder : ImageRepDecoder {
             case 16:
                 var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _RGBColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+                pixels.withUnsafeBufferPointer(as: (BEUInt16, BEUInt16, BEUInt16, BEUInt16).self) { _source in
                     
-                    guard var source = bytes.bindMemory(to: (BEUInt16, BEUInt16, BEUInt16, BEUInt16).self).baseAddress else { return }
+                    guard var source = _source.baseAddress else { return }
                     
                     image.withUnsafeMutableBufferPointer { destination in
                         

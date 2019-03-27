@@ -58,9 +58,9 @@ struct CFFINDEX : ByteDecodable, RandomAccessCollection {
     
     static func _offset(_ index: Int, _ offSize: UInt8, _ offset: Data) -> Range<Int> {
         
-        return offset.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
+        return offset.withUnsafeBufferPointer(as: UInt8.self) { _offset in
             
-            guard let offset = bytes.bindMemory(to: UInt8.self).baseAddress else { return 0..<0 }
+            guard let offset = _offset.baseAddress else { return 0..<0 }
             
             let offSize = Int(offSize)
             
