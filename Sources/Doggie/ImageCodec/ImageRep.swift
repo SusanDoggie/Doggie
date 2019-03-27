@@ -58,11 +58,14 @@ extension ImageRepBase {
 @_fixed_layout
 public struct ImageRep {
     
+    public let originalData: Data?
+    
     private let base: ImageRepBase
     
     private let cache = Cache()
     
     private init(base: ImageRepBase) {
+        self.originalData = nil
         self.base = base
     }
 }
@@ -97,6 +100,8 @@ extension ImageRep {
     
     public init(data: Data) throws {
         
+        self.originalData = data
+        
         let decoders: [ImageRepDecoder.Type] = [
             BMPDecoder.self,
             TIFFDecoder.self,
@@ -118,11 +123,11 @@ extension ImageRep {
 extension ImageRep {
     
     public init<Pixel>(image: Image<Pixel>) {
-        self.base = AnyImage(image)
+        self.init(base: AnyImage(image))
     }
     
     public init(image: AnyImage) {
-        self.base = image
+        self.init(base: image)
     }
 }
 

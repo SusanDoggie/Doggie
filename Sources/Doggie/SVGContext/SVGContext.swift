@@ -75,7 +75,6 @@ public class SVGContext : DrawableContext {
     
     private var _defs: [SDXMLElement] = []
     private var _imageTable: [ImageTableKey: String] = [:]
-    public private(set) var all_names: Set<String> = []
     
     public let viewBox: Rect
     
@@ -135,7 +134,7 @@ extension SVGContext {
         return next ?? self
     }
     
-    private var defs: [SDXMLElement] {
+    public var defs: [SDXMLElement] {
         get {
             return global?.defs ?? _defs
         }
@@ -146,6 +145,28 @@ extension SVGContext {
                 self._defs = newValue
             }
         }
+    }
+    
+    public var all_names: Set<String> {
+        return Set(defs.compactMap { $0.isNode ? $0.attributes(for: "id", namespace: "") : nil })
+    }
+    
+    public func new_name(_ type: String) -> String {
+        
+        let all_names = self.all_names
+        
+        var name = ""
+        var counter = 6
+        
+        let chars = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        
+        repeat {
+            let _name = String((0..<counter).map { _ in chars.randomElement()! })
+            name = "\(type)_ID_\(_name)"
+            counter += 1
+        } while all_names.contains(name)
+        
+        return name
     }
     
     private var imageTable: [ImageTableKey: String] {
@@ -159,28 +180,6 @@ extension SVGContext {
                 self._imageTable = newValue
             }
         }
-    }
-    
-    private func new_name(_ type: String) -> String {
-        
-        if let global = self.global {
-            return global.new_name(type)
-        }
-        
-        var name = ""
-        var counter = 6
-        
-        let chars = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        
-        repeat {
-            let _name = String((0..<counter).map { _ in chars.randomElement()! })
-            name = "\(type)_ID_\(_name)"
-            counter += 1
-        } while all_names.contains(name)
-        
-        all_names.insert(name)
-        
-        return name
     }
 }
 
@@ -407,54 +406,59 @@ extension SVGContext {
 
 extension SVGContext {
     
-    private func apply_style(_ element: inout SDXMLElement) {
+    private func apply_style(_ element: inout SDXMLElement, options: StyleOptions) {
         
-        var style: [String: String] = self.blendMode == .normal ? [:] : ["isolation": "isolate"]
+        var style: [String: String] = self.blendMode == .normal && options.contains(.isolate) ? [:] : ["isolation": "isolate"]
         
-        if self.opacity < 1 {
+        if let transform = self.transform.attributeStr(), options.contains(.transform) {
+            element.setAttribute(for: "transform", value: transform)
+        }
+        
+        if self.opacity < 1 && options.contains(.opacity) {
             element.setAttribute(for: "opacity", value: "\(self.opacity)")
         }
         
-        switch self.blendMode {
-        case .normal: break
-        case .multiply:
-            style["mix-blend-mode"] = "multiply"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "multiply")
-        case .screen:
-            style["mix-blend-mode"] = "screen"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "screen")
-        case .overlay:
-            style["mix-blend-mode"] = "overlay"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "overlay")
-        case .darken:
-            style["mix-blend-mode"] = "darken"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "darken")
-        case .lighten:
-            style["mix-blend-mode"] = "lighten"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "lighten")
-        case .colorDodge:
-            style["mix-blend-mode"] = "color-dodge"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "colorDodge")
-        case .colorBurn:
-            style["mix-blend-mode"] = "color-burn"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "colorBurn")
-        case .softLight:
-            style["mix-blend-mode"] = "soft-light"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "softLight")
-        case .hardLight:
-            style["mix-blend-mode"] = "hard-light"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "hardLight")
-        case .difference:
-            style["mix-blend-mode"] = "difference"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "difference")
-        case .exclusion:
-            style["mix-blend-mode"] = "exclusion"
-            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "exclusion")
-        default: break
+        if options.contains(.blendMode) {
+            switch self.blendMode {
+            case .normal: break
+            case .multiply:
+                style["mix-blend-mode"] = "multiply"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "multiply")
+            case .screen:
+                style["mix-blend-mode"] = "screen"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "screen")
+            case .overlay:
+                style["mix-blend-mode"] = "overlay"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "overlay")
+            case .darken:
+                style["mix-blend-mode"] = "darken"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "darken")
+            case .lighten:
+                style["mix-blend-mode"] = "lighten"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "lighten")
+            case .colorDodge:
+                style["mix-blend-mode"] = "color-dodge"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "colorDodge")
+            case .colorBurn:
+                style["mix-blend-mode"] = "color-burn"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "colorBurn")
+            case .softLight:
+                style["mix-blend-mode"] = "soft-light"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "softLight")
+            case .hardLight:
+                style["mix-blend-mode"] = "hard-light"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "hardLight")
+            case .difference:
+                style["mix-blend-mode"] = "difference"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "difference")
+            case .exclusion:
+                style["mix-blend-mode"] = "exclusion"
+                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "exclusion")
+            default: break
+            }
         }
         
-        if let clip = self.current.clip {
-            
+        if options.contains(.clip), let clip = self.current.clip {
             switch clip {
             case let .clip(id): element.setAttribute(for: "clip-path", value: "url(#\(id))")
             case let .mask(id): element.setAttribute(for: "mask", value: "url(#\(id))")
@@ -462,19 +466,47 @@ extension SVGContext {
         }
         
         if style.count != 0 {
-            element.setAttribute(for: "style", value: style.map { "\($0): \($1)" }.joined(separator: "; "))
+            var style: [String] = style.map { "\($0): \($1)" }
+            if let _style = element.attributes(for: "style", namespace: "") {
+                style = _style.split(separator: ";").map { $0.trimmingCharacters(in: .whitespaces) } + style
+            }
+            element.setAttribute(for: "style", value: style.joined(separator: "; "))
         }
     }
 }
 
 extension SVGContext {
     
-    public func append(_ newElement: SDXMLElement) {
+    public struct StyleOptions: OptionSet, Hashable {
+        
+        public var rawValue: Int
+        
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+        
+        public static let isolate           = StyleOptions(rawValue: 1 << 0)
+        public static let transform         = StyleOptions(rawValue: 1 << 1)
+        public static let opacity           = StyleOptions(rawValue: 1 << 2)
+        public static let blendMode         = StyleOptions(rawValue: 1 << 3)
+        public static let compositingMode   = StyleOptions(rawValue: 1 << 4)
+        public static let shadow            = StyleOptions(rawValue: 1 << 5)
+        public static let clip              = StyleOptions(rawValue: 1 << 6)
+        
+        public static let all: StyleOptions = [.allWithoutTransform, .transform]
+        public static let allWithoutTransform: StyleOptions = [.isolate, .opacity, .blendMode, .compositingMode, .shadow, .clip]
+    }
+    
+    public func append(_ newElement: SDXMLElement, options: StyleOptions = []) {
+        var newElement = newElement
+        self.apply_style(&newElement, options: options)
         self.current.elements.append(newElement)
     }
     
-    public func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
-        self.current.elements.append(contentsOf: newElements)
+    public func append<S : Sequence>(contentsOf newElements: S, options: StyleOptions = []) where S.Element == SDXMLElement {
+        for newElement in newElements {
+            self.append(newElement, options: options)
+        }
     }
 }
 
@@ -503,11 +535,7 @@ extension SVGContext {
                 
                 guard next.elements.count != 0 else { return }
                 
-                var element = SDXMLElement(name: "g", elements: next.elements)
-                
-                self.apply_style(&element)
-                
-                self.append(element)
+                self.append(SDXMLElement(name: "g", elements: next.elements), options: .allWithoutTransform)
             }
         }
     }
@@ -531,8 +559,6 @@ extension SVGContext {
         let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
         
-        self.apply_style(&element)
-        
         switch winding {
         case .nonZero: element.setAttribute(for: "fill-rule", value: "nonzero")
         case .evenOdd: element.setAttribute(for: "fill-rule", value: "evenodd")
@@ -544,7 +570,7 @@ extension SVGContext {
             element.setAttribute(for: "fill-opacity", value: "\(color.opacity)")
         }
         
-        self.append(element)
+        self.append(element, options: .allWithoutTransform)
     }
 }
 
@@ -625,9 +651,7 @@ extension SVGContext {
         let transform = transform * self.transform
         element.setAttribute(for: "transform", value: transform.attributeStr())
         
-        self.apply_style(&element)
-        
-        self.append(element)
+        self.append(element, options: .allWithoutTransform)
     }
 }
 
@@ -760,8 +784,6 @@ extension SVGContext {
         let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
         
-        self.apply_style(&element)
-        
         switch winding {
         case .nonZero: element.setAttribute(for: "fill-rule", value: "nonzero")
         case .evenOdd: element.setAttribute(for: "fill-rule", value: "evenodd")
@@ -773,7 +795,7 @@ extension SVGContext {
             element.setAttribute(for: "fill-opacity", value: "\(gradient.opacity)")
         }
         
-        self.append(element)
+        self.append(element, options: .allWithoutTransform)
     }
 }
 
@@ -817,7 +839,7 @@ extension SVGContext {
         
         defs.append(element)
         
-        var rect = SDXMLElement(name: "rect", attributes: [
+        let rect = SDXMLElement(name: "rect", attributes: [
             "fill": "url(#\(id))",
             "x": dataFormatter.string(from: NSNumber(value: viewBox.x)) ?? "0",
             "y": dataFormatter.string(from: NSNumber(value: viewBox.y)) ?? "0",
@@ -825,9 +847,7 @@ extension SVGContext {
             "height": dataFormatter.string(from: NSNumber(value: viewBox.height)) ?? "0",
             ])
         
-        self.apply_style(&rect)
-        
-        self.append(rect)
+        self.append(rect, options: .allWithoutTransform)
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
@@ -874,7 +894,7 @@ extension SVGContext {
         
         defs.append(element)
         
-        var rect = SDXMLElement(name: "rect", attributes: [
+        let rect = SDXMLElement(name: "rect", attributes: [
             "fill": "url(#\(id))",
             "x": dataFormatter.string(from: NSNumber(value: viewBox.x)) ?? "0",
             "y": dataFormatter.string(from: NSNumber(value: viewBox.y)) ?? "0",
@@ -882,9 +902,7 @@ extension SVGContext {
             "height": dataFormatter.string(from: NSNumber(value: viewBox.height)) ?? "0",
             ])
         
-        self.apply_style(&rect)
-        
-        self.append(rect)
+        self.append(rect, options: .allWithoutTransform)
     }
 }
 
