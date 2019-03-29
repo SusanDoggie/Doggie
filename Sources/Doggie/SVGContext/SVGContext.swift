@@ -408,7 +408,7 @@ extension SVGContext {
     
     private func apply_style(_ element: inout SDXMLElement, options: StyleOptions) {
         
-        var style: [String: String] = self.blendMode == .normal && options.contains(.isolate) ? [:] : ["isolation": "isolate"]
+        var style: [String: String] = self.blendMode == .normal || !options.contains(.isolate) ? [:] : ["isolation": "isolate"]
         
         if let transform = self.transform.attributeStr(), options.contains(.transform) {
             element.setAttribute(for: "transform", value: transform)
