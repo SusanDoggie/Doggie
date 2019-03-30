@@ -444,7 +444,7 @@ extension Shape.Segment {
         
         if let lastControl = lastControl {
             let d = p + lastControl - 2 * relative
-            return _round(d.x) == 0 && _round(d.y) == 0
+            return _decimal_round(d.x) == 0 && _decimal_round(d.y) == 0
         }
         return false
     }
@@ -456,10 +456,10 @@ extension Shape.Segment {
             
             var currentState = currentState
             let str: String
-            if _round(relative.x) == _round(point.x) {
+            if _decimal_round(relative.x) == _decimal_round(point.x) {
                 str = getPathDataString(currentState == 1 ? nil : "V", point.y)
                 currentState = 1
-            } else if _round(relative.y) == _round(point.y) {
+            } else if _decimal_round(relative.y) == _decimal_round(point.y) {
                 str = getPathDataString(currentState == 3 ? nil : "H", point.x)
                 currentState = 3
             } else {
@@ -501,10 +501,10 @@ extension Shape.Segment {
             
             var currentState = currentState
             let str: String
-            if _round(relative.x) == _round(point.x) {
+            if _decimal_round(relative.x) == _decimal_round(point.x) {
                 str = getPathDataString(currentState == 2 ? nil : "v", point.y - relative.y)
                 currentState = 2
-            } else if _round(relative.y) == _round(point.y) {
+            } else if _decimal_round(relative.y) == _decimal_round(point.y) {
                 str = getPathDataString(currentState == 4 ? nil : "h", point.x - relative.x)
                 currentState = 4
             } else {

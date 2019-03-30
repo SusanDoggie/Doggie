@@ -315,17 +315,17 @@ extension SVGContext {
         switch resolution.unit {
         case .point:
             
-            body.setAttribute(for: "x", value: "\(dataFormatter.string(from: NSNumber(value: x)) ?? "0")pt")
-            body.setAttribute(for: "y", value: "\(dataFormatter.string(from: NSNumber(value: y)) ?? "0")pt")
-            body.setAttribute(for: "width", value: "\(dataFormatter.string(from: NSNumber(value: width)) ?? "0")pt")
-            body.setAttribute(for: "height", value: "\(dataFormatter.string(from: NSNumber(value: height)) ?? "0")pt")
+            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))pt")
+            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))pt")
+            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))pt")
+            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))pt")
             
         case .pica:
             
-            body.setAttribute(for: "x", value: "\(dataFormatter.string(from: NSNumber(value: x)) ?? "0")pc")
-            body.setAttribute(for: "y", value: "\(dataFormatter.string(from: NSNumber(value: y)) ?? "0")pc")
-            body.setAttribute(for: "width", value: "\(dataFormatter.string(from: NSNumber(value: width)) ?? "0")pc")
-            body.setAttribute(for: "height", value: "\(dataFormatter.string(from: NSNumber(value: height)) ?? "0")pc")
+            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))pc")
+            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))pc")
+            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))pc")
+            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))pc")
             
         case .meter:
             
@@ -334,31 +334,31 @@ extension SVGContext {
             let width = resolution.unit.convert(length: width, to: .centimeter)
             let height = resolution.unit.convert(length: height, to: .centimeter)
             
-            body.setAttribute(for: "x", value: "\(dataFormatter.string(from: NSNumber(value: x)) ?? "0")cm")
-            body.setAttribute(for: "y", value: "\(dataFormatter.string(from: NSNumber(value: y)) ?? "0")cm")
-            body.setAttribute(for: "width", value: "\(dataFormatter.string(from: NSNumber(value: width)) ?? "0")cm")
-            body.setAttribute(for: "height", value: "\(dataFormatter.string(from: NSNumber(value: height)) ?? "0")cm")
+            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))cm")
+            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))cm")
+            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))cm")
+            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))cm")
             
         case .centimeter:
             
-            body.setAttribute(for: "x", value: "\(dataFormatter.string(from: NSNumber(value: x)) ?? "0")cm")
-            body.setAttribute(for: "y", value: "\(dataFormatter.string(from: NSNumber(value: y)) ?? "0")cm")
-            body.setAttribute(for: "width", value: "\(dataFormatter.string(from: NSNumber(value: width)) ?? "0")cm")
-            body.setAttribute(for: "height", value: "\(dataFormatter.string(from: NSNumber(value: height)) ?? "0")cm")
+            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))cm")
+            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))cm")
+            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))cm")
+            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))cm")
             
         case .millimeter:
             
-            body.setAttribute(for: "x", value: "\(dataFormatter.string(from: NSNumber(value: x)) ?? "0")mm")
-            body.setAttribute(for: "y", value: "\(dataFormatter.string(from: NSNumber(value: y)) ?? "0")mm")
-            body.setAttribute(for: "width", value: "\(dataFormatter.string(from: NSNumber(value: width)) ?? "0")mm")
-            body.setAttribute(for: "height", value: "\(dataFormatter.string(from: NSNumber(value: height)) ?? "0")mm")
+            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))mm")
+            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))mm")
+            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))mm")
+            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))mm")
             
         case .inch:
             
-            body.setAttribute(for: "x", value: "\(dataFormatter.string(from: NSNumber(value: x)) ?? "0")in")
-            body.setAttribute(for: "y", value: "\(dataFormatter.string(from: NSNumber(value: y)) ?? "0")in")
-            body.setAttribute(for: "width", value: "\(dataFormatter.string(from: NSNumber(value: width)) ?? "0")in")
-            body.setAttribute(for: "height", value: "\(dataFormatter.string(from: NSNumber(value: height)) ?? "0")in")
+            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))in")
+            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))in")
+            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))in")
+            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))in")
         }
         
         let dateFormatter = DateFormatter()
@@ -719,20 +719,20 @@ extension SVGContext {
             var element = SDXMLElement(name: "linearGradient", attributes: [
                 "id": id,
                 "gradientUnits": "objectBoundingBox",
-                "x1": dataFormatter.string(from: NSNumber(value: gradient.start.x)) ?? "0",
-                "y1": dataFormatter.string(from: NSNumber(value: gradient.start.y)) ?? "0",
-                "x2": dataFormatter.string(from: NSNumber(value: gradient.end.x)) ?? "0",
-                "y2": dataFormatter.string(from: NSNumber(value: gradient.end.y)) ?? "0",
+                "x1": _decimal_formatter(gradient.start.x),
+                "y1": _decimal_formatter(gradient.start.y),
+                "x2": _decimal_formatter(gradient.end.x),
+                "y2": _decimal_formatter(gradient.end.y),
                 ])
             
             element.setAttribute(for: "gradientTransform", value: gradient.transform.attributeStr())
             
             for stop in gradient.stops {
                 var _stop = SDXMLElement(name: "stop")
-                _stop.setAttribute(for: "offset", value: dataFormatter.string(from: NSNumber(value: stop.offset)) ?? "0")
+                _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
                 _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
                 if stop.color.opacity < 1 {
-                    _stop.setAttribute(for: "stop-opacity", value: dataFormatter.string(from: NSNumber(value: stop.color.opacity)) ?? "0")
+                    _stop.setAttribute(for: "stop-opacity", value: _decimal_formatter(stop.color.opacity))
                 }
                 element.append(_stop)
             }
@@ -747,7 +747,7 @@ extension SVGContext {
             var element = SDXMLElement(name: "radialGradient", attributes: [
                 "id": id,
                 "gradientUnits": "objectBoundingBox",
-                "fx": dataFormatter.string(from: NSNumber(value: 0.5 + magnitude)) ?? "0.5",
+                "fx": _decimal_formatter(0.5 + magnitude),
                 "fy": "0.5",
                 "cx": "0.5",
                 "cy": "0.5",
@@ -758,10 +758,10 @@ extension SVGContext {
             
             for stop in gradient.stops {
                 var _stop = SDXMLElement(name: "stop")
-                _stop.setAttribute(for: "offset", value: dataFormatter.string(from: NSNumber(value: stop.offset)) ?? "0")
+                _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
                 _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
                 if stop.color.opacity < 1 {
-                    _stop.setAttribute(for: "stop-opacity", value: dataFormatter.string(from: NSNumber(value: stop.color.opacity)) ?? "0")
+                    _stop.setAttribute(for: "stop-opacity", value: _decimal_formatter(stop.color.opacity))
                 }
                 element.append(_stop)
             }
@@ -806,10 +806,10 @@ extension SVGContext {
         var element = SDXMLElement(name: "linearGradient", attributes: [
             "id": id,
             "gradientUnits": "userSpaceOnUse",
-            "x1": dataFormatter.string(from: NSNumber(value: start.x)) ?? "0",
-            "y1": dataFormatter.string(from: NSNumber(value: start.y)) ?? "0",
-            "x2": dataFormatter.string(from: NSNumber(value: end.x)) ?? "0",
-            "y2": dataFormatter.string(from: NSNumber(value: end.y)) ?? "0",
+            "x1": _decimal_formatter(start.x),
+            "y1": _decimal_formatter(start.y),
+            "x2": _decimal_formatter(end.x),
+            "y2": _decimal_formatter(end.y),
             ])
         
         switch spreadMethod {
@@ -822,10 +822,10 @@ extension SVGContext {
         
         for stop in stops {
             var _stop = SDXMLElement(name: "stop")
-            _stop.setAttribute(for: "offset", value: dataFormatter.string(from: NSNumber(value: stop.offset)) ?? "0")
+            _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
             _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
             if stop.color.opacity < 1 {
-                _stop.setAttribute(for: "stop-opacity", value: dataFormatter.string(from: NSNumber(value: stop.color.opacity)) ?? "0")
+                _stop.setAttribute(for: "stop-opacity", value: _decimal_formatter(stop.color.opacity))
             }
             element.append(_stop)
         }
@@ -834,10 +834,10 @@ extension SVGContext {
         
         let rect = SDXMLElement(name: "rect", attributes: [
             "fill": "url(#\(id))",
-            "x": dataFormatter.string(from: NSNumber(value: viewBox.x)) ?? "0",
-            "y": dataFormatter.string(from: NSNumber(value: viewBox.y)) ?? "0",
-            "width": dataFormatter.string(from: NSNumber(value: viewBox.width)) ?? "0",
-            "height": dataFormatter.string(from: NSNumber(value: viewBox.height)) ?? "0",
+            "x": _decimal_formatter(viewBox.x),
+            "y": _decimal_formatter(viewBox.y),
+            "width": _decimal_formatter(viewBox.width),
+            "height": _decimal_formatter(viewBox.height),
             ])
         
         self.append(rect, options: .allWithoutTransform)
@@ -858,12 +858,12 @@ extension SVGContext {
         var element = SDXMLElement(name: "radialGradient", attributes: [
             "id": id,
             "gradientUnits": "userSpaceOnUse",
-            "fx": dataFormatter.string(from: NSNumber(value: 0.5 + magnitude)) ?? "0.5",
+            "fx": _decimal_formatter(0.5 + magnitude),
             "fy": "0.5",
             "cx": "0.5",
             "cy": "0.5",
-            "fr": dataFormatter.string(from: NSNumber(value: startRadius)) ?? "0",
-            "r": dataFormatter.string(from: NSNumber(value: endRadius)) ?? "1",
+            "fr": _decimal_formatter(startRadius),
+            "r": _decimal_formatter(endRadius),
             ])
         
         switch spreadMethod {
@@ -877,10 +877,10 @@ extension SVGContext {
         
         for stop in stops {
             var _stop = SDXMLElement(name: "stop")
-            _stop.setAttribute(for: "offset", value: dataFormatter.string(from: NSNumber(value: stop.offset)) ?? "0")
+            _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
             _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
             if stop.color.opacity < 1 {
-                _stop.setAttribute(for: "stop-opacity", value: dataFormatter.string(from: NSNumber(value: stop.color.opacity)) ?? "0")
+                _stop.setAttribute(for: "stop-opacity", value: _decimal_formatter(stop.color.opacity))
             }
             element.append(_stop)
         }
@@ -889,10 +889,10 @@ extension SVGContext {
         
         let rect = SDXMLElement(name: "rect", attributes: [
             "fill": "url(#\(id))",
-            "x": dataFormatter.string(from: NSNumber(value: viewBox.x)) ?? "0",
-            "y": dataFormatter.string(from: NSNumber(value: viewBox.y)) ?? "0",
-            "width": dataFormatter.string(from: NSNumber(value: viewBox.width)) ?? "0",
-            "height": dataFormatter.string(from: NSNumber(value: viewBox.height)) ?? "0",
+            "x": _decimal_formatter(viewBox.x),
+            "y": _decimal_formatter(viewBox.y),
+            "width": _decimal_formatter(viewBox.width),
+            "height": _decimal_formatter(viewBox.height),
             ])
         
         self.append(rect, options: .allWithoutTransform)
