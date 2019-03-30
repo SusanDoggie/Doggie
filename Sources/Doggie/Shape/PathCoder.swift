@@ -343,28 +343,28 @@ extension Shape {
     }
 }
 
-private let dataFormatter: NumberFormatter = {
-    let formatter = NumberFormatter()
-    formatter.negativeFormat = "#.#########"
-    formatter.positiveFormat = "#.#########"
-    return formatter
-    }()
+@inline(__always)
+public func _decimal_round(_ x: Double) -> Decimal {
+    var decimal = Decimal(x)
+    withUnsafeMutablePointer(to: &decimal) { NSDecimalRound($0, $0, 9, .plain) }
+    return decimal
+}
+
+@inline(__always)
+public func _decimal_formatter(_ x: Double) -> String {
+    return "\(_decimal_round(x))"
+}
 
 @inline(__always)
 private func getDataString(_ x: [Double]) -> String {
     var str = ""
-    for _x in x.map({ dataFormatter.string(from: NSNumber(value: $0)) ?? "0" }) {
+    for _x in x.map(_decimal_formatter) {
         if !str.isEmpty && _x.first != "-" {
             str.append(" ")
         }
         _x.write(to: &str)
     }
     return str
-}
-
-@inline(__always)
-private func _round(_ x: Double) -> Double {
-    return round(x * 1000000000) / 1000000000
 }
 
 @inline(__always)

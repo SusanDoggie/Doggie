@@ -276,18 +276,11 @@ extension SVGContext {
     }
 }
 
-private let dataFormatter: NumberFormatter = {
-    let formatter = NumberFormatter()
-    formatter.negativeFormat = "#.#########"
-    formatter.positiveFormat = "#.#########"
-    return formatter
-}()
-
 private func getDataString(_ x: Double ...) -> String {
     return getDataString(x)
 }
 private func getDataString(_ x: [Double]) -> String {
-    return x.map { dataFormatter.string(from: NSNumber(value: $0)) ?? "0" }.map { $0 == "-0" ? "0" : $0 }.joined(separator: " ")
+    return x.map(_decimal_formatter).joined(separator: " ")
 }
 
 extension SDTransform {
