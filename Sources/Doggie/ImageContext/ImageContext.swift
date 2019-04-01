@@ -207,20 +207,12 @@ extension ImageContext {
 
 extension ImageContext {
     
-    private var currentGraphicState: GraphicState {
-        return next?.currentGraphicState ?? GraphicState(context: self)
-    }
-    
     public func saveGraphicState() {
-        graphicStateStack.append(currentGraphicState)
+        graphicStateStack.append(GraphicState(context: current))
     }
     
     public func restoreGraphicState() {
-        if let next = self.next {
-            graphicStateStack.popLast()?.apply(to: next)
-        } else {
-            graphicStateStack.popLast()?.apply(to: self)
-        }
+        graphicStateStack.popLast()?.apply(to: current)
     }
 }
 
