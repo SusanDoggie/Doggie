@@ -64,7 +64,7 @@ public class SVGContext : DrawableContext {
     
     fileprivate var clip: Clip?
     
-    fileprivate var styles: SVGContextStyles
+    fileprivate var styles: SVGContextStyles = SVGContextStyles()
     
     private var next: SVGContext?
     private weak var global: SVGContext?
@@ -81,8 +81,6 @@ public class SVGContext : DrawableContext {
     public let resolution: Resolution
     
     public init(viewBox: Rect, resolution: Resolution = .default) {
-        self.clip = nil
-        self.styles = SVGContextStyles()
         self.viewBox = viewBox
         self.resolution = resolution
     }
@@ -131,7 +129,7 @@ extension SVGContext {
 extension SVGContext {
     
     private var current: SVGContext {
-        return next ?? self
+        return next?.current ?? self
     }
     
     public var defs: [SDXMLElement] {
@@ -510,7 +508,7 @@ extension SVGContext {
             next.beginTransparencyLayer()
         } else {
             self.next = SVGContext(copyStates: self)
-            self.next?.global = self
+            self.next?.global = global ?? self
         }
     }
     
@@ -681,7 +679,7 @@ extension SVGContext {
     public func drawClip(body: (SVGContext) throws -> Void) rethrows {
         
         let mask_context = SVGContext(copyStates: self)
-        mask_context.global = self
+        mask_context.global = global ?? self
         
         try body(mask_context)
         

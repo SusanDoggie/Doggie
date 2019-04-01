@@ -128,7 +128,7 @@ extension ImageContext {
     
     @usableFromInline
     var current: ImageContext {
-        return next ?? self
+        return next?.current ?? self
     }
 }
 
