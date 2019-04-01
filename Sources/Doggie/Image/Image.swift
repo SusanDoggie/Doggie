@@ -214,7 +214,7 @@ extension Image {
     @inlinable
     @inline(__always)
     public func isFastEqual(_ other: Image) -> Bool {
-        return self.width == other.width && self.height == other.height && self.resolution == other.resolution && self.colorSpace.isFastEqual(other.colorSpace) && self.pixels.withUnsafeBufferPointer { lhs in other.pixels.withUnsafeBufferPointer { rhs in lhs.count == rhs.count && lhs.baseAddress == rhs.baseAddress } }
+        return self.width == other.width && self.height == other.height && self.resolution == other.resolution && self.colorSpace.isFastEqual(other.colorSpace) && self.pixels.isFastEqual(other.pixels)
     }
 }
 

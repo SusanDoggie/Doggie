@@ -117,12 +117,25 @@ extension SVGContext {
         case mask(String)
     }
     
-    fileprivate struct ImageTableKey: Hashable {
+    fileprivate enum ImageTableKey: Hashable {
         
-        var image: AnyImage
+        case image(AnyImage)
+        case data(Data)
+        
+        init(_ image: AnyImage) {
+            self = .image(image)
+        }
+        
+        init(_ data: Data) {
+            self = .data(data)
+        }
         
         static func ==(lhs: ImageTableKey, rhs: ImageTableKey) -> Bool {
-            return lhs.image.isFastEqual(rhs.image)
+            switch (lhs, rhs) {
+            case let (.image(lhs), .image(rhs)): return lhs.isFastEqual(rhs)
+            case let (.data(lhs), .data(rhs)): return lhs.isFastEqual(rhs)
+            default: return false
+            }
         }
     }
 }
@@ -571,7 +584,7 @@ private protocol SVGImageProtocol {
 extension Image: SVGImageProtocol {
     
     fileprivate var imageTableKey: SVGContext.ImageTableKey {
-        return SVGContext.ImageTableKey(image: AnyImage(self))
+        return SVGContext.ImageTableKey(AnyImage(self))
     }
     
     fileprivate var base64: String? {
@@ -583,7 +596,7 @@ extension Image: SVGImageProtocol {
 extension AnyImage: SVGImageProtocol {
     
     fileprivate var imageTableKey: SVGContext.ImageTableKey {
-        return SVGContext.ImageTableKey(image: self)
+        return SVGContext.ImageTableKey(self)
     }
     
     fileprivate var base64: String? {
@@ -597,11 +610,37 @@ extension AnyImage: SVGImageProtocol {
     }
 }
 
+extension ImageRep: SVGImageProtocol {
+    
+    fileprivate var imageTableKey: SVGContext.ImageTableKey {
+        return self.originalData.map { SVGContext.ImageTableKey($0) } ?? SVGContext.ImageTableKey(AnyImage(imageRep: self, fileBacked: true))
+    }
+    
+    fileprivate var base64: String? {
+        
+        guard let mediaType = self.mediaType, let data = self.originalData else {
+            return AnyImage(imageRep: self, fileBacked: true).base64
+        }
+        
+        let _mediaType: String
+        
+        switch mediaType {
+        case .bmp: _mediaType = "image/bmp"
+        case .gif: _mediaType = "image/gif"
+        case .jpeg: _mediaType = "image/jpeg"
+        case .jpeg2000: _mediaType = "image/jp2"
+        case .png: _mediaType = "image/png"
+        case .tiff: _mediaType = "image/tiff"
+        }
+        
+        return "data:\(_mediaType);base64," + data.base64EncodedString()
+    }
+}
+
 extension SVGContext {
     
-    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform) {
+    private func _draw(image: SVGImageProtocol, transform: SDTransform) {
         
-        let image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
         let key = image.imageTableKey
         
         let id: String
@@ -636,6 +675,15 @@ extension SVGContext {
         element.setAttribute(for: "transform", value: transform.attributeStr())
         
         self.append(element, options: .allWithoutTransform)
+    }
+    
+    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform) {
+        let image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
+        self._draw(image: image, transform: transform)
+    }
+    
+    public func draw(image: ImageRep, transform: SDTransform) {
+        self._draw(image: image, transform: transform)
     }
 }
 
@@ -688,7 +736,11 @@ extension SVGContext {
 
 extension SVGContext {
     
-    public func setClip<Image>(image: Image, transform: SDTransform) where Image : ImageProtocol {
+    public func setClip<Image : ImageProtocol>(image: Image, transform: SDTransform) {
+        self.drawClip { context in context.draw(image: image, transform: transform) }
+    }
+    
+    public func setClip(image: ImageRep, transform: SDTransform) {
         self.drawClip { context in context.draw(image: image, transform: transform) }
     }
     
