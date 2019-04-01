@@ -127,21 +127,21 @@ extension ImageContext {
 extension ImageContext {
     
     @usableFromInline
-    var current: ImageContext {
-        return next?.current ?? self
+    var current_layer: ImageContext {
+        return next?.current_layer ?? self
     }
 }
 
 extension ImageContext {
     
     public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
-        let current = self.current
-        current.isDirty = true
-        return try current._image.withUnsafeMutableBufferPointer(body)
+        let current_layer = self.current_layer
+        current_layer.isDirty = true
+        return try current_layer._image.withUnsafeMutableBufferPointer(body)
     }
     
     public func withUnsafeImageBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
-        return try current.image.withUnsafeBufferPointer(body)
+        return try current_layer.image.withUnsafeBufferPointer(body)
     }
 }
 
@@ -149,29 +149,29 @@ extension ImageContext {
     
     public func withUnsafeMutableClipBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
         
-        let current = self.current
+        let current_layer = self.current_layer
         
-        if current.clip == nil {
-            current.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        if current_layer.clip == nil {
+            current_layer.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
-        return try current.clip!.withUnsafeMutableBufferPointer(body)
+        return try current_layer.clip!.withUnsafeMutableBufferPointer(body)
     }
     
     public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
         
-        let current = self.current
+        let current_layer = self.current_layer
         
-        if current.clip == nil {
-            current.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        if current_layer.clip == nil {
+            current_layer.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
-        return try current.clip!.withUnsafeBufferPointer(body)
+        return try current_layer.clip!.withUnsafeBufferPointer(body)
     }
     
     @usableFromInline
     func withOptionalUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>?) throws -> R) rethrows -> R {
-        return try current.clip?.withUnsafeBufferPointer(body) ?? body(nil)
+        return try current_layer.clip?.withUnsafeBufferPointer(body) ?? body(nil)
     }
     
     @inlinable
@@ -180,11 +180,11 @@ extension ImageContext {
         
         if value == 1 {
             
-            current.clip = nil
+            current_layer.clip = nil
             
-        } else if current.clip == nil || value == 0 {
+        } else if current_layer.clip == nil || value == 0 {
             
-            current.clip = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
+            current_layer.clip = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
             
         } else {
             
@@ -208,11 +208,11 @@ extension ImageContext {
 extension ImageContext {
     
     public func saveGraphicState() {
-        graphicStateStack.append(GraphicState(context: current))
+        graphicStateStack.append(GraphicState(context: current_layer))
     }
     
     public func restoreGraphicState() {
-        graphicStateStack.popLast()?.apply(to: current)
+        graphicStateStack.popLast()?.apply(to: current_layer)
     }
 }
 
@@ -226,117 +226,117 @@ extension ImageContext {
     
     public var opacity: Double {
         get {
-            return current.styles.opacity
+            return current_layer.styles.opacity
         }
         set {
-            current.styles.opacity = newValue
+            current_layer.styles.opacity = newValue
         }
     }
     
     public var transform: SDTransform {
         get {
-            return current.styles.transform
+            return current_layer.styles.transform
         }
         set {
-            current.styles.transform = newValue
+            current_layer.styles.transform = newValue
         }
     }
     
     public var shouldAntialias: Bool {
         get {
-            return current.styles.shouldAntialias
+            return current_layer.styles.shouldAntialias
         }
         set {
-            current.styles.shouldAntialias = newValue
+            current_layer.styles.shouldAntialias = newValue
         }
     }
     public var antialias: Int {
         get {
-            return current.styles.antialias
+            return current_layer.styles.antialias
         }
         set {
-            current.styles.antialias = max(1, newValue)
+            current_layer.styles.antialias = max(1, newValue)
         }
     }
     
     public var shadowColor: AnyColor {
         get {
-            return current.styles.shadowColor
+            return current_layer.styles.shadowColor
         }
         set {
-            current.styles.shadowColor = newValue
+            current_layer.styles.shadowColor = newValue
         }
     }
     
     public var shadowOffset: Size {
         get {
-            return current.styles.shadowOffset
+            return current_layer.styles.shadowOffset
         }
         set {
-            current.styles.shadowOffset = newValue
+            current_layer.styles.shadowOffset = newValue
         }
     }
     
     public var shadowBlur: Double {
         get {
-            return current.styles.shadowBlur
+            return current_layer.styles.shadowBlur
         }
         set {
-            current.styles.shadowBlur = newValue
+            current_layer.styles.shadowBlur = newValue
         }
     }
     
     public var convolutionAlgorithm: ImageConvolutionAlgorithm {
         get {
-            return current.styles.convolutionAlgorithm
+            return current_layer.styles.convolutionAlgorithm
         }
         set {
-            current.styles.convolutionAlgorithm = newValue
+            current_layer.styles.convolutionAlgorithm = newValue
         }
     }
     
     public var compositingMode: ColorCompositingMode {
         get {
-            return current.styles.compositingMode
+            return current_layer.styles.compositingMode
         }
         set {
-            current.styles.compositingMode = newValue
+            current_layer.styles.compositingMode = newValue
         }
     }
     
     public var blendMode: ColorBlendMode {
         get {
-            return current.styles.blendMode
+            return current_layer.styles.blendMode
         }
         set {
-            current.styles.blendMode = newValue
+            current_layer.styles.blendMode = newValue
         }
     }
     
     public var resamplingAlgorithm: ResamplingAlgorithm {
         get {
-            return current.styles.resamplingAlgorithm
+            return current_layer.styles.resamplingAlgorithm
         }
         set {
-            current.styles.resamplingAlgorithm = newValue
+            current_layer.styles.resamplingAlgorithm = newValue
         }
     }
     
     public var renderingIntent: RenderingIntent {
         get {
-            return current.styles.renderingIntent
+            return current_layer.styles.renderingIntent
         }
         set {
-            current.styles.renderingIntent = newValue
+            current_layer.styles.renderingIntent = newValue
         }
     }
     
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
         get {
-            return current.image.colorSpace.chromaticAdaptationAlgorithm
+            return current_layer.image.colorSpace.chromaticAdaptationAlgorithm
         }
         set {
-            current._image.colorSpace.chromaticAdaptationAlgorithm = newValue
+            current_layer._image.colorSpace.chromaticAdaptationAlgorithm = newValue
         }
     }
 }
@@ -364,24 +364,24 @@ extension ImageContext {
     
     public func withUnsafeMutableDepthBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
         
-        let current = self.current
+        let current_layer = self.current_layer
         
-        if current.depth == nil {
-            current.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        if current_layer.depth == nil {
+            current_layer.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
-        return try current.depth!.withUnsafeMutableBufferPointer(body)
+        return try current_layer.depth!.withUnsafeMutableBufferPointer(body)
     }
     
     public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
         
-        let current = self.current
+        let current_layer = self.current_layer
         
-        if current.depth == nil {
-            current.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        if current_layer.depth == nil {
+            current_layer.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
-        return try current.depth!.withUnsafeBufferPointer(body)
+        return try current_layer.depth!.withUnsafeBufferPointer(body)
     }
 }
 
@@ -389,19 +389,19 @@ extension ImageContext {
     
     public var renderCullingMode: ImageContextRenderCullMode {
         get {
-            return current.styles.renderCullingMode
+            return current_layer.styles.renderCullingMode
         }
         set {
-            current.styles.renderCullingMode = newValue
+            current_layer.styles.renderCullingMode = newValue
         }
     }
     
     public var renderDepthCompareMode: ImageContextRenderDepthCompareMode {
         get {
-            return current.styles.renderDepthCompareMode
+            return current_layer.styles.renderDepthCompareMode
         }
         set {
-            current.styles.renderDepthCompareMode = newValue
+            current_layer.styles.renderDepthCompareMode = newValue
         }
     }
     
@@ -411,11 +411,11 @@ extension ImageContext {
         
         if value == 1 {
             
-            current.depth = nil
+            current_layer.depth = nil
             
-        } else if current.depth == nil || value == 0 {
+        } else if current_layer.depth == nil || value == 0 {
             
-            current.depth = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
+            current_layer.depth = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
             
         } else {
             
@@ -439,7 +439,7 @@ extension ImageContext {
 extension ImageContext {
     
     public var colorSpace: ColorSpace<Pixel.Model> {
-        return current.image.colorSpace
+        return current_layer.image.colorSpace
     }
     
     public var width: Int {

@@ -129,8 +129,8 @@ extension SVGContext {
 
 extension SVGContext {
     
-    private var current: SVGContext {
-        return next?.current ?? self
+    private var current_layer: SVGContext {
+        return next?.current_layer ?? self
     }
     
     public var defs: [SDXMLElement] {
@@ -186,91 +186,91 @@ extension SVGContext {
     
     public var opacity: Double {
         get {
-            return current.styles.opacity
+            return current_layer.styles.opacity
         }
         set {
-            current.styles.opacity = newValue
+            current_layer.styles.opacity = newValue
         }
     }
     
     public var transform: SDTransform {
         get {
-            return current.styles.transform
+            return current_layer.styles.transform
         }
         set {
-            current.styles.transform = newValue
+            current_layer.styles.transform = newValue
         }
     }
     
     public var shadowColor: AnyColor {
         get {
-            return current.styles.shadowColor
+            return current_layer.styles.shadowColor
         }
         set {
-            current.styles.shadowColor = newValue
+            current_layer.styles.shadowColor = newValue
         }
     }
     
     public var shadowOffset: Size {
         get {
-            return current.styles.shadowOffset
+            return current_layer.styles.shadowOffset
         }
         set {
-            current.styles.shadowOffset = newValue
+            current_layer.styles.shadowOffset = newValue
         }
     }
     
     public var shadowBlur: Double {
         get {
-            return current.styles.shadowBlur
+            return current_layer.styles.shadowBlur
         }
         set {
-            current.styles.shadowBlur = newValue
+            current_layer.styles.shadowBlur = newValue
         }
     }
     
     public var compositingMode: ColorCompositingMode {
         get {
-            return current.styles.compositingMode
+            return current_layer.styles.compositingMode
         }
         set {
-            current.styles.compositingMode = newValue
+            current_layer.styles.compositingMode = newValue
         }
     }
     
     public var blendMode: ColorBlendMode {
         get {
-            return current.styles.blendMode
+            return current_layer.styles.blendMode
         }
         set {
-            current.styles.blendMode = newValue
+            current_layer.styles.blendMode = newValue
         }
     }
     
     public var resamplingAlgorithm: ResamplingAlgorithm {
         get {
-            return current.styles.resamplingAlgorithm
+            return current_layer.styles.resamplingAlgorithm
         }
         set {
-            current.styles.resamplingAlgorithm = newValue
+            current_layer.styles.resamplingAlgorithm = newValue
         }
     }
     
     public var renderingIntent: RenderingIntent {
         get {
-            return current.styles.renderingIntent
+            return current_layer.styles.renderingIntent
         }
         set {
-            current.styles.renderingIntent = newValue
+            current_layer.styles.renderingIntent = newValue
         }
     }
     
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
         get {
-            return current.styles.chromaticAdaptationAlgorithm
+            return current_layer.styles.chromaticAdaptationAlgorithm
         }
         set {
-            current.styles.chromaticAdaptationAlgorithm = newValue
+            current_layer.styles.chromaticAdaptationAlgorithm = newValue
         }
     }
 }
@@ -380,11 +380,11 @@ extension SVGContext {
 extension SVGContext {
     
     public func saveGraphicState() {
-        graphicStateStack.append(GraphicState(context: current))
+        graphicStateStack.append(GraphicState(context: current_layer))
     }
     
     public func restoreGraphicState() {
-        graphicStateStack.popLast()?.apply(to: current)
+        graphicStateStack.popLast()?.apply(to: current_layer)
     }
 }
 
@@ -442,7 +442,7 @@ extension SVGContext {
             }
         }
         
-        if options.contains(.clip), let clip = self.current.clip {
+        if options.contains(.clip), let clip = self.current_layer.clip {
             switch clip {
             case let .clip(id): element.setAttribute(for: "clip-path", value: "url(#\(id))")
             case let .mask(id): element.setAttribute(for: "mask", value: "url(#\(id))")
@@ -484,7 +484,7 @@ extension SVGContext {
     public func append(_ newElement: SDXMLElement, options: StyleOptions = []) {
         var newElement = newElement
         self.apply_style(&newElement, options: options)
-        self.current.elements.append(newElement)
+        self.current_layer.elements.append(newElement)
     }
     
     public func append<S : Sequence>(contentsOf newElements: S, options: StyleOptions = []) where S.Element == SDXMLElement {
@@ -599,7 +599,7 @@ extension AnyImage: SVGImageProtocol {
 
 extension SVGContext {
     
-    public func draw<Image>(image: Image, transform: SDTransform) where Image : ImageProtocol {
+    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform) {
         
         let image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
         let key = image.imageTableKey
@@ -642,13 +642,13 @@ extension SVGContext {
 extension SVGContext {
     
     public func resetClip() {
-        current.clip = nil
+        current_layer.clip = nil
     }
     
     public func setClip(shape: Shape, winding: Shape.WindingRule) {
         
         guard shape.count != 0 else {
-            current.clip = nil
+            current_layer.clip = nil
             return
         }
         
@@ -666,7 +666,7 @@ extension SVGContext {
         
         defs.append(clipPath)
         
-        current.clip = .clip(id)
+        current_layer.clip = .clip(id)
     }
     
     public func drawClip(body: (SVGContext) throws -> Void) rethrows {
@@ -682,7 +682,7 @@ extension SVGContext {
         
         defs.append(mask)
         
-        current.clip = .mask(id)
+        current_layer.clip = .mask(id)
     }
 }
 
