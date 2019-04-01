@@ -76,6 +76,36 @@ extension Data {
 
 extension Data {
     
+    @inlinable
+    @inline(__always)
+    public mutating func append(utf8 str: String) {
+        let count = str.utf8.count
+        str.utf8CString.withUnsafeBufferPointer { self.append(UnsafeBufferPointer(rebasing: $0.prefix(count))) }
+    }
+}
+
+extension RangeReplaceableCollection where Element == UInt8 {
+    
+    @inlinable
+    @inline(__always)
+    public mutating func append(utf8 str: String) {
+        let count = str.utf8.count
+        str.utf8CString.withUnsafeBufferPointer { self.append(contentsOf: UnsafeRawBufferPointer(UnsafeBufferPointer(rebasing: $0.prefix(count)))) }
+    }
+}
+
+extension String {
+    
+    @inlinable
+    @inline(__always)
+    public var _utf8_data: Data {
+        let count = self.utf8.count
+        return self.utf8CString.withUnsafeBufferPointer { Data(buffer: UnsafeBufferPointer(rebasing: $0.prefix(count))) }
+    }
+}
+
+extension Data {
+    
     public func write(to url: URL, withIntermediateDirectories createIntermediates: Bool, options: Data.WritingOptions = []) throws {
         
         let manager = FileManager.default

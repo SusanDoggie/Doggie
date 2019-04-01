@@ -32,8 +32,7 @@ extension SDXMLDocument {
     }
     
     public func data(prettyPrinted: Bool = false) -> Data {
-        let xml = self.xml(prettyPrinted: prettyPrinted)
-        return xml.data(using: .utf8) ?? Data()
+        return self.xml(prettyPrinted: prettyPrinted)._utf8_data
     }
     
     private func _xml(prettyPrinted: Bool, _ output: inout String) {
