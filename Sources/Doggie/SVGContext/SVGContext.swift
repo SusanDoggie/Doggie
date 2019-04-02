@@ -364,6 +364,7 @@ extension SVGContext {
         dateFormatter.dateStyle = .long
         dateFormatter.timeStyle = .long
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
         
         body.append(SDXMLElement(comment: " Created by Doggie SVG Generator; \(dateFormatter.string(from: Date())) "))
         
