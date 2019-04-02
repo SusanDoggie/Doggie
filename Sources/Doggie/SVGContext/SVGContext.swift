@@ -720,6 +720,11 @@ extension SVGContext {
     
     public func drawClip(body: (SVGContext) throws -> Void) rethrows {
         
+        if let next = self.next {
+            try next.drawClip(body: body)
+            return
+        }
+        
         let mask_context = SVGContext(copyStates: self)
         mask_context.global = global ?? self
         

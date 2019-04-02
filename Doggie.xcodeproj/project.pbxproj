@@ -125,6 +125,13 @@
 		0A5E8D461F57BE5C000D51E3 /* SFNTHHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */; };
 		0A5E8D4C1F57BF28000D51E3 /* SFNTVHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */; };
 		0A5E8D4E1F57CC07000D51E3 /* SFNTMAXP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D4D1F57CC07000D51E3 /* SFNTMAXP.swift */; };
+		0A63C95D2251E92600993714 /* PDFObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A63C9552251E92400993714 /* PDFObject.swift */; };
+		0A63C95E2251E92600993714 /* PDFArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A63C9562251E92400993714 /* PDFArray.swift */; };
+		0A63C95F2251E92600993714 /* PDFDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A63C9572251E92400993714 /* PDFDictionary.swift */; };
+		0A63C9602251E92600993714 /* PDFNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A63C9582251E92400993714 /* PDFNumber.swift */; };
+		0A63C9612251E92600993714 /* PDFName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A63C9592251E92400993714 /* PDFName.swift */; };
+		0A63C9622251E92600993714 /* PDFContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A63C95B2251E92600993714 /* PDFContext.swift */; };
+		0A63C9632251E92600993714 /* PDFContextEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A63C95C2251E92600993714 /* PDFContextEncoder.swift */; };
 		0A71434420FC404D009DFFB5 /* DisplacementMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A71434320FC404D009DFFB5 /* DisplacementMap.swift */; };
 		0A72EF151F54FD2C00F0550A /* SFNTHEAD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */; };
 		0A72EF181F54FED200F0550A /* SFNTCMAP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A72EF171F54FED200F0550A /* SFNTCMAP.swift */; };
@@ -425,6 +432,13 @@
 		0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTHHEA.swift; sourceTree = "<group>"; };
 		0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTVHEA.swift; sourceTree = "<group>"; };
 		0A5E8D4D1F57CC07000D51E3 /* SFNTMAXP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTMAXP.swift; sourceTree = "<group>"; };
+		0A63C9552251E92400993714 /* PDFObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFObject.swift; sourceTree = "<group>"; };
+		0A63C9562251E92400993714 /* PDFArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFArray.swift; sourceTree = "<group>"; };
+		0A63C9572251E92400993714 /* PDFDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFDictionary.swift; sourceTree = "<group>"; };
+		0A63C9582251E92400993714 /* PDFNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFNumber.swift; sourceTree = "<group>"; };
+		0A63C9592251E92400993714 /* PDFName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFName.swift; sourceTree = "<group>"; };
+		0A63C95B2251E92600993714 /* PDFContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFContext.swift; sourceTree = "<group>"; };
+		0A63C95C2251E92600993714 /* PDFContextEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFContextEncoder.swift; sourceTree = "<group>"; };
 		0A71434320FC404D009DFFB5 /* DisplacementMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplacementMap.swift; sourceTree = "<group>"; };
 		0A72EF141F54FD2C00F0550A /* SFNTHEAD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTHEAD.swift; sourceTree = "<group>"; };
 		0A72EF171F54FED200F0550A /* SFNTCMAP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTCMAP.swift; sourceTree = "<group>"; };
@@ -732,6 +746,7 @@
 				0A251C612101848400E31473 /* SDObject */,
 				0A55AE2520BFE5D800FC951F /* Json */,
 				0AFC4E311F7268A200E5FD5A /* XML */,
+				0A63C9542251E92400993714 /* PDF */,
 				0AD3E6301F53DA03003CC21A /* Font */,
 				0AB2E23B1F17765900B0CA84 /* Compression */,
 				0A00F05121BA17AD00CAF48C /* Platform */,
@@ -744,6 +759,7 @@
 				0A94BE9E1F108E8100F1BCD2 /* ImageCodec */,
 				0A39A6B31ED9342C00804004 /* ImageContext */,
 				0A1D45372244E951001A4967 /* SVGContext */,
+				0A63C95A2251E92600993714 /* PDFContext */,
 				0A74D68620047B7000330C86 /* ImageFilter */,
 				0AA33B6120942BD600317F54 /* Misc */,
 				08458AD41E2E627600D01813 /* Maths */,
@@ -999,6 +1015,27 @@
 				0A53E4551E35AEF80060FB83 /* Json.swift */,
 			);
 			path = Json;
+			sourceTree = "<group>";
+		};
+		0A63C9542251E92400993714 /* PDF */ = {
+			isa = PBXGroup;
+			children = (
+				0A63C9552251E92400993714 /* PDFObject.swift */,
+				0A63C9562251E92400993714 /* PDFArray.swift */,
+				0A63C9572251E92400993714 /* PDFDictionary.swift */,
+				0A63C9582251E92400993714 /* PDFNumber.swift */,
+				0A63C9592251E92400993714 /* PDFName.swift */,
+			);
+			path = PDF;
+			sourceTree = "<group>";
+		};
+		0A63C95A2251E92600993714 /* PDFContext */ = {
+			isa = PBXGroup;
+			children = (
+				0A63C95B2251E92600993714 /* PDFContext.swift */,
+				0A63C95C2251E92600993714 /* PDFContextEncoder.swift */,
+			);
+			path = PDFContext;
 			sourceTree = "<group>";
 		};
 		0A72EF161F54FD4300F0550A /* SFNTFontFace */ = {
@@ -1526,6 +1563,7 @@
 				0A8ABC1420E48BA600A2634A /* TextureProtocol.swift in Sources */,
 				0A8EDDD41F19E74000C917CC /* iccTextDescription.swift in Sources */,
 				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
+				0A63C9612251E92600993714 /* PDFName.swift in Sources */,
 				0AD3E63B1F53DBEE003CC21A /* WOFFDecoder.swift in Sources */,
 				0A8EDDD11F19E33200C917CC /* iccDateTimeNumber.swift in Sources */,
 				0AF93C911FF4A0CC000AEAB7 /* Rational.swift in Sources */,
@@ -1549,6 +1587,7 @@
 				0AE67D0C21A544EC004E21F2 /* AppleCompression.swift in Sources */,
 				0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */,
 				0ADAA3AE20CB6FAB006682EA /* LazySliceSequence.swift in Sources */,
+				0A63C9602251E92600993714 /* PDFNumber.swift in Sources */,
 				0A236523217EC1E7001A5E68 /* AATStateTable.swift in Sources */,
 				0A8535331F591C57006FB85D /* CFFDICT.swift in Sources */,
 				0A251C632101849A00E31473 /* SDObject.swift in Sources */,
@@ -1619,6 +1658,7 @@
 				0AAF447720EF0F1300178EA2 /* ImageOrientation.swift in Sources */,
 				0A44F77C21F70DB000383140 /* ColorSeparation.swift in Sources */,
 				0ABDF1AD1F2B3520007EC7B2 /* RenderingIntent.swift in Sources */,
+				0A63C95E2251E92600993714 /* PDFArray.swift in Sources */,
 				0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */,
 				0AAA7CF220B8EC950080D1BE /* Exported.swift in Sources */,
 				0A8535301F5911CD006FB85D /* CFF2INDEX.swift in Sources */,
@@ -1652,6 +1692,7 @@
 				0AFC4E331F7268AE00E5FD5A /* SDXMLParser.swift in Sources */,
 				0ADAA3B620CB6FFF006682EA /* ConcatCollection.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
+				0A63C9622251E92600993714 /* PDFContext.swift in Sources */,
 				0AB380F320A5374A00A8CBD7 /* Texture.swift in Sources */,
 				0A9CD5951EEB9A2A00094148 /* CalibratedGrayColorSpace.swift in Sources */,
 				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,
@@ -1690,6 +1731,7 @@
 				0A74D68A20047BF700330C86 /* GaussianBlur.swift in Sources */,
 				0AAA7CF420B8EDA30080D1BE /* AppleExported.swift in Sources */,
 				0A21119120CA5911003CA6BC /* JPEGHuffman.swift in Sources */,
+				0A63C9632251E92600993714 /* PDFContextEncoder.swift in Sources */,
 				0A72EF181F54FED200F0550A /* SFNTCMAP.swift in Sources */,
 				08458B611E2E627600D01813 /* SDTask.swift in Sources */,
 				0AE71A041EF51DF80086923C /* AnyColorSpace.swift in Sources */,
@@ -1708,6 +1750,7 @@
 				0A8D4F1E20C8FD8400921F91 /* CubicBezier.swift in Sources */,
 				0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */,
 				0A9CD58F1EEB9A2700094148 /* CIELabColorSpace.swift in Sources */,
+				0A63C95D2251E92600993714 /* PDFObject.swift in Sources */,
 				0AAFBEED20B53B9300A392FE /* PredefinedColor.swift in Sources */,
 				0AD4D8D91EA6247200C99728 /* MathsExtension.swift in Sources */,
 				0A20DD5020C91C570067558F /* BezierProtocol.swift in Sources */,
@@ -1737,6 +1780,7 @@
 				0A8D86431F7DFCFC00F9530E /* ImageProtocol.swift in Sources */,
 				0A8EDDC31F19B67800C917CC /* iccLUTTransform.swift in Sources */,
 				08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */,
+				0A63C95F2251E92600993714 /* PDFDictionary.swift in Sources */,
 				0A9CD5841EEB989700094148 /* AdobeRGB.swift in Sources */,
 				0A4714AA21D9D03400650284 /* SVGNoise.swift in Sources */,
 				0A21118F20CA58F2003CA6BC /* JPEGQuantization.swift in Sources */,
