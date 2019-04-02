@@ -681,8 +681,8 @@ extension PDFContext {
         let transform = _mirrored_transform
         let _transform = [
             "\(_decimal_round(transform.a))",
-            "\(_decimal_round(transform.b))",
             "\(_decimal_round(transform.d))",
+            "\(_decimal_round(transform.b))",
             "\(_decimal_round(transform.e))",
             "\(_decimal_round(transform.c))",
             "\(_decimal_round(transform.f))",
@@ -717,8 +717,8 @@ extension PDFContext {
         let transform = _mirrored_transform
         let _transform = [
             "\(_decimal_round(transform.a))",
-            "\(_decimal_round(transform.b))",
             "\(_decimal_round(transform.d))",
+            "\(_decimal_round(transform.b))",
             "\(_decimal_round(transform.e))",
             "\(_decimal_round(transform.c))",
             "\(_decimal_round(transform.f))",
