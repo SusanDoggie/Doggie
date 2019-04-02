@@ -110,7 +110,7 @@ extension PDFContext {
         fileprivate var styles: PDFContextStyles = PDFContextStyles()
         
         fileprivate var next: Page?
-        private weak var global: Page?
+        fileprivate weak var global: Page?
         
         fileprivate var graphicStateStack: [GraphicState] = []
         
@@ -626,12 +626,10 @@ extension PDFContext {
 
 extension PDFContext {
     
-    private func create_function<C>(stops: [GradientStop<C>]) -> PDFFunction? {
-        
-        guard stops.count >= 2 else { return nil }
+    private func create_gradient_function<C>(stops: [GradientStop<C>]) -> PDFFunction {
         
         let colorSpace = current_page.colorSpace
-        var stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1.convert(to: colorSpace, intent: renderingIntent) }
+        var stops = stops.map { $0.convert(to: colorSpace, intent: renderingIntent) }
         
         if let stop = stops.first, stop.offset > 0 {
             stops.insert(GradientStop(offset: 0, color: stop.color), at: 0)
@@ -658,25 +656,35 @@ extension PDFContext {
         return PDFFunction(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
     }
     
-    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
+    private func create_gradient_opacity_function<C>(stops: [GradientStop<C>]) -> PDFFunction {
         
-        guard let function = create_function(stops: stops) else { return }
+        var stops = stops
         
-        let shading = PDFShading(
-            type: 2,
-            coords: [start.x, start.y, end.x, end.y],
-            function: function,
-            e0: startSpread == .pad,
-            e1: endSpread == .pad
-        )
-        
-        let context = current_page.current_layer
-        
-        if context.shading[shading] == nil {
-            context.shading[shading] = "Sh\(context.shading.count + 1)"
+        if let stop = stops.first, stop.offset > 0 {
+            stops.insert(GradientStop(offset: 0, color: stop.color), at: 0)
+        }
+        if let stop = stops.last, stop.offset < 1 {
+            stops.append(GradientStop(offset: 1, color: stop.color))
         }
         
-        context.commands += "q\n"
+        var functions: [PDFFunction] = []
+        var bounds: [Double] = []
+        var encode: [Double] = []
+        
+        for (lhs, rhs) in zip(stops, stops.dropFirst()) {
+            functions.append(PDFFunction(c0: [lhs.color.opacity], c1: [rhs.color.opacity]))
+            bounds.append(rhs.offset)
+            encode.append(0)
+            encode.append(1)
+        }
+        
+        return PDFFunction(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
+    }
+    
+    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
+        
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
+        guard stops.count >= 2 else { return }
         
         let transform = _mirrored_transform
         let _transform = [
@@ -687,6 +695,53 @@ extension PDFContext {
             "\(_decimal_round(transform.c))",
             "\(_decimal_round(transform.f))",
         ]
+        
+        let context = current_page.current_layer
+        
+        context.commands += "q\n"
+        
+        if stops.contains(where: { !$0.color.isOpaque }) {
+            
+            let shading = PDFShading(
+                type: 2,
+                is_clip: true,
+                coords: [start.x, start.y, end.x, end.y],
+                function: create_gradient_opacity_function(stops: stops),
+                e0: startSpread == .pad,
+                e1: endSpread == .pad
+            )
+            
+            if context.shading[shading] == nil {
+                context.shading[shading] = "Sh\(context.shading.count + 1)"
+            }
+            
+            var mask_commands = "/DeviceGray cs\n"
+            mask_commands += "\(_transform.joined(separator: " ")) cm\n"
+            
+            let _shading = context.shading[shading]!
+            mask_commands += "/\(_shading) sh\n"
+            
+            let name = "Mk\(context.mask.count + 1)"
+            context.mask[name] = mask_commands
+            
+            context.commands += "/\(name) gs\n"
+        }
+        
+        set_opacity(self.opacity)
+        
+        let shading = PDFShading(
+            type: 2,
+            is_clip: context.is_clip,
+            coords: [start.x, start.y, end.x, end.y],
+            function: create_gradient_function(stops: stops),
+            e0: startSpread == .pad,
+            e1: endSpread == .pad
+        )
+        
+        if context.shading[shading] == nil {
+            context.shading[shading] = "Sh\(context.shading.count + 1)"
+        }
+        
         context.commands += "\(_transform.joined(separator: " ")) cm\n"
         
         let _shading = context.shading[shading]!
@@ -694,25 +749,10 @@ extension PDFContext {
         context.commands += "Q\n"
     }
     
-    public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
+    public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
-        guard let function = create_function(stops: stops) else { return }
-        
-        let shading = PDFShading(
-            type: 3,
-            coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
-            function: function,
-            e0: startSpread == .pad,
-            e1: endSpread == .pad
-        )
-        
-        let context = current_page.current_layer
-        
-        if context.shading[shading] == nil {
-            context.shading[shading] = "Sh\(context.shading.count + 1)"
-        }
-        
-        context.commands += "q\n"
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
+        guard stops.count >= 2 else { return }
         
         let transform = _mirrored_transform
         let _transform = [
@@ -723,6 +763,53 @@ extension PDFContext {
             "\(_decimal_round(transform.c))",
             "\(_decimal_round(transform.f))",
         ]
+        
+        let context = current_page.current_layer
+        
+        context.commands += "q\n"
+        
+        if stops.contains(where: { !$0.color.isOpaque }) {
+            
+            let shading = PDFShading(
+                type: 3,
+                is_clip: true,
+                coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
+                function: create_gradient_opacity_function(stops: stops),
+                e0: startSpread == .pad,
+                e1: endSpread == .pad
+            )
+            
+            if context.shading[shading] == nil {
+                context.shading[shading] = "Sh\(context.shading.count + 1)"
+            }
+            
+            var mask_commands = "/DeviceGray cs\n"
+            mask_commands += "\(_transform.joined(separator: " ")) cm\n"
+            
+            let _shading = context.shading[shading]!
+            mask_commands += "/\(_shading) sh\n"
+            
+            let name = "Mk\(context.mask.count + 1)"
+            context.mask[name] = mask_commands
+            
+            context.commands += "/\(name) gs\n"
+        }
+        
+        set_opacity(self.opacity)
+        
+        let shading = PDFShading(
+            type: 3,
+            is_clip: context.is_clip,
+            coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
+            function: create_gradient_function(stops: stops),
+            e0: startSpread == .pad,
+            e1: endSpread == .pad
+        )
+        
+        if context.shading[shading] == nil {
+            context.shading[shading] = "Sh\(context.shading.count + 1)"
+        }
+        
         context.commands += "\(_transform.joined(separator: " ")) cm\n"
         
         let _shading = context.shading[shading]!

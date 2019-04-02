@@ -27,6 +27,8 @@ struct PDFShading : Hashable {
     
     var type: Int
     
+    var is_clip: Bool
+    
     var coords: [Double]
     var function: PDFFunction
     var e0: Bool

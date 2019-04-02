@@ -301,7 +301,7 @@ extension PDFContext.Page {
             let _function = PDFContext._write(shading.function.pdf_object, to: &data, xref: &xref)
             
             let _shading = PDFContext._write([
-                "ColorSpace": "\(_colorSpaceRef) 0 R",
+                "ColorSpace": shading.is_clip ? "/DeviceGray" : "\(_colorSpaceRef) 0 R",
                 "ShadingType": "\(shading.type)",
                 "Function": "\(_function) 0 R",
                 "Coords": "[\(shading.coords.lazy.map { "\($0)" }.joined(separator: " "))]",
