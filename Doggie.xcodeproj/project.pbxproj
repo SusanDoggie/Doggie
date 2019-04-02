@@ -41,6 +41,7 @@
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		0889F2C91F18FF1D0020E750 /* FixedNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2C71F18FF1D0020E750 /* FixedNumber.swift */; };
 		0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2CA1F1904EB0020E750 /* Signature.swift */; };
+		08AC2DE82253B4FB00EC847F /* PDFContextFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */; };
 		08B085491E9A20720037DECE /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B085471E9A20720037DECE /* Algorithm.swift */; };
 		08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B457E51EDD3223007AA4F0 /* Arithmetic.swift */; };
 		08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A301ED07A2400F8D423 /* ColorSpace.swift */; };
@@ -120,7 +121,7 @@
 		0A55505921D70E620035AF94 /* ObjectiveC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55505821D70E620035AF94 /* ObjectiveC.swift */; };
 		0A55AE6E20BFF98400FC951F /* ByteOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */; };
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
-		0A592E07225346F200E55388 /* PDFShading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A592E06225346F100E55388 /* PDFShading.swift */; };
+		0A592E07225346F200E55388 /* PDFContextShading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A592E06225346F100E55388 /* PDFContextShading.swift */; };
 		0A5DEDD71F7B60D600A45B4B /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DEDD61F7B60D600A45B4B /* Resolution.swift */; };
 		0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D411F56B428000D51E3 /* FontCollection.swift */; };
 		0A5E8D461F57BE5C000D51E3 /* SFNTHHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */; };
@@ -349,6 +350,7 @@
 		087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoggieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0889F2C71F18FF1D0020E750 /* FixedNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FixedNumber.swift; sourceTree = "<group>"; };
 		0889F2CA1F1904EB0020E750 /* Signature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Signature.swift; sourceTree = "<group>"; };
+		08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextFunction.swift; sourceTree = "<group>"; };
 		08B085471E9A20720037DECE /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Algorithm.swift; sourceTree = "<group>"; };
 		08B457E51EDD3223007AA4F0 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Arithmetic.swift; sourceTree = "<group>"; };
 		08B68A301ED07A2400F8D423 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ColorSpace.swift; sourceTree = "<group>"; };
@@ -428,7 +430,7 @@
 		0A55505821D70E620035AF94 /* ObjectiveC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveC.swift; sourceTree = "<group>"; };
 		0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteOutputStream.swift; sourceTree = "<group>"; };
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RectCollection.swift; sourceTree = "<group>"; };
-		0A592E06225346F100E55388 /* PDFShading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFShading.swift; sourceTree = "<group>"; };
+		0A592E06225346F100E55388 /* PDFContextShading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextShading.swift; sourceTree = "<group>"; };
 		0A5DEDD61F7B60D600A45B4B /* Resolution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Resolution.swift; sourceTree = "<group>"; };
 		0A5E8D411F56B428000D51E3 /* FontCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FontCollection.swift; sourceTree = "<group>"; };
 		0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTHHEA.swift; sourceTree = "<group>"; };
@@ -1035,7 +1037,8 @@
 			isa = PBXGroup;
 			children = (
 				0A63C95B2251E92600993714 /* PDFContext.swift */,
-				0A592E06225346F100E55388 /* PDFShading.swift */,
+				0A592E06225346F100E55388 /* PDFContextShading.swift */,
+				08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */,
 				0A63C95C2251E92600993714 /* PDFContextEncoder.swift */,
 			);
 			path = PDFContext;
@@ -1660,7 +1663,7 @@
 				0A53E4651E35AEF80060FB83 /* FloatingPoint.swift in Sources */,
 				0AAF447720EF0F1300178EA2 /* ImageOrientation.swift in Sources */,
 				0A44F77C21F70DB000383140 /* ColorSeparation.swift in Sources */,
-				0A592E07225346F200E55388 /* PDFShading.swift in Sources */,
+				0A592E07225346F200E55388 /* PDFContextShading.swift in Sources */,
 				0ABDF1AD1F2B3520007EC7B2 /* RenderingIntent.swift in Sources */,
 				0A63C95E2251E92600993714 /* PDFArray.swift in Sources */,
 				0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */,
@@ -1749,6 +1752,7 @@
 				0A1D45392244E968001A4967 /* SVGContext.swift in Sources */,
 				0AC621CB20EDFBA500E5FF15 /* Gradient.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
+				08AC2DE82253B4FB00EC847F /* PDFContextFunction.swift in Sources */,
 				0AABCC6320F9982F00D7BD78 /* ImageIO.swift in Sources */,
 				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A8D4F1E20C8FD8400921F91 /* CubicBezier.swift in Sources */,

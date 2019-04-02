@@ -1,5 +1,5 @@
 //
-//  PDFShading.swift
+//  PDFContextFunction.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -23,33 +23,24 @@
 //  THE SOFTWARE.
 //
 
-struct PDFShading : Hashable {
+extension PDFContext {
     
-    var type: Int
-    
-    var is_clip: Bool
-    
-    var coords: [Double]
-    var function: PDFFunction
-    var e0: Bool
-    var e1: Bool
+    struct Function : Hashable {
+        
+        var type: Int
+        var domain: ClosedRange<Double>
+        
+        var functions: [Function]
+        var bounds: [Double]
+        var encode: [Double]
+        
+        var c0: [Double]
+        var c1: [Double]
+        var n: Double
+    }
 }
 
-struct PDFFunction : Hashable {
-    
-    var type: Int
-    var domain: ClosedRange<Double>
-    
-    var functions: [PDFFunction]
-    var bounds: [Double]
-    var encode: [Double]
-    
-    var c0: [Double]
-    var c1: [Double]
-    var n: Double
-}
-
-extension PDFFunction {
+extension PDFContext.Function {
     
     init(domain: ClosedRange<Double> = 0...1, c0: [Double], c1: [Double], n: Double = 1) {
         self.type = 2
@@ -62,7 +53,7 @@ extension PDFFunction {
         self.n = n
     }
     
-    init(domain: ClosedRange<Double> = 0...1, functions: [PDFFunction], bounds: [Double], encode: [Double]) {
+    init(domain: ClosedRange<Double> = 0...1, functions: [PDFContext.Function], bounds: [Double], encode: [Double]) {
         self.type = 3
         self.domain = domain
         self.functions = functions
@@ -74,7 +65,7 @@ extension PDFFunction {
     }
 }
 
-extension PDFFunction {
+extension PDFContext.Function {
     
     var pdf_object: PDFDictionary {
         

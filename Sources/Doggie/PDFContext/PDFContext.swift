@@ -40,7 +40,6 @@ private struct PDFContextStyles {
     var resamplingAlgorithm: ResamplingAlgorithm = .default
     
     var renderingIntent: RenderingIntent = .default
-    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default
     
 }
 
@@ -49,15 +48,18 @@ private struct GraphicState {
     var clip: PDFContext.Clip?
     
     var styles: PDFContextStyles
+    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
     
     init(context: PDFContext.Page) {
         self.clip = context.clip
         self.styles = context.styles
+        self.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
     }
     
     func apply(to context: PDFContext.Page) {
         context.clip = self.clip
         context.styles = self.styles
+        context.colorSpace.chromaticAdaptationAlgorithm = self.chromaticAdaptationAlgorithm
     }
 }
 
@@ -93,7 +95,7 @@ extension PDFContext {
         let trim: Rect
         let margin: Rect
         
-        let colorSpace: AnyColorSpace
+        var colorSpace: AnyColorSpace
         
         var is_clip: Bool = false
         
@@ -103,7 +105,7 @@ extension PDFContext {
         var _extGState: [String: String] = [:]
         var _transparency_layers: [String: String] = [:]
         var _mask: [String: String] = [:]
-        var _shading: [PDFShading: String] = [:]
+        var _shading: [PDFContext.Shading: String] = [:]
         
         fileprivate var clip: Clip?
         
@@ -167,6 +169,7 @@ extension PDFContext.Page {
         self.styles.shadowBlur = 0
         self.styles.compositingMode = .default
         self.styles.blendMode = .default
+        self.colorSpace.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
     }
 }
 
@@ -237,7 +240,7 @@ extension PDFContext.Page {
             }
         }
     }
-    var shading: [PDFShading: String] {
+    var shading: [PDFContext.Shading: String] {
         get {
             return global?.shading ?? _shading
         }
@@ -386,10 +389,10 @@ extension PDFContext {
     
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
         get {
-            return current_page.current_layer.styles.chromaticAdaptationAlgorithm
+            return current_page.current_layer.colorSpace.chromaticAdaptationAlgorithm
         }
         set {
-            current_page.current_layer.styles.chromaticAdaptationAlgorithm = newValue
+            current_page.current_layer.colorSpace.chromaticAdaptationAlgorithm = newValue
         }
     }
 }
@@ -668,7 +671,7 @@ extension PDFContext {
 
 extension PDFContext {
     
-    private func create_gradient_function<C>(stops: [GradientStop<C>]) -> PDFFunction {
+    private func create_gradient_function<C>(stops: [GradientStop<C>]) -> PDFContext.Function {
         
         let colorSpace = current_page.colorSpace
         var stops = stops.map { $0.convert(to: colorSpace, intent: renderingIntent) }
@@ -680,7 +683,7 @@ extension PDFContext {
             stops.append(GradientStop(offset: 1, color: stop.color))
         }
         
-        var functions: [PDFFunction] = []
+        var functions: [PDFContext.Function] = []
         var bounds: [Double] = []
         var encode: [Double] = []
         
@@ -689,16 +692,16 @@ extension PDFContext {
             let c0 = (0..<colorSpace.numberOfComponents).map { lhs.color.component($0) }
             let c1 = (0..<colorSpace.numberOfComponents).map { rhs.color.component($0) }
             
-            functions.append(PDFFunction(c0: c0, c1: c1))
+            functions.append(PDFContext.Function(c0: c0, c1: c1))
             bounds.append(rhs.offset)
             encode.append(0)
             encode.append(1)
         }
         
-        return PDFFunction(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
+        return PDFContext.Function(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
     }
     
-    private func create_gradient_opacity_function<C>(stops: [GradientStop<C>]) -> PDFFunction {
+    private func create_gradient_opacity_function<C>(stops: [GradientStop<C>]) -> PDFContext.Function {
         
         var stops = stops
         
@@ -709,18 +712,18 @@ extension PDFContext {
             stops.append(GradientStop(offset: 1, color: stop.color))
         }
         
-        var functions: [PDFFunction] = []
+        var functions: [PDFContext.Function] = []
         var bounds: [Double] = []
         var encode: [Double] = []
         
         for (lhs, rhs) in zip(stops, stops.dropFirst()) {
-            functions.append(PDFFunction(c0: [lhs.color.opacity], c1: [rhs.color.opacity]))
+            functions.append(PDFContext.Function(c0: [lhs.color.opacity], c1: [rhs.color.opacity]))
             bounds.append(rhs.offset)
             encode.append(0)
             encode.append(1)
         }
         
-        return PDFFunction(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
+        return PDFContext.Function(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
     }
     
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
@@ -744,7 +747,7 @@ extension PDFContext {
         
         if stops.contains(where: { !$0.color.isOpaque }) {
             
-            let shading = PDFShading(
+            let shading = PDFContext.Shading(
                 type: 2,
                 is_clip: true,
                 coords: [start.x, start.y, end.x, end.y],
@@ -772,7 +775,7 @@ extension PDFContext {
         set_blendmode()
         set_opacity(self.opacity)
         
-        let shading = PDFShading(
+        let shading = PDFContext.Shading(
             type: 2,
             is_clip: context.is_clip,
             coords: [start.x, start.y, end.x, end.y],
@@ -813,7 +816,7 @@ extension PDFContext {
         
         if stops.contains(where: { !$0.color.isOpaque }) {
             
-            let shading = PDFShading(
+            let shading = PDFContext.Shading(
                 type: 3,
                 is_clip: true,
                 coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
@@ -841,7 +844,7 @@ extension PDFContext {
         set_blendmode()
         set_opacity(self.opacity)
         
-        let shading = PDFShading(
+        let shading = PDFContext.Shading(
             type: 3,
             is_clip: context.is_clip,
             coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
