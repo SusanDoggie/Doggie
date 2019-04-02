@@ -71,6 +71,6 @@ extension PDFArray {
             element.write(to: &data)
             data.append(utf8: "\n")
         }
-        data.append(utf8: "]\n")
+        data.append(utf8: "]")
     }
 }

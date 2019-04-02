@@ -30,6 +30,14 @@ extension PDFContext {
         case unsupportedColorSpace
     }
     
+    static func _write(_ array: [String], to data: inout Data, xref: inout [Int]) -> Int {
+        xref.append(data.count)
+        data.append(utf8: "\(xref.count) 0 obj\n[\n")
+        data.append(utf8: array.lazy.map { "\($0)" }.joined(separator: "\n"))
+        data.append(utf8: "\n]\nendobj\n")
+        return xref.count
+    }
+    
     static func _write(_ obj: String, to data: inout Data, xref: inout [Int]) -> Int {
         xref.append(data.count)
         data.append(utf8: """
@@ -60,6 +68,13 @@ extension PDFContext {
     static func _write(stream: Data, _ dictionary: PDFDictionary = [:], to data: inout Data, xref: inout [Int]) -> Int {
         
         var dictionary = dictionary
+        var stream = stream
+        
+        if let compressed = try? Deflate(windowBits: 15).process(stream) {
+            stream = compressed
+            dictionary["Filter"] = PDFName("FlateDecode")
+        }
+        
         dictionary["Length"] = PDFNumber(stream.count)
         
         xref.append(data.count)
@@ -75,17 +90,37 @@ extension PDFContext {
     static func _write(stream: String, _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
         
         var dictionary = dictionary
-        dictionary["Length"] = "\(stream.utf8.count)"
         
         xref.append(data.count)
-        data.append(utf8: "\(xref.count) 0 obj\n")
-        data.append(utf8: "<<\n")
-        data.append(utf8: dictionary.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
-        data.append(utf8: "\n>>\n")
-        data.append(utf8: "stream\n")
-        data.append(utf8: stream)
-        data.append(utf8: "\nendstream\n")
-        data.append(utf8: "endobj\n")
+        
+        if let compressed = try? Deflate(windowBits: 15).process(stream._utf8_data) {
+            
+            dictionary["Filter"] = "/FlateDecode"
+            dictionary["Length"] = "\(compressed.count)"
+            
+            data.append(utf8: "\(xref.count) 0 obj\n")
+            data.append(utf8: "<<\n")
+            data.append(utf8: dictionary.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
+            data.append(utf8: "\n>>\n")
+            data.append(utf8: "stream\n")
+            data.append(compressed)
+            data.append(utf8: "\nendstream\n")
+            data.append(utf8: "endobj\n")
+            
+        } else {
+            
+            dictionary["Length"] = "\(stream.utf8.count)"
+            
+            data.append(utf8: "\(xref.count) 0 obj\n")
+            data.append(utf8: "<<\n")
+            data.append(utf8: dictionary.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
+            data.append(utf8: "\n>>\n")
+            data.append(utf8: "stream\n")
+            data.append(utf8: stream)
+            data.append(utf8: "\nendstream\n")
+            data.append(utf8: "endobj\n")
+        }
+        
         return xref.count
     }
     
@@ -257,9 +292,28 @@ extension PDFContext.Page {
         guard let iccData = colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
         let iccBased = PDFContext._write(stream: iccData, ["N": PDFNumber(colorSpace.numberOfComponents)], to: &data, xref: &xref)
         
-        let _colorSpace = PDFContext._write(["Cs1": "[/ICCBased \(iccBased) 0 R]"], to: &data, xref: &xref)
+        let _colorSpaceRef = PDFContext._write(["/ICCBased \(iccBased) 0 R"], to: &data, xref: &xref)
+        let _colorSpace = PDFContext._write(["Cs1": "\(_colorSpaceRef) 0 R"], to: &data, xref: &xref)
         
-        let _resources = _colorSpace + 3 + transparency_layers.count + mask.count << 1
+        var shading_table: [String: String] = [:]
+        for (shading, name) in self.shading {
+            
+            let _function = PDFContext._write(shading.function.pdf_object, to: &data, xref: &xref)
+            
+            let _shading = PDFContext._write([
+                "ColorSpace": "\(_colorSpaceRef) 0 R",
+                "ShadingType": "\(shading.type)",
+                "Function": "\(_function) 0 R",
+                "Coords": "[\(shading.coords.lazy.map { "\($0)" }.joined(separator: " "))]",
+                "Extend": "[\(shading.e0) \(shading.e1)]",
+                ], to: &data, xref: &xref)
+            
+            shading_table[name] = "\(_shading) 0 R"
+        }
+        
+        let _shading = PDFContext._write(shading_table, to: &data, xref: &xref)
+        
+        let _resources = xref.count + 3 + transparency_layers.count + mask.count << 1
         
         let _bbox = self.media.standardized
         let bbox = [
@@ -322,7 +376,8 @@ extension PDFContext.Page {
             "ProcSet": "[/PDF]",
             "ColorSpace": "\(_colorSpace) 0 R",
             "ExtGState": "\(_extGState) 0 R",
-            "XObject": "\(_xobject) 0 R"
+            "XObject": "\(_xobject) 0 R",
+            "Shading": "\(_shading) 0 R",
             ], to: &data, xref: &xref)
     }
     

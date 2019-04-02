@@ -65,6 +65,6 @@ extension PDFDictionary {
             value.write(to: &data)
             data.append(utf8: "\n")
         }
-        data.append(utf8: ">>\n")
+        data.append(utf8: ">>")
     }
 }

@@ -843,12 +843,12 @@ extension SVGContext {
 
 extension SVGContext {
     
-    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
+    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         guard startSpread == endSpread else { return }
         self.drawLinearGradient(stops: stops, start: start, end: end, spreadMethod: startSpread)
     }
     
-    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, spreadMethod: GradientSpreadMode) where C : ColorProtocol {
+    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, spreadMethod: GradientSpreadMode) {
         
         let id = new_name("GRADIENT")
         
@@ -869,7 +869,7 @@ extension SVGContext {
         
         element.setAttribute(for: "gradientTransform", value: self.transform.attributeStr())
         
-        for stop in stops {
+        for (_, stop) in stops.indexed().sorted(by: { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }) {
             var _stop = SDXMLElement(name: "stop")
             _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
             _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
@@ -892,12 +892,12 @@ extension SVGContext {
         self.append(rect, options: .allWithoutTransform)
     }
     
-    public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
+    public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         guard startSpread == endSpread else { return }
         self.drawRadialGradient(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, spreadMethod: startSpread)
     }
     
-    public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, spreadMethod: GradientSpreadMode) where C : ColorProtocol {
+    public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, spreadMethod: GradientSpreadMode) {
         
         let id = new_name("GRADIENT")
         
@@ -924,7 +924,7 @@ extension SVGContext {
         let transform = SDTransform.translate(x: -0.5, y: -0.5) * SDTransform.rotate(phase) * SDTransform.translate(x: end.x, y: end.y) * self.transform
         element.setAttribute(for: "gradientTransform", value: transform.attributeStr())
         
-        for stop in stops {
+        for (_, stop) in stops.indexed().sorted(by: { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }) {
             var _stop = SDXMLElement(name: "stop")
             _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
             _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
