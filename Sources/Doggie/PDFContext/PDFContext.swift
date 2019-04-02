@@ -193,12 +193,6 @@ extension PDFContext {
 
 extension PDFContext.Page {
     
-    fileprivate struct CurrentStyle {
-        
-        var color: String? = nil
-        var opacity: String? = nil
-    }
-    
     fileprivate var current_layer: PDFContext.Page {
         return next?.current_layer ?? self
     }
@@ -257,6 +251,16 @@ extension PDFContext.Page {
     }
 }
 
+extension PDFContext.Page {
+    
+    fileprivate struct CurrentStyle {
+        
+        var color: String? = nil
+        var opacity: String? = nil
+        var blend: String? = nil
+    }
+}
+
 extension PDFContext.Page.CurrentStyle {
     
     func apply(to context: PDFContext.Page) {
@@ -266,6 +270,9 @@ extension PDFContext.Page.CurrentStyle {
         }
         if let opacity = self.opacity {
             context.commands += "/\(opacity) gs\n"
+        }
+        if let blend = self.blend {
+            context.commands += "/\(blend) gs\n"
         }
     }
 }
@@ -521,10 +528,45 @@ extension PDFContext {
         }
     }
     
+    private func set_blendmode() {
+        
+        let context = current_page.current_layer
+        
+        let _mode: String
+        
+        switch self.blendMode {
+        case .normal: _mode = "/Normal"
+        case .multiply: _mode = "/Multiply"
+        case .screen: _mode = "/Screen"
+        case .overlay: _mode = "/Overlay"
+        case .darken: _mode = "/Darken"
+        case .lighten: _mode = "/Lighten"
+        case .colorDodge: _mode = "/ColorDodge"
+        case .colorBurn: _mode = "/ColorBurn"
+        case .softLight: _mode = "/SoftLight"
+        case .hardLight: _mode = "/HardLight"
+        case .difference: _mode = "/Difference"
+        case .exclusion: _mode = "/Exclusion"
+        default: _mode = "/Normal"
+        }
+        
+        let gstate = "/BM \(_mode)"
+        if current_page.extGState[gstate] == nil {
+            current_page.extGState[gstate] = "Gs\(current_page.extGState.count + 1)"
+        }
+        
+        let _blend = current_page.extGState[gstate]!
+        if context.currentStyle.blend != _blend {
+            context.commands += "/\(_blend) gs\n"
+            context.currentStyle.blend = _blend
+        }
+    }
+    
     public func draw<C : ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
         let context = current_page.current_layer
         
+        set_blendmode()
         set_opacity(color.opacity * self.opacity)
         
         let color = color.convert(to: current_page.colorSpace, intent: renderingIntent)
@@ -727,6 +769,7 @@ extension PDFContext {
             context.commands += "/\(name) gs\n"
         }
         
+        set_blendmode()
         set_opacity(self.opacity)
         
         let shading = PDFShading(
@@ -795,6 +838,7 @@ extension PDFContext {
             context.commands += "/\(name) gs\n"
         }
         
+        set_blendmode()
         set_opacity(self.opacity)
         
         let shading = PDFShading(
