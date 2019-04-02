@@ -432,9 +432,7 @@ extension SDObject.Base {
         case let .string(value):
             
             data.append(0x73)
-            if let utf8 = value.data(using: .utf8) {
-                data.append(contentsOf: utf8)
-            }
+            data.append(utf8: value)
             
         case let .signed(value):
             
@@ -497,7 +495,7 @@ extension SDObject.Base {
             data.encode(0 as BEUInt64)
             var body = MappedBuffer<UInt8>()
             for (key, value) in dictionary {
-                body.append(contentsOf: key.data(using: .utf8)!)
+                body.append(contentsOf: key._utf8_data)
                 data.encode(BEUInt64(body.count))
                 value.base.encode(to: &body)
                 data.encode(BEUInt64(body.count))

@@ -32,8 +32,7 @@ extension SDXMLDocument {
     }
     
     public init(xml string: String) throws {
-        guard let data = string.data(using: .utf8) else { throw Error.unknown }
-        try self.init(data: data)
+        try self.init(data: string._utf8_data)
     }
     
     public init(data: Data) throws {

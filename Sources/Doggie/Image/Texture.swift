@@ -125,7 +125,7 @@ extension Texture {
     @inlinable
     @inline(__always)
     public func isFastEqual(_ other: Texture) -> Bool {
-        return self.width == other.width && self.height == other.height && self.resamplingAlgorithm == other.resamplingAlgorithm && self.horizontalWrappingMode == other.horizontalWrappingMode && self.verticalWrappingMode == other.verticalWrappingMode && self.pixels.withUnsafeBufferPointer { lhs in other.pixels.withUnsafeBufferPointer { rhs in lhs.count == rhs.count && lhs.baseAddress == rhs.baseAddress } }
+        return self.width == other.width && self.height == other.height && self.resamplingAlgorithm == other.resamplingAlgorithm && self.horizontalWrappingMode == other.horizontalWrappingMode && self.verticalWrappingMode == other.verticalWrappingMode && self.pixels.isFastEqual(other.pixels)
     }
 }
 
