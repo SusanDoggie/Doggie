@@ -105,11 +105,11 @@ extension ImageContext {
         
         guard opacity > 0 else { return }
         
-        self.withUnsafeMutableImageBufferPointer { _image in
+        self.withOptionalUnsafeClipBufferPointer { _clip in
             
-            guard let _destination = _image.baseAddress else { return }
-            
-            self.withOptionalUnsafeClipBufferPointer { _clip in
+            self.withUnsafeMutableImageBufferPointer { _image in
+                
+                guard let _destination = _image.baseAddress else { return }
                 
                 body(ImageContextPixelBlender(destination: _destination, clip: _clip?.baseAddress, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
             }
@@ -130,11 +130,11 @@ extension ImageContext {
             
             var layer = Texture<Pixel>(width: width, height: height, fileBacked: image.fileBacked)
             
-            layer.withUnsafeMutableBufferPointer { _layer in
+            self.withOptionalUnsafeClipBufferPointer { _clip in
                 
-                guard let _destination = _layer.baseAddress else { return }
-                
-                self.withOptionalUnsafeClipBufferPointer { _clip in
+                layer.withUnsafeMutableBufferPointer { _layer in
+                    
+                    guard let _destination = _layer.baseAddress else { return }
                     
                     body(ImageContextPixelBlender(destination: _destination, clip: _clip?.baseAddress, opacity: opacity, compositingMode: compositingMode, blendMode: blendMode))
                 }

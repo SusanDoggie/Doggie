@@ -216,11 +216,13 @@ extension ImageContext {
     @inline(__always)
     public func render<G : ImageContextRenderTriangleGenerator, P : ColorPixelProtocol>(_ triangles: G, projection: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where Pixel.Model == P.Model {
         
+        let width = self.width
+        let height = self.height
         let transform = self.transform
         let cullingMode = self.renderCullingMode
         let depthCompareMode = self.renderDepthCompareMode
         
-        if self.width == 0 || self.height == 0 || transform.determinant.almostZero() {
+        if width == 0 || height == 0 || transform.determinant.almostZero() {
             return
         }
         
@@ -293,19 +295,23 @@ extension ImageContext {
             }
         }
         
-        self.withUnsafePixelBlender { blender in
+        if let depthFun = depthFun {
             
-            if let depthFun = depthFun {
+            self.withUnsafeMutableDepthBufferPointer { _depth in
                 
-                self.withUnsafeMutableDepthBufferPointer { _depth in
-                    
-                    guard let _depth = _depth.baseAddress else { return }
+                guard let _depth = _depth.baseAddress else { return }
+                
+                self.withUnsafePixelBlender { blender in
                     
                     let rasterizer = ImageContextRenderBuffer(blender: blender, depth: _depth, width: width, height: height)
                     
                     _render(rasterizer: rasterizer, projection: projection, depthFun: depthFun, shader: shader)
                 }
-            } else {
+            }
+            
+        } else {
+            
+            self.withUnsafePixelBlender { blender in
                 
                 let rasterizer = ImageContextRenderBuffer(blender: blender, depth: nil, width: width, height: height)
                 

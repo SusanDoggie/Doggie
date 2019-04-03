@@ -61,7 +61,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _drawGradient(_ blender: ImageContextPixelBlender<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float64ColorPixel<Pixel.Model>, _ c1: Float64ColorPixel<Pixel.Model>, _ c2: Float64ColorPixel<Pixel.Model>, _ c3: Float64ColorPixel<Pixel.Model>) {
+    func _drawGradient(_ rasterizer: ImageContextGradientMeshRasterizeBuffer<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float64ColorPixel<Pixel.Model>, _ c1: Float64ColorPixel<Pixel.Model>, _ c2: Float64ColorPixel<Pixel.Model>, _ c3: Float64ColorPixel<Pixel.Model>) {
         
         let (p0, p1, p2, p3) = patch.split(0.5, 0.5)
         
@@ -81,16 +81,11 @@ extension ImageContext {
             
             if abs(d0.x) < 1 && abs(d0.y) < 1 && abs(d1.x) < 1 && abs(d1.y) < 1 && abs(d2.x) < 1 && abs(d2.y) < 1 && abs(d3.x) < 1 && abs(d3.y) < 1 {
                 
-                let width = self.width
-                let height = self.height
-                
-                let rasterizer = ImageContextGradientMeshRasterizeBuffer(blender: blender, width: width, height: height)
-                
                 rasterizer.rasterize(patch.m00, patch.m03, patch.m30) { buf in buf.blender.draw { c8 } }
                 rasterizer.rasterize(patch.m03, patch.m33, patch.m30) { buf in buf.blender.draw { c8 } }
                 
             } else {
-                _drawGradient(blender, patch, c0, c1, c2, c3)
+                _drawGradient(rasterizer, patch, c0, c1, c2, c3)
             }
         }
         
@@ -118,6 +113,11 @@ extension ImageContext {
         let _c2 = Float64ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent))
         let _c3 = Float64ColorPixel(c3.convert(to: colorSpace, intent: renderingIntent))
         
-        self.withUnsafePixelBlender { blender in _drawGradient(blender, patch * transform, _c0, _c1, _c2, _c3) }
+        self.withUnsafePixelBlender { blender in
+            
+            let rasterizer = ImageContextGradientMeshRasterizeBuffer(blender: blender, width: width, height: height)
+            
+            _drawGradient(rasterizer, patch * transform, _c0, _c1, _c2, _c3)
+        }
     }
 }
