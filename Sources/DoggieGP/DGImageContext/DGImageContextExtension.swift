@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+import Doggie
+
 extension DGImageContext {
     
     @inlinable
