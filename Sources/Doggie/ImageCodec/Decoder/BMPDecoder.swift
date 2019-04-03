@@ -497,13 +497,13 @@ struct BMPHeader {
     
     init?(data: Data) {
         
+        guard data.count > 18 else { return nil }
+        
         self.signature = data.load(as: Signature<BEUInt16>.self)
         self.size = data.load(fromByteOffset: 2, as: LEUInt32.self)
         self.reserved1 = data.load(fromByteOffset: 6, as: LEUInt16.self)
         self.reserved2 = data.load(fromByteOffset: 8, as: LEUInt16.self)
         self.offset = data.load(fromByteOffset: 10, as: LEUInt32.self)
-        
-        guard data.count > 18 else { return nil }
         
         let DIBSize = data.load(fromByteOffset: 14, as: LEUInt32.self)
         
