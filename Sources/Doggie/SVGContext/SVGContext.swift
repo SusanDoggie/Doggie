@@ -694,7 +694,7 @@ extension SVGContext {
         current_layer.clip = nil
     }
     
-    public func setClip(shape: Shape, winding: Shape.WindingRule) {
+    public func clip(shape: Shape, winding: Shape.WindingRule) {
         
         guard shape.reduce(0, { $0 + $1.count }) != 0 else {
             current_layer.clip = nil
@@ -718,6 +718,10 @@ extension SVGContext {
         current_layer.clip = .clip(id)
     }
     
+    public func drawClip(body: (DrawableContext) throws -> Void) rethrows {
+        try self.drawClip { (context: SVGContext) in try body(context) }
+    }
+    
     public func drawClip(body: (SVGContext) throws -> Void) rethrows {
         
         let mask_context = SVGContext(copyStates: current_layer)
@@ -732,22 +736,6 @@ extension SVGContext {
         defs.append(mask)
         
         current_layer.clip = .mask(id)
-    }
-}
-
-extension SVGContext {
-    
-    public func setClip<Image : ImageProtocol>(image: Image, transform: SDTransform) {
-        self.drawClip { context in context.draw(image: image, transform: transform) }
-    }
-    
-    public func setClip(image: ImageRep, transform: SDTransform) {
-        self.drawClip { context in context.draw(image: image, transform: transform) }
-    }
-    
-    public func setClip<P>(texture: Texture<P>, transform: SDTransform) where P : ColorPixelProtocol, P.Model == GrayColorModel {
-        let image = Image(texture: texture, colorSpace: .genericGamma22Gray)
-        self.setClip(image: image, transform: transform)
     }
 }
 

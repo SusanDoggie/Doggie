@@ -217,27 +217,19 @@ extension PDFContext {
         current_page.resetClip()
     }
     
-    public func setClip(shape: Shape, winding: Shape.WindingRule) {
-        current_page.setClip(shape: shape, winding: winding)
+    public func clip(shape: Shape, winding: Shape.WindingRule) {
+        current_page.clip(shape: shape, winding: winding)
     }
 }
 
 extension PDFContext {
+    
+    public func drawClip(body: (DrawableContext) throws -> Void) rethrows {
+        try self.drawClip { (context: PDFContext) in try body(context) }
+    }
     
     public func drawClip(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (PDFContext) throws -> Void) rethrows {
         try current_page.drawClip(colorSpace: colorSpace) { try body(PDFContext(page: $0)) }
-    }
-}
-
-extension PDFContext {
-    
-    public func setClip<Image>(image: Image, transform: SDTransform) where Image : ImageProtocol {
-        self.drawClip { context in context.draw(image: image, transform: transform) }
-    }
-    
-    public func setClip<P>(texture: Texture<P>, transform: SDTransform) where P : ColorPixelProtocol, P.Model == GrayColorModel {
-        let image = Image(texture: texture, colorSpace: .genericGamma22Gray)
-        self.setClip(image: image, transform: transform)
     }
 }
 

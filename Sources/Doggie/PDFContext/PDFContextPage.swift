@@ -545,7 +545,7 @@ extension PDFContext.Page {
         current_layer.clip = nil
     }
     
-    func setClip(shape: Shape, winding: Shape.WindingRule) {
+    func clip(shape: Shape, winding: Shape.WindingRule) {
         
         guard shape.reduce(0, { $0 + $1.count }) != 0 else {
             self.resetClip()

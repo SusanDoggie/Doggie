@@ -384,11 +384,11 @@ extension DGImageContext {
 
 extension DGImageContext {
     
-    public func drawClip(body: (DGImageContext<GrayColorModel>) throws -> Void) rethrows {
-        try self.drawClip(colorSpace: ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), body: body)
+    public func drawClip(body: (DrawableContext) throws -> Void) rethrows {
+        try self.drawClip { (context: DGImageContext<GrayColorModel>) in try body(context) }
     }
     
-    public func drawClip(colorSpace: ColorSpace<GrayColorModel>, body: (DGImageContext<GrayColorModel>) throws -> Void) rethrows {
+    public func drawClip(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (DGImageContext<GrayColorModel>) throws -> Void) rethrows {
         
         if let next = self.next {
             try next.drawClip(body: body)
@@ -416,14 +416,7 @@ extension DGImageContext {
 
 extension DGImageContext {
     
-    public func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel {
-        self.drawClip { (context: DGImageContext<GrayColorModel>) in context.draw(texture: texture, transform: transform) }
-    }
-}
-
-extension DGImageContext {
-    
-    public func setClip(shape: Shape, winding: Shape.WindingRule) {
+    public func clip(shape: Shape, winding: Shape.WindingRule) {
         self.drawClip { (context: DGImageContext<GrayColorModel>) in context.draw(shape: shape, winding: winding, color: .white) }
     }
 }

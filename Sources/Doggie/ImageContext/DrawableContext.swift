@@ -57,11 +57,9 @@ public protocol DrawableContext : AnyObject {
     
     func concatenate(_ transform: SDTransform)
     
-    func setClip(shape: Shape, winding: Shape.WindingRule)
+    func clip(shape: Shape, winding: Shape.WindingRule)
     
-    func setClip<Image: ImageProtocol>(image: Image, transform: SDTransform)
-    
-    func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel
+    func drawClip(body: (DrawableContext) throws -> Void) rethrows
     
     func draw<Image: ImageProtocol>(image: Image, transform: SDTransform)
     
@@ -139,20 +137,20 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func setClip(rect: Rect) {
-        self.setClip(shape: Shape(rect: rect), winding: .nonZero)
+    public func clip(rect: Rect) {
+        self.clip(shape: Shape(rect: rect), winding: .nonZero)
     }
     
     @inlinable
     @inline(__always)
-    public func setClip(roundedRect rect: Rect, radius: Radius) {
-        self.setClip(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero)
+    public func clip(roundedRect rect: Rect, radius: Radius) {
+        self.clip(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero)
     }
     
     @inlinable
     @inline(__always)
-    public func setClip(ellipseIn rect: Rect) {
-        self.setClip(shape: Shape(ellipseIn: rect), winding: .nonZero)
+    public func clip(ellipseIn rect: Rect) {
+        self.clip(shape: Shape(ellipseIn: rect), winding: .nonZero)
     }
 }
 
@@ -440,7 +438,7 @@ extension DrawableContext {
         
         self.beginTransparencyLayer()
         
-        self.setClip(shape: shape, winding: winding)
+        self.clip(shape: shape, winding: winding)
         
         let boundary = shape.originalBoundary
         let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.x, y: boundary.y) * shape.transform

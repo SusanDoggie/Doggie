@@ -302,7 +302,7 @@ class ImageTest: XCTestCase {
         
         context.draw(rect: Rect(x: 0, y: 0, width: 500, height: 500), color: .black)
         
-        context.setClip(shape: mask, winding: .nonZero)
+        context.clip(shape: mask, winding: .nonZero)
         
         context.beginTransparencyLayer()
         
@@ -320,7 +320,7 @@ class ImageTest: XCTestCase {
             
             let context = ImageContext<ARGB32ColorPixel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
             
-            context.setClip(shape: Shape(ellipseIn: Rect(x: 20, y: 20, width: 460, height: 460)), winding: .nonZero)
+            context.clip(shape: Shape(ellipseIn: Rect(x: 20, y: 20, width: 460, height: 460)), winding: .nonZero)
             
             context.scale(5)
             

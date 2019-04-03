@@ -79,15 +79,6 @@ extension DGImageContext {
     
     @inlinable
     @inline(__always)
-    public func setClip<Image: ImageProtocol>(image: Image, transform: SDTransform) {
-        self.setClip(texture: Texture<Float64ColorPixel<GrayColorModel>>(image: image.convert(to: ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
-    }
-}
-
-extension DGImageContext {
-    
-    @inlinable
-    @inline(__always)
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
         self.draw(texture: Texture<Float64ColorPixel<Model>>(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
     }

@@ -528,13 +528,13 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func drawClip<P>(body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
-        try self.drawClip(colorSpace: ColorSpace.calibratedGray(from: colorSpace, gamma: 2.2), body: body)
+    public func drawClip(body: (DrawableContext) throws -> Void) rethrows {
+        try self.drawClip { (context: ImageContext<Float64ColorPixel<GrayColorModel>>) in try body(context) }
     }
     
     @inlinable
     @inline(__always)
-    public func drawClip<P>(colorSpace: ColorSpace<GrayColorModel>, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
+    public func drawClip<P>(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
         
         let width = self.width
         let height = self.height
@@ -552,14 +552,5 @@ extension ImageContext {
         } else {
             current_layer.clearClipBuffer(with: 0)
         }
-    }
-}
-
-extension ImageContext {
-    
-    @inlinable
-    @inline(__always)
-    public func setClip<P>(texture: Texture<P>, transform: SDTransform) where P.Model == GrayColorModel {
-        self.drawClip { (context: ImageContext<Float64ColorPixel<GrayColorModel>>) in context.draw(texture: texture, transform: transform) }
     }
 }
