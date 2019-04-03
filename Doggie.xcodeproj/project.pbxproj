@@ -123,6 +123,7 @@
 		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
 		0A592E07225346F200E55388 /* PDFContextShading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A592E06225346F100E55388 /* PDFContextShading.swift */; };
 		0A5DEDD71F7B60D600A45B4B /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DEDD61F7B60D600A45B4B /* Resolution.swift */; };
+		0A5DF8FB225452FA00110895 /* PDFContextPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DF8FA225452FA00110895 /* PDFContextPage.swift */; };
 		0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D411F56B428000D51E3 /* FontCollection.swift */; };
 		0A5E8D461F57BE5C000D51E3 /* SFNTHHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */; };
 		0A5E8D4C1F57BF28000D51E3 /* SFNTVHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */; };
@@ -432,6 +433,7 @@
 		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RectCollection.swift; sourceTree = "<group>"; };
 		0A592E06225346F100E55388 /* PDFContextShading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextShading.swift; sourceTree = "<group>"; };
 		0A5DEDD61F7B60D600A45B4B /* Resolution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Resolution.swift; sourceTree = "<group>"; };
+		0A5DF8FA225452FA00110895 /* PDFContextPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextPage.swift; sourceTree = "<group>"; };
 		0A5E8D411F56B428000D51E3 /* FontCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FontCollection.swift; sourceTree = "<group>"; };
 		0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTHHEA.swift; sourceTree = "<group>"; };
 		0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTVHEA.swift; sourceTree = "<group>"; };
@@ -1037,6 +1039,7 @@
 			isa = PBXGroup;
 			children = (
 				0A63C95B2251E92600993714 /* PDFContext.swift */,
+				0A5DF8FA225452FA00110895 /* PDFContextPage.swift */,
 				0A592E06225346F100E55388 /* PDFContextShading.swift */,
 				08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */,
 				0A63C95C2251E92600993714 /* PDFContextEncoder.swift */,
@@ -1642,6 +1645,7 @@
 				0A967E521F132DC0007E38E4 /* GIFEncoder.swift in Sources */,
 				0A9F28251EF0D9CE00E69976 /* LuvColorModel.swift in Sources */,
 				0A9F281C1EF0D98400E69976 /* RGBColorModel.swift in Sources */,
+				0A5DF8FB225452FA00110895 /* PDFContextPage.swift in Sources */,
 				08458B291E2E627600D01813 /* ColorModel.swift in Sources */,
 				0A4714AC21D9D2B500650284 /* SVGTurbulence.swift in Sources */,
 				0A92C7B31E56A52E0090EBFC /* CompressionCodec.swift in Sources */,

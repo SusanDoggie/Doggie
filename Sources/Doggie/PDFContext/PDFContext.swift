@@ -23,46 +23,6 @@
 //  THE SOFTWARE.
 //
 
-private struct PDFContextStyles {
-    
-    static let defaultShadowColor = AnyColor(colorSpace: .default, white: 0.0, opacity: 1.0 / 3.0)
-    
-    var opacity: Double = 1
-    var transform: SDTransform = SDTransform.identity
-    
-    var shadowColor: AnyColor = PDFContextStyles.defaultShadowColor
-    var shadowOffset: Size = Size()
-    var shadowBlur: Double = 0
-    
-    var compositingMode: ColorCompositingMode = .default
-    var blendMode: ColorBlendMode = .default
-    
-    var resamplingAlgorithm: ResamplingAlgorithm = .default
-    
-    var renderingIntent: RenderingIntent = .default
-    
-}
-
-private struct GraphicState {
-    
-    var clip: PDFContext.Clip?
-    
-    var styles: PDFContextStyles
-    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
-    
-    init(context: PDFContext.Page) {
-        self.clip = context.clip
-        self.styles = context.styles
-        self.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
-    }
-    
-    func apply(to context: PDFContext.Page) {
-        context.clip = self.clip
-        context.styles = self.styles
-        context.colorSpace.chromaticAdaptationAlgorithm = self.chromaticAdaptationAlgorithm
-    }
-}
-
 public class PDFContext : DrawableContext {
     
     var pages: [Page] = []
@@ -78,98 +38,6 @@ public class PDFContext : DrawableContext {
         let page = Page(media: media, bleed: bleed, trim: trim, margin: margin, colorSpace: colorSpace)
         page.initialize()
         self.pages = [page]
-    }
-}
-
-extension PDFContext {
-    
-    fileprivate enum Clip {
-        case clip(String)
-        case mask(String)
-    }
-    
-    class Page {
-        
-        let media: Rect
-        let bleed: Rect
-        let trim: Rect
-        let margin: Rect
-        
-        var colorSpace: AnyColorSpace
-        
-        var is_clip: Bool = false
-        
-        var commands: String = ""
-        fileprivate var currentStyle = CurrentStyle()
-        
-        var _extGState: [String: String] = [:]
-        var _transparency_layers: [String: String] = [:]
-        var _mask: [String: String] = [:]
-        var _shading: [PDFContext.Shading: String] = [:]
-        
-        fileprivate var clip: Clip?
-        
-        fileprivate var styles: PDFContextStyles = PDFContextStyles()
-        
-        fileprivate var next: Page?
-        fileprivate weak var global: Page?
-        
-        fileprivate var graphicStateStack: [GraphicState] = []
-        
-        fileprivate init(media: Rect, bleed: Rect, trim: Rect, margin: Rect, colorSpace: AnyColorSpace) {
-            self.media = media
-            self.bleed = bleed
-            self.trim = trim
-            self.margin = margin
-            self.colorSpace = colorSpace
-        }
-        
-        fileprivate func initialize() {
-            
-            if is_clip {
-                self.commands += "/DeviceGray cs\n"
-            } else {
-                self.commands += "/Cs1 cs\n"
-            }
-            
-            self.commands += "q\n"
-        }
-    }
-}
-
-extension PDFContext.Page {
-    
-    private func _mirror(_ rect: Rect) -> Rect {
-        let transform = SDTransform.reflectY(media.midY)
-        let p0 = Point(x: rect.minX, y: rect.minY) * transform
-        let p1 = Point(x: rect.maxX, y: rect.maxY) * transform
-        return Rect.bound([p0, p1])
-    }
-    
-    var _mirrored_bleed: Rect {
-        return _mirror(bleed)
-    }
-    var _mirrored_trim: Rect {
-        return _mirror(trim)
-    }
-    var _mirrored_margin: Rect {
-        return _mirror(margin)
-    }
-}
-
-extension PDFContext.Page {
-    
-    fileprivate convenience init(copyStates context: PDFContext.Page, colorSpace: AnyColorSpace) {
-        self.init(media: context.media, bleed: context.bleed, trim: context.trim, margin: context.margin, colorSpace: colorSpace)
-        self.is_clip = context.is_clip
-        self.styles = context.styles
-        self.styles.opacity = 1
-        self.styles.shadowColor = PDFContextStyles.defaultShadowColor
-        self.styles.shadowOffset = Size()
-        self.styles.shadowBlur = 0
-        self.styles.compositingMode = .default
-        self.styles.blendMode = .default
-        self.colorSpace.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
     }
 }
 
@@ -191,92 +59,6 @@ extension PDFContext {
         let page = Page(media: media, bleed: bleed, trim: trim, margin: margin, colorSpace: colorSpace ?? current_page.colorSpace)
         page.initialize()
         self.pages.append(page)
-    }
-}
-
-extension PDFContext.Page {
-    
-    fileprivate var current_layer: PDFContext.Page {
-        return next?.current_layer ?? self
-    }
-    
-    func finalize() -> String {
-        return commands + "Q"
-    }
-    
-    var extGState: [String: String] {
-        get {
-            return global?.extGState ?? _extGState
-        }
-        set {
-            if let global = self.global {
-                global._extGState = newValue
-            } else {
-                self._extGState = newValue
-            }
-        }
-    }
-    var transparency_layers: [String: String] {
-        get {
-            return global?.transparency_layers ?? _transparency_layers
-        }
-        set {
-            if let global = self.global {
-                global._transparency_layers = newValue
-            } else {
-                self._transparency_layers = newValue
-            }
-        }
-    }
-    var mask: [String: String] {
-        get {
-            return global?.mask ?? _mask
-        }
-        set {
-            if let global = self.global {
-                global._mask = newValue
-            } else {
-                self._mask = newValue
-            }
-        }
-    }
-    var shading: [PDFContext.Shading: String] {
-        get {
-            return global?.shading ?? _shading
-        }
-        set {
-            if let global = self.global {
-                global._shading = newValue
-            } else {
-                self._shading = newValue
-            }
-        }
-    }
-}
-
-extension PDFContext.Page {
-    
-    fileprivate struct CurrentStyle {
-        
-        var color: String? = nil
-        var opacity: String? = nil
-        var blend: String? = nil
-    }
-}
-
-extension PDFContext.Page.CurrentStyle {
-    
-    func apply(to context: PDFContext.Page) {
-        
-        if let color = self.color {
-            context.commands += "\(color) sc\n"
-        }
-        if let opacity = self.opacity {
-            context.commands += "/\(opacity) gs\n"
-        }
-        if let blend = self.blend {
-            context.commands += "/\(blend) gs\n"
-        }
     }
 }
 
@@ -304,95 +86,91 @@ extension PDFContext {
     
     public var opacity: Double {
         get {
-            return current_page.current_layer.styles.opacity
+            return current_page.opacity
         }
         set {
-            current_page.current_layer.styles.opacity = newValue
+            current_page.opacity = newValue
         }
-    }
-    
-    fileprivate var _mirrored_transform: SDTransform {
-        return self.transform * .reflectY(media.midY)
     }
     
     public var transform: SDTransform {
         get {
-            return current_page.current_layer.styles.transform
+            return current_page.transform
         }
         set {
-            current_page.current_layer.styles.transform = newValue
+            current_page.transform = newValue
         }
     }
     
     public var shadowColor: AnyColor {
         get {
-            return current_page.current_layer.styles.shadowColor
+            return current_page.shadowColor
         }
         set {
-            current_page.current_layer.styles.shadowColor = newValue
+            current_page.shadowColor = newValue
         }
     }
     
     public var shadowOffset: Size {
         get {
-            return current_page.current_layer.styles.shadowOffset
+            return current_page.shadowOffset
         }
         set {
-            current_page.current_layer.styles.shadowOffset = newValue
+            current_page.shadowOffset = newValue
         }
     }
     
     public var shadowBlur: Double {
         get {
-            return current_page.current_layer.styles.shadowBlur
+            return current_page.shadowBlur
         }
         set {
-            current_page.current_layer.styles.shadowBlur = newValue
+            current_page.shadowBlur = newValue
         }
     }
     
     public var compositingMode: ColorCompositingMode {
         get {
-            return current_page.current_layer.styles.compositingMode
+            return current_page.compositingMode
         }
         set {
-            current_page.current_layer.styles.compositingMode = newValue
+            current_page.compositingMode = newValue
         }
     }
     
     public var blendMode: ColorBlendMode {
         get {
-            return current_page.current_layer.styles.blendMode
+            return current_page.blendMode
         }
         set {
-            current_page.current_layer.styles.blendMode = newValue
+            current_page.blendMode = newValue
         }
     }
     
     public var resamplingAlgorithm: ResamplingAlgorithm {
         get {
-            return current_page.current_layer.styles.resamplingAlgorithm
+            return current_page.resamplingAlgorithm
         }
         set {
-            current_page.current_layer.styles.resamplingAlgorithm = newValue
+            current_page.resamplingAlgorithm = newValue
         }
     }
     
     public var renderingIntent: RenderingIntent {
         get {
-            return current_page.current_layer.styles.renderingIntent
+            return current_page.renderingIntent
         }
         set {
-            current_page.current_layer.styles.renderingIntent = newValue
+            current_page.renderingIntent = newValue
         }
     }
     
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
         get {
-            return current_page.current_layer.colorSpace.chromaticAdaptationAlgorithm
+            return current_page.chromaticAdaptationAlgorithm
         }
         set {
-            current_page.current_layer.colorSpace.chromaticAdaptationAlgorithm = newValue
+            current_page.chromaticAdaptationAlgorithm = newValue
         }
     }
 }
@@ -400,260 +178,54 @@ extension PDFContext {
 extension PDFContext {
     
     public func saveGraphicState() {
-        current_page.graphicStateStack.append(GraphicState(context: current_page.current_layer))
+        current_page.saveGraphicState()
     }
     
     public func restoreGraphicState() {
-        current_page.graphicStateStack.popLast()?.apply(to: current_page.current_layer)
-    }
-}
-
-extension PDFContext.Page {
-    
-    fileprivate func _beginTransparencyLayer() {
-        if let next = self.next {
-            next._beginTransparencyLayer()
-        } else {
-            self.next = PDFContext.Page(copyStates: self, colorSpace: colorSpace)
-            self.next?.global = global ?? self
-            self.next?.initialize()
-        }
-    }
-    
-    fileprivate func _endTransparencyLayer() {
-        
-        if let next = self.next {
-            
-            if next.next != nil {
-                
-                next._endTransparencyLayer()
-                
-            } else {
-                
-                self.next = nil
-                
-                let name = "Fm\(self.transparency_layers.count + 1)"
-                self.transparency_layers[name] = next.finalize()
-                
-                self.commands += "/\(name) Do\n"
-            }
-        }
+        current_page.restoreGraphicState()
     }
 }
 
 extension PDFContext {
     
     public func beginTransparencyLayer() {
-        current_page._beginTransparencyLayer()
+        current_page.beginTransparencyLayer()
     }
     
     public func endTransparencyLayer() {
-        current_page._endTransparencyLayer()
+        current_page.endTransparencyLayer()
     }
 }
 
 extension PDFContext {
     
-    private func encode_path(shape: Shape) {
-        
-        let context = current_page.current_layer
-        
-        let shape = shape * _mirrored_transform
-        
-        for component in shape.identity {
-            
-            context.commands += "\(_decimal_round(component.start.x)) \(_decimal_round(component.start.y)) m\n"
-            
-            var current_point = component.start
-            
-            for segment in component {
-                switch segment {
-                case let .line(p1):
-                    
-                    context.commands += "\(_decimal_round(p1.x)) \(_decimal_round(p1.y)) l\n"
-                    current_point = p1
-                    
-                case let .quad(p1, p2):
-                    
-                    let cubic = QuadBezier(current_point, p1, p2).elevated()
-                    
-                    if cubic.p1 == current_point {
-                        context.commands += "\(_decimal_round(cubic.p2.x)) \(_decimal_round(cubic.p2.y))\n"
-                        context.commands += "\(_decimal_round(cubic.p3.x)) \(_decimal_round(cubic.p3.y)) v\n"
-                    } else if cubic.p2 == current_point {
-                        context.commands += "\(_decimal_round(cubic.p1.x)) \(_decimal_round(cubic.p1.y))\n"
-                        context.commands += "\(_decimal_round(cubic.p3.x)) \(_decimal_round(cubic.p3.y)) y\n"
-                    } else {
-                        context.commands += "\(_decimal_round(cubic.p1.x)) \(_decimal_round(cubic.p1.y))\n"
-                        context.commands += "\(_decimal_round(cubic.p2.x)) \(_decimal_round(cubic.p2.y))\n"
-                        context.commands += "\(_decimal_round(cubic.p3.x)) \(_decimal_round(cubic.p3.y)) c\n"
-                    }
-                    
-                    current_point = p2
-                    
-                case let .cubic(p1, p2, p3):
-                    
-                    if p1 == current_point {
-                        context.commands += "\(_decimal_round(p2.x)) \(_decimal_round(p2.y))\n"
-                        context.commands += "\(_decimal_round(p3.x)) \(_decimal_round(p3.y)) v\n"
-                    } else if p2 == current_point {
-                        context.commands += "\(_decimal_round(p1.x)) \(_decimal_round(p1.y))\n"
-                        context.commands += "\(_decimal_round(p3.x)) \(_decimal_round(p3.y)) y\n"
-                    } else {
-                        context.commands += "\(_decimal_round(p1.x)) \(_decimal_round(p1.y))\n"
-                        context.commands += "\(_decimal_round(p2.x)) \(_decimal_round(p2.y))\n"
-                        context.commands += "\(_decimal_round(p3.x)) \(_decimal_round(p3.y)) c\n"
-                    }
-                    
-                    current_point = p3
-                }
-            }
-            
-            if component.isClosed {
-                context.commands += "h\n"
-            }
-        }
-    }
-    
-    private func set_opacity(_ opacity: Double) {
-        
-        let context = current_page.current_layer
-        
-        let gstate = "/ca \(_decimal_round(opacity))"
-        if current_page.extGState[gstate] == nil {
-            current_page.extGState[gstate] = "Gs\(current_page.extGState.count + 1)"
-        }
-        
-        let _opacity = current_page.extGState[gstate]!
-        if context.currentStyle.opacity != _opacity {
-            context.commands += "/\(_opacity) gs\n"
-            context.currentStyle.opacity = _opacity
-        }
-    }
-    
-    private func set_blendmode() {
-        
-        let context = current_page.current_layer
-        
-        let _mode: String
-        
-        switch self.blendMode {
-        case .normal: _mode = "/Normal"
-        case .multiply: _mode = "/Multiply"
-        case .screen: _mode = "/Screen"
-        case .overlay: _mode = "/Overlay"
-        case .darken: _mode = "/Darken"
-        case .lighten: _mode = "/Lighten"
-        case .colorDodge: _mode = "/ColorDodge"
-        case .colorBurn: _mode = "/ColorBurn"
-        case .softLight: _mode = "/SoftLight"
-        case .hardLight: _mode = "/HardLight"
-        case .difference: _mode = "/Difference"
-        case .exclusion: _mode = "/Exclusion"
-        default: _mode = "/Normal"
-        }
-        
-        let gstate = "/BM \(_mode)"
-        if current_page.extGState[gstate] == nil {
-            current_page.extGState[gstate] = "Gs\(current_page.extGState.count + 1)"
-        }
-        
-        let _blend = current_page.extGState[gstate]!
-        if context.currentStyle.blend != _blend {
-            context.commands += "/\(_blend) gs\n"
-            context.currentStyle.blend = _blend
-        }
-    }
-    
     public func draw<C : ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
-        
-        let context = current_page.current_layer
-        
-        set_blendmode()
-        set_opacity(color.opacity * self.opacity)
-        
-        let color = color.convert(to: current_page.colorSpace, intent: renderingIntent)
-        let _color = (0..<color.numberOfComponents - 1).lazy.map { "\(_decimal_round(color.component($0)))" }.joined(separator: " ")
-        
-        if context.currentStyle.color != _color {
-            context.commands += "\(_color) sc\n"
-            context.currentStyle.color = _color
-        }
-        
-        self.encode_path(shape: shape)
-        switch winding {
-        case .nonZero: context.commands += "f\n"
-        case .evenOdd: context.commands += "f*\n"
-        }
+        current_page.draw(shape: shape, winding: winding, color: color)
     }
 }
 
 extension PDFContext {
     
     public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform) {
-        
+        current_page.draw(image: image, transform: transform)
     }
 }
 
 extension PDFContext {
     
     public func resetClip() {
-        
-        let context = current_page.current_layer
-        
-        context.commands += "Q q\n"
-        context.currentStyle.apply(to: context)
+        current_page.resetClip()
     }
     
     public func setClip(shape: Shape, winding: Shape.WindingRule) {
-        
-        let context = current_page.current_layer
-        
-        context.commands += "Q q\n"
-        context.currentStyle.apply(to: context)
-        
-        self.encode_path(shape: shape)
-        switch winding {
-        case .nonZero: context.commands += "W n\n"
-        case .evenOdd: context.commands += "W* n\n"
-        }
-    }
-}
-
-extension PDFContext.Page {
-    
-    fileprivate func _drawClip(colorSpace: ColorSpace<GrayColorModel>, body: (PDFContext.Page) throws -> Void) rethrows {
-        
-        if let next = self.next {
-            try next._drawClip(colorSpace: colorSpace, body: body)
-            return
-        }
-        
-        self.commands += "Q q\n"
-        self.currentStyle.apply(to: self)
-        
-        let mask = PDFContext.Page(copyStates: self, colorSpace: AnyColorSpace(colorSpace))
-        mask.global = global ?? self
-        mask.is_clip = true
-        mask.initialize()
-        
-        try body(mask)
-        
-        let name = "Mk\(self.mask.count + 1)"
-        self.mask[name] = mask.finalize()
-        
-        self.commands += "/\(name) gs\n"
+        current_page.setClip(shape: shape, winding: winding)
     }
 }
 
 extension PDFContext {
     
-    public func drawClip(body: (PDFContext) throws -> Void) rethrows {
-        try self.drawClip(colorSpace: .genericGamma22Gray, body: body)
-    }
-    
-    public func drawClip(colorSpace: ColorSpace<GrayColorModel>, body: (PDFContext) throws -> Void) rethrows {
-        try current_page._drawClip(colorSpace: colorSpace) { try body(PDFContext(page: $0)) }
+    public func drawClip(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (PDFContext) throws -> Void) rethrows {
+        try current_page.drawClip(colorSpace: colorSpace) { try body(PDFContext(page: $0)) }
     }
 }
 
@@ -671,196 +243,11 @@ extension PDFContext {
 
 extension PDFContext {
     
-    private func create_gradient_function<C>(stops: [GradientStop<C>]) -> PDFContext.Function {
-        
-        let colorSpace = current_page.colorSpace
-        var stops = stops.map { $0.convert(to: colorSpace, intent: renderingIntent) }
-        
-        if let stop = stops.first, stop.offset > 0 {
-            stops.insert(GradientStop(offset: 0, color: stop.color), at: 0)
-        }
-        if let stop = stops.last, stop.offset < 1 {
-            stops.append(GradientStop(offset: 1, color: stop.color))
-        }
-        
-        var functions: [PDFContext.Function] = []
-        var bounds: [Double] = []
-        var encode: [Double] = []
-        
-        for (lhs, rhs) in zip(stops, stops.dropFirst()) {
-            
-            let c0 = (0..<colorSpace.numberOfComponents).map { lhs.color.component($0) }
-            let c1 = (0..<colorSpace.numberOfComponents).map { rhs.color.component($0) }
-            
-            functions.append(PDFContext.Function(c0: c0, c1: c1))
-            bounds.append(rhs.offset)
-            encode.append(0)
-            encode.append(1)
-        }
-        
-        return PDFContext.Function(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
-    }
-    
-    private func create_gradient_opacity_function<C>(stops: [GradientStop<C>]) -> PDFContext.Function {
-        
-        var stops = stops
-        
-        if let stop = stops.first, stop.offset > 0 {
-            stops.insert(GradientStop(offset: 0, color: stop.color), at: 0)
-        }
-        if let stop = stops.last, stop.offset < 1 {
-            stops.append(GradientStop(offset: 1, color: stop.color))
-        }
-        
-        var functions: [PDFContext.Function] = []
-        var bounds: [Double] = []
-        var encode: [Double] = []
-        
-        for (lhs, rhs) in zip(stops, stops.dropFirst()) {
-            functions.append(PDFContext.Function(c0: [lhs.color.opacity], c1: [rhs.color.opacity]))
-            bounds.append(rhs.offset)
-            encode.append(0)
-            encode.append(1)
-        }
-        
-        return PDFContext.Function(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
-    }
-    
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
-        
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
-        guard stops.count >= 2 else { return }
-        
-        let transform = _mirrored_transform
-        let _transform = [
-            "\(_decimal_round(transform.a))",
-            "\(_decimal_round(transform.d))",
-            "\(_decimal_round(transform.b))",
-            "\(_decimal_round(transform.e))",
-            "\(_decimal_round(transform.c))",
-            "\(_decimal_round(transform.f))",
-        ]
-        
-        let context = current_page.current_layer
-        
-        context.commands += "q\n"
-        
-        if stops.contains(where: { !$0.color.isOpaque }) {
-            
-            let shading = PDFContext.Shading(
-                type: 2,
-                is_clip: true,
-                coords: [start.x, start.y, end.x, end.y],
-                function: create_gradient_opacity_function(stops: stops),
-                e0: startSpread == .pad,
-                e1: endSpread == .pad
-            )
-            
-            if context.shading[shading] == nil {
-                context.shading[shading] = "Sh\(context.shading.count + 1)"
-            }
-            
-            var mask_commands = "/DeviceGray cs\n"
-            mask_commands += "\(_transform.joined(separator: " ")) cm\n"
-            
-            let _shading = context.shading[shading]!
-            mask_commands += "/\(_shading) sh\n"
-            
-            let name = "Mk\(context.mask.count + 1)"
-            context.mask[name] = mask_commands
-            
-            context.commands += "/\(name) gs\n"
-        }
-        
-        set_blendmode()
-        set_opacity(self.opacity)
-        
-        let shading = PDFContext.Shading(
-            type: 2,
-            is_clip: context.is_clip,
-            coords: [start.x, start.y, end.x, end.y],
-            function: create_gradient_function(stops: stops),
-            e0: startSpread == .pad,
-            e1: endSpread == .pad
-        )
-        
-        if context.shading[shading] == nil {
-            context.shading[shading] = "Sh\(context.shading.count + 1)"
-        }
-        
-        context.commands += "\(_transform.joined(separator: " ")) cm\n"
-        
-        let _shading = context.shading[shading]!
-        context.commands += "/\(_shading) sh\n"
-        context.commands += "Q\n"
+        current_page.drawLinearGradient(stops: stops, start: start, end: end, startSpread: startSpread, endSpread: endSpread)
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
-        
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
-        guard stops.count >= 2 else { return }
-        
-        let transform = _mirrored_transform
-        let _transform = [
-            "\(_decimal_round(transform.a))",
-            "\(_decimal_round(transform.d))",
-            "\(_decimal_round(transform.b))",
-            "\(_decimal_round(transform.e))",
-            "\(_decimal_round(transform.c))",
-            "\(_decimal_round(transform.f))",
-        ]
-        
-        let context = current_page.current_layer
-        
-        context.commands += "q\n"
-        
-        if stops.contains(where: { !$0.color.isOpaque }) {
-            
-            let shading = PDFContext.Shading(
-                type: 3,
-                is_clip: true,
-                coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
-                function: create_gradient_opacity_function(stops: stops),
-                e0: startSpread == .pad,
-                e1: endSpread == .pad
-            )
-            
-            if context.shading[shading] == nil {
-                context.shading[shading] = "Sh\(context.shading.count + 1)"
-            }
-            
-            var mask_commands = "/DeviceGray cs\n"
-            mask_commands += "\(_transform.joined(separator: " ")) cm\n"
-            
-            let _shading = context.shading[shading]!
-            mask_commands += "/\(_shading) sh\n"
-            
-            let name = "Mk\(context.mask.count + 1)"
-            context.mask[name] = mask_commands
-            
-            context.commands += "/\(name) gs\n"
-        }
-        
-        set_blendmode()
-        set_opacity(self.opacity)
-        
-        let shading = PDFContext.Shading(
-            type: 3,
-            is_clip: context.is_clip,
-            coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
-            function: create_gradient_function(stops: stops),
-            e0: startSpread == .pad,
-            e1: endSpread == .pad
-        )
-        
-        if context.shading[shading] == nil {
-            context.shading[shading] = "Sh\(context.shading.count + 1)"
-        }
-        
-        context.commands += "\(_transform.joined(separator: " ")) cm\n"
-        
-        let _shading = context.shading[shading]!
-        context.commands += "/\(_shading) sh\n"
-        context.commands += "Q\n"
+        current_page.drawRadialGradient(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
     }
 }

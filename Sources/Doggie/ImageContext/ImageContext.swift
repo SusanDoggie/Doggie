@@ -536,11 +536,6 @@ extension ImageContext {
     @inline(__always)
     public func drawClip<P>(colorSpace: ColorSpace<GrayColorModel>, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
         
-        if let next = self.next {
-            try next.drawClip(body: body)
-            return
-        }
-        
         let width = self.width
         let height = self.height
         
@@ -548,14 +543,14 @@ extension ImageContext {
             return
         }
         
-        let _clip = ImageContext<P>(copyStates: self, colorSpace: colorSpace)
+        let _clip = ImageContext<P>(copyStates: current_layer, colorSpace: colorSpace)
         
         try body(_clip)
         
         if _clip.isDirty {
-            self.clip = _clip.image.pixels.map { $0.color.white * $0.opacity }
+            current_layer.clip = _clip.image.pixels.map { $0.color.white * $0.opacity }
         } else {
-            self.clearClipBuffer(with: 0)
+            current_layer.clearClipBuffer(with: 0)
         }
     }
 }

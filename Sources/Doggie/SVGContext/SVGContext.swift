@@ -696,7 +696,7 @@ extension SVGContext {
     
     public func setClip(shape: Shape, winding: Shape.WindingRule) {
         
-        guard shape.count != 0 else {
+        guard shape.reduce(0, { $0 + $1.count }) != 0 else {
             current_layer.clip = nil
             return
         }
@@ -720,12 +720,7 @@ extension SVGContext {
     
     public func drawClip(body: (SVGContext) throws -> Void) rethrows {
         
-        if let next = self.next {
-            try next.drawClip(body: body)
-            return
-        }
-        
-        let mask_context = SVGContext(copyStates: self)
+        let mask_context = SVGContext(copyStates: current_layer)
         mask_context.global = global ?? self
         
         try body(mask_context)
@@ -822,6 +817,10 @@ extension SVGContext {
     }
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
+        
+        if shape.reduce(0, { $0 + $1.count }) == 0 {
+            return
+        }
         
         let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])

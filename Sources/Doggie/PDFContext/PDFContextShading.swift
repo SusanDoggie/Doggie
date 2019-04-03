@@ -29,7 +29,7 @@ extension PDFContext {
         
         var type: Int
         
-        var is_clip: Bool
+        var deviceGray: Bool
         
         var coords: [Double]
         var function: PDFContext.Function
