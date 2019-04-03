@@ -113,12 +113,11 @@ extension ImageContext {
             return
         }
         
-        self.withUnsafePixelBlender { blender in
-            _drawGradient(blender, patch * transform,
-                          Float64ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent)),
-                          Float64ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent)),
-                          Float64ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent)),
-                          Float64ColorPixel(c3.convert(to: colorSpace, intent: renderingIntent)))
-        }
+        let _c0 = Float64ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent))
+        let _c1 = Float64ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent))
+        let _c2 = Float64ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent))
+        let _c3 = Float64ColorPixel(c3.convert(to: colorSpace, intent: renderingIntent))
+        
+        self.withUnsafePixelBlender { blender in _drawGradient(blender, patch * transform, _c0, _c1, _c2, _c3) }
     }
 }
