@@ -29,6 +29,20 @@ tessellation(width: 500, height: 500)
 
 tessellation2(width: 500, height: 500)
 
+circle_pdf(width: 500, height: 500)
+
+shadow_pdf(width: 500, height: 500)
+
+drum_pdf(width: 500, height: 500)
+
+linearGradient_pdf(width: 500, height: 500)
+
+radialGradient_pdf(width: 500, height: 500)
+
+linearGradient2_pdf(width: 500, height: 500)
+
+radialGradient2_pdf(width: 500, height: 500)
+
 try circle_gp(width: 500, height: 500)
 
 try shadow_gp(width: 500, height: 500)

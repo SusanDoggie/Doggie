@@ -26,6 +26,29 @@ public func doggie(blendMode: ColorBlendMode, compositingMode: ColorCompositingM
     return context.image
 }
 
+public func doggie_pdf(blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, opacity: Double) -> NSImage? {
+    
+    let context = PDFContext(width: 500, height: 500, colorSpace: AnyColorSpace(.sRGB))
+    
+    context.transform = SDTransform.scale(5)
+    
+    context.draw(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), color: AnyColor(red: 247/255, green: 217/255, blue: 12/255))
+    
+    context.stroke(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), width: 4, cap: .round, join: .round, color: AnyColor.black)
+    
+    context.blendMode = blendMode
+    
+    context.compositingMode = compositingMode
+    
+    context.opacity = opacity
+    
+    context.draw(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), color: AnyColor(red: 234/255, green: 24/255, blue: 71/255))
+    
+    context.stroke(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), width: 4, cap: .round, join: .round, color: AnyColor.black)
+    
+    return try? NSImage(data: context.data())
+}
+
 public func doggie_gp(blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, opacity: Double) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
     let context = DGImageContext<RGBColorModel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
