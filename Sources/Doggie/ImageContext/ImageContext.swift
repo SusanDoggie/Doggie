@@ -74,7 +74,7 @@ private struct GraphicState {
     }
 }
 
-public class ImageContext<Pixel: ColorPixelProtocol> : TypedDrawableContext {
+public class ImageContext<Pixel: ColorPixelProtocol> : DrawableContext {
     
     @usableFromInline
     var _image: Image<Pixel>

@@ -124,6 +124,8 @@
 		0A592E07225346F200E55388 /* PDFContextShading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A592E06225346F100E55388 /* PDFContextShading.swift */; };
 		0A5DEDD71F7B60D600A45B4B /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DEDD61F7B60D600A45B4B /* Resolution.swift */; };
 		0A5DF8FB225452FA00110895 /* PDFContextPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DF8FA225452FA00110895 /* PDFContextPage.swift */; };
+		0A5DFE4422546ADF00110895 /* ImageContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DFE4322546ADF00110895 /* ImageContextExtension.swift */; };
+		0A5DFE4622546B6F00110895 /* DGImageContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DFE4522546B6F00110895 /* DGImageContextExtension.swift */; };
 		0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D411F56B428000D51E3 /* FontCollection.swift */; };
 		0A5E8D461F57BE5C000D51E3 /* SFNTHHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */; };
 		0A5E8D4C1F57BF28000D51E3 /* SFNTVHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */; };
@@ -434,6 +436,8 @@
 		0A592E06225346F100E55388 /* PDFContextShading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextShading.swift; sourceTree = "<group>"; };
 		0A5DEDD61F7B60D600A45B4B /* Resolution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Resolution.swift; sourceTree = "<group>"; };
 		0A5DF8FA225452FA00110895 /* PDFContextPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextPage.swift; sourceTree = "<group>"; };
+		0A5DFE4322546ADF00110895 /* ImageContextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextExtension.swift; sourceTree = "<group>"; };
+		0A5DFE4522546B6F00110895 /* DGImageContextExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGImageContextExtension.swift; sourceTree = "<group>"; };
 		0A5E8D411F56B428000D51E3 /* FontCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FontCollection.swift; sourceTree = "<group>"; };
 		0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTHHEA.swift; sourceTree = "<group>"; };
 		0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTVHEA.swift; sourceTree = "<group>"; };
@@ -736,6 +740,7 @@
 			isa = PBXGroup;
 			children = (
 				0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */,
+				0A5DFE4522546B6F00110895 /* DGImageContextExtension.swift */,
 				0A29B1DB2189985D0046FFB4 /* Renderer.swift */,
 			);
 			path = DGImageContext;
@@ -949,6 +954,7 @@
 			children = (
 				0AC621C120EDF07100E5FF15 /* DrawableContext.swift */,
 				0A39A6B41ED9342C00804004 /* ImageContext.swift */,
+				0A5DFE4322546ADF00110895 /* ImageContextExtension.swift */,
 				0A21F0231F061AE2009C4490 /* PixelBlender.swift */,
 				0AAFBEEE20B5687200A392FE /* Shadow.swift */,
 				0A39A6B71ED9345100804004 /* DrawImage.swift */,
@@ -1782,6 +1788,7 @@
 				08458AFB1E2E627600D01813 /* DirectConvolve.swift in Sources */,
 				0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */,
 				0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */,
+				0A5DFE4422546ADF00110895 /* ImageContextExtension.swift in Sources */,
 				0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */,
 				0A9F28281EF0D9DF00E69976 /* XYZColorModel.swift in Sources */,
 				0889F2C91F18FF1D0020E750 /* FixedNumber.swift in Sources */,
@@ -1830,6 +1837,7 @@
 				0A459AAA219014180015CDCD /* shadow.metal in Sources */,
 				0A13DB34218AE99200BD05F8 /* clip.metal in Sources */,
 				0A29B2F22189A4210046FFB4 /* set_opacity.metal in Sources */,
+				0A5DFE4622546B6F00110895 /* DGImageContextExtension.swift in Sources */,
 				0A29B237218998710046FFB4 /* stencil.metal in Sources */,
 				0A29B2F82189A9A10046FFB4 /* MetalRenderer.swift in Sources */,
 				0A098F2521967002003F3CE4 /* fill_stencil.metal in Sources */,

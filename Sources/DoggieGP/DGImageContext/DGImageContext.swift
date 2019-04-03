@@ -68,7 +68,7 @@ private struct GraphicState {
     }
 }
 
-public class DGImageContext<Model: ColorModelProtocol> : TypedDrawableContext {
+public class DGImageContext<Model: ColorModelProtocol> : DrawableContext {
     
     public let width: Int
     public let height: Int
