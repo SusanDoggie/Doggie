@@ -43,12 +43,27 @@ public class PDFContext : DrawableContext {
 
 extension PDFContext {
     
+    public convenience init(width: Double, height: Double, unit: Resolution.Unit = .point, colorSpace: AnyColorSpace = AnyColorSpace(.sRGB)) {
+        let _width = unit.convert(length: width, to: .point)
+        let _height = unit.convert(length: height, to: .point)
+        self.init(media: Rect(x: 0, y: 0, width: _width, height: _height), colorSpace: colorSpace)
+    }
+}
+
+extension PDFContext {
+    
     var current_page: Page {
         return pages.last!
     }
     
     public func nextPage(colorSpace: AnyColorSpace? = nil) {
         self.nextPage(media: current_page.media, bleed: current_page.bleed, trim: current_page.trim, margin: current_page.margin, colorSpace: colorSpace)
+    }
+    
+    public func nextPage(width: Double, height: Double, unit: Resolution.Unit = .point, colorSpace: AnyColorSpace? = nil) {
+        let _width = unit.convert(length: width, to: .point)
+        let _height = unit.convert(length: height, to: .point)
+        self.nextPage(media: Rect(x: 0, y: 0, width: _width, height: _height), colorSpace: colorSpace)
     }
     
     public func nextPage(media: Rect, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: AnyColorSpace? = nil) {
