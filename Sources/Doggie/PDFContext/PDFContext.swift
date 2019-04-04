@@ -221,8 +221,21 @@ extension PDFContext {
 
 extension PDFContext {
     
+    public enum CompressionScheme {
+        
+        case none
+        
+        case tiff_predictor
+        
+        case png_filter
+    }
+    
+    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, compression: CompressionScheme) {
+        current_page.draw(image: image, transform: transform, compression: compression)
+    }
+    
     public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform) {
-        current_page.draw(image: image, transform: transform)
+        self.draw(image: image, transform: transform, compression: .none)
     }
 }
 

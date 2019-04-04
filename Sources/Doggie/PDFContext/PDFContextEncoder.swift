@@ -65,21 +65,23 @@ extension PDFContext {
         return xref.count
     }
     
-    static func _write(stream: Data, _ dictionary: PDFDictionary = [:], to data: inout Data, xref: inout [Int]) -> Int {
+    static func _write(stream: Data, _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
         
         var dictionary = dictionary
         var stream = stream
         
-        if let compressed = try? Deflate(windowBits: 15).process(stream) {
+        if dictionary["Filter"] == nil, let compressed = try? Deflate(windowBits: 15).process(stream) {
             stream = compressed
-            dictionary["Filter"] = PDFName("FlateDecode")
+            dictionary["Filter"] = "/FlateDecode"
         }
         
-        dictionary["Length"] = PDFNumber(stream.count)
+        dictionary["Length"] = "\(stream.count)"
         
         xref.append(data.count)
         data.append(utf8: "\(xref.count) 0 obj\n")
-        dictionary.write(to: &data)
+        data.append(utf8: "<<\n")
+        data.append(utf8: dictionary.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
+        data.append(utf8: "\n>>\n")
         data.append(utf8: "stream\n")
         data.append(stream)
         data.append(utf8: "\nendstream\n")
@@ -93,7 +95,7 @@ extension PDFContext {
         
         xref.append(data.count)
         
-        if let compressed = try? Deflate(windowBits: 15).process(stream._utf8_data) {
+        if dictionary["Filter"] == nil, let compressed = try? Deflate(windowBits: 15).process(stream._utf8_data) {
             
             dictionary["Filter"] = "/FlateDecode"
             dictionary["Length"] = "\(compressed.count)"
@@ -290,12 +292,13 @@ extension PDFContext.Page {
     func write_resources(xobjectGroup: XObjectGroup, to data: inout Data, xref: inout [Int]) throws -> Int {
         
         guard let iccData = colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
-        let iccBased = PDFContext._write(stream: iccData, ["N": PDFNumber(colorSpace.numberOfComponents)], to: &data, xref: &xref)
+        let iccBased = PDFContext._write(stream: iccData, ["N": "\(colorSpace.numberOfComponents)"], to: &data, xref: &xref)
         
         let _colorSpaceRef = PDFContext._write(["/ICCBased \(iccBased) 0 R"], to: &data, xref: &xref)
         let _colorSpace = PDFContext._write(["Cs1": "\(_colorSpaceRef) 0 R"], to: &data, xref: &xref)
         
         var shading_table: [String: String] = [:]
+        
         for (shading, name) in self.shading {
             
             let _function = PDFContext._write(shading.function.pdf_object, to: &data, xref: &xref)
@@ -313,6 +316,34 @@ extension PDFContext.Page {
         
         let _shading = PDFContext._write(shading_table, to: &data, xref: &xref)
         
+        var extGState_table: [String: String] = [:]
+        for (gstate, name) in extGState {
+            extGState_table[name] = "<</Type /ExtGState \(gstate)>>"
+        }
+        
+        var xobject_table: [String: String] = [:]
+        for (name, (var image, mask)) in image {
+            
+            if var mask = mask {
+                
+                mask.table["Type"] = "/XObject"
+                mask.table["Subtype"] = "/Image"
+                
+                let xobj = PDFContext._write(stream: mask.data, mask.table, to: &data, xref: &xref)
+                image.table["SMask"] = "\(xobj) 0 R"
+            }
+            
+            image.table["Type"] = "/XObject"
+            image.table["Subtype"] = "/Image"
+            
+            if image.table["ColorSpace"] == nil {
+                image.table["ColorSpace"] = "\(_colorSpaceRef) 0 R"
+            }
+            
+            let xobj = PDFContext._write(stream: image.data, image.table, to: &data, xref: &xref)
+            xobject_table[name] = "\(xobj) 0 R"
+        }
+        
         let _resources = xref.count + 3 + transparency_layers.count + mask.count << 1
         
         let _bbox = self.media.standardized
@@ -322,11 +353,6 @@ extension PDFContext.Page {
             _decimal_round(_bbox.width),
             _decimal_round(_bbox.height),
         ]
-        
-        var extGState_table: [String: String] = [:]
-        for (gstate, name) in extGState {
-            extGState_table[name] = "<</Type /ExtGState \(gstate)>>"
-        }
         
         for (name, commands) in mask {
             
@@ -353,7 +379,6 @@ extension PDFContext.Page {
         
         let _extGState = PDFContext._write(extGState_table, to: &data, xref: &xref)
         
-        var xobject_table: [String: String] = [:]
         for (name, commands) in transparency_layers {
             
             let dictionary = [
@@ -373,7 +398,7 @@ extension PDFContext.Page {
         let _xobject = PDFContext._write(xobject_table, to: &data, xref: &xref)
         
         return PDFContext._write([
-            "ProcSet": "[/PDF]",
+            "ProcSet": "[/PDF /ImageB /ImageC /ImageI]",
             "ColorSpace": "\(_colorSpace) 0 R",
             "ExtGState": "\(_extGState) 0 R",
             "XObject": "\(_xobject) 0 R",

@@ -25,7 +25,9 @@
 
 protocol TIFFRawRepresentable {
     
-    func tiff_rawData(_ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8>
+    func tiff_color_data(_ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8>
+    
+    func tiff_opacity_data(_ predictor: Int) -> MappedBuffer<UInt8>
 }
 
 protocol TIFFEncodablePixel: ColorPixelProtocol {
@@ -137,7 +139,7 @@ extension Gray32ColorPixel : TIFFEncodablePixel {
 
 extension Image : TIFFRawRepresentable {
     
-    func tiff_rawData(_ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    func tiff_color_data(_ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? Pixel.Model.numberOfComponents : Pixel.Model.numberOfComponents + 1
         let bytesPerSample = 2
@@ -229,181 +231,41 @@ extension Image : TIFFRawRepresentable {
         
         return data
     }
-}
-
-extension TIFFEncoder {
     
-    static func tiff_rawData<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    func tiff_opacity_data(_ predictor: Int) -> MappedBuffer<UInt8> {
         
-        let samplesPerPixel = isOpaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents
-        let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
-        
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
-        
-        image.withUnsafeBufferPointer {
-            
-            guard var source = $0.baseAddress else { return }
-            
-            switch predictor {
-            case 1:
-                let count = image.width * image.height
-                
-                if isOpaque {
-                    for _ in 0..<count {
-                        let pixel = source.pointee
-                        pixel.tiff_encode_color(&data)
-                        source += 1
-                    }
-                } else {
-                    for _ in 0..<count {
-                        let pixel = source.pointee
-                        pixel.tiff_encode_color(&data)
-                        pixel.tiff_encode_opacity(&data)
-                        source += 1
-                    }
-                }
-            case 2:
-                
-                if isOpaque {
-                    
-                    for _ in 0..<image.height {
-                        
-                        var lhs = Pixel()
-                        
-                        for _ in 0..<image.width {
-                            
-                            let rhs = source.pointee
-                            let pixel = rhs.tiff_prediction_2(lhs)
-                            pixel.tiff_encode_color(&data)
-                            lhs = rhs
-                            source += 1
-                        }
-                    }
-                } else {
-                    
-                    for _ in 0..<image.height {
-                        
-                        var lhs = Pixel()
-                        
-                        for _ in 0..<image.width {
-                            
-                            let rhs = source.pointee
-                            let pixel = rhs.tiff_prediction_2(lhs)
-                            pixel.tiff_encode_color(&data)
-                            pixel.tiff_encode_opacity(&data)
-                            lhs = rhs
-                            source += 1
-                        }
-                    }
-                }
-            default: fatalError()
-            }
-        }
-        
-        return data
-    }
-    
-    static func tiff_rawData<Pixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> where Pixel.Model == LabColorModel {
-        
-        let samplesPerPixel = isOpaque ? 3 : 4
         let bytesPerSample = 2
         
-        var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
+        var data = MappedBuffer<UInt8>(capacity: self.width * self.height * bytesPerSample, fileBacked: true)
         
-        image.withUnsafeBufferPointer {
+        self.withUnsafeBufferPointer {
             
             guard var source = $0.baseAddress else { return }
             
             switch predictor {
             case 1:
-                let count = image.width * image.height
+                let count = self.width * self.height
                 
-                if isOpaque {
-                    for _ in 0..<count {
-                        let color = source.pointee.color
-                        data.encode(UInt16((color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
-                        data.encode(Int16((color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
-                        data.encode(Int16((color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
-                        source += 1
-                    }
-                } else {
-                    for _ in 0..<count {
-                        let pixel = source.pointee
-                        data.encode(UInt16((pixel.color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
-                        data.encode(Int16((pixel.color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
-                        data.encode(Int16((pixel.color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
-                        data.encode(UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
-                        source += 1
-                    }
+                for _ in 0..<count {
+                    data.encode(UInt16((source.pointee.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    source += 1
                 }
             case 2:
                 
-                if isOpaque {
+                var lhs: UInt16 = 0
+                
+                for _ in 0..<self.height {
                     
-                    for _ in 0..<image.height {
-                        
-                        var _l1: UInt16 = 0
-                        var _a1: Int16 = 0
-                        var _b1: Int16 = 0
-                        
-                        for _ in 0..<image.width {
-                            
-                            let color = source.pointee.color
-                            
-                            let _l2 = UInt16((color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded())
-                            let _a2 = Int16((color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded())
-                            let _b2 = Int16((color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded())
-                            
-                            let _l3 = _l2 &- _l1
-                            let _a3 = _a2 &- _a1
-                            let _b3 = _b2 &- _b1
-                            
-                            data.encode(_l3.bigEndian)
-                            data.encode(_a3.bigEndian)
-                            data.encode(_b3.bigEndian)
-                            
-                            _l1 = _l2
-                            _a1 = _a2
-                            _b1 = _b2
-                            
-                            source += 1
-                        }
-                    }
-                } else {
+                    lhs = 0
                     
-                    for _ in 0..<image.height {
+                    for _ in 0..<self.width {
                         
-                        var _l1: UInt16 = 0
-                        var _a1: Int16 = 0
-                        var _b1: Int16 = 0
-                        var _o1: UInt16 = 0
+                        let c = UInt16((source.pointee.opacity * 65535).clamped(to: 0...65535).rounded())
+                        let s = c &- lhs
+                        data.encode(s.bigEndian)
+                        lhs = c
                         
-                        for _ in 0..<image.width {
-                            
-                            let pixel = source.pointee
-                            
-                            let _l2 = UInt16((pixel.color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded())
-                            let _a2 = Int16((pixel.color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded())
-                            let _b2 = Int16((pixel.color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded())
-                            let _o2 = UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded())
-                            
-                            let _l3 = _l2 &- _l1
-                            let _a3 = _a2 &- _a1
-                            let _b3 = _b2 &- _b1
-                            let _o3 = _o2 &- _o1
-                            
-                            data.encode(_l3.bigEndian)
-                            data.encode(_a3.bigEndian)
-                            data.encode(_b3.bigEndian)
-                            data.encode(_o3.bigEndian)
-                            
-                            _l1 = _l2
-                            _a1 = _a2
-                            _b1 = _b2
-                            _o1 = _o2
-                            
-                            source += 1
-                        }
+                        source += 1
                     }
                 }
             default: fatalError()
@@ -412,4 +274,225 @@ extension TIFFEncoder {
         
         return data
     }
+}
+
+func tiff_color_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    
+    let samplesPerPixel = isOpaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents
+    let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
+    
+    var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
+    
+    image.withUnsafeBufferPointer {
+        
+        guard var source = $0.baseAddress else { return }
+        
+        switch predictor {
+        case 1:
+            let count = image.width * image.height
+            
+            if isOpaque {
+                for _ in 0..<count {
+                    let pixel = source.pointee
+                    pixel.tiff_encode_color(&data)
+                    source += 1
+                }
+            } else {
+                for _ in 0..<count {
+                    let pixel = source.pointee
+                    pixel.tiff_encode_color(&data)
+                    pixel.tiff_encode_opacity(&data)
+                    source += 1
+                }
+            }
+        case 2:
+            
+            if isOpaque {
+                
+                for _ in 0..<image.height {
+                    
+                    var lhs = Pixel()
+                    
+                    for _ in 0..<image.width {
+                        
+                        let rhs = source.pointee
+                        let pixel = rhs.tiff_prediction_2(lhs)
+                        pixel.tiff_encode_color(&data)
+                        lhs = rhs
+                        source += 1
+                    }
+                }
+            } else {
+                
+                for _ in 0..<image.height {
+                    
+                    var lhs = Pixel()
+                    
+                    for _ in 0..<image.width {
+                        
+                        let rhs = source.pointee
+                        let pixel = rhs.tiff_prediction_2(lhs)
+                        pixel.tiff_encode_color(&data)
+                        pixel.tiff_encode_opacity(&data)
+                        lhs = rhs
+                        source += 1
+                    }
+                }
+            }
+        default: fatalError()
+        }
+    }
+    
+    return data
+}
+
+func tiff_opacity_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predictor: Int) -> MappedBuffer<UInt8> {
+    
+    let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
+    
+    var data = MappedBuffer<UInt8>(capacity: image.width * image.height * bytesPerSample, fileBacked: true)
+    
+    image.withUnsafeBufferPointer {
+        
+        guard var source = $0.baseAddress else { return }
+        
+        switch predictor {
+        case 1:
+            let count = image.width * image.height
+            
+            for _ in 0..<count {
+                let pixel = source.pointee
+                pixel.tiff_encode_opacity(&data)
+                source += 1
+            }
+        case 2:
+            
+            for _ in 0..<image.height {
+                
+                var lhs = Pixel()
+                
+                for _ in 0..<image.width {
+                    
+                    let rhs = source.pointee
+                    let pixel = rhs.tiff_prediction_2(lhs)
+                    pixel.tiff_encode_opacity(&data)
+                    lhs = rhs
+                    source += 1
+                }
+            }
+        default: fatalError()
+        }
+    }
+    
+    return data
+}
+
+func tiff_color_data<Pixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> where Pixel.Model == LabColorModel {
+    
+    let samplesPerPixel = isOpaque ? 3 : 4
+    let bytesPerSample = 2
+    
+    var data = MappedBuffer<UInt8>(capacity: image.width * image.height * samplesPerPixel * bytesPerSample, fileBacked: true)
+    
+    image.withUnsafeBufferPointer {
+        
+        guard var source = $0.baseAddress else { return }
+        
+        switch predictor {
+        case 1:
+            let count = image.width * image.height
+            
+            if isOpaque {
+                for _ in 0..<count {
+                    let color = source.pointee.color
+                    data.encode(UInt16((color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.encode(Int16((color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(Int16((color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    source += 1
+                }
+            } else {
+                for _ in 0..<count {
+                    let pixel = source.pointee
+                    data.encode(UInt16((pixel.color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.encode(Int16((pixel.color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(Int16((pixel.color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    source += 1
+                }
+            }
+        case 2:
+            
+            if isOpaque {
+                
+                for _ in 0..<image.height {
+                    
+                    var _l1: UInt16 = 0
+                    var _a1: Int16 = 0
+                    var _b1: Int16 = 0
+                    
+                    for _ in 0..<image.width {
+                        
+                        let color = source.pointee.color
+                        
+                        let _l2 = UInt16((color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded())
+                        let _a2 = Int16((color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded())
+                        let _b2 = Int16((color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded())
+                        
+                        let _l3 = _l2 &- _l1
+                        let _a3 = _a2 &- _a1
+                        let _b3 = _b2 &- _b1
+                        
+                        data.encode(_l3.bigEndian)
+                        data.encode(_a3.bigEndian)
+                        data.encode(_b3.bigEndian)
+                        
+                        _l1 = _l2
+                        _a1 = _a2
+                        _b1 = _b2
+                        
+                        source += 1
+                    }
+                }
+            } else {
+                
+                for _ in 0..<image.height {
+                    
+                    var _l1: UInt16 = 0
+                    var _a1: Int16 = 0
+                    var _b1: Int16 = 0
+                    var _o1: UInt16 = 0
+                    
+                    for _ in 0..<image.width {
+                        
+                        let pixel = source.pointee
+                        
+                        let _l2 = UInt16((pixel.color.normalizedComponent(0) * 65535).clamped(to: 0...65535).rounded())
+                        let _a2 = Int16((pixel.color.normalizedComponent(1) * 65535 - 32768).clamped(to: -32768...32767).rounded())
+                        let _b2 = Int16((pixel.color.normalizedComponent(2) * 65535 - 32768).clamped(to: -32768...32767).rounded())
+                        let _o2 = UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded())
+                        
+                        let _l3 = _l2 &- _l1
+                        let _a3 = _a2 &- _a1
+                        let _b3 = _b2 &- _b1
+                        let _o3 = _o2 &- _o1
+                        
+                        data.encode(_l3.bigEndian)
+                        data.encode(_a3.bigEndian)
+                        data.encode(_b3.bigEndian)
+                        data.encode(_o3.bigEndian)
+                        
+                        _l1 = _l2
+                        _a1 = _a2
+                        _b1 = _b2
+                        _o1 = _o2
+                        
+                        source += 1
+                    }
+                }
+            }
+        default: fatalError()
+        }
+    }
+    
+    return data
 }

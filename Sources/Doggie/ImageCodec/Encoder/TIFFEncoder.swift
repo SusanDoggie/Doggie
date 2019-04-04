@@ -107,37 +107,37 @@ struct TIFFEncoder : ImageRepEncoder {
             
             bitsPerChannel = 8
             
-            pixelData = tiff_rawData(image, predictor, isOpaque)
+            pixelData = tiff_color_data(image, predictor, isOpaque)
             
         case let image as Image<ARGB64ColorPixel>:
             
             bitsPerChannel = 16
             
-            pixelData = tiff_rawData(image, predictor, isOpaque)
+            pixelData = tiff_color_data(image, predictor, isOpaque)
             
         case let image as Image<RGBA32ColorPixel>:
             
             bitsPerChannel = 8
             
-            pixelData = tiff_rawData(image, predictor, isOpaque)
+            pixelData = tiff_color_data(image, predictor, isOpaque)
             
         case let image as Image<RGBA64ColorPixel>:
             
             bitsPerChannel = 16
             
-            pixelData = tiff_rawData(image, predictor, isOpaque)
+            pixelData = tiff_color_data(image, predictor, isOpaque)
             
         case let image as Image<Gray16ColorPixel>:
             
             bitsPerChannel = 8
             
-            pixelData = tiff_rawData(image, predictor, isOpaque)
+            pixelData = tiff_color_data(image, predictor, isOpaque)
             
         case let image as Image<Gray32ColorPixel>:
             
             bitsPerChannel = 16
             
-            pixelData = tiff_rawData(image, predictor, isOpaque)
+            pixelData = tiff_color_data(image, predictor, isOpaque)
             
         default:
             
@@ -145,13 +145,13 @@ struct TIFFEncoder : ImageRepEncoder {
             
             if photometric == 8 {
                 if let image = image.base as? Image<Float64ColorPixel<LabColorModel>>, image.colorSpace == .cieLab(white: Point(x: 0.34567, y: 0.35850)) {
-                    pixelData = tiff_rawData(image, predictor, isOpaque)
+                    pixelData = tiff_color_data(image, predictor, isOpaque)
                 } else {
-                    pixelData = tiff_rawData(Image<Float32ColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850))), predictor, isOpaque)
+                    pixelData = tiff_color_data(Image<Float32ColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850))), predictor, isOpaque)
                 }
             } else {
                 guard let image = image.base as? TIFFRawRepresentable else { return nil }
-                pixelData = image.tiff_rawData(predictor, isOpaque)
+                pixelData = image.tiff_color_data(predictor, isOpaque)
             }
         }
         
