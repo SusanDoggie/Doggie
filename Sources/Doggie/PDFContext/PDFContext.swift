@@ -27,8 +27,8 @@ public class PDFContext : DrawableContext {
     
     var pages: [Page] = []
     
-    private init(page: Page) {
-        self.pages = [page]
+    private init(pages: [Page]) {
+        self.pages = pages
     }
     
     public init(media: Rect, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: AnyColorSpace = AnyColorSpace(.sRGB)) {
@@ -56,6 +56,10 @@ extension PDFContext {
         return pages.last!
     }
     
+    public func clone() -> PDFContext {
+        return PDFContext(pages: pages.map { $0.clone() })
+    }
+    
     public func nextPage(colorSpace: AnyColorSpace? = nil) {
         self.nextPage(media: current_page.media, bleed: current_page.bleed, trim: current_page.trim, margin: current_page.margin, colorSpace: colorSpace)
     }
@@ -67,7 +71,7 @@ extension PDFContext {
     }
     
     public func nextPage(media: Rect, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: AnyColorSpace? = nil) {
-        precondition(!current_page.is_clip, "Multiple pages is not allowed for clip context.")
+        precondition(!current_page.state.is_clip, "Multiple pages is not allowed for clip context.")
         let bleed = bleed ?? media
         let trim = trim ?? bleed
         let margin = margin ?? trim
@@ -248,7 +252,7 @@ extension PDFContext {
     }
     
     public func drawClip(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (PDFContext) throws -> Void) rethrows {
-        try current_page.drawClip(colorSpace: colorSpace) { try body(PDFContext(page: $0)) }
+        try current_page.drawClip(colorSpace: colorSpace) { try body(PDFContext(pages: [$0])) }
     }
 }
 

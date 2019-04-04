@@ -51,35 +51,38 @@ private struct GraphicState {
     var styles: SVGContextStyles
     
     init(context: SVGContext) {
-        self.clip = context.clip
+        self.clip = context.state.clip
         self.styles = context.styles
     }
     
     func apply(to context: SVGContext) {
-        context.clip = self.clip
+        context.state.clip = self.clip
         context.styles = self.styles
     }
 }
 
+private struct SVGContextState {
+    
+    var clip: SVGContext.Clip?
+    
+    var elements: [SDXMLElement] = []
+    
+    var defs: [SDXMLElement] = []
+    var imageTable: [SVGContext.ImageTableKey: String] = [:]
+    
+}
+
 public class SVGContext : DrawableContext {
     
-    fileprivate var clip: Clip?
+    public let viewBox: Rect
+    public let resolution: Resolution
     
+    fileprivate var state: SVGContextState = SVGContextState()
     fileprivate var styles: SVGContextStyles = SVGContextStyles()
+    private var graphicStateStack: [GraphicState] = []
     
     private var next: SVGContext?
     private weak var global: SVGContext?
-    
-    private var graphicStateStack: [GraphicState] = []
-    
-    private var elements: [SDXMLElement] = []
-    
-    private var _defs: [SDXMLElement] = []
-    private var _imageTable: [ImageTableKey: String] = [:]
-    
-    public let viewBox: Rect
-    
-    public let resolution: Resolution
     
     public init(viewBox: Rect, resolution: Resolution = .default) {
         self.viewBox = viewBox
@@ -146,15 +149,29 @@ extension SVGContext {
         return next?.current_layer ?? self
     }
     
+    private func _clone(global: SVGContext?) -> SVGContext {
+        let clone = SVGContext(viewBox: viewBox, resolution: resolution)
+        clone.state = self.state
+        clone.styles = self.styles
+        clone.graphicStateStack = self.graphicStateStack
+        clone.next = self.next?._clone(global: global ?? clone)
+        clone.global = global
+        return clone
+    }
+    
+    public func clone() -> SVGContext {
+        return self._clone(global: nil)
+    }
+    
     public var defs: [SDXMLElement] {
         get {
-            return global?.defs ?? _defs
+            return global?.defs ?? state.defs
         }
         set {
             if let global = self.global {
-                global._defs = newValue
+                global.state.defs = newValue
             } else {
-                self._defs = newValue
+                self.state.defs = newValue
             }
         }
     }
@@ -183,13 +200,13 @@ extension SVGContext {
     
     private var imageTable: [ImageTableKey: String] {
         get {
-            return global?.imageTable ?? _imageTable
+            return global?.imageTable ?? state.imageTable
         }
         set {
             if let global = self.global {
-                global._imageTable = newValue
+                global.state.imageTable = newValue
             } else {
-                self._imageTable = newValue
+                self.state.imageTable = newValue
             }
         }
     }
@@ -385,7 +402,7 @@ extension SVGContext {
             body.append(SDXMLElement(name: "defs", elements: defs))
         }
         
-        body.append(contentsOf: elements)
+        body.append(contentsOf: state.elements)
         
         return [body]
     }
@@ -456,7 +473,7 @@ extension SVGContext {
             }
         }
         
-        if options.contains(.clip), let clip = self.current_layer.clip {
+        if options.contains(.clip), let clip = self.current_layer.state.clip {
             switch clip {
             case let .clip(id): element.setAttribute(for: "clip-path", value: "url(#\(id))")
             case let .mask(id): element.setAttribute(for: "mask", value: "url(#\(id))")
@@ -498,7 +515,7 @@ extension SVGContext {
     public func append(_ newElement: SDXMLElement, options: StyleOptions = []) {
         var newElement = newElement
         self.apply_style(&newElement, options: options)
-        self.current_layer.elements.append(newElement)
+        self.current_layer.state.elements.append(newElement)
     }
     
     public func append<S : Sequence>(contentsOf newElements: S, options: StyleOptions = []) where S.Element == SDXMLElement {
@@ -531,9 +548,9 @@ extension SVGContext {
                 
                 self.next = nil
                 
-                guard next.elements.count != 0 else { return }
+                guard next.state.elements.count != 0 else { return }
                 
-                self.append(SDXMLElement(name: "g", elements: next.elements), options: .allWithoutTransform)
+                self.append(SDXMLElement(name: "g", elements: next.state.elements), options: .allWithoutTransform)
             }
         }
     }
@@ -692,13 +709,13 @@ extension SVGContext {
 extension SVGContext {
     
     public func resetClip() {
-        current_layer.clip = nil
+        current_layer.state.clip = nil
     }
     
     public func clip(shape: Shape, winding: Shape.WindingRule) {
         
         guard shape.reduce(0, { $0 + $1.count }) != 0 else {
-            current_layer.clip = nil
+            current_layer.state.clip = nil
             return
         }
         
@@ -716,7 +733,7 @@ extension SVGContext {
         
         defs.append(clipPath)
         
-        current_layer.clip = .clip(id)
+        current_layer.state.clip = .clip(id)
     }
     
     public func drawClip(body: (DrawableContext) throws -> Void) rethrows {
@@ -732,11 +749,11 @@ extension SVGContext {
         
         let id = new_name("MASK")
         
-        let mask = SDXMLElement(name: "mask", attributes: ["id": id], elements: mask_context.elements)
+        let mask = SDXMLElement(name: "mask", attributes: ["id": id], elements: mask_context.state.elements)
         
         defs.append(mask)
         
-        current_layer.clip = .mask(id)
+        current_layer.state.clip = .mask(id)
     }
 }
 

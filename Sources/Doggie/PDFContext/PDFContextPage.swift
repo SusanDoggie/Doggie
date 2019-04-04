@@ -51,19 +51,74 @@ private struct GraphicState {
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
     
     init(context: PDFContext.Page) {
-        self.clip = context.clip
+        self.clip = context.state.clip
         self.styles = context.styles
         self.chromaticAdaptationAlgorithm = context.colorSpace.chromaticAdaptationAlgorithm
     }
     
     func apply(to context: PDFContext.Page) {
-        context.clip = self.clip
+        context.state.clip = self.clip
         context.styles = self.styles
         context.colorSpace.chromaticAdaptationAlgorithm = self.chromaticAdaptationAlgorithm
     }
 }
 
+struct PDFContextState {
+    
+    var is_clip: Bool = false
+    
+    var commands: String = ""
+    fileprivate var currentStyle = PDFContext.CurrentStyle()
+    
+    fileprivate var imageTable: [PDFContext.ImageTableKey: String] = [:]
+    
+    fileprivate var extGState: [String: String] = [:]
+    fileprivate var transparency_layers: [String: String] = [:]
+    fileprivate var mask: [String: String] = [:]
+    fileprivate var image: [String: (PDFContext.ImageStream, PDFContext.ImageStream?)] = [:]
+    fileprivate var shading: [PDFContext.Shading: String] = [:]
+    
+    fileprivate var clip: PDFContext.Clip?
+    
+}
+
 extension PDFContext {
+    
+    class Page {
+        
+        let media: Rect
+        let bleed: Rect
+        let trim: Rect
+        let margin: Rect
+        
+        var colorSpace: AnyColorSpace
+        
+        var state: PDFContextState = PDFContextState()
+        fileprivate var styles: PDFContextStyles = PDFContextStyles()
+        private var graphicStateStack: [GraphicState] = []
+        
+        private var next: Page?
+        private weak var global: Page?
+        
+        init(media: Rect, bleed: Rect, trim: Rect, margin: Rect, colorSpace: AnyColorSpace) {
+            self.media = media
+            self.bleed = bleed
+            self.trim = trim
+            self.margin = margin
+            self.colorSpace = colorSpace
+        }
+        
+        func initialize() {
+            
+            if state.is_clip {
+                self.state.commands += "/DeviceGray cs\n"
+            } else {
+                self.state.commands += "/Cs1 cs\n"
+            }
+            
+            self.state.commands += "q\n"
+        }
+    }
     
     fileprivate enum Clip {
         case clip(Shape, Shape.WindingRule)
@@ -95,57 +150,6 @@ extension PDFContext {
         var table: [String: String]
         var data: Data
     }
-    
-    class Page {
-        
-        let media: Rect
-        let bleed: Rect
-        let trim: Rect
-        let margin: Rect
-        
-        var colorSpace: AnyColorSpace
-        
-        var is_clip: Bool = false
-        
-        var commands: String = ""
-        private var currentStyle = CurrentStyle()
-        
-        private var _imageTable: [ImageTableKey: String] = [:]
-        
-        private var _extGState: [String: String] = [:]
-        private var _transparency_layers: [String: String] = [:]
-        private var _mask: [String: String] = [:]
-        private var _image: [String: (ImageStream, ImageStream?)] = [:]
-        private var _shading: [PDFContext.Shading: String] = [:]
-        
-        fileprivate var clip: Clip?
-        
-        fileprivate var styles: PDFContextStyles = PDFContextStyles()
-        
-        private var next: Page?
-        private weak var global: Page?
-        
-        private var graphicStateStack: [GraphicState] = []
-        
-        init(media: Rect, bleed: Rect, trim: Rect, margin: Rect, colorSpace: AnyColorSpace) {
-            self.media = media
-            self.bleed = bleed
-            self.trim = trim
-            self.margin = margin
-            self.colorSpace = colorSpace
-        }
-        
-        func initialize() {
-            
-            if is_clip {
-                self.commands += "/DeviceGray cs\n"
-            } else {
-                self.commands += "/Cs1 cs\n"
-            }
-            
-            self.commands += "q\n"
-        }
-    }
 }
 
 extension PDFContext.Page {
@@ -172,7 +176,7 @@ extension PDFContext.Page {
     
     private convenience init(copyStates context: PDFContext.Page, colorSpace: AnyColorSpace) {
         self.init(media: context.media, bleed: context.bleed, trim: context.trim, margin: context.margin, colorSpace: colorSpace)
-        self.is_clip = context.is_clip
+        self.state.is_clip = context.state.is_clip
         self.styles = context.styles
         self.styles.opacity = 1
         self.styles.shadowColor = PDFContextStyles.defaultShadowColor
@@ -189,13 +193,13 @@ extension PDFContext.CurrentStyle {
     func apply(to context: PDFContext.Page) {
         
         if let color = self.color {
-            context.commands += "\(color) sc\n"
+            context.state.commands += "\(color) sc\n"
         }
         if let opacity = self.opacity {
-            context.commands += "/\(opacity) gs\n"
+            context.state.commands += "/\(opacity) gs\n"
         }
         if let blend = self.blend {
-            context.commands += "/\(blend) gs\n"
+            context.state.commands += "/\(blend) gs\n"
         }
     }
 }
@@ -206,80 +210,94 @@ extension PDFContext.Page {
         return next?.current_layer ?? self
     }
     
+    private func _clone(global: PDFContext.Page?) -> PDFContext.Page {
+        let clone = PDFContext.Page(media: media, bleed: bleed, trim: trim, margin: margin, colorSpace: colorSpace)
+        clone.state = self.state
+        clone.styles = self.styles
+        clone.graphicStateStack = self.graphicStateStack
+        clone.next = self.next?._clone(global: global ?? clone)
+        clone.global = global
+        return clone
+    }
+    
+    func clone() -> PDFContext.Page {
+        return self._clone(global: nil)
+    }
+    
     func finalize() -> String {
-        return commands + "Q"
+        return state.commands + "Q"
     }
     
     var imageTable: [PDFContext.ImageTableKey: String] {
         get {
-            return global?.imageTable ?? _imageTable
+            return global?.imageTable ?? state.imageTable
         }
         set {
             if let global = self.global {
-                global._imageTable = newValue
+                global.state.imageTable = newValue
             } else {
-                self._imageTable = newValue
+                self.state.imageTable = newValue
             }
         }
     }
     
     var extGState: [String: String] {
         get {
-            return global?.extGState ?? _extGState
+            return global?.extGState ?? state.extGState
         }
         set {
             if let global = self.global {
-                global._extGState = newValue
+                global.state.extGState = newValue
             } else {
-                self._extGState = newValue
+                self.state.extGState = newValue
             }
         }
     }
     var transparency_layers: [String: String] {
         get {
-            return global?.transparency_layers ?? _transparency_layers
+            return global?.transparency_layers ?? state.transparency_layers
         }
         set {
             if let global = self.global {
-                global._transparency_layers = newValue
+                global.state.transparency_layers = newValue
             } else {
-                self._transparency_layers = newValue
+                self.state.transparency_layers = newValue
             }
         }
     }
     var mask: [String: String] {
         get {
-            return global?.mask ?? _mask
+            return global?.mask ?? state.mask
         }
         set {
             if let global = self.global {
-                global._mask = newValue
+                global.state.mask = newValue
             } else {
-                self._mask = newValue
+                self.state.mask = newValue
             }
         }
     }
     var image: [String: (PDFContext.ImageStream, PDFContext.ImageStream?)] {
         get {
-            return global?.image ?? _image
+            return global?.image ?? state.image
         }
         set {
             if let global = self.global {
-                global._image = newValue
+                global.state.image = newValue
             } else {
-                self._image = newValue
+                self.state.image = newValue
             }
         }
     }
     var shading: [PDFContext.Shading: String] {
         get {
-            return global?.shading ?? _shading
+            return global?.shading ?? state.shading
         }
         set {
             if let global = self.global {
-                global._shading = newValue
+                global.state.shading = newValue
             } else {
-                self._shading = newValue
+                self.state.shading = newValue
             }
         }
     }
@@ -392,19 +410,19 @@ extension PDFContext.Page {
         
         graphicStateStack.popLast()?.apply(to: current_layer)
         
-        current_layer.commands += "Q q\n"
-        current_layer.currentStyle.apply(to: current_layer)
+        current_layer.state.commands += "Q q\n"
+        current_layer.state.currentStyle.apply(to: current_layer)
         
-        if let clip = current_layer.clip {
+        if let clip = current_layer.state.clip {
             
             switch clip {
             case let .clip(shape, winding):
-                self.encode_path(shape: shape, commands: &current_layer.commands)
+                self.encode_path(shape: shape, commands: &current_layer.state.commands)
                 switch winding {
-                case .nonZero: current_layer.commands += "W n\n"
-                case .evenOdd: current_layer.commands += "W* n\n"
+                case .nonZero: current_layer.state.commands += "W n\n"
+                case .evenOdd: current_layer.state.commands += "W* n\n"
                 }
-            case let .mask(name): current_layer.commands += "/\(name) gs\n"
+            case let .mask(name): current_layer.state.commands += "/\(name) gs\n"
             }
         }
     }
@@ -437,7 +455,7 @@ extension PDFContext.Page {
                 let name = "Fm\(self.transparency_layers.count + 1)"
                 self.transparency_layers[name] = next.finalize()
                 
-                self.commands += "/\(name) Do\n"
+                self.state.commands += "/\(name) Do\n"
             }
         }
     }
@@ -510,9 +528,9 @@ extension PDFContext.Page {
         }
         
         let _opacity = extGState[gstate]!
-        if current_layer.currentStyle.opacity != _opacity {
-            current_layer.commands += "/\(_opacity) gs\n"
-            current_layer.currentStyle.opacity = _opacity
+        if current_layer.state.currentStyle.opacity != _opacity {
+            current_layer.state.commands += "/\(_opacity) gs\n"
+            current_layer.state.currentStyle.opacity = _opacity
         }
     }
     
@@ -542,9 +560,9 @@ extension PDFContext.Page {
         }
         
         let _blend = extGState[gstate]!
-        if current_layer.currentStyle.blend != _blend {
-            current_layer.commands += "/\(_blend) gs\n"
-            current_layer.currentStyle.blend = _blend
+        if current_layer.state.currentStyle.blend != _blend {
+            current_layer.state.commands += "/\(_blend) gs\n"
+            current_layer.state.currentStyle.blend = _blend
         }
     }
     
@@ -562,15 +580,15 @@ extension PDFContext.Page {
         let color = color.convert(to: colorSpace, intent: renderingIntent)
         let _color = (0..<color.numberOfComponents - 1).lazy.map { "\(_decimal_round(color.component($0)))" }.joined(separator: " ")
         
-        if current_layer.currentStyle.color != _color {
-            current_layer.commands += "\(_color) sc\n"
-            current_layer.currentStyle.color = _color
+        if current_layer.state.currentStyle.color != _color {
+            current_layer.state.commands += "\(_color) sc\n"
+            current_layer.state.currentStyle.color = _color
         }
         
-        self.encode_path(shape: shape, commands: &current_layer.commands)
+        self.encode_path(shape: shape, commands: &current_layer.state.commands)
         switch winding {
-        case .nonZero: current_layer.commands += "f\n"
-        case .evenOdd: current_layer.commands += "f*\n"
+        case .nonZero: current_layer.state.commands += "f\n"
+        case .evenOdd: current_layer.state.commands += "f*\n"
         }
     }
 }
@@ -586,10 +604,10 @@ extension PDFContext.Page {
     
     func resetClip() {
         
-        current_layer.commands += "Q q\n"
-        current_layer.currentStyle.apply(to: current_layer)
+        current_layer.state.commands += "Q q\n"
+        current_layer.state.currentStyle.apply(to: current_layer)
         
-        current_layer.clip = nil
+        current_layer.state.clip = nil
     }
     
     func clip(shape: Shape, winding: Shape.WindingRule) {
@@ -601,16 +619,16 @@ extension PDFContext.Page {
         
         let shape = shape * _mirrored_transform
         
-        current_layer.commands += "Q q\n"
-        current_layer.currentStyle.apply(to: current_layer)
+        current_layer.state.commands += "Q q\n"
+        current_layer.state.currentStyle.apply(to: current_layer)
         
-        self.encode_path(shape: shape, commands: &current_layer.commands)
+        self.encode_path(shape: shape, commands: &current_layer.state.commands)
         switch winding {
-        case .nonZero: current_layer.commands += "W n\n"
-        case .evenOdd: current_layer.commands += "W* n\n"
+        case .nonZero: current_layer.state.commands += "W n\n"
+        case .evenOdd: current_layer.state.commands += "W* n\n"
         }
         
-        current_layer.clip = .clip(shape, winding)
+        current_layer.state.clip = .clip(shape, winding)
     }
 }
 
@@ -618,12 +636,12 @@ extension PDFContext.Page {
     
     func drawClip(colorSpace: ColorSpace<GrayColorModel>, body: (PDFContext.Page) throws -> Void) rethrows {
         
-        current_layer.commands += "Q q\n"
-        current_layer.currentStyle.apply(to: current_layer)
+        current_layer.state.commands += "Q q\n"
+        current_layer.state.currentStyle.apply(to: current_layer)
         
         let mask = PDFContext.Page(copyStates: current_layer, colorSpace: AnyColorSpace(colorSpace))
         mask.global = global ?? self
-        mask.is_clip = true
+        mask.state.is_clip = true
         mask.initialize()
         
         try body(mask)
@@ -631,9 +649,9 @@ extension PDFContext.Page {
         let name = "Mk\(self.mask.count + 1)"
         current_layer.mask[name] = mask.finalize()
         
-        current_layer.commands += "/\(name) gs\n"
+        current_layer.state.commands += "/\(name) gs\n"
         
-        current_layer.clip = .mask(name)
+        current_layer.state.clip = .mask(name)
     }
 }
 
@@ -708,7 +726,7 @@ extension PDFContext.Page {
             "\(_decimal_round(transform.f))",
         ]
         
-        current_layer.commands += "q\n"
+        current_layer.state.commands += "q\n"
         
         if stops.contains(where: { !$0.color.isOpaque }) {
             
@@ -727,7 +745,7 @@ extension PDFContext.Page {
             
             var mask_commands = "/DeviceGray cs\n"
             
-            if let clip = current_layer.clip {
+            if let clip = current_layer.state.clip {
                 
                 switch clip {
                 case let .clip(shape, winding):
@@ -748,7 +766,7 @@ extension PDFContext.Page {
             let name = "Mk\(mask.count + 1)"
             mask[name] = mask_commands
             
-            current_layer.commands += "/\(name) gs\n"
+            current_layer.state.commands += "/\(name) gs\n"
         }
         
         set_blendmode()
@@ -756,7 +774,7 @@ extension PDFContext.Page {
         
         let shading = PDFContext.Shading(
             type: 2,
-            deviceGray: is_clip,
+            deviceGray: state.is_clip,
             coords: [start.x, start.y, end.x, end.y],
             function: create_gradient_function(stops: stops),
             e0: startSpread == .pad,
@@ -767,11 +785,11 @@ extension PDFContext.Page {
             self.shading[shading] = "Sh\(self.shading.count + 1)"
         }
         
-        current_layer.commands += "\(_transform.joined(separator: " ")) cm\n"
+        current_layer.state.commands += "\(_transform.joined(separator: " ")) cm\n"
         
         let _shading = self.shading[shading]!
-        current_layer.commands += "/\(_shading) sh\n"
-        current_layer.commands += "Q\n"
+        current_layer.state.commands += "/\(_shading) sh\n"
+        current_layer.state.commands += "Q\n"
     }
     
     func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
@@ -789,7 +807,7 @@ extension PDFContext.Page {
             "\(_decimal_round(transform.f))",
         ]
         
-        current_layer.commands += "q\n"
+        current_layer.state.commands += "q\n"
         
         if stops.contains(where: { !$0.color.isOpaque }) {
             
@@ -808,7 +826,7 @@ extension PDFContext.Page {
             
             var mask_commands = "/DeviceGray cs\n"
             
-            if let clip = current_layer.clip {
+            if let clip = current_layer.state.clip {
                 
                 switch clip {
                 case let .clip(shape, winding):
@@ -829,7 +847,7 @@ extension PDFContext.Page {
             let name = "Mk\(mask.count + 1)"
             mask[name] = mask_commands
             
-            current_layer.commands += "/\(name) gs\n"
+            current_layer.state.commands += "/\(name) gs\n"
         }
         
         set_blendmode()
@@ -837,7 +855,7 @@ extension PDFContext.Page {
         
         let shading = PDFContext.Shading(
             type: 3,
-            deviceGray: is_clip,
+            deviceGray: state.is_clip,
             coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
             function: create_gradient_function(stops: stops),
             e0: startSpread == .pad,
@@ -848,10 +866,10 @@ extension PDFContext.Page {
             self.shading[shading] = "Sh\(self.shading.count + 1)"
         }
         
-        current_layer.commands += "\(_transform.joined(separator: " ")) cm\n"
+        current_layer.state.commands += "\(_transform.joined(separator: " ")) cm\n"
         
         let _shading = self.shading[shading]!
-        current_layer.commands += "/\(_shading) sh\n"
-        current_layer.commands += "Q\n"
+        current_layer.state.commands += "/\(_shading) sh\n"
+        current_layer.state.commands += "Q\n"
     }
 }

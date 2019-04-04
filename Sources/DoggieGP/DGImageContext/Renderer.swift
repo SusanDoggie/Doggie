@@ -185,7 +185,7 @@ extension DGImageContext {
         
         guard width != 0 && height != 0 else { return }
         
-        guard self._image.cached_image == nil else { return }
+        guard self.state.image.cached_image == nil else { return }
         
         let renderer = try DGImageContext.make_renderer(device, Renderer.self)
         let encoder = try renderer.encoder(width: width, height: height)
@@ -196,11 +196,11 @@ extension DGImageContext {
         let texture = Texture<Float32ColorPixel<Model>>(width: width, height: height, fileBacked: false)
         let resource = Resource<Renderer.Encoder>()
         
-        try self._image.render(encoder: encoder, output: encoder.make_buffer(texture), resource: resource)
+        try self.state.image.render(encoder: encoder, output: encoder.make_buffer(texture), resource: resource)
         
         encoder.commit(waitUntilCompleted: true)
         
-        self._image = TextureLayer(texture)
+        self.state.image = TextureLayer(texture)
     }
     
     static func maxPixelsCount<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws -> Int where Renderer.Model == Model {

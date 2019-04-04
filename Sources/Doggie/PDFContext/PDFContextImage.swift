@@ -61,7 +61,7 @@ extension PDFContext.Page {
             stream.0.table["Height"] = "\(image.height)"
             stream.0.table["Interpolate"] = "true"
             
-            if is_clip {
+            if state.is_clip {
                 stream.0.table["ColorSpace"] = "/DeviceGray"
             }
             
@@ -95,8 +95,8 @@ extension PDFContext.Page {
             "\(_decimal_round(transform.f))",
         ]
         
-        current_layer.commands += "\(_transform.joined(separator: " ")) cm\n"
-        current_layer.commands += "/\(name) Do\n"
+        current_layer.state.commands += "\(_transform.joined(separator: " ")) cm\n"
+        current_layer.state.commands += "/\(name) Do\n"
     }
 }
 

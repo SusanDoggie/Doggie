@@ -60,28 +60,23 @@ private struct GraphicState {
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
     
     init<Pixel>(context: ImageContext<Pixel>) {
-        self.clip = context.clip
-        self.depth = context.depth
+        self.clip = context.state.clip
+        self.depth = context.state.depth
         self.styles = context.styles
         self.chromaticAdaptationAlgorithm = context.chromaticAdaptationAlgorithm
     }
     
     func apply<Pixel>(to context: ImageContext<Pixel>) {
-        context.clip = self.clip
-        context.depth = self.depth
+        context.state.clip = self.clip
+        context.state.depth = self.depth
         context.styles = self.styles
         context.chromaticAdaptationAlgorithm = self.chromaticAdaptationAlgorithm
     }
 }
 
-public class ImageContext<Pixel: ColorPixelProtocol> : DrawableContext {
-    
-    @usableFromInline
-    var _image: Image<Pixel>
-    
-    public var image: Image<Pixel> {
-        return _image
-    }
+@_fixed_layout
+@usableFromInline
+struct ImageContextState {
     
     @usableFromInline
     var clip: MappedBuffer<Double>?
@@ -89,15 +84,24 @@ public class ImageContext<Pixel: ColorPixelProtocol> : DrawableContext {
     @usableFromInline
     var depth: MappedBuffer<Double>?
     
-    fileprivate var styles: ImageContextStyles = ImageContextStyles()
-    
-    @usableFromInline
-    var next: ImageContext?
-    
     @usableFromInline
     var isDirty: Bool = false
     
+}
+
+public class ImageContext<Pixel: ColorPixelProtocol> : DrawableContext {
+    
+    @usableFromInline
+    var _image: Image<Pixel>
+    
+    @usableFromInline
+    var state: ImageContextState = ImageContextState()
+    
+    fileprivate var styles: ImageContextStyles = ImageContextStyles()
     private var graphicStateStack: [GraphicState] = []
+    
+    @usableFromInline
+    var next: ImageContext?
     
     public init(image: Image<Pixel>) {
         self._image = image
@@ -130,13 +134,26 @@ extension ImageContext {
     var current_layer: ImageContext {
         return next?.current_layer ?? self
     }
+    
+    public func clone() -> ImageContext {
+        let clone = ImageContext(image: self._image)
+        clone.state = self.state
+        clone.styles = self.styles
+        clone.graphicStateStack = self.graphicStateStack
+        clone.next = self.next?.clone()
+        return clone
+    }
+    
+    public var image: Image<Pixel> {
+        return _image
+    }
 }
 
 extension ImageContext {
     
     public func withUnsafeMutableImageBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         let current_layer = self.current_layer
-        current_layer.isDirty = true
+        current_layer.state.isDirty = true
         return try current_layer._image.withUnsafeMutableBufferPointer(body)
     }
     
@@ -151,27 +168,27 @@ extension ImageContext {
         
         let current_layer = self.current_layer
         
-        if current_layer.clip == nil {
-            current_layer.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        if current_layer.state.clip == nil {
+            current_layer.state.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
-        return try current_layer.clip!.withUnsafeMutableBufferPointer(body)
+        return try current_layer.state.clip!.withUnsafeMutableBufferPointer(body)
     }
     
     public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
         
         let current_layer = self.current_layer
         
-        if current_layer.clip == nil {
-            current_layer.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        if current_layer.state.clip == nil {
+            current_layer.state.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
-        return try current_layer.clip!.withUnsafeBufferPointer(body)
+        return try current_layer.state.clip!.withUnsafeBufferPointer(body)
     }
     
     @usableFromInline
     func withOptionalUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>?) throws -> R) rethrows -> R {
-        return try current_layer.clip?.withUnsafeBufferPointer(body) ?? body(nil)
+        return try current_layer.state.clip?.withUnsafeBufferPointer(body) ?? body(nil)
     }
     
     @inlinable
@@ -180,11 +197,11 @@ extension ImageContext {
         
         if value == 1 {
             
-            current_layer.clip = nil
+            current_layer.state.clip = nil
             
-        } else if current_layer.clip == nil || value == 0 {
+        } else if current_layer.state.clip == nil || value == 0 {
             
-            current_layer.clip = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
+            current_layer.state.clip = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
             
         } else {
             
@@ -366,22 +383,22 @@ extension ImageContext {
         
         let current_layer = self.current_layer
         
-        if current_layer.depth == nil {
-            current_layer.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        if current_layer.state.depth == nil {
+            current_layer.state.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
-        return try current_layer.depth!.withUnsafeMutableBufferPointer(body)
+        return try current_layer.state.depth!.withUnsafeMutableBufferPointer(body)
     }
     
     public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
         
         let current_layer = self.current_layer
         
-        if current_layer.depth == nil {
-            current_layer.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        if current_layer.state.depth == nil {
+            current_layer.state.depth = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         }
         
-        return try current_layer.depth!.withUnsafeBufferPointer(body)
+        return try current_layer.state.depth!.withUnsafeBufferPointer(body)
     }
 }
 
@@ -411,11 +428,11 @@ extension ImageContext {
         
         if value == 1 {
             
-            current_layer.depth = nil
+            current_layer.state.depth = nil
             
-        } else if current_layer.depth == nil || value == 0 {
+        } else if current_layer.state.depth == nil || value == 0 {
             
-            current_layer.depth = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
+            current_layer.state.depth = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
             
         } else {
             
@@ -495,7 +512,7 @@ extension ImageContext {
                     return
                 }
                 
-                guard next.isDirty else { return }
+                guard next.state.isDirty else { return }
                 
                 if isShadow {
                     
@@ -547,8 +564,8 @@ extension ImageContext {
         
         try body(_clip)
         
-        if _clip.isDirty {
-            current_layer.clip = _clip.image.pixels.map { $0.color.white * $0.opacity }
+        if _clip.state.isDirty {
+            current_layer.state.clip = _clip.image.pixels.map { $0.color.white * $0.opacity }
         } else {
             current_layer.clearClipBuffer(with: 0)
         }
