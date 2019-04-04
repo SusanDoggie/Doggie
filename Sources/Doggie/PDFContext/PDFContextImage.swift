@@ -27,9 +27,9 @@ extension PDFContext {
     
     public enum CompressionScheme {
         
-        case none
+        case noPrediction
         
-        case tiff_predictor
+        case tiffPrediction
     }
 }
 
@@ -125,7 +125,7 @@ extension AnyImage: PDFImageProtocol {
         var bitsPerChannel = 0
         
         switch compression {
-        case .none:
+        case .noPrediction:
             
             guard let _stream = self.tiff_predictor(predictor: 1, true, &bitsPerChannel) else { return nil }
             color = _stream.data
@@ -138,7 +138,7 @@ extension AnyImage: PDFImageProtocol {
             table["Predictor"] = "1"
             table["BitsPerComponent"] = "\(bitsPerChannel)"
             
-        case .tiff_predictor:
+        case .tiffPrediction:
             
             guard let _stream = self.tiff_predictor(predictor: 2, true, &bitsPerChannel) else { return nil }
             color = _stream.data

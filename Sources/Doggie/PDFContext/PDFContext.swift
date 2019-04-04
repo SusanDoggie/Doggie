@@ -226,7 +226,7 @@ extension PDFContext {
     }
     
     public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform) {
-        self.draw(image: image, transform: transform, compression: .none)
+        self.draw(image: image, transform: transform, compression: .noPrediction)
     }
 }
 
