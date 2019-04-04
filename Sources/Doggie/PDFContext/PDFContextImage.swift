@@ -37,6 +37,9 @@ extension PDFContext.Page {
     
     func _draw(image: AnyImage, transform: SDTransform, compression: PDFContext.CompressionScheme) {
         
+        self.beginTransparencyLayer()
+        defer { self.endTransparencyLayer() }
+        
         let key = image.imageTableKey
         
         let name: String
@@ -92,10 +95,8 @@ extension PDFContext.Page {
             "\(_decimal_round(transform.f))",
         ]
         
-        current_layer.commands += "q\n"
         current_layer.commands += "\(_transform.joined(separator: " ")) cm\n"
         current_layer.commands += "/\(name) Do\n"
-        current_layer.commands += "Q\n"
     }
 }
 
