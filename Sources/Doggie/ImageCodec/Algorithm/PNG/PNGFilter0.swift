@@ -23,6 +23,100 @@
 //  THE SOFTWARE.
 //
 
+protocol PNGEncodablePixel: ColorPixelProtocol {
+    
+    func png_encode_color(_ data: inout Data)
+    
+    func png_encode_opacity(_ data: inout Data)
+}
+
+extension ARGB32ColorPixel : PNGEncodablePixel {
+    
+    func png_encode_color(_ data: inout Data) {
+        data.encode(r.bigEndian)
+        data.encode(g.bigEndian)
+        data.encode(b.bigEndian)
+    }
+    
+    func png_encode_opacity(_ data: inout Data) {
+        data.encode(a.bigEndian)
+    }
+}
+
+extension ARGB64ColorPixel : PNGEncodablePixel {
+    
+    func png_encode_color(_ data: inout Data) {
+        data.encode(r.bigEndian)
+        data.encode(g.bigEndian)
+        data.encode(b.bigEndian)
+    }
+    
+    func png_encode_opacity(_ data: inout Data) {
+        data.encode(a.bigEndian)
+    }
+}
+
+extension RGBA32ColorPixel : PNGEncodablePixel {
+    
+    func png_encode_color(_ data: inout Data) {
+        data.encode(r.bigEndian)
+        data.encode(g.bigEndian)
+        data.encode(b.bigEndian)
+    }
+    
+    func png_encode_opacity(_ data: inout Data) {
+        data.encode(a.bigEndian)
+    }
+}
+
+extension RGBA64ColorPixel : PNGEncodablePixel {
+    
+    func png_encode_color(_ data: inout Data) {
+        data.encode(r.bigEndian)
+        data.encode(g.bigEndian)
+        data.encode(b.bigEndian)
+    }
+    
+    func png_encode_opacity(_ data: inout Data) {
+        data.encode(a.bigEndian)
+    }
+}
+
+extension BGRA32ColorPixel : PNGEncodablePixel {
+    
+    func png_encode_color(_ data: inout Data) {
+        data.encode(r.bigEndian)
+        data.encode(g.bigEndian)
+        data.encode(b.bigEndian)
+    }
+    
+    func png_encode_opacity(_ data: inout Data) {
+        data.encode(a.bigEndian)
+    }
+}
+
+extension Gray16ColorPixel : PNGEncodablePixel {
+    
+    func png_encode_color(_ data: inout Data) {
+        data.encode(w.bigEndian)
+    }
+    
+    func png_encode_opacity(_ data: inout Data) {
+        data.encode(a.bigEndian)
+    }
+}
+
+extension Gray32ColorPixel : PNGEncodablePixel {
+    
+    func png_encode_color(_ data: inout Data) {
+        data.encode(w.bigEndian)
+    }
+    
+    func png_encode_opacity(_ data: inout Data) {
+        data.encode(a.bigEndian)
+    }
+}
+
 private func average(_ a: UInt8, _ b: UInt8) -> UInt8 {
     return UInt8((UInt16(a) &+ UInt16(b)) >> 1)
 }

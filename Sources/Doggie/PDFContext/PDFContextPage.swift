@@ -77,7 +77,7 @@ extension PDFContext {
         var blend: String? = nil
     }
     
-    fileprivate struct ImageTableKey: Hashable {
+    struct ImageTableKey: Hashable {
         
         let image: AnyImage
         
@@ -112,11 +112,11 @@ extension PDFContext {
         
         private var _imageTable: [ImageTableKey: String] = [:]
         
-        var _extGState: [String: String] = [:]
-        var _transparency_layers: [String: String] = [:]
-        var _mask: [String: String] = [:]
-        var _image: [String: (ImageStream, ImageStream?)] = [:]
-        var _shading: [PDFContext.Shading: String] = [:]
+        private var _extGState: [String: String] = [:]
+        private var _transparency_layers: [String: String] = [:]
+        private var _mask: [String: String] = [:]
+        private var _image: [String: (ImageStream, ImageStream?)] = [:]
+        private var _shading: [PDFContext.Shading: String] = [:]
         
         fileprivate var clip: Clip?
         
@@ -202,7 +202,7 @@ extension PDFContext.CurrentStyle {
 
 extension PDFContext.Page {
     
-    private var current_layer: PDFContext.Page {
+    var current_layer: PDFContext.Page {
         return next?.current_layer ?? self
     }
     
@@ -210,7 +210,7 @@ extension PDFContext.Page {
         return commands + "Q"
     }
     
-    private var imageTable: [PDFContext.ImageTableKey: String] {
+    var imageTable: [PDFContext.ImageTableKey: String] {
         get {
             return global?.imageTable ?? _imageTable
         }
@@ -296,7 +296,7 @@ extension PDFContext.Page {
         }
     }
     
-    private var _mirrored_transform: SDTransform {
+    var _mirrored_transform: SDTransform {
         return self.transform * .reflectY(media.midY)
     }
     
@@ -575,194 +575,7 @@ extension PDFContext.Page {
     }
 }
 
-private protocol PDFImageProtocol {
-    
-    var width: Int { get }
-    var height: Int { get }
-    
-    var imageTableKey: PDFContext.ImageTableKey { get }
-    
-    func pdf_data(compression: PDFContext.CompressionScheme) -> (PDFContext.ImageStream, PDFContext.ImageStream?)?
-}
-
-extension AnyImage: PDFImageProtocol {
-    
-    private func tiff_predictor(predictor: Int, _ color: Bool, _ bitsPerChannel: inout Int) -> MappedBuffer<UInt8>? {
-        
-        switch self.base {
-        case let image as Image<ARGB32ColorPixel>:
-            
-            bitsPerChannel = 8
-            
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
-            
-        case let image as Image<ARGB64ColorPixel>:
-            
-            bitsPerChannel = 16
-            
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
-            
-        case let image as Image<RGBA32ColorPixel>:
-            
-            bitsPerChannel = 8
-            
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
-            
-        case let image as Image<RGBA64ColorPixel>:
-            
-            bitsPerChannel = 16
-            
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
-            
-        case let image as Image<Gray16ColorPixel>:
-            
-            bitsPerChannel = 8
-            
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
-            
-        case let image as Image<Gray32ColorPixel>:
-            
-            bitsPerChannel = 16
-            
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
-            
-        default:
-            
-            bitsPerChannel = 16
-            
-            if color {
-                if let image = self.base as? Image<Float64ColorPixel<LabColorModel>> {
-                    return tiff_color_data(image, predictor, true)
-                } else if let image = Image<Float32ColorPixel<LabColorModel>>(self) {
-                    return tiff_color_data(image, predictor, true)
-                } else {
-                    guard let image = self.base as? TIFFRawRepresentable else { return nil }
-                    return image.tiff_color_data(predictor, true)
-                }
-            } else {
-                guard let image = self.base as? TIFFRawRepresentable else { return nil }
-                return image.tiff_opacity_data(predictor)
-            }
-        }
-    }
-    
-    fileprivate var imageTableKey: PDFContext.ImageTableKey {
-        return PDFContext.ImageTableKey(self)
-    }
-    
-    fileprivate func pdf_data(compression: PDFContext.CompressionScheme) -> (PDFContext.ImageStream, PDFContext.ImageStream?)? {
-        
-        var table: [String: String] = ["Columns": "\(width)", "Colors": "\(colorSpace.numberOfComponents)"]
-        let color: Data
-        var mask: Data?
-        
-        var bitsPerChannel = 0
-        
-        switch compression {
-        case .none:
-            
-            guard let _stream = self.tiff_predictor(predictor: 1, true, &bitsPerChannel) else { return nil }
-            color = _stream.data
-            
-            if !self.isOpaque {
-                guard let _stream = self.tiff_predictor(predictor: 1, false, &bitsPerChannel) else { return nil }
-                mask = _stream.data
-            }
-            
-            table["Predictor"] = "1"
-            table["BitsPerComponent"] = "\(bitsPerChannel)"
-            
-        case .tiff_predictor:
-            
-            guard let _stream = self.tiff_predictor(predictor: 2, true, &bitsPerChannel) else { return nil }
-            color = _stream.data
-            
-            if !self.isOpaque {
-                guard let _stream = self.tiff_predictor(predictor: 2, false, &bitsPerChannel) else { return nil }
-                mask = _stream.data
-            }
-            
-            table["Predictor"] = "2"
-            table["BitsPerComponent"] = "\(bitsPerChannel)"
-            
-        case .png_filter:
-            
-            table["Predictor"] = "15"
-            
-            return nil
-        }
-        
-        var mask_table = table
-        mask_table["Colors"] = "1"
-        
-        return (PDFContext.ImageStream(table: table, data: color), mask.map { PDFContext.ImageStream(table: mask_table, data: $0) })
-    }
-}
-
 extension PDFContext.Page {
-    
-    private func _draw(image: PDFImageProtocol, transform: SDTransform, compression: PDFContext.CompressionScheme) {
-        
-        let key = image.imageTableKey
-        
-        let name: String
-        
-        if let _name = imageTable[key] {
-            
-            name = _name
-            
-        } else {
-            
-            guard var stream = image.pdf_data(compression: compression) else { return }
-            
-            stream.0.table["DecodeParms"] = """
-            <<
-            \(stream.0.table.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
-            >>
-            """
-            stream.0.table["Width"] = "\(image.width)"
-            stream.0.table["Height"] = "\(image.height)"
-            stream.0.table["Interpolate"] = "true"
-            
-            if is_clip {
-                stream.0.table["ColorSpace"] = "/DeviceGray"
-            }
-            
-            if var mask = stream.1 {
-                
-                mask.table["DecodeParms"] = """
-                <<
-                \(mask.table.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
-                >>
-                """
-                mask.table["Width"] = "\(image.width)"
-                mask.table["Height"] = "\(image.height)"
-                mask.table["Interpolate"] = "true"
-                mask.table["ColorSpace"] = "/DeviceGray"
-                
-                stream.1 = mask
-            }
-            
-            name = "Im\(imageTable.count + 1)"
-            current_layer.imageTable[key] = name
-            current_layer.image[name] = stream
-        }
-        
-        let transform = .reflectY(0.5) * .scale(x: Double(image.width), y: Double(image.height)) * transform * _mirrored_transform
-        let _transform = [
-            "\(_decimal_round(transform.a))",
-            "\(_decimal_round(transform.d))",
-            "\(_decimal_round(transform.b))",
-            "\(_decimal_round(transform.e))",
-            "\(_decimal_round(transform.c))",
-            "\(_decimal_round(transform.f))",
-        ]
-        
-        current_layer.commands += "q\n"
-        current_layer.commands += "\(_transform.joined(separator: " ")) cm\n"
-        current_layer.commands += "/\(name) Do\n"
-        current_layer.commands += "Q\n"
-    }
     
     func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, compression: PDFContext.CompressionScheme) {
         self._draw(image: image.convert(to: colorSpace, intent: renderingIntent), transform: transform, compression: compression)

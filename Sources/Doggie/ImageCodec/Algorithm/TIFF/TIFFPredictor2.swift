@@ -107,6 +107,23 @@ extension RGBA64ColorPixel : TIFFEncodablePixel {
     }
 }
 
+extension BGRA32ColorPixel : TIFFEncodablePixel {
+    
+    func tiff_prediction_2(_ lhs: BGRA32ColorPixel) -> BGRA32ColorPixel {
+        return BGRA32ColorPixel(red: r &- lhs.r, green: g &- lhs.g, blue: b &- lhs.b, opacity: a &- lhs.a)
+    }
+    
+    func tiff_encode_color(_ data: inout MappedBuffer<UInt8>) {
+        data.encode(r.bigEndian)
+        data.encode(g.bigEndian)
+        data.encode(b.bigEndian)
+    }
+    
+    func tiff_encode_opacity(_ data: inout MappedBuffer<UInt8>) {
+        data.encode(a.bigEndian)
+    }
+}
+
 extension Gray16ColorPixel : TIFFEncodablePixel {
     
     func tiff_prediction_2(_ lhs: Gray16ColorPixel) -> Gray16ColorPixel {

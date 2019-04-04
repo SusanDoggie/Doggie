@@ -110,6 +110,7 @@
 		0A4A752F21B8D61500AF0CB6 /* FontTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A752D21B8D61400AF0CB6 /* FontTest.swift */; };
 		0A4C4DA221952B16002E40DE /* ArithmeticTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A4C4DA121952B16002E40DE /* ArithmeticTest.swift */; };
 		0A50FBA92255969D0066B35D /* TIFFPredictor2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A50FBA82255969D0066B35D /* TIFFPredictor2.swift */; };
+		0A50FBAB2255D27B0066B35D /* PDFContextImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A50FBAA2255D27B0066B35D /* PDFContextImage.swift */; };
 		0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */; };
 		0A53E4631E35AEF80060FB83 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E44F1E35AEF80060FB83 /* Date.swift */; };
 		0A53E4651E35AEF80060FB83 /* FloatingPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */; };
@@ -423,6 +424,7 @@
 		0A4A752D21B8D61400AF0CB6 /* FontTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FontTest.swift; sourceTree = "<group>"; };
 		0A4C4DA121952B16002E40DE /* ArithmeticTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArithmeticTest.swift; sourceTree = "<group>"; };
 		0A50FBA82255969D0066B35D /* TIFFPredictor2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TIFFPredictor2.swift; sourceTree = "<group>"; };
+		0A50FBAA2255D27B0066B35D /* PDFContextImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextImage.swift; sourceTree = "<group>"; };
 		0A53E44D1E35AEF80060FB83 /* CollectionExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CollectionExtension.swift; sourceTree = "<group>"; };
 		0A53E44F1E35AEF80060FB83 /* Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Date.swift; sourceTree = "<group>"; };
 		0A53E4501E35AEF80060FB83 /* FloatingPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FloatingPoint.swift; sourceTree = "<group>"; };
@@ -1056,6 +1058,7 @@
 			children = (
 				0A63C95B2251E92600993714 /* PDFContext.swift */,
 				0A5DF8FA225452FA00110895 /* PDFContextPage.swift */,
+				0A50FBAA2255D27B0066B35D /* PDFContextImage.swift */,
 				0A592E06225346F100E55388 /* PDFContextShading.swift */,
 				08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */,
 				0A63C95C2251E92600993714 /* PDFContextEncoder.swift */,
@@ -1634,6 +1637,7 @@
 				0A8F4F681F622B020062FD11 /* Stencil.swift in Sources */,
 				0A32D9991F28825F0027F384 /* Tensor.swift in Sources */,
 				0A9CD5971EEB9A2D00094148 /* CalibratedRGBColorSpace.swift in Sources */,
+				0A50FBAB2255D27B0066B35D /* PDFContextImage.swift in Sources */,
 				0A3674B421634DC800175580 /* CGImageRep.swift in Sources */,
 				0AD3E6401F54018B003CC21A /* TTCDecoder.swift in Sources */,
 				0A2107121E5BEEBB00F1E00E /* PathStroke.swift in Sources */,

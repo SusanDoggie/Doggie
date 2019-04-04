@@ -127,6 +127,12 @@ struct TIFFEncoder : ImageRepEncoder {
             
             pixelData = tiff_color_data(image, predictor, isOpaque)
             
+        case let image as Image<BGRA32ColorPixel>:
+            
+            bitsPerChannel = 8
+            
+            pixelData = tiff_color_data(image, predictor, isOpaque)
+            
         case let image as Image<Gray16ColorPixel>:
             
             bitsPerChannel = 8

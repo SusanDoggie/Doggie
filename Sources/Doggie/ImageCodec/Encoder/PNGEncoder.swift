@@ -192,31 +192,30 @@ struct PNGEncoder : ImageRepEncoder {
         return PNGChunk(signature: "IDAT", data: compressed.data)
     }
     
-    private static func encodeRGB(image: Image<ARGB64ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
+    private static func encodeRGB<Pixel>(image: Image<Pixel>, interlace: Bool) -> MappedBuffer<UInt8>? where Pixel : PNGEncodablePixel, Pixel.Model == RGBColorModel {
         
-        guard let iccp = iCCP(image.colorSpace) else { return encodeRGB(image: Image<ARGB64ColorPixel>(image: image, colorSpace: .sRGB), interlace: interlace) }
+        guard let iccp = iCCP(image.colorSpace) else { return encodeRGB(image: Image<Pixel>(image: image, colorSpace: .sRGB), interlace: interlace) }
+        
+        let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
+        let bitDepth = UInt8(bytesPerSample << 3)
         
         let opaque = image.isOpaque
         
-        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: 16, colour: opaque ? 2 : 6, interlace: interlace)
+        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: bitDepth, colour: opaque ? 2 : 6, interlace: interlace)
         let phys = pHYs(image.resolution)
         
         let _idat: PNGChunk?
         
         if opaque {
             
-            _idat = encodeIDAT(image: image, bitsPerPixel: 48, interlace: interlace) {
-                $0.encode(BEUInt16($1.r))
-                $0.encode(BEUInt16($1.g))
-                $0.encode(BEUInt16($1.b))
+            _idat = encodeIDAT(image: image, bitsPerPixel: bitDepth * 3, interlace: interlace) {
+                $1.png_encode_color(&$0)
             }
         } else {
             
-            _idat = encodeIDAT(image: image, bitsPerPixel: 64, interlace: interlace) {
-                $0.encode(BEUInt16($1.r))
-                $0.encode(BEUInt16($1.g))
-                $0.encode(BEUInt16($1.b))
-                $0.encode(BEUInt16($1.a))
+            _idat = encodeIDAT(image: image, bitsPerPixel: bitDepth * 4, interlace: interlace) {
+                $1.png_encode_color(&$0)
+                $1.png_encode_opacity(&$0)
             }
         }
         
@@ -225,89 +224,30 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    private static func encodeRGB(image: Image<ARGB32ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
+    private static func encodeGray<Pixel>(image: Image<Pixel>, interlace: Bool) -> MappedBuffer<UInt8>? where Pixel : PNGEncodablePixel, Pixel.Model == GrayColorModel {
         
-        guard let iccp = iCCP(image.colorSpace) else { return encodeRGB(image: Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB), interlace: interlace) }
+        guard let iccp = iCCP(image.colorSpace) else { return encodeGray(image: Image<Pixel>(image: image, colorSpace: .genericGamma22Gray), interlace: interlace) }
+        
+        let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
+        let bitDepth = UInt8(bytesPerSample << 3)
         
         let opaque = image.isOpaque
         
-        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: 8, colour: opaque ? 2 : 6, interlace: interlace)
+        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: bitDepth, colour: opaque ? 0 : 4, interlace: interlace)
         let phys = pHYs(image.resolution)
         
         let _idat: PNGChunk?
         
         if opaque {
             
-            _idat = encodeIDAT(image: image, bitsPerPixel: 24, interlace: interlace) {
-                $0.encode($1.r)
-                $0.encode($1.g)
-                $0.encode($1.b)
+            _idat = encodeIDAT(image: image, bitsPerPixel: bitDepth, interlace: interlace) {
+                $1.png_encode_color(&$0)
             }
         } else {
             
-            _idat = encodeIDAT(image: image, bitsPerPixel: 32, interlace: interlace) {
-                $0.encode($1.r)
-                $0.encode($1.g)
-                $0.encode($1.b)
-                $0.encode($1.a)
-            }
-        }
-        
-        guard let idat = _idat else { return nil }
-        
-        return encode(ihdr, phys, iccp, idat)
-    }
-    
-    private static func encodeGray(image: Image<Gray32ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
-        
-        guard let iccp = iCCP(image.colorSpace) else { return encodeGray(image: Image<Gray32ColorPixel>(image: image, colorSpace: .genericGamma22Gray), interlace: interlace) }
-        
-        let opaque = image.isOpaque
-        
-        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: 16, colour: opaque ? 0 : 4, interlace: interlace)
-        let phys = pHYs(image.resolution)
-        
-        let _idat: PNGChunk?
-        
-        if opaque {
-            
-            _idat = encodeIDAT(image: image, bitsPerPixel: 16, interlace: interlace) {
-                $0.encode(BEUInt16($1.w))
-            }
-        } else {
-            
-            _idat = encodeIDAT(image: image, bitsPerPixel: 32, interlace: interlace) {
-                $0.encode(BEUInt16($1.w))
-                $0.encode(BEUInt16($1.a))
-            }
-        }
-        
-        guard let idat = _idat else { return nil }
-        
-        return encode(ihdr, phys, iccp, idat)
-    }
-    
-    private static func encodeGray(image: Image<Gray16ColorPixel>, interlace: Bool) -> MappedBuffer<UInt8>? {
-        
-        guard let iccp = iCCP(image.colorSpace) else { return encodeGray(image: Image<Gray16ColorPixel>(image: image, colorSpace: .genericGamma22Gray), interlace: interlace) }
-        
-        let opaque = image.isOpaque
-        
-        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: 8, colour: opaque ? 0 : 4, interlace: interlace)
-        let phys = pHYs(image.resolution)
-        
-        let _idat: PNGChunk?
-        
-        if opaque {
-            
-            _idat = encodeIDAT(image: image, bitsPerPixel: 8, interlace: interlace) {
-                $0.encode($1.w)
-            }
-        } else {
-            
-            _idat = encodeIDAT(image: image, bitsPerPixel: 16, interlace: interlace) {
-                $0.encode($1.w)
-                $0.encode($1.a)
+            _idat = encodeIDAT(image: image, bitsPerPixel: bitDepth * 2, interlace: interlace) {
+                $1.png_encode_color(&$0)
+                $1.png_encode_opacity(&$0)
             }
         }
         
@@ -329,6 +269,18 @@ struct PNGEncoder : ImageRepEncoder {
         }
         
         if let image = image.base as? Image<ARGB64ColorPixel> {
+            return encodeRGB(image: image, interlace: interlaced)?.data
+        }
+        
+        if let image = image.base as? Image<RGBA64ColorPixel> {
+            return encodeRGB(image: image, interlace: interlaced)?.data
+        }
+        
+        if let image = image.base as? Image<RGBA32ColorPixel> {
+            return encodeRGB(image: image, interlace: interlaced)?.data
+        }
+        
+        if let image = image.base as? Image<BGRA32ColorPixel> {
             return encodeRGB(image: image, interlace: interlaced)?.data
         }
         
