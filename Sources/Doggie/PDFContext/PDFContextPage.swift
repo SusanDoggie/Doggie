@@ -873,3 +873,43 @@ extension PDFContext.Page {
         current_layer.state.commands += "Q\n"
     }
 }
+
+extension PDFContext.Page {
+    
+    func drawShading(_ shader: PDFContext.Function) {
+        
+        let transform = _mirrored_transform
+        let _transform = [
+            "\(_decimal_round(transform.a))",
+            "\(_decimal_round(transform.d))",
+            "\(_decimal_round(transform.b))",
+            "\(_decimal_round(transform.e))",
+            "\(_decimal_round(transform.c))",
+            "\(_decimal_round(transform.f))",
+        ]
+        
+        current_layer.state.commands += "q\n"
+        
+        set_blendmode()
+        set_opacity(self.opacity)
+        
+        let shading = PDFContext.Shading(
+            type: 1,
+            deviceGray: state.is_clip,
+            coords: [],
+            function: shader,
+            e0: false,
+            e1: false
+        )
+        
+        if self.shading[shading] == nil {
+            self.shading[shading] = "Sh\(self.shading.count + 1)"
+        }
+        
+        current_layer.state.commands += "\(_transform.joined(separator: " ")) cm\n"
+        
+        let _shading = self.shading[shading]!
+        current_layer.state.commands += "/\(_shading) sh\n"
+        current_layer.state.commands += "Q\n"
+    }
+}

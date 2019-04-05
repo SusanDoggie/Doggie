@@ -293,11 +293,11 @@ extension PDFContext.Page {
         
         guard let iccData = colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
         
-        let rangeOfComponents = (0..<colorSpace.numberOfComponents).map { colorSpace.rangeOfComponent($0) }.map { "\(_decimal_round($0.lowerBound)) \(_decimal_round($0.upperBound))" }.joined(separator: "\n")
+        let _rangeOfComponents = (0..<colorSpace.numberOfComponents).map { colorSpace.rangeOfComponent($0) }.flatMap { [_decimal_round($0.lowerBound), _decimal_round($0.upperBound)] }
         
         let iccBased = PDFContext._write(stream: iccData, [
             "N": "\(colorSpace.numberOfComponents)",
-            "Range": "[\n\(rangeOfComponents)\n]",
+            "Range": "[\n\(_rangeOfComponents.lazy.map { "\($0)" }.joined(separator: "\n"))\n]",
             ], to: &data, xref: &xref)
         
         let _colorSpaceRef = PDFContext._write(["/ICCBased \(iccBased) 0 R"], to: &data, xref: &xref)
@@ -307,15 +307,47 @@ extension PDFContext.Page {
         
         for (shading, name) in self.shading {
             
-            let _function = PDFContext._write(shading.function.pdf_object, to: &data, xref: &xref)
+            let _function: Int
             
-            let _shading = PDFContext._write([
-                "ColorSpace": shading.deviceGray ? "/DeviceGray" : "\(_colorSpaceRef) 0 R",
-                "ShadingType": "\(shading.type)",
-                "Function": "\(_function) 0 R",
-                "Coords": "[\(shading.coords.lazy.map { "\($0)" }.joined(separator: " "))]",
-                "Extend": "[\(shading.e0) \(shading.e1)]",
-                ], to: &data, xref: &xref)
+            switch shading.function.type {
+            case 2, 3: _function = PDFContext._write(shading.function.pdf_object, to: &data, xref: &xref)
+            case 4:
+                
+                let _domain = shading.function.domain.flatMap { [_decimal_round($0.lowerBound), _decimal_round($0.upperBound)] }
+                let _range = shading.function.range.flatMap { [_decimal_round($0.lowerBound), _decimal_round($0.upperBound)] }
+                
+                _function = PDFContext._write(stream: shading.function.postscript, [
+                    "FunctionType": "\(shading.function.type)",
+                    "Domain": "[\n\(_domain.lazy.map { "\($0)" }.joined(separator: "\n"))\n]",
+                    "Range": "[\n\(_range.lazy.map { "\($0)" }.joined(separator: "\n"))\n]",
+                    ], to: &data, xref: &xref)
+                
+            default: continue
+            }
+            
+            let _shading: Int
+            
+            switch shading.type {
+            case 1:
+                
+                _shading = PDFContext._write([
+                    "ColorSpace": shading.deviceGray ? "/DeviceGray" : "\(_colorSpaceRef) 0 R",
+                    "ShadingType": "\(shading.type)",
+                    "Function": "\(_function) 0 R",
+                    ], to: &data, xref: &xref)
+                
+            case 2, 3:
+                
+                _shading = PDFContext._write([
+                    "ColorSpace": shading.deviceGray ? "/DeviceGray" : "\(_colorSpaceRef) 0 R",
+                    "ShadingType": "\(shading.type)",
+                    "Function": "\(_function) 0 R",
+                    "Coords": "[\(shading.coords.lazy.map { "\($0)" }.joined(separator: " "))]",
+                    "Extend": "[\(shading.e0) \(shading.e1)]",
+                    ], to: &data, xref: &xref)
+                
+            default: continue
+            }
             
             shading_table[name] = "\(_shading) 0 R"
         }

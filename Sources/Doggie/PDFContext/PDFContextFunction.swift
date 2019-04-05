@@ -25,18 +25,21 @@
 
 extension PDFContext {
     
-    struct Function : Hashable {
+    public struct Function : Hashable {
         
-        var type: Int
-        var domain: ClosedRange<Double>
+        public let type: Int
+        public let domain: [ClosedRange<Double>]
         
-        var functions: [Function]
-        var bounds: [Double]
-        var encode: [Double]
+        let functions: [Function]
+        let bounds: [Double]
+        let encode: [Double]
         
-        var c0: [Double]
-        var c1: [Double]
-        var n: Double
+        let c0: [Double]
+        let c1: [Double]
+        let n: Double
+        
+        public let range: [ClosedRange<Double>]
+        public let postscript: String
     }
 }
 
@@ -44,24 +47,41 @@ extension PDFContext.Function {
     
     init(domain: ClosedRange<Double> = 0...1, c0: [Double], c1: [Double], n: Double = 1) {
         self.type = 2
-        self.domain = domain
+        self.domain = [domain]
         self.functions = []
         self.bounds = []
         self.encode = []
         self.c0 = c0
         self.c1 = c1
         self.n = n
+        self.range = []
+        self.postscript = ""
     }
     
     init(domain: ClosedRange<Double> = 0...1, functions: [PDFContext.Function], bounds: [Double], encode: [Double]) {
         self.type = 3
-        self.domain = domain
+        self.domain = [domain]
         self.functions = functions
         self.bounds = bounds
         self.encode = encode
         self.c0 = []
         self.c1 = []
         self.n = 0
+        self.range = []
+        self.postscript = ""
+    }
+    
+    public init(domain: [ClosedRange<Double>], range: [ClosedRange<Double>], postscript: String) {
+        self.type = 4
+        self.domain = domain
+        self.functions = []
+        self.bounds = []
+        self.encode = []
+        self.c0 = []
+        self.c1 = []
+        self.n = 0
+        self.range = range
+        self.postscript = postscript
     }
 }
 
@@ -69,17 +89,19 @@ extension PDFContext.Function {
     
     var pdf_object: PDFDictionary {
         
+        let _domain = domain.flatMap { [PDFNumber($0.lowerBound), PDFNumber($0.upperBound)] }
+        
         switch type {
         case 2: return [
             "FunctionType": 2 as PDFNumber,
-            "Domain": [PDFNumber(domain.lowerBound), PDFNumber(domain.upperBound)] as PDFArray,
+            "Domain": PDFArray(_domain),
             "C0": PDFArray(c0.map { PDFNumber($0) }),
             "C1": PDFArray(c1.map { PDFNumber($0) }),
             "N": PDFNumber(n),
             ]
         case 3: return [
             "FunctionType": 3 as PDFNumber,
-            "Domain": [PDFNumber(domain.lowerBound), PDFNumber(domain.upperBound)] as PDFArray,
+            "Domain": PDFArray(_domain),
             "Functions": PDFArray(functions.map { $0.pdf_object }),
             "Bounds": PDFArray(bounds.map { PDFNumber($0) }),
             "Encode": PDFArray(encode.map { PDFNumber($0) }),

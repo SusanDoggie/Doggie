@@ -276,3 +276,10 @@ extension PDFContext {
         current_page.drawRadialGradient(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
     }
 }
+
+extension PDFContext {
+    
+    public func drawShading(_ shader: PDFContext.Function) {
+        current_page.drawShading(shader)
+    }
+}
