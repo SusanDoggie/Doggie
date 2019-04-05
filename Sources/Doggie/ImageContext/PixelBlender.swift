@@ -105,7 +105,7 @@ extension ImageContext {
         
         guard opacity > 0 else { return }
         
-        self.withOptionalUnsafeClipBufferPointer { _clip in
+        self.withUnsafeClipBufferPointer { _clip in
             
             self.withUnsafeMutableImageBufferPointer { _image in
                 
@@ -130,7 +130,7 @@ extension ImageContext {
             
             var layer = Texture<Pixel>(width: width, height: height, fileBacked: image.fileBacked)
             
-            self.withOptionalUnsafeClipBufferPointer { _clip in
+            self.withUnsafeClipBufferPointer { _clip in
                 
                 layer.withUnsafeMutableBufferPointer { _layer in
                     

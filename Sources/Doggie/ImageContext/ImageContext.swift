@@ -168,22 +168,14 @@ extension ImageContext {
         
         let current_layer = self.current_layer
         
-        var clip = current_layer.state.clip ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        if current_layer.state.clip == nil {
+            current_layer.state.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        }
         
-        let result = try clip.withUnsafeMutableBufferPointer(body)
-        
-        current_layer.state.clip = clip
-        
-        return result
+        return try current_layer.state.clip!.withUnsafeMutableBufferPointer(body)
     }
     
-    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
-        let clip = current_layer.state.clip ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
-        return try clip.withUnsafeBufferPointer(body)
-    }
-    
-    @usableFromInline
-    func withOptionalUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>?) throws -> R) rethrows -> R {
+    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>?) throws -> R) rethrows -> R {
         return try current_layer.state.clip?.withUnsafeBufferPointer(body) ?? body(nil)
     }
     
@@ -388,9 +380,8 @@ extension ImageContext {
         return result
     }
     
-    public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>) throws -> R) rethrows -> R {
-        let depth = current_layer.state.depth ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
-        return try depth.withUnsafeBufferPointer(body)
+    public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>?) throws -> R) rethrows -> R {
+        return try current_layer.state.depth?.withUnsafeBufferPointer(body) ?? body(nil)
     }
 }
 
