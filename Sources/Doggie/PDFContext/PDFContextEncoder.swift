@@ -292,7 +292,13 @@ extension PDFContext.Page {
     func write_resources(xobjectGroup: XObjectGroup, to data: inout Data, xref: inout [Int]) throws -> Int {
         
         guard let iccData = colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
-        let iccBased = PDFContext._write(stream: iccData, ["N": "\(colorSpace.numberOfComponents)"], to: &data, xref: &xref)
+        
+        let rangeOfComponents = (0..<colorSpace.numberOfComponents).map { colorSpace.rangeOfComponent($0) }.map { "\(_decimal_round($0.lowerBound)) \(_decimal_round($0.upperBound))" }.joined(separator: "\n")
+        
+        let iccBased = PDFContext._write(stream: iccData, [
+            "N": "\(colorSpace.numberOfComponents)",
+            "Range": "[\n\(rangeOfComponents)\n]",
+            ], to: &data, xref: &xref)
         
         let _colorSpaceRef = PDFContext._write(["/ICCBased \(iccBased) 0 R"], to: &data, xref: &xref)
         let _colorSpace = PDFContext._write(["Cs1": "\(_colorSpaceRef) 0 R"], to: &data, xref: &xref)

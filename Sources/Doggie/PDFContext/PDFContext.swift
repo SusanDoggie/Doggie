@@ -43,10 +43,20 @@ public class PDFContext : DrawableContext {
 
 extension PDFContext {
     
+    public convenience init<Model>(media: Rect, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: ColorSpace<Model>) {
+        self.init(media: media, bleed: bleed, trim: trim, margin: margin, colorSpace: AnyColorSpace(colorSpace))
+    }
+    
     public convenience init(width: Double, height: Double, unit: Resolution.Unit = .point, colorSpace: AnyColorSpace = AnyColorSpace(.sRGB)) {
         let _width = unit.convert(length: width, to: .point)
         let _height = unit.convert(length: height, to: .point)
         self.init(media: Rect(x: 0, y: 0, width: _width, height: _height), colorSpace: colorSpace)
+    }
+    
+    public convenience init<Model>(width: Double, height: Double, unit: Resolution.Unit = .point, colorSpace: ColorSpace<Model>) {
+        let _width = unit.convert(length: width, to: .point)
+        let _height = unit.convert(length: height, to: .point)
+        self.init(media: Rect(x: 0, y: 0, width: _width, height: _height), colorSpace: AnyColorSpace(colorSpace))
     }
 }
 
