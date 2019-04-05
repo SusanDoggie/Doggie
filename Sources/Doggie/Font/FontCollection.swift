@@ -239,10 +239,12 @@ extension FontCollection {
         
         self.init()
         
-        for url in FileManager.default.fileUrls(urls) {
-            
-            if let data = try? Data(contentsOf: url, options: .alwaysMapped), let fonts = try? FontCollection(data: data) {
-                self.formUnion(fonts)
+        let urls = Array(FileManager.default.fileUrls(urls))
+        let fonts = urls.parallelMap { try? FontCollection(data: Data(contentsOf: $0, options: .alwaysMapped)) }
+        
+        for _fonts in fonts {
+            if let _fonts = _fonts {
+                self.formUnion(_fonts)
             }
         }
     }

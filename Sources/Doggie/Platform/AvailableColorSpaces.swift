@@ -29,16 +29,10 @@ extension AnyColorSpace {
     
     public static var availableColorSpaces: [AnyColorSpace] {
         
-        var availableColorSpaces: [AnyColorSpace] = []
+        let directory = FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithFileSystemRepresentation: "ColorSync/Profiles/", isDirectory: true, relativeTo: $0) }
         
-        for url in FileManager.default.fileUrls(FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithFileSystemRepresentation: "ColorSync/Profiles/", isDirectory: true, relativeTo: $0) }) {
-            
-            if let data = try? Data(contentsOf: url, options: .alwaysMapped), let colorSpace = try? AnyColorSpace(iccData: data) {
-                availableColorSpaces.append(colorSpace)
-            }
-        }
-        
-        return availableColorSpaces
+        let urls = Array(FileManager.default.fileUrls(directory))
+        return urls.parallelMap { try? AnyColorSpace(iccData: Data(contentsOf: $0, options: .alwaysMapped)) }.compactMap { $0 }
     }
 }
 
@@ -48,22 +42,14 @@ extension AnyColorSpace {
     
     public static var availableColorSpaces: [AnyColorSpace] {
         
-        let urls = [
+        let directory = [
             URL(fileURLWithPath: "/usr/share/color/icc", isDirectory: true),
             URL(fileURLWithPath: "/usr/local/share/color/icc", isDirectory: true),
             URL(fileURLWithFileSystemRepresentation: ".color/icc/", isDirectory: true, relativeTo: FileManager.default.homeDirectoryForCurrentUser),
             ]
         
-        var availableColorSpaces: [AnyColorSpace] = []
-        
-        for url in FileManager.default.fileUrls(urls) {
-            
-            if let data = try? Data(contentsOf: url, options: .alwaysMapped), let colorSpace = try? AnyColorSpace(iccData: data) {
-                availableColorSpaces.append(colorSpace)
-            }
-        }
-        
-        return availableColorSpaces
+        let urls = Array(FileManager.default.fileUrls(directory))
+        return urls.parallelMap { try? AnyColorSpace(iccData: Data(contentsOf: $0, options: .alwaysMapped)) }.compactMap { $0 }
     }
 }
 
