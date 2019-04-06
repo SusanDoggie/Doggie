@@ -35,23 +35,9 @@ extension Data {
 extension Data {
     
     @inlinable
+    @inline(__always)
     public func withUnsafeBufferPointer<T, R>(as type: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         return try self.withUnsafeBytes { try body($0.bindMemory(to: T.self)) }
-    }
-    
-    @inlinable
-    public mutating func withUnsafeMutableBufferPointer<T, R>(as type: T.Type, _ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
-        
-        return try self.withUnsafeMutableBytes { (bytes: UnsafeMutableRawBufferPointer) in
-            
-            var buf = bytes.bindMemory(to: T.self)
-            let copy = buf
-            
-            defer { precondition(buf.baseAddress == copy.baseAddress) }
-            defer { precondition(buf.count == copy.count) }
-            
-            return try body(&buf)
-        }
     }
 }
 
@@ -70,7 +56,7 @@ extension Data {
     public mutating func storeBytes<T>(of value: T, toByteOffset offset: Int = 0) {
         precondition(offset >= 0, "Data.storeBytes with negative offset")
         precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.storeBytes out of bounds")
-        self.withUnsafeMutableBytes { ($0.baseAddress! + offset).bindMemory(to: T.self, capacity: 1).pointee = value }
+        self.withUnsafeMutableBytes { dst in Swift.withUnsafeBytes(of: value) { dst.copyMemory(from: $0) } }
     }
 }
 
