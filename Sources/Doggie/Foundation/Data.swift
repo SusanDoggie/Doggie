@@ -56,7 +56,7 @@ extension Data {
     public mutating func storeBytes<T>(of value: T, toByteOffset offset: Int = 0) {
         precondition(offset >= 0, "Data.storeBytes with negative offset")
         precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.storeBytes out of bounds")
-        self.withUnsafeMutableBytes { dst in Swift.withUnsafeBytes(of: value) { UnsafeRawBufferPointer(rebasing: dst.dropFirst(offset)).copyMemory(from: $0) } }
+        self.withUnsafeMutableBytes { ($0.baseAddress! + offset).bindMemory(to: T.self, capacity: 1).pointee = value }
     }
 }
 
