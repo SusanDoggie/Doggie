@@ -50,14 +50,6 @@ extension Data {
         precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.load out of bounds")
         return self.withUnsafeBytes { ($0.baseAddress! + offset).bindMemory(to: T.self, capacity: 1).pointee }
     }
-    
-    @inlinable
-    @inline(__always)
-    public mutating func storeBytes<T>(of value: T, toByteOffset offset: Int = 0) {
-        precondition(offset >= 0, "Data.storeBytes with negative offset")
-        precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.storeBytes out of bounds")
-        self.withUnsafeMutableBytes { ($0.baseAddress! + offset).bindMemory(to: T.self, capacity: 1).pointee = value }
-    }
 }
 
 extension Data {

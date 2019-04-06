@@ -70,9 +70,19 @@ extension iccProfile {
         
         let header_size = MemoryLayout<iccLUTTransform.LutAtoB>.stride + 8
         
-        var header = Data(count: header_size)
+        var header = Data()
         
-        header.storeBytes(of: (iccProfile.TagType.lutAtoB, 0 as BEUInt32, iccLUTTransform.LutAtoB(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)))
+        header.encode(iccProfile.TagType.lutAtoB)
+        header.encode(0 as BEUInt32)
+        header.encode(iccLUTTransform.LutAtoB(
+            inputChannels: 3,
+            outputChannels: 3,
+            offsetB: BEUInt32(header_size),
+            offsetMatrix: 0,
+            offsetM: 0,
+            offsetCLUT: 0,
+            offsetA: 0
+        ))
         
         self[tag] = TagData(rawData: header + B_data)
     }
@@ -88,9 +98,19 @@ extension iccProfile {
         
         let header_size = MemoryLayout<iccLUTTransform.LutBtoA>.stride + 8
         
-        var header = Data(count: header_size)
+        var header = Data()
         
-        header.storeBytes(of: (iccProfile.TagType.lutBtoA, 0 as BEUInt32, iccLUTTransform.LutBtoA(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: 0, offsetM: 0, offsetCLUT: 0, offsetA: 0)))
+        header.encode(iccProfile.TagType.lutBtoA)
+        header.encode(0 as BEUInt32)
+        header.encode(iccLUTTransform.LutBtoA(
+            inputChannels: 3,
+            outputChannels: 3,
+            offsetB: BEUInt32(header_size),
+            offsetMatrix: 0,
+            offsetM: 0,
+            offsetCLUT: 0,
+            offsetA: 0
+        ))
         
         self[tag] = TagData(rawData: header + B_data)
     }
@@ -104,8 +124,8 @@ extension iccProfile {
             B_data.count = B_data.count.align(4)
         }
         
-        var matrix_data = Data(count: MemoryLayout<iccMatrix3x4>.stride)
-        matrix_data.storeBytes(of: iccMatrix3x4(matrix))
+        var matrix_data = Data()
+        matrix_data.encode(iccMatrix3x4(matrix))
         
         var M_data = Data()
         
@@ -116,9 +136,19 @@ extension iccProfile {
         
         let header_size = MemoryLayout<iccLUTTransform.LutAtoB>.stride + 8
         
-        var header = Data(count: header_size)
+        var header = Data()
         
-        header.storeBytes(of: (iccProfile.TagType.lutAtoB, 0 as BEUInt32, iccLUTTransform.LutAtoB(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)))
+        header.encode(iccProfile.TagType.lutAtoB)
+        header.encode(0 as BEUInt32)
+        header.encode(iccLUTTransform.LutAtoB(
+            inputChannels: 3,
+            outputChannels: 3,
+            offsetB: BEUInt32(header_size),
+            offsetMatrix: BEUInt32(header_size + B_data.count),
+            offsetM: BEUInt32(header_size + B_data.count + matrix_data.count),
+            offsetCLUT: 0,
+            offsetA: 0
+        ))
         
         self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
     }
@@ -132,8 +162,8 @@ extension iccProfile {
             B_data.count = B_data.count.align(4)
         }
         
-        var matrix_data = Data(count: MemoryLayout<iccMatrix3x4>.stride)
-        matrix_data.storeBytes(of: iccMatrix3x4(matrix))
+        var matrix_data = Data()
+        matrix_data.encode(iccMatrix3x4(matrix))
         
         var M_data = Data()
         
@@ -144,9 +174,19 @@ extension iccProfile {
         
         let header_size = MemoryLayout<iccLUTTransform.LutBtoA>.stride + 8
         
-        var header = Data(count: header_size)
+        var header = Data()
         
-        header.storeBytes(of: (iccProfile.TagType.lutBtoA, 0 as BEUInt32, iccLUTTransform.LutBtoA(inputChannels: 3, outputChannels: 3, offsetB: BEUInt32(header_size), offsetMatrix: BEUInt32(header_size + B_data.count), offsetM: BEUInt32(header_size + B_data.count + matrix_data.count), offsetCLUT: 0, offsetA: 0)))
+        header.encode(iccProfile.TagType.lutBtoA)
+        header.encode(0 as BEUInt32)
+        header.encode(iccLUTTransform.LutBtoA(
+            inputChannels: 3,
+            outputChannels: 3,
+            offsetB: BEUInt32(header_size),
+            offsetMatrix: BEUInt32(header_size + B_data.count),
+            offsetM: BEUInt32(header_size + B_data.count + matrix_data.count),
+            offsetCLUT: 0,
+            offsetA: 0
+        ))
         
         self[tag] = TagData(rawData: header + B_data + matrix_data + M_data)
     }
