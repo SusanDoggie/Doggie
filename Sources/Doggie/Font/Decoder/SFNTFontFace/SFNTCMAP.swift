@@ -128,7 +128,7 @@ extension SFNTCMAP {
         
         subscript(code: UInt32) -> Int {
             guard code < 256 else { return 0 }
-            return Int(data.withUnsafeBufferPointer(as: UInt8.self) { $0[Int(code)] })
+            return Int(data[Int(code)])
         }
         
         var coveredCharacterSet: CharacterSet {
@@ -205,14 +205,14 @@ extension SFNTCMAP {
                 
                 let glyphIndex: Int
                 
-                let _idRangeOffset = self.idRangeOffset.withUnsafeBufferPointer(as: BEUInt16.self) { $0[i] }
+                let _idRangeOffset = self.idRangeOffset.typed(as: BEUInt16.self)[i]
                 
                 if _idRangeOffset == 0 {
                     glyphIndex = Int(code)
                 } else {
                     let offset = i + (Int(_idRangeOffset) >> 1) + (Int(code) - Int(startCode[i]))
                     guard offset < idRangeOffset.count >> 1 else { return 0 }
-                    glyphIndex = Int(self.idRangeOffset.withUnsafeBufferPointer(as: BEUInt16.self) { $0[offset] })
+                    glyphIndex = Int(self.idRangeOffset.typed(as: BEUInt16.self)[offset])
                 }
                 
                 return glyphIndex == 0 ? 0 : (Int(idDelta[i]) + glyphIndex) % 0xFFFF
@@ -253,12 +253,13 @@ extension SFNTCMAP {
             self.language = try data.decode(BEUInt32.self)
             self.nGroups = try data.decode(BEUInt32.self)
             guard data.count >= Int(nGroups) * MemoryLayout<Group>.stride else { throw ByteDecodeError.endOfData }
-            self.groups = data.popFirst(Int(nGroups))
+            self.groups = data.popFirst(Int(nGroups) * MemoryLayout<Group>.stride)
         }
         
-        func search(_ code: UInt32, _ groups: UnsafePointer<Group>, _ range: Range<Int>) -> Int {
+        subscript(code: UInt32) -> Int {
             
-            var range = range
+            let groups = self.groups.typed(as: Group.self)
+            var range = 0..<Int(self.nGroups)
             
             while range.count != 0 {
                 
@@ -274,26 +275,17 @@ extension SFNTCMAP {
             return 0
         }
         
-        subscript(code: UInt32) -> Int {
-            return groups.withUnsafeBufferPointer(as: Group.self) { search(code, $0.baseAddress!, 0..<Int(self.nGroups)) }
-        }
-        
         var coveredCharacterSet: CharacterSet {
             
             var result = CharacterSet()
             
-            groups.withUnsafeBufferPointer(as: Group.self) { _groups in
+            for group in groups.typed(as: Group.self).prefix(Int(self.nGroups)) {
                 
-                guard let groups = _groups.baseAddress else { return }
+                guard let startCharCode = UnicodeScalar(group.startGlyphCode == 0 ? UInt32(group.startCharCode) + 1 : UInt32(group.startCharCode)) else { continue }
+                guard let endCharCode = UnicodeScalar(UInt32(group.endCharCode)) else { continue }
                 
-                for group in UnsafeBufferPointer(start: groups, count: Int(self.nGroups)) {
-                    
-                    guard let startCharCode = UnicodeScalar(group.startGlyphCode == 0 ? UInt32(group.startCharCode) + 1 : UInt32(group.startCharCode)) else { continue }
-                    guard let endCharCode = UnicodeScalar(UInt32(group.endCharCode)) else { continue }
-                    
-                    if startCharCode <= endCharCode {
-                        result.formUnion(CharacterSet(charactersIn: startCharCode...endCharCode))
-                    }
+                if startCharCode <= endCharCode {
+                    result.formUnion(CharacterSet(charactersIn: startCharCode...endCharCode))
                 }
             }
             
@@ -347,24 +339,20 @@ extension SFNTCMAP {
         
         func search(_ varSelector: UInt32, _ range: Range<Int>) -> VariationSelector? {
             
-            return varSelectorRecords.withUnsafeBufferPointer(as: VariationSelector.self) { _buf -> VariationSelector? in
+            let buf = varSelectorRecords.typed(as: VariationSelector.self)
+            var range = range
+            
+            while range.count != 0 {
                 
-                guard let buf = _buf.baseAddress else { return nil }
-                
-                var range = range
-                
-                while range.count != 0 {
-                    
-                    let mid = (range.lowerBound + range.upperBound) >> 1
-                    let _mid = buf[mid]
-                    if varSelector == _mid.varSelector {
-                        return _mid
-                    }
-                    range = varSelector < _mid.varSelector ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+                let mid = (range.lowerBound + range.upperBound) >> 1
+                let _mid = buf[mid]
+                if varSelector == _mid.varSelector {
+                    return _mid
                 }
-                
-                return nil
+                range = varSelector < _mid.varSelector ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
             }
+            
+            return nil
         }
         
         enum MappedValue {
@@ -382,62 +370,44 @@ extension SFNTCMAP {
             let nonDefaultUVSOffset = Int(varSelector.nonDefaultUVSOffset)
             
             if defaultUVSOffset != 0 {
+                
                 var data = self.data.dropFirst(defaultUVSOffset)
                 
                 guard let count = try? data.decode(BEInt32.self) else { return .none }
                 
-                let result = data.withUnsafeBufferPointer(as: UnicodeValueRange.self) { _buf -> UnicodeValueRange? in
-                    
-                    guard let buf = _buf.baseAddress else { return nil }
-                    
-                    var range = 0..<Int(count)
-                    
-                    while range.count != 0 {
-                        
-                        let mid = (range.lowerBound + range.upperBound) >> 1
-                        let _mid = buf[mid]
-                        let startUnicodeValue = _mid.startUnicodeValue
-                        let endUnicodeValue = startUnicodeValue + UInt32(_mid.additionalCount)
-                        if startUnicodeValue <= endUnicodeValue && startUnicodeValue...endUnicodeValue ~= code {
-                            return _mid
-                        }
-                        range = code < startUnicodeValue ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
-                    }
-                    
-                    return nil
-                }
+                let buf = data.typed(as: UnicodeValueRange.self)
+                var range = 0..<Int(count)
                 
-                if result != nil {
-                    return .default
+                while range.count != 0 {
+                    
+                    let mid = (range.lowerBound + range.upperBound) >> 1
+                    let _mid = buf[mid]
+                    let startUnicodeValue = _mid.startUnicodeValue
+                    let endUnicodeValue = startUnicodeValue + UInt32(_mid.additionalCount)
+                    if startUnicodeValue <= endUnicodeValue && startUnicodeValue...endUnicodeValue ~= code {
+                        return .default
+                    }
+                    range = code < startUnicodeValue ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
                 }
             }
             
             if nonDefaultUVSOffset != 0 {
+                
                 var data = self.data.dropFirst(nonDefaultUVSOffset)
                 
                 guard let count = try? data.decode(BEInt32.self) else { return .none }
                 
-                let result = data.withUnsafeBufferPointer(as: UVSMapping.self) { _buf -> UVSMapping? in
-                    
-                    guard let buf = _buf.baseAddress else { return nil }
-                    
-                    var range = 0..<Int(count)
-                    
-                    while range.count != 0 {
-                        
-                        let mid = (range.lowerBound + range.upperBound) >> 1
-                        let _mid = buf[mid]
-                        if code == _mid.unicodeValue {
-                            return _mid
-                        }
-                        range = code < _mid.unicodeValue ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
-                    }
-                    
-                    return nil
-                }
+                let buf = data.typed(as: UVSMapping.self)
+                var range = 0..<Int(count)
                 
-                if let result = result {
-                    return .glyph(result.glyphID)
+                while range.count != 0 {
+                    
+                    let mid = (range.lowerBound + range.upperBound) >> 1
+                    let _mid = buf[mid]
+                    if code == _mid.unicodeValue {
+                        return .glyph(_mid.glyphID)
+                    }
+                    range = code < _mid.unicodeValue ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
                 }
             }
             

@@ -54,7 +54,7 @@ struct SFNTSBIX : RandomAccessCollection {
         precondition(position < count, "Index out of range.")
         
         guard self.data.count > position << 2 else { return nil }
-        let offset = self.data.withUnsafeBufferPointer(as: BEUInt32.self) { $0[position] }
+        let offset = self.data.typed(as: BEUInt32.self)[position]
         
         guard offset >= 8 else { return nil }
         var data = self.data.dropFirst(Int(offset) - 8)
@@ -92,8 +92,8 @@ extension SFNTSBIX.Strike {
         
         guard self.data.count > (glyph + 1) << 2 else { return nil }
         
-        let startIndex = Int(self.data.withUnsafeBufferPointer(as: BEUInt32.self) { $0[glyph] }) - 4
-        let endIndex = Int(self.data.withUnsafeBufferPointer(as: BEUInt32.self) { $0[glyph + 1] }) - 4
+        let startIndex = Int(self.data.typed(as: BEUInt32.self)[glyph]) - 4
+        let endIndex = Int(self.data.typed(as: BEUInt32.self)[glyph + 1]) - 4
         
         guard endIndex >= startIndex + 8 else { return nil }
         

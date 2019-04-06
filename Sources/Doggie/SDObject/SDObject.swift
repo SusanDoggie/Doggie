@@ -792,13 +792,14 @@ struct SDUndecodedObject {
         
         guard data.count > table_size else { return nil }
         
-        return data.prefix(table_size).withUnsafeBufferPointer(as: UInt64.self) { _offsets in
-            guard let offsets = _offsets.baseAddress else { return nil }
-            let from = Int(UInt64(bigEndian: offsets[index]))
-            let to = Int(UInt64(bigEndian: offsets[index + 1]))
-            guard to > from && data.count >= table_size + to else { return nil }
-            return SDObject(decode: data.dropFirst(table_size).dropFirst(from).prefix(to - from))
-        }
+        let offsets = data.prefix(table_size).typed(as: UInt64.self)
+        
+        let from = Int(UInt64(bigEndian: offsets[index]))
+        let to = Int(UInt64(bigEndian: offsets[index + 1]))
+        
+        guard to > from && data.count >= table_size + to else { return nil }
+        
+        return SDObject(decode: data.dropFirst(table_size).dropFirst(from).prefix(to - from))
     }
     
     @inlinable
@@ -812,24 +813,21 @@ struct SDUndecodedObject {
         
         guard data.count > table_size else { return nil }
         
-        return data.prefix(table_size).withUnsafeBufferPointer(as: (UInt64, UInt64).self) { _offsets in
-            
-            guard let offsets = _offsets.baseAddress else { return nil }
-            let from = Int(UInt64(bigEndian: offsets[index].1))
-            
-            let offset_0 = Int(UInt64(bigEndian: offsets[index + 1].0))
-            let offset_1 = Int(UInt64(bigEndian: offsets[index + 1].1))
-            
-            guard offset_0 > from && offset_1 > offset_0 && data.count >= table_size + offset_1 else { return nil }
-            
-            let _key = data.dropFirst(table_size).dropFirst(from).prefix(offset_0 - from)
-            let _value = data.dropFirst(table_size).dropFirst(offset_0).prefix(offset_1 - offset_0)
-            
-            guard let key = String(bytes: _key, encoding: .utf8) else { return nil }
-            
-            let value = SDObject(decode: _value)
-            return value.isNil ? nil : (key, value)
-        }
+        let offsets = data.prefix(table_size).typed(as: (UInt64, UInt64).self)
+        let from = Int(UInt64(bigEndian: offsets[index].1))
+        
+        let offset_0 = Int(UInt64(bigEndian: offsets[index + 1].0))
+        let offset_1 = Int(UInt64(bigEndian: offsets[index + 1].1))
+        
+        guard offset_0 > from && offset_1 > offset_0 && data.count >= table_size + offset_1 else { return nil }
+        
+        let _key = data.dropFirst(table_size).dropFirst(from).prefix(offset_0 - from)
+        let _value = data.dropFirst(table_size).dropFirst(offset_0).prefix(offset_1 - offset_0)
+        
+        guard let key = String(bytes: _key, encoding: .utf8) else { return nil }
+        
+        let value = SDObject(decode: _value)
+        return value.isNil ? nil : (key, value)
     }
     
     @inlinable

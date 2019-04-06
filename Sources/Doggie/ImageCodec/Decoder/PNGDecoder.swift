@@ -129,7 +129,7 @@ struct PNGDecoder : ImageRepDecoder {
                 
                 var counter = tRNS.data.count
                 
-                tRNS.data.withUnsafeBufferPointer(as: UInt8.self) { _ptr2 in
+                tRNS.data.withUnsafeBufferPointer { _ptr2 in
                     
                     guard var ptr2 = _ptr2.baseAddress else { return }
                     
@@ -477,7 +477,7 @@ struct PNGDecoder : ImageRepDecoder {
                 
                 var image = Image<Float64ColorPixel<GrayColorModel>>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
+                pixels.withUnsafeBufferPointer { _source in
                     
                     guard var source = _source.baseAddress else { return }
                     
@@ -543,7 +543,7 @@ struct PNGDecoder : ImageRepDecoder {
             case 8:
                 var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: _GrayColorSpace, fileBacked: fileBacked)
                 
-                pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
+                pixels.withUnsafeBufferPointer { _source in
                     
                     guard var source = _source.baseAddress else { return }
                     
@@ -644,7 +644,7 @@ struct PNGDecoder : ImageRepDecoder {
             
             palette.withUnsafeBufferPointer { palette in
                 
-                pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
+                pixels.withUnsafeBufferPointer { _source in
                     
                     guard var source = _source.baseAddress else { return }
                     

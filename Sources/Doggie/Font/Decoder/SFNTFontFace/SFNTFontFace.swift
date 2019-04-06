@@ -318,13 +318,15 @@ extension SFNTFontFace {
     
     func metric(glyph: Int) -> Font.Metric {
         let hMetricCount = Int(hhea.numOfLongHorMetrics)
-        return hmtx.withUnsafeBufferPointer(as: Metric.self) { $0[glyph < hMetricCount ? glyph : hMetricCount - 1]._font_metric() }
+        let index = glyph < hMetricCount ? glyph : hMetricCount - 1
+        return hmtx.typed(as: Metric.self)[index]._font_metric()
     }
     
     func verticalMetric(glyph: Int) -> Font.Metric {
         if let vhea = self.vhea, let vmtx = self.vmtx {
             let vMetricCount = Int(vhea.numOfLongVerMetrics)
-            return vmtx.withUnsafeBufferPointer(as: Metric.self) { $0[glyph < vMetricCount ? glyph : vMetricCount - 1]._font_metric() }
+            let index = glyph < vMetricCount ? glyph : vMetricCount - 1
+            return vmtx.typed(as: Metric.self)[index]._font_metric()
         }
         return Font.Metric(advance: 0, bearing: 0)
     }

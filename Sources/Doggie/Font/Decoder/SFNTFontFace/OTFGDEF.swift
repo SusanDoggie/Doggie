@@ -89,30 +89,28 @@ struct OTFGDEF : ByteDecodable {
                 if glyph >= startGlyphID {
                     let offset = Int(glyph - startGlyphID)
                     if offset < glyphCount {
-                        return data.withUnsafeBufferPointer(as: BEUInt16.self) { $0[offset] }
+                        return data.typed(as: BEUInt16.self)[offset]
                     }
                 }
             case 2:
                 
                 var range = 0..<Int(classRangeCount)
                 
-                return data.withUnsafeBufferPointer(as: ClassRangeRecord.self) { _record in
+                let record = data.typed(as: ClassRangeRecord.self)
+                
+                while range.count != 0 {
                     
-                    guard let record = _record.baseAddress else { return 0 }
-                    
-                    while range.count != 0 {
-                        
-                        let mid = (range.lowerBound + range.upperBound) >> 1
-                        let startGlyphID = UInt16(record[mid].startGlyphID)
-                        let endGlyphID = UInt16(record[mid].endGlyphID)
-                        if startGlyphID <= endGlyphID && startGlyphID...endGlyphID ~= glyph {
-                            return record[mid]._class
-                        }
-                        range = glyph < startGlyphID ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
+                    let mid = (range.lowerBound + range.upperBound) >> 1
+                    let startGlyphID = UInt16(record[mid].startGlyphID)
+                    let endGlyphID = UInt16(record[mid].endGlyphID)
+                    if startGlyphID <= endGlyphID && startGlyphID...endGlyphID ~= glyph {
+                        return record[mid]._class
                     }
-                    
-                    return 0
+                    range = glyph < startGlyphID ? range.prefix(upTo: mid) : range.suffix(from: mid).dropFirst()
                 }
+                
+                return 0
+                
             default: break
             }
             return 0

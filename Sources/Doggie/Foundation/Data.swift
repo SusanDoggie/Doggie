@@ -36,19 +36,16 @@ extension Data {
     
     @inlinable
     @inline(__always)
-    public func withUnsafeBufferPointer<T, R>(as type: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
-        return try self.withUnsafeBytes { try body($0.bindMemory(to: T.self)) }
-    }
-}
-
-extension Data {
-    
-    @inlinable
-    @inline(__always)
     public func load<T>(fromByteOffset offset: Int = 0, as type: T.Type) -> T {
         precondition(offset >= 0, "Data.load with negative offset")
         precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.load out of bounds")
         return self.withUnsafeBytes { ($0.baseAddress! + offset).bindMemory(to: T.self, capacity: 1).pointee }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func withUnsafeBufferPointer<T, R>(as type: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
+        return try self.withUnsafeBytes { try body($0.bindMemory(to: T.self)) }
     }
 }
 

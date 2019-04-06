@@ -70,44 +70,37 @@ extension iccProfile.TagData {
 extension iccProfile.TagData {
     
     var uInt16Array: [BEUInt16]? {
-        
-        return type == .uInt16Array ? data.withUnsafeBufferPointer(as: BEUInt16.self) { Array($0) } : nil
+        return type == .uInt16Array ? Array(data.typed(as: BEUInt16.self)) : nil
     }
     
     var uInt32Array: [BEUInt32]? {
-        
-        return type == .uInt32Array ? data.withUnsafeBufferPointer(as: BEUInt32.self) { Array($0) } : nil
+        return type == .uInt32Array ? Array(data.typed(as: BEUInt32.self)) : nil
     }
     
     var uInt64Array: [BEUInt64]? {
-        
-        return type == .uInt64Array ? data.withUnsafeBufferPointer(as: BEUInt64.self) { Array($0) } : nil
+        return type == .uInt64Array ? Array(data.typed(as: BEUInt64.self)) : nil
     }
     
     var uInt8Array: [UInt8]? {
-        
-        return type == .uInt8Array ? data.withUnsafeBufferPointer(as: UInt8.self) { Array($0) } : nil
+        return type == .uInt8Array ? Array(data) : nil
     }
 }
 
 extension iccProfile.TagData {
     
     var s15Fixed16Array: [Fixed16Number<BEInt32>]? {
-        
-        return type == .s15Fixed16Array ? data.withUnsafeBufferPointer(as: Fixed16Number<BEInt32>.self) { Array($0) } : nil
+        return type == .s15Fixed16Array ? Array(data.typed(as: Fixed16Number<BEInt32>.self)) : nil
     }
     
     var u16Fixed16Array: [Fixed16Number<BEUInt32>]? {
-        
-        return type == .u16Fixed16Array ? data.withUnsafeBufferPointer(as: Fixed16Number<BEUInt32>.self) { Array($0) } : nil
+        return type == .u16Fixed16Array ? Array(data.typed(as: Fixed16Number<BEUInt32>.self)) : nil
     }
 }
 
 extension iccProfile.TagData {
     
     var XYZArray: [iccXYZNumber]? {
-        
-        return type == .XYZArray ? data.withUnsafeBufferPointer(as: iccXYZNumber.self) { Array($0) } : nil
+        return type == .XYZArray ? Array(data.typed(as: iccXYZNumber.self)) : nil
     }
 }
 

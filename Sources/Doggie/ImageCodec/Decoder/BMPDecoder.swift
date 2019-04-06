@@ -198,7 +198,7 @@ struct BMPDecoder : ImageRepDecoder {
             
             var image = Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
             
-            pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
+            pixels.withUnsafeBufferPointer { _source in
                 
                 guard var source = _source.baseAddress else { return }
                 let endOfData = pixels.count + Int(bitPattern: source)
@@ -264,7 +264,7 @@ struct BMPDecoder : ImageRepDecoder {
                     var red: UInt8
                 }
                 
-                palette = data.dropFirst(header.paletteOffset).withUnsafeBufferPointer(as: Palette.self) { $0.prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
+                palette = data.dropFirst(header.paletteOffset).typed(as: Palette.self).prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) }
                 
             } else {
                 
@@ -276,7 +276,7 @@ struct BMPDecoder : ImageRepDecoder {
                     var reserved: UInt8
                 }
                 
-                palette = data.dropFirst(header.paletteOffset).withUnsafeBufferPointer(as: Palette.self) { $0.prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) } }
+                palette = data.dropFirst(header.paletteOffset).typed(as: Palette.self).prefix(paletteCount).map { ARGB32ColorPixel(red: $0.red, green: $0.green, blue: $0.blue) }
             }
             
             func UncompressedPixelReader() -> Image<ARGB32ColorPixel> {
@@ -287,7 +287,7 @@ struct BMPDecoder : ImageRepDecoder {
                 
                 palette.withUnsafeBufferPointer { palette in
                     
-                    pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
+                    pixels.withUnsafeBufferPointer { _source in
                         
                         guard var source = _source.baseAddress else { return }
                         let start = source
@@ -345,7 +345,7 @@ struct BMPDecoder : ImageRepDecoder {
                     
                     palette.withUnsafeBufferPointer { palette in
                         
-                        pixels.withUnsafeBufferPointer(as: UInt8.self) { _source in
+                        pixels.withUnsafeBufferPointer { _source in
                             
                             guard let source = _source.baseAddress else { return }
                             var stream = UnsafeBufferPointer(start: source, count: pixels.count)[...]
