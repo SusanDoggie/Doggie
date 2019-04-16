@@ -346,7 +346,7 @@ extension Shape {
 @inline(__always)
 private func getDataString(_ x: [Double]) -> String {
     var str = ""
-    for _x in x.map(_decimal_formatter) {
+    for _x in x.map({ _decimal_formatter($0) }) {
         if !str.isEmpty && _x.first != "-" {
             str.append(" ")
         }

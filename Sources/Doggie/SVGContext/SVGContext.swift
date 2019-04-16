@@ -309,7 +309,7 @@ private func getDataString(_ x: Double ...) -> String {
     return getDataString(x)
 }
 private func getDataString(_ x: [Double]) -> String {
-    return x.map(_decimal_formatter).joined(separator: " ")
+    return x.map { _decimal_formatter($0) }.joined(separator: " ")
 }
 
 extension SDTransform {
