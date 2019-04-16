@@ -344,18 +344,6 @@ extension Shape {
 }
 
 @inline(__always)
-public func _decimal_round(_ x: Double) -> Decimal {
-    var decimal = Decimal(x)
-    withUnsafeMutablePointer(to: &decimal) { NSDecimalRound($0, $0, 9, .plain) }
-    return decimal
-}
-
-@inline(__always)
-public func _decimal_formatter(_ x: Double) -> String {
-    return "\(_decimal_round(x))"
-}
-
-@inline(__always)
 private func getDataString(_ x: [Double]) -> String {
     var str = ""
     for _x in x.map(_decimal_formatter) {

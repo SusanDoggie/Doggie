@@ -623,3 +623,15 @@ extension FloatingPoint {
         return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: self)
     }
 }
+
+@inline(__always)
+public func _decimal_round(_ x: Double, _ scale: Int = 9, _ roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
+    var decimal = Decimal(x)
+    withUnsafeMutablePointer(to: &decimal) { NSDecimalRound($0, $0, scale, roundingMode) }
+    return decimal
+}
+
+@inline(__always)
+public func _decimal_formatter(_ x: Double, _ scale: Int = 9, _ roundingMode: NSDecimalNumber.RoundingMode = .plain) -> String {
+    return "\(_decimal_round(x, scale, roundingMode))"
+}
