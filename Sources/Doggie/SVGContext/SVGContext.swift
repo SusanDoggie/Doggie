@@ -67,6 +67,8 @@ private struct SVGContextState {
     
     var elements: [SDXMLElement] = []
     
+    var visibleBound: Rect?
+    
     var defs: [SDXMLElement] = []
     var imageTable: [SVGContext.ImageTableKey: String] = [:]
     
@@ -421,7 +423,7 @@ extension SVGContext {
 
 extension SVGContext {
     
-    private func apply_style(_ element: inout SDXMLElement, options: StyleOptions) {
+    private func apply_style(_ element: inout SDXMLElement, _ visibleBound: inout Rect, options: StyleOptions) {
         
         var style: [String: String] = self.blendMode == .normal || !options.contains(.isolate) ? [:] : ["isolation": "isolate"]
         
@@ -480,6 +482,44 @@ extension SVGContext {
             }
         }
         
+        if options.contains(.shadow), self.shadowColor.opacity > 0 && self.shadowBlur > 0 {
+            
+            let id = new_name("SHADOW")
+            
+            visibleBound = visibleBound.union(visibleBound.inset(dx: -ceil(3 * self.shadowBlur), dy: -ceil(3 * self.shadowBlur)).offset(dx: self.shadowOffset.width, dy: self.shadowOffset.height))
+            
+            var filter = SDXMLElement(name: "filter", attributes: [
+                "id": id,
+                "filterUnits": "userSpaceOnUse",
+                "x": _decimal_formatter(visibleBound.x),
+                "y": _decimal_formatter(visibleBound.y),
+                "width": _decimal_formatter(visibleBound.width),
+                "height": _decimal_formatter(visibleBound.height),
+                ])
+            
+            let color = self.shadowColor.convert(to: ColorSpace.sRGB, intent: renderingIntent)
+            
+            let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
+            let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
+            let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
+            
+            var shadow = SDXMLElement(name: "feDropShadow", attributes: [
+                "dx": _decimal_formatter(self.shadowOffset.width),
+                "dy": _decimal_formatter(self.shadowOffset.height),
+                "stdDeviation": _decimal_formatter(0.5 * self.shadowBlur),
+                "flood-color": "rgb(\(red),\(green),\(blue))",
+                ])
+            
+            if color.opacity < 1 {
+                shadow.setAttribute(for: "flood-opacity", value: _decimal_formatter(color.opacity))
+            }
+            
+            filter.append(shadow)
+            defs.append(filter)
+            
+            element.setAttribute(for: "filter", value: "url(#\(id))")
+        }
+        
         if style.count != 0 {
             var style: [String] = style.map { "\($0): \($1)" }
             if let _style = element.attributes(for: "style", namespace: "") {
@@ -512,10 +552,16 @@ extension SVGContext {
         public static let allWithoutTransform: StyleOptions = [.isolate, .opacity, .blendMode, .compositingMode, .shadow, .clip]
     }
     
-    public func append(_ newElement: SDXMLElement, options: StyleOptions = []) {
+    private func append(_ newElement: SDXMLElement, _ visibleBound: Rect, options: StyleOptions) {
         var newElement = newElement
-        self.apply_style(&newElement, options: options)
+        var visibleBound = visibleBound
+        self.apply_style(&newElement, &visibleBound, options: options)
         self.current_layer.state.elements.append(newElement)
+        self.current_layer.state.visibleBound = self.current_layer.state.visibleBound.map { $0.union(visibleBound) } ?? visibleBound
+    }
+    
+    public func append(_ newElement: SDXMLElement, options: StyleOptions = []) {
+        self.append(newElement, self.viewBox, options: options)
     }
     
     public func append<S : Sequence>(contentsOf newElements: S, options: StyleOptions = []) where S.Element == SDXMLElement {
@@ -549,8 +595,9 @@ extension SVGContext {
                 self.next = nil
                 
                 guard next.state.elements.count != 0 else { return }
+                guard let visibleBound = next.state.visibleBound else { return }
                 
-                self.append(SDXMLElement(name: "g", elements: next.state.elements), options: .allWithoutTransform)
+                self.append(SDXMLElement(name: "g", elements: next.state.elements), visibleBound, options: .allWithoutTransform)
             }
         }
     }
@@ -585,7 +632,7 @@ extension SVGContext {
             element.setAttribute(for: "fill-opacity", value: "\(color.opacity)")
         }
         
-        self.append(element, options: .allWithoutTransform)
+        self.append(element, shape.boundary, options: .allWithoutTransform)
     }
 }
 
@@ -689,7 +736,8 @@ extension SVGContext {
         let transform = transform * self.transform
         element.setAttribute(for: "transform", value: transform.attributeStr())
         
-        self.append(element, options: .allWithoutTransform)
+        let _bound = Rect.bound(Rect(x: 0, y: 0, width: image.width, height: image.height).points.map { $0 * transform })
+        self.append(element, _bound, options: .allWithoutTransform)
     }
     
     public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
@@ -842,7 +890,7 @@ extension SVGContext {
             element.setAttribute(for: "fill-opacity", value: "\(gradient.opacity)")
         }
         
-        self.append(element, options: .allWithoutTransform)
+        self.append(element, shape.boundary, options: .allWithoutTransform)
     }
 }
 
@@ -894,7 +942,7 @@ extension SVGContext {
             "height": _decimal_formatter(viewBox.height),
             ])
         
-        self.append(rect, options: .allWithoutTransform)
+        self.append(rect, self.viewBox, options: .allWithoutTransform)
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
@@ -949,7 +997,7 @@ extension SVGContext {
             "height": _decimal_formatter(viewBox.height),
             ])
         
-        self.append(rect, options: .allWithoutTransform)
+        self.append(rect, self.viewBox, options: .allWithoutTransform)
     }
 }
 
