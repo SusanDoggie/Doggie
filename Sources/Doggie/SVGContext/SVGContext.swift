@@ -68,6 +68,7 @@ private struct SVGContextState {
     var elements: [SDXMLElement] = []
     
     var visibleBound: Rect?
+    var objectBound: Rect?
     
     var defs: [SDXMLElement] = []
     var imageTable: [SVGContext.ImageTableKey: String] = [:]
@@ -423,7 +424,7 @@ extension SVGContext {
 
 extension SVGContext {
     
-    private func apply_style(_ element: inout SDXMLElement, _ visibleBound: inout Rect, options: StyleOptions) {
+    private func apply_style(_ element: inout SDXMLElement, _ visibleBound: inout Rect, _ objectBound: Rect, options: StyleOptions) {
         
         var style: [String: String] = self.blendMode == .normal || !options.contains(.isolate) ? [:] : ["isolation": "isolate"]
         
@@ -482,20 +483,42 @@ extension SVGContext {
             }
         }
         
-        if options.contains(.shadow), self.shadowColor.opacity > 0 && self.shadowBlur > 0 {
+        if options.contains(.shadow), self.shadowColor.opacity > 0 && self.shadowBlur > 0 && objectBound.width != 0 && objectBound.height != 0 {
             
             let id = new_name("SHADOW")
             
-            visibleBound = visibleBound.union(visibleBound.inset(dx: -ceil(3 * self.shadowBlur), dy: -ceil(3 * self.shadowBlur)).offset(dx: self.shadowOffset.width, dy: self.shadowOffset.height))
+            let shadowBound = visibleBound.inset(dx: -ceil(3 * self.shadowBlur), dy: -ceil(3 * self.shadowBlur)).offset(dx: self.shadowOffset.width, dy: self.shadowOffset.height)
+            visibleBound = visibleBound.union(shadowBound)
+            
+            let x = 100 * (visibleBound.x - objectBound.x) / objectBound.width
+            let y = 100 * (visibleBound.y - objectBound.y) / objectBound.height
+            let width = 100 * visibleBound.width / objectBound.width
+            let height = 100 * visibleBound.height / objectBound.height
+            
+            let _x = floor(x)
+            let _y = floor(y)
+            let _width = _x == x ? ceil(width) : ceil(width + 1)
+            let _height = _y == y ? ceil(height) : ceil(height + 1)
             
             var filter = SDXMLElement(name: "filter", attributes: [
                 "id": id,
-                "filterUnits": "userSpaceOnUse",
-                "x": _decimal_formatter(visibleBound.x),
-                "y": _decimal_formatter(visibleBound.y),
-                "width": _decimal_formatter(visibleBound.width),
-                "height": _decimal_formatter(visibleBound.height),
+                "filterUnits": "objectBoundingBox",
+                "x": _decimal_formatter(_x) + "%",
+                "y": _decimal_formatter(_y) + "%",
+                "width": _decimal_formatter(_width) + "%",
+                "height": _decimal_formatter(_height) + "%",
                 ])
+            
+            filter.append(SDXMLElement(name: "feGaussianBlur", attributes: [
+                "in": "SourceAlpha",
+                "stdDeviation": _decimal_formatter(0.5 * self.shadowBlur),
+                ]))
+            
+            filter.append(SDXMLElement(name: "feOffset", attributes: [
+                "dx": _decimal_formatter(self.shadowOffset.width),
+                "dy": _decimal_formatter(self.shadowOffset.height),
+                "result": "offsetblur",
+                ]))
             
             let color = self.shadowColor.convert(to: ColorSpace.sRGB, intent: renderingIntent)
             
@@ -503,18 +526,25 @@ extension SVGContext {
             let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
             let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
             
-            var shadow = SDXMLElement(name: "feDropShadow", attributes: [
-                "dx": _decimal_formatter(self.shadowOffset.width),
-                "dy": _decimal_formatter(self.shadowOffset.height),
-                "stdDeviation": _decimal_formatter(0.5 * self.shadowBlur),
+            var flood = SDXMLElement(name: "feFlood", attributes: [
                 "flood-color": "rgb(\(red),\(green),\(blue))",
                 ])
             
             if color.opacity < 1 {
-                shadow.setAttribute(for: "flood-opacity", value: _decimal_formatter(color.opacity))
+                flood.setAttribute(for: "flood-opacity", value: _decimal_formatter(color.opacity))
             }
             
-            filter.append(shadow)
+            filter.append(flood)
+            
+            filter.append(SDXMLElement(name: "feComposite", attributes: [
+                "in2": "offsetblur",
+                "operator": "in",
+                ]))
+            filter.append(SDXMLElement(name: "feMerge", elements: [
+                SDXMLElement(name: "feMergeNode"),
+                SDXMLElement(name: "feMergeNode", attributes: ["in": "SourceGraphic"]),
+                ]))
+            
             defs.append(filter)
             
             element.setAttribute(for: "filter", value: "url(#\(id))")
@@ -552,12 +582,17 @@ extension SVGContext {
         public static let allWithoutTransform: StyleOptions = [.isolate, .opacity, .blendMode, .compositingMode, .shadow, .clip]
     }
     
-    private func append(_ newElement: SDXMLElement, _ visibleBound: Rect, options: StyleOptions) {
+    private func append(_ newElement: SDXMLElement, _ visibleBound: Rect, _ objectBound: Rect, options: StyleOptions) {
         var newElement = newElement
         var visibleBound = visibleBound
-        self.apply_style(&newElement, &visibleBound, options: options)
+        self.apply_style(&newElement, &visibleBound, objectBound, options: options)
         self.current_layer.state.elements.append(newElement)
         self.current_layer.state.visibleBound = self.current_layer.state.visibleBound.map { $0.union(visibleBound) } ?? visibleBound
+        self.current_layer.state.objectBound = self.current_layer.state.objectBound.map { $0.union(objectBound) } ?? objectBound
+    }
+    
+    private func append(_ newElement: SDXMLElement, _ objectBound: Rect, options: StyleOptions) {
+        self.append(newElement, objectBound, objectBound, options: options)
     }
     
     public func append(_ newElement: SDXMLElement, options: StyleOptions = []) {
@@ -596,8 +631,9 @@ extension SVGContext {
                 
                 guard next.state.elements.count != 0 else { return }
                 guard let visibleBound = next.state.visibleBound else { return }
+                guard let objectBound = next.state.objectBound else { return }
                 
-                self.append(SDXMLElement(name: "g", elements: next.state.elements), visibleBound, options: .allWithoutTransform)
+                self.append(SDXMLElement(name: "g", elements: next.state.elements), visibleBound, objectBound, options: .allWithoutTransform)
             }
         }
     }
