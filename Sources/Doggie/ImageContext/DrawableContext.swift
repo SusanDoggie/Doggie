@@ -215,7 +215,7 @@ extension DrawableContext {
     public func draw<Image : ImageProtocol>(image: Image, in rect: Rect) {
         let rect = rect.standardized
         let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
-        self.draw(image: sample, transform: transform)
+        self.draw(image: image, transform: transform)
     }
     
     @inlinable
@@ -223,7 +223,7 @@ extension DrawableContext {
     public func draw(image: ImageRep, in rect: Rect) {
         let rect = rect.standardized
         let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
-        self.draw(image: sample, transform: transform)
+        self.draw(image: image, transform: transform)
     }
 }
 
