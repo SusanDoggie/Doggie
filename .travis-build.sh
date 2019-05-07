@@ -9,7 +9,9 @@ exit $?
 
 fi
 
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 apt-get update && apt-get install -y git sudo lsb-release wget libxml2
+fi
 
 git clone https://github.com/IBM-Swift/Package-Builder.git
 
