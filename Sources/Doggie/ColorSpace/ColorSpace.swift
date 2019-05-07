@@ -46,7 +46,7 @@ protocol _ColorSpaceBaseProtocol: PolymorphicHashable {
     
     var _linearTone: _ColorSpaceBaseProtocol { get }
     
-    func isFastEqual(_ other: _ColorSpaceBaseProtocol) -> Bool
+    func isStorageEqual(_ other: _ColorSpaceBaseProtocol) -> Bool
 }
 
 extension _ColorSpaceBaseProtocol {
@@ -130,7 +130,7 @@ extension ColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func isFastEqual(_ other: _ColorSpaceBaseProtocol) -> Bool {
+    func isStorageEqual(_ other: _ColorSpaceBaseProtocol) -> Bool {
         return self.isEqual(other)
     }
 }
@@ -174,8 +174,8 @@ extension ColorSpace {
     }
     
     @inlinable
-    public func isFastEqual(_ other: ColorSpace<Model>) -> Bool {
-        return self.chromaticAdaptationAlgorithm == other.chromaticAdaptationAlgorithm && self.base.isFastEqual(other.base)
+    public func isStorageEqual(_ other: ColorSpace<Model>) -> Bool {
+        return self.chromaticAdaptationAlgorithm == other.chromaticAdaptationAlgorithm && self.base.isStorageEqual(other.base)
     }
 }
 

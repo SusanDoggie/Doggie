@@ -45,6 +45,6 @@ public protocol ColorSpaceProtocol {
     
     var linearTone: Self { get }
     
-    func isFastEqual(_ other: Self) -> Bool
+    func isStorageEqual(_ other: Self) -> Bool
 }
 

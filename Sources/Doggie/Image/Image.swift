@@ -213,8 +213,8 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    public func isFastEqual(_ other: Image) -> Bool {
-        return self.width == other.width && self.height == other.height && self.resolution == other.resolution && self.colorSpace.isFastEqual(other.colorSpace) && self.pixels.isFastEqual(other.pixels)
+    public func isStorageEqual(_ other: Image) -> Bool {
+        return self.width == other.width && self.height == other.height && self.resolution == other.resolution && self.colorSpace.isStorageEqual(other.colorSpace) && self.pixels.isStorageEqual(other.pixels)
     }
 }
 

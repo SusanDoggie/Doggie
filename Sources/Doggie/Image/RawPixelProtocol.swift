@@ -59,7 +59,7 @@ public protocol RawPixelProtocol : Hashable {
     
     mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R
     
-    func isFastEqual(_ other: Self) -> Bool
+    func isStorageEqual(_ other: Self) -> Bool
 }
 
 extension RawPixelProtocol {

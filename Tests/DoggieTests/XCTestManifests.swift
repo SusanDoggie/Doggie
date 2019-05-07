@@ -40,6 +40,10 @@ extension CollectionTest {
         ("testOptionOneCollection1", testOptionOneCollection1),
         ("testOptionOneCollection2", testOptionOneCollection2),
         ("testSequenceScan", testSequenceScan),
+        ("testSequenceStorageEqual", testSequenceStorageEqual),
+        ("testSequenceStorageEqual2", testSequenceStorageEqual2),
+        ("testSequenceStorageEqual3", testSequenceStorageEqual3),
+        ("testSequenceStorageEqual4", testSequenceStorageEqual4),
     ]
 }
 

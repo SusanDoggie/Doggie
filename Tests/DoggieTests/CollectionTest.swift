@@ -28,6 +28,21 @@ import XCTest
 
 class CollectionTest: XCTestCase {
     
+    var sample: Image<ARGB32ColorPixel> = {
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 100, height: 100, colorSpace: ColorSpace.sRGB)
+        
+        context.draw(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255))
+        
+        context.stroke(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), width: 1, cap: .round, join: .round, color: RGBColorModel())
+        
+        context.draw(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), color: RGBColorModel(red: 234/255, green: 24/255, blue: 71/255))
+        
+        context.stroke(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), width: 1, cap: .round, join: .round, color: RGBColorModel())
+        
+        return context.image
+    }()
+    
     func testCollectionRangeOf() {
         
         let array = [1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -165,6 +180,42 @@ class CollectionTest: XCTestCase {
         
         XCTAssert(result.elementsEqual(answer))
         XCTAssertEqual(Array(result), answer)
+    }
+    
+    func testSequenceStorageEqual() {
+        
+        let a = [1, 2, 3, 4, 5, 6]
+        let b = a[0...]
+        
+        XCTAssertEqual(a.isStorageEqual(b), true)
+    }
+    
+    func testSequenceStorageEqual2() {
+        
+        let a = [1, 2, 3, 4, 5, 6]
+        var b = a[0...]
+        
+        b[0] = 1
+        
+        XCTAssertEqual(a.isStorageEqual(b), false)
+    }
+    
+    func testSequenceStorageEqual3() {
+        
+        let a = sample
+        let b = sample
+        
+        XCTAssertEqual(a.isStorageEqual(b), true)
+    }
+    
+    func testSequenceStorageEqual4() {
+        
+        let a = sample
+        var b = sample
+        
+        b[0, 0] = b[0, 0]
+        
+        XCTAssertEqual(a.isStorageEqual(b), false)
     }
     
 }

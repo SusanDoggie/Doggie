@@ -33,15 +33,6 @@ public protocol UnsafeMutableBufferProtocol: UnsafeBufferProtocol, MutableCollec
     mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws -> R) rethrows -> R
 }
 
-extension UnsafeMutableBufferProtocol {
-    
-    @inlinable
-    @inline(__always)
-    public func isFastEqual(_ other: Self) -> Bool {
-        return self.withUnsafeBufferPointer { lhs in other.withUnsafeBufferPointer { rhs in lhs.count == rhs.count && lhs.baseAddress == rhs.baseAddress } }
-    }
-}
-
 extension Array: UnsafeMutableBufferProtocol {
     
 }

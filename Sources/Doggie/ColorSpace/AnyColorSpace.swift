@@ -58,7 +58,7 @@ protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
     
     func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
     
-    func _isFastEqual(_ other: AnyColorSpaceBaseProtocol) -> Bool
+    func _isStorageEqual(_ other: AnyColorSpaceBaseProtocol) -> Bool
 }
 
 extension ColorSpace : AnyColorSpaceBaseProtocol {
@@ -102,9 +102,9 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func _isFastEqual(_ other: AnyColorSpaceBaseProtocol) -> Bool {
+    func _isStorageEqual(_ other: AnyColorSpaceBaseProtocol) -> Bool {
         guard let other = other as? ColorSpace else { return false }
-        return self.isFastEqual(other)
+        return self.isStorageEqual(other)
     }
 }
 
@@ -138,8 +138,8 @@ extension AnyColorSpace {
     }
     
     @inlinable
-    public func isFastEqual(_ other: AnyColorSpace) -> Bool {
-        return _base._isFastEqual(other._base)
+    public func isStorageEqual(_ other: AnyColorSpace) -> Bool {
+        return _base._isStorageEqual(other._base)
     }
 }
 

@@ -138,8 +138,8 @@ extension SVGContext {
         
         static func ==(lhs: ImageTableKey, rhs: ImageTableKey) -> Bool {
             switch (lhs, rhs) {
-            case let (.image(lhs), .image(rhs)): return lhs.isFastEqual(rhs)
-            case let (.data(lhs), .data(rhs)): return lhs.isFastEqual(rhs)
+            case let (.image(lhs), .image(rhs)): return lhs.isStorageEqual(rhs)
+            case let (.data(lhs), .data(rhs)): return lhs.isStorageEqual(rhs)
             default: return false
             }
         }

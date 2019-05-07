@@ -73,7 +73,7 @@ public protocol ImageProtocol : Hashable {
     
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyImage
     
-    func isFastEqual(_ other: Self) -> Bool
+    func isStorageEqual(_ other: Self) -> Bool
 }
 
 extension Image {

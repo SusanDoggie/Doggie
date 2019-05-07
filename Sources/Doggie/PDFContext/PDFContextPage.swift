@@ -141,7 +141,7 @@ extension PDFContext {
         }
         
         static func ==(lhs: ImageTableKey, rhs: ImageTableKey) -> Bool {
-            return lhs.image.isFastEqual(rhs.image)
+            return lhs.image.isStorageEqual(rhs.image)
         }
     }
     

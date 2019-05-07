@@ -68,7 +68,7 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     func _copy<Model>() -> Image<Float64ColorPixel<Model>>?
     
-    func _isFastEqual(_ other: AnyImageBaseProtocol) -> Bool
+    func _isStorageEqual(_ other: AnyImageBaseProtocol) -> Bool
 }
 
 extension Image : AnyImageBaseProtocol {
@@ -109,9 +109,9 @@ extension Image : AnyImageBaseProtocol {
     }
     
     @inlinable
-    func _isFastEqual(_ other: AnyImageBaseProtocol) -> Bool {
+    func _isStorageEqual(_ other: AnyImageBaseProtocol) -> Bool {
         guard let other = other as? Image else { return false }
-        return self.isFastEqual(other)
+        return self.isStorageEqual(other)
     }
 }
 
@@ -145,8 +145,8 @@ extension AnyImage {
     }
     
     @inlinable
-    public func isFastEqual(_ other: AnyImage) -> Bool {
-        return _base._isFastEqual(other._base)
+    public func isStorageEqual(_ other: AnyImage) -> Bool {
+        return _base._isStorageEqual(other._base)
     }
 }
 
