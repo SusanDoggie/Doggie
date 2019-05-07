@@ -785,8 +785,12 @@ extension SVGContext {
         self.draw(image: image, transform: transform, using: .png, properties: [:])
     }
     
-    public func draw(image: ImageRep, transform: SDTransform, using storageType: ImageRep.MediaType = .png, properties: [ImageRep.PropertyKey : Any] = [:]) {
+    public func draw(image: ImageRep, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
         self._draw(image: image, transform: transform, using: storageType, properties: properties)
+    }
+    
+    public func draw(image: ImageRep, transform: SDTransform) {
+        self.draw(image: image, transform: transform, using: .png, properties: [:])
     }
 }
 

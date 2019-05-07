@@ -63,6 +63,8 @@ public protocol DrawableContext : AnyObject {
     
     func draw<Image: ImageProtocol>(image: Image, transform: SDTransform)
     
+    func draw(image: ImageRep, transform: SDTransform)
+    
     func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C)
     
     func stroke<C: ColorProtocol>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C)
@@ -194,6 +196,34 @@ extension DrawableContext {
     @inline(__always)
     public func stroke<C: ColorProtocol>(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
         self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color)
+    }
+}
+
+extension DrawableContext {
+    
+    @inlinable
+    @inline(__always)
+    public func draw(image: ImageRep, transform: SDTransform) {
+        self.draw(image: AnyImage(imageRep: image), transform: transform)
+    }
+}
+
+extension DrawableContext {
+    
+    @inlinable
+    @inline(__always)
+    public func draw<Image : ImageProtocol>(image: Image, in rect: Rect) {
+        let rect = rect.standardized
+        let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
+        self.draw(image: sample, transform: transform)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func draw(image: ImageRep, in rect: Rect) {
+        let rect = rect.standardized
+        let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
+        self.draw(image: sample, transform: transform)
     }
 }
 
