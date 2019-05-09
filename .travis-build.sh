@@ -18,6 +18,7 @@ export DEBIAN_FRONTEND=noninteractive
 echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
 apt-get install -y fontconfig ttf-mscorefonts-installer
 EOF
+
 fi
 
 git clone https://github.com/SusanDoggie/Package-Builder.git
