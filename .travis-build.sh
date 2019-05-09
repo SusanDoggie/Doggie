@@ -2,15 +2,18 @@
 set -e
 
 if [ -n "${DOCKER_IMAGE}" ]; then
-
-docker pull ${DOCKER_IMAGE}
-docker run --env SWIFT_SNAPSHOT -v ${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR} ${DOCKER_IMAGE} /bin/bash -c "cd $TRAVIS_BUILD_DIR && ./.travis-build.sh"
-exit $?
-
+  docker pull ${DOCKER_IMAGE}
+  docker run --env SWIFT_SNAPSHOT -v ${TRAVIS_BUILD_DIR}:${TRAVIS_BUILD_DIR} ${DOCKER_IMAGE} /bin/bash -c "cd $TRAVIS_BUILD_DIR && ./.travis-build.sh"
+  exit $?
 fi
 
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-apt-get update && apt-get install -y git sudo lsb-release wget libxml2 zlib1g-dev msttcorefonts
+  apt-get update && apt-get install -y git sudo lsb-release wget libxml2 zlib1g-dev
+fi
+
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+  echo msttcorefonts msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+  apt-get install -y msttcorefonts
 fi
 
 git clone https://github.com/IBM-Swift/Package-Builder.git
@@ -20,17 +23,17 @@ if [ "$(uname)" == "Darwin" -a -n "${USE_XCODEBUILD}" ]; then
 gem install xcpretty xcpretty-travis-formatter
 
 if [ -z "${DESTINATION}" ]; then
-export DESTINATION="platform=macOS"
+  export DESTINATION="platform=macOS"
 fi
 
 if [ -z "${SDK}" ]; then
-export SDK=macosx
+  export SDK=macosx
 fi
 
 if [ -n "${CODECOV_ELIGIBLE}" ]; then
-export ENABLE_CODECOV=YES
+  export ENABLE_CODECOV=YES
 else
-export ENABLE_CODECOV=NO
+  export ENABLE_CODECOV=NO
 fi
 
 export XCODEBUILD_CONFIG="-project Doggie.xcodeproj -configuration Release -sdk ${SDK}"
