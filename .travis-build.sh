@@ -8,6 +8,9 @@ if [ -n "${DOCKER_IMAGE}" ]; then
 fi
 
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+
+apt-get update && apt-get install -y git
+
 cat <<"EOF" > ./.before-install-swift
 #!/bin/bash
 set -e
