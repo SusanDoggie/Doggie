@@ -8,12 +8,8 @@ if [ -n "${DOCKER_IMAGE}" ]; then
 fi
 
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  apt-get update && apt-get install -y git sudo lsb-release wget libxml2 zlib1g-dev
-fi
-
-if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  echo msttcorefonts msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
-  apt-get install -y msttcorefonts
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update && apt-get install -y git sudo lsb-release wget libxml2 zlib1g-dev msttcorefonts
 fi
 
 git clone https://github.com/IBM-Swift/Package-Builder.git
