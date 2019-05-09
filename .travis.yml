@@ -19,7 +19,6 @@ matrix:
     - os: osx
       osx_image: xcode10.2
     - os: linux
-    - os: linux
       services: docker
       env: DOCKER_IMAGE=ubuntu:14.04
     - os: linux
