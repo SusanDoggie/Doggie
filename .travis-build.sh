@@ -9,7 +9,9 @@ fi
 
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
 
+echo -en "travis_fold:start:install_git\\r${ANSI_CLEAR}"
 apt-get update && apt-get install -y git
+echo -en "travis_fold:end:install_git\\r${ANSI_CLEAR}"
 
 cat <<"EOF" > ./.before-install-swift
 #!/bin/bash
