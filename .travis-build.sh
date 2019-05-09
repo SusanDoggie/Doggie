@@ -8,13 +8,14 @@ if [ -n "${DOCKER_IMAGE}" ]; then
 fi
 
 if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  export DEBIAN_FRONTEND=noninteractive
-  apt-get update && apt-get install -y git sudo lsb-release wget libxml2 zlib1g-dev fontconfig
-fi
-
-if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-  echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
-  apt-get install -y ttf-mscorefonts-installer
+cat <<"EOF" > ./.before-install-swift
+#!/bin/bash
+set -e
+export DEBIAN_FRONTEND=noninteractive
+apt-get update && apt-get install -y git sudo lsb-release wget libxml2 zlib1g-dev fontconfig
+echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+apt-get install -y ttf-mscorefonts-installer
+EOF
 fi
 
 git clone https://github.com/SusanDoggie/Package-Builder.git
