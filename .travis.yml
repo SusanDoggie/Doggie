@@ -26,4 +26,4 @@ matrix:
       env: DOCKER_IMAGE=ubuntu:18.04
 
 script:
-  - ./.travis-build.sh
+  - ./.travis/build-package
