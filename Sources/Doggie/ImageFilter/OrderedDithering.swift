@@ -25,13 +25,9 @@
 
 @inlinable
 @inline(__always)
-public func _ordered_dithering(_ n: UInt32, _ x: UInt32, _ y: UInt32) -> Double {
-    
+public func _ordered_dithering(_ n: UInt32, _ x: UInt32, _ y: UInt32) -> UInt32 {
     let i = x % n
     let j = y % n
-    
     let t = (i ^ j).zeroInterleaved | (j.zeroInterleaved << 1)
-    let m = t.reverse >> UInt32(n * n - 1).leadingZeroBitCount
-    
-    return Double(m) / Double(n * n)
+    return t.reverse >> UInt32(n * n - 1).leadingZeroBitCount
 }
