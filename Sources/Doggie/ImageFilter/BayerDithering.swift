@@ -1,5 +1,5 @@
 //
-//  OrderedDithering.swift
+//  BayerDithering.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-public func _ordered_dithering(_ n: UInt32, _ x: UInt32, _ y: UInt32) -> UInt32 {
+public func _bayer_dithering(_ n: UInt32, _ x: UInt32, _ y: UInt32) -> UInt32 {
     let i = x % n
     let j = y % n
     let t = (i ^ j).zeroInterleaved | (j.zeroInterleaved << 1)
