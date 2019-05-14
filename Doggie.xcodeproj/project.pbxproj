@@ -92,6 +92,7 @@
 		0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B71ED9345100804004 /* DrawImage.swift */; };
 		0A39A6BC1ED9347C00804004 /* DrawShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6BA1ED9347C00804004 /* DrawShape.swift */; };
 		0A3D5C641EEA498E00A9CDEA /* CGColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3D5C621EEA498E00A9CDEA /* CGColor.swift */; };
+		0A3E8F9F228A600F00A70E63 /* OrderedDithering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3E8F9E228A600F00A70E63 /* OrderedDithering.swift */; };
 		0A3FD862210079BC006D4737 /* CGContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3FD861210079BC006D4737 /* CGContext.swift */; };
 		0A404BE2218BE24F00F7F1AD /* blend.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A404BE1218BE24F00F7F1AD /* blend.metal */; };
 		0A404BE6218C46AF00F7F1AD /* resampling.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A404BE5218C46AF00F7F1AD /* resampling.metal */; };
@@ -407,6 +408,7 @@
 		0A39A6B71ED9345100804004 /* DrawImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawImage.swift; sourceTree = "<group>"; };
 		0A39A6BA1ED9347C00804004 /* DrawShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawShape.swift; sourceTree = "<group>"; };
 		0A3D5C621EEA498E00A9CDEA /* CGColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGColor.swift; sourceTree = "<group>"; };
+		0A3E8F9E228A600F00A70E63 /* OrderedDithering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedDithering.swift; sourceTree = "<group>"; };
 		0A3FD861210079BC006D4737 /* CGContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGContext.swift; sourceTree = "<group>"; };
 		0A404BE1218BE24F00F7F1AD /* blend.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = blend.metal; sourceTree = "<group>"; };
 		0A404BE5218C46AF00F7F1AD /* resampling.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = resampling.metal; sourceTree = "<group>"; };
@@ -1110,6 +1112,7 @@
 				0AE9686821F5C6D700FCA4C1 /* LaplacianOfGaussian.swift */,
 				0A44F77921F6C38900383140 /* DifferenceOfGaussian.swift */,
 				0A44F77D21F72C0700383140 /* BilateralFilter.swift */,
+				0A3E8F9E228A600F00A70E63 /* OrderedDithering.swift */,
 			);
 			path = ImageFilter;
 			sourceTree = "<group>";
@@ -1654,6 +1657,7 @@
 				0A72EF151F54FD2C00F0550A /* SFNTHEAD.swift in Sources */,
 				0A831A901F1895200007932A /* ImageRepDecoder.swift in Sources */,
 				0A9CD58E1EEB98F300094148 /* displayP3.swift in Sources */,
+				0A3E8F9F228A600F00A70E63 /* OrderedDithering.swift in Sources */,
 				0A5E8D461F57BE5C000D51E3 /* SFNTHHEA.swift in Sources */,
 				0A8D4F2420C9072100921F91 /* CubicBezierPatch.swift in Sources */,
 				0A92C7C51E56AB9D0090EBFC /* Data.swift in Sources */,

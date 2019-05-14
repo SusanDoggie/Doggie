@@ -57,6 +57,20 @@ extension FixedWidthInteger {
     }
 }
 
+extension UInt32 {
+    
+    @inlinable
+    @inline(__always)
+    public var zeroInterleaved: UInt32 {
+        var x = self
+        x = (x | (x << 8)) & 0x00FF00FF
+        x = (x | (x << 4)) & 0x0F0F0F0F
+        x = (x | (x << 2)) & 0x33333333
+        x = (x | (x << 1)) & 0x55555555
+        return x
+    }
+}
+
 @inlinable
 @inline(__always)
 public func log2<T: FixedWidthInteger>(_ x: T) -> T {
