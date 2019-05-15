@@ -71,7 +71,7 @@ extension LazyCollectionProtocol where Elements : RandomAccessCollection {
     
     @inlinable
     public func slice(by maxLength: Int) -> LazySliceSequence<Elements> {
-        precondition(maxLength != 0, "Sliced by zero-length.")
+        assert(maxLength != 0, "Sliced by zero-length.")
         return LazySliceSequence(base: elements, maxLength: maxLength, currentIndex: elements.startIndex)
     }
 }

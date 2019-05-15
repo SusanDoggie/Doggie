@@ -28,7 +28,7 @@ extension Data {
     @inlinable
     @inline(__always)
     public func fileBacked() -> Data {
-        return self.withUnsafeBufferPointer { MappedBuffer(bytes: UnsafeRawBufferPointer($0), fileBacked: true).data }
+        return self.withUnsafeBytes { MappedBuffer(bytes: $0, fileBacked: true).data }
     }
 }
 
@@ -37,8 +37,8 @@ extension Data {
     @inlinable
     @inline(__always)
     public func load<T>(fromByteOffset offset: Int = 0, as type: T.Type) -> T {
-        precondition(offset >= 0, "Data.load with negative offset")
-        precondition(offset + MemoryLayout<T>.stride <= self.count, "Data.load out of bounds")
+        assert(offset >= 0, "Data.load with negative offset")
+        assert(offset + MemoryLayout<T>.stride <= self.count, "Data.load out of bounds")
         return self.withUnsafeBytes { ($0.baseAddress! + offset).bindMemory(to: T.self, capacity: 1).pointee }
     }
     

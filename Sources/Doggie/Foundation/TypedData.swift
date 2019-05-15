@@ -52,7 +52,7 @@ extension TypedData {
     @inlinable
     @inline(__always)
     public subscript(position: Int) -> T {
-        precondition(self.indices ~= position, "Index out of range.")
+        assert(self.indices ~= position, "Index out of range.")
         return data.load(fromByteOffset: position * MemoryLayout<T>.stride, as: T.self)
     }
 }

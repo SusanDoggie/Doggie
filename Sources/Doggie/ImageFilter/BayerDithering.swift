@@ -25,9 +25,11 @@
 
 @inlinable
 @inline(__always)
-public func _bayer_dithering(_ n: UInt32, _ x: UInt32, _ y: UInt32) -> UInt32 {
-    let i = x % n
-    let j = y % n
+public func _bayer_dithering<T: FixedWidthInteger>(_ n: T, _ x: T, _ y: T) -> T {
+    assert(n.isPower2, "n is not power of 2.")
+    let _n = n - 1
+    let i = x & _n
+    let j = y & _n
     let t = (i ^ j).zeroInterleaved | (j.zeroInterleaved << 1)
-    return t.reverse >> UInt32(n * n - 1).leadingZeroBitCount
+    return t.reverse >> (n * n - 1).leadingZeroBitCount
 }

@@ -90,7 +90,7 @@ struct CFF2INDEX : ByteDecodable, RandomAccessCollection {
     }
     
     subscript(position: Int) -> Data {
-        precondition(position < count, "Index out of range.")
+        assert(0..<count ~= position, "Index out of range.")
         let range = CFF2INDEX._offset(position, offSize, offset)
         let lowerBound = data.startIndex + range.lowerBound
         let upperBound = data.startIndex + range.upperBound

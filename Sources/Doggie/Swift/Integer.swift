@@ -30,7 +30,7 @@ extension FixedWidthInteger {
     public var reverse: Self {
         
         var m1: Self = 0
-        for _ in 0..<bitWidth >> 3 {
+        for _ in 0..<Self.bitWidth >> 3 {
             m1 = (m1 << 8) | 0x0F
         }
         
@@ -57,16 +57,26 @@ extension FixedWidthInteger {
     }
 }
 
-extension UInt32 {
+extension FixedWidthInteger {
     
     @inlinable
     @inline(__always)
-    public var zeroInterleaved: UInt32 {
+    public var zeroInterleaved: Self {
+        
         var x = self
-        x = (x | (x << 8)) & 0x00FF00FF
-        x = (x | (x << 4)) & 0x0F0F0F0F
-        x = (x | (x << 2)) & 0x33333333
-        x = (x | (x << 1)) & 0x55555555
+        var s = Self.bitWidth >> 2
+        var m: Self = 0
+        
+        for _ in 0..<Self.bitWidth >> 4 {
+            m = (m << 8) | 0xFF
+        }
+        
+        while s != 0 {
+            m ^= m << s
+            x = (x | (x << s)) & m
+            s >>= 1
+        }
+        
         return x
     }
 }
@@ -74,7 +84,7 @@ extension UInt32 {
 @inlinable
 @inline(__always)
 public func log2<T: FixedWidthInteger>(_ x: T) -> T {
-    return x == 0 ? 0 : T(x.bitWidth - x.leadingZeroBitCount - 1)
+    return x == 0 ? 0 : T(T.bitWidth - x.leadingZeroBitCount - 1)
 }
 
 extension FixedWidthInteger {

@@ -51,7 +51,8 @@ struct SFNTSBIX : RandomAccessCollection {
     }
     
     subscript(position: Int) -> Strike? {
-        precondition(position < count, "Index out of range.")
+        
+        assert(0..<count ~= position, "Index out of range.")
         
         guard self.data.count > position << 2 else { return nil }
         let offset = self.data.typed(as: BEUInt32.self)[position]

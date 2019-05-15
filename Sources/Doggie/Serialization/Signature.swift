@@ -52,7 +52,7 @@ extension SignatureProtocol {
     @inlinable
     @inline(__always)
     public init(stringLiteral value: StaticString) {
-        precondition(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
+        assert(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
         self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
     }
     

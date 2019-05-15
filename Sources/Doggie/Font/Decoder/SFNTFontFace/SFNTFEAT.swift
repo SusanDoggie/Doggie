@@ -53,7 +53,7 @@ struct SFNTFEAT: RandomAccessCollection {
     
     subscript(position: Int) -> Name? {
         
-        precondition(position < count, "Index out of range.")
+        assert(0..<count ~= position, "Index out of range.")
         
         var data = self.data.dropFirst(12 * position)
         
@@ -111,7 +111,7 @@ extension SFNTFEAT.Name: RandomAccessCollection {
     
     subscript(position: Int) -> Setting? {
         
-        precondition(position < count, "Index out of range.")
+        assert(0..<count ~= position, "Index out of range.")
         
         var data = self.data.dropFirst(4 * position)
         
