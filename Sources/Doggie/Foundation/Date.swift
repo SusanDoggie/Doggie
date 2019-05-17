@@ -25,10 +25,19 @@
 
 extension DateFormatter {
     
-    public static var rfc3339: DateFormatter {
+    public static let rfc2822: DateFormatter = {
+        var formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss O"
+        formatter.timeZone = TimeZone(abbreviation: "GMT")
+        return formatter
+    }()
+    
+    public static let rfc3339: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
         formatter.timeZone = TimeZone(abbreviation: "UTC")
         return formatter
-    }
+    }()
 }
