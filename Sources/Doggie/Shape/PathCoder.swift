@@ -49,7 +49,7 @@ private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequenc
     }
 }
 
-private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?"
+private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?\\d*\\.?\\d+([eE][+-]?\\d+)?"
 
 extension Shape {
     
