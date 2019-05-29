@@ -136,7 +136,7 @@ public func radialGradient2_pdf(width: Int, height: Int) -> NSImage? {
 
 public func linearGradient_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
-    let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    let context = GPImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
     context.transform = SDTransform.scale(x: Double(width) / 300, y: Double(height) / 300)
     
@@ -152,7 +152,7 @@ public func linearGradient_gp(width: Int, height: Int) throws -> Image<Float32Co
 
 public func radialGradient_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
-    let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    let context = GPImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
     context.transform = SDTransform.scale(x: Double(width) / 300, y: Double(height) / 300)
     
@@ -168,7 +168,7 @@ public func radialGradient_gp(width: Int, height: Int) throws -> Image<Float32Co
 
 public func linearGradient2_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
-    let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    let context = GPImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
     let gradient = Gradient(type: .linear, start: Point(x: 1.0 / 6.0, y: 1.0 / 6.0), end: Point(x: 5.0 / 6.0, y: 5.0 / 6.0), stops: [
         GradientStop(offset: 0, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 1, green: 0, blue: 0))),
@@ -184,7 +184,7 @@ public func linearGradient2_gp(width: Int, height: Int) throws -> Image<Float32C
 
 public func radialGradient2_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
-    let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    let context = GPImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
     let gradient = Gradient(type: .radial, start: Point(x: 1.0 / 3.0, y: 0.5), end: Point(x: 0.5, y: 0.5), stops: [
         GradientStop(offset: 0, color: Color(colorSpace: context.colorSpace, color: RGBColorModel(red: 1, green: 0, blue: 0))),

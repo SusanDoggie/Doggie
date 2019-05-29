@@ -121,15 +121,15 @@ extension DGRendererEncoder {
     }
     
     func clip_encoder() throws -> Renderer.ClipEncoder {
-        let renderer = try DGImageContext<GrayColorModel>.make_renderer(device, Renderer.ClipEncoder.Renderer.self)
+        let renderer = try GPImageContext<GrayColorModel>.make_renderer(device, Renderer.ClipEncoder.Renderer.self)
         return try renderer.encoder(width: width, height: height)
     }
 }
 
-private let DGImageContextCacheLock = SDLock()
-private var DGImageContextCache: [AnyHashable: Any] = [:]
+private let GPImageContextCacheLock = SDLock()
+private var GPImageContextCache: [AnyHashable: Any] = [:]
 
-extension DGImageContext {
+extension GPImageContext {
     
     @_fixed_layout
     public struct Error: Swift.Error, CustomStringConvertible {
@@ -161,23 +161,23 @@ extension DGImageContext {
     
     fileprivate static func make_renderer<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws -> Renderer where Renderer.Model == Model {
         
-        DGImageContextCacheLock.lock()
-        defer { DGImageContextCacheLock.unlock() }
+        GPImageContextCacheLock.lock()
+        defer { GPImageContextCacheLock.unlock() }
         
         let key = CacheKey<Renderer>(device: device)
         
-        if let renderer = DGImageContextCache[key] as? Renderer {
+        if let renderer = GPImageContextCache[key] as? Renderer {
             return renderer
         }
         
         let renderer = try Renderer(device: device)
-        DGImageContextCache[key] = renderer
+        GPImageContextCache[key] = renderer
         
         return renderer
     }
     
     func prepare<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) -> Bool where Renderer.Model == Model {
-        guard let renderer = try? DGImageContext.make_renderer(device, Renderer.self) else { return false }
+        guard let renderer = try? GPImageContext.make_renderer(device, Renderer.self) else { return false }
         return renderer.prepare()
     }
     
@@ -187,7 +187,7 @@ extension DGImageContext {
         
         guard self.state.image.cached_image == nil else { return }
         
-        let renderer = try DGImageContext.make_renderer(device, Renderer.self)
+        let renderer = try GPImageContext.make_renderer(device, Renderer.self)
         let encoder = try renderer.encoder(width: width, height: height)
         
         let maxBufferLength = renderer.maxBufferLength
@@ -204,18 +204,18 @@ extension DGImageContext {
     }
     
     static func maxPixelsCount<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws -> Int where Renderer.Model == Model {
-        let renderer = try DGImageContext.make_renderer(device, Renderer.self)
+        let renderer = try GPImageContext.make_renderer(device, Renderer.self)
         return renderer.maxBufferLength / Renderer.pixel_size
     }
     
     func maxAntialiasLevel<Renderer: DGRenderer>(_ device: Renderer.Device, _ : Renderer.Type) throws -> Int where Renderer.Model == Model {
         guard width != 0 && height != 0 else { return 0 }
-        let renderer = try DGImageContext.make_renderer(device, Renderer.self)
+        let renderer = try GPImageContext.make_renderer(device, Renderer.self)
         return Int(isqrt(UInt(renderer.maxBufferLength / (width * height * 2))))
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     class Resource<Encoder: DGRendererEncoder> where Encoder.Renderer.Model == Model {
         
@@ -291,7 +291,7 @@ extension DGImageContext {
         let source: Layer
         let destination: Layer
         
-        let clip: DGImageContext<GrayColorModel>.Layer?
+        let clip: GPImageContext<GrayColorModel>.Layer?
         
         let shadowColor: Float32ColorPixel<Model>
         let shadowOffset: Size
@@ -301,7 +301,7 @@ extension DGImageContext {
         let compositingMode: ColorCompositingMode
         let blendMode: ColorBlendMode
         
-        init(source: Layer, destination: Layer, clip: DGImageContext<GrayColorModel>.Layer?, shadowColor: Float32ColorPixel<Model>, shadowOffset: Size, shadowBlur: Double, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
+        init(source: Layer, destination: Layer, clip: GPImageContext<GrayColorModel>.Layer?, shadowColor: Float32ColorPixel<Model>, shadowOffset: Size, shadowBlur: Double, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
             self.source = source
             self.destination = destination
             self.clip = clip
@@ -355,7 +355,7 @@ extension DGImageContext {
                         
                     } else if let clip_encoder = encoder as? Encoder.Renderer.ClipEncoder {
                         
-                        let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
+                        let clip_resource = GPImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
                         clip_resource.recycle = resource.recycle as? [Encoder.Renderer.ClipEncoder.Buffer] ?? []
                         
                         _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0
@@ -366,7 +366,7 @@ extension DGImageContext {
                         
                     } else {
                         
-                        let clip_resource = DGImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
+                        let clip_resource = GPImageContext<GrayColorModel>.Resource<Encoder.Renderer.ClipEncoder>()
                         let clip_encoder = try encoder.clip_encoder()
                         
                         _clip = try clip.render(encoder: clip_encoder, resource: clip_resource).0

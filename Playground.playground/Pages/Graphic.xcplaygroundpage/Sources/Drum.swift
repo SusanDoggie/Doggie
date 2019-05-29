@@ -30,7 +30,7 @@ public func drum_pdf(width: Int, height: Int) -> NSImage? {
 
 public func drum_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
-    let context = DGImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
+    let context = GPImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
     context.transform = SDTransform.scale(x: Double(width) / 100, y: Double(height) / 100)
     

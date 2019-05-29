@@ -51,7 +51,7 @@ public func doggie_pdf(blendMode: ColorBlendMode, compositingMode: ColorComposit
 
 public func doggie_gp(blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, opacity: Double) throws -> Image<Float32ColorPixel<RGBColorModel>> {
     
-    let context = DGImageContext<RGBColorModel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
+    let context = GPImageContext<RGBColorModel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
     
     context.transform = SDTransform.scale(5)
     

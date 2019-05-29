@@ -1,5 +1,5 @@
 //
-//  DGImageContext.swift
+//  GPImageContext.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Doggie
 
-private struct DGImageContextStyles {
+private struct GPImageContextStyles {
     
     static let defaultShadowColor = AnyColor(colorSpace: .default, white: 0.0, opacity: 1.0 / 3.0)
     
@@ -35,7 +35,7 @@ private struct DGImageContextStyles {
     var shouldAntialias: Bool = true
     var antialias: Int = 5
     
-    var shadowColor: AnyColor = DGImageContextStyles.defaultShadowColor
+    var shadowColor: AnyColor = GPImageContextStyles.defaultShadowColor
     var shadowOffset: Size = Size()
     var shadowBlur: Double = 0
     
@@ -50,44 +50,44 @@ private struct DGImageContextStyles {
 
 private struct GraphicState {
     
-    var clip: DGImageContext<GrayColorModel>.Layer?
+    var clip: GPImageContext<GrayColorModel>.Layer?
     
-    var styles: DGImageContextStyles
+    var styles: GPImageContextStyles
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
     
-    init<Pixel>(context: DGImageContext<Pixel>) {
+    init<Pixel>(context: GPImageContext<Pixel>) {
         self.clip = context.state.clip
         self.styles = context.styles
         self.chromaticAdaptationAlgorithm = context.chromaticAdaptationAlgorithm
     }
     
-    func apply<Pixel>(to context: DGImageContext<Pixel>) {
+    func apply<Pixel>(to context: GPImageContext<Pixel>) {
         context.state.clip = self.clip
         context.styles = self.styles
         context.chromaticAdaptationAlgorithm = self.chromaticAdaptationAlgorithm
     }
 }
 
-struct DGImageContextState<Model: ColorModelProtocol> {
+struct GPImageContextState<Model: ColorModelProtocol> {
     
-    var clip: DGImageContext<GrayColorModel>.Layer?
+    var clip: GPImageContext<GrayColorModel>.Layer?
     
-    var image: DGImageContext<Model>.Layer = DGImageContext<Model>.Layer()
+    var image: GPImageContext<Model>.Layer = GPImageContext<Model>.Layer()
     
 }
 
-public class DGImageContext<Model: ColorModelProtocol> : DrawableContext {
+public class GPImageContext<Model: ColorModelProtocol> : DrawableContext {
     
     public let width: Int
     public let height: Int
     public let resolution: Resolution
     public fileprivate(set) var colorSpace: ColorSpace<Model>
     
-    var state: DGImageContextState<Model> = DGImageContextState<Model>()
-    fileprivate var styles: DGImageContextStyles = DGImageContextStyles()
+    var state: GPImageContextState<Model> = GPImageContextState<Model>()
+    fileprivate var styles: GPImageContextStyles = GPImageContextStyles()
     private var graphicStateStack: [GraphicState] = []
     
-    private var next: DGImageContext?
+    private var next: GPImageContext?
     
     public init(image: Image<Float32ColorPixel<Model>>) {
         self.width = image.width
@@ -105,13 +105,13 @@ public class DGImageContext<Model: ColorModelProtocol> : DrawableContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
-    private convenience init<M>(copyStates context: DGImageContext<M>, colorSpace: ColorSpace<Model>) {
+    private convenience init<M>(copyStates context: GPImageContext<M>, colorSpace: ColorSpace<Model>) {
         self.init(width: context.width, height: context.height, resolution: context.resolution, colorSpace: colorSpace)
         self.styles = context.styles
         self.styles.opacity = 1
-        self.styles.shadowColor = DGImageContextStyles.defaultShadowColor
+        self.styles.shadowColor = GPImageContextStyles.defaultShadowColor
         self.styles.shadowOffset = Size()
         self.styles.shadowBlur = 0
         self.styles.compositingMode = .default
@@ -120,7 +120,7 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     public var image: Image<Float32ColorPixel<Model>> {
         guard width != 0 && height != 0 else { return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace) }
@@ -129,14 +129,14 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
-    private var current_layer: DGImageContext {
+    private var current_layer: GPImageContext {
         return next?.current_layer ?? self
     }
     
-    public func clone() -> DGImageContext {
-        let clone = DGImageContext(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
+    public func clone() -> GPImageContext {
+        let clone = GPImageContext(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
         clone.state = self.state
         clone.styles = self.styles
         clone.graphicStateStack = self.graphicStateStack
@@ -145,16 +145,16 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     public func clearClipBuffer(with value: Double = 1) {
         if value == 1 {
             current_layer.state.clip = nil
         } else if value == 0 {
-            current_layer.state.clip = DGImageContext<GrayColorModel>.Layer()
+            current_layer.state.clip = GPImageContext<GrayColorModel>.Layer()
         } else {
             let _clip = Texture(width: width, height: height, pixel: Float32ColorPixel(white: value), fileBacked: false)
-            current_layer.state.clip = DGImageContext<GrayColorModel>.TextureLayer(_clip)
+            current_layer.state.clip = GPImageContext<GrayColorModel>.TextureLayer(_clip)
         }
     }
     
@@ -163,7 +163,7 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     private var currentGraphicState: GraphicState {
         return next?.currentGraphicState ?? GraphicState(context: self)
@@ -182,7 +182,7 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     public var opacity: Double {
         get {
@@ -292,7 +292,7 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     private func draw_layer(_ source: Layer) {
         
@@ -314,7 +314,7 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     public func beginTransparencyLayer() {
         
@@ -329,7 +329,7 @@ extension DGImageContext {
                 return
             }
             
-            self.next = DGImageContext(copyStates: self, colorSpace: colorSpace)
+            self.next = GPImageContext(copyStates: self, colorSpace: colorSpace)
         }
     }
     
@@ -350,7 +350,7 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     public func draw(shape: Shape, winding: Shape.WindingRule, color: Model, opacity: Double = 1) {
         
@@ -375,7 +375,7 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     public func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Model {
         
@@ -396,13 +396,13 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     public func drawClip(body: (DrawableContext) throws -> Void) rethrows {
-        try self.drawClip { (context: DGImageContext<GrayColorModel>) in try body(context) }
+        try self.drawClip { (context: GPImageContext<GrayColorModel>) in try body(context) }
     }
     
-    public func drawClip(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (DGImageContext<GrayColorModel>) throws -> Void) rethrows {
+    public func drawClip(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (GPImageContext<GrayColorModel>) throws -> Void) rethrows {
         
         if let next = self.next {
             try next.drawClip(body: body)
@@ -416,7 +416,7 @@ extension DGImageContext {
             return
         }
         
-        let _clip = DGImageContext<GrayColorModel>(copyStates: self, colorSpace: colorSpace)
+        let _clip = GPImageContext<GrayColorModel>(copyStates: self, colorSpace: colorSpace)
         
         try body(_clip)
         
@@ -428,14 +428,14 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     public func clip(shape: Shape, winding: Shape.WindingRule) {
-        self.drawClip { (context: DGImageContext<GrayColorModel>) in context.draw(shape: shape, winding: winding, color: .white) }
+        self.drawClip { (context: GPImageContext<GrayColorModel>) in context.draw(shape: shape, winding: winding, color: .white) }
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) where C : ColorProtocol {
         

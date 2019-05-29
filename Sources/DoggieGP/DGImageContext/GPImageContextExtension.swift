@@ -1,5 +1,5 @@
 //
-//  DGImageContextExtension.swift
+//  GPImageContextExtension.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 import Doggie
 
-extension DGImageContext {
+extension GPImageContext {
     
     @inlinable
     @inline(__always)
@@ -41,7 +41,7 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     @inlinable
     @inline(__always)
@@ -75,7 +75,7 @@ extension DGImageContext {
     }
 }
 
-extension DGImageContext {
+extension GPImageContext {
     
     @inlinable
     @inline(__always)

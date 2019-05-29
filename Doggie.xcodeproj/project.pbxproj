@@ -78,7 +78,7 @@
 		0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26A0901FA98994008BEADB /* CompressionTest.swift */; };
 		0A29B20C218998710046FFB4 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DB2189985D0046FFB4 /* Renderer.swift */; };
 		0A29B237218998710046FFB4 /* stencil.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1D92189985D0046FFB4 /* stencil.metal */; };
-		0A29B266218998710046FFB4 /* DGImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */; };
+		0A29B266218998710046FFB4 /* GPImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B1DA2189985D0046FFB4 /* GPImageContext.swift */; };
 		0A29B2DD218999020046FFB4 /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; };
 		0A29B2F22189A4210046FFB4 /* set_opacity.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F12189A4210046FFB4 /* set_opacity.metal */; };
 		0A29B2F82189A9A10046FFB4 /* MetalRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A29B2F72189A9A00046FFB4 /* MetalRenderer.swift */; };
@@ -129,7 +129,7 @@
 		0A5DEDD71F7B60D600A45B4B /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DEDD61F7B60D600A45B4B /* Resolution.swift */; };
 		0A5DF8FB225452FA00110895 /* PDFContextPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DF8FA225452FA00110895 /* PDFContextPage.swift */; };
 		0A5DFE4422546ADF00110895 /* ImageContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DFE4322546ADF00110895 /* ImageContextExtension.swift */; };
-		0A5DFE4622546B6F00110895 /* DGImageContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DFE4522546B6F00110895 /* DGImageContextExtension.swift */; };
+		0A5DFE4622546B6F00110895 /* GPImageContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DFE4522546B6F00110895 /* GPImageContextExtension.swift */; };
 		0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D411F56B428000D51E3 /* FontCollection.swift */; };
 		0A5E8D461F57BE5C000D51E3 /* SFNTHHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */; };
 		0A5E8D4C1F57BF28000D51E3 /* SFNTVHEA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */; };
@@ -393,7 +393,7 @@
 		0A251C622101849A00E31473 /* SDObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDObject.swift; sourceTree = "<group>"; };
 		0A26A0901FA98994008BEADB /* CompressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CompressionTest.swift; sourceTree = "<group>"; };
 		0A29B1D92189985D0046FFB4 /* stencil.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = stencil.metal; sourceTree = "<group>"; };
-		0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGImageContext.swift; sourceTree = "<group>"; };
+		0A29B1DA2189985D0046FFB4 /* GPImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPImageContext.swift; sourceTree = "<group>"; };
 		0A29B1DB2189985D0046FFB4 /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		0A29B2DA218998710046FFB4 /* DoggieGP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DoggieGP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A29B2F12189A4210046FFB4 /* set_opacity.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = set_opacity.metal; sourceTree = "<group>"; };
@@ -445,7 +445,7 @@
 		0A5DEDD61F7B60D600A45B4B /* Resolution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Resolution.swift; sourceTree = "<group>"; };
 		0A5DF8FA225452FA00110895 /* PDFContextPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextPage.swift; sourceTree = "<group>"; };
 		0A5DFE4322546ADF00110895 /* ImageContextExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageContextExtension.swift; sourceTree = "<group>"; };
-		0A5DFE4522546B6F00110895 /* DGImageContextExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DGImageContextExtension.swift; sourceTree = "<group>"; };
+		0A5DFE4522546B6F00110895 /* GPImageContextExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPImageContextExtension.swift; sourceTree = "<group>"; };
 		0A5E8D411F56B428000D51E3 /* FontCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FontCollection.swift; sourceTree = "<group>"; };
 		0A5E8D451F57BE5C000D51E3 /* SFNTHHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTHHEA.swift; sourceTree = "<group>"; };
 		0A5E8D4A1F57BF28000D51E3 /* SFNTVHEA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SFNTVHEA.swift; sourceTree = "<group>"; };
@@ -748,8 +748,8 @@
 		084638DE21EA5224005D2EDD /* DGImageContext */ = {
 			isa = PBXGroup;
 			children = (
-				0A29B1DA2189985D0046FFB4 /* DGImageContext.swift */,
-				0A5DFE4522546B6F00110895 /* DGImageContextExtension.swift */,
+				0A29B1DA2189985D0046FFB4 /* GPImageContext.swift */,
+				0A5DFE4522546B6F00110895 /* GPImageContextExtension.swift */,
 				0A29B1DB2189985D0046FFB4 /* Renderer.swift */,
 			);
 			path = DGImageContext;
@@ -1861,12 +1861,12 @@
 				0A459AAA219014180015CDCD /* shadow.metal in Sources */,
 				0A13DB34218AE99200BD05F8 /* clip.metal in Sources */,
 				0A29B2F22189A4210046FFB4 /* set_opacity.metal in Sources */,
-				0A5DFE4622546B6F00110895 /* DGImageContextExtension.swift in Sources */,
+				0A5DFE4622546B6F00110895 /* GPImageContextExtension.swift in Sources */,
 				0A29B237218998710046FFB4 /* stencil.metal in Sources */,
 				0A29B2F82189A9A10046FFB4 /* MetalRenderer.swift in Sources */,
 				0A098F2521967002003F3CE4 /* fill_stencil.metal in Sources */,
 				0A13DB36218AF88200BD05F8 /* gradient.metal in Sources */,
-				0A29B266218998710046FFB4 /* DGImageContext.swift in Sources */,
+				0A29B266218998710046FFB4 /* GPImageContext.swift in Sources */,
 				0A404BE2218BE24F00F7F1AD /* blend.metal in Sources */,
 				0A404BE6218C46AF00F7F1AD /* resampling.metal in Sources */,
 			);
