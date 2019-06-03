@@ -452,10 +452,13 @@ extension PDFContext.Page {
                 
                 self.next = nil
                 
-                let name = "Fm\(self.transparency_layers.count + 1)"
-                self.transparency_layers[name] = next.finalize()
+                let commands = next.finalize()
+                if transparency_layers[commands] == nil {
+                    transparency_layers[commands] = "Fm\(transparency_layers.count + 1)"
+                }
                 
-                self.state.commands += "/\(name) Do\n"
+                let _layer = transparency_layers[commands]!
+                self.state.commands += "/\(_layer) Do\n"
             }
         }
     }

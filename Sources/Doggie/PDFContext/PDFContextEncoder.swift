@@ -417,7 +417,7 @@ extension PDFContext.Page {
         
         let _extGState = PDFContext._write(extGState_table, to: &data, xref: &xref)
         
-        for (name, commands) in transparency_layers {
+        for (commands, name) in transparency_layers {
             
             let dictionary = [
                 "Type": "/XObject",
