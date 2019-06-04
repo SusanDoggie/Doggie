@@ -1,5 +1,5 @@
 //
-//  ConcatCollection.swift
+//  LazyConcatCollection.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -63,7 +63,7 @@ public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : Itera
 }
 
 @_fixed_layout
-public struct ConcatSequence<S1 : Sequence, S2 : Sequence> : Sequence where S1.Element == S2.Element {
+public struct LazyConcatSequence<S1 : Sequence, S2 : Sequence> : LazySequenceProtocol where S1.Element == S2.Element {
     
     @usableFromInline
     let base1: S1
@@ -132,7 +132,7 @@ public func < <I1, I2>(lhs: ConcatCollectionIndex<I1, I2>, rhs: ConcatCollection
 }
 
 @_fixed_layout
-public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection where S1.Element == S2.Element {
+public struct LazyConcatCollection<S1 : Collection, S2 : Collection> : LazyCollectionProtocol where S1.Element == S2.Element {
     
     public typealias Iterator = ConcatIterator<S1.Iterator, S2.Iterator>
     
@@ -200,7 +200,7 @@ public struct ConcatCollection<S1 : Collection, S2 : Collection> : Collection wh
     }
 }
 
-extension ConcatCollection : BidirectionalCollection where S1 : BidirectionalCollection, S2 : BidirectionalCollection {
+extension LazyConcatCollection : BidirectionalCollection where S1 : BidirectionalCollection, S2 : BidirectionalCollection {
     
     @inlinable
     public func index(before i: Index) -> Index {
@@ -215,31 +215,15 @@ extension ConcatCollection : BidirectionalCollection where S1 : BidirectionalCol
 extension Sequence {
     
     @inlinable
-    public func concat<S>(_ with: S) -> ConcatSequence<Self, S> {
-        return ConcatSequence(base1: self, base2: with)
+    public func concat<S>(_ other: S) -> LazyConcatSequence<Self, S> {
+        return LazyConcatSequence(base1: self, base2: other)
     }
 }
 
 extension Collection {
     
     @inlinable
-    public func concat<S>(_ with: S) -> ConcatCollection<Self, S> {
-        return ConcatCollection(base1: self, base2: with)
-    }
-}
-
-extension LazySequenceProtocol {
-    
-    @inlinable
-    public func concat<S>(_ with: S) -> LazySequence<ConcatSequence<Elements, S>> {
-        return ConcatSequence(base1: self.elements, base2: with).lazy
-    }
-}
-
-extension LazyCollectionProtocol {
-    
-    @inlinable
-    public func concat<S>(_ with: S) -> LazyCollection<ConcatCollection<Elements, S>> {
-        return ConcatCollection(base1: self.elements, base2: with).lazy
+    public func concat<S>(_ other: S) -> LazyConcatCollection<Self, S> {
+        return LazyConcatCollection(base1: self, base2: other)
     }
 }

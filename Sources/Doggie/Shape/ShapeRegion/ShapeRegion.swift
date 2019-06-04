@@ -40,7 +40,7 @@ extension RandomAccessCollection where Index : SignedInteger {
 
 extension Collection where SubSequence : Collection {
     
-    func rotateZip() -> Zip2Sequence<Self, ConcatCollection<Self.SubSequence, Self.SubSequence>> {
+    func rotateZip() -> Zip2Sequence<Self, LazyConcatCollection<Self.SubSequence, Self.SubSequence>> {
         return zip(self, self.rotated(1))
     }
 }
@@ -180,7 +180,7 @@ extension ShapeRegion.Solid {
         return ShapeRegion.Solid(solid: solid.reversed(), holes: holes)
     }
     
-    fileprivate func components(_ sign: FloatingPointSign) -> ConcatCollection<CollectionOfOne<Shape.Component>, [Shape.Component]> {
+    fileprivate func components(_ sign: FloatingPointSign) -> LazyConcatCollection<CollectionOfOne<Shape.Component>, [Shape.Component]> {
         return CollectionOfOne(solid.area.sign == sign ? solid : solid.reversed()).concat(holes.components(sign == .plus ? .minus : .plus))
     }
     

@@ -154,7 +154,7 @@ extension MutableCollection {
 extension Sequence {
     
     @inlinable
-    public func appended(_ newElement: Element) -> ConcatSequence<Self, CollectionOfOne<Element>> {
+    public func appended(_ newElement: Element) -> LazyConcatSequence<Self, CollectionOfOne<Element>> {
         return self.concat(CollectionOfOne(newElement))
     }
 }
@@ -162,31 +162,15 @@ extension Sequence {
 extension Collection {
     
     @inlinable
-    public func appended(_ newElement: Element) -> ConcatCollection<Self, CollectionOfOne<Element>> {
+    public func appended(_ newElement: Element) -> LazyConcatCollection<Self, CollectionOfOne<Element>> {
         return self.concat(CollectionOfOne(newElement))
-    }
-}
-
-extension LazySequenceProtocol {
-    
-    @inlinable
-    public func appended(_ newElement: Elements.Element) -> LazySequence<ConcatSequence<Elements, CollectionOfOne<Elements.Element>>> {
-        return self.elements.appended(newElement).lazy
-    }
-}
-
-extension LazyCollectionProtocol {
-    
-    @inlinable
-    public func appended(_ newElement: Elements.Element) -> LazyCollection<ConcatCollection<Elements, CollectionOfOne<Elements.Element>>> {
-        return self.elements.appended(newElement).lazy
     }
 }
 
 extension Collection where SubSequence : Collection {
     
     @inlinable
-    public func rotated(at index: Index) -> ConcatCollection<SubSequence, SubSequence> {
+    public func rotated(at index: Index) -> LazyConcatCollection<SubSequence, SubSequence> {
         return self.suffix(from: index).concat(self.prefix(upTo: index))
     }
 }
@@ -194,7 +178,7 @@ extension Collection where SubSequence : Collection {
 extension Collection where SubSequence : Collection {
     
     @inlinable
-    public func rotated(_ n: Int) -> ConcatCollection<SubSequence, SubSequence> {
+    public func rotated(_ n: Int) -> LazyConcatCollection<SubSequence, SubSequence> {
         let count = self.count
         if count == 0 {
             return self[...].concat(self[...])
@@ -205,14 +189,6 @@ extension Collection where SubSequence : Collection {
         }
         let _n = n % count
         return self.dropFirst(_n).concat(self.prefix(_n))
-    }
-}
-
-extension LazyCollectionProtocol where Elements.SubSequence : Collection {
-    
-    @inlinable
-    public func rotated(_ n: Int) -> LazyCollection<ConcatCollection<Elements.SubSequence, Elements.SubSequence>> {
-        return self.elements.rotated(n).lazy
     }
 }
 
