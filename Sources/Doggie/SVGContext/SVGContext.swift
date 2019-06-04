@@ -643,7 +643,7 @@ extension SVGContext {
     
     private func create_color<C : ColorProtocol>(_ color: C) -> String {
         
-        var color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
+        let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
         
         let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
         let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())

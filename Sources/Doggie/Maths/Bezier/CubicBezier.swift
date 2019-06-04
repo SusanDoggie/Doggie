@@ -171,14 +171,24 @@ extension CubicBezier {
     }
 }
 
+extension CubicBezier {
+    
+    @inlinable
+    public var _polynomial: (Element, Element, Element) {
+        let b = 3 * (p1 - p0)
+        var c = 3 * (p2 + p0)
+        c -= 6 * p1
+        let d = p3 - p0 + 3 * (p1 - p2)
+        return (b, c, d)
+    }
+}
+
 extension CubicBezier where Element == Double {
     
     @inlinable
     public var polynomial: Polynomial {
         let a = p0
-        let b = 3 * (p1 - p0)
-        let c = 3 * (p2 + p0) - 6 * p1
-        let d = p3 - p0 + 3 * (p1 - p2)
+        let (b, c, d) = _polynomial
         return [a, b, c, d]
     }
 }
@@ -218,9 +228,7 @@ extension CubicBezier where Element == Point {
     @inlinable
     public func closest(_ point: Point) -> [Double] {
         let a = p0 - point
-        let b = 3 * (p1 - p0)
-        let c = 3 * (p2 + p0) - 6 * p1
-        let d = p3 - p0 + 3 * (p1 - p2)
+        let (b, c, d) = _polynomial
         let x: Polynomial = [a.x, b.x, c.x, d.x]
         let y: Polynomial = [a.y, b.y, c.y, d.y]
         let dot = x * x + y * y
@@ -321,9 +329,7 @@ extension CubicBezier where Element == Point {
     @inlinable
     public func selfIntersect() -> (Double, Double)? {
         
-        let q1 = 3 * (p1 - p0)
-        let q2 = 3 * (p2 + p0) - 6 * p1
-        let q3 = p3 - p0 + 3 * (p1 - p2)
+        let (q1, q2, q3) = _polynomial
         
         let d1 = -cross(q3, q2)
         let d2 = cross(q3, q1)
@@ -349,9 +355,7 @@ extension CubicBezier where Element == Point {
     public func overlap(_ other: LineSegment<Element>) -> Bool {
         
         let a = p0 - other.p0
-        let b = 3 * (p1 - p0)
-        let c = 3 * (p2 + p0) - 6 * p1
-        let d = p3 - p0 + 3 * (p1 - p2)
+        let (b, c, d) = _polynomial
         
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = other.p0.x - other.p1.x
@@ -367,9 +371,7 @@ extension CubicBezier where Element == Point {
     public func overlap(_ other: QuadBezier<Element>) -> Bool {
         
         let a = p0 - other.p0
-        let b = 3 * (p1 - p0)
-        let c = 3 * (p2 + p0) - 6 * p1
-        let d = p3 - p0 + 3 * (p1 - p2)
+        let (b, c, d) = _polynomial
         
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = 2 * (other.p0.x - other.p1.x)
@@ -393,9 +395,7 @@ extension CubicBezier where Element == Point {
     public func overlap(_ other: CubicBezier) -> Bool {
         
         let a = p0 - other.p0
-        let b = 3 * (p1 - p0)
-        let c = 3 * (p2 + p0) - 6 * p1
-        let d = p3 - p0 + 3 * (p1 - p2)
+        let (b, c, d) = _polynomial
         
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = 3 * (other.p0.x - other.p1.x)
@@ -432,9 +432,7 @@ extension CubicBezier where Element == Point {
     public func intersect(_ other: LineSegment<Element>) -> [Double]? {
         
         let a = p0 - other.p0
-        let b = 3 * (p1 - p0)
-        let c = 3 * (p2 + p0) - 6 * p1
-        let d = p3 - p0 + 3 * (p1 - p2)
+        let (b, c, d) = _polynomial
         
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = other.p0.x - other.p1.x
@@ -450,9 +448,7 @@ extension CubicBezier where Element == Point {
     public func intersect(_ other: QuadBezier<Element>) -> [Double]? {
         
         let a = p0 - other.p0
-        let b = 3 * (p1 - p0)
-        let c = 3 * (p2 + p0) - 6 * p1
-        let d = p3 - p0 + 3 * (p1 - p2)
+        let (b, c, d) = _polynomial
         
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = 2 * (other.p0.x - other.p1.x)
@@ -476,9 +472,7 @@ extension CubicBezier where Element == Point {
     public func intersect(_ other: CubicBezier) -> [Double]? {
         
         let a = p0 - other.p0
-        let b = 3 * (p1 - p0)
-        let c = 3 * (p2 + p0) - 6 * p1
-        let d = p3 - p0 + 3 * (p1 - p2)
+        let (b, c, d) = _polynomial
         
         let u0: Polynomial = [a.x, b.x, c.x, d.x]
         let u1 = 3 * (other.p0.x - other.p1.x)

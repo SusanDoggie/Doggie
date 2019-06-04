@@ -414,7 +414,6 @@ public prefix func - (p: Polynomial) -> Polynomial {
 
 @inlinable
 public func + (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
-    var lhs = lhs
     var buf = [Double](repeating: 0, count: max(lhs.count, rhs.count))
     for idx in buf.indices {
         buf[idx] = lhs[idx] + rhs[idx]
@@ -438,7 +437,6 @@ public func + (lhs: Polynomial, rhs: Double) -> Polynomial {
 
 @inlinable
 public func - (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
-    var lhs = lhs
     var buf = [Double](repeating: 0, count: max(lhs.count, rhs.count))
     for idx in buf.indices {
         buf[idx] = lhs[idx] - rhs[idx]

@@ -51,9 +51,7 @@ public func *= (lhs: inout Shape.RenderOperation, rhs: SDTransform) {
 @inline(__always)
 private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) throws -> Void) rethrows {
     
-    let q1 = 3 * (p1 - p0)
-    let q2 = 3 * (p2 + p0) - 6 * p1
-    let q3 = p3 - p0 + 3 * (p1 - p2)
+    let (q1, q2, q3) = CubicBezier(p0, p1, p2, p3)._polynomial
     
     let d1 = -cross(q3, q2)
     let d2 = cross(q3, q1)

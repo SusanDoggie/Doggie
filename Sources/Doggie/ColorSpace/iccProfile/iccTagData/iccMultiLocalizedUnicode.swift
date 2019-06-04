@@ -76,7 +76,7 @@ struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
         var offset = entry_size + 16
         
         for (language, country, string) in messages {
-            var str = string.data(using: .utf16BigEndian)!
+            let str = string.data(using: .utf16BigEndian)!
             strData.append(str)
             stream.encode(Entry(language: language, country: country, length: BEUInt32(str.count), offset: BEUInt32(offset)))
             offset += str.count

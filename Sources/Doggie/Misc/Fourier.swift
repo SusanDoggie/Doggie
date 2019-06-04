@@ -243,7 +243,6 @@ public func InverseBluestein(_ buffer: [Complex], _ result: inout [Complex]) {
 @inlinable
 @inline(__always)
 public func Radix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
-    var buffer = buffer
     switch buffer.count {
     case 0:
         result = []
@@ -261,7 +260,6 @@ public func Radix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
 @inlinable
 @inline(__always)
 public func InverseRadix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
-    var buffer = buffer
     switch buffer.count {
     case 0:
         result = []
