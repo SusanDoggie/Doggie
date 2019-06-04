@@ -336,7 +336,7 @@ public struct Gradient<Color: ColorProtocol> {
         }
     }
     
-    public var transform : SDTransform = SDTransform.identity
+    public var transform: SDTransform = .identity
     
     public var opacity: Double = 1
     

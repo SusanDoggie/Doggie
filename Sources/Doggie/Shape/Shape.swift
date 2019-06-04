@@ -67,7 +67,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     @usableFromInline
     var components: [Component]
     
-    public var transform : SDTransform = SDTransform.identity {
+    public var transform: SDTransform = .identity {
         willSet {
             if transform != newValue {
                 cache = cache.lck.synchronized { Cache(originalBoundary: cache.originalBoundary, originalArea: cache.originalArea, table: cache.table) }
