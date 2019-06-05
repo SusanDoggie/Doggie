@@ -32,8 +32,8 @@ let package = Package(
         .macOS(.v10_10), .iOS(.v8), .tvOS(.v9), .watchOS(.v2)
     ],
     products: [
-        .library(name: "Doggie", targets: ["Doggie"]),
-        .library(name: "DoggieGP", targets: ["DoggieGP"]),
+        .library(name: "Doggie", type: .dynamic, targets: ["Doggie"]),
+        .library(name: "DoggieGP", type: .dynamic, targets: ["DoggieGP"]),
         ],
     targets: [
         .target(name: "doggie_c", dependencies: []),
