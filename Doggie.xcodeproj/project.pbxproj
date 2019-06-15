@@ -37,6 +37,8 @@
 		08458B5D1E2E627600D01813 /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AED1E2E627600D01813 /* AtomicStack.swift */; };
 		08458B5F1E2E627600D01813 /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEE1E2E627600D01813 /* Lock.swift */; };
 		08458B611E2E627600D01813 /* SDTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* SDTask.swift */; };
+		086CBF3422B53C0D00D9460E /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086CBF3322B53C0D00D9460E /* Crypto.swift */; };
+		086CBF3A22B53D1200D9460E /* WeakSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086CBF3922B53D1200D9460E /* WeakSet.swift */; };
 		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
 		086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* GradientMesh.swift */; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
@@ -351,6 +353,8 @@
 		08458AED1E2E627600D01813 /* AtomicStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AtomicStack.swift; sourceTree = "<group>"; };
 		08458AEE1E2E627600D01813 /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Lock.swift; sourceTree = "<group>"; };
 		08458AEF1E2E627600D01813 /* SDTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SDTask.swift; sourceTree = "<group>"; };
+		086CBF3322B53C0D00D9460E /* Crypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crypto.swift; sourceTree = "<group>"; };
+		086CBF3922B53D1200D9460E /* WeakSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakSet.swift; sourceTree = "<group>"; };
 		086F06481EDC623D00BA70C8 /* Rasterizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rasterizer.swift; sourceTree = "<group>"; };
 		086F064B1EDC65D600BA70C8 /* GradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GradientMesh.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -682,6 +686,7 @@
 				0A53E45C1E35AEF80060FB83 /* Regex.swift */,
 				0A7F5B661F79F13600685AA0 /* MappedBuffer.swift */,
 				0A55505621D7014E0035AF94 /* WeakDictionary.swift */,
+				086CBF3922B53D1200D9460E /* WeakSet.swift */,
 				0A792C9F1FDA9742003C0290 /* FileManager.swift */,
 				0A7C9D042022D01400927674 /* Cache.swift */,
 			);
@@ -877,6 +882,7 @@
 				0AE762541EE9475400E926D5 /* CGColorSpace.swift */,
 				0A3D5C621EEA498E00A9CDEA /* CGColor.swift */,
 				0A11968B212A74DD00B2D4DB /* Metal.swift */,
+				086CBF3322B53C0D00D9460E /* Crypto.swift */,
 			);
 			path = ApplePlatform;
 			sourceTree = "<group>";
@@ -1626,6 +1632,7 @@
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B451E2E627600D01813 /* Actor.swift in Sources */,
 				0A8D863F1F7DF13E00F9530E /* ColorProtocol.swift in Sources */,
+				086CBF3422B53C0D00D9460E /* Crypto.swift in Sources */,
 				0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */,
 				0AF5676620D26AC9003B243B /* YxyColorModel.swift in Sources */,
 				0A9F993F1F56649C0008D36D /* SFNTPOST.swift in Sources */,
@@ -1685,6 +1692,7 @@
 				0A00F05521BA192E00CAF48C /* CoreText.swift in Sources */,
 				08458B2F1E2E627600D01813 /* Image.swift in Sources */,
 				0AE9686721F59F8000FCA4C1 /* kMeansClustering.swift in Sources */,
+				086CBF3A22B53D1200D9460E /* WeakSet.swift in Sources */,
 				0A7F5B671F79F13600685AA0 /* MappedBuffer.swift in Sources */,
 				0A792C751FDA28DB003C0290 /* PathBuilder.swift in Sources */,
 				0A831A871F186E6F0007932A /* ARGB64ColorPixel.swift in Sources */,

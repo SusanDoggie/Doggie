@@ -64,3 +64,9 @@
 @_exported import AVFoundation
 
 #endif
+
+#if canImport(CommonCrypto)
+
+@_exported import CommonCrypto
+
+#endif

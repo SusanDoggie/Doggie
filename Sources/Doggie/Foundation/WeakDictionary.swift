@@ -95,6 +95,11 @@ extension WeakDictionary {
     }
     
     @inlinable
+    public var isEmpty: Bool {
+        return !base.values.contains { $0.key !== nil }
+    }
+    
+    @inlinable
     public var startIndex: Index {
         for (index, (key: _, value: container)) in base.indexed() {
             if let key = container.key {
