@@ -31,6 +31,14 @@ public struct Crypto {
 
 extension Crypto {
     
+    public static let rfc3394: Data = {
+        let immutableReference = NSData(bytesNoCopy: UnsafeMutableRawPointer(mutating: UnsafeRawPointer(CCrfc3394_iv!)), length: CCrfc3394_ivLen, deallocator: .none)
+        return Data(referencing: immutableReference)
+    }()
+}
+
+extension Crypto {
+    
     public enum CryptorAlgorithm {
         
         case AES
@@ -59,7 +67,7 @@ extension Crypto {
         public var status: CCCryptorStatus
     }
     
-    public func encrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ iv: Data?, _ data: Data) throws -> Data {
+    public func encrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ data: Data, _ iv: Data? = nil) throws -> Data {
         
         var result = Data(count: data.count + algorithm.blockSize)
         var length = 0
@@ -83,7 +91,7 @@ extension Crypto {
         return result.prefix(length)
     }
     
-    public func decrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ iv: Data?, _ data: Data) throws -> Data {
+    public func decrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ data: Data, _ iv: Data? = nil) throws -> Data {
         
         var result = Data(count: data.count + algorithm.blockSize)
         var length = 0
@@ -142,18 +150,18 @@ extension Crypto {
         case AES
     }
     
-    public static func symmetricKeyWrap(_ algorithm: WrappingAlgorithm, _ key: Data, _ encryptionKey: Data) throws -> Data {
+    public static func symmetricKeyWrap(_ algorithm: WrappingAlgorithm, _ key: Data, _ encryptionKey: Data, _ iv: Data = Crypto.rfc3394) throws -> Data {
         
         let outputSize = CCSymmetricWrappedSize(algorithm.rawValue, key.count)
         var result = Data(count: outputSize)
         
         var length = outputSize
         
-        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in encryptionKey.withUnsafeBufferPointer { encryptionKey in
+        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in encryptionKey.withUnsafeBufferPointer { encryptionKey in iv.withUnsafeBufferPointer { iv in
             
-            CCSymmetricKeyWrap(algorithm.rawValue, CCrfc3394_iv, CCrfc3394_ivLen, encryptionKey.baseAddress, encryptionKey.count, key.baseAddress, key.count, result.baseAddress, &length)
+            CCSymmetricKeyWrap(algorithm.rawValue, iv.baseAddress, iv.count, encryptionKey.baseAddress, encryptionKey.count, key.baseAddress, key.count, result.baseAddress, &length)
             
-            } } }
+            } } } }
         
         guard status == kCCSuccess else  { throw Error(status: status) }
         
@@ -161,18 +169,18 @@ extension Crypto {
         
     }
     
-    public static func symmetricKeyUnwrap(_ algorithm: WrappingAlgorithm, _ key: Data, _ encryptionKey: Data) throws -> Data {
+    public static func symmetricKeyUnwrap(_ algorithm: WrappingAlgorithm, _ key: Data, _ encryptionKey: Data, _ iv: Data = Crypto.rfc3394) throws -> Data {
         
         let outputSize = CCSymmetricUnwrappedSize(algorithm.rawValue, key.count)
         var result = Data(count: outputSize)
         
         var length = outputSize
         
-        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in encryptionKey.withUnsafeBufferPointer { encryptionKey in
+        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in encryptionKey.withUnsafeBufferPointer { encryptionKey in iv.withUnsafeBufferPointer { iv in
             
-            CCSymmetricKeyUnwrap(algorithm.rawValue, CCrfc3394_iv, CCrfc3394_ivLen, encryptionKey.baseAddress, encryptionKey.count, key.baseAddress, key.count, result.baseAddress, &length)
+            CCSymmetricKeyUnwrap(algorithm.rawValue, iv.baseAddress, iv.count, encryptionKey.baseAddress, encryptionKey.count, key.baseAddress, key.count, result.baseAddress, &length)
             
-            } } }
+            } } } }
         
         guard status == kCCSuccess else  { throw Error(status: status) }
         
