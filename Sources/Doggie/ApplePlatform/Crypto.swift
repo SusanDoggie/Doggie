@@ -137,6 +137,170 @@ extension Crypto.CryptorAlgorithm {
 
 extension Crypto {
     
+    public enum WrappingAlgorithm {
+        
+        case AES
+    }
+    
+    public static func symmetricKeyWrap(_ algorithm: WrappingAlgorithm, _ key: Data, _ encryptionKey: Data) throws -> Data {
+        
+        let outputSize = CCSymmetricWrappedSize(algorithm.rawValue, key.count)
+        var result = Data(count: outputSize)
+        
+        var length = outputSize
+        
+        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in encryptionKey.withUnsafeBufferPointer { encryptionKey in
+            
+            CCSymmetricKeyWrap(algorithm.rawValue, CCrfc3394_iv, CCrfc3394_ivLen, encryptionKey.baseAddress, encryptionKey.count, key.baseAddress, key.count, result.baseAddress, &length)
+            
+            } } }
+        
+        guard status == kCCSuccess else  { throw Error(status: status) }
+        
+        return result.prefix(upTo: length)
+        
+    }
+    
+    public static func symmetricKeyUnwrap(_ algorithm: WrappingAlgorithm, _ key: Data, _ encryptionKey: Data) throws -> Data {
+        
+        let outputSize = CCSymmetricUnwrappedSize(algorithm.rawValue, key.count)
+        var result = Data(count: outputSize)
+        
+        var length = outputSize
+        
+        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in encryptionKey.withUnsafeBufferPointer { encryptionKey in
+            
+            CCSymmetricKeyUnwrap(algorithm.rawValue, CCrfc3394_iv, CCrfc3394_ivLen, encryptionKey.baseAddress, encryptionKey.count, key.baseAddress, key.count, result.baseAddress, &length)
+            
+            } } }
+        
+        guard status == kCCSuccess else  { throw Error(status: status) }
+        
+        return result.prefix(upTo: length)
+        
+    }
+}
+
+extension Crypto.WrappingAlgorithm {
+    
+    fileprivate var rawValue: CCWrappingAlgorithm {
+        switch self {
+        case .AES: return CCWrappingAlgorithm(kCCWRAPAES)
+        }
+    }
+}
+
+extension Crypto {
+    
+    public enum PBKDFAlgorithm {
+        
+        case PBKDF2
+    }
+    
+    public enum PseudoRandomAlgorithm {
+        
+        case SHA1
+        case SHA224
+        case SHA256
+        case SHA384
+        case SHA512
+    }
+    
+    public static func CalibratePBKDF(_ algorithm: PBKDFAlgorithm, _ pseudoRandomAlgorithm: PseudoRandomAlgorithm, _ keyLength: Int, _ saltLength: Int, _ derivedKeyLength: Int, _ msec: Int) -> Int {
+        return Int(CCCalibratePBKDF(algorithm.rawValue, keyLength, saltLength, pseudoRandomAlgorithm.rawValue, derivedKeyLength, UInt32(msec)))
+    }
+    
+    public static func PBKDF(_ algorithm: PBKDFAlgorithm, _ pseudoRandomAlgorithm: PseudoRandomAlgorithm, _ key: Data, _ salt: Data, _ derivedKeyLength: Int, _ round: Int) throws -> Data {
+        
+        var result = Data(count: derivedKeyLength)
+        
+        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in key.withMemoryRebound(to: Int8.self) { key in salt.withUnsafeBufferPointer { salt in
+            
+            CCKeyDerivationPBKDF(algorithm.rawValue, key.baseAddress, key.count, salt.baseAddress, salt.count, pseudoRandomAlgorithm.rawValue, uint(round), result.baseAddress, result.count)
+            
+            } } } }
+        
+        guard status == kCCSuccess else  { throw Error(status: status) }
+        
+        return result
+    }
+}
+
+extension Crypto.PBKDFAlgorithm {
+    
+    fileprivate var rawValue: CCPBKDFAlgorithm {
+        switch self {
+        case .PBKDF2: return CCPBKDFAlgorithm(kCCPBKDF2)
+        }
+    }
+}
+
+extension Crypto.PseudoRandomAlgorithm {
+    
+    fileprivate var rawValue: CCPseudoRandomAlgorithm {
+        switch self {
+        case .SHA1: return CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA1)
+        case .SHA224: return CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA224)
+        case .SHA256: return CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA256)
+        case .SHA384: return CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA384)
+        case .SHA512: return CCPseudoRandomAlgorithm(kCCPRFHmacAlgSHA512)
+        }
+    }
+}
+
+extension Crypto {
+    
+    public enum HMACAlgorithm {
+        
+        case MD5
+        case SHA1
+        case SHA224
+        case SHA256
+        case SHA384
+        case SHA512
+    }
+    
+    public static func HMAC(_ algorithm: HMACAlgorithm, _ key: Data, _ message: Data) -> Data {
+        
+        var result = Data(count: algorithm.digestLength)
+        
+        result.withUnsafeMutableBytes { result in key.withUnsafeBytes { key in message.withUnsafeBytes { message in
+            
+            CCHmac(algorithm.rawValue, key.baseAddress, key.count, message.baseAddress, message.count, result.baseAddress)
+            
+            } } }
+        
+        return result
+    }
+}
+
+extension Crypto.HMACAlgorithm {
+    
+    fileprivate var rawValue: CCHmacAlgorithm {
+        switch self {
+        case .MD5: return CCPseudoRandomAlgorithm(kCCHmacAlgMD5)
+        case .SHA1: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA1)
+        case .SHA224: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA224)
+        case .SHA256: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA256)
+        case .SHA384: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA384)
+        case .SHA512: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA512)
+        }
+    }
+    
+    public var digestLength: Int {
+        switch self {
+        case .MD5: return Int(CC_MD5_DIGEST_LENGTH)
+        case .SHA1: return Int(CC_SHA1_DIGEST_LENGTH)
+        case .SHA224: return Int(CC_SHA224_DIGEST_LENGTH)
+        case .SHA256: return Int(CC_SHA256_DIGEST_LENGTH)
+        case .SHA384: return Int(CC_SHA384_DIGEST_LENGTH)
+        case .SHA512: return Int(CC_SHA512_DIGEST_LENGTH)
+        }
+    }
+}
+
+extension Crypto {
+    
     public static func randomData(length: Int) -> Data {
         var data = Data(count: length)
         let status = data.withUnsafeMutableBytes { SecRandomCopyBytes(kSecRandomDefault, length, $0.baseAddress!) }
