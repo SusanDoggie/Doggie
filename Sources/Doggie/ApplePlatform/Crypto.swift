@@ -31,14 +31,6 @@ public struct Crypto {
 
 extension Crypto {
     
-    public static let rfc3394: Data = {
-        let immutableReference = NSData(bytesNoCopy: UnsafeMutableRawPointer(mutating: UnsafeRawPointer(CCrfc3394_iv!)), length: CCrfc3394_ivLen, deallocator: .none)
-        return Data(referencing: immutableReference)
-    }()
-}
-
-extension Crypto {
-    
     public enum CryptorAlgorithm {
         
         case AES
@@ -149,6 +141,11 @@ extension Crypto {
         
         case AES
     }
+    
+    public static let rfc3394: Data = {
+        let immutableReference = NSData(bytesNoCopy: UnsafeMutableRawPointer(mutating: UnsafeRawPointer(CCrfc3394_iv!)), length: CCrfc3394_ivLen, deallocator: .none)
+        return Data(referencing: immutableReference)
+    }()
     
     public static func symmetricKeyWrap(_ algorithm: WrappingAlgorithm, _ key: Data, _ encryptionKey: Data, _ iv: Data = Crypto.rfc3394) throws -> Data {
         
