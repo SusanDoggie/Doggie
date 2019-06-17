@@ -278,12 +278,12 @@ extension Crypto.HMACAlgorithm {
     
     fileprivate var rawValue: CCHmacAlgorithm {
         switch self {
-        case .MD5: return CCPseudoRandomAlgorithm(kCCHmacAlgMD5)
-        case .SHA1: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA1)
-        case .SHA224: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA224)
-        case .SHA256: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA256)
-        case .SHA384: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA384)
-        case .SHA512: return CCPseudoRandomAlgorithm(kCCHmacAlgSHA512)
+        case .MD5: return CCHmacAlgorithm(kCCHmacAlgMD5)
+        case .SHA1: return CCHmacAlgorithm(kCCHmacAlgSHA1)
+        case .SHA224: return CCHmacAlgorithm(kCCHmacAlgSHA224)
+        case .SHA256: return CCHmacAlgorithm(kCCHmacAlgSHA256)
+        case .SHA384: return CCHmacAlgorithm(kCCHmacAlgSHA384)
+        case .SHA512: return CCHmacAlgorithm(kCCHmacAlgSHA512)
         }
     }
     
