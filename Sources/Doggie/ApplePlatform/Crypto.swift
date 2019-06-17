@@ -261,15 +261,8 @@ extension Crypto {
     }
     
     public static func HMAC(_ algorithm: HMACAlgorithm, _ key: Data, _ message: Data) -> Data {
-        
         var result = Data(count: algorithm.digestLength)
-        
-        result.withUnsafeMutableBytes { result in key.withUnsafeBytes { key in message.withUnsafeBytes { message in
-            
-            CCHmac(algorithm.rawValue, key.baseAddress, key.count, message.baseAddress, message.count, result.baseAddress)
-            
-            } } }
-        
+        result.withUnsafeMutableBytes { result in key.withUnsafeBytes { key in message.withUnsafeBytes { message in CCHmac(algorithm.rawValue, key.baseAddress, key.count, message.baseAddress, message.count, result.baseAddress) } } }
         return result
     }
 }
@@ -303,8 +296,8 @@ extension Crypto {
     
     public static func randomData(length: Int) -> Data {
         var data = Data(count: length)
-        let status = data.withUnsafeMutableBytes { SecRandomCopyBytes(kSecRandomDefault, length, $0.baseAddress!) }
-        assert(status == 0)
+        let status = data.withUnsafeMutableBytes { CCRandomGenerateBytes($0.baseAddress, length) }
+        assert(status == kCCSuccess)
         return data
     }
 }
