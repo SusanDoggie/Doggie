@@ -59,7 +59,7 @@ extension Crypto {
         public var status: CCCryptorStatus
     }
     
-    public func encrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ data: Data, _ iv: Data? = nil) throws -> Data {
+    public static func encrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ data: Data, _ iv: Data? = nil) throws -> Data {
         
         var result = Data(count: data.count + algorithm.blockSize)
         var length = 0
@@ -83,7 +83,7 @@ extension Crypto {
         return result.prefix(length)
     }
     
-    public func decrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ data: Data, _ iv: Data? = nil) throws -> Data {
+    public static func decrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ data: Data, _ iv: Data? = nil) throws -> Data {
         
         var result = Data(count: data.count + algorithm.blockSize)
         var length = 0
