@@ -33,12 +33,10 @@ let package = Package(
     ],
     products: [
         .library(name: "Doggie", type: .dynamic, targets: ["Doggie"]),
-        .library(name: "DoggieGP", type: .dynamic, targets: ["DoggieGP"]),
         ],
     targets: [
         .target(name: "doggie_c", dependencies: []),
         .target(name: "Doggie", dependencies: ["doggie_c"]),
-        .target(name: "DoggieGP", dependencies: ["Doggie"]),
         .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
         ]
 )
