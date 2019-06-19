@@ -18,17 +18,3 @@ resampling(image: sample, width: 500, height: 500, resampling: .hermite(0.5, 0),
 resampling(image: sample, width: 500, height: 500, resampling: .mitchell(1/3, 1/3), antialias: false)
 
 resampling(image: sample, width: 500, height: 500, resampling: .lanczos(3), antialias: false)
-
-try resampling_gp(image: sample, width: 500, height: 500, resampling: .none, antialias: false)
-
-try resampling_gp(image: sample, width: 500, height: 500, resampling: .linear, antialias: false)
-
-try resampling_gp(image: sample, width: 500, height: 500, resampling: .cosine, antialias: false)
-
-try resampling_gp(image: sample, width: 500, height: 500, resampling: .cubic, antialias: false)
-
-try resampling_gp(image: sample, width: 500, height: 500, resampling: .hermite(0.5, 0), antialias: false)
-
-try resampling_gp(image: sample, width: 500, height: 500, resampling: .mitchell(1/3, 1/3), antialias: false)
-
-try resampling_gp(image: sample, width: 500, height: 500, resampling: .lanczos(3), antialias: false)

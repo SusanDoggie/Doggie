@@ -29,18 +29,3 @@ public func resampling<Pixel>(image: Image<Pixel>, width: Int, height: Int, resa
     
     return context.image
 }
-
-public func resampling_gp<Pixel>(image: Image<Pixel>, width: Int, height: Int, resampling algorithm: ResamplingAlgorithm, antialias: Bool) throws -> Image<Float32ColorPixel<Pixel.Model>> {
-    
-    let context = GPImageContext<Pixel.Model>(width: width, height: height, colorSpace: image.colorSpace)
-    
-    context.shouldAntialias = false
-    context.resamplingAlgorithm = algorithm
-    
-    context.draw(image: image, transform: SDTransform.scale(x: Double(width) / Double(image.width), y: Double(height) / Double(image.height)))
-    
-    try context.render()
-    
-    return context.image
-}
-

@@ -42,17 +42,3 @@ radialGradient_pdf(width: 500, height: 500)
 linearGradient2_pdf(width: 500, height: 500)
 
 radialGradient2_pdf(width: 500, height: 500)
-
-try circle_gp(width: 500, height: 500)
-
-try shadow_gp(width: 500, height: 500)
-
-try drum_gp(width: 500, height: 500)
-
-try linearGradient_gp(width: 500, height: 500)
-
-try radialGradient_gp(width: 500, height: 500)
-
-try linearGradient2_gp(width: 500, height: 500)
-
-try radialGradient2_gp(width: 500, height: 500)

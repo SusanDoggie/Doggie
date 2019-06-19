@@ -27,17 +27,3 @@ public func drum_pdf(width: Int, height: Int) -> NSImage? {
     
     return try? NSImage(data: context.data())
 }
-
-public func drum_gp(width: Int, height: Int) throws -> Image<Float32ColorPixel<RGBColorModel>> {
-    
-    let context = GPImageContext<RGBColorModel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
-    
-    context.transform = SDTransform.scale(x: Double(width) / 100, y: Double(height) / 100)
-    
-    context.draw(shape: path, winding: .nonZero, color: RGBColorModel(red: 0/255, green: 0/255, blue: 0/255))
-    
-    try context.render()
-    
-    return context.image
-}
-
