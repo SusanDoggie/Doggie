@@ -20,20 +20,6 @@
                ReferencedContainer = "container:Doggie.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0A29B1DF218998710046FFB4"
-               BuildableName = "DoggieGP.framework"
-               BlueprintName = "DoggieGP"
-               ReferencedContainer = "container:Doggie.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
