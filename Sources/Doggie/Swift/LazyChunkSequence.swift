@@ -1,5 +1,5 @@
 //
-//  LazySliceSequence.swift
+//  LazyChunkSequence.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -26,13 +26,13 @@
 extension RandomAccessCollection {
     
     @inlinable
-    public func slice(by maxLength: Int) -> [SubSequence] {
-        return Array(self.lazy.slice(by: maxLength))
+    public func chunked(by maxLength: Int) -> [SubSequence] {
+        return Array(self.lazy.chunked(by: maxLength))
     }
 }
 
 @_fixed_layout
-public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtocol, LazySequenceProtocol {
+public struct LazyChunkSequence<Base : RandomAccessCollection> : IteratorProtocol, LazySequenceProtocol {
     
     @usableFromInline
     let base: Base
@@ -70,8 +70,8 @@ public struct LazySliceSequence<Base : RandomAccessCollection> : IteratorProtoco
 extension LazyCollectionProtocol where Elements : RandomAccessCollection {
     
     @inlinable
-    public func slice(by maxLength: Int) -> LazySliceSequence<Elements> {
+    public func chunked(by maxLength: Int) -> LazyChunkSequence<Elements> {
         assert(maxLength != 0, "Sliced by zero-length.")
-        return LazySliceSequence(base: elements, maxLength: maxLength, currentIndex: elements.startIndex)
+        return LazyChunkSequence(base: elements, maxLength: maxLength, currentIndex: elements.startIndex)
     }
 }

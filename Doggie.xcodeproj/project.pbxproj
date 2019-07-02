@@ -274,7 +274,7 @@
 		0AD4B6D01F61394D00A9A6B8 /* CFFEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD4B6CF1F61394D00A9A6B8 /* CFFEncoding.swift */; };
 		0AD4D8D91EA6247200C99728 /* MathsExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD4D8D71EA6247200C99728 /* MathsExtension.swift */; };
 		0AD7FA311EBDA86A001C9B21 /* ShapeWinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD7FA2F1EBDA86A001C9B21 /* ShapeWinding.swift */; };
-		0ADAA3AE20CB6FAB006682EA /* LazySliceSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADAA3AD20CB6FAB006682EA /* LazySliceSequence.swift */; };
+		0ADAA3AE20CB6FAB006682EA /* LazyChunkSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADAA3AD20CB6FAB006682EA /* LazyChunkSequence.swift */; };
 		0ADAA3B020CB6FC2006682EA /* LazyScanSequence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADAA3AF20CB6FC2006682EA /* LazyScanSequence.swift */; };
 		0ADAA3B420CB6FED006682EA /* OptionOneCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADAA3B320CB6FED006682EA /* OptionOneCollection.swift */; };
 		0ADAA3B620CB6FFF006682EA /* LazyConcatCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ADAA3B520CB6FFF006682EA /* LazyConcatCollection.swift */; };
@@ -578,7 +578,7 @@
 		0AD4B6CF1F61394D00A9A6B8 /* CFFEncoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CFFEncoding.swift; sourceTree = "<group>"; };
 		0AD4D8D71EA6247200C99728 /* MathsExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = MathsExtension.swift; sourceTree = "<group>"; };
 		0AD7FA2F1EBDA86A001C9B21 /* ShapeWinding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ShapeWinding.swift; sourceTree = "<group>"; };
-		0ADAA3AD20CB6FAB006682EA /* LazySliceSequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazySliceSequence.swift; sourceTree = "<group>"; };
+		0ADAA3AD20CB6FAB006682EA /* LazyChunkSequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyChunkSequence.swift; sourceTree = "<group>"; };
 		0ADAA3AF20CB6FC2006682EA /* LazyScanSequence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyScanSequence.swift; sourceTree = "<group>"; };
 		0ADAA3B320CB6FED006682EA /* OptionOneCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionOneCollection.swift; sourceTree = "<group>"; };
 		0ADAA3B520CB6FFF006682EA /* LazyConcatCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyConcatCollection.swift; sourceTree = "<group>"; };
@@ -1315,7 +1315,7 @@
 				0ADAA3B720CB7019006682EA /* IndexedCollection.swift */,
 				0ADAA3B520CB6FFF006682EA /* LazyConcatCollection.swift */,
 				0ADAA3B320CB6FED006682EA /* OptionOneCollection.swift */,
-				0ADAA3AD20CB6FAB006682EA /* LazySliceSequence.swift */,
+				0ADAA3AD20CB6FAB006682EA /* LazyChunkSequence.swift */,
 				0ADAA3AF20CB6FC2006682EA /* LazyScanSequence.swift */,
 				0A80D1461E66A7000003BB44 /* RangeSet.swift */,
 				0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */,
@@ -1519,7 +1519,7 @@
 				0AE762561EE9475400E926D5 /* CGColorSpace.swift in Sources */,
 				0AE67D0C21A544EC004E21F2 /* AppleCompression.swift in Sources */,
 				0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */,
-				0ADAA3AE20CB6FAB006682EA /* LazySliceSequence.swift in Sources */,
+				0ADAA3AE20CB6FAB006682EA /* LazyChunkSequence.swift in Sources */,
 				0A63C9602251E92600993714 /* PDFNumber.swift in Sources */,
 				0A236523217EC1E7001A5E68 /* AATStateTable.swift in Sources */,
 				0A8535331F591C57006FB85D /* CFFDICT.swift in Sources */,

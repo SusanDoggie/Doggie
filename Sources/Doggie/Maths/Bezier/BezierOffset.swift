@@ -169,7 +169,7 @@ private func BezierFitting(start: Double, end: Double, _ passing: [(Double, Doub
     }
     
     if MatrixElimination(n, &matrix) {
-        let a: LazyMapSequence = matrix.lazy.slice(by: n + 1).map { $0.last! }
+        let a: LazyMapSequence = matrix.lazy.chunked(by: n + 1).map { $0.last! }
         let b = CollectionOfOne(start).concat(a).concat(CollectionOfOne(end))
         return Array(b)
     }

@@ -446,7 +446,7 @@ extension Image {
         let channelBytesOffset = channel.bitRange.lowerBound >> 3
         let channelBitsShift = channel.bitRange.lowerBound & 7
         
-        let _slices: LazySliceSequence = channel.bitRange.lazy.slice(by: 8)
+        let chunks: LazyChunkSequence = channel.bitRange.lazy.chunked(by: 8)
         
         @inline(__always)
         func read_pixel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
@@ -496,12 +496,12 @@ extension Image {
                         let _destination = destination + channel.index
                         
                         var bitPattern: T = 0
-                        for (i, slice) in _slices.enumerated() {
-                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i, slice.count)
-                            if slice.count != 8 {
-                                byte >>= 8 - slice.count
+                        for (i, chunk) in chunks.enumerated() {
+                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i, chunk.count)
+                            if chunk.count != 8 {
+                                byte >>= 8 - chunk.count
                             }
-                            bitPattern = (bitPattern << slice.count) | T(byte)
+                            bitPattern = (bitPattern << chunk.count) | T(byte)
                         }
                         
                         let _d: T
@@ -547,7 +547,7 @@ extension Image {
         let channelBytesOffset = channel.bitRange.lowerBound >> 3
         let channelBitsShift = channel.bitRange.lowerBound & 7
         
-        let _slices: LazySliceSequence = channel.bitRange.lazy.slice(by: 8)
+        let chunks: LazyChunkSequence = channel.bitRange.lazy.chunked(by: 8)
         
         let _base = (1 as UInt64) << (channel.bitRange.count - 1)
         let _mask = ((1 as UInt64) << channel.bitRange.count) &- 1
@@ -600,12 +600,12 @@ extension Image {
                         let _destination = destination + channel.index
                         
                         var bitPattern: UInt64 = 0
-                        for (i, slice) in _slices.enumerated() {
-                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i, slice.count)
-                            if slice.count != 8 {
-                                byte >>= 8 - slice.count
+                        for (i, chunk) in chunks.enumerated() {
+                            var byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, i, chunk.count)
+                            if chunk.count != 8 {
+                                byte >>= 8 - chunk.count
                             }
-                            bitPattern = (bitPattern << slice.count) | UInt64(byte)
+                            bitPattern = (bitPattern << chunk.count) | UInt64(byte)
                         }
                         
                         let _d: UInt64
