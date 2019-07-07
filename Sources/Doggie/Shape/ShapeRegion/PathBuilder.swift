@@ -91,8 +91,7 @@ extension ConstructiveSolidResult.Table {
                 } else {
                     overlap_l_index.insert(l_idx)
                     overlap_r_index.insert(r_idx)
-                    let bezier = Bezier(l_segment)
-                    let direction = bezier.closest(r_segment.start)[0] < bezier.closest(r_segment.end)[0]
+                    let direction = l_segment.closest(r_segment.start) < l_segment.closest(r_segment.end)
                     overlap_l.append((ConstructiveSolidResult.Split(index: l_idx, split: [r_segment.start, r_segment.end].compactMap { l_segment.fromPoint($0) }.min() ?? 0), direction))
                 }
             }

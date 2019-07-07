@@ -235,15 +235,35 @@ extension Shape.Component.BezierCollection.Element {
     }
     
     @inlinable
-    public func fromPoint(_ p: Point) -> Double? {
+    func _closest(_ p: Point) -> LazyMapSequence<LazyFilterSequence<LazyMapSequence<[Double], Double?>>, Double> {
         switch self.segment {
         case let .line(p1):
-            return LineSegment(start, p1).closest(p).lazy.compactMap(split_check).first { p.almostEqual(self.point($0)) }
+            return LineSegment(start, p1).closest(p).lazy.compactMap(split_check)
         case let .quad(p1, p2):
-            return QuadBezier(start, p1, p2).closest(p).lazy.compactMap(split_check).first { p.almostEqual(self.point($0)) }
+            return QuadBezier(start, p1, p2).closest(p).lazy.compactMap(split_check)
         case let .cubic(p1, p2, p3):
-            return CubicBezier(start, p1, p2, p3).closest(p).lazy.compactMap(split_check).first { p.almostEqual(self.point($0)) }
+            return CubicBezier(start, p1, p2, p3).closest(p).lazy.compactMap(split_check)
         }
+    }
+    
+    @inlinable
+    public func closest(_ p: Point) -> Double {
+        if p.distance(to: self.start) < p.distance(to: self.end) {
+            if let s = self._closest(p).min(by: { p.distance(to: self.point($0)) }), p.distance(to: self.point(s)) < p.distance(to: self.start) {
+                return s
+            }
+            return 0
+        } else {
+            if let s = self._closest(p).min(by: { p.distance(to: self.point($0)) }), p.distance(to: self.point(s)) < p.distance(to: self.end) {
+                return s
+            }
+            return 1
+        }
+    }
+    
+    @inlinable
+    public func fromPoint(_ p: Point) -> Double? {
+        return self._closest(p).first { p.almostEqual(self.point($0)) }
     }
     
     @inlinable
