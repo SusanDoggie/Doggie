@@ -135,7 +135,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     public var originalBoundary : Rect {
         return cache.lck.synchronized {
             if cache.originalBoundary == nil {
-                cache.originalBoundary = self.components.reduce(nil) { $0?.union($1.boundary) ?? $1.boundary } ?? Rect()
+                cache.originalBoundary = self.components.lazy.map { $0.boundary }.reduce { $0.union($1) } ?? Rect()
             }
             return cache.originalBoundary!
         }
