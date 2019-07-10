@@ -221,7 +221,7 @@ extension ImageContext {
     }
 }
 
-public enum ImageConvolutionAlgorithm {
+public enum ImageConvolutionAlgorithm : CaseIterable {
     
     case direct
     case cooleyTukey
@@ -346,14 +346,14 @@ extension ImageContext {
     }
 }
 
-public enum ImageContextRenderCullMode {
+public enum ImageContextRenderCullMode : CaseIterable {
     
     case none
     case front
     case back
 }
 
-public enum ImageContextRenderDepthCompareMode {
+public enum ImageContextRenderDepthCompareMode : CaseIterable {
     
     case always
     case never

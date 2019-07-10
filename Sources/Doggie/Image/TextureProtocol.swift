@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum WrappingMode {
+public enum WrappingMode : CaseIterable {
     
     case none
     case clamp

@@ -145,7 +145,7 @@ struct JPEGDecoder : ImageRepDecoder {
         }
     }
     
-    enum Encoding {
+    enum Encoding : CaseIterable {
         case baseline
         case extended
         case progressive
@@ -163,7 +163,7 @@ struct JPEGDecoder : ImageRepDecoder {
         }
     }
     
-    enum Compression {
+    enum Compression : CaseIterable {
         case huffman
         case arithmetic
     }

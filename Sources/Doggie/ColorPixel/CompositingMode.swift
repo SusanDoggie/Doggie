@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum ColorCompositingMode {
+public enum ColorCompositingMode : CaseIterable {
     
     case clear /* R = 0 */
     

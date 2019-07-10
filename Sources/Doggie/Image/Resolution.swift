@@ -55,7 +55,7 @@ extension Resolution {
 
 extension Resolution {
     
-    public enum Unit {
+    public enum Unit : CaseIterable {
         
         case point
         case pica

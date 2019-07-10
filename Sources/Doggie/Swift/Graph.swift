@@ -24,7 +24,7 @@
 //
 
 @usableFromInline
-enum GraphError : Error {
+enum GraphError : Error, CaseIterable {
     case keyCollision
 }
 

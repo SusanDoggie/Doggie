@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum MemoryAdvise {
+public enum MemoryAdvise : CaseIterable {
     
     case normal
     case random

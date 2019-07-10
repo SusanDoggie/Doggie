@@ -34,7 +34,7 @@ enum ConstructiveSolidResult {
 
 extension ConstructiveSolidResult {
     
-    enum Overlap {
+    enum Overlap : CaseIterable {
         case none, equal, superset, subset
     }
 }

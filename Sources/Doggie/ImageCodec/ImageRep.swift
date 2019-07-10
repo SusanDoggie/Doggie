@@ -187,7 +187,7 @@ extension ImageRep {
 
 extension ImageRep {
     
-    public enum MediaType {
+    public enum MediaType : String, CaseIterable {
         
         case bmp
         
@@ -210,7 +210,7 @@ extension ImageRep {
 
 extension ImageRep {
     
-    public enum PropertyKey {
+    public enum PropertyKey : CaseIterable {
         
         case compression
         
@@ -219,7 +219,7 @@ extension ImageRep {
         case interlaced
     }
     
-    public enum TIFFCompressionScheme {
+    public enum TIFFCompressionScheme : CaseIterable {
         
         case none
         

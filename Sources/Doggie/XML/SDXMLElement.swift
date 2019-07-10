@@ -25,7 +25,7 @@
 
 public struct SDXMLElement {
     
-    enum Kind {
+    enum Kind : CaseIterable {
         case node
         case characters
         case comment

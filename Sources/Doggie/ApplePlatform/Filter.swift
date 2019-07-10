@@ -243,7 +243,7 @@ public func AztecCodeGenerator(_ string: String, correction level: Float = 23, c
     return code.outputImage
 }
 
-public enum QRCorrectionLevel {
+public enum QRCorrectionLevel : CaseIterable {
     case low
     case medium
     case quartile

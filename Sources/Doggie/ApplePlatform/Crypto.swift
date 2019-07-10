@@ -31,7 +31,7 @@ public struct Crypto {
 
 extension Crypto {
     
-    public enum CryptorAlgorithm {
+    public enum CryptorAlgorithm : CaseIterable {
         
         case AES
         case DES
@@ -137,7 +137,7 @@ extension Crypto.CryptorAlgorithm {
 
 extension Crypto {
     
-    public enum WrappingAlgorithm {
+    public enum WrappingAlgorithm : CaseIterable {
         
         case AES
     }
@@ -197,12 +197,12 @@ extension Crypto.WrappingAlgorithm {
 
 extension Crypto {
     
-    public enum PBKDFAlgorithm {
+    public enum PBKDFAlgorithm : CaseIterable {
         
         case PBKDF2
     }
     
-    public enum PseudoRandomAlgorithm {
+    public enum PseudoRandomAlgorithm : CaseIterable {
         
         case SHA1
         case SHA224
@@ -255,7 +255,7 @@ extension Crypto.PseudoRandomAlgorithm {
 
 extension Crypto {
     
-    public enum HMACAlgorithm {
+    public enum HMACAlgorithm : CaseIterable {
         
         case MD5
         case SHA1

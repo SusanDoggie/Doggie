@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum RenderingIntent {
+public enum RenderingIntent : CaseIterable {
     
     case perceptual
     case absoluteColorimetric

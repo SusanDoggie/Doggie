@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum ColorBlendMode {
+public enum ColorBlendMode : CaseIterable {
     
     case normal /* B(cb, cs) = cs */
     

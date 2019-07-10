@@ -25,7 +25,7 @@
 
 extension PDFContext {
     
-    public enum EncodeError : Error {
+    public enum EncodeError : Error, CaseIterable {
         
         case unsupportedColorSpace
     }

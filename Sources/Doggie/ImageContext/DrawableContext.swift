@@ -227,7 +227,7 @@ extension DrawableContext {
     }
 }
 
-public enum GradientSpreadMode {
+public enum GradientSpreadMode : CaseIterable {
     
     case none
     case pad
@@ -298,7 +298,7 @@ extension GradientStop {
     }
 }
 
-public enum GradientType {
+public enum GradientType : CaseIterable {
     
     case linear
     case radial

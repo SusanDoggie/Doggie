@@ -107,14 +107,14 @@ extension RawBitmap {
 
 extension RawBitmap {
     
-    public enum Format {
+    public enum Format : CaseIterable {
         
         case unsigned
         case signed
         case float
     }
     
-    public enum Endianness {
+    public enum Endianness : CaseIterable {
         
         case big
         case little

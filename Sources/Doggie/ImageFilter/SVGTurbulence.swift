@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum SVGTurbulenceType {
+public enum SVGTurbulenceType : CaseIterable {
     
     case fractalNoise
     case turbulence

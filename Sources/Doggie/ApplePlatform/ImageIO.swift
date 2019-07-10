@@ -54,7 +54,7 @@ extension CGImage {
 
 extension CGImage {
     
-    public enum MediaType {
+    public enum MediaType : String, CaseIterable {
         
         case bmp
         
@@ -68,11 +68,10 @@ extension CGImage {
         
         case tiff
         
-        @available(OSX 10.13, iOS 11.0, tvOS 11.0, *)
         case heic
     }
     
-    public enum PropertyKey : Int {
+    public enum PropertyKey : Int, CaseIterable {
         
         case compression
         
@@ -83,7 +82,7 @@ extension CGImage {
         case resolution
     }
     
-    public enum TIFFCompressionScheme {
+    public enum TIFFCompressionScheme : CaseIterable {
         
         case none
         

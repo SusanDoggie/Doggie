@@ -39,7 +39,7 @@ extension ByteDecodable {
 
 public typealias ByteCodable = ByteOutputStreamable & ByteDecodable
 
-public enum ByteDecodeError : Error {
+public enum ByteDecodeError : Error, CaseIterable {
     
     case endOfData
 }

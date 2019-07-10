@@ -25,7 +25,7 @@
 
 extension PDFContext {
     
-    public enum CompressionScheme {
+    public enum CompressionScheme : CaseIterable {
         
         case noPrediction
         

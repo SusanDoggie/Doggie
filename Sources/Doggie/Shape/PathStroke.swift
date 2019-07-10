@@ -25,7 +25,7 @@
 
 extension Shape {
     
-    public enum LineCap {
+    public enum LineCap : CaseIterable {
         case butt
         case round
         case square

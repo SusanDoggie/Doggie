@@ -168,7 +168,7 @@ extension Font {
 
 extension Font {
     
-    public enum FamilyClass {
+    public enum FamilyClass : CaseIterable {
         
         case oldStyleSerifs
         case transitionalSerifs
@@ -310,7 +310,7 @@ extension Font {
 
 extension Font {
     
-    public enum LayoutDirection {
+    public enum LayoutDirection : CaseIterable {
         
         case leftToRight
         case rightToLeft

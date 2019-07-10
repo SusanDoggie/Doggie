@@ -42,7 +42,7 @@ public class Deflate : _Z_STREAM {
 
 extension Deflate {
     
-    public enum Strategy {
+    public enum Strategy : CaseIterable {
         
         case `default`
         case filtered

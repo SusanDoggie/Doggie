@@ -129,7 +129,7 @@ extension CGImageRep {
 
 extension CGImageRep {
     
-    public enum MediaType {
+    public enum MediaType : String, CaseIterable {
         
         case image
         
