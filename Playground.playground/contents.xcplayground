@@ -8,12 +8,10 @@
         <page name='Region'/>
         <page name='ShapeTweening'/>
         <page name='Graphic'/>
-        <page name='DGImageContext'/>
         <page name='Blending'/>
         <page name='Resampling'/>
         <page name='Simplex Noise'/>
-        <page name='Stroke'/>
-        <page name='CoonsPatchView'/>
-        <page name='TensorPatchView'/>
+        <page name='QuadStroke'/>
+        <page name='CubicStroke'/>
     </pages>
 </playground>
