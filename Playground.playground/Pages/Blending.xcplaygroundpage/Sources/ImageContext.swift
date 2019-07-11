@@ -1,7 +1,6 @@
 
 import Cocoa
 import Doggie
-import DoggieGP
 
 public func doggie(blendMode: ColorBlendMode, compositingMode: ColorCompositingMode, opacity: Double) -> Image<ARGB32ColorPixel> {
     

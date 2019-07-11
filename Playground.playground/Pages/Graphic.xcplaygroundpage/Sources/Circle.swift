@@ -1,7 +1,6 @@
 
 import Cocoa
 import Doggie
-import DoggieGP
 
 public func circle(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     

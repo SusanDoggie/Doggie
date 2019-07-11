@@ -1,7 +1,6 @@
 
 import Cocoa
 import Doggie
-import DoggieGP
 
 public func sampleImage(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
