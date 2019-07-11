@@ -354,86 +354,39 @@ extension Shape.StrokeBuffer {
         
         switch segment {
         case let .line(p0, p1):
-            if let (q0, q1) = BezierOffset(p0, p1, width * 0.5) {
+            if let segment = LineSegment(p0, p1).offset(width * 0.5) {
                 if flag {
-                    start = q0
+                    start = segment.p0
                 }
-                buffer1.append(.line(q1))
+                buffer1.append(.line(segment.p1))
             }
-            if let (q0, q1) = BezierOffset(p0, p1, -width * 0.5) {
-                reverse_start = q1
-                buffer2.append(.line(q0))
+            if let segment = LineSegment(p0, p1).offset(-width * 0.5) {
+                reverse_start = segment.p1
+                buffer2.append(.line(segment.p0))
             }
         case let .quad(p0, p1, p2):
-            do {
-                let path = BezierOffset(p0, p1, p2, width * 0.5)
-                if let first = path.first {
-                    if flag {
-                        start = first[0]
-                    }
-                    for item in path {
-                        switch item.count {
-                        case 2: buffer1.append(.line(item[1]))
-                        case 3: buffer1.append(.quad(item[1], item[2]))
-                        case 4: buffer1.append(.cubic(item[1], item[2], item[3]))
-                        default: break
-                        }
-                    }
+            QuadBezier(p0, p1, p2).offset(width * 0.5) { _, segment in
+                if flag {
+                    start = segment.p0
                 }
+                buffer1.append(.cubic(segment.p1, segment.p2, segment.p3))
             }
-            do {
-                let path = BezierOffset(p0, p1, p2, -width * 0.5)
-                for item in path {
-                    switch item.count {
-                    case 2:
-                        reverse_start = item[1]
-                        buffer2.append(.line(item[0]))
-                    case 3:
-                        reverse_start = item[2]
-                        buffer2.append(.quad(item[1], item[0]))
-                    case 4:
-                        reverse_start = item[3]
-                        buffer2.append(.cubic(item[2], item[1], item[0]))
-                    default: break
-                    }
-                }
+            QuadBezier(p0, p1, p2).offset(-width * 0.5) { _, segment in
+                reverse_start = segment.p3
+                buffer2.append(.cubic(segment.p2, segment.p1, segment.p0))
             }
         case let .cubic(p0, p1, p2, p3):
-            do {
-                let path = BezierOffset([p0, p1, p2, p3], width * 0.5)
-                if let first = path.first {
-                    if flag {
-                        start = first[0]
-                    }
-                    for item in path {
-                        switch item.count {
-                        case 2: buffer1.append(.line(item[1]))
-                        case 3: buffer1.append(.quad(item[1], item[2]))
-                        case 4: buffer1.append(.cubic(item[1], item[2], item[3]))
-                        default: break
-                        }
-                    }
+            CubicBezier(p0, p1, p2, p3).offset(width * 0.5) { _, segment in
+                if flag {
+                    start = segment.p0
                 }
+                buffer1.append(.cubic(segment.p1, segment.p2, segment.p3))
             }
-            do {
-                let path = BezierOffset([p0, p1, p2, p3], -width * 0.5)
-                for item in path {
-                    switch item.count {
-                    case 2:
-                        reverse_start = item[1]
-                        buffer2.append(.line(item[0]))
-                    case 3:
-                        reverse_start = item[2]
-                        buffer2.append(.quad(item[1], item[0]))
-                    case 4:
-                        reverse_start = item[3]
-                        buffer2.append(.cubic(item[2], item[1], item[0]))
-                    default: break
-                    }
-                }
+            CubicBezier(p0, p1, p2, p3).offset(-width * 0.5) { _, segment in
+                reverse_start = segment.p3
+                buffer2.append(.cubic(segment.p2, segment.p1, segment.p0))
             }
         }
-        
     }
     
 }

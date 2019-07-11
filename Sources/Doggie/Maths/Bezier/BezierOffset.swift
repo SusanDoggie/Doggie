@@ -113,3 +113,13 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         }
     }
 }
+
+extension LineSegment where Element == Point {
+    
+    @inlinable
+    public func offset(_ a: Double) -> LineSegment<Point>? {
+        guard let q0 = self._offset_point(a, 0) else { return nil }
+        guard let q1 = self._offset_point(a, 1) else { return nil }
+        return LineSegment(q0, q1)
+    }
+}

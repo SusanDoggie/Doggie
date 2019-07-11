@@ -185,7 +185,7 @@ extension CubicBezierPatch {
 extension CubicBezierPatch where Element == Point {
     
     @inlinable
-    public func warping(_ bezier: Bezier<Point>) -> [Bezier<Point>] {
+    public func warping(_ bezier: Bezier<Point>) -> Bezier<Point> {
         
         let u = Bezier(bezier.points.map { $0.x }).polynomial
         let v = Bezier(bezier.points.map { $0.y }).polynomial
@@ -245,12 +245,7 @@ extension CubicBezierPatch where Element == Point {
             y = y.elevated()
         }
         
-        let points = zip(x, y).map { Point(x: $0, y: $1) }
-        
-        switch degree {
-        case 1, 2, 3: return [Bezier(points)]
-        default: return QuadBezierFitting(points).map(Bezier.init)
-        }
+        return Bezier(zip(x, y).map { Point(x: $0, y: $1) })
     }
 }
 
