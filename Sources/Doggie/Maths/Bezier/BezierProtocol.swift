@@ -25,9 +25,9 @@
 
 public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar : BinaryFloatingPoint, Index == Int {
     
-    associatedtype Elevated : BezierProtocol where Elevated.Element == Self.Element
+    associatedtype Elevated : BezierProtocol where Elevated.Scalar == Self.Scalar, Elevated.Element == Self.Element
     
-    associatedtype Derivative : BezierProtocol where Derivative.Element == Self.Element
+    associatedtype Derivative : BezierProtocol where Derivative.Scalar == Self.Scalar, Derivative.Element == Self.Element
     
     init()
     
