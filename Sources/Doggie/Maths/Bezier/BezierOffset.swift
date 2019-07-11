@@ -50,14 +50,12 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     @inlinable
     func _offset(_ a: Double, _ c: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
-        var s = 0.0
-        
         let n = 1 << degree
-        let _n = 1 / Double(n)
+        var s = 0.0
         
         for _t in stride(from: 0, through: n, by: 1).dropFirst() {
             
-            let t = Double(_t) * _n
+            let t = Double(_t) / Double(n)
             
             let u0 = 2 * s - t
             let u3 = 2 * t - s
