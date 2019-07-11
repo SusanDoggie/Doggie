@@ -144,6 +144,26 @@ extension LineSegment {
     public func eval(_ t: Double) -> Element {
         return p0 + t * (p1 - p0)
     }
+    
+    @inlinable
+    @inline(__always)
+    public func split(_ t: Double) -> (LineSegment, LineSegment) {
+        let q0 = p0 + t * (p1 - p0)
+        return (LineSegment(p0, q0), LineSegment(q0, p1))
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func elevated() -> QuadBezier<Element> {
+        return QuadBezier(p0, eval(0.5), p1)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func derivative() -> LineSegment {
+        let q = p1 - p0
+        return LineSegment(q, q)
+    }
 }
 
 extension LineSegment where Element == Double {
@@ -153,25 +173,6 @@ extension LineSegment where Element == Double {
         let a = p0
         let b = p1 - p0
         return [a, b]
-    }
-}
-
-extension LineSegment {
-    
-    @inlinable
-    @inline(__always)
-    public func elevated() -> QuadBezier<Element> {
-        return QuadBezier(p0, eval(0.5), p1)
-    }
-}
-
-extension LineSegment {
-    
-    @inlinable
-    @inline(__always)
-    public func split(_ t: Double) -> (LineSegment, LineSegment) {
-        let q0 = p0 + t * (p1 - p0)
-        return (LineSegment(p0, q0), LineSegment(q0, p1))
     }
 }
 

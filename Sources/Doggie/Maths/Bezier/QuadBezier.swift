@@ -157,6 +157,32 @@ extension QuadBezier {
         let c = t * t * p2
         return a + b + c
     }
+    
+    @inlinable
+    @inline(__always)
+    public func split(_ t: Double) -> (QuadBezier, QuadBezier) {
+        let q0 = p0 + t * (p1 - p0)
+        let q1 = p1 + t * (p2 - p1)
+        let u0 = q0 + t * (q1 - q0)
+        return (QuadBezier(p0, q0, u0), QuadBezier(u0, q1, p2))
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func elevated() -> CubicBezier<Element> {
+        let q1 = 2 * p1
+        let c1 = (q1 + p0) / 3
+        let c2 = (q1 + p2) / 3
+        return CubicBezier(p0, c1, c2, p2)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func derivative() -> LineSegment<Element> {
+        let q0 = 2 * (p1 - p0)
+        let q1 = 2 * (p2 - p1)
+        return LineSegment(q0, q1)
+    }
 }
 
 extension QuadBezier where Element == Double {
@@ -167,39 +193,6 @@ extension QuadBezier where Element == Double {
         let b = 2 * (p1 - p0)
         let c = p0 + p2 - 2 * p1
         return [a, b, c]
-    }
-}
-
-extension QuadBezier {
-    
-    @inlinable
-    @inline(__always)
-    public func elevated() -> CubicBezier<Element> {
-        let q1 = 2 * p1
-        let c1 = (q1 + p0) / 3
-        let c2 = (q1 + p2) / 3
-        return CubicBezier(p0, c1, c2, p2)
-    }
-}
-
-extension QuadBezier {
-    
-    @inlinable
-    @inline(__always)
-    public func split(_ t: Double) -> (QuadBezier, QuadBezier) {
-        let q0 = p0 + t * (p1 - p0)
-        let q1 = p1 + t * (p2 - p1)
-        let u0 = q0 + t * (q1 - q0)
-        return (QuadBezier(p0, q0, u0), QuadBezier(u0, q1, p2))
-    }
-}
-
-extension QuadBezier {
-    
-    @inlinable
-    @inline(__always)
-    public func derivative() -> LineSegment<Element> {
-        return LineSegment(2 * (p1 - p0), 2 * (p2 - p1))
     }
 }
 

@@ -169,6 +169,30 @@ extension CubicBezier {
         let d = t * t2 * p3
         return a + b + c + d
     }
+    
+    @inlinable
+    public func split(_ t: Double) -> (CubicBezier, CubicBezier) {
+        let q0 = p0 + t * (p1 - p0)
+        let q1 = p1 + t * (p2 - p1)
+        let q2 = p2 + t * (p3 - p2)
+        let u0 = q0 + t * (q1 - q0)
+        let u1 = q1 + t * (q2 - q1)
+        let v0 = u0 + t * (u1 - u0)
+        return (CubicBezier(p0, q0, u0, v0), CubicBezier(v0, u1, q2, p3))
+    }
+    
+    @inlinable
+    public func elevated() -> Bezier<Element> {
+        return Bezier(self).elevated()
+    }
+    
+    @inlinable
+    public func derivative() -> QuadBezier<Element> {
+        let q0 = 3 * (p1 - p0)
+        let q1 = 3 * (p2 - p1)
+        let q2 = 3 * (p3 - p2)
+        return QuadBezier(q0, q1, q2)
+    }
 }
 
 extension CubicBezier {
@@ -190,36 +214,6 @@ extension CubicBezier where Element == Double {
         let a = p0
         let (b, c, d) = _polynomial
         return [a, b, c, d]
-    }
-}
-
-extension CubicBezier {
-    
-    @inlinable
-    public func elevated() -> Bezier<Element> {
-        return Bezier(self).elevated()
-    }
-}
-
-extension CubicBezier {
-    
-    @inlinable
-    public func split(_ t: Double) -> (CubicBezier, CubicBezier) {
-        let q0 = p0 + t * (p1 - p0)
-        let q1 = p1 + t * (p2 - p1)
-        let q2 = p2 + t * (p3 - p2)
-        let u0 = q0 + t * (q1 - q0)
-        let u1 = q1 + t * (q2 - q1)
-        let v0 = u0 + t * (u1 - u0)
-        return (CubicBezier(p0, q0, u0, v0), CubicBezier(v0, u1, q2, p3))
-    }
-}
-
-extension CubicBezier {
-    
-    @inlinable
-    public func derivative() -> QuadBezier<Element> {
-        return QuadBezier<Element>(3 * (p1 - p0), 3 * (p2 - p1), 3 * (p3 - p2))
     }
 }
 

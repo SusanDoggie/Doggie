@@ -25,6 +25,10 @@
 
 public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar : BinaryFloatingPoint, Index == Int {
     
+    associatedtype Elevated : BezierProtocol where Elevated.Element == Self.Element
+    
+    associatedtype Derivative : BezierProtocol where Derivative.Element == Self.Element
+    
     init()
     
     var degree: Int { get }
@@ -32,6 +36,11 @@ public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, Mu
     func split(_ t: Scalar) -> (Self, Self)
     
     func eval(_ t: Scalar) -> Element
+    
+    func elevated() -> Elevated
+    
+    func derivative() -> Derivative
+    
 }
 
 extension BezierProtocol {

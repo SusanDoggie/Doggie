@@ -187,65 +187,6 @@ extension Bezier {
         }
     }
     
-}
-
-extension Bezier where Element == Double {
-    
-    @inlinable
-    public var polynomial: Polynomial {
-        switch points.count {
-        case 2: return LineSegment(points[0], points[1]).polynomial
-        case 3: return QuadBezier(points[0], points[1], points[2]).polynomial
-        case 4: return CubicBezier(points[0], points[1], points[2], points[3]).polynomial
-        default:
-            var result = PermutationList(UInt(points.count - 1)).map(Double.init) as Array
-            for i in result.indices {
-                var sum = 0.0
-                let fact = Array(FactorialList(UInt(i)))
-                for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
-                    if (i + j) & 1 == 0 {
-                        sum += points[j] / Double(f)
-                    } else {
-                        sum -= points[j] / Double(f)
-                    }
-                }
-                result[i] *= sum
-            }
-            return Polynomial(result)
-        }
-    }
-    
-    @inlinable
-    public init(_ polynomial: Polynomial) {
-        let de = (0..<Swift.max(1, polynomial.degree)).scan(polynomial) { p, _ in p.derivative / Double(p.degree) }
-        var points: [Double] = []
-        for n in de.indices {
-            let s = zip(CombinationList(UInt(n)), de)
-            points.append(s.reduce(0) { $0 + Double($1.0) * $1.1[0] })
-        }
-        self.init(points)
-    }
-}
-
-extension Bezier {
-    
-    @inlinable
-    public func elevated() -> Bezier {
-        let p = self.points
-        let n = Double(p.count)
-        var result = [p[0]]
-        result.reserveCapacity(p.count + 1)
-        for (k, points) in zip(p, p.dropFirst()).enumerated() {
-            let t = Double(k + 1) / n
-            result.append(t * (points.0 - points.1) + points.1)
-        }
-        result.append(p.last!)
-        return Bezier(result)
-    }
-}
-
-extension Bezier {
-    
     @inlinable
     static func split(_ t: Double, _ p: [Element]) -> ([Element], [Element]) {
         switch p.count {
@@ -292,14 +233,63 @@ extension Bezier {
         let split = Bezier.split(t, points)
         return (Bezier(split.0), Bezier(split.1))
     }
-}
-
-extension Bezier {
+    
+    @inlinable
+    public func elevated() -> Bezier {
+        let p = self.points
+        let n = Double(p.count)
+        var result = [p[0]]
+        result.reserveCapacity(p.count + 1)
+        for (k, points) in zip(p, p.dropFirst()).enumerated() {
+            let t = Double(k + 1) / n
+            result.append(t * (points.0 - points.1) + points.1)
+        }
+        result.append(p.last!)
+        return Bezier(result)
+    }
     
     @inlinable
     public func derivative() -> Bezier {
         let n = Double(points.count - 1)
         return Bezier(zip(points, points.dropFirst()).map { n * ($1 - $0) })
+    }
+}
+
+extension Bezier where Element == Double {
+    
+    @inlinable
+    public var polynomial: Polynomial {
+        switch points.count {
+        case 2: return LineSegment(points[0], points[1]).polynomial
+        case 3: return QuadBezier(points[0], points[1], points[2]).polynomial
+        case 4: return CubicBezier(points[0], points[1], points[2], points[3]).polynomial
+        default:
+            var result = PermutationList(UInt(points.count - 1)).map(Double.init) as Array
+            for i in result.indices {
+                var sum = 0.0
+                let fact = Array(FactorialList(UInt(i)))
+                for (j, f) in zip(fact, fact.reversed()).map(*).enumerated() {
+                    if (i + j) & 1 == 0 {
+                        sum += points[j] / Double(f)
+                    } else {
+                        sum -= points[j] / Double(f)
+                    }
+                }
+                result[i] *= sum
+            }
+            return Polynomial(result)
+        }
+    }
+    
+    @inlinable
+    public init(_ polynomial: Polynomial) {
+        let de = (0..<Swift.max(1, polynomial.degree)).scan(polynomial) { p, _ in p.derivative / Double(p.degree) }
+        var points: [Double] = []
+        for n in de.indices {
+            let s = zip(CombinationList(UInt(n)), de)
+            points.append(s.reduce(0) { $0 + Double($1.0) * $1.1[0] })
+        }
+        self.init(points)
     }
 }
 
