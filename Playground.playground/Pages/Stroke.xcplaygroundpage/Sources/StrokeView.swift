@@ -2,6 +2,22 @@
 import Cocoa
 import Doggie
 
+extension CubicBezier where Element == Point {
+    
+    @inlinable
+    public var cusp: Double? {
+        
+        let (q1, q2, q3) = _polynomial
+        
+        let d1 = -cross(q3, q2)
+        let d2 = cross(q3, q1)
+        let d3 = -cross(q2, q1)
+        
+        let discr = 3 * d2 * d2 - 4 * d1 * d3
+        return !d1.almostZero() && discr.almostZero() ? 0.5 * d2 / d1 : nil
+    }
+}
+
 public class StrokeView: NSView, NSGestureRecognizerDelegate {
     
     public var p0: Point = Point() {
@@ -61,6 +77,23 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
             context.addPath(shape.strokePath(width: 50, cap: .round, join: .round).cgPath)
             context.setStrokeColor(NSColor.red.cgColor)
             context.strokePath()
+            
+            context.addPath(shape)
+            context.setStrokeColor(NSColor.purple.cgColor)
+            context.strokePath()
+            
+            let bezier = CubicBezier(p0, p1, p2, p3)
+            
+            for t in bezier.inflection {
+                context.setStrokeColor(NSColor.purple.cgColor)
+                drawPoint(context, bezier.eval(t))
+            }
+            
+            if let (t0, t1) = bezier.selfIntersect() {
+                context.setStrokeColor(NSColor.red.cgColor)
+                drawPoint(context, bezier.eval(t0))
+                drawPoint(context, bezier.eval(t1))
+            }
             
             context.setStrokeColor(NSColor.blue.cgColor)
             

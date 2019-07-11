@@ -80,27 +80,38 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     @inlinable
     public func offset(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
-        var t: [Double] = []
+        var t: [Double]
         
         switch self {
         case let bezier as QuadBezier<Point>:
             
-            t.append(contentsOf: QuadBezier(bezier.p0.x, bezier.p1.x, bezier.p2.x).stationary.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 })
+            if a.almostZero() {
+                try calback(0...1, bezier.elevated())
+                return
+            }
+            
+            t = QuadBezier(bezier.p0.x, bezier.p1.x, bezier.p2.x).stationary.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
             t.append(contentsOf: QuadBezier(bezier.p0.y, bezier.p1.y, bezier.p2.y).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
             
         case let bezier as CubicBezier<Point>:
             
-            t.append(contentsOf: bezier.inflection.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 })
+            if a.almostZero() {
+                try calback(0...1, bezier)
+                return
+            }
+            
+            t = bezier.selfIntersect().map { [$0, $1].filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 } } ?? []
+            t.append(contentsOf: bezier.inflection.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
             t.append(contentsOf: CubicBezier(bezier.p0.x, bezier.p1.x, bezier.p2.x, bezier.p3.x).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
             t.append(contentsOf: CubicBezier(bezier.p0.y, bezier.p1.y, bezier.p2.y, bezier.p3.y).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
             
         case let bezier as Bezier<Point>:
             
-            t.append(contentsOf: bezier.inflection.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 })
+            t = bezier.inflection.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
             t.append(contentsOf: Bezier(bezier.points.map { $0.x }).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
             t.append(contentsOf: Bezier(bezier.points.map { $0.y }).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
             
-        default: break
+        default: t = []
         }
         
         if t.count == 0 {
@@ -112,14 +123,35 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             }
         }
     }
+    
+    @inlinable
+    public func offset(_ a: Double) -> [(ClosedRange<Double>, CubicBezier<Point>)] {
+        var result: [(ClosedRange<Double>, CubicBezier<Point>)] = []
+        self.offset(a) { result.append(($0, $1)) }
+        return result
+    }
 }
 
 extension LineSegment where Element == Point {
     
     @inlinable
     public func offset(_ a: Double) -> LineSegment<Point>? {
-        guard let q0 = self._offset_point(a, 0) else { return nil }
-        guard let q1 = self._offset_point(a, 1) else { return nil }
-        return LineSegment(q0, q1)
+        
+        if a.almostZero() {
+            return self
+        }
+        
+        let _x = p1.x - p0.x
+        let _y = p1.y - p0.y
+        
+        if _x.almostZero() && _y.almostZero() {
+            return nil
+        }
+        
+        let m = 1 / sqrt(_x * _x + _y * _y)
+        let s = a * _y * m
+        let t = -a * _x * m
+        
+        return LineSegment(p0 + Point(x: s, y: t), p1 + Point(x: s, y: t))
     }
 }
