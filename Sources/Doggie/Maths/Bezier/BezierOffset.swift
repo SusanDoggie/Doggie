@@ -48,7 +48,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     }
     
     @inlinable
-    func _offset(_ a: Double, _ c: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
+    func _offset(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
         let n = 1 << degree
         var s = 0.0
@@ -65,11 +65,10 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let q2 = self._offset_point(a, t) else { return }
             guard let q3 = self._offset_point(a, u3) else { return }
             
-            let _c = (1 - c) / 6
             let m0 = q2 - q0
             let m1 = q3 - q1
             
-            try calback(s...t, CubicBezier(q1, q1 + _c * m0, q2 - _c * m1, q2))
+            try calback(s...t, CubicBezier(q1, q1 + m0 / 6, q2 - m1 / 6, q2))
             
             s = t
         }
@@ -113,12 +112,12 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         }
         
         if t.count == 0 {
-            try _offset(a, 1, calback)
+            try _offset(a, calback)
         } else {
             t.sort()
             for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) {
                 let c = t - s
-                try segment._offset(a, c) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
+                try segment._offset(a) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             }
         }
     }
