@@ -185,6 +185,37 @@ extension QuadBezier {
     }
 }
 
+extension QuadBezier where Element == Point {
+    
+    @inlinable
+    public var x: QuadBezier<Double> {
+        return QuadBezier<Double>(p0.x, p1.x, p2.x)
+    }
+    
+    @inlinable
+    public var y: QuadBezier<Double> {
+        return QuadBezier<Double>(p0.y, p1.y, p2.y)
+    }
+}
+
+extension QuadBezier where Element == Vector {
+    
+    @inlinable
+    public var x: QuadBezier<Double> {
+        return QuadBezier<Double>(p0.x, p1.x, p2.x)
+    }
+    
+    @inlinable
+    public var y: QuadBezier<Double> {
+        return QuadBezier<Double>(p0.y, p1.y, p2.y)
+    }
+    
+    @inlinable
+    public var z: QuadBezier<Double> {
+        return QuadBezier<Double>(p0.z, p1.z, p2.z)
+    }
+}
+
 extension QuadBezier where Element == Double {
     
     @inlinable
@@ -280,8 +311,8 @@ extension QuadBezier where Element == Point {
             return t
         }
         
-        let x = QuadBezier<Double>(p0.x, p1.x, p2.x).polynomial.derivative
-        let y = QuadBezier<Double>(p0.y, p1.y, p2.y).polynomial.derivative
+        let x = self.x.polynomial.derivative
+        let y = self.y.polynomial.derivative
         
         let u = x * x + y * y
         
@@ -294,8 +325,8 @@ extension QuadBezier where Element == Point {
             return length
         }
         
-        let x = QuadBezier<Double>(p0.x, p1.x, p2.x).polynomial.derivative
-        let y = QuadBezier<Double>(p0.y, p1.y, p2.y).polynomial.derivative
+        let x = self.x.polynomial.derivative
+        let y = self.y.polynomial.derivative
         
         let u = x * x + y * y
         
@@ -321,6 +352,23 @@ extension QuadBezier where Element == Point {
     }
 }
 
+extension QuadBezier where Element == Point {
+    
+    @inlinable
+    public func curvature(_ t: Double) -> Double {
+        let x = self.x.polynomial
+        let y = self.y.polynomial
+        return _bezier_curvature(x, y, t)
+    }
+    
+    @inlinable
+    public var stationary: [Double] {
+        let x = self.x.polynomial
+        let y = self.y.polynomial
+        return _bezier_stationary(x, y)
+    }
+}
+
 extension QuadBezier where Element == Double {
     
     @inlinable
@@ -338,8 +386,8 @@ extension QuadBezier where Element == Point {
     @inlinable
     public var boundary: Rect {
         
-        let bx = QuadBezier<Double>(p0.x, p1.x, p2.x)
-        let by = QuadBezier<Double>(p0.y, p1.y, p2.y)
+        let bx = self.x
+        let by = self.y
         
         let _x = bx.stationary.value.map { bx.eval($0.clamped(to: 0...1)) }
         let _y = by.stationary.value.map { by.eval($0.clamped(to: 0...1)) }

@@ -195,6 +195,37 @@ extension CubicBezier {
     }
 }
 
+extension CubicBezier where Element == Point {
+    
+    @inlinable
+    public var x: CubicBezier<Double> {
+        return CubicBezier<Double>(p0.x, p1.x, p2.x, p3.x)
+    }
+    
+    @inlinable
+    public var y: CubicBezier<Double> {
+        return CubicBezier<Double>(p0.y, p1.y, p2.y, p3.y)
+    }
+}
+
+extension CubicBezier where Element == Vector {
+    
+    @inlinable
+    public var x: CubicBezier<Double> {
+        return CubicBezier<Double>(p0.x, p1.x, p2.x, p3.x)
+    }
+    
+    @inlinable
+    public var y: CubicBezier<Double> {
+        return CubicBezier<Double>(p0.y, p1.y, p2.y, p3.y)
+    }
+    
+    @inlinable
+    public var z: CubicBezier<Double> {
+        return CubicBezier<Double>(p0.z, p1.z, p2.z, p3.z)
+    }
+}
+
 extension CubicBezier {
     
     @inlinable
@@ -266,6 +297,20 @@ extension CubicBezier where Element == Point {
         }
         return degree2roots(y / x, z / x)
     }
+    
+    @inlinable
+    public func curvature(_ t: Double) -> Double {
+        let x = self.x.polynomial
+        let y = self.y.polynomial
+        return _bezier_curvature(x, y, t)
+    }
+    
+    @inlinable
+    public var stationary: [Double] {
+        let x = self.x.polynomial
+        let y = self.y.polynomial
+        return _bezier_stationary(x, y)
+    }
 }
 
 extension CubicBezier where Element == Double {
@@ -303,8 +348,8 @@ extension CubicBezier where Element == Point {
     @inlinable
     public var boundary: Rect {
         
-        let bx = CubicBezier<Double>(p0.x, p1.x, p2.x, p3.x)
-        let by = CubicBezier<Double>(p0.y, p1.y, p2.y, p3.y)
+        let bx = self.x
+        let by = self.y
         
         let _x = bx.stationary.lazy.map { bx.eval($0.clamped(to: 0...1)) }
         let _y = by.stationary.lazy.map { by.eval($0.clamped(to: 0...1)) }

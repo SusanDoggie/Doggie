@@ -69,14 +69,36 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
             let bezier = CubicBezier(p0, p1, p2, p3)
             
             for t in bezier.inflection {
-                context.setStrokeColor(NSColor.purple.cgColor)
+                context.setStrokeColor(NSColor.green.cgColor)
                 drawPoint(context, bezier.eval(t))
+                
+                let frame = CGRect(origin: CGPoint(bezier.eval(t).offset(dx: 10, dy: 10)), size: CGSize(width: 500, height: -500))
+                let text = NSAttributedString(string: "\(_decimal_round(bezier.curvature(t)))", attributes: [.foregroundColor: NSColor.green])
+                context.draw(text, in: CGPath(rect: frame, transform: nil))
             }
             
             if let (t0, t1) = bezier.selfIntersect() {
                 context.setStrokeColor(NSColor.red.cgColor)
                 drawPoint(context, bezier.eval(t0))
                 drawPoint(context, bezier.eval(t1))
+            }
+            
+            for t in stride(from: 0, through: 1, by: 0.125) {
+                context.setStrokeColor(NSColor.purple.cgColor)
+                drawPoint(context, bezier.eval(t))
+                
+                let frame = CGRect(origin: CGPoint(bezier.eval(t).offset(dx: 10, dy: 10)), size: CGSize(width: 500, height: -500))
+                let text = NSAttributedString(string: "\(_decimal_round(bezier.curvature(t)))", attributes: [.foregroundColor: NSColor.purple])
+                context.draw(text, in: CGPath(rect: frame, transform: nil))
+            }
+            
+            for t in bezier.stationary {
+                context.setStrokeColor(NSColor.red.cgColor)
+                drawPoint(context, bezier.eval(t))
+                
+                let frame = CGRect(origin: CGPoint(bezier.eval(t).offset(dx: 10, dy: 10)), size: CGSize(width: 500, height: -500))
+                let text = NSAttributedString(string: "\(_decimal_round(bezier.curvature(t)))", attributes: [.foregroundColor: NSColor.red])
+                context.draw(text, in: CGPath(rect: frame, transform: nil))
             }
             
             context.setStrokeColor(NSColor.blue.cgColor)

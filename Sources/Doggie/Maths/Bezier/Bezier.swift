@@ -255,6 +255,37 @@ extension Bezier {
     }
 }
 
+extension Bezier where Element == Point {
+    
+    @inlinable
+    public var x: Bezier<Double> {
+        return Bezier<Double>(points.map { $0.x })
+    }
+    
+    @inlinable
+    public var y: Bezier<Double> {
+        return Bezier<Double>(points.map { $0.y })
+    }
+}
+
+extension Bezier where Element == Vector {
+    
+    @inlinable
+    public var x: Bezier<Double> {
+        return Bezier<Double>(points.map { $0.x })
+    }
+    
+    @inlinable
+    public var y: Bezier<Double> {
+        return Bezier<Double>(points.map { $0.y })
+    }
+    
+    @inlinable
+    public var z: Bezier<Double> {
+        return Bezier<Double>(points.map { $0.z })
+    }
+}
+
 extension Bezier where Element == Double {
     
     @inlinable
@@ -302,8 +333,8 @@ extension Bezier where Element == Point {
         case 3: return QuadBezier(points[0], points[1], points[2]).closest(point)
         case 4: return CubicBezier(points[0], points[1], points[2], points[3]).closest(point)
         default:
-            let x = Bezier<Double>(points.map { $0.x }).polynomial - point.x
-            let y = Bezier<Double>(points.map { $0.y }).polynomial - point.y
+            let x = self.x.polynomial - point.x
+            let y = self.y.polynomial - point.y
             let dot = x * x + y * y
             return dot.derivative.roots.sorted(by: { dot.eval($0) })
         }
@@ -332,12 +363,41 @@ extension Bezier where Element == Point {
         case 3: return QuadBezier(points[0], points[1], points[2]).area
         case 4: return CubicBezier(points[0], points[1], points[2], points[3]).area
         default:
-            let x = Bezier<Double>(points.map { $0.x }).polynomial
-            let y = Bezier<Double>(points.map { $0.y }).polynomial
+            let x = self.x.polynomial
+            let y = self.y.polynomial
             let t = x * y.derivative - x.derivative * y
             return 0.5 * t.integral.eval(1)
         }
     }
+}
+
+@inlinable
+func _bezier_curvature(_ x0: Polynomial, _ y0: Polynomial, _ t: Double) -> Double {
+    let x1 = x0.derivative
+    let y1 = y0.derivative
+    let x2 = x1.derivative
+    let y2 = y1.derivative
+    let u = x1 * y2 - x2 * y1
+    let v = x1 * x1 + y2 * y2
+    return u.eval(t) * pow(v.eval(t), -1.5)
+}
+
+@inlinable
+func _bezier_stationary(_ x0: Polynomial, _ y0: Polynomial) -> [Double] {
+    
+    let x1 = x0.derivative
+    let y1 = y0.derivative
+    let x2 = x1.derivative
+    let y2 = y1.derivative
+    
+    let u = x1 * y2 - x2 * y1
+    let v = x1 * x1 + y2 * y2
+    
+    let u2 = u.derivative
+    let v2 = v.derivative
+    
+    let k = u2 * v * v - 1.5 * u * v * v2
+    return k.roots
 }
 
 extension Bezier where Element == Point {
@@ -348,10 +408,24 @@ extension Bezier where Element == Point {
         case 2, 3: return []
         case 4: return Array(CubicBezier(points[0], points[1], points[2], points[3]).inflection)
         default:
-            let x = Bezier<Double>(points.map { $0.x }).polynomial.derivative
-            let y = Bezier<Double>(points.map { $0.y }).polynomial.derivative
+            let x = self.x.polynomial.derivative
+            let y = self.y.polynomial.derivative
             return (x * y.derivative - y * x.derivative).roots
         }
+    }
+    
+    @inlinable
+    public func curvature(_ t: Double) -> Double {
+        let x = self.x.polynomial
+        let y = self.y.polynomial
+        return _bezier_curvature(x, y, t)
+    }
+    
+    @inlinable
+    public var stationary: [Double] {
+        let x = self.x.polynomial
+        let y = self.y.polynomial
+        return _bezier_stationary(x, y)
     }
 }
 
@@ -374,8 +448,8 @@ extension Bezier where Element == Point {
     public var boundary: Rect {
         let points = self.points
         
-        let bx = Bezier<Double>(points.map { $0.x })
-        let by = Bezier<Double>(points.map { $0.y })
+        let bx = self.x
+        let by = self.y
         
         let _x = bx.stationary.lazy.map { bx.eval($0.clamped(to: 0...1)) }
         let _y = by.stationary.lazy.map { by.eval($0.clamped(to: 0...1)) }
@@ -461,10 +535,10 @@ extension Bezier where Element == Point {
     
     private func _resultant(_ other: Bezier) -> Polynomial {
         
-        let p1_x = Bezier<Double>(self.points.map { $0.x }).polynomial
-        let p1_y = Bezier<Double>(self.points.map { $0.y }).polynomial
-        let p2_x = Bezier<Double>(other.points.map { $0.x }).polynomial
-        let p2_y = Bezier<Double>(other.points.map { $0.y }).polynomial
+        let p1_x = self.x.polynomial
+        let p1_y = self.y.polynomial
+        let p2_x = other.x.polynomial
+        let p2_y = other.y.polynomial
         
         let u = [BézoutElement.polynomial(p1_x - p2_x[0])] + p2_x.dropFirst().map { BézoutElement.number(-$0) }
         let v = [BézoutElement.polynomial(p1_y - p2_y[0])] + p2_y.dropFirst().map { BézoutElement.number(-$0) }
