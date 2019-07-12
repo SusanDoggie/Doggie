@@ -372,31 +372,27 @@ extension Bezier where Element == Point {
 }
 
 @inlinable
-func _bezier_curvature(_ x0: Polynomial, _ y0: Polynomial, _ t: Double) -> Double {
-    let x1 = x0.derivative
-    let y1 = y0.derivative
-    let x2 = x1.derivative
-    let y2 = y1.derivative
-    let u = x1 * y2 - x2 * y1
-    let v = x1 * x1 + y2 * y2
+func _bezier_curvature(_ x: Polynomial, _ y: Polynomial, _ t: Double) -> Double {
+    let dx = x.derivative
+    let dy = y.derivative
+    let ddx = dx.derivative
+    let ddy = dy.derivative
+    let u = dx * ddy - ddx * dy
+    let v = dx * dx + dy * dy
     return u.eval(t) * pow(v.eval(t), -1.5)
 }
 
 @inlinable
-func _bezier_stationary(_ x0: Polynomial, _ y0: Polynomial) -> [Double] {
-    
-    let x1 = x0.derivative
-    let y1 = y0.derivative
-    let x2 = x1.derivative
-    let y2 = y1.derivative
-    
-    let u = x1 * y2 - x2 * y1
-    let v = x1 * x1 + y2 * y2
-    
-    let u2 = u.derivative
-    let v2 = v.derivative
-    
-    let k = u2 * v * v - 1.5 * u * v * v2
+func _bezier_stationary(_ x: Polynomial, _ y: Polynomial) -> [Double] {
+    let dx = x.derivative
+    let dy = y.derivative
+    let ddx = dx.derivative
+    let ddy = dy.derivative
+    let u = dx * ddy - ddx * dy
+    let v = dx * dx + dy * dy
+    let du = u.derivative
+    let dv = v.derivative
+    let k = du * v * v - 1.5 * u * v * dv
     return k.roots
 }
 
