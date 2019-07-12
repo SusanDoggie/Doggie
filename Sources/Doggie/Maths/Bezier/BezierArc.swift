@@ -94,10 +94,10 @@ public func BezierArc(_ angle: Double) -> [Point] {
             let _c = result.count - 2
             let _d = result.count - 1
             let end = Point(x: cos(s), y: sin(s))
-            let t = Bezier(result[_a], result[_b], result[_c], result[_d]).closest(end).first!
-            let split = Bezier(result[_a], result[_b], result[_c], result[_d]).split(t).0
-            result[_b] = split[1]
-            result[_c] = split[2]
+            let t = CubicBezier(result[_a], result[_b], result[_c], result[_d]).closest(end).first!
+            let split = CubicBezier(result[_a], result[_b], result[_c], result[_d]).split(t).0
+            result[_b] = split.p1
+            result[_c] = split.p2
             result[_d] = end
         }
         _angle -= 0.5 * Double.pi
