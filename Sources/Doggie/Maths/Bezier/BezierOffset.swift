@@ -87,8 +87,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
                 return
             }
             
-            t = QuadBezier(bezier.p0.x, bezier.p1.x, bezier.p2.x).stationary.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
-            t.append(contentsOf: QuadBezier(bezier.p0.y, bezier.p1.y, bezier.p2.y).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
+            t = bezier.stationary.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
             
         case let bezier as CubicBezier<Point>:
             
@@ -97,16 +96,13 @@ extension BezierProtocol where Scalar == Double, Element == Point {
                 return
             }
             
-            t = bezier.selfIntersect().map { [$0, $1].filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 } } ?? []
-            t.append(contentsOf: bezier.inflection.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
-            t.append(contentsOf: CubicBezier(bezier.p0.x, bezier.p1.x, bezier.p2.x, bezier.p3.x).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
-            t.append(contentsOf: CubicBezier(bezier.p0.y, bezier.p1.y, bezier.p2.y, bezier.p3.y).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
+            t = bezier.inflection.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+            t.append(contentsOf: bezier.stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
             
         case let bezier as Bezier<Point>:
             
             t = bezier.inflection.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
-            t.append(contentsOf: Bezier(bezier.points.map { $0.x }).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
-            t.append(contentsOf: Bezier(bezier.points.map { $0.y }).stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
+            t.append(contentsOf: bezier.stationary.filter { _t in !_t.almostZero() && !_t.almostEqual(1) && 0...1 ~= _t && !t.contains { $0.almostEqual(_t) } })
             
         default: t = []
         }
