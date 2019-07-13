@@ -46,7 +46,18 @@ extension BezierProtocol where Scalar == Double, Element == Point {
 extension BezierProtocol where Scalar == Double, Element == Point {
     
     @inlinable
-    func _offset(_ a: Double, _ calback: (CubicBezier<Point>) throws -> Void) rethrows {
+    func _closest(_ point: Point) -> [Double] {
+        switch self {
+        case let bezier as LineSegment<Point>: return bezier.closest(point)
+        case let bezier as QuadBezier<Point>: return bezier.closest(point)
+        case let bezier as CubicBezier<Point>: return bezier.closest(point)
+        case let bezier as Bezier<Point>: return bezier.closest(point)
+        default: return []
+        }
+    }
+    
+    @inlinable
+    func _offset(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
         var s = 0.0
         
@@ -67,25 +78,45 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let m2 = self._offset_point(a, 0.75 * (t - s) + s) else { continue }
             guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { continue }
             
-            try calback(CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
+            try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
             
             s = t
         }
     }
     
     @inlinable
-    func _closest(_ point: Point) -> [Double] {
-        switch self {
-        case let bezier as LineSegment<Point>: return bezier.closest(point)
-        case let bezier as QuadBezier<Point>: return bezier.closest(point)
-        case let bezier as CubicBezier<Point>: return bezier.closest(point)
-        case let bezier as Bezier<Point>: return bezier.closest(point)
-        default: return []
+    func _offset2(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
+        
+        var s = 0.0
+        
+        for _t in 1...degree {
+            
+            let t = Double(_t) / Double(degree)
+            
+            let p0 = self.eval(s)
+            let p3 = self.eval(t)
+            
+            guard let u = self._closest(0.5 * (p0 + p3)).first(where: { !$0.almostEqual(s) && !$0.almostEqual(t) && s...t ~= $0 }) else { continue }
+            guard let m = self._offset_point(a, u) else { continue }
+            
+            let d0 = self._direction(s).unit
+            let d3 = self._direction(t).unit
+            
+            guard !d0.almostZero() && !d3.almostZero() else { continue }
+            
+            let q0 = p0.offset(dx: a * d0.y, dy: -a * d0.x)
+            let q3 = p3.offset(dx: a * d3.y, dy: -a * d3.x)
+            
+            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [m]) else { continue }
+            
+            try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
+            
+            s = t
         }
     }
     
     @inlinable
-    public func offset(_ a: Double, _ calback: (CubicBezier<Point>) throws -> Void) rethrows {
+    public func offset(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
         var t: [Double]
         
@@ -93,7 +124,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         case let bezier as QuadBezier<Point>:
             
             if a.almostZero() {
-                try calback(bezier.elevated())
+                try calback(0...1, bezier.elevated())
                 return
             }
             
@@ -103,7 +134,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         case let bezier as CubicBezier<Point>:
             
             if a.almostZero() {
-                try calback(bezier)
+                try calback(0...1, bezier)
                 return
             }
             
@@ -122,35 +153,19 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         t.sort()
         
         for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
-            
-            if t - s > 0.05 {
-                
-                try segment._offset(a, calback)
-                
+            let c = t - s
+            if c > 0.05 {
+                try segment._offset(a) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             } else {
-                
-                guard let u = segment._closest(0.5 * (segment.start + segment.end)).first(where: { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }) else { continue }
-                guard let m = segment._offset_point(a, u) else { continue }
-                
-                let d0 = segment._direction(0).unit
-                let d3 = segment._direction(1).unit
-                
-                guard !d0.almostZero() && !d3.almostZero() else { continue }
-                
-                let q0 = segment.start.offset(dx: a * d0.y, dy: -a * d0.x)
-                let q3 = segment.end.offset(dx: a * d3.y, dy: -a * d3.x)
-                
-                guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.5, m)]) else { continue }
-                
-                try calback(CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
+                try segment._offset2(a) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             }
         }
     }
     
     @inlinable
-    public func offset(_ a: Double) -> [CubicBezier<Point>] {
-        var result: [CubicBezier<Point>] = []
-        self.offset(a) { result.append($0) }
+    public func offset(_ a: Double) -> [(ClosedRange<Double>, CubicBezier<Point>)] {
+        var result: [(ClosedRange<Double>, CubicBezier<Point>)] = []
+        self.offset(a) { result.append(($0, $1)) }
         return result
     }
 }

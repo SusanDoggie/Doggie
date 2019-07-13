@@ -68,6 +68,28 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
             
             let bezier = CubicBezier(p0, p1, p2, p3)
             
+            bezier.offset(25) { range, segment in
+                if range.lowerBound == 0 {
+                    context.addPath(Shape([Shape.Component(start: bezier.p0, segments: [.line(segment.p0)])]).cgPath)
+                    context.setStrokeColor(NSColor.red.cgColor)
+                    context.strokePath()
+                }
+                context.addPath(Shape([Shape.Component(start: bezier.eval(range.upperBound), segments: [.line(segment.p3)])]).cgPath)
+                context.setStrokeColor(NSColor.red.cgColor)
+                context.strokePath()
+            }
+            
+            bezier.offset(-25) { range, segment in
+                if range.lowerBound == 0 {
+                    context.addPath(Shape([Shape.Component(start: bezier.p0, segments: [.line(segment.p0)])]).cgPath)
+                    context.setStrokeColor(NSColor.red.cgColor)
+                    context.strokePath()
+                }
+                context.addPath(Shape([Shape.Component(start: bezier.eval(range.upperBound), segments: [.line(segment.p3)])]).cgPath)
+                context.setStrokeColor(NSColor.red.cgColor)
+                context.strokePath()
+            }
+            
             for t in bezier.inflection {
                 context.setStrokeColor(NSColor.green.cgColor)
                 drawPoint(context, bezier.eval(t))

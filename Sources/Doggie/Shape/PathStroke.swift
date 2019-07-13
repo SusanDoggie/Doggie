@@ -366,27 +366,27 @@ extension Shape.StrokeBuffer {
             }
         case let .quad(p0, p1, p2):
             var flag2 = true
-            QuadBezier(p0, p1, p2).offset(width * 0.5) { segment in
+            QuadBezier(p0, p1, p2).offset(width * 0.5) { _, segment in
                 if flag && flag2 {
                     start = segment.p0
                     flag2 = false
                 }
                 buffer1.append(.cubic(segment.p1, segment.p2, segment.p3))
             }
-            QuadBezier(p0, p1, p2).offset(-width * 0.5) { segment in
+            QuadBezier(p0, p1, p2).offset(-width * 0.5) { _, segment in
                 reverse_start = segment.p3
                 buffer2.append(.cubic(segment.p2, segment.p1, segment.p0))
             }
         case let .cubic(p0, p1, p2, p3):
             var flag2 = true
-            CubicBezier(p0, p1, p2, p3).offset(width * 0.5) { segment in
+            CubicBezier(p0, p1, p2, p3).offset(width * 0.5) { _, segment in
                 if flag && flag2 {
                     start = segment.p0
                     flag2 = false
                 }
                 buffer1.append(.cubic(segment.p1, segment.p2, segment.p3))
             }
-            CubicBezier(p0, p1, p2, p3).offset(-width * 0.5) { segment in
+            CubicBezier(p0, p1, p2, p3).offset(-width * 0.5) { _, segment in
                 reverse_start = segment.p3
                 buffer2.append(.cubic(segment.p2, segment.p1, segment.p0))
             }
