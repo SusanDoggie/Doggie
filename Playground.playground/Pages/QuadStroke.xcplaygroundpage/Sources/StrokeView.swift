@@ -62,7 +62,7 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
             
             let bezier = QuadBezier(p0, p1, p2)
             
-            bezier.offset(25) { range, segment in
+            bezier.offset(25) { segment in
                 if range.lowerBound == 0 {
                     context.addPath(Shape([Shape.Component(start: bezier.p0, segments: [.line(segment.p0)])]).cgPath)
                     context.setStrokeColor(NSColor.red.cgColor)
@@ -73,7 +73,7 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
                 context.strokePath()
             }
             
-            bezier.offset(-25) { range, segment in
+            bezier.offset(-25) { segment in
                 if range.lowerBound == 0 {
                     context.addPath(Shape([Shape.Component(start: bezier.p0, segments: [.line(segment.p0)])]).cgPath)
                     context.setStrokeColor(NSColor.red.cgColor)
