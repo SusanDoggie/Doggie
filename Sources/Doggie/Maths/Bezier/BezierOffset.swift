@@ -41,12 +41,9 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         let q = self._direction(t).unit
         return q.almostZero() ? nil : self.eval(t).offset(dx: a * q.y, dy: -a * q.x)
     }
-}
-
-extension BezierProtocol where Scalar == Double, Element == Point {
     
     @inlinable
-    func _closest(_ point: Point) -> [Double] {
+    public func _closest(_ point: Point) -> [Double] {
         switch self {
         case let bezier as LineSegment<Point>: return bezier.closest(point)
         case let bezier as QuadBezier<Point>: return bezier.closest(point)
@@ -55,6 +52,29 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         default: return []
         }
     }
+    
+    @inlinable
+    public func _curvature(_ t: Double) -> Double {
+        switch self {
+        case let bezier as QuadBezier<Point>: return bezier.curvature(t)
+        case let bezier as CubicBezier<Point>: return bezier.curvature(t)
+        case let bezier as Bezier<Point>: return bezier.curvature(t)
+        default: return 0
+        }
+    }
+    
+    @inlinable
+    public var _stationary: [Double] {
+        switch self {
+        case let bezier as QuadBezier<Point>: return bezier.stationary
+        case let bezier as CubicBezier<Point>: return bezier.stationary
+        case let bezier as Bezier<Point>: return bezier.stationary
+        default: return []
+        }
+    }
+}
+
+extension BezierProtocol where Scalar == Double, Element == Point {
     
     @inlinable
     func _offset(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
@@ -118,39 +138,8 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     @inlinable
     public func offset(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
-        var t: [Double]
-        
-        switch self {
-        case let bezier as QuadBezier<Point>:
-            
-            if a.almostZero() {
-                try calback(0...1, bezier.elevated())
-                return
-            }
-            
-            t = bezier.stationary
-            t.append(contentsOf: t.flatMap { abs(bezier.curvature($0)) > 0.05 ? [$0 - 0.025, $0 + 0.025] : [] })
-            
-        case let bezier as CubicBezier<Point>:
-            
-            if a.almostZero() {
-                try calback(0...1, bezier)
-                return
-            }
-            
-            t = bezier.stationary
-            t.append(contentsOf: t.flatMap { abs(bezier.curvature($0)) > 0.05 ? [$0 - 0.025, $0 + 0.025] : [] })
-            
-        case let bezier as Bezier<Point>:
-            
-            t = bezier.stationary
-            t.append(contentsOf: t.flatMap { abs(bezier.curvature($0)) > 0.05 ? [$0 - 0.025, $0 + 0.025] : [] })
-            
-        default: t = []
-        }
-        
-        t = t.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
-        t.sort()
+        let t = self._stationary.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.025, $0 + 0.025] : [$0] }.sorted()
+            .filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         
         for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
             let c = t - s
