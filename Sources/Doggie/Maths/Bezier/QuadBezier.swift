@@ -149,6 +149,16 @@ extension QuadBezier {
 extension QuadBezier {
     
     @inlinable
+    public var start: Element {
+        return p0
+    }
+    
+    @inlinable
+    public var end: Element {
+        return p2
+    }
+    
+    @inlinable
     @inline(__always)
     public func eval(_ t: Double) -> Element {
         let _t = 1 - t

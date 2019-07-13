@@ -33,6 +33,10 @@ public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, Mu
     
     var degree: Int { get }
     
+    var start: Element { get }
+    
+    var end: Element { get }
+    
     func split(_ t: Scalar) -> (Self, Self)
     
     func eval(_ t: Scalar) -> Element

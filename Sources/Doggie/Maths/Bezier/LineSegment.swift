@@ -140,6 +140,16 @@ extension LineSegment {
 extension LineSegment {
     
     @inlinable
+    public var start: Element {
+        return p0
+    }
+    
+    @inlinable
+    public var end: Element {
+        return p1
+    }
+    
+    @inlinable
     @inline(__always)
     public func eval(_ t: Double) -> Element {
         return p0 + t * (p1 - p0)

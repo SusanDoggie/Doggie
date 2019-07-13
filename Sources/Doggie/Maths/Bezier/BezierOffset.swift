@@ -74,6 +74,17 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     }
     
     @inlinable
+    func _closest(_ point: Point) -> [Double] {
+        switch self {
+        case let bezier as LineSegment<Point>: return bezier.closest(point)
+        case let bezier as QuadBezier<Point>: return bezier.closest(point)
+        case let bezier as CubicBezier<Point>: return bezier.closest(point)
+        case let bezier as Bezier<Point>: return bezier.closest(point)
+        default: return []
+        }
+    }
+    
+    @inlinable
     public func offset(_ a: Double, _ calback: (CubicBezier<Point>) throws -> Void) rethrows {
         
         var t: [Double]
@@ -86,8 +97,8 @@ extension BezierProtocol where Scalar == Double, Element == Point {
                 return
             }
             
-            t = bezier.stationary.filter { abs(bezier.curvature($0)) > 0.05 }
-            t.append(contentsOf: t.flatMap { [$0 - 0.025, $0 + 0.025] })
+            t = bezier.stationary
+            t.append(contentsOf: t.flatMap { abs(bezier.curvature($0)) > 0.05 ? [$0 - 0.025, $0 + 0.025] : [] })
             
         case let bezier as CubicBezier<Point>:
             
@@ -96,13 +107,13 @@ extension BezierProtocol where Scalar == Double, Element == Point {
                 return
             }
             
-            t = bezier.stationary.filter { abs(bezier.curvature($0)) > 0.05 }
-            t.append(contentsOf: t.flatMap { [$0 - 0.025, $0 + 0.025] })
+            t = bezier.stationary
+            t.append(contentsOf: t.flatMap { abs(bezier.curvature($0)) > 0.05 ? [$0 - 0.025, $0 + 0.025] : [] })
             
         case let bezier as Bezier<Point>:
             
-            t = bezier.stationary.filter { abs(bezier.curvature($0)) > 0.05 }
-            t.append(contentsOf: t.flatMap { [$0 - 0.025, $0 + 0.025] })
+            t = bezier.stationary
+            t.append(contentsOf: t.flatMap { abs(bezier.curvature($0)) > 0.05 ? [$0 - 0.025, $0 + 0.025] : [] })
             
         default: t = []
         }
@@ -111,12 +122,27 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         t.sort()
         
         for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
+            
             if t - s > 0.05 {
+                
                 try segment._offset(a, calback)
+                
             } else {
-                guard let q0 = segment._offset_point(a, 0) else { continue }
-                guard let q1 = segment._offset_point(a, 1) else { continue }
-                try calback(CubicBezier(q0, q0, q1, q1))
+                
+                guard let u = segment._closest(0.5 * (segment.start + segment.end)).first(where: { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }) else { continue }
+                guard let m = segment._offset_point(a, u) else { continue }
+                
+                let d0 = segment._direction(0).unit
+                let d3 = segment._direction(1).unit
+                
+                guard !d0.almostZero() && !d3.almostZero() else { continue }
+                
+                let q0 = segment.start.offset(dx: a * d0.y, dy: -a * d0.x)
+                let q3 = segment.end.offset(dx: a * d3.y, dy: -a * d3.x)
+                
+                guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.5, m)]) else { continue }
+                
+                try calback(CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
             }
         }
     }

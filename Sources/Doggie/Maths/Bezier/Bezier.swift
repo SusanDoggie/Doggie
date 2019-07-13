@@ -167,6 +167,16 @@ extension Bezier {
 extension Bezier {
     
     @inlinable
+    public var start: Element {
+        return points[0]
+    }
+    
+    @inlinable
+    public var end: Element {
+        return points[points.count - 1]
+    }
+    
+    @inlinable
     public func eval(_ t: Double) -> Element {
         switch points.count {
         case 2: return LineSegment(points[0], points[1]).eval(t)

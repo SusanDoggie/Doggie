@@ -159,6 +159,16 @@ extension CubicBezier {
 extension CubicBezier {
     
     @inlinable
+    public var start: Element {
+        return p0
+    }
+    
+    @inlinable
+    public var end: Element {
+        return p3
+    }
+    
+    @inlinable
     public func eval(_ t: Double) -> Element {
         let t2 = t * t
         let _t = 1 - t
