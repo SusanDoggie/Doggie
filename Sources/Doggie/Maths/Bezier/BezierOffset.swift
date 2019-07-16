@@ -107,43 +107,48 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     @inlinable
     func _offset2(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
-        var s = 0.0
-        
-        for _t in 1...degree {
+        func _offset(_ range: ClosedRange<Double>, _ limit: Int, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
             
-            let t = Double(_t) / Double(degree)
+            let s = range.lowerBound
+            let t = range.upperBound
+            
+            if limit > 0 && (abs(self._curvature(s)) > 1 || abs(self._curvature(t)) > 1) {
+                try _offset(range.lowerBound...0.5 * (range.lowerBound + range.upperBound), limit - 1, calback)
+                try _offset(0.5 * (range.lowerBound + range.upperBound)...range.upperBound, limit - 1, calback)
+                return
+            }
             
             let p0 = self.eval(s)
             let p3 = self.eval(t)
             
-            guard let u = self._closest(0.5 * (p0 + p3)).first(where: { !$0.almostEqual(s) && !$0.almostEqual(t) && s...t ~= $0 }) else { continue }
-            guard let m = self._offset_point(a, u) else { continue }
+            guard let u = self._closest(0.5 * (p0 + p3)).first(where: { !$0.almostEqual(s) && !$0.almostEqual(t) && s...t ~= $0 }) else { return }
+            guard let m = self._offset_point(a, u) else { return }
             
             let d0 = self._direction(s).unit
             let d3 = self._direction(t).unit
             
-            guard !d0.almostZero() && !d3.almostZero() else { continue }
+            guard !d0.almostZero() && !d3.almostZero() else { return }
             
             let q0 = p0.offset(dx: a * d0.y, dy: -a * d0.x)
             let q3 = p3.offset(dx: a * d3.y, dy: -a * d3.x)
             
-            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [m]) else { continue }
+            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [m]) else { return }
             
             try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
-            
-            s = t
         }
+        
+        try _offset(0...0.5, 5, calback)
+        try _offset(0.5...1, 5, calback)
     }
     
     @inlinable
     public func offset(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
-        let t = self._stationary.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.025, $0 + 0.025] : [$0] }.sorted()
-            .filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        let t = self._stationary.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.05, $0 + 0.05] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         
         for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
             let c = t - s
-            if c > 0.05 {
+            if c > 0.1 {
                 try segment._offset(a) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             } else {
                 try segment._offset2(a) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
