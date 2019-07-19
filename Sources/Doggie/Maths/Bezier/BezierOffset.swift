@@ -120,9 +120,7 @@ extension LineSegment where Element == Point {
     @inlinable
     public func offset(_ a0: Double, _ a1: Double) -> LineSegment? {
         
-        if a0.almostZero() && a1.almostZero() {
-            return self
-        }
+        if a0.almostEqual(a1) { return self.offset(a0) }
         
         let r0 = abs(a0)
         let r1 = abs(a1)
@@ -219,7 +217,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         if abs(angle) > 0.25 * .pi {
             
             let center = self.eval(0.5 * (s + t))
-            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(d0.phase - 0.5 * .pi) + center }
+            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(angle < 0 ? d0.phase + 0.5 * .pi : d0.phase - 0.5 * .pi) + center }
             var s = s
             
             for i in 0..<arc.count / 3 {
@@ -365,7 +363,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             let center = self.eval(0.5 * (s + t))
             guard let a = _offset_point(0.5 * (s + t))?.distance(to: center) else { return }
             
-            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(d0.phase - 0.5 * .pi) + center }
+            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(angle < 0 ? d0.phase + 0.5 * .pi : d0.phase - 0.5 * .pi) + center }
             var s = s
             
             for i in 0..<arc.count / 3 {
@@ -387,6 +385,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     @inlinable
     public func offset(_ a0: Double, _ a1: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
+        if a0.almostEqual(a1) { return try self.offset(a0, calback) }
         guard a0.sign == a1.sign || a0 == 0 || a1 == 0 else { return }
         
         let length = self._length(1)
@@ -410,5 +409,12 @@ extension BezierProtocol where Scalar == Double, Element == Point {
                 try segment._offset2(a0.sign == .minus || a1.sign == .minus, { _offset_point($0 * c + s) }, 0.5...1, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             }
         }
+    }
+    
+    @inlinable
+    public func offset(_ a0: Double, _ a1: Double) -> [(ClosedRange<Double>, CubicBezier<Point>)] {
+        var result: [(ClosedRange<Double>, CubicBezier<Point>)] = []
+        self.offset(a0, a1) { result.append(($0, $1)) }
+        return result
     }
 }
