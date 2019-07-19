@@ -217,7 +217,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         if abs(angle) > 0.25 * .pi {
             
             let center = self.eval(0.5 * (s + t))
-            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(angle < 0 ? d0.phase + 0.5 * .pi : d0.phase - 0.5 * .pi) + center }
+            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(d0.phase - 0.5 * .pi) + center }
             var s = s
             
             for i in 0..<arc.count / 3 {
