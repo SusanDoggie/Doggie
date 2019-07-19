@@ -105,40 +105,50 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     }
     
     @inlinable
-    func _offset2(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
+    func _offset2(_ a: Double, _ range: ClosedRange<Double>, _ limit: Int, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
-        func _offset(_ range: ClosedRange<Double>, _ limit: Int, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
+        let s = range.lowerBound
+        let t = range.upperBound
+        
+        if limit > 0 && (abs(self._curvature(s)) > 1 || abs(self._curvature(t)) > 1) {
+            try _offset2(a, s...0.5 * (s + t), limit - 1, calback)
+            try _offset2(a, 0.5 * (s + t)...t, limit - 1, calback)
+            return
+        }
+        
+        let p0 = self.eval(s)
+        let p3 = self.eval(t)
+        
+        let d0 = self._direction(s).unit
+        let d3 = self._direction(t).unit
+        
+        guard !d0.almostZero() && !d3.almostZero() else { return }
+        
+        let q0 = p0.offset(dx: a * d0.y, dy: -a * d0.x)
+        let q3 = p3.offset(dx: a * d3.y, dy: -a * d3.x)
+        
+        let angle = (d3.phase - d0.phase).remainder(dividingBy: 2 * .pi)
+        
+        if abs(angle) > 0.25 * .pi {
             
-            let s = range.lowerBound
-            let t = range.upperBound
+            let center = self.eval(0.5 * (s + t))
+            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(d0.phase - 0.5 * .pi) + center }
+            var s = s
             
-            if limit > 0 && (abs(self._curvature(s)) > 1 || abs(self._curvature(t)) > 1) {
-                try _offset(range.lowerBound...0.5 * (range.lowerBound + range.upperBound), limit - 1, calback)
-                try _offset(0.5 * (range.lowerBound + range.upperBound)...range.upperBound, limit - 1, calback)
-                return
+            for i in 0..<arc.count / 3 {
+                try calback(s...t, CubicBezier(arc[i * 3], arc[i * 3 + 1], arc[i * 3 + 2], arc[i * 3 + 3]))
+                s = t
             }
             
-            let p0 = self.eval(s)
-            let p3 = self.eval(t)
+        } else {
             
-            guard let u = self._closest(0.5 * (p0 + p3)).first(where: { !$0.almostEqual(s) && !$0.almostEqual(t) && s...t ~= $0 }) else { return }
-            guard let m = self._offset_point(a, u) else { return }
-            
-            let d0 = self._direction(s).unit
-            let d3 = self._direction(t).unit
-            
-            guard !d0.almostZero() && !d3.almostZero() else { return }
-            
-            let q0 = p0.offset(dx: a * d0.y, dy: -a * d0.x)
-            let q3 = p3.offset(dx: a * d3.y, dy: -a * d3.x)
-            
-            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [m]) else { return }
+            guard let m0 = self._offset_point(a, 0.25 * (t - s) + s) else { return }
+            guard let m1 = self._offset_point(a, 0.5 * (t - s) + s) else { return }
+            guard let m2 = self._offset_point(a, 0.75 * (t - s) + s) else { return }
+            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { return }
             
             try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
         }
-        
-        try _offset(0...0.5, 5, calback)
-        try _offset(0.5...1, 5, calback)
     }
     
     @inlinable
@@ -151,7 +161,8 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             if c > 0.1 {
                 try segment._offset(a) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             } else {
-                try segment._offset2(a) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
+                try segment._offset2(a, 0...0.5, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
+                try segment._offset2(a, 0.5...1, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             }
         }
     }
@@ -186,17 +197,6 @@ extension LineSegment where Element == Point {
         
         return LineSegment(p0 + Point(x: s, y: t), p1 + Point(x: s, y: t))
     }
-}
-
-public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point) -> Point? {
-    let a = p2.x - p0.x
-    let b = p2.y - p0.y
-    let c = m0.x * m2.y - m0.y * m2.x
-    if c == 0 {
-        return nil
-    }
-    let d = a * m2.y - b * m2.x
-    return p0 + m0 * d / c
 }
 
 public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> (Double, Double)? {
@@ -247,11 +247,4 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
     let v = (_c1 * _a2 - _c2 * _a1) * _t
     
     return (u, v)
-}
-
-public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [Point]) -> (Double, Double)? {
-    
-    let ds = zip(CollectionOfOne(p0).concat(points), points).map { $0.distance(to: $1) }
-    let dt = zip(points, points.dropFirst().concat(CollectionOfOne(p3))).map { $0.distance(to: $1) }
-    return CubicBezierFitting(p0, p3, m0, m1, Array(zip(zip(ds, dt).map { $0 / ($0 + $1) }, points)))
 }

@@ -86,8 +86,8 @@ public func BezierArc(_ angle: Double) -> [Point] {
             result.append(Point(x: 1, y: 0))
         default: break
         }
-        if _angle < 0.5 * Double.pi {
-            let offset = Double(counter & 3) * 0.5 * Double.pi
+        if _angle < 0.5 * .pi {
+            let offset = Double(counter & 3) * 0.5 * .pi
             let s = _angle + offset
             let _a = result.count - 4
             let _b = result.count - 3
@@ -100,7 +100,7 @@ public func BezierArc(_ angle: Double) -> [Point] {
             result[_c] = split.p2
             result[_d] = end
         }
-        _angle -= 0.5 * Double.pi
+        _angle -= 0.5 * .pi
         counter += 1
     }
     return angle.sign == .minus ? result.map { Point(x: $0.x, y: -$0.y) } : result

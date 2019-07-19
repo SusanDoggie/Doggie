@@ -71,8 +71,8 @@ public struct LuvColorModel : ColorModelProtocol {
     @inline(__always)
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
-        self.u = chroma * cos(2 * Double.pi * hue)
-        self.v = chroma * sin(2 * Double.pi * hue)
+        self.u = chroma * cos(2 * .pi * hue)
+        self.v = chroma * sin(2 * .pi * hue)
     }
     
     @inlinable
@@ -111,7 +111,7 @@ extension LuvColorModel {
     @inline(__always)
     public var hue: Double {
         get {
-            return positive_mod(0.5 * atan2(v, u) / Double.pi, 1)
+            return positive_mod(0.5 * atan2(v, u) / .pi, 1)
         }
         set {
             self = LuvColorModel(lightness: lightness, chroma: chroma, hue: newValue)

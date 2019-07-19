@@ -263,7 +263,7 @@ public func asin(_ x: Complex) -> Complex {
 @inlinable
 @inline(__always)
 public func acos(_ x: Complex) -> Complex {
-    return 0.5 * Double.pi - asin(x)
+    return 0.5 * .pi - asin(x)
 }
 
 @inlinable
@@ -276,7 +276,7 @@ public func atan(_ x: Complex) -> Complex {
 @inlinable
 @inline(__always)
 public func asec(_ x: Complex) -> Complex {
-    return 0.5 * Double.pi - acsc(x)
+    return 0.5 * .pi - acsc(x)
 }
 
 @inlinable

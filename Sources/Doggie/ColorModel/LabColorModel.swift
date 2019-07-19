@@ -72,8 +72,8 @@ public struct LabColorModel : ColorModelProtocol {
     @inline(__always)
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
-        self.a = chroma * cos(2 * Double.pi * hue)
-        self.b = chroma * sin(2 * Double.pi * hue)
+        self.a = chroma * cos(2 * .pi * hue)
+        self.b = chroma * sin(2 * .pi * hue)
     }
     
     @inlinable
@@ -112,7 +112,7 @@ extension LabColorModel {
     @inline(__always)
     public var hue: Double {
         get {
-            return positive_mod(0.5 * atan2(b, a) / Double.pi, 1)
+            return positive_mod(0.5 * atan2(b, a) / .pi, 1)
         }
         set {
             self = LabColorModel(lightness: lightness, chroma: chroma, hue: newValue)

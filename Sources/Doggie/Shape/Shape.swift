@@ -683,7 +683,7 @@ extension Shape {
     @inlinable
     public static func Polygon(center: Point, radius: Double, edges: Int) -> Shape {
         precondition(edges >= 3, "Edges is less than 3")
-        let _n = 2 * Double.pi / Double(edges)
+        let _n = 2 * .pi / Double(edges)
         var segments: [Shape.Segment] = []
         for i in 1..<edges {
             let p = Point(x: cos(_n * Double(i)), y: sin(_n * Double(i)))
@@ -864,11 +864,11 @@ extension Shape.Component {
         
         if sweep {
             while endAngle < startAngle {
-                endAngle += 2 * Double.pi
+                endAngle += 2 * .pi
             }
         } else {
             while endAngle > startAngle {
-                endAngle -= 2 * Double.pi
+                endAngle -= 2 * .pi
             }
         }
         

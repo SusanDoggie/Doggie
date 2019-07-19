@@ -557,7 +557,7 @@ class FourierTest: XCTestCase {
 
 func _DCTII(_ buffer: [Double], result: inout [Double]) {
     result = [Double](repeating: 0, count: buffer.count)
-    let angle = Double.pi / Double(buffer.count)
+    let angle = .pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         for i in buffer.indices {
@@ -569,7 +569,7 @@ func _DCTII(_ buffer: [Double], result: inout [Double]) {
 }
 func _DCTIII(_ buffer: [Double], result: inout [Double]) {
     result = [Double](repeating: 0, count: buffer.count)
-    let angle = Double.pi / Double(buffer.count)
+    let angle = .pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         for i in buffer.indices {
@@ -584,7 +584,7 @@ func _DCTIII(_ buffer: [Double], result: inout [Double]) {
 }
 func _DCTIV(_ buffer: [Double], result: inout [Double]) {
     result = [Double](repeating: 0, count: buffer.count)
-    let angle = Double.pi / Double(buffer.count)
+    let angle = .pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         for i in buffer.indices {
@@ -595,7 +595,7 @@ func _DCTIV(_ buffer: [Double], result: inout [Double]) {
 }
 func _DSTII(_ buffer: [Double], result: inout [Double]) {
     result = [Double](repeating: 0, count: buffer.count)
-    let angle = Double.pi / Double(buffer.count)
+    let angle = .pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         for i in buffer.indices {
@@ -607,7 +607,7 @@ func _DSTII(_ buffer: [Double], result: inout [Double]) {
 }
 func _DSTIII(_ buffer: [Double], result: inout [Double]) {
     result = [Double](repeating: 0, count: buffer.count)
-    let angle = Double.pi / Double(buffer.count)
+    let angle = .pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         for i in buffer.indices {
@@ -622,7 +622,7 @@ func _DSTIII(_ buffer: [Double], result: inout [Double]) {
 }
 func _DSTIV(_ buffer: [Double], result: inout [Double]) {
     result = [Double](repeating: 0, count: buffer.count)
-    let angle = Double.pi / Double(buffer.count)
+    let angle = .pi / Double(buffer.count)
     let _sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         for i in buffer.indices {

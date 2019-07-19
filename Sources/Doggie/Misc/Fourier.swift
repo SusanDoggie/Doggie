@@ -111,7 +111,7 @@ public func BluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     kernel[0].real = 1
     kernel[0].imag = 0
     
-    let angle = Double.pi / Double(count)
+    let angle = .pi / Double(count)
     var twiddle = cis(angle)
     let twiddleBasis = twiddle * twiddle
     var twiddle2 = twiddle
@@ -137,7 +137,7 @@ public func InverseBluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     kernel[0].real = 1
     kernel[0].imag = 0
     
-    let angle = -Double.pi / Double(count)
+    let angle = -.pi / Double(count)
     var twiddle = cis(angle)
     let twiddleBasis = twiddle * twiddle
     var twiddle2 = twiddle
@@ -436,7 +436,7 @@ public func DiscreteFourier(_ buffer: [Double], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    let angle: Double = -2 * Double.pi / Double(buffer.count)
+    let angle: Double = -2 * .pi / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         var tp = Complex(0)
@@ -452,7 +452,7 @@ public func DiscreteFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    let angle: Double = -2 * Double.pi / Double(buffer.count)
+    let angle: Double = -2 * .pi / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         var tp = Complex(0)
@@ -468,7 +468,7 @@ public func InverseDiscreteFourier(_ buffer: [Double], _ result: inout [Complex]
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    let angle: Double = 2 * Double.pi / Double(buffer.count)
+    let angle: Double = 2 * .pi / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         var tp = Complex(0)
@@ -484,7 +484,7 @@ public func InverseDiscreteFourier(_ buffer: [Complex], _ result: inout [Complex
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
     }
-    let angle: Double = 2 * Double.pi / Double(buffer.count)
+    let angle: Double = 2 * .pi / Double(buffer.count)
     let sqrt_length = sqrt(Double(buffer.count))
     for k in buffer.indices {
         var tp = Complex(0)
@@ -531,7 +531,7 @@ public func DCTII(_ buffer: [Double], _ result: inout [Double]) {
     Fourier(temp, &_temp)
     result = [Double](repeating: 0, count: N)
     result[0] = _temp[0].real
-    let _angle = -0.5 * Double.pi / Double(N)
+    let _angle = -0.5 * .pi / Double(N)
     for i in 1..<N {
         result[i] = (_temp[i] * Complex(magnitude: sqrt(2), phase: _angle * Double(i))).real
     }
@@ -542,7 +542,7 @@ public func DCTIII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Complex](repeating: Complex(0), count: N)
     temp[0] = Complex(buffer[0])
-    let _angle = -0.5 * Double.pi / Double(N)
+    let _angle = -0.5 * .pi / Double(N)
     for i in 1..<N {
         temp[i] = buffer[i] * Complex(magnitude: sqrt(2), phase: _angle * Double(i))
     }
@@ -571,13 +571,13 @@ public func DCTIV(_ buffer: [Double], _ result: inout [Double]) {
     }
     var _temp = [Complex](repeating: Complex(0), count: N)
     _temp[0] = Complex(temp[0])
-    let _angle = -Double.pi / Double(N)
+    let _angle = -.pi / Double(N)
     for i in 1..<N {
         _temp[i] = Complex(magnitude: temp[i], phase: _angle * Double(i))
     }
     Fourier(_temp, &_temp)
     result = [Double](repeating: 0, count: N)
-    let _angle2 = -0.25 * Double.pi / Double(N)
+    let _angle2 = -0.25 * .pi / Double(N)
     for i in 0..<N {
         result[i] = (_temp[i] * Complex(magnitude: sqrt(2), phase: _angle2 * Double((i << 1) + 1))).real
     }
@@ -596,17 +596,17 @@ public func DSTII(_ buffer: [Double], _ result: inout [Double]) {
     }
     var _temp = [Complex](repeating: Complex(0), count: N)
     _temp[0] = Complex(temp[0])
-    let _angle: Double = -2 * Double.pi / Double(N)
+    let _angle: Double = -2 * .pi / Double(N)
     for i in 1..<N {
         _temp[i] = Complex(magnitude: temp[i], phase: _angle * Double(i))
     }
     Fourier(_temp, &_temp)
     result = [Double](repeating: 0, count: N)
-    let _angle2 = -0.5 * Double.pi / Double(N)
+    let _angle2 = -0.5 * .pi / Double(N)
     for i in 0..<N - 1 {
         result[i] = (_temp[i] * Complex(magnitude: sqrt(2), phase: _angle2 * Double(i + 1))).imag
     }
-    result[N - 1] = (_temp[N - 1] * Complex(magnitude: 1, phase: -0.5 * Double.pi)).imag
+    result[N - 1] = (_temp[N - 1] * Complex(magnitude: 1, phase: -0.5 * .pi)).imag
 }
 @inlinable
 @inline(__always)
@@ -614,14 +614,14 @@ public func DSTIII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Complex](repeating: Complex(0), count: N)
     temp[0] = Complex(buffer[0])
-    let _angle = -0.5 * Double.pi / Double(N)
+    let _angle = -0.5 * .pi / Double(N)
     for i in 0..<N - 1 {
         temp[i] = Complex(magnitude: buffer[i] * sqrt(2), phase: _angle * Double(i + 1))
     }
-    temp[N - 1] = Complex(magnitude: buffer[N - 1], phase: -0.5 * Double.pi)
+    temp[N - 1] = Complex(magnitude: buffer[N - 1], phase: -0.5 * .pi)
     var _temp = [Complex]()
     Fourier(temp, &_temp)
-    let _angle2: Double = -2 * Double.pi / Double(N)
+    let _angle2: Double = -2 * .pi / Double(N)
     for i in 1..<N {
         _temp[i] *= Complex(magnitude: 1, phase: _angle2 * Double(i))
     }
@@ -648,13 +648,13 @@ public func DSTIV(_ buffer: [Double], _ result: inout [Double]) {
     }
     var _temp = [Complex](repeating: Complex(0), count: N)
     _temp[0] = Complex(temp[0])
-    let _angle = -Double.pi / Double(N)
+    let _angle = -.pi / Double(N)
     for i in 1..<N {
         _temp[i] = Complex(magnitude: temp[i], phase: _angle * Double(i))
     }
     Fourier(_temp, &_temp)
     result = [Double](repeating: 0, count: N)
-    let _angle2 = -0.25 * Double.pi / Double(N)
+    let _angle2 = -0.25 * .pi / Double(N)
     for i in 0..<N {
         result[i] = (_temp[i] * Complex(magnitude: sqrt(2), phase: _angle2 * Double((i << 1) + 1))).imag
     }

@@ -163,9 +163,9 @@ public func EllipseBound(_ center: Point, _ r: Radius, _ matrix: SDTransform) ->
     let t2 = EllipseStationary(r, matrix.d, matrix.e)
     
     let p0 = Ellipse(t1, center, r)
-    let p1 = Ellipse(t1 + Double.pi, center, r)
+    let p1 = Ellipse(t1 + .pi, center, r)
     let p2 = Ellipse(t2, center, r)
-    let p3 = Ellipse(t2 + Double.pi, center, r)
+    let p3 = Ellipse(t2 + .pi, center, r)
     
     let _p0 = matrix.a * p0.x + matrix.b * p0.y
     let _p1 = matrix.a * p1.x + matrix.b * p1.y
