@@ -54,6 +54,26 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     }
     
     @inlinable
+    public func _length(_ t: Double) -> Double {
+        switch self {
+        case let bezier as LineSegment<Point>: return bezier.length(t)
+        case let bezier as QuadBezier<Point>: return bezier.length(t)
+        default:
+            
+            var p0 = self.start
+            var sum = 0.0
+            
+            for _t in 1...16 {
+                let p1 = self.eval(Double(_t) * t / 16)
+                sum += p0.distance(to: p1)
+                p0 = p1
+            }
+            
+            return sum
+        }
+    }
+    
+    @inlinable
     public func _curvature(_ t: Double) -> Double {
         switch self {
         case let bezier as QuadBezier<Point>: return bezier.curvature(t)
@@ -71,6 +91,73 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         case let bezier as Bezier<Point>: return bezier.stationary
         default: return []
         }
+    }
+}
+
+extension LineSegment where Element == Point {
+    
+    @inlinable
+    public func offset(_ a: Double) -> LineSegment? {
+        
+        if a.almostZero() {
+            return self
+        }
+        
+        let _x = p1.x - p0.x
+        let _y = p1.y - p0.y
+        
+        if _x.almostZero() && _y.almostZero() {
+            return nil
+        }
+        
+        let m = 1 / sqrt(_x * _x + _y * _y)
+        let s = a * _y * m
+        let t = -a * _x * m
+        
+        return LineSegment(p0 + Point(x: s, y: t), p1 + Point(x: s, y: t))
+    }
+    
+    @inlinable
+    public func offset(_ a0: Double, _ a1: Double) -> LineSegment? {
+        
+        if a0.almostZero() && a1.almostZero() {
+            return self
+        }
+        
+        let r0 = abs(a0)
+        let r1 = abs(a1)
+        
+        guard a0.sign == a1.sign || a0 == 0 || a1 == 0 else { return nil }
+        guard r1 > r0 else { return LineSegment(p1, p0).offset(a1, a0).map { LineSegment($0.p1, $0.p0) } }
+        
+        let d = p1 - p0
+        let m = d.magnitude
+        let p = d.phase
+        
+        let _r = r1 - r0
+        
+        guard m > _r && !m.almostEqual(_r) else { return nil }
+        
+        let a = asin(_r / m)
+        
+        let x1, y1, x2, y2: Double
+        
+        if a0.sign == .plus || a1.sign == .plus {
+            x1 = r0 * cos(0.5 * .pi + a)
+            y1 = r0 * sin(0.5 * .pi + a)
+            x2 = r1 * cos(0.5 * .pi + a)
+            y2 = r1 * sin(0.5 * .pi + a)
+        } else {
+            x1 = r0 * cos(0.5 * .pi + a)
+            y1 = -r0 * sin(0.5 * .pi + a)
+            x2 = r1 * cos(0.5 * .pi + a)
+            y2 = -r1 * sin(0.5 * .pi + a)
+        }
+        
+        let t1 = SDTransform.rotate(p) * SDTransform.translate(x: p0.x, y: p0.y)
+        let t2 = SDTransform.rotate(p) * SDTransform.translate(x: p1.x, y: p1.y)
+        
+        return LineSegment(Point(x: x1, y: y1) * t1, Point(x: x2, y: y2) * t2)
     }
 }
 
@@ -175,30 +262,6 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     }
 }
 
-extension LineSegment where Element == Point {
-    
-    @inlinable
-    public func offset(_ a: Double) -> LineSegment<Point>? {
-        
-        if a.almostZero() {
-            return self
-        }
-        
-        let _x = p1.x - p0.x
-        let _y = p1.y - p0.y
-        
-        if _x.almostZero() && _y.almostZero() {
-            return nil
-        }
-        
-        let m = 1 / sqrt(_x * _x + _y * _y)
-        let s = a * _y * m
-        let t = -a * _x * m
-        
-        return LineSegment(p0 + Point(x: s, y: t), p1 + Point(x: s, y: t))
-    }
-}
-
 public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> (Double, Double)? {
     
     var _a1 = 0.0
@@ -247,4 +310,105 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
     let v = (_c1 * _a2 - _c2 * _a1) * _t
     
     return (u, v)
+}
+
+extension BezierProtocol where Scalar == Double, Element == Point {
+    
+    @inlinable
+    func _offset(_ signed: Bool, _ _offset_point: (Double) -> Point?, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
+        
+        var s = 0.0
+        
+        for _t in 1...degree {
+            
+            let t = Double(_t) / Double(degree)
+            
+            guard let q0 = _offset_point(s) else { continue }
+            guard let q3 = _offset_point(t) else { continue }
+            
+            let d0 = (q0 - self.eval(s)).unit * SDTransform.rotate(signed ? 0.5 * .pi : -0.5 * .pi)
+            let d3 = (q3 - self.eval(t)).unit * SDTransform.rotate(signed ? 0.5 * .pi : -0.5 * .pi)
+            
+            guard let m0 = _offset_point(0.25 * (t - s) + s) else { continue }
+            guard let m1 = _offset_point(0.5 * (t - s) + s) else { continue }
+            guard let m2 = _offset_point(0.75 * (t - s) + s) else { continue }
+            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { continue }
+            
+            try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
+            
+            s = t
+        }
+    }
+    
+    @inlinable
+    func _offset2(_ signed: Bool, _ _offset_point: (Double) -> Point?, _ range: ClosedRange<Double>, _ limit: Int, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
+        
+        let s = range.lowerBound
+        let t = range.upperBound
+        
+        if limit > 0 && (abs(self._curvature(s)) > 1 || abs(self._curvature(t)) > 1) {
+            try _offset2(signed, _offset_point, s...0.5 * (s + t), limit - 1, calback)
+            try _offset2(signed, _offset_point, 0.5 * (s + t)...t, limit - 1, calback)
+            return
+        }
+        
+        guard let q0 = _offset_point(s) else { return }
+        guard let q3 = _offset_point(t) else { return }
+        
+        let d0 = (q0 - self.eval(s)).unit * SDTransform.rotate(signed ? 0.5 * .pi : -0.5 * .pi)
+        let d3 = (q3 - self.eval(t)).unit * SDTransform.rotate(signed ? 0.5 * .pi : -0.5 * .pi)
+        
+        let angle = (d3.phase - d0.phase).remainder(dividingBy: 2 * .pi)
+        
+        if abs(angle) > 0.25 * .pi {
+            
+            let center = self.eval(0.5 * (s + t))
+            guard let a = _offset_point(0.5 * (s + t))?.distance(to: center) else { return }
+            
+            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(d0.phase - 0.5 * .pi) + center }
+            var s = s
+            
+            for i in 0..<arc.count / 3 {
+                try calback(s...t, CubicBezier(arc[i * 3], arc[i * 3 + 1], arc[i * 3 + 2], arc[i * 3 + 3]))
+                s = t
+            }
+            
+        } else {
+            
+            guard let m0 = _offset_point(0.25 * (t - s) + s) else { return }
+            guard let m1 = _offset_point(0.5 * (t - s) + s) else { return }
+            guard let m2 = _offset_point(0.75 * (t - s) + s) else { return }
+            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { return }
+            
+            try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
+        }
+    }
+    
+    @inlinable
+    public func offset(_ a0: Double, _ a1: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
+        
+        guard a0.sign == a1.sign || a0 == 0 || a1 == 0 else { return }
+        
+        let length = self._length(1)
+        guard let tangent = LineSegment(Point(), Point(x: length, y: 0)).offset(a0, a1) else { return }
+        
+        let t = self._stationary.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.05, $0 + 0.05] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        
+        func _offset_point(_ t: Double) -> Point? {
+            let q = self._direction(t)
+            let s = self._length(t)
+            let offset = tangent.eval(s / length) - Point(x: s, y: 0)
+            return q.almostZero() ? nil : self.eval(t) + offset * SDTransform.rotate(q.phase)
+        }
+        
+        for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
+            let c = t - s
+            if c > 0.1 {
+                try segment._offset(a0.sign == .minus || a1.sign == .minus, { _offset_point($0 * c + s) }) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
+            } else {
+                try segment._offset2(a0.sign == .minus || a1.sign == .minus, { _offset_point($0 * c + s) }, 0...0.5, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
+                try segment._offset2(a0.sign == .minus || a1.sign == .minus, { _offset_point($0 * c + s) }, 0.5...1, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
+            }
+        }
+    }
 }
