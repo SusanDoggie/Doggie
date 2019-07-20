@@ -489,35 +489,19 @@ extension ShapeRegion {
 extension ShapeRegion {
     
     public static func Polygon(center: Point, radius: Double, edges: Int) -> ShapeRegion {
-        if let solid = ShapeRegion.Solid(segments: Shape.Polygon(center: center, radius: radius, edges: edges)[0].bezier) {
-            return ShapeRegion(solid: solid)
-        } else {
-            return ShapeRegion()
-        }
+        return ShapeRegion(solid: ShapeRegion.Solid(solid: Shape.Component.Polygon(center: center, radius: radius, edges: edges)))
     }
     
     public init(rect: Rect) {
-        if let solid = ShapeRegion.Solid(segments: Shape(rect: rect)[0].bezier) {
-            self.init(solid: solid)
-        } else {
-            self.init()
-        }
+        self.init(solid: ShapeRegion.Solid(solid: Shape.Component(rect: rect)))
     }
     
     public init(roundedRect rect: Rect, radius: Radius) {
-        if let solid = ShapeRegion.Solid(segments: Shape(roundedRect: rect, radius: radius)[0].bezier) {
-            self.init(solid: solid)
-        } else {
-            self.init()
-        }
+        self.init(solid: ShapeRegion.Solid(solid: Shape.Component(roundedRect: rect, radius: radius)))
     }
     
     public init(ellipseIn rect: Rect) {
-        if let solid = ShapeRegion.Solid(segments: Shape(ellipseIn: rect)[0].bezier) {
-            self.init(solid: solid)
-        } else {
-            self.init()
-        }
+        self.init(solid: ShapeRegion.Solid(solid: Shape.Component(ellipseIn: rect)))
     }
 }
 

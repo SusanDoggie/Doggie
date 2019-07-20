@@ -678,10 +678,10 @@ extension Shape.Component {
     }
 }
 
-extension Shape {
+extension Shape.Component {
     
     @inlinable
-    public static func Polygon(center: Point, radius: Double, edges: Int) -> Shape {
+    public static func Polygon(center: Point, radius: Double, edges: Int) -> Shape.Component {
         precondition(edges >= 3, "Edges is less than 3")
         let _n = 2 * .pi / Double(edges)
         var segments: [Shape.Segment] = []
@@ -689,13 +689,13 @@ extension Shape {
             let p = Point(x: cos(_n * Double(i)), y: sin(_n * Double(i)))
             segments.append(.line(center + radius * p))
         }
-        return [Component(start: Point(x: center.x + radius, y: center.y), closed: true, segments: segments)]
+        return Shape.Component(start: Point(x: center.x + radius, y: center.y), closed: true, segments: segments)
     }
     
     @inlinable
     public init(rect: Rect) {
         let points = rect.standardized.points
-        self = [Component(start: points[0], closed: true, segments: [.line(points[1]), .line(points[2]), .line(points[3])])]
+        self.init(start: points[0], closed: true, segments: [.line(points[1]), .line(points[2]), .line(points[3])])
     }
     
     @inlinable
@@ -719,7 +719,7 @@ extension Shape {
             .cubic(BezierCircle[7] * t3, BezierCircle[8] * t3, BezierCircle[9] * t3), .line(BezierCircle[9] * t4),
             .cubic(BezierCircle[10] * t4, BezierCircle[11] * t4, BezierCircle[12] * t4)
         ]
-        self = [Component(start: BezierCircle[0] * t1, closed: true, segments: segments)]
+        self.init(start: BezierCircle[0] * t1, closed: true, segments: segments)
     }
     
     @inlinable
@@ -732,7 +732,30 @@ extension Shape {
             .cubic(BezierCircle[7] * transform, BezierCircle[8] * transform, BezierCircle[9] * transform),
             .cubic(BezierCircle[10] * transform, BezierCircle[11] * transform, BezierCircle[12] * transform)
         ]
-        self = [Component(start: BezierCircle[0] * transform, closed: true, segments: segments)]
+        self.init(start: BezierCircle[0] * transform, closed: true, segments: segments)
+    }
+}
+
+extension Shape {
+    
+    @inlinable
+    public static func Polygon(center: Point, radius: Double, edges: Int) -> Shape {
+        return [Component.Polygon(center: center, radius: radius, edges: edges)]
+    }
+    
+    @inlinable
+    public init(rect: Rect) {
+        self = [Component(rect: rect)]
+    }
+    
+    @inlinable
+    public init(roundedRect rect: Rect, radius: Radius) {
+        self = [Component(roundedRect: rect, radius: radius)]
+    }
+    
+    @inlinable
+    public init(ellipseIn rect: Rect) {
+        self = [Component(ellipseIn: rect)]
     }
 }
 

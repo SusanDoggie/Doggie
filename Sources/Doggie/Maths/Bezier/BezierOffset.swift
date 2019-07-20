@@ -140,7 +140,7 @@ extension LineSegment where Element == Point {
         
         let x1, y1, x2, y2: Double
         
-        if a0.sign == .plus || a1.sign == .plus {
+        if a0.sign == .minus || a1.sign == .minus {
             x1 = r0 * cos(0.5 * .pi + a)
             y1 = r0 * sin(0.5 * .pi + a)
             x2 = r1 * cos(0.5 * .pi + a)
@@ -324,8 +324,8 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let q0 = _offset_point(s) else { continue }
             guard let q3 = _offset_point(t) else { continue }
             
-            let d0 = (q0 - self.eval(s)).unit * SDTransform.rotate(signed ? 0.5 * .pi : -0.5 * .pi)
-            let d3 = (q3 - self.eval(t)).unit * SDTransform.rotate(signed ? 0.5 * .pi : -0.5 * .pi)
+            let d0 = (q0 - self.eval(s)).unit * SDTransform.rotate(signed ? -0.5 * .pi : 0.5 * .pi)
+            let d3 = (q3 - self.eval(t)).unit * SDTransform.rotate(signed ? -0.5 * .pi : 0.5 * .pi)
             
             guard let m0 = _offset_point(0.25 * (t - s) + s) else { continue }
             guard let m1 = _offset_point(0.5 * (t - s) + s) else { continue }
@@ -353,8 +353,8 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         guard let q0 = _offset_point(s) else { return }
         guard let q3 = _offset_point(t) else { return }
         
-        let d0 = (q0 - self.eval(s)).unit * SDTransform.rotate(signed ? 0.5 * .pi : -0.5 * .pi)
-        let d3 = (q3 - self.eval(t)).unit * SDTransform.rotate(signed ? 0.5 * .pi : -0.5 * .pi)
+        let d0 = (q0 - self.eval(s)).unit * SDTransform.rotate(signed ? -0.5 * .pi : 0.5 * .pi)
+        let d3 = (q3 - self.eval(t)).unit * SDTransform.rotate(signed ? -0.5 * .pi : 0.5 * .pi)
         
         let angle = (d3.phase - d0.phase).remainder(dividingBy: 2 * .pi)
         
@@ -364,7 +364,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard var a = _offset_point(0.5 * (s + t))?.distance(to: center) else { return }
             if signed { a = -a }
             
-            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(d0.phase + 0.5 * .pi) + center }
+            let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(d0.phase - 0.5 * .pi) + center }
             var s = s
             
             for i in 0..<arc.count / 3 {

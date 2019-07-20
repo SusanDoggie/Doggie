@@ -36,6 +36,9 @@ extension Shape {
         case round
         case bevel
     }
+}
+
+extension Shape {
     
     fileprivate struct StrokeBuffer {
         
@@ -62,7 +65,6 @@ extension Shape {
             self.cap = cap
             self.join = join
         }
-        
     }
 }
 

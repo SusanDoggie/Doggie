@@ -10,6 +10,7 @@
 		0805A95620B2F85D001A5974 /* ShapeTweening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0805A95520B2F85D001A5974 /* ShapeTweening.swift */; };
 		080AE2732259031400004032 /* TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080AE2722259031400004032 /* TypedData.swift */; };
 		0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0821D6401EED58FC007E42F5 /* Rendering.swift */; };
+		0835846822E2A8CB00901986 /* VariableRoundStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0835846722E2A8CA00901986 /* VariableRoundStroke.swift */; };
 		08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
 		08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */; };
 		08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB31E2E627600D01813 /* CircularConvolve.swift */; };
@@ -313,6 +314,7 @@
 		0805A95520B2F85D001A5974 /* ShapeTweening.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeTweening.swift; sourceTree = "<group>"; };
 		080AE2722259031400004032 /* TypedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedData.swift; sourceTree = "<group>"; };
 		0821D6401EED58FC007E42F5 /* Rendering.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rendering.swift; sourceTree = "<group>"; };
+		0835846722E2A8CA00901986 /* VariableRoundStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariableRoundStroke.swift; sourceTree = "<group>"; };
 		08458AB11E2E627600D01813 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
 		08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AccelerateArithmetic.swift; sourceTree = "<group>"; };
 		08458AB31E2E627600D01813 /* CircularConvolve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CircularConvolve.swift; sourceTree = "<group>"; };
@@ -854,6 +856,7 @@
 			children = (
 				0A2107081E5BEEBB00F1E00E /* PathCoder.swift */,
 				0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */,
+				0835846722E2A8CA00901986 /* VariableRoundStroke.swift */,
 				0A21070C1E5BEEBB00F1E00E /* Shape.swift */,
 				0805A95520B2F85D001A5974 /* ShapeTweening.swift */,
 				0AD7FA2F1EBDA86A001C9B21 /* ShapeWinding.swift */,
@@ -1699,6 +1702,7 @@
 				0AF5676820D26DDE003B243B /* CIEYxyColorSpace.swift in Sources */,
 				0A53E4631E35AEF80060FB83 /* Date.swift in Sources */,
 				0AADB89620AC0BA400F3BF17 /* PNGInterlace.swift in Sources */,
+				0835846822E2A8CB00901986 /* VariableRoundStroke.swift in Sources */,
 				0A9CD58B1EEB98E600094148 /* sRGB.swift in Sources */,
 				0A792C771FDA2996003C0290 /* BreakLoop.swift in Sources */,
 				0AD3E6321F53DA9B003CC21A /* FontDecoder.swift in Sources */,
