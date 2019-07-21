@@ -147,7 +147,7 @@ extension ShapeRegion.Solid {
     
     init?<S : Sequence>(segments: S) where S.Element == Segment {
         
-        var segments = segments.filter { !$0.isPoint }
+        var segments = segments.filter { !$0._invisible }
         
         guard segments.count > 0 else { return nil }
         

@@ -70,20 +70,11 @@ extension Shape {
 
 extension Shape.StrokeBuffer.Segment {
     
-    var isPoint: Bool {
+    var _invisible: Bool {
         switch self {
-        case let .line(p0, p1):
-            let z0 = p1 - p0
-            return z0.x.almostZero() && z0.y.almostZero()
-        case let .quad(p0, p1, p2):
-            let z0 = p1 - p0
-            let z1 = p2 - p1
-            return z0.x.almostZero() && z0.y.almostZero() && z1.x.almostZero() && z1.y.almostZero()
-        case let .cubic(p0, p1, p2, p3):
-            let z0 = p1 - p0
-            let z1 = p2 - p1
-            let z2 = p3 - p2
-            return z0.x.almostZero() && z0.y.almostZero() && z1.x.almostZero() && z1.y.almostZero() && z2.x.almostZero() && z2.y.almostZero()
+        case let .line(p0, p1): return p0.almostEqual(p1)
+        case let .quad(p0, _, p2): return p0.almostEqual(p2)
+        case let .cubic(p0, p1, p2, p3): return p0.almostEqual(p1) && p1.almostEqual(p2) && p2.almostEqual(p3)
         }
     }
     
@@ -329,9 +320,7 @@ extension Shape.StrokeBuffer {
     
     mutating func addSegment(_ segment: Segment) {
         
-        if segment.isPoint {
-            return
-        }
+        if segment._invisible { return }
         
         var flag = false
         
