@@ -400,8 +400,10 @@ extension Shape.StrokeBuffer {
 extension Shape {
     
     public func strokePath(width: Double, cap: LineCap, join: LineJoin) -> Shape {
+        
         var buffer = StrokeBuffer(width: width, cap: cap, join: join)
         buffer.path.reserveCapacity(self.count << 1)
+        
         for item in self.identity {
             var last = item.start
             for segment in item {
@@ -426,7 +428,8 @@ extension Shape {
             }
             buffer.flush()
         }
-        return Shape(buffer.path)
+        
+        return Shape(buffer.path.map { $0.area.sign == .plus ? $0 : $0.reversed() })
     }
     
 }

@@ -133,7 +133,7 @@ extension Shape.Component {
             result.append(Shape.Component(start: s0.p0, closed: true, segments: [.line(s0.p1), .line(s1.p1), .line(s1.p0)]))
         }
         
-        return result
+        return result.map { $0.area.sign == .plus ? $0 : $0.reversed() }
     }
 }
 
