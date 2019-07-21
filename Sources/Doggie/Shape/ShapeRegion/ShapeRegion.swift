@@ -489,19 +489,31 @@ extension ShapeRegion {
 extension ShapeRegion {
     
     public static func Polygon(center: Point, radius: Double, edges: Int) -> ShapeRegion {
-        return ShapeRegion(solid: ShapeRegion.Solid(solid: Shape.Component.Polygon(center: center, radius: radius, edges: edges)))
+        return radius.almostZero() ? ShapeRegion() : ShapeRegion(solid: ShapeRegion.Solid(solid: Shape.Component.Polygon(center: center, radius: radius, edges: edges)))
     }
     
     public init(rect: Rect) {
-        self.init(solid: ShapeRegion.Solid(solid: Shape.Component(rect: rect)))
+        if rect.width.almostZero() || rect.height.almostZero() {
+            self.init()
+        } else {
+            self.init(solid: ShapeRegion.Solid(solid: Shape.Component(rect: rect)))
+        }
     }
     
     public init(roundedRect rect: Rect, radius: Radius) {
-        self.init(solid: ShapeRegion.Solid(solid: Shape.Component(roundedRect: rect, radius: radius)))
+        if rect.width.almostZero() || rect.height.almostZero() {
+            self.init()
+        } else {
+            self.init(solid: ShapeRegion.Solid(solid: Shape.Component(roundedRect: rect, radius: radius)))
+        }
     }
     
     public init(ellipseIn rect: Rect) {
-        self.init(solid: ShapeRegion.Solid(solid: Shape.Component(ellipseIn: rect)))
+        if rect.width.almostZero() || rect.height.almostZero() {
+            self.init()
+        } else {
+            self.init(solid: ShapeRegion.Solid(solid: Shape.Component(ellipseIn: rect)))
+        }
     }
 }
 
