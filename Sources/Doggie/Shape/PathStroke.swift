@@ -429,7 +429,7 @@ extension Shape {
             buffer.flush()
         }
         
-        return Shape(buffer.path.map { $0.area.sign == .plus ? $0 : $0.reversed() })
+        return Shape(buffer.path)
     }
     
 }
