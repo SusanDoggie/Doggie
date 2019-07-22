@@ -27,7 +27,7 @@ extension Shape.Component {
     
     public func variableRoundStroke(widths: [Double]) -> [Shape.Component] {
         
-        guard widths.count == self.count + 1 else { fatalError() }
+        precondition(widths.count == self.count + 1, "invalid count of widths.")
         
         func _circle(_ center: Point, _ radius: Double) -> Shape.Component {
             return Shape.Component(ellipseIn: Rect(x: center.x - radius, y: center.y - radius, width: 2 * radius, height: 2 * radius))

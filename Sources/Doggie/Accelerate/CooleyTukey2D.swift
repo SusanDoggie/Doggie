@@ -126,6 +126,10 @@ public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ level: (Int
 @inline(__always)
 public func separate_convolution_filter<T: BinaryFloatingPoint>(_ filter: [T], _ width: Int, _ height: Int) -> ([T], [T])? {
     
+    precondition(width > 0, "invalid width.")
+    precondition(height > 0, "invalid height.")
+    precondition(width * height == filter.count, "mismatch filter count.")
+    
     var horizontal = [T](repeating: 0, count: width)
     var vertical = [T](repeating: 0, count: height)
     

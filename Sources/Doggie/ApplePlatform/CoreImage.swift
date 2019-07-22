@@ -1,5 +1,5 @@
 //
-//  Filter.swift
+//  CoreImage.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -228,6 +228,85 @@ extension CGImage {
     
     public func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
         return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
+    }
+}
+
+extension CIImage {
+    
+    public func convolve(_ matrix: [Double], _ orderX: Int, _ orderY: Int) -> CIImage? {
+        
+        precondition(orderX > 0, "invalid orderX.")
+        precondition(orderY > 0, "invalid orderY.")
+        precondition(orderX * orderY == matrix.count, "mismatch matrix count.")
+        
+        let matrix = Array(matrix.chunked(by: orderX).lazy.map { $0.reversed() }.joined())
+        
+        if orderX <= 5 && orderY <= 5 {
+            
+            let append_x = 5 - orderX
+            let append_y = 5 - orderY
+            
+            var _matrix = Array(matrix.chunked(by: orderX).joined(separator: repeatElement(0, count: append_x)))
+            _matrix.append(contentsOf: repeatElement(0, count: append_x + 5 * append_y))
+            
+            return self.applyingFilter("CIConvolution5X5", parameters: ["inputWeights": CIVector(_matrix)]).transformed(by: CGAffineTransform(translationX: 0.5 * CGFloat(append_x), y: 0.5 * CGFloat(append_y)))
+        }
+        
+        if orderX <= 7 && orderY <= 7 {
+            
+            let append_x = 7 - orderX
+            let append_y = 7 - orderY
+            
+            var _matrix = Array(matrix.chunked(by: orderX).joined(separator: repeatElement(0, count: append_x)))
+            _matrix.append(contentsOf: repeatElement(0, count: append_x + 7 * append_y))
+            
+            return self.applyingFilter("CIConvolution7X7", parameters: ["inputWeights": CIVector(_matrix)]).transformed(by: CGAffineTransform(translationX: 0.5 * CGFloat(append_x), y: 0.5 * CGFloat(append_y)))
+        }
+        
+        if orderX <= 9 && orderY <= 9, var (horizontal, vertical) = separate_convolution_filter(matrix, orderX, orderY) {
+            
+            let append_x = 9 - orderX
+            let append_y = 9 - orderY
+            
+            horizontal.append(contentsOf: repeatElement(0, count: append_x))
+            vertical.append(contentsOf: repeatElement(0, count: append_y))
+            
+            return self.applyingFilter("CIConvolution9Horizontal", parameters: ["inputWeights": CIVector(horizontal.reversed())])
+                .applyingFilter("CIConvolution9Vertical", parameters: ["inputWeights": CIVector(vertical.reversed())]).transformed(by: CGAffineTransform(translationX: 0.5 * CGFloat(append_x), y: 0.5 * CGFloat(append_y)))
+        }
+        
+        return nil
+    }
+}
+
+extension CIVector {
+    
+    public convenience init<T: BinaryFloatingPoint>(_ values: [T]) {
+        self.init(values: values.map { CGFloat($0) }, count: values.count)
+    }
+    
+    public convenience init<T: BinaryFloatingPoint>(_ values: T ...) {
+        self.init(values)
+    }
+    
+    public convenience init(_ point: Point) {
+        self.init(cgPoint: CGPoint(point))
+    }
+    
+    public convenience init(_ point: Vector) {
+        self.init(point.x, point.y, point.z)
+    }
+    
+    public convenience init(_ size: Size) {
+        self.init(size.width, size.height)
+    }
+    
+    public convenience init(_ rect: Rect) {
+        self.init(cgRect: CGRect(rect))
+    }
+    
+    public convenience init(_ transform: SDTransform) {
+        self.init(cgAffineTransform: CGAffineTransform(transform))
     }
 }
 
