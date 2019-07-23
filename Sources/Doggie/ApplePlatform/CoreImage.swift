@@ -220,6 +220,17 @@ extension CIImage {
     }
 }
 
+extension CIImage {
+    
+    public func transformed(by transform: SDTransform) -> CIImage {
+        return self.transformed(by: CGAffineTransform(transform))
+    }
+    
+    public func cropped(to rect: Rect) -> CIImage {
+        return self.cropped(to: CGRect(rect))
+    }
+}
+
 extension CGImage {
     
     public func applying(_ filter: CIFilter) -> CIImage {

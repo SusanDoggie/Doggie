@@ -129,7 +129,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     
     @inlinable
     public var boundary : Rect {
-        return self.originalBoundary.apply(transform) ?? identity.originalBoundary
+        return self.originalBoundary.applying(transform) ?? identity.originalBoundary
     }
     
     public var originalBoundary : Rect {

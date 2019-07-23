@@ -474,7 +474,7 @@ extension Rect {
     
     @inlinable
     @inline(__always)
-    public func apply(_ transform: SDTransform) -> Rect? {
+    public func applying(_ transform: SDTransform) -> Rect? {
         
         let minX = self.minX
         let maxX = self.maxX
