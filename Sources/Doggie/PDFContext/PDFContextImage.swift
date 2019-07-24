@@ -23,22 +23,9 @@
 //  THE SOFTWARE.
 //
 
-extension PDFContext {
-    
-    public enum CompressionScheme : CaseIterable {
-        
-        case noPrediction
-        
-        case tiffPrediction
-    }
-}
-
 extension PDFContext.Page {
     
     func _draw(image: AnyImage, transform: SDTransform, compression: PDFContext.CompressionScheme) {
-        
-        self.beginTransparencyLayer()
-        defer { self.endTransparencyLayer() }
         
         let key = image.imageTableKey
         
@@ -95,8 +82,14 @@ extension PDFContext.Page {
             "\(_decimal_round(transform.f))",
         ]
         
+        current_layer.state.commands += "q\n"
+        
+        set_blendmode()
+        set_opacity(self.opacity)
+        
         current_layer.state.commands += "\(_transform.joined(separator: " ")) cm\n"
         current_layer.state.commands += "/\(name) Do\n"
+        current_layer.state.commands += "Q\n"
     }
 }
 

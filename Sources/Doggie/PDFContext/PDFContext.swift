@@ -235,6 +235,13 @@ extension PDFContext {
 
 extension PDFContext {
     
+    public enum CompressionScheme : CaseIterable {
+        
+        case noPrediction
+        
+        case tiffPrediction
+    }
+    
     public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, compression: CompressionScheme) {
         current_page.draw(image: image, transform: transform, compression: compression)
     }

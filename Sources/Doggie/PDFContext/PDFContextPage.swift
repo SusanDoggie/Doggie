@@ -523,7 +523,7 @@ extension PDFContext.Page {
         }
     }
     
-    private func set_opacity(_ opacity: Double) {
+    func set_opacity(_ opacity: Double) {
         
         let gstate = "/ca \(_decimal_round(opacity))"
         if extGState[gstate] == nil {
@@ -537,7 +537,7 @@ extension PDFContext.Page {
         }
     }
     
-    private func set_blendmode() {
+    func set_blendmode() {
         
         let _mode: String
         
