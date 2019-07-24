@@ -50,39 +50,45 @@ public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ type: SVGTurbulenceT
         switch type {
         case .fractalNoise:
             
-            for y in 0..<height {
-                for x in 0..<width {
-                    
-                    let point = Point(x: x, y: y) * transform
-                    
-                    let red = noise.turbulence(0, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
-                    let green = noise.turbulence(1, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
-                    let blue = noise.turbulence(2, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
-                    let opacity = noise.turbulence(3, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
-                    
-                    ptr.pointee = T(red: red, green: green, blue: blue, opacity: opacity)
-                    
-                    ptr += 1
+            noise.uLatticeSelector.withUnsafeBufferPointer { uLatticeSelector in noise.fGradient.withUnsafeBufferPointer { fGradient in
+                
+                for y in 0..<height {
+                    for x in 0..<width {
+                        let point = Point(x: x, y: y) * transform
+                        
+                        let red = noise._turbulence(uLatticeSelector, fGradient, 0, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
+                        let green = noise._turbulence(uLatticeSelector, fGradient, 1, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
+                        let blue = noise._turbulence(uLatticeSelector, fGradient, 2, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
+                        let opacity = noise._turbulence(uLatticeSelector, fGradient, 3, point, baseFrequency, baseFrequency, numOctaves, true, stitchTile) * 0.5 + 0.5
+                        
+                        ptr.pointee = T(red: red, green: green, blue: blue, opacity: opacity)
+                        
+                        ptr += 1
+                    }
                 }
-            }
+                
+                } }
             
         case .turbulence:
             
-            for y in 0..<height {
-                for x in 0..<width {
-                    
-                    let point = Point(x: x, y: y) * transform
-                    
-                    let red = noise.turbulence(0, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
-                    let green = noise.turbulence(1, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
-                    let blue = noise.turbulence(2, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
-                    let opacity = noise.turbulence(3, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
-                    
-                    ptr.pointee = T(red: red, green: green, blue: blue, opacity: opacity)
-                    
-                    ptr += 1
+            noise.uLatticeSelector.withUnsafeBufferPointer { uLatticeSelector in noise.fGradient.withUnsafeBufferPointer { fGradient in
+                
+                for y in 0..<height {
+                    for x in 0..<width {
+                        let point = Point(x: x, y: y) * transform
+                        
+                        let red = noise._turbulence(uLatticeSelector, fGradient, 0, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
+                        let green = noise._turbulence(uLatticeSelector, fGradient, 1, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
+                        let blue = noise._turbulence(uLatticeSelector, fGradient, 2, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
+                        let opacity = noise._turbulence(uLatticeSelector, fGradient, 3, point, baseFrequency, baseFrequency, numOctaves, false, stitchTile)
+                        
+                        ptr.pointee = T(red: red, green: green, blue: blue, opacity: opacity)
+                        
+                        ptr += 1
+                    }
                 }
-            }
+                
+                } }
         }
     }
     

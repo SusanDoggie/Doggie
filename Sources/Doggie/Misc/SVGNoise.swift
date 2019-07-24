@@ -26,24 +26,28 @@
 @_fixed_layout
 public struct SVGNoise {
     
-    private var uLatticeSelector: [Int]
-    private var fGradient: [[Point]]
+    @usableFromInline
+    private(set) var uLatticeSelector: [Int]
+    
+    @usableFromInline
+    private(set) var fGradient: [Point]
     
     public init(_ lSeed: Int) {
         
         let BSize = 0x100
+        let _BSize = BSize + BSize + 2
         
-        self.uLatticeSelector = Array(repeating: 0, count: BSize + BSize + 2)
-        self.fGradient = Array(repeating: Array(repeating: Point(), count: BSize + BSize + 2), count: 4)
+        self.uLatticeSelector = Array(repeating: 0, count: _BSize)
+        self.fGradient = Array(repeating: Point(), count: _BSize * 4)
         
         var RG = RandomGenerator(lSeed)
         
         for k in 0..<4 {
             for i in 0..<BSize {
                 uLatticeSelector[i] = i
-                fGradient[k][i].x = Double((RG.random() % (BSize + BSize)) - BSize) / Double(BSize)
-                fGradient[k][i].y = Double((RG.random() % (BSize + BSize)) - BSize) / Double(BSize)
-                fGradient[k][i] /= fGradient[k][i].magnitude
+                fGradient[k * _BSize + i].x = Double((RG.random() % (BSize + BSize)) - BSize) / Double(BSize)
+                fGradient[k * _BSize + i].y = Double((RG.random() % (BSize + BSize)) - BSize) / Double(BSize)
+                fGradient[k * _BSize + i] /= fGradient[k * _BSize + i].magnitude
             }
         }
         
@@ -57,7 +61,7 @@ public struct SVGNoise {
         for i in 0..<BSize + 2 {
             uLatticeSelector[BSize + i] = uLatticeSelector[i]
             for k in 0..<4 {
-                fGradient[k][BSize + i] = fGradient[k][i]
+                fGradient[k * _BSize + BSize + i] = fGradient[k * _BSize + i]
             }
         }
     }
@@ -102,22 +106,47 @@ extension SVGNoise {
 
 extension SVGNoise {
     
-    private struct StitchInfo {
+    @_fixed_layout
+    @usableFromInline
+    struct StitchInfo {
         
-        var width: Int = 0
-        var height: Int = 0
-        var wrapX: Int = 0
-        var wrapY: Int = 0
+        @usableFromInline
+        var width: Int
+        
+        @usableFromInline
+        var height: Int
+        
+        @usableFromInline
+        var wrapX: Int
+        
+        @usableFromInline
+        var wrapY: Int
+        
+        @inlinable
+        @inline(__always)
+        init() {
+            self.width = 0
+            self.height = 0
+            self.wrapX = 0
+            self.wrapY = 0
+        }
     }
     
-    private static func s_curve(_ t: Double) -> Double {
+    @inlinable
+    @inline(__always)
+    static func s_curve(_ t: Double) -> Double {
         return t * t * (3.0 - 2.0 * t)
     }
-    private static func lerp(_ t: Double, _ a: Double, _ b: Double) -> Double {
+    
+    @inlinable
+    @inline(__always)
+    static func lerp(_ t: Double, _ a: Double, _ b: Double) -> Double {
         return a + t * (b - a)
     }
     
-    private func noise2(_ channel: Int, _ point: Point, _ stitchInfo: StitchInfo?) -> Double {
+    @inlinable
+    @inline(__always)
+    func noise2(_ uLatticeSelector: UnsafePointer<Int>, _ fGradient: UnsafePointer<Point>, _ point: Point, _ stitchInfo: StitchInfo?) -> Double {
         
         var bx0, bx1, by0, by1, b00, b10, b01, b11: Int
         var rx0, rx1, ry0, ry1, sx, sy, a, b, t, u, v: Double
@@ -163,21 +192,23 @@ extension SVGNoise {
         sx = SVGNoise.s_curve(rx0)
         sy = SVGNoise.s_curve(ry0)
         
-        q = fGradient[channel][b00]
+        q = fGradient[b00]
         u = rx0 * q.x + ry0 * q.y
-        q = fGradient[channel][b10]
+        q = fGradient[b10]
         v = rx1 * q.x + ry0 * q.y
         a = SVGNoise.lerp(sx, u, v)
-        q = fGradient[channel][b01]
+        q = fGradient[b01]
         u = rx0 * q.x + ry1 * q.y
-        q = fGradient[channel][b11]
+        q = fGradient[b11]
         v = rx1 * q.x + ry1 * q.y
         b = SVGNoise.lerp(sx, u, v)
         
         return SVGNoise.lerp(sy, a, b)
     }
     
-    public func turbulence(_ channel: Int, _ point: Point, _ baseFreqX: Double, _ baseFreqY: Double, _ numOctaves: Int, _ fractalSum: Bool, _ stitchTile: Rect?) -> Double {
+    @inlinable
+    @inline(__always)
+    func _turbulence(_ uLatticeSelector: UnsafeBufferPointer<Int>, _ fGradient: UnsafeBufferPointer<Point>, _ channel: Int, _ point: Point, _ baseFreqX: Double, _ baseFreqY: Double, _ numOctaves: Int, _ fractalSum: Bool, _ stitchTile: Rect?) -> Double {
         
         var stitchInfo: StitchInfo?
         
@@ -218,12 +249,18 @@ extension SVGNoise {
         point.y *= baseFreqY
         var ratio = 1.0
         
+        let BSize = 0x100
+        let _BSize = BSize + BSize + 2
+        
+        let uLatticeSelector = uLatticeSelector.baseAddress!
+        let fGradient = fGradient.baseAddress! + channel * _BSize
+        
         for _ in 0..<numOctaves {
             
             if fractalSum {
-                fSum += noise2(channel, point, stitchInfo) / ratio
+                fSum += noise2(uLatticeSelector, fGradient, point, stitchInfo) / ratio
             } else {
-                fSum += fabs(noise2(channel, point, stitchInfo)) / ratio
+                fSum += fabs(noise2(uLatticeSelector, fGradient, point, stitchInfo)) / ratio
             }
             
             point.x *= 2
@@ -237,6 +274,14 @@ extension SVGNoise {
                 stitchInfo!.wrapY = 2 * stitchInfo!.wrapY - 0x1000
             }
         }
+        
         return fSum
+        
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func turbulence(_ channel: Int, _ point: Point, _ baseFreqX: Double, _ baseFreqY: Double, _ numOctaves: Int, _ fractalSum: Bool, _ stitchTile: Rect?) -> Double {
+        return uLatticeSelector.withUnsafeBufferPointer { uLatticeSelector in fGradient.withUnsafeBufferPointer { fGradient in self._turbulence(uLatticeSelector, fGradient, channel, point, baseFreqX, baseFreqY, numOctaves, fractalSum, stitchTile) } }
     }
 }
