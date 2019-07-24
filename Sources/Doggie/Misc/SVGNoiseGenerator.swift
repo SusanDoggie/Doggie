@@ -1,5 +1,5 @@
 //
-//  SVGNoise.swift
+//  SVGNoiseGenerator.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -24,7 +24,7 @@
 //
 
 @_fixed_layout
-public struct SVGNoise {
+public struct SVGNoiseGenerator {
     
     public let seed: Int
     
@@ -70,7 +70,7 @@ public struct SVGNoise {
     }
 }
 
-extension SVGNoise {
+extension SVGNoiseGenerator {
     
     private static let RAND_m = 2147483647
     private static let RAND_a = 16807
@@ -107,7 +107,7 @@ extension SVGNoise {
     }
 }
 
-extension SVGNoise {
+extension SVGNoiseGenerator {
     
     @_fixed_layout
     @usableFromInline
@@ -192,21 +192,21 @@ extension SVGNoise {
         b10 = uLatticeSelector[j + by0]
         b01 = uLatticeSelector[i + by1]
         b11 = uLatticeSelector[j + by1]
-        sx = SVGNoise.s_curve(rx0)
-        sy = SVGNoise.s_curve(ry0)
+        sx = SVGNoiseGenerator.s_curve(rx0)
+        sy = SVGNoiseGenerator.s_curve(ry0)
         
         q = fGradient[b00]
         u = rx0 * q.x + ry0 * q.y
         q = fGradient[b10]
         v = rx1 * q.x + ry0 * q.y
-        a = SVGNoise.lerp(sx, u, v)
+        a = SVGNoiseGenerator.lerp(sx, u, v)
         q = fGradient[b01]
         u = rx0 * q.x + ry1 * q.y
         q = fGradient[b11]
         v = rx1 * q.x + ry1 * q.y
-        b = SVGNoise.lerp(sx, u, v)
+        b = SVGNoiseGenerator.lerp(sx, u, v)
         
-        return SVGNoise.lerp(sy, a, b)
+        return SVGNoiseGenerator.lerp(sy, a, b)
     }
     
     @inlinable

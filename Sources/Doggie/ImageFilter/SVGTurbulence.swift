@@ -24,10 +24,10 @@
 //
 
 private let cache_lck = SDLock()
-private var cache: [SVGNoise] = []
+private var cache: [SVGNoiseGenerator] = []
 
 @usableFromInline
-func svg_noise_generator(_ seed: Int) -> SVGNoise {
+func svg_noise_generator(_ seed: Int) -> SVGNoiseGenerator {
     
     cache_lck.lock()
     defer { cache_lck.unlock() }
@@ -45,7 +45,7 @@ func svg_noise_generator(_ seed: Int) -> SVGNoise {
         
     } else {
         
-        let noise = SVGNoise(seed)
+        let noise = SVGNoiseGenerator(seed)
         cache.append(noise)
         
         while cache.count > 10 {
