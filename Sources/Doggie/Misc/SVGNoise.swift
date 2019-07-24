@@ -26,21 +26,24 @@
 @_fixed_layout
 public struct SVGNoise {
     
+    public let seed: Int
+    
     @usableFromInline
     private(set) var uLatticeSelector: [Int]
     
     @usableFromInline
     private(set) var fGradient: [Point]
     
-    public init(_ lSeed: Int) {
+    public init(_ seed: Int) {
         
         let BSize = 0x100
         let _BSize = BSize + BSize + 2
         
+        self.seed = seed
         self.uLatticeSelector = Array(repeating: 0, count: _BSize)
         self.fGradient = Array(repeating: Point(), count: _BSize * 4)
         
-        var RG = RandomGenerator(lSeed)
+        var RG = RandomGenerator(seed)
         
         for k in 0..<4 {
             for i in 0..<BSize {

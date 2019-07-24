@@ -23,6 +23,39 @@
 //  THE SOFTWARE.
 //
 
+private let cache_lck = SDLock()
+private var cache: [SVGNoise] = []
+
+@usableFromInline
+func svg_noise_generator(_ seed: Int) -> SVGNoise {
+    
+    cache_lck.lock()
+    defer { cache_lck.unlock() }
+    
+    if let index = cache.firstIndex(where: { $0.seed == seed }) {
+        
+        let noise = cache.remove(at: index)
+        cache.append(noise)
+        
+        while cache.count > 10 {
+            cache.removeFirst()
+        }
+        
+        return noise
+        
+    } else {
+        
+        let noise = SVGNoise(seed)
+        cache.append(noise)
+        
+        while cache.count > 10 {
+            cache.removeFirst()
+        }
+        
+        return noise
+    }
+}
+
 public enum SVGTurbulenceType : CaseIterable {
     
     case fractalNoise
@@ -45,7 +78,7 @@ public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ type: SVGTurbulenceT
         
         guard var ptr = $0.baseAddress else { return }
         
-        let noise = SVGNoise(seed)
+        let noise = svg_noise_generator(seed)
         
         switch type {
         case .fractalNoise:
