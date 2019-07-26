@@ -634,7 +634,7 @@ extension Shape.Component : RangeReplaceableCollection {
     @inlinable
     public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Shape.Segment {
         self.resetCache()
-        segments.replaceSubrange(subRange, with: newElements)
+        segments.replaceSubrange(subRange.lowerBound + segments.startIndex..<subRange.upperBound + segments.startIndex, with: newElements)
     }
 }
 
