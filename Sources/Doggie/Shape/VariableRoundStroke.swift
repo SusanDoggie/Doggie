@@ -25,17 +25,28 @@
 
 extension Shape.Component {
     
+    private struct Circle {
+        
+        var center: Point
+        var radius: Double
+        
+        init(center: Point, width: Double) {
+            self.center = center
+            self.radius = 0.5 * abs(width)
+        }
+        
+        var shape: Shape.Component {
+            return Shape.Component(ellipseIn: Rect(x: center.x - radius, y: center.y - radius, width: 2 * radius, height: 2 * radius))
+        }
+    }
+    
     public func variableRoundStroke(widths: [Double]) -> [Shape.Component] {
         
         precondition(widths.count == self.count + 1, "invalid count of widths.")
         
-        func _circle(_ center: Point, _ radius: Double) -> Shape.Component {
-            return Shape.Component(ellipseIn: Rect(x: center.x - radius, y: center.y - radius, width: 2 * radius, height: 2 * radius))
-        }
-        
-        var last = self.start
-        var last_width = abs(widths[0])
-        var result: [Shape.Component] = [_circle(last, 0.5 * last_width)]
+        var last = Circle(center: self.start, width: widths[0])
+        var last_max = last
+        var result: [Shape.Component] = []
         
         for (width, segment) in zip(widths.dropFirst(), self) {
             
@@ -44,30 +55,40 @@ extension Shape.Component {
             switch segment {
             case let .line(p1):
                 
-                result.append(_circle(p1, 0.5 * width))
+                let current = Circle(center: p1, width: width)
                 
-                let segment = LineSegment(last, p1)
+                defer {
+                    last = current
+                    last_max = current.radius > last_max.radius ? current : last_max
+                }
                 
-                guard let s0 = segment.offset(0.5 * last_width, 0.5 * width) else { continue }
-                guard let s1 = segment.offset(-0.5 * last_width, -0.5 * width) else { continue }
+                let segment = LineSegment(last.center, p1)
+                
+                guard let s0 = segment.offset(last.radius, 0.5 * width) else { continue }
+                guard let s1 = segment.offset(-last.radius, -0.5 * width) else { continue }
                 
                 result.append(Shape.Component(start: s0.p0, closed: true, segments: [.line(s0.p1), .line(s1.p1), .line(s1.p0)]))
+                result.append(last_max.shape)
                 
-                last = p1
-                last_width = width
+                last_max = current
                 
             case let .quad(p1, p2):
                 
-                result.append(_circle(p2, 0.5 * width))
+                let current = Circle(center: p2, width: width)
                 
-                let segment = QuadBezier(last, p1, p2)
+                defer {
+                    last = current
+                    last_max = current.radius > last_max.radius ? current : last_max
+                }
+                
+                let segment = QuadBezier(last.center, p1, p2)
                 
                 var _start: Point?
                 var _reverse_start: Point?
                 var segments1: [Shape.Segment] = []
                 var segments2: [Shape.Segment] = []
                 
-                segment.offset(0.5 * last_width, 0.5 * width) { _, segment in
+                segment.offset(last.radius, 0.5 * width) { _, segment in
                     if _start == nil {
                         _start = segment.p0
                     }
@@ -76,7 +97,7 @@ extension Shape.Component {
                 
                 guard let start = _start else { continue }
                 
-                segment.offset(-0.5 * last_width, -0.5 * width) { _, segment in
+                segment.offset(-last.radius, -0.5 * width) { _, segment in
                     _reverse_start = segment.p3
                     segments2.append(.cubic(segment.p2, segment.p1, segment.p0))
                 }
@@ -84,22 +105,27 @@ extension Shape.Component {
                 guard let reverse_start = _reverse_start else { continue }
                 
                 result.append(Shape.Component(start: start, closed: true, segments: segments1 + [.line(reverse_start)] + segments2.reversed()))
+                result.append(last_max.shape)
                 
-                last = p2
-                last_width = width
+                last_max = current
                 
             case let .cubic(p1, p2, p3):
                 
-                result.append(_circle(p3, 0.5 * width))
+                let current = Circle(center: p3, width: width)
                 
-                let segment = CubicBezier(last, p1, p2, p3)
+                defer {
+                    last = current
+                    last_max = current.radius > last_max.radius ? current : last_max
+                }
+                
+                let segment = CubicBezier(last.center, p1, p2, p3)
                 
                 var _start: Point?
                 var _reverse_start: Point?
                 var segments1: [Shape.Segment] = []
                 var segments2: [Shape.Segment] = []
                 
-                segment.offset(0.5 * last_width, 0.5 * width) { _, segment in
+                segment.offset(last.radius, 0.5 * width) { _, segment in
                     if _start == nil {
                         _start = segment.p0
                     }
@@ -108,7 +134,7 @@ extension Shape.Component {
                 
                 guard let start = _start else { continue }
                 
-                segment.offset(-0.5 * last_width, -0.5 * width) { _, segment in
+                segment.offset(-last.radius, -0.5 * width) { _, segment in
                     _reverse_start = segment.p3
                     segments2.append(.cubic(segment.p2, segment.p1, segment.p0))
                 }
@@ -116,22 +142,24 @@ extension Shape.Component {
                 guard let reverse_start = _reverse_start else { continue }
                 
                 result.append(Shape.Component(start: start, closed: true, segments: segments1 + [.line(reverse_start)] + segments2.reversed()))
+                result.append(last_max.shape)
                 
-                last = p3
-                last_width = width
+                last_max = current
             }
         }
         
-        if isClosed && !start.almostEqual(last) {
+        if isClosed && !start.almostEqual(last.center) {
             
             let width = abs(widths[0])
-            let segment = LineSegment(last, start)
+            let segment = LineSegment(last.center, start)
             
-            guard let s0 = segment.offset(0.5 * last_width, 0.5 * width) else { return result }
-            guard let s1 = segment.offset(-0.5 * last_width, -0.5 * width) else { return result }
+            guard let s0 = segment.offset(last.radius, 0.5 * width) else { return result }
+            guard let s1 = segment.offset(-last.radius, -0.5 * width) else { return result }
             
             result.append(Shape.Component(start: s0.p0, closed: true, segments: [.line(s0.p1), .line(s1.p1), .line(s1.p0)]))
         }
+        
+        result.append(last_max.shape)
         
         return result
     }
