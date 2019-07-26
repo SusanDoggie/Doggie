@@ -46,12 +46,12 @@ protocol CGImageRepBase {
 
 public struct CGImageRep {
     
-    private let base: CGImageRepBase
+    private let shape: CGImageRepBase
     
     private let cache = Cache()
     
-    private init(base: CGImageRepBase) {
-        self.base = base
+    private init(shape: CGImageRepBase) {
+        self.shape = shape
     }
 }
 
@@ -76,20 +76,20 @@ extension CGImageRep {
     
     public init?(data: Data) {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
-        self.base = source
+        self.shape = source
     }
 }
 
 extension CGImageRep {
     
     public var numberOfPages: Int {
-        return base.numberOfPages
+        return shape.numberOfPages
     }
     
     public func page(_ index: Int) -> CGImageRep {
         return cache.lck.synchronized {
             if cache.pages[index] == nil {
-                cache.pages[index] = CGImageRep(base: base.page(index))
+                cache.pages[index] = CGImageRep(shape: shape.page(index))
             }
             return cache.pages[index]!
         }
@@ -98,7 +98,7 @@ extension CGImageRep {
     public var cgImage: CGImage? {
         return cache.lck.synchronized {
             if cache.image == nil {
-                cache.image = base.cgImage
+                cache.image = shape.cgImage
             }
             return cache.image
         }
@@ -108,22 +108,22 @@ extension CGImageRep {
 extension CGImageRep {
     
     public var width: Int {
-        return base.width
+        return shape.width
     }
     
     public var height: Int {
-        return base.height
+        return shape.height
     }
     
     public var resolution: Resolution {
-        return base.resolution
+        return shape.resolution
     }
 }
 
 extension CGImageRep {
     
     public var properties: [CFString : Any] {
-        return base.properties
+        return shape.properties
     }
 }
 
@@ -155,7 +155,7 @@ extension CGImageRep {
     }
     
     public var mediaType: MediaType? {
-        return base.mediaType
+        return shape.mediaType
     }
 }
 
