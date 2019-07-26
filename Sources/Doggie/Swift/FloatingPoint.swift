@@ -625,13 +625,13 @@ extension FloatingPoint {
 }
 
 @inline(__always)
-public func _decimal_round(_ x: Double, _ scale: Int = 9, _ roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
-    var decimal = Decimal(x)
+public func _decimal_round<T: BinaryFloatingPoint>(_ x: T, _ scale: Int = 9, _ roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
+    var decimal = Decimal(Double(x))
     withUnsafeMutablePointer(to: &decimal) { NSDecimalRound($0, $0, scale, roundingMode) }
     return decimal
 }
 
 @inline(__always)
-public func _decimal_formatter(_ x: Double, _ scale: Int = 9, _ roundingMode: NSDecimalNumber.RoundingMode = .plain) -> String {
+public func _decimal_formatter<T: BinaryFloatingPoint>(_ x: T, _ scale: Int = 9, _ roundingMode: NSDecimalNumber.RoundingMode = .plain) -> String {
     return "\(_decimal_round(x, scale, roundingMode))"
 }

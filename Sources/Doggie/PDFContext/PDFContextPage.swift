@@ -581,7 +581,7 @@ extension PDFContext.Page {
         set_opacity(color.opacity * self.opacity)
         
         let color = color.convert(to: colorSpace, intent: renderingIntent)
-        let _color = (0..<color.numberOfComponents - 1).lazy.map { "\(_decimal_round(color.component($0)))" }.joined(separator: " ")
+        let _color = (0..<color.numberOfComponents - 1).lazy.map { _decimal_formatter(color.component($0)) }.joined(separator: " ")
         
         if current_layer.state.currentStyle.color != _color {
             current_layer.state.commands += "\(_color) sc\n"
@@ -721,12 +721,12 @@ extension PDFContext.Page {
         
         let transform = _mirrored_transform
         let _transform = [
-            "\(_decimal_round(transform.a))",
-            "\(_decimal_round(transform.d))",
-            "\(_decimal_round(transform.b))",
-            "\(_decimal_round(transform.e))",
-            "\(_decimal_round(transform.c))",
-            "\(_decimal_round(transform.f))",
+            _decimal_formatter(transform.a),
+            _decimal_formatter(transform.d),
+            _decimal_formatter(transform.b),
+            _decimal_formatter(transform.e),
+            _decimal_formatter(transform.c),
+            _decimal_formatter(transform.f),
         ]
         
         current_layer.state.commands += "q\n"
@@ -802,12 +802,12 @@ extension PDFContext.Page {
         
         let transform = _mirrored_transform
         let _transform = [
-            "\(_decimal_round(transform.a))",
-            "\(_decimal_round(transform.d))",
-            "\(_decimal_round(transform.b))",
-            "\(_decimal_round(transform.e))",
-            "\(_decimal_round(transform.c))",
-            "\(_decimal_round(transform.f))",
+            _decimal_formatter(transform.a),
+            _decimal_formatter(transform.d),
+            _decimal_formatter(transform.b),
+            _decimal_formatter(transform.e),
+            _decimal_formatter(transform.c),
+            _decimal_formatter(transform.f),
         ]
         
         current_layer.state.commands += "q\n"
@@ -883,12 +883,12 @@ extension PDFContext.Page {
         
         let transform = _mirrored_transform
         let _transform = [
-            "\(_decimal_round(transform.a))",
-            "\(_decimal_round(transform.d))",
-            "\(_decimal_round(transform.b))",
-            "\(_decimal_round(transform.e))",
-            "\(_decimal_round(transform.c))",
-            "\(_decimal_round(transform.f))",
+            _decimal_formatter(transform.a),
+            _decimal_formatter(transform.d),
+            _decimal_formatter(transform.b),
+            _decimal_formatter(transform.e),
+            _decimal_formatter(transform.c),
+            _decimal_formatter(transform.f),
         ]
         
         current_layer.state.commands += "q\n"
