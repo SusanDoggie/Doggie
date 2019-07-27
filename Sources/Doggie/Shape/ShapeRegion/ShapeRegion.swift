@@ -528,22 +528,32 @@ extension ShapeRegion {
         case .evenOdd: cacheKey = ShapeCacheEvenOddRegionKey
         }
         
-        self = path.identity.cache.load(for: cacheKey) {
+        if let region: ShapeRegion = path.identity.cache.load(for: cacheKey) {
             
-            var region: ShapeRegion = path.cache.load(for: cacheKey) {
-                
-                var region = ShapeRegion()
-                
-                switch winding {
-                case .nonZero: region.addLoopWithNonZeroWinding(loops: path.breakLoop())
-                case .evenOdd: region.addLoopWithEvenOddWinding(loops: path.breakLoop())
-                }
-                
-                return region
-            }
+            self = region
+            
+        } else if var region: ShapeRegion = path.cache.load(for: cacheKey) {
             
             region *= path.transform
-            return region
+            self = region
+            
+            path.identity.cache.store(value: region, for: cacheKey)
+            
+        } else {
+            
+            var region = ShapeRegion()
+            
+            switch winding {
+            case .nonZero: region.addLoopWithNonZeroWinding(loops: path.breakLoop())
+            case .evenOdd: region.addLoopWithEvenOddWinding(loops: path.breakLoop())
+            }
+            
+            path.cache.store(value: region, for: cacheKey)
+            
+            region *= path.transform
+            self = region
+            
+            path.identity.cache.store(value: region, for: cacheKey)
         }
     }
     
