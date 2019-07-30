@@ -68,7 +68,7 @@ public struct ShapeRegion {
     }
     
     init<S : Sequence>(solids: S) where S.Element == ShapeRegion.Solid {
-        let solids = Array(solids)
+        let solids = solids.makeContiguousBuffer()
         self.solids = solids
         self.spacePartition = RectCollection(solids.map { $0.boundary })
         self.boundary = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
@@ -84,6 +84,13 @@ public struct ShapeRegion {
         public let boundary: Rect
         public let area: Double
         
+        fileprivate init(solid: Shape.Component, holes: ShapeRegion, boundary: Rect, area: Double) {
+            self.solid = solid
+            self.holes = holes
+            self.boundary = boundary
+            self.area = area
+        }
+        
         fileprivate init(solid: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
             var solid = solid
             if !solid.start.almostEqual(solid.end) {
@@ -97,17 +104,13 @@ public struct ShapeRegion {
     }
 }
 
-extension ShapeRegion {
+extension Sequence where Element == ShapeRegion.Solid {
     
-    @usableFromInline
-    class Cache {
-        
-        let lck = SDLock()
-        
-        var subtracting = WeakDictionary<ShapeRegion.Cache, ShapeRegion>()
-        var intersection = WeakDictionary<ShapeRegion.Cache, ShapeRegion>()
-        var union = WeakDictionary<ShapeRegion.Cache, ShapeRegion>()
-        var symmetricDifference = WeakDictionary<ShapeRegion.Cache, ShapeRegion>()
+    func makeContiguousBuffer() -> [ShapeRegion.Solid] {
+        let solids = Array(self)
+        var _solids = solids.map { $0.solid }
+        _solids.makeContiguousBuffer()
+        return zip(_solids, solids).map { ShapeRegion.Solid(solid: $0, holes: $1.holes, boundary: $1.boundary, area: $1.area) }
     }
 }
 

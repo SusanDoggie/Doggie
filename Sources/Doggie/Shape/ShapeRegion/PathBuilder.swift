@@ -248,13 +248,9 @@ extension Shape.Component {
         
         if hint.count == 0 {
             
-            let self_spaces = self.spaces
-            let other_spaces = other.spaces
-            
             for index in 0..<other.count {
-                let overlap = self_spaces.search(overlap: other_spaces[index].inset(dx: -1e-8, dy: -1e-8))
-                if overlap.allSatisfy({ !self.bezier[$0].overlap(other.bezier[index]) }) {
-                    hint.insert(index)
+                if self.bezier.allSatisfy({ !$0.overlap(other.bezier[index]) }) {
+                    return self.winding(other.bezier[index].point(0.5)) != 0
                 }
             }
         }
