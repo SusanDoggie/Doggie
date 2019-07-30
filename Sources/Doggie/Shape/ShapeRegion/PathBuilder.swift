@@ -340,9 +340,11 @@ extension Shape.Component {
     }
     
     private func _breakLoop(_ points: [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]) -> ShapeRegion {
-        let area = self.area
-        let loops = self.breakLoop(points)
-        return ShapeRegion(solids: loops.filter { $0.area.sign == area.sign }).subtracting(ShapeRegion(solids: loops.filter { $0.area.sign != area.sign }))
+        var region = ShapeRegion()
+        for loop in self.breakLoop(points) {
+            region.formUnion(ShapeRegion(solid: loop))
+        }
+        return region
     }
     
     func process(_ other: Shape.Component) -> ConstructiveSolidResult {
