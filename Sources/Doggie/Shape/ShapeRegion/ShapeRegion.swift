@@ -85,6 +85,10 @@ public struct ShapeRegion {
         public let area: Double
         
         fileprivate init(solid: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
+            var solid = solid
+            if !solid.start.almostEqual(solid.end) {
+                solid.append(.line(solid.start))
+            }
             self.solid = solid
             self.holes = holes
             self.boundary = solid.boundary
@@ -148,15 +152,9 @@ extension ShapeRegion.Solid {
     init?<S : Sequence>(segments: S) where S.Element == Segment {
         
         var segments = segments.filter { !$0._invisible }
-        
         guard segments.count > 0 else { return nil }
         
-        if !segments[0].start.almostEqual(segments.last!.end) {
-            segments.append(Segment(segments.last!.end, segments[0].start))
-        }
-        
         let solid = Shape.Component(start: segments[0].start, closed: true, segments: segments.map { $0.segment })
-        
         guard !solid.area.almostZero() else { return nil }
         
         self.init(solid: solid)
