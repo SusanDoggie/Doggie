@@ -361,14 +361,12 @@ extension Shape.Component.CacheArray {
     @usableFromInline
     struct Element {
         
-        var spaces: RectCollection?
         var boundary: Rect?
         var area: Double?
         
         var table: [String : Any]?
         
         init() {
-            self.spaces = nil
             self.boundary = nil
             self.area = nil
             self.table = nil
@@ -393,14 +391,6 @@ extension Shape.Component.Cache {
         }
     }
     
-    var spaces: RectCollection? {
-        get {
-            return _values.spaces
-        }
-        nonmutating set {
-            _values.spaces = newValue
-        }
-    }
     var boundary: Rect? {
         get {
             return _values.boundary
@@ -453,31 +443,6 @@ extension Shape.Component.Cache {
 }
 
 extension Shape.Component {
-    
-    public var spaces : RectCollection {
-        return cache.lck.synchronized {
-            if cache.spaces == nil {
-                var lastPoint = start
-                var bounds: [Rect] = []
-                bounds.reserveCapacity(segments.count)
-                for segment in segments {
-                    switch segment {
-                    case let .line(p1):
-                        bounds.append(LineSegment(lastPoint, p1).boundary)
-                        lastPoint = p1
-                    case let .quad(p1, p2):
-                        bounds.append(QuadBezier(lastPoint, p1, p2).boundary)
-                        lastPoint = p2
-                    case let .cubic(p1, p2, p3):
-                        bounds.append(CubicBezier(lastPoint, p1, p2, p3).boundary)
-                        lastPoint = p3
-                    }
-                }
-                cache.spaces = RectCollection(bounds)
-            }
-            return cache.spaces!
-        }
-    }
     
     public var boundary : Rect {
         return cache.lck.synchronized {
@@ -669,7 +634,6 @@ extension Shape.Component {
         let reversed = Shape.Component(start: p0, closed: isClosed, segments: _segments.reversed())
         
         cache.lck.synchronized {
-            reversed.cache.spaces = self.cache.spaces.map { RectCollection($0.reversed()) }
             reversed.cache.boundary = self.cache.boundary
             reversed.cache.area = self.cache.area.map { -$0 }
         }

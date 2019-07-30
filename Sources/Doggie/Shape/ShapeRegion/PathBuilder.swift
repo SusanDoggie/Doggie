@@ -66,17 +66,12 @@ extension ConstructiveSolidResult.Table {
             let point: Point
         }
         
-        let left_spaces = left.spaces
-        let right_spaces = right.spaces
-        
         var data: [SplitData] = []
         var overlap_r_index: Set<Int> = []
         var overlap_l_index: Set<Int> = []
         var overlap_l: [(ConstructiveSolidResult.Split, Bool)] = []
-        for r_idx in right_spaces.search(overlap: left.boundary.inset(dx: -1e-8, dy: -1e-8)) {
-            let r_segment = right.bezier[r_idx]
-            for l_idx in left_spaces.search(overlap: right_spaces[r_idx].inset(dx: -1e-8, dy: -1e-8)) {
-                let l_segment = left.bezier[l_idx]
+        for (r_idx, r_segment) in right.bezier.indexed() where r_segment.boundary.isIntersect(left.boundary.inset(dx: -1e-8, dy: -1e-8)) {
+            for (l_idx, l_segment) in left.bezier.indexed() where l_segment.boundary.isIntersect(r_segment.boundary.inset(dx: -1e-8, dy: -1e-8)) {
                 if let intersect = l_segment.intersect(r_segment) {
                     for (t1, t2) in intersect {
                         let _t1 = t1 == 1 ? 0 : t1

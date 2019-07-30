@@ -115,7 +115,6 @@
 		0A55505721D7014E0035AF94 /* WeakDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55505621D7014E0035AF94 /* WeakDictionary.swift */; };
 		0A55505921D70E620035AF94 /* ObjectiveC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55505821D70E620035AF94 /* ObjectiveC.swift */; };
 		0A55AE6E20BFF98400FC951F /* ByteOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */; };
-		0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A56E90F1E35F02E00D93786 /* RectCollection.swift */; };
 		0A592E07225346F200E55388 /* PDFContextShading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A592E06225346F100E55388 /* PDFContextShading.swift */; };
 		0A5DEDD71F7B60D600A45B4B /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DEDD61F7B60D600A45B4B /* Resolution.swift */; };
 		0A5DF8FB225452FA00110895 /* PDFContextPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DF8FA225452FA00110895 /* PDFContextPage.swift */; };
@@ -420,7 +419,6 @@
 		0A55505621D7014E0035AF94 /* WeakDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeakDictionary.swift; sourceTree = "<group>"; };
 		0A55505821D70E620035AF94 /* ObjectiveC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveC.swift; sourceTree = "<group>"; };
 		0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteOutputStream.swift; sourceTree = "<group>"; };
-		0A56E90F1E35F02E00D93786 /* RectCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RectCollection.swift; sourceTree = "<group>"; };
 		0A592E06225346F100E55388 /* PDFContextShading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextShading.swift; sourceTree = "<group>"; };
 		0A5DEDD61F7B60D600A45B4B /* Resolution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Resolution.swift; sourceTree = "<group>"; };
 		0A5DF8FA225452FA00110895 /* PDFContextPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextPage.swift; sourceTree = "<group>"; };
@@ -693,7 +691,6 @@
 				08458ADA1E2E627600D01813 /* Point.swift */,
 				08458ADB1E2E627600D01813 /* Polynomial.swift */,
 				08458ADC1E2E627600D01813 /* Rect.swift */,
-				0A56E90F1E35F02E00D93786 /* RectCollection.swift */,
 				08458ADD1E2E627600D01813 /* SDTransform.swift */,
 				0A32D9971F28825F0027F384 /* Tensor.swift */,
 				08458ADE1E2E627600D01813 /* Vector.swift */,
@@ -1648,7 +1645,6 @@
 				0A55505721D7014E0035AF94 /* WeakDictionary.swift in Sources */,
 				0A74D68820047BA600330C86 /* ImageConvolution.swift in Sources */,
 				0A8ABC1020E4852B00A2634A /* StencilTexture.swift in Sources */,
-				0A56E9111E35F02E00D93786 /* RectCollection.swift in Sources */,
 				0A7F24AD1EF37CD500EAD9C7 /* Endianness.swift in Sources */,
 				0ADAA3B820CB7019006682EA /* IndexedCollection.swift in Sources */,
 				0A71434420FC404D009DFFB5 /* DisplacementMap.swift in Sources */,
