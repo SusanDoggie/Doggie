@@ -237,16 +237,18 @@ extension QuadBezier where Element == Double {
     }
 }
 
-extension QuadBezier where Element == Point {
+extension QuadBezier where Element : Tensor {
     
     @inlinable
-    public func closest(_ point: Point) -> [Double] {
+    public func closest(_ point: Element) -> [Double] {
         let a = p0 - point
         let b = 2 * (p1 - p0)
         let c = p0 + p2 - 2 * p1
-        let x: Polynomial = [a.x, b.x, c.x]
-        let y: Polynomial = [a.y, b.y, c.y]
-        let dot = x * x + y * y
+        var dot: Polynomial = []
+        for i in 0..<Element.numberOfComponents {
+            let p: Polynomial = [a[i], b[i], c[i]]
+            dot += p * p
+        }
         return dot.derivative.roots.sorted(by: { dot.eval($0) })
     }
 }
@@ -414,7 +416,7 @@ extension QuadBezier where Element == Point {
 extension QuadBezier where Element == Point {
     
     @inlinable
-    public func overlap(_ other: LineSegment<Element>) -> Bool {
+    func _intersect(_ other: LineSegment<Element>) -> Polynomial {
         
         let a = p0 - other.p0
         let b = 2 * (p1 - p0)
@@ -426,74 +428,54 @@ extension QuadBezier where Element == Point {
         let v0: Polynomial = [a.y, b.y, c.y]
         let v1 = other.p0.y - other.p1.y
         
-        let det = u1 * v0 - u0 * v1
+        return u1 * v0 - u0 * v1
+    }
+    
+    @inlinable
+    func _intersect(_ other: QuadBezier) -> Polynomial {
+        
+        let a = p0 - other.p0
+        let b = 2 * (p1 - p0)
+        let c = p0 - 2 * p1 + p2
+        
+        let u0: Polynomial = [a.x, b.x, c.x]
+        let u1 = 2 * (other.p0.x - other.p1.x)
+        let u2 = 2 * other.p1.x - other.p0.x -  other.p2.x
+        
+        let v0: Polynomial = [a.y, b.y, c.y]
+        let v1 = 2 * (other.p0.y - other.p1.y)
+        let v2 = 2 * other.p1.y - other.p0.y -  other.p2.y
+        
+        // Bézout matrix
+        let m00 = u2 * v1 - u1 * v2
+        let m01 = u2 * v0 - u0 * v2
+        let m10 = m01
+        let m11 = u1 * v0 - u0 * v1
+        
+        return m00 * m11 - m01 * m10
+    }
+    
+    @inlinable
+    public func overlap(_ other: LineSegment<Element>) -> Bool {
+        let det = self._intersect(other)
         return det.allSatisfy { $0.almostZero() }
     }
     
     @inlinable
     public func overlap(_ other: QuadBezier) -> Bool {
-        
-        let a = p0 - other.p0
-        let b = 2 * (p1 - p0)
-        let c = p0 - 2 * p1 + p2
-        
-        let u0: Polynomial = [a.x, b.x, c.x]
-        let u1 = 2 * (other.p0.x - other.p1.x)
-        let u2 = 2 * other.p1.x - other.p0.x -  other.p2.x
-        
-        let v0: Polynomial = [a.y, b.y, c.y]
-        let v1 = 2 * (other.p0.y - other.p1.y)
-        let v2 = 2 * other.p1.y - other.p0.y -  other.p2.y
-        
-        // Bézout matrix
-        let m00 = u2 * v1 - u1 * v2
-        let m01 = u2 * v0 - u0 * v2
-        let m10 = m01
-        let m11 = u1 * v0 - u0 * v1
-        
-        let det = m00 * m11 - m01 * m10
+        let det = self._intersect(other)
         return det.allSatisfy { $0.almostZero() }
     }
     
     @inlinable
     public func intersect(_ other: LineSegment<Element>) -> [Double]? {
-        
-        let a = p0 - other.p0
-        let b = 2 * (p1 - p0)
-        let c = p0 - 2 * p1 + p2
-        
-        let u0: Polynomial = [a.x, b.x, c.x]
-        let u1 = other.p0.x - other.p1.x
-        
-        let v0: Polynomial = [a.y, b.y, c.y]
-        let v1 = other.p0.y - other.p1.y
-        
-        let det = u1 * v0 - u0 * v1
+        let det = self._intersect(other)
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }
     
     @inlinable
     public func intersect(_ other: QuadBezier) -> [Double]? {
-        
-        let a = p0 - other.p0
-        let b = 2 * (p1 - p0)
-        let c = p0 - 2 * p1 + p2
-        
-        let u0: Polynomial = [a.x, b.x, c.x]
-        let u1 = 2 * (other.p0.x - other.p1.x)
-        let u2 = 2 * other.p1.x - other.p0.x -  other.p2.x
-        
-        let v0: Polynomial = [a.y, b.y, c.y]
-        let v1 = 2 * (other.p0.y - other.p1.y)
-        let v2 = 2 * other.p1.y - other.p0.y -  other.p2.y
-        
-        // Bézout matrix
-        let m00 = u2 * v1 - u1 * v2
-        let m01 = u2 * v0 - u0 * v2
-        let m10 = m01
-        let m11 = u1 * v0 - u0 * v1
-        
-        let det = m00 * m11 - m01 * m10
+        let det = self._intersect(other)
         return det.allSatisfy { $0.almostZero() } ? nil : det.roots
     }
 }
