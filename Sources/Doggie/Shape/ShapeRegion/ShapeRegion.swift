@@ -529,13 +529,19 @@ extension ShapeRegion {
             
             var region = ShapeRegion()
             
-            let bound = path.boundary
+            var _path = path
+            _path.transform = .identity
+            
+            let bound = _path.boundary
             let reference = bound.width * bound.height
+            _path.transform = SDTransform.translate(x: -bound.x, y: -bound.y)
             
             switch winding {
-            case .nonZero: region.addLoopWithNonZeroWinding(loops: path.breakLoop(), reference: reference)
-            case .evenOdd: region.addLoopWithEvenOddWinding(loops: path.breakLoop(), reference: reference)
+            case .nonZero: region.addLoopWithNonZeroWinding(loops: _path.identity.breakLoop(), reference: reference)
+            case .evenOdd: region.addLoopWithEvenOddWinding(loops: _path.identity.breakLoop(), reference: reference)
             }
+            
+            region *= _path.transform.inverse
             
             path.cache.store(value: region, for: cacheKey)
             
