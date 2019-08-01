@@ -187,7 +187,7 @@ extension InterscetionTable {
 
 extension Shape.Component {
     
-    func splitPath(_ start: InterscetionTable.Split, _ end: InterscetionTable.Split) -> [ShapeRegion.Solid.Segment] {
+    func split_path(_ start: InterscetionTable.Split, _ end: InterscetionTable.Split) -> [ShapeRegion.Solid.Segment] {
         
         if start.almostEqual(end, reference: 0) {
             return []
@@ -217,7 +217,19 @@ extension Shape.Component {
         }
     }
     
-    func _contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
+    private func mid_point(_ start: InterscetionTable.Split, _ end: InterscetionTable.Split) -> Point {
+        
+        if start.index == end.index {
+            if start.split < end.split {
+                return self.bezier[start.index].point(0.5 * (start.split + end.split))
+            } else {
+                return self.bezier[end.index].end
+            }
+        }
+        return self.bezier[start.index].end
+    }
+    
+    private func _contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
         
         if !self.boundary.isIntersect(other.boundary) {
             return false
@@ -301,11 +313,11 @@ extension Shape.Component {
             left_segments[start] = nil
             
             var current = current
-            var segments = self.splitPath(start, current)
+            var segments = self.split_path(start, current)
             guard !segments.isEmpty else { continue }
             
             var is_left = true
-            let is_outer_left = other.winding(segments[0].point(0.5)) == 0
+            let is_outer_left = other.winding(self.mid_point(start, table._left_segments[start]!)) == 0
             
             var breaker = 0
             
@@ -317,10 +329,10 @@ extension Shape.Component {
                     
                     if let next = left_segments[current] {
                         
-                        let _segments = self.splitPath(current, next)
+                        let _segments = self.split_path(current, next)
                         guard !_segments.isEmpty else { continue outer }
                         
-                        let _is_outer = other.winding(_segments[0].point(0.5)) == 0
+                        let _is_outer = other.winding(self.mid_point(current, table._left_segments[current]!)) == 0
                         
                         if is_outer_left == _is_outer {
                             segments.append(contentsOf: _segments)
@@ -347,10 +359,10 @@ extension Shape.Component {
                     
                     if let next = right_segments[current] {
                         
-                        let _segments = other.splitPath(current, next)
+                        let _segments = other.split_path(current, next)
                         guard !_segments.isEmpty else { continue outer }
                         
-                        let _is_outer = self.winding(_segments[0].point(0.5)) == 0
+                        let _is_outer = self.winding(other.mid_point(current, table._right_segments[current]!)) == 0
                         
                         if reverse ? is_outer_left != _is_outer : is_outer_left == _is_outer {
                             segments.append(contentsOf: _segments)

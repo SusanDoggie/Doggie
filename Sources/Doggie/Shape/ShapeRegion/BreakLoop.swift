@@ -98,7 +98,7 @@ extension Shape.Component {
         
         for (left, right) in _points.rotateZip() {
             if left.0 == right.0 {
-                if let solid = ShapeRegion.Solid(segments: self.splitPath(left.1, right.1), reference: reference) {
+                if let solid = ShapeRegion.Solid(segments: self.split_path(left.1, right.1), reference: reference) {
                     result.append(solid)
                 }
             } else {
@@ -113,7 +113,7 @@ extension Shape.Component {
                     var segments: [ShapeRegion.Solid.Segment] = []
                     for (left, right) in loop.rotateZip() {
                         if let split = graph[from: left, to: right]?.last {
-                            segments.append(contentsOf: self.splitPath(split.0, split.1))
+                            segments.append(contentsOf: self.split_path(split.0, split.1))
                             if var splits = graph[from: left, to: right], splits.count != 1 {
                                 splits.removeLast()
                                 graph[from: left, to: right] = splits
