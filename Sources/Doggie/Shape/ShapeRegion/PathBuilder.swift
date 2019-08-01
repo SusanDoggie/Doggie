@@ -47,6 +47,9 @@ enum InterscetionResult {
 
 struct InterscetionTable {
     
+    var _left_segments: [Split : Split] = [:]
+    var _right_segments: [Split : Split] = [:]
+    
     var left_segments: [Split : Split] = [:]
     var right_segments: [Split : Split] = [:]
     
@@ -153,6 +156,9 @@ extension InterscetionTable {
         
         left_segments = Dictionary(uniqueKeysWithValues: left_split.values.sorted().rotateZip())
         right_segments = Dictionary(uniqueKeysWithValues: right_split.values.sorted().rotateZip())
+        
+        _left_segments = left_segments
+        _right_segments = right_segments
         
         for (start, end) in left_segments {
             
