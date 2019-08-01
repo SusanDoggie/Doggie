@@ -94,7 +94,7 @@ extension InterscetionTable {
 extension InterscetionTable.Split {
     
     func almostEqual(_ other: InterscetionTable.Split) -> Bool {
-        return self.index == other.index && self.split.almostEqual(other.split)
+        return self == other || (self.index == other.index && self.split.almostEqual(other.split))
     }
 }
 
@@ -102,8 +102,8 @@ extension InterscetionTable {
     
     init(_ left: Shape.Component, _ right: Shape.Component) {
         
-        var left_split: [Split] = []
-        var right_split: [Split] = []
+        var left_split: [Int: Split] = [:]
+        var right_split: [Int: Split] = [:]
         var overlap: [Overlap: Bool] = [:]
         var point_id = 0
         
@@ -118,22 +118,22 @@ extension InterscetionTable {
                         let lhs = Split(point_id: point_id, index: l_idx, count: left.count, split: l_split)
                         let rhs = Split(point_id: point_id, index: r_idx, count: right.count, split: r_split)
                         
-                        if left_split.contains(where: { $0.almostEqual(lhs) }) && right_split.contains(where: { $0.almostEqual(rhs) }) {
+                        if left_split.values.contains(where: { $0.almostEqual(lhs) }) && right_split.values.contains(where: { $0.almostEqual(rhs) }) {
                             continue
                         }
                         
-                        let _lhs = right_split.first(where: { $0.almostEqual(rhs) }).flatMap { rhs in left_split.first { $0.point_id == rhs.point_id } }
-                        let _rhs = left_split.first(where: { $0.almostEqual(lhs) }).flatMap { lhs in right_split.first { $0.point_id == lhs.point_id } }
+                        let _lhs = right_split.values.first(where: { $0.almostEqual(rhs) }).flatMap { left_split[$0.point_id] }
+                        let _rhs = left_split.values.first(where: { $0.almostEqual(lhs) }).flatMap { right_split[$0.point_id] }
                         
                         if let _lhs = _lhs {
                             looping_left.append((_lhs, lhs))
                         } else {
-                            left_split.append(lhs)
+                            left_split[point_id] = lhs
                         }
                         if let _rhs = _rhs {
                             looping_right.append((_rhs, rhs))
                         } else {
-                            right_split.append(rhs)
+                            right_split[point_id] = rhs
                         }
                         
                         point_id += 1
@@ -144,18 +144,13 @@ extension InterscetionTable {
             }
         }
         
-        if !looping_left.isEmpty || !looping_right.isEmpty {
-            return
-        }
+        //guard looping_left.isEmpty && looping_right.isEmpty else { return }
         
         left_overlap = Set(overlap.map { $0.key.left })
         right_overlap = Set(overlap.map { $0.key.right })
         
-        left_split.sort()
-        right_split.sort()
-        
-        left_segments = Dictionary(uniqueKeysWithValues: left_split.rotateZip())
-        right_segments = Dictionary(uniqueKeysWithValues: right_split.rotateZip())
+        left_segments = Dictionary(uniqueKeysWithValues: left_split.values.sorted().rotateZip())
+        right_segments = Dictionary(uniqueKeysWithValues: right_split.values.sorted().rotateZip())
         
         for (start, end) in left_segments {
             
@@ -247,6 +242,7 @@ extension Shape.Component {
     }
     
     private func _breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)]) -> ShapeRegion {
+        guard !points.isEmpty else { return ShapeRegion(solid: ShapeRegion.Solid(solid: self)) }
         var region = ShapeRegion()
         for loop in self.breakLoop(points) {
             region.formUnion(ShapeRegion(solid: loop))
@@ -258,9 +254,7 @@ extension Shape.Component {
         
         let table = InterscetionTable(self, other)
         
-        if !table.looping_left.isEmpty || !table.looping_right.isEmpty {
-            return .regions(self._breakLoop(table.looping_left), other._breakLoop(table.looping_right))
-        }
+        //guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left), other._breakLoop(table.looping_right)) }
         
         if !table.left_overlap.isStrictSubset(of: 0..<self.count) || !table.right_overlap.isStrictSubset(of: 0..<other.count) {
             if self._contains(other) {
@@ -315,12 +309,16 @@ extension Shape.Component {
                             breaker = 0
                         } else {
                             guard breaker < 2 else { continue outer }
+                            guard let _current = right_segments.index(forKey: current).map({ right_segments[$0].key }) else { continue outer }
+                            current = _current
                             flag = false
                             is_left = false
                         }
                         
                     } else {
                         guard breaker < 2 else { continue outer }
+                        guard let _current = right_segments.index(forKey: current).map({ right_segments[$0].key }) else { continue outer }
+                        current = _current
                         flag = false
                         is_left = false
                     }
@@ -341,12 +339,16 @@ extension Shape.Component {
                             breaker = 0
                         } else {
                             guard breaker < 2 else { continue outer }
+                            guard let _current = left_segments.index(forKey: current).map({ left_segments[$0].key }) else { continue outer }
+                            current = _current
                             flag = false
                             is_left = true
                         }
                         
                     } else {
                         guard breaker < 2 else { continue outer }
+                        guard let _current = left_segments.index(forKey: current).map({ left_segments[$0].key }) else { continue outer }
+                        current = _current
                         flag = false
                         is_left = true
                     }

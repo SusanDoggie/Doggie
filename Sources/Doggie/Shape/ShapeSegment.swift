@@ -368,7 +368,9 @@ extension Shape.Component.BezierCollection.Element {
     
     @inlinable
     public func intersect(_ other: Shape.Component.BezierCollection.Element) -> [(Double, Double)]? {
-        var result: [(Double, Double)]? = nil
+        
+        var result: [(Double, Double)]?
+        
         switch self.segment {
         case let .line(p1):
             switch other.segment {

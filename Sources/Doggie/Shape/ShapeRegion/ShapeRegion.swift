@@ -84,7 +84,7 @@ public struct ShapeRegion {
             self.area = area
         }
         
-        fileprivate init(solid: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
+        init(solid: Shape.Component, holes: ShapeRegion = ShapeRegion()) {
             var solid = solid
             if !solid.start.almostEqual(solid.end) {
                 solid.append(.line(solid.start))
