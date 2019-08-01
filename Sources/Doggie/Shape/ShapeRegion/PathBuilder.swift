@@ -144,10 +144,10 @@ extension InterscetionTable {
             }
         }
         
+        guard looping_left.isEmpty && looping_right.isEmpty else { return }
+        
         left_overlap = Set(overlap.map { $0.key.left })
         right_overlap = Set(overlap.map { $0.key.right })
-        
-        guard looping_left.isEmpty && looping_right.isEmpty else { return }
         
         left_segments = Dictionary(uniqueKeysWithValues: left_split.values.sorted().rotateZip())
         right_segments = Dictionary(uniqueKeysWithValues: right_split.values.sorted().rotateZip())
