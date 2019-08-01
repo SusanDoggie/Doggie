@@ -257,10 +257,10 @@ extension Shape.Component {
         guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left, reference: reference), other._breakLoop(table.looping_right, reference: reference)) }
         
         if !table.left_overlap.isStrictSubset(of: 0..<self.count) || !table.right_overlap.isStrictSubset(of: 0..<other.count) {
-            if self._contains(other) {
+            if self._contains(other, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
                 return .superset
             }
-            if other._contains(self) {
+            if other._contains(self, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
                 return .subset
             }
             return .equal
