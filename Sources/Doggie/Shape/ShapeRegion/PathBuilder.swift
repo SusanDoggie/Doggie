@@ -245,7 +245,7 @@ extension Shape.Component {
         guard !points.isEmpty else { return ShapeRegion(solid: ShapeRegion.Solid(solid: self)) }
         var region = ShapeRegion()
         for loop in self.breakLoop(points, reference: reference) {
-            region.formUnion(ShapeRegion(solid: loop))
+            region = region.union(ShapeRegion(solid: loop), reference: reference)
         }
         return region
     }

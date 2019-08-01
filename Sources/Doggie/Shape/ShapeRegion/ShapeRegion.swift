@@ -269,8 +269,7 @@ extension ShapeRegion.Solid {
         
         let (_subtracting, superset) = self.solid._subtracting(other.solid, reference: reference)
         if superset {
-            let holes = self.holes.union(ShapeRegion(solid: other), reference: reference) ?? ShapeRegion(solids: self.holes.solids.appended(other))
-            return [ShapeRegion.Solid(solid: self.solid, holes: holes)]
+            return [ShapeRegion.Solid(solid: self.solid, holes: self.holes.union(ShapeRegion(solid: other), reference: reference))]
         } else if let subtracting = _subtracting {
             let a = subtracting.concat(other.holes.intersection(self._solid, reference: reference))
             return self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self.holes, reference: reference).solids
@@ -282,7 +281,7 @@ extension ShapeRegion.Solid {
 
 extension ShapeRegion {
     
-    fileprivate func union(_ other: ShapeRegion, reference: Double) -> ShapeRegion? {
+    func union(_ other: ShapeRegion, reference: Double) -> ShapeRegion {
         
         if self.isEmpty && other.isEmpty {
             return ShapeRegion()
@@ -300,12 +299,10 @@ extension ShapeRegion {
         var result1 = self.solids
         var result2: [ShapeRegion.Solid] = []
         var remain = other.solids
-        var flag = false
         outer: while let rhs = remain.popLast() {
             for idx in result1.indices {
-                let (union, _flag) = result1[idx].union(rhs, reference: reference)
-                if _flag {
-                    flag = true
+                let (union, flag) = result1[idx].union(rhs, reference: reference)
+                if flag {
                     result1.remove(at: idx)
                     remain.append(contentsOf: union)
                     continue outer
@@ -313,7 +310,7 @@ extension ShapeRegion {
             }
             result2.append(rhs)
         }
-        return flag ? ShapeRegion(solids: result1.concat(result2)) : nil
+        return ShapeRegion(solids: result1.concat(result2))
     }
     
     fileprivate func intersection(_ other: ShapeRegion.Solid, reference: Double) -> [ShapeRegion.Solid] {
@@ -399,7 +396,7 @@ extension ShapeRegion {
     public func union(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
         let reference = bound.width * bound.height
-        return union(other, reference: reference) ?? ShapeRegion(solids: self.solids.concat(other.solids))
+        return union(other, reference: reference)
     }
     public func intersection(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
@@ -554,7 +551,7 @@ extension ShapeRegion {
             var remain = ShapeRegion(solid: loop)
             if loop.solid.area.sign == .minus {
                 for index in negative.indices {
-                    (negative[index], remain) = (negative[index].union(remain, reference: reference) ?? ShapeRegion(solids: negative[index].solids.concat(remain)), negative[index].intersection(remain, reference: reference))
+                    (negative[index], remain) = (negative[index].union(remain, reference: reference), negative[index].intersection(remain, reference: reference))
                     if remain.isEmpty {
                         break
                     }
@@ -564,7 +561,7 @@ extension ShapeRegion {
                 }
             } else {
                 for index in positive.indices {
-                    (positive[index], remain) = (positive[index].union(remain, reference: reference) ?? ShapeRegion(solids: positive[index].solids.concat(remain)), positive[index].intersection(remain, reference: reference))
+                    (positive[index], remain) = (positive[index].union(remain, reference: reference), positive[index].intersection(remain, reference: reference))
                     if remain.isEmpty {
                         break
                     }
