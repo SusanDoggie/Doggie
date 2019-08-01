@@ -194,7 +194,7 @@ extension Shape.Component {
         case .equal, .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self))
         case .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
         case .none: return nil
-        case let .regions(left, right): return left.union(right)
+        case let .regions(left, right): return left.union(right, reference: reference)
         case let .loops(loops):
             let _solid = loops.outer.lazy.filter { $0.area.sign == self.area.sign }.max { abs($0.area) }
             guard let solid = _solid?.solid else { return ShapeRegion() }
@@ -208,7 +208,7 @@ extension Shape.Component {
         case .equal, .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self))
         case .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
         case .none: return ShapeRegion()
-        case let .regions(left, right): return left.intersection(right)
+        case let .regions(left, right): return left.intersection(right, reference: reference)
         case let .loops(loops): return ShapeRegion(solids: loops.inner)
         }
     }
@@ -218,7 +218,7 @@ extension Shape.Component {
         case .equal, .subset: return (ShapeRegion(), false)
         case .superset: return (nil, true)
         case .none: return (nil, false)
-        case let .regions(left, right): return (left.subtracting(right), false)
+        case let .regions(left, right): return (left.subtracting(right, reference: reference), false)
         case let .loops(loops): return (ShapeRegion(solids: loops.outer.filter { $0.area.sign == self.area.sign }), false)
         }
     }
