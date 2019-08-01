@@ -172,10 +172,10 @@ extension InterscetionTable {
             
             if _overlap {
                 if let new_start = left_segments.first(where: { $0.value == start })?.key {
-                    left_segments[new_start] = new_start.almostEqual(end) ? nil : end
+                    left_segments[new_start] = end
                 }
                 if let new_start = right_segments.first(where: { $0.value == r_start })?.key {
-                    right_segments[new_start] = new_start.almostEqual(r_end) ? nil : r_end
+                    right_segments[new_start] = r_end
                 }
             }
         }
@@ -282,24 +282,30 @@ extension Shape.Component {
         
         var flag = true
         
-        while let (start, current) = left_segments.first {
+        outer: while let (start, current) = left_segments.first {
             
             left_segments[start] = nil
             
             var current = current
             var segments = self.splitPath(start, current)
+            guard !segments.isEmpty else { continue }
+            
             var is_left = true
             let is_outer_left = other.winding(segments[0].point(0.5)) == 0
             
+            var breaker = 0
+            
             while current != start {
                 
+                breaker += 1
+                
                 if is_left {
-                    
-                    guard !left_segments.isEmpty else { break }
                     
                     if let next = left_segments[current] {
                         
                         let _segments = self.splitPath(current, next)
+                        guard !_segments.isEmpty else { continue outer }
+                        
                         let _is_outer = other.winding(_segments[0].point(0.5)) == 0
                         
                         if is_outer_left == _is_outer {
@@ -310,18 +316,24 @@ extension Shape.Component {
                             flag = false
                             is_left = false
                         }
+                        
+                        breaker = 0
+                        
                     } else {
+                        
+                        guard breaker < 2 else { continue outer }
+                        
                         flag = false
                         is_left = false
                     }
                     
                 } else {
                     
-                    guard !right_segments.isEmpty else { break }
-                    
                     if let next = right_segments[current] {
                         
                         let _segments = other.splitPath(current, next)
+                        guard !_segments.isEmpty else { continue outer }
+                        
                         let _is_outer = self.winding(_segments[0].point(0.5)) == 0
                         
                         if reverse ? is_outer_left != _is_outer : is_outer_left == _is_outer {
@@ -332,7 +344,13 @@ extension Shape.Component {
                             flag = false
                             is_left = true
                         }
+                        
+                        breaker = 0
+                        
                     } else {
+                        
+                        guard breaker < 2 else { continue outer }
+                        
                         flag = false
                         is_left = true
                     }
