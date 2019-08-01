@@ -111,7 +111,7 @@ extension InterscetionTable {
             
             for (l_idx, l_segment) in left.bezier.indexed() where l_segment.boundary.isIntersect(r_segment.boundary.inset(dx: -1e-8, dy: -1e-8)) {
                 
-                if let intersect = r_segment.intersect(l_segment) {
+                if let intersect = l_segment.intersect(r_segment) {
                     
                     for (l_split, r_split) in intersect {
                         
