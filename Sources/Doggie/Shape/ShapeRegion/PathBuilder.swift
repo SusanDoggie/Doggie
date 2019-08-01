@@ -263,10 +263,15 @@ extension Shape.Component {
             
             return .equal
             
-        } else if check1 || check2 {
+        } else if check1 {
+            
             if self._contains(other, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
                 return .superset
             }
+            return .none
+            
+        } else if check2 {
+            
             if other._contains(self, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
                 return .subset
             }
