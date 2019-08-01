@@ -312,17 +312,15 @@ extension Shape.Component {
                             segments.append(contentsOf: _segments)
                             left_segments[current] = nil
                             current = next
+                            breaker = 0
                         } else {
+                            guard breaker < 2 else { continue outer }
                             flag = false
                             is_left = false
                         }
                         
-                        breaker = 0
-                        
                     } else {
-                        
                         guard breaker < 2 else { continue outer }
-                        
                         flag = false
                         is_left = false
                     }
@@ -340,17 +338,15 @@ extension Shape.Component {
                             segments.append(contentsOf: _segments)
                             right_segments[current] = nil
                             current = next
+                            breaker = 0
                         } else {
+                            guard breaker < 2 else { continue outer }
                             flag = false
                             is_left = true
                         }
                         
-                        breaker = 0
-                        
                     } else {
-                        
                         guard breaker < 2 else { continue outer }
-                        
                         flag = false
                         is_left = true
                     }
