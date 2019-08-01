@@ -144,10 +144,10 @@ extension InterscetionTable {
             }
         }
         
-        guard looping_left.isEmpty && looping_right.isEmpty else { return }
-        
         left_overlap = Set(overlap.map { $0.key.left })
         right_overlap = Set(overlap.map { $0.key.right })
+        
+        guard looping_left.isEmpty && looping_right.isEmpty else { return }
         
         left_segments = Dictionary(uniqueKeysWithValues: left_split.values.sorted().rotateZip())
         right_segments = Dictionary(uniqueKeysWithValues: right_split.values.sorted().rotateZip())
@@ -363,10 +363,10 @@ extension Shape.Component {
         }
         
         if flag {
-            if self._contains(other) {
+            if self._contains(other, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
                 return .superset
             }
-            if other._contains(self) {
+            if other._contains(self, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
                 return .subset
             }
             return .none
