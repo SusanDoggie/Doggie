@@ -59,7 +59,8 @@ public struct ShapeRegion {
     }
     
     public init(solid: ShapeRegion.Solid) {
-        self.init(solids: CollectionOfOne(solid))
+        self.solids = [solid]
+        self.boundary = solid.boundary
     }
     
     init<S : Sequence>(solids: S) where S.Element == ShapeRegion.Solid {
