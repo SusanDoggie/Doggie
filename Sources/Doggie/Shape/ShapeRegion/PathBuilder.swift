@@ -256,14 +256,21 @@ extension Shape.Component {
         
         guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left, reference: reference), other._breakLoop(table.looping_right, reference: reference)) }
         
-        if !table.left_overlap.isStrictSubset(of: 0..<self.count) || !table.right_overlap.isStrictSubset(of: 0..<other.count) {
+        let check1 = !table.left_overlap.isStrictSubset(of: 0..<self.count)
+        let check2 = !table.right_overlap.isStrictSubset(of: 0..<other.count)
+        
+        if check1 && check2 {
+            
+            return .equal
+            
+        } else if check1 || check2 {
             if self._contains(other, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
                 return .superset
             }
             if other._contains(self, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
                 return .subset
             }
-            return .equal
+            return .none
         }
         
         var left_segments = table.left_segments
