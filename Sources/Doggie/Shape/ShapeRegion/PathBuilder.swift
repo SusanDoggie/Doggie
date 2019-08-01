@@ -144,8 +144,6 @@ extension InterscetionTable {
             }
         }
         
-        //guard looping_left.isEmpty && looping_right.isEmpty else { return }
-        
         left_overlap = Set(overlap.map { $0.key.left })
         right_overlap = Set(overlap.map { $0.key.right })
         
@@ -254,7 +252,7 @@ extension Shape.Component {
         
         let table = InterscetionTable(self, other)
         
-        //guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left), other._breakLoop(table.looping_right)) }
+        guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left), other._breakLoop(table.looping_right)) }
         
         if !table.left_overlap.isStrictSubset(of: 0..<self.count) || !table.right_overlap.isStrictSubset(of: 0..<other.count) {
             if self._contains(other) {
