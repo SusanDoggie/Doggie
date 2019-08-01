@@ -396,22 +396,26 @@ extension ShapeRegion {
     public func union(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
         let reference = bound.width * bound.height
-        return union(other, reference: reference)
+        let transform = SDTransform.translate(x: -bound.x, y: -bound.y)
+        return (self * transform).union(other * transform, reference: reference) * transform.inverse
     }
     public func intersection(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
         let reference = bound.width * bound.height
-        return intersection(other, reference: reference)
+        let transform = SDTransform.translate(x: -bound.x, y: -bound.y)
+        return (self * transform).intersection(other * transform, reference: reference) * transform.inverse
     }
     public func subtracting(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
         let reference = bound.width * bound.height
-        return subtracting(other, reference: reference)
+        let transform = SDTransform.translate(x: -bound.x, y: -bound.y)
+        return (self * transform).subtracting(other * transform, reference: reference) * transform.inverse
     }
     public func symmetricDifference(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
         let reference = bound.width * bound.height
-        return subtracting(other, reference: reference)
+        let transform = SDTransform.translate(x: -bound.x, y: -bound.y)
+        return (self * transform).symmetricDifference(other * transform, reference: reference) * transform.inverse
     }
     
     @inlinable
