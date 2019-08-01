@@ -239,20 +239,20 @@ extension Shape.Component {
         return false
     }
     
-    private func _breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)]) -> ShapeRegion {
+    private func _breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)], reference: Double) -> ShapeRegion {
         guard !points.isEmpty else { return ShapeRegion(solid: ShapeRegion.Solid(solid: self)) }
         var region = ShapeRegion()
-        for loop in self.breakLoop(points) {
+        for loop in self.breakLoop(points, reference: reference) {
             region.formUnion(ShapeRegion(solid: loop))
         }
         return region
     }
     
-    private func _process(_ other: Shape.Component) -> InterscetionResult {
+    private func _process(_ other: Shape.Component, reference: Double) -> InterscetionResult {
         
         let table = InterscetionTable(self, other)
         
-        guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left), other._breakLoop(table.looping_right)) }
+        guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left, reference: reference), other._breakLoop(table.looping_right, reference: reference)) }
         
         if !table.left_overlap.isStrictSubset(of: 0..<self.count) || !table.right_overlap.isStrictSubset(of: 0..<other.count) {
             if self._contains(other) {
@@ -370,8 +370,8 @@ extension Shape.Component {
             return .none
         }
         
-        let _outer = outer.compactMap { ShapeRegion.Solid(segments: $0) }
-        let _inner = inner.compactMap { ShapeRegion.Solid(segments: $0) }
+        let _outer = outer.compactMap { ShapeRegion.Solid(segments: $0, reference: reference) }
+        let _inner = inner.compactMap { ShapeRegion.Solid(segments: $0, reference: reference) }
         
         return .loops(InterscetionResult.Loop(outer: _outer, inner: _inner))
     }
@@ -385,7 +385,7 @@ extension Shape.Component {
         }
     }
     
-    func process(_ other: Shape.Component) -> InterscetionResult {
+    func process(_ other: Shape.Component, reference: Double) -> InterscetionResult {
         
         if interscetionResultCache[other.cache] == nil {
             if let result = other.interscetionResultCache[self.cache] {
@@ -398,7 +398,7 @@ extension Shape.Component {
                 case let .loops(loops): return self.area.sign == other.area.sign ? .loops(loops) : .loops(loops.reversed())
                 }
             } else {
-                interscetionResultCache[other.cache] = self._process(other)
+                interscetionResultCache[other.cache] = self._process(other, reference: reference)
             }
         }
         return interscetionResultCache[other.cache]!

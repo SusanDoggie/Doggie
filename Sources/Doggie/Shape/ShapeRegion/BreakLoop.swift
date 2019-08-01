@@ -25,7 +25,7 @@
 
 extension Shape.Component {
     
-    func breakLoop() -> [ShapeRegion.Solid] {
+    func breakLoop(reference: Double) -> [ShapeRegion.Solid] {
         
         var intersects: [(InterscetionTable.Split, InterscetionTable.Split)] = []
         for (index1, segment1) in bezier.enumerated() {
@@ -80,13 +80,14 @@ extension Shape.Component {
                 }
             }
         }
-        return breakLoop(intersects)
+        
+        return breakLoop(intersects, reference: reference)
     }
     
-    func breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)]) -> [ShapeRegion.Solid] {
+    func breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)], reference: Double) -> [ShapeRegion.Solid] {
         
         if points.count == 0 {
-            return ShapeRegion.Solid(segments: self.bezier).map { [$0] } ?? []
+            return ShapeRegion.Solid(segments: self.bezier, reference: reference).map { [$0] } ?? []
         }
         
         var result: [ShapeRegion.Solid] = []
@@ -97,7 +98,7 @@ extension Shape.Component {
         
         for (left, right) in _points.rotateZip() {
             if left.0 == right.0 {
-                if let solid = ShapeRegion.Solid(segments: self.splitPath(left.1, right.1)) {
+                if let solid = ShapeRegion.Solid(segments: self.splitPath(left.1, right.1), reference: reference) {
                     result.append(solid)
                 }
             } else {
@@ -121,7 +122,7 @@ extension Shape.Component {
                             }
                         }
                     }
-                    if let solid = ShapeRegion.Solid(segments: segments) {
+                    if let solid = ShapeRegion.Solid(segments: segments, reference: reference) {
                         result.append(solid)
                     }
                     if i == 0 {
@@ -141,6 +142,9 @@ extension Shape {
     
     func breakLoop() -> [ShapeRegion.Solid] {
         
+        let bound = self.boundary
+        let reference = bound.width * bound.height
+        
         var solids: [ShapeRegion.Solid] = []
         
         for item in self {
@@ -151,7 +155,7 @@ extension Shape {
                 case let .cubic(p1, p2, p3):
                     
                     if segment.start.almostEqual(p3) {
-                        if let loop = ShapeRegion.Solid(segments: CollectionOfOne(segment)) {
+                        if let loop = ShapeRegion.Solid(segments: CollectionOfOne(segment), reference: reference) {
                             solids.append(loop)
                         }
                     } else {
@@ -170,7 +174,7 @@ extension Shape {
                             if check_1 && check_4 {
                                 
                                 let split = segment.split(b)
-                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.0)) {
+                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.0), reference: reference) {
                                     solids.append(loop)
                                 }
                                 segment = split.1
@@ -178,7 +182,7 @@ extension Shape {
                             } else if check_2 && check_3 {
                                 
                                 let split = segment.split(a)
-                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.1)) {
+                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.1), reference: reference) {
                                     solids.append(loop)
                                 }
                                 segment = split.0
@@ -186,7 +190,7 @@ extension Shape {
                             } else if check_2 && check_4 {
                                 
                                 let split = segment.split([a, b])
-                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split[1])) {
+                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split[1]), reference: reference) {
                                     solids.append(loop)
                                 }
                                 path.append(split[0])
@@ -200,13 +204,13 @@ extension Shape {
                 }
             }
             if path.count != 0 {
-                if let solid = ShapeRegion.Solid(segments: path) {
+                if let solid = ShapeRegion.Solid(segments: path, reference: reference) {
                     solids.append(solid)
                 }
             }
         }
         
-        return solids.flatMap { $0.solid.breakLoop() }
+        return solids.flatMap { $0.solid.breakLoop(reference: reference) }
     }
 }
 

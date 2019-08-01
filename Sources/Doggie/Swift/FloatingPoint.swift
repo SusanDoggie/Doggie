@@ -622,6 +622,12 @@ extension FloatingPoint {
     public func almostEqual(_ other: Self, epsilon: Self = Self.defaultAlmostEqualEpsilon) -> Bool {
         return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: self)
     }
+    
+    @inlinable
+    @inline(__always)
+    public func almostEqual(_ other: Self, epsilon: Self = Self.defaultAlmostEqualEpsilon, reference: Self) -> Bool {
+        return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: reference)
+    }
 }
 
 @inline(__always)
