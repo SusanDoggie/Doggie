@@ -27,7 +27,7 @@ extension Shape.Component {
     
     func breakLoop() -> [ShapeRegion.Solid] {
         
-        var intersects: [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)] = []
+        var intersects: [(InterscetionTable.Split, InterscetionTable.Split)] = []
         for (index1, segment1) in bezier.enumerated() {
             for (index2, segment2) in bezier.suffix(from: index1 + 1).indexed() {
                 if !segment2.boundary.inset(dx: -1e-6, dy: -1e-6).isIntersect(segment1.boundary.inset(dx: -1e-6, dy: -1e-6)) {
@@ -35,59 +35,55 @@ extension Shape.Component {
                 }
                 if let _intersects = segment1.intersect(segment2) {
                     for _intersect in _intersects {
-                        let _l_idx = _intersect.0 == 1 ? self.indexMod(index1 + 1) : index1
-                        let _r_idx = _intersect.1 == 1 ? self.indexMod(index2 + 1) : index2
-                        let _t1 = _intersect.0 == 1 ? 0 : _intersect.0
-                        let _t2 = _intersect.1 == 1 ? 0 : _intersect.1
-                        if _l_idx == _r_idx && _t1 == 0 && _t2 == 0 {
+                        let s0 = InterscetionTable.Split(index: index1, count: self.count, split: _intersect.0)
+                        let s1 = InterscetionTable.Split(index: index2, count: self.count, split: _intersect.1)
+                        if s0.almostEqual(s1) {
                             continue
                         }
-                        if intersects.contains(where: { $0.0.index == _l_idx && $0.0.split.almostEqual(_t1) && $0.1.index == _r_idx && $0.1.split.almostEqual(_t2) }) {
+                        if intersects.contains(where: { $0.almostEqual(s0) && $1.almostEqual(s1) }) {
                             continue
                         }
-                        if intersects.contains(where: { $0.1.index == _l_idx && $0.1.split.almostEqual(_t1) && $0.0.index == _r_idx && $0.0.split.almostEqual(_t2) }) {
+                        if intersects.contains(where: { $1.almostEqual(s0) && $0.almostEqual(s1) }) {
                             continue
                         }
-                        intersects.append((ConstructiveSolidResult.Split(index: _l_idx, split: _t1), ConstructiveSolidResult.Split(index: _r_idx, split: _t2)))
+                        intersects.append((s0, s1))
                     }
                 } else {
                     if let a = segment2.fromPoint(segment1.end) {
-                        let _l_idx = self.indexMod(index1 + 1)
-                        let _r_idx = a == 1 ? self.indexMod(index2 + 1) : index2
-                        let _t2 = a == 1 ? 0 : a
-                        if _l_idx == _r_idx && _t2 == 0 {
+                        let s0 = InterscetionTable.Split(index: index1, count: self.count, split: 1)
+                        let s1 = InterscetionTable.Split(index: index2, count: self.count, split: a)
+                        if s0.almostEqual(s1) {
                             continue
                         }
-                        if intersects.contains(where: { $0.0.index == _l_idx && $0.0.split.almostEqual(0) && $0.1.index == _r_idx && $0.1.split.almostEqual(_t2) }) {
+                        if intersects.contains(where: { $0.almostEqual(s0) && $1.almostEqual(s1) }) {
                             continue
                         }
-                        if intersects.contains(where: { $0.1.index == _l_idx && $0.1.split.almostEqual(0) && $0.0.index == _r_idx && $0.0.split.almostEqual(_t2) }) {
+                        if intersects.contains(where: { $1.almostEqual(s0) && $0.almostEqual(s1) }) {
                             continue
                         }
-                        intersects.append((ConstructiveSolidResult.Split(index: _l_idx, split: 0), ConstructiveSolidResult.Split(index: _r_idx, split: _t2)))
+                        intersects.append((s0, s1))
                     }
                     if let b = segment1.fromPoint(segment2.start) {
-                        let _l_idx = b == 1 ? self.indexMod(index1 + 1) : index1
-                        let _r_idx = index2
-                        let _t1 = b == 1 ? 0 : b
-                        if _l_idx == _r_idx && _t1 == 0 {
+                        let s0 = InterscetionTable.Split(index: index1, count: self.count, split: b)
+                        let s1 = InterscetionTable.Split(index: index2, count: self.count, split: 0)
+                        if s0.almostEqual(s1) {
                             continue
                         }
-                        if intersects.contains(where: { $0.0.index == _l_idx && $0.0.split.almostEqual(_t1) && $0.1.index == _r_idx && $0.1.split.almostEqual(0) }) {
+                        if intersects.contains(where: { $0.almostEqual(s0) && $1.almostEqual(s1) }) {
                             continue
                         }
-                        if intersects.contains(where: { $0.1.index == _l_idx && $0.1.split.almostEqual(_t1) && $0.0.index == _r_idx && $0.0.split.almostEqual(0) }) {
+                        if intersects.contains(where: { $1.almostEqual(s0) && $0.almostEqual(s1) }) {
                             continue
                         }
-                        intersects.append((ConstructiveSolidResult.Split(index: _l_idx, split: _t1), ConstructiveSolidResult.Split(index: _r_idx, split: 0)))
+                        intersects.append((s0, s1))
                     }
                 }
             }
         }
-        return breakLoop(intersects.filter { !$0.0.almostEqual($0.1) })
+        return breakLoop(intersects)
     }
     
-    func breakLoop(_ points: [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]) -> [ShapeRegion.Solid] {
+    func breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)]) -> [ShapeRegion.Solid] {
         
         if points.count == 0 {
             return ShapeRegion.Solid(segments: self.bezier).map { [$0] } ?? []
@@ -95,9 +91,9 @@ extension Shape.Component {
         
         var result: [ShapeRegion.Solid] = []
         
-        var graph = Graph<Int, [(ConstructiveSolidResult.Split, ConstructiveSolidResult.Split)]>()
+        var graph = Graph<Int, [(InterscetionTable.Split, InterscetionTable.Split)]>()
         
-        let _points = points.enumerated().flatMap { [($0.0, $0.1.0), ($0.0, $0.1.1)] }.sorted { $0.1 < $1.1 }
+        let _points = points.enumerated().flatMap { [($0, $1.0), ($0, $1.1)] }.sorted { $0.1 < $1.1 }
         
         for (left, right) in _points.rotateZip() {
             if left.0 == right.0 {

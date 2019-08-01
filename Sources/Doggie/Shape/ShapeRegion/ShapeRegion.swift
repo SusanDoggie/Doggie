@@ -170,7 +170,7 @@ extension ShapeRegion.Solid {
         return ShapeRegion.Solid(solid: self.solid)
     }
     
-    fileprivate func reversed() -> ShapeRegion.Solid {
+    func reversed() -> ShapeRegion.Solid {
         return ShapeRegion.Solid(solid: solid.reversed(), holes: holes)
     }
     
@@ -188,43 +188,38 @@ extension ShapeRegion.Solid {
 
 extension Shape.Component {
     
-    fileprivate func _union(_ other: Shape.Component) -> ShapeRegion? {
+    func _union(_ other: Shape.Component) -> ShapeRegion? {
         
         switch process(other) {
-        case let .overlap(overlap):
-            switch overlap {
-            case .equal, .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self))
-            case .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
-            case .none: return nil
-            }
+        case .equal, .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self))
+        case .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
+        case .none: return nil
         case let .regions(left, right): return left.union(right)
-        case let .segments(forward, backward): return ShapeRegion(solids: forward.enumerated().compactMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? nil : ShapeRegion.Solid(solid: arg.1.solid, holes: ShapeRegion(solids: backward.filter { arg.1.solid._contains($0.solid) })) })
+        case let .loops(loops):
+            let _solid = loops.outer.lazy.filter { $0.area.sign == self.area.sign }.max { abs($0.area) }
+            guard let solid = _solid?.solid else { return ShapeRegion() }
+            let holes = ShapeRegion(solids: loops.outer.filter { $0.area.sign != self.area.sign })
+            return ShapeRegion(solids: [ShapeRegion.Solid(solid: solid, holes: holes)])
         }
     }
-    fileprivate func _intersection(_ other: Shape.Component) -> ShapeRegion {
+    func _intersection(_ other: Shape.Component) -> ShapeRegion {
         
         switch process(other) {
-        case let .overlap(overlap):
-            switch overlap {
-            case .equal, .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self))
-            case .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
-            case .none: return ShapeRegion()
-            }
+        case .equal, .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: self))
+        case .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
+        case .none: return ShapeRegion()
         case let .regions(left, right): return left.intersection(right)
-        case let .segments(forward, _): return ShapeRegion(solids: forward.enumerated().compactMap { arg in forward.enumerated().contains { $0.0 != arg.0 && $0.1.solid._contains(arg.1.solid) } ? arg.1 : nil })
+        case let .loops(loops): return ShapeRegion(solids: loops.inner)
         }
     }
-    fileprivate func _subtracting(_ other: Shape.Component) -> (ShapeRegion?, Bool) {
+    func _subtracting(_ other: Shape.Component) -> (ShapeRegion?, Bool) {
         
         switch process(other) {
-        case let .overlap(overlap):
-            switch overlap {
-            case .equal, .subset: return (ShapeRegion(), false)
-            case .superset: return (nil, true)
-            case .none: return (nil, false)
-            }
+        case .equal, .subset: return (ShapeRegion(), false)
+        case .superset: return (nil, true)
+        case .none: return (nil, false)
         case let .regions(left, right): return (left.subtracting(right), false)
-        case let .segments(forward, _): return (ShapeRegion(solids: forward), false)
+        case let .loops(loops): return (ShapeRegion(solids: loops.outer.filter { $0.area.sign == self.area.sign }), false)
         }
     }
 }
