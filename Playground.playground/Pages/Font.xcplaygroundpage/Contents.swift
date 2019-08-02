@@ -28,7 +28,7 @@ for font in Arial {
         shape.append(contentsOf: outline.identity)
     }
     
-    shape
+    shape.preview()
 }
 
 let PingFang = availableFonts.filter { $0.familyName == "PingFang HK" }.sorted { $0.fontName }
@@ -50,5 +50,5 @@ for font in PingFang {
         shape.append(contentsOf: outline.identity)
     }
     
-    shape
+    shape.preview()
 }

@@ -11,4 +11,4 @@ for i in 0...10 {
     shapes.append(contentsOf: square.tweened(to: ellipse, Double(i) / 10))
 }
 
-shapes
+shapes.preview()

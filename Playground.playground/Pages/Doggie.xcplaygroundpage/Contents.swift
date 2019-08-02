@@ -44,11 +44,11 @@ let shape = try Shape(code: "M100 0c0-100-236.60 36.60-150 86.60S36.60-136.60-50
 let region = ShapeRegion(shape, winding: .nonZero)
 let ellipse = ShapeRegion(ellipseIn: shape.boundary)
 
-region.union(ellipse)
+region.union(ellipse).preview()
 
-region.intersection(ellipse)
+region.intersection(ellipse).preview()
 
-region.subtracting(ellipse)
-ellipse.subtracting(region)
+region.subtracting(ellipse).preview()
+ellipse.subtracting(region).preview()
 
-region.symmetricDifference(ellipse)
+region.symmetricDifference(ellipse).preview()
