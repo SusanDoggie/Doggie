@@ -222,15 +222,9 @@ extension Shape.Component {
     }
     
     private func mid_point(_ start: InterscetionTable.Split, _ end: InterscetionTable.Split) -> Point {
-        
-        if start.index == end.index {
-            if start.split < end.split {
-                return self.bezier[start.index].point(0.5 * (start.split + end.split))
-            } else {
-                return self.bezier[end.index].end
-            }
-        }
-        return self.bezier[start.index].end
+        let segments = self.split_path(start, end)
+        let segment = segments.max { $0.length } ?? segments[0]
+        return segment.point(0.5)
     }
     
     private func _contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
@@ -253,12 +247,7 @@ extension Shape.Component {
             return false
         }
         
-        func _length(_ bezier: Shape.Component.BezierCollection.Element) -> Double {
-            let points = bezier.points([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-            return zip(points, points.dropFirst()).reduce(0) { $0 + $1.0.distance(to: $1.1) }
-        }
-        
-        if let index = hint.max(by: { _length(other.bezier[$0]) }) {
+        if let index = hint.max(by: { other.bezier[$0].length }) {
             return self.winding(other.bezier[index].point(0.5)) != 0
         }
         

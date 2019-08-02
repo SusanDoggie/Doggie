@@ -203,6 +203,15 @@ func split_check(_ t: (Double, Double?)) -> (Double, Double)? {
 extension Shape.Component.BezierCollection.Element {
     
     @inlinable
+    public var length: Double {
+        switch self.segment {
+        case let .line(p1): return LineSegment(start, p1).length(1)
+        case let .quad(p1, p2): return QuadBezier(start, p1, p2).length(1)
+        case let .cubic(p1, p2, p3): return CubicBezier(start, p1, p2, p3)._length(1)
+        }
+    }
+    
+    @inlinable
     public func _invisible(reference: Double) -> Bool {
         switch self.segment {
         case let .line(p1): return start.almostEqual(p1, reference: reference)
