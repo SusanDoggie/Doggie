@@ -65,11 +65,13 @@ extension InterscetionTable {
     struct Split : Comparable, Hashable {
         
         let point_id: Int
+        let point: Point
         let index: Int
         let split: Double
         
-        init(point_id: Int = -1, index: Int, count: Int, split: Double) {
+        init(point_id: Int = -1, point: Point, index: Int, count: Int, split: Double) {
             self.point_id = point_id
+            self.point = point
             self.index = split == 1 ? (index + 1) % count : index % count
             self.split = split == 1 ? 0 : split
         }
@@ -97,11 +99,11 @@ extension InterscetionTable {
 extension InterscetionTable.Split {
     
     func almostEqual(_ other: InterscetionTable.Split) -> Bool {
-        return self == other || (self.index == other.index && self.split.almostEqual(other.split))
+        return self == other || self.point.almostEqual(other.point) || (self.index == other.index && self.split.almostEqual(other.split))
     }
     
     func almostEqual(_ other: InterscetionTable.Split, reference: Double) -> Bool {
-        return self == other || (self.index == other.index && self.split.almostEqual(other.split, reference: reference))
+        return self == other || self.point.almostEqual(other.point, reference: reference) || (self.index == other.index && self.split.almostEqual(other.split))
     }
 }
 
@@ -124,8 +126,8 @@ extension InterscetionTable {
                     
                     for (l_split, r_split) in intersect {
                         
-                        let lhs = Split(point_id: point_id, index: l_idx, count: left.count, split: l_split)
-                        let rhs = Split(point_id: point_id, index: r_idx, count: right.count, split: r_split)
+                        let lhs = Split(point_id: point_id, point: l_segment.point(l_split), index: l_idx, count: left.count, split: l_split)
+                        let rhs = Split(point_id: point_id, point: r_segment.point(r_split), index: r_idx, count: right.count, split: r_split)
                         
                         if left_split.values.contains(where: { $0.almostEqual(lhs, reference: reference) }) && right_split.values.contains(where: { $0.almostEqual(rhs, reference: reference) }) {
                             continue
@@ -256,11 +258,7 @@ extension Shape.Component {
     
     private func _breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)], reference: Double) -> ShapeRegion {
         guard !points.isEmpty else { return ShapeRegion(solid: ShapeRegion.Solid(solid: self)) }
-        var region = ShapeRegion()
-        for loop in self.breakLoop(points, reference: reference) {
-            region = region.union(ShapeRegion(solid: loop), reference: reference)
-        }
-        return region
+        return ShapeRegion(solids: self.breakLoop(points, reference: reference))
     }
     
     private func _process(_ other: Shape.Component, reference: Double) -> InterscetionResult {

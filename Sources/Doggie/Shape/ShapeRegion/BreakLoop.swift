@@ -35,8 +35,8 @@ extension Shape.Component {
                 }
                 if let _intersects = segment1.intersect(segment2) {
                     for _intersect in _intersects {
-                        let s0 = InterscetionTable.Split(index: index1, count: self.count, split: _intersect.0)
-                        let s1 = InterscetionTable.Split(index: index2, count: self.count, split: _intersect.1)
+                        let s0 = InterscetionTable.Split(point: segment1.point(_intersect.0), index: index1, count: self.count, split: _intersect.0)
+                        let s1 = InterscetionTable.Split(point: segment2.point(_intersect.1), index: index2, count: self.count, split: _intersect.1)
                         if s0.almostEqual(s1) {
                             continue
                         }
@@ -50,8 +50,8 @@ extension Shape.Component {
                     }
                 } else {
                     if let a = segment2.fromPoint(segment1.end) {
-                        let s0 = InterscetionTable.Split(index: index1, count: self.count, split: 1)
-                        let s1 = InterscetionTable.Split(index: index2, count: self.count, split: a)
+                        let s0 = InterscetionTable.Split(point: segment1.end, index: index1, count: self.count, split: 1)
+                        let s1 = InterscetionTable.Split(point: segment2.point(a), index: index2, count: self.count, split: a)
                         if s0.almostEqual(s1) {
                             continue
                         }
@@ -64,8 +64,8 @@ extension Shape.Component {
                         intersects.append((s0, s1))
                     }
                     if let b = segment1.fromPoint(segment2.start) {
-                        let s0 = InterscetionTable.Split(index: index1, count: self.count, split: b)
-                        let s1 = InterscetionTable.Split(index: index2, count: self.count, split: 0)
+                        let s0 = InterscetionTable.Split(point: segment1.point(b), index: index1, count: self.count, split: b)
+                        let s1 = InterscetionTable.Split(point: segment2.start, index: index2, count: self.count, split: 0)
                         if s0.almostEqual(s1) {
                             continue
                         }
