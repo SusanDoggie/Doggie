@@ -242,8 +242,6 @@ extension Shape.Component {
             return false
         }
         
-        var hint = hint
-        
         if hint.count == 0 {
             
             for index in 0..<other.count {
@@ -251,6 +249,8 @@ extension Shape.Component {
                     return self.winding(other.bezier[index].point(0.5)) != 0
                 }
             }
+            
+            return false
         }
         
         func _length(_ bezier: Shape.Component.BezierCollection.Element) -> Double {
@@ -312,7 +312,7 @@ extension Shape.Component {
         
         var flag = true
         
-        outer: while let (start, current) = left_segments.first {
+        while let (start, current) = left_segments.first {
             
             left_segments[start] = nil
             
@@ -334,7 +334,7 @@ extension Shape.Component {
                     if let next = left_segments[current] {
                         
                         let _segments = self.split_path(current, next)
-                        guard !_segments.isEmpty else { continue outer }
+                        guard !_segments.isEmpty else { break }
                         
                         let _is_outer = other.winding(self.mid_point(current, table._left_segments[current]!)) == 0
                         
@@ -344,16 +344,16 @@ extension Shape.Component {
                             current = next
                             breaker = 0
                         } else {
-                            guard breaker < 2 else { continue outer }
-                            guard let _current = right_segments.index(forKey: current).map({ right_segments[$0].key }) else { continue outer }
+                            guard breaker < 2 else { break }
+                            guard let _current = right_segments.index(forKey: current).map({ right_segments[$0].key }) else { break }
                             current = _current
                             flag = false
                             is_left = false
                         }
                         
                     } else {
-                        guard breaker < 2 else { continue outer }
-                        guard let _current = right_segments.index(forKey: current).map({ right_segments[$0].key }) else { continue outer }
+                        guard breaker < 2 else { break }
+                        guard let _current = right_segments.index(forKey: current).map({ right_segments[$0].key }) else { break }
                         current = _current
                         flag = false
                         is_left = false
@@ -364,7 +364,7 @@ extension Shape.Component {
                     if let next = right_segments[current] {
                         
                         let _segments = other.split_path(current, next)
-                        guard !_segments.isEmpty else { continue outer }
+                        guard !_segments.isEmpty else { break }
                         
                         let _is_outer = self.winding(other.mid_point(current, table._right_segments[current]!)) == 0
                         
@@ -374,16 +374,16 @@ extension Shape.Component {
                             current = next
                             breaker = 0
                         } else {
-                            guard breaker < 2 else { continue outer }
-                            guard let _current = left_segments.index(forKey: current).map({ left_segments[$0].key }) else { continue outer }
+                            guard breaker < 2 else { break }
+                            guard let _current = left_segments.index(forKey: current).map({ left_segments[$0].key }) else { break }
                             current = _current
                             flag = false
                             is_left = true
                         }
                         
                     } else {
-                        guard breaker < 2 else { continue outer }
-                        guard let _current = left_segments.index(forKey: current).map({ left_segments[$0].key }) else { continue outer }
+                        guard breaker < 2 else { break }
+                        guard let _current = left_segments.index(forKey: current).map({ left_segments[$0].key }) else { break }
                         current = _current
                         flag = false
                         is_left = true
