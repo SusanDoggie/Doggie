@@ -206,104 +206,83 @@ extension Polynomial {
         case 2: return degree2roots(coeffs[1] / coeffs[2], coeffs[0] / coeffs[2]).filter { range ~= $0 }
         case 3: return degree3roots(coeffs[2] / coeffs[3], coeffs[1] / coeffs[3], coeffs[0] / coeffs[3]).filter { range ~= $0 }
         case 4: return degree4roots(coeffs[3] / coeffs[4], coeffs[2] / coeffs[4], coeffs[1] / coeffs[4], coeffs[0] / coeffs[4]).filter { range ~= $0 }
-        default: return _root(self / coeffs.last!, range).filter { range ~= $0 }
+        default:
+            let p = self / coeffs.last!
+            return p._root(range).filter { range ~= $0 }
         }
     }
-}
-
-@usableFromInline
-func _root(_ p: Polynomial, _ range: ClosedRange<Double>) -> [Double] {
     
-    var extrema = p.derivative.roots(in: range).sorted()
-    
-    if range.upperBound == .infinity {
-        var probe = max(extrema.last ?? 1, 1)
-        while p.eval(probe) < 0 {
-            probe *= 2
-        }
-        extrema.append(probe)
-    } else {
-        extrema.append(range.upperBound)
-    }
-    
-    if range.lowerBound == -.infinity {
-        var probe = min(extrema.first!, -1)
-        if p.coeffs.count & 1 == 0 {
-            while p.eval(probe) > 0 {
-                probe *= 2
-            }
-        } else {
-            while p.eval(probe) < 0 {
-                probe *= 2
-            }
-        }
-        extrema.insert(probe, at: 0)
-    } else {
-        extrema.insert(range.lowerBound, at: 0)
-    }
-    
-    var result = [Double]()
-    
-    for idx in extrema.indices.dropLast() {
+    @usableFromInline
+    func _root(_ range: ClosedRange<Double>) -> [Double] {
         
-        let left = p.eval(extrema[idx])
-        let right = p.eval(extrema[idx + 1])
+        var extrema = self.derivative.roots(in: range).sorted()
         
-        if left.almostZero(reference: extrema[idx]) {
-            if !result.contains(extrema[idx]) {
-                result.append(extrema[idx])
-            }
+        extrema.append(Swift.min(range.upperBound, coeffs.dropLast().lazy.map { -$0 }.max().map { 1 + $0 } ?? 1))
+        extrema.append(Swift.max(range.lowerBound, coeffs.dropLast().enumerated().lazy.map { $0 & 1 == 0 ? -$1 : $1 }.max().map { -1 - $0 } ?? -1))
+        
+        var result = [Double]()
+        
+        for idx in extrema.indices.dropLast() {
             
-        } else if !right.almostZero(reference: extrema[idx + 1]) && left.sign != right.sign {
-            var neg: Double
-            var pos: Double
-            if left > 0 {
-                neg = extrema[idx + 1]
-                pos = extrema[idx]
-            } else {
-                neg = extrema[idx]
-                pos = extrema[idx + 1]
-            }
+            let left = self.eval(extrema[idx])
+            let right = self.eval(extrema[idx + 1])
             
-            var negVal = p.eval(neg)
-            var posVal = p.eval(pos)
-            var previous = extrema[idx + 1]
-            
-            var eps = 1e-14
-            var iter = 0
-            
-            while true {
-                var mid = (pos * negVal - neg * posVal) / (negVal - posVal)
-                let u = 3.0 * abs(mid - previous)
-                let v = abs(neg - pos)
-                if u < v {
-                    mid = 0.5 * (neg + pos)
-                }
-                let midVal = p.eval(mid)
-                if midVal.almostZero(epsilon: eps, reference: mid) || pos.almostEqual(neg, epsilon: eps) {
-                    result.append(mid)
-                    break
-                }
-                previous = mid
-                if midVal.sign == .minus {
-                    neg = mid
-                    negVal = midVal
-                } else {
-                    pos = mid
-                    posVal = midVal
+            if left.almostZero(reference: extrema[idx]) {
+                if !result.contains(extrema[idx]) {
+                    result.append(extrema[idx])
                 }
                 
-                iter += 1
-                if iter % 5000 == 0 {
-                    eps *= 2
+            } else if !right.almostZero(reference: extrema[idx + 1]) && left.sign != right.sign {
+                var neg: Double
+                var pos: Double
+                if left > 0 {
+                    neg = extrema[idx + 1]
+                    pos = extrema[idx]
+                } else {
+                    neg = extrema[idx]
+                    pos = extrema[idx + 1]
+                }
+                
+                var negVal = self.eval(neg)
+                var posVal = self.eval(pos)
+                var previous = extrema[idx + 1]
+                
+                var eps = 1e-14
+                var iter = 0
+                
+                while true {
+                    var mid = (pos * negVal - neg * posVal) / (negVal - posVal)
+                    let u = 3.0 * abs(mid - previous)
+                    let v = abs(neg - pos)
+                    if u < v {
+                        mid = 0.5 * (neg + pos)
+                    }
+                    let midVal = self.eval(mid)
+                    if midVal.almostZero(epsilon: eps, reference: mid) || pos.almostEqual(neg, epsilon: eps) {
+                        result.append(mid)
+                        break
+                    }
+                    previous = mid
+                    if midVal.sign == .minus {
+                        neg = mid
+                        negVal = midVal
+                    } else {
+                        pos = mid
+                        posVal = midVal
+                    }
+                    
+                    iter += 1
+                    if iter % 5000 == 0 {
+                        eps *= 2
+                    }
                 }
             }
         }
+        if let last = extrema.last, self.eval(last).almostZero(reference: last) {
+            result.append(last)
+        }
+        return result
     }
-    if let last = extrema.last, p.eval(last).almostZero(reference: last) {
-        result.append(last)
-    }
-    return result
 }
 
 extension Polynomial {
