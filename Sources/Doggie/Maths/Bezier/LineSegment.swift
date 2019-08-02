@@ -208,7 +208,7 @@ extension LineSegment where Element: Tensor {
     
     @inlinable
     @inline(__always)
-    public func length(_ t: Double) -> Double {
+    public func length(_ t: Double = 1) -> Double {
         return p0.distance(to: eval(t))
     }
     

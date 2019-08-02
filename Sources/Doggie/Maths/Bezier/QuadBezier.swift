@@ -317,7 +317,7 @@ extension QuadBezier where Element == Point {
         return i * (g * h - j * b - delta * (k - l))
     }
     
-    public func length(_ t: Double) -> Double {
+    public func length(_ t: Double = 1) -> Double {
         
         if t.almostZero() {
             return t

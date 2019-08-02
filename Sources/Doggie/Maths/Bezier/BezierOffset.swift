@@ -54,7 +54,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     }
     
     @inlinable
-    public func _length(_ t: Double) -> Double {
+    public func _length(_ t: Double = 1) -> Double {
         switch self {
         case let bezier as LineSegment<Point>: return bezier.length(t)
         case let bezier as QuadBezier<Point>: return bezier.length(t)

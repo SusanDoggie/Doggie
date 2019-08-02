@@ -223,7 +223,7 @@ extension Shape.Component {
     
     private func mid_point(_ start: InterscetionTable.Split, _ end: InterscetionTable.Split) -> Point {
         let segments = self.split_path(start, end)
-        let segment = segments.max { $0.length } ?? segments[0]
+        let segment = segments.max { $0.length() } ?? segments[0]
         return segment.point(0.5)
     }
     
@@ -247,7 +247,7 @@ extension Shape.Component {
             return false
         }
         
-        if let index = hint.max(by: { other.bezier[$0].length }) {
+        if let index = hint.max(by: { other.bezier[$0].length() }) {
             return self.winding(other.bezier[index].point(0.5)) != 0
         }
         
