@@ -25,7 +25,7 @@
 
 extension Shape {
     
-    public func preview(color: RGBColorModel = RGBColorModel(red: 0.0, green: 0.4, blue: 0.8), inset: Double = 0) -> Image<RGBA32ColorPixel> {
+    public func preview(inset: Double = -16) -> Image<RGBA32ColorPixel> {
         
         let inset = inset - 0.5
         let bound = self.boundary.inset(dx: inset, dy: inset)
@@ -34,7 +34,8 @@ extension Shape {
         
         context.translate(x: -bound.x, y: -bound.y)
         
-        context.draw(shape: self, winding: .nonZero, color: color, opacity: 0.25)
+        let color = RGBColorModel(red: 0.0, green: 0.5, blue: 1.0)
+        context.draw(shape: self, winding: .nonZero, color: color, opacity: 0.2)
         context.stroke(shape: self, width: 1, cap: .round, join: .round, color: color)
         
         return context.image
@@ -43,21 +44,21 @@ extension Shape {
 
 extension Shape.Component {
     
-    public func preview(color: RGBColorModel = RGBColorModel(red: 0.0, green: 0.4, blue: 0.8), inset: Double = 0) -> Image<RGBA32ColorPixel> {
-        return Shape([self]).preview(color: color, inset: inset)
+    public func preview(inset: Double = -16) -> Image<RGBA32ColorPixel> {
+        return Shape([self]).preview(inset: inset)
     }
 }
 
 extension ShapeRegion {
     
-    public func preview(color: RGBColorModel = RGBColorModel(red: 0.0, green: 0.4, blue: 0.8), inset: Double = 0) -> Image<RGBA32ColorPixel> {
-        return shape.preview(color: color, inset: inset)
+    public func preview(inset: Double = -16) -> Image<RGBA32ColorPixel> {
+        return shape.preview(inset: inset)
     }
 }
 
 extension ShapeRegion.Solid {
     
-    public func preview(color: RGBColorModel = RGBColorModel(red: 0.0, green: 0.4, blue: 0.8), inset: Double = 0) -> Image<RGBA32ColorPixel> {
-        return shape.preview(color: color, inset: inset)
+    public func preview(inset: Double = -16) -> Image<RGBA32ColorPixel> {
+        return shape.preview(inset: inset)
     }
 }
