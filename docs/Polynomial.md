@@ -29,7 +29,7 @@ let rem = poly % [4, 5]  // -5.96
 
 Real roots of polynomial:
 ```swift
-print(poly.roots)  // [1.449489742783178, -3.449489742783178]
+print(poly.roots())  // [1.449489742783178, -3.449489742783178]
 ```
 
 Evaluate value of P(x):
@@ -83,5 +83,5 @@ let m11 = u1 * v0 - u0 * v1
 If the system of polynomial have intersections on (x, y), the determinant of Bézout matrix is equal to zero. Hence, we can find roots of `Det(Bézout matrix) = 0` which represent the result of the system of polynomial.
 ```swift
 let det = m00 * m11 - m01 * m10  // -16 + 64y - 96y^2 + 64y^3 - 16y^4
-let result = det.roots  // results of y
+let result = det.roots()  // results of y
 ```
