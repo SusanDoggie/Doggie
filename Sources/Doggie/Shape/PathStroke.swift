@@ -231,8 +231,9 @@ extension Shape.StrokeBuffer {
                             let p1 = p0 + Point(x: -v0, y: u0)
                             let q0 = segment.start + Point(x: u1, y: v1)
                             let q1 = q0 + Point(x: -v1, y: u1)
-                            let intersect = LineSegment(p0, p1).intersect(LineSegment(q0, q1))!
-                            buffer1.append(.line(intersect))
+                            if let intersect = LineSegment(p0, p1).intersect(LineSegment(q0, q1)) {
+                                buffer1.append(.line(intersect))
+                            }
                             buffer1.append(.line(q0))
                         }
                         buffer2.append(.line(reverse_start))
@@ -259,9 +260,10 @@ extension Shape.StrokeBuffer {
                             let p1 = p0 + Point(x: -v0, y: u0)
                             let q0 = last!.end + Point(x: u1, y: v1)
                             let q1 = q0 + Point(x: -v1, y: u1)
-                            let intersect = LineSegment(p0, p1).intersect(LineSegment(q0, q1))!
                             buffer2.append(.line(q0))
-                            buffer2.append(.line(intersect))
+                            if let intersect = LineSegment(p0, p1).intersect(LineSegment(q0, q1)) {
+                                buffer2.append(.line(intersect))
+                            }
                             reverse_start = p0
                         }
                     }
