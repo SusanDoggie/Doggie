@@ -227,22 +227,21 @@ extension Shape.Component {
 
 extension ShapeRegion.Solid {
     
-    fileprivate func union(_ other: ShapeRegion.Solid, reference: Double) -> ([ShapeRegion.Solid], Bool) {
+    fileprivate func union(_ other: ShapeRegion.Solid, reference: Double) -> [ShapeRegion.Solid]? {
         
         if !self.boundary.isIntersect(other.boundary) {
-            return ([self, other], false)
+            return nil
         }
         
         let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
         
-        if let union = self.solid._union(other.solid, reference: reference) {
-            let a = self.holes.intersection(other.holes, reference: reference).solids
-            let b = self.holes.subtracting(other._solid, reference: reference)
-            let c = other.holes.subtracting(self._solid, reference: reference)
-            return (union.subtracting(ShapeRegion(solids: a.concat(b).concat(c)), reference: reference).solids, true)
-        } else {
-            return ([self, other], false)
-        }
+        guard let union = self.solid._union(other.solid, reference: reference) else { return nil }
+        
+        let a = self.holes.intersection(other.holes, reference: reference).solids
+        let b = self.holes.subtracting(other._solid, reference: reference)
+        let c = other.holes.subtracting(self._solid, reference: reference)
+        
+        return union.subtracting(ShapeRegion(solids: a.concat(b).concat(c)), reference: reference).solids
     }
     fileprivate func intersection(_ other: ShapeRegion.Solid, reference: Double) -> [ShapeRegion.Solid] {
         
@@ -301,8 +300,7 @@ extension ShapeRegion {
         var remain = other.solids
         outer: while let rhs = remain.popLast() {
             for idx in result1.indices {
-                let (union, flag) = result1[idx].union(rhs, reference: reference)
-                if flag {
+                if let union = result1[idx].union(rhs, reference: reference) {
                     result1.remove(at: idx)
                     remain.append(contentsOf: union)
                     continue outer
