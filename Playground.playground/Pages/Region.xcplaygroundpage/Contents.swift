@@ -9,14 +9,14 @@ let region = ShapeRegion(path1, winding: .nonZero)
 let ellipse = Shape(ellipseIn: path1.boundary)
 let region2 = ShapeRegion(ellipse, winding: .nonZero)
 
-path1 + ellipse
+(path1 + ellipse).preview()
 
-region.union(region2)
+region.union(region2).preview()
 
-region.intersection(region2)
-region.subtracting(region2)
-region2.subtracting(region)
-region.symmetricDifference(region2)
+region.intersection(region2).preview()
+region.subtracting(region2).preview()
+region2.subtracting(region).preview()
+region.symmetricDifference(region2).preview()
 
 let path2 = try Shape(code: "M141.102,150.83c100,90.476,85.715-36.055-4.762,76.871s112.763-105.442,36.994-76.871S141.102,150.83,141.102,150.83z")
 
