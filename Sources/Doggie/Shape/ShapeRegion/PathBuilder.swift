@@ -96,6 +96,10 @@ extension InterscetionTable {
 
 extension InterscetionTable.Split {
     
+    func almostEqual(_ other: InterscetionTable.Split) -> Bool {
+        return self == other || (self.index == other.index && self.split.almostEqual(other.split))
+    }
+    
     func almostEqual(_ other: InterscetionTable.Split, reference: Double) -> Bool {
         return self == other || (self.index == other.index && self.split.almostEqual(other.split, reference: reference))
     }
@@ -189,7 +193,7 @@ extension Shape.Component {
     
     func split_path(_ start: InterscetionTable.Split, _ end: InterscetionTable.Split) -> [ShapeRegion.Solid.Segment] {
         
-        if start.almostEqual(end, reference: 0) {
+        if start.almostEqual(end) {
             return []
         }
         if start.index == end.index {
