@@ -215,10 +215,15 @@ extension Polynomial {
     @usableFromInline
     func _root(_ range: ClosedRange<Double>) -> [Double] {
         
+        let upperBound = Swift.min(range.upperBound, coeffs.dropLast().lazy.map { -$0 }.max().map { 1 + $0 } ?? 1)
+        let lowerBound = Swift.max(range.lowerBound, coeffs.dropLast().enumerated().lazy.map { $0 & 1 == 0 ? -$1 : $1 }.max().map { -1 - $0 } ?? -1)
+        
+        guard lowerBound <= upperBound else { return [] }
+        
         var extrema = self.derivative.roots(in: range).sorted()
         
-        extrema.append(Swift.min(range.upperBound, coeffs.dropLast().lazy.map { -$0 }.max().map { 1 + $0 } ?? 1))
-        extrema.append(Swift.max(range.lowerBound, coeffs.dropLast().enumerated().lazy.map { $0 & 1 == 0 ? -$1 : $1 }.max().map { -1 - $0 } ?? -1))
+        extrema.append(upperBound)
+        extrema.append(lowerBound)
         
         var result = [Double]()
         
