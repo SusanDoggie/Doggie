@@ -215,8 +215,10 @@ extension Polynomial {
     @usableFromInline
     func _root(_ range: ClosedRange<Double>) -> [Double] {
         
+        let _d = degree & 1
+        
         let upperBound = Swift.min(range.upperBound, coeffs.dropLast().lazy.map { -$0 }.max().map { 1 + $0 } ?? 1)
-        let lowerBound = Swift.max(range.lowerBound, coeffs.dropLast().enumerated().lazy.map { $0 & 1 == 0 ? -$1 : $1 }.max().map { -1 - $0 } ?? -1)
+        let lowerBound = Swift.max(range.lowerBound, coeffs.dropLast().enumerated().lazy.map { $0 & 1 == _d ? -$1 : $1 }.max().map { -1 - $0 } ?? -1)
         
         guard lowerBound <= upperBound else { return [] }
         
