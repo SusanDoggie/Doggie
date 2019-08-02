@@ -220,7 +220,7 @@ extension Shape.Component {
         case .superset: return (nil, true)
         case .none: return (nil, false)
         case let .regions(left, right): return (left.subtracting(right, reference: reference), false)
-        case let .loops(loops): return (ShapeRegion(solids: loops.outer.filter { $0.area.sign == self.area.sign }), false)
+        case let .loops(loops): return (ShapeRegion(solids: loops.outer), false)
         }
     }
 }
