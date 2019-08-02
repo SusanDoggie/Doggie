@@ -197,9 +197,9 @@ extension Shape.Component {
         case .none: return nil
         case let .regions(left, right): return left.union(right, reference: reference)
         case let .loops(loops):
-            let _solid = loops.outer.lazy.filter { $0.area.sign == self.area.sign }.max { abs($0.area) }
+            let _solid = loops.outer.lazy.filter { $0.solid.area.sign == self.area.sign }.max { abs($0.area) }
             guard let solid = _solid?.solid else { return ShapeRegion() }
-            let holes = ShapeRegion(solids: loops.outer.filter { $0.area.sign != self.area.sign })
+            let holes = ShapeRegion(solids: loops.outer.filter { $0.solid.area.sign != self.area.sign })
             return ShapeRegion(solids: [ShapeRegion.Solid(solid: solid, holes: holes)])
         }
     }
