@@ -189,10 +189,10 @@ extension LineSegment where Element == Double {
 extension LineSegment where Element == Point {
     
     @inlinable
-    public func closest(_ point: Point) -> [Double] {
+    public func closest(_ point: Point, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double] {
         let a = p0 - point
         let b = p1 - p0
-        return Polynomial(b.x * a.x + b.y * a.y, b.x * b.x + b.y * b.y).roots
+        return Polynomial(b.x * a.x + b.y * a.y, b.x * b.x + b.y * b.y).roots(in: range)
     }
 }
 

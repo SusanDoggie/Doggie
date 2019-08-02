@@ -240,7 +240,7 @@ extension QuadBezier where Element == Double {
 extension QuadBezier where Element : Tensor {
     
     @inlinable
-    public func closest(_ point: Element) -> [Double] {
+    public func closest(_ point: Element, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double] {
         let a = p0 - point
         let b = 2 * (p1 - p0)
         let c = p0 + p2 - 2 * p1
@@ -249,7 +249,7 @@ extension QuadBezier where Element : Tensor {
             let p: Polynomial = [a[i], b[i], c[i]]
             dot += p * p
         }
-        return dot.derivative.roots.sorted(by: { dot.eval($0) })
+        return dot.derivative.roots(in: range).sorted(by: { dot.eval($0) })
     }
 }
 
@@ -468,14 +468,14 @@ extension QuadBezier where Element == Point {
     }
     
     @inlinable
-    public func intersect(_ other: LineSegment<Element>) -> [Double]? {
+    public func intersect(_ other: LineSegment<Element>, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() } ? nil : det.roots
+        return det.allSatisfy { $0.almostZero() } ? nil : det.roots(in: range)
     }
     
     @inlinable
-    public func intersect(_ other: QuadBezier) -> [Double]? {
+    public func intersect(_ other: QuadBezier, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() } ? nil : det.roots
+        return det.allSatisfy { $0.almostZero() } ? nil : det.roots(in: range)
     }
 }

@@ -261,7 +261,7 @@ extension CubicBezier where Element == Double {
 extension CubicBezier where Element : Tensor {
     
     @inlinable
-    public func closest(_ point: Element) -> [Double] {
+    public func closest(_ point: Element, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double] {
         let a = p0 - point
         let (b, c, d) = _polynomial
         var dot: Polynomial = []
@@ -269,7 +269,7 @@ extension CubicBezier where Element : Tensor {
             let p: Polynomial = [a[i], b[i], c[i], d[i]]
             dot += p * p
         }
-        return dot.derivative.roots.sorted(by: { dot.eval($0) })
+        return dot.derivative.roots(in: range).sorted(by: { dot.eval($0) })
     }
 }
 
@@ -495,20 +495,20 @@ extension CubicBezier where Element == Point {
     }
     
     @inlinable
-    public func intersect(_ other: LineSegment<Element>) -> [Double]? {
+    public func intersect(_ other: LineSegment<Element>, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() } ? nil : det.roots
+        return det.allSatisfy { $0.almostZero() } ? nil : det.roots(in: range)
     }
     
     @inlinable
-    public func intersect(_ other: QuadBezier<Element>) -> [Double]? {
+    public func intersect(_ other: QuadBezier<Element>, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() } ? nil : det.roots
+        return det.allSatisfy { $0.almostZero() } ? nil : det.roots(in: range)
     }
     
     @inlinable
-    public func intersect(_ other: CubicBezier) -> [Double]? {
+    public func intersect(_ other: CubicBezier, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() } ? nil : det.roots
+        return det.allSatisfy { $0.almostZero() } ? nil : det.roots(in: range)
     }
 }

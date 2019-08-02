@@ -189,50 +189,58 @@ extension Polynomial {
 extension Polynomial {
     
     @inlinable
-    public var roots : [Double] {
+    public func roots(in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double] {
         
         if degree == 0 {
             return []
         }
         if coeffs.last!.almostZero() {
-            return Polynomial(coeffs.dropLast()).roots
+            return Polynomial(coeffs.dropLast()).roots(in: range)
         }
         if coeffs.first!.almostZero() {
-            let z = Polynomial(coeffs.dropFirst()).roots
-            return z.contains(0) ? z : [0] + z
+            let z = Polynomial(coeffs.dropFirst()).roots(in: range)
+            return range ~= 0 && z.contains(0) ? z : [0] + z
         }
         switch degree {
-        case 1: return [-coeffs[0] / coeffs[1]]
-        case 2: return Array(degree2roots(coeffs[1] / coeffs[2], coeffs[0] / coeffs[2]))
-        case 3: return degree3roots(coeffs[2] / coeffs[3], coeffs[1] / coeffs[3], coeffs[0] / coeffs[3])
-        case 4: return degree4roots(coeffs[3] / coeffs[4], coeffs[2] / coeffs[4], coeffs[1] / coeffs[4], coeffs[0] / coeffs[4])
-        default: return _root(self / coeffs.last!)
+        case 1: return [-coeffs[0] / coeffs[1]].filter { range ~= $0 }
+        case 2: return degree2roots(coeffs[1] / coeffs[2], coeffs[0] / coeffs[2]).filter { range ~= $0 }
+        case 3: return degree3roots(coeffs[2] / coeffs[3], coeffs[1] / coeffs[3], coeffs[0] / coeffs[3]).filter { range ~= $0 }
+        case 4: return degree4roots(coeffs[3] / coeffs[4], coeffs[2] / coeffs[4], coeffs[1] / coeffs[4], coeffs[0] / coeffs[4]).filter { range ~= $0 }
+        default: return _root(self / coeffs.last!, range).filter { range ~= $0 }
         }
     }
 }
 
 @usableFromInline
-func _root(_ p: Polynomial) -> [Double] {
+func _root(_ p: Polynomial, _ range: ClosedRange<Double>) -> [Double] {
     
-    var extrema = p.derivative.roots.sorted()
+    var extrema = p.derivative.roots(in: range).sorted()
     
-    var probe = max(extrema.last ?? 1, 1)
-    while p.eval(probe) < 0 {
-        probe *= 2
-    }
-    extrema.append(probe)
-    
-    probe = min(extrema.first!, -1)
-    if p.coeffs.count & 1 == 0 {
-        while p.eval(probe) > 0 {
-            probe *= 2
-        }
-    } else {
+    if range.upperBound == .infinity {
+        var probe = max(extrema.last ?? 1, 1)
         while p.eval(probe) < 0 {
             probe *= 2
         }
+        extrema.append(probe)
+    } else {
+        extrema.append(range.upperBound)
     }
-    extrema.insert(probe, at: 0)
+    
+    if range.lowerBound == -.infinity {
+        var probe = min(extrema.first!, -1)
+        if p.coeffs.count & 1 == 0 {
+            while p.eval(probe) > 0 {
+                probe *= 2
+            }
+        } else {
+            while p.eval(probe) < 0 {
+                probe *= 2
+            }
+        }
+        extrema.insert(probe, at: 0)
+    } else {
+        extrema.insert(range.lowerBound, at: 0)
+    }
     
     var result = [Double]()
     

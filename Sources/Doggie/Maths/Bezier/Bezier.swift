@@ -337,16 +337,16 @@ extension Bezier where Element == Double {
 extension Bezier where Element == Point {
     
     @inlinable
-    public func closest(_ point: Point) -> [Double] {
+    public func closest(_ point: Point, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double] {
         switch points.count {
-        case 2: return LineSegment(points[0], points[1]).closest(point)
-        case 3: return QuadBezier(points[0], points[1], points[2]).closest(point)
-        case 4: return CubicBezier(points[0], points[1], points[2], points[3]).closest(point)
+        case 2: return LineSegment(points[0], points[1]).closest(point, in: range)
+        case 3: return QuadBezier(points[0], points[1], points[2]).closest(point, in: range)
+        case 4: return CubicBezier(points[0], points[1], points[2], points[3]).closest(point, in: range)
         default:
             let x = self.x.polynomial - point.x
             let y = self.y.polynomial - point.y
             let dot = x * x + y * y
-            return dot.derivative.roots.sorted(by: { dot.eval($0) })
+            return dot.derivative.roots(in: range).sorted(by: { dot.eval($0) })
         }
     }
 }
@@ -354,13 +354,13 @@ extension Bezier where Element == Point {
 extension Bezier where Element : Tensor {
     
     @inlinable
-    public func closest(_ point: Element) -> [Double] {
+    public func closest(_ point: Element, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double] {
         var dot: Polynomial = []
         for i in 0..<Element.numberOfComponents {
             let p = Bezier<Double>(points.map { $0[i] }).polynomial - point[i]
             dot += p * p
         }
-        return dot.derivative.roots.sorted(by: { dot.eval($0) })
+        return dot.derivative.roots(in: range).sorted(by: { dot.eval($0) })
     }
 }
 
@@ -403,7 +403,7 @@ func _bezier_stationary(_ x: Polynomial, _ y: Polynomial) -> [Double] {
     let du = u.derivative
     let dv = v.derivative
     let k = du * v * v - 1.5 * u * v * dv
-    return k.roots
+    return k.roots()
 }
 
 extension Bezier where Element == Point {
@@ -416,7 +416,7 @@ extension Bezier where Element == Point {
         default:
             let x = self.x.polynomial.derivative
             let y = self.y.polynomial.derivative
-            return (x * y.derivative - y * x.derivative).roots
+            return (x * y.derivative - y * x.derivative).roots()
         }
     }
     
@@ -443,7 +443,7 @@ extension Bezier where Element == Double {
         case 2: return []
         case 3: return Array(QuadBezier(points[0], points[1], points[2]).stationary)
         case 4: return Array(CubicBezier(points[0], points[1], points[2], points[3]).stationary)
-        default: return polynomial.derivative.roots
+        default: return polynomial.derivative.roots()
         }
     }
 }
@@ -598,8 +598,8 @@ extension Bezier where Element == Point {
         return _resultant(other).allSatisfy { $0.almostZero() }
     }
     
-    public func intersect(_ other: Bezier) -> [Double]? {
+    public func intersect(_ other: Bezier, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
         let resultant = _resultant(other)
-        return resultant.allSatisfy { $0.almostZero() } ? nil : resultant.roots
+        return resultant.allSatisfy { $0.almostZero() } ? nil : resultant.roots(in: range)
     }
 }
