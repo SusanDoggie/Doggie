@@ -143,6 +143,14 @@ extension Shape : CustomPlaygroundDisplayConvertible {
 
 #endif
 
+extension Shape.Component : CustomPlaygroundDisplayConvertible {
+    
+    @inlinable
+    public var playgroundDescription: Any {
+        return Shape([self])
+    }
+}
+
 extension ShapeRegion : CustomPlaygroundDisplayConvertible {
     
     @inlinable
