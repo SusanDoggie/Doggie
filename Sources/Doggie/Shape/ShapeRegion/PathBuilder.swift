@@ -198,23 +198,38 @@ extension InterscetionTable {
             
             guard r_end == l_start else { continue }
             
-            var l_end_index = l_end.split == 0 ? l_end.index - 1 : l_end.index
-            var r_end_index = r_end.split == 0 ? r_end.index - 1 : r_end.index
-            
-            if l_end_index < 0 {
-                l_end_index += left.count
+            do {
+                
+                let segments = left.split_path(l_start, l_end) + right.split_path(r_start, r_end)
+                
+                if ShapeRegion.Solid(segments: segments, reference: reference) == nil {
+                    left_segments[l_start] = nil
+                    right_segments[r_start] = nil
+                    continue
+                }
             }
-            if r_end_index < 0 {
-                r_end_index += right.count
-            }
             
-            let l_range = l_start.index...(l_start.index <= l_end_index ? l_end_index : l_end_index + left.count)
-            let r_range = r_start.index...(r_start.index <= r_end_index ? r_end_index : r_end_index + right.count)
-            let check = l_range.allSatisfy { l_idx in r_range.contains { r_idx in overlap[InterscetionTable.Overlap(left: l_idx % left.count, right: r_idx % right.count)] == false } }
-            
-            if check {
-                left_segments[l_start] = nil
-                right_segments[r_start] = nil
+            do {
+                
+                var l_end_index = l_end.split == 0 ? l_end.index - 1 : l_end.index
+                var r_end_index = r_end.split == 0 ? r_end.index - 1 : r_end.index
+                
+                if l_end_index < 0 {
+                    l_end_index += left.count
+                }
+                if r_end_index < 0 {
+                    r_end_index += right.count
+                }
+                
+                let l_range = l_start.index...(l_start.index <= l_end_index ? l_end_index : l_end_index + left.count)
+                let r_range = r_start.index...(r_start.index <= r_end_index ? r_end_index : r_end_index + right.count)
+                let check = l_range.allSatisfy { l_idx in r_range.contains { r_idx in overlap[InterscetionTable.Overlap(left: l_idx % left.count, right: r_idx % right.count)] == false } }
+                
+                if check {
+                    left_segments[l_start] = nil
+                    right_segments[r_start] = nil
+                    continue
+                }
             }
         }
     }
