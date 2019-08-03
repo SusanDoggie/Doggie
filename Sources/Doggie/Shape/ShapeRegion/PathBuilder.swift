@@ -269,8 +269,9 @@ extension Shape.Component {
     
     private func mid_point(_ start: InterscetionTable.Split, _ end: InterscetionTable.Split) -> Point {
         let segments = self.split_path(start, end)
-        let segment = segments.max { $0.length() } ?? segments[0]
-        return segment.point(0.5)
+        let lengths = segments.scan(0) { $0 + $1.length() }
+        let half = 0.5 * lengths[lengths.count - 1]
+        return segments[lengths.lastIndex(where: { $0 < half }) ?? 0].point(0.5)
     }
     
     private func _contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
