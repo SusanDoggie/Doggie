@@ -27,10 +27,12 @@ extension Shape.Component {
     
     func breakLoop(reference: Double) -> [ShapeRegion.Solid] {
         
+        let epsilon = -1e-8 * Swift.max(1, abs(reference))
+        
         var intersects: [(InterscetionTable.Split, InterscetionTable.Split)] = []
         for (index1, segment1) in bezier.enumerated() {
             for (index2, segment2) in bezier.suffix(from: index1 + 1).indexed() {
-                if !segment2.boundary.inset(dx: -1e-6, dy: -1e-6).isIntersect(segment1.boundary.inset(dx: -1e-6, dy: -1e-6)) {
+                if !segment2.boundary.inset(dx: epsilon, dy: epsilon).isIntersect(segment1.boundary.inset(dx: epsilon, dy: epsilon)) {
                     continue
                 }
                 if let _intersects = segment1.intersect(segment2) {
@@ -154,7 +156,7 @@ extension Shape {
                 switch segment.segment {
                 case let .cubic(p1, p2, p3):
                     
-                    if segment.start.almostEqual(p3) {
+                    if segment.start.almostEqual(p3, reference: reference) {
                         if let loop = ShapeRegion.Solid(segments: CollectionOfOne(segment), reference: reference) {
                             solids.append(loop)
                         }

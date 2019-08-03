@@ -225,16 +225,16 @@ extension Polynomial {
     @usableFromInline
     func _root(_ range: ClosedRange<Double>) -> [Double] {
         
-        let _d = degree & 1
-        let upperBound = Swift.min(range.upperBound, coeffs.dropLast().lazy.map { -$0 }.max().map { 1 + $0 } ?? 1)
-        let lowerBound = Swift.max(range.lowerBound, coeffs.dropLast().enumerated().lazy.map { $0 & 1 == _d ? -$1 : $1 }.max().map { -1 - $0 } ?? -1)
+        let bound = coeffs.dropLast().lazy.map { abs($0) }.max().map { 1 + $0 } ?? 1
+        let upperBound = Swift.min(range.upperBound, bound)
+        let lowerBound = Swift.max(range.lowerBound, -bound)
         
         guard lowerBound <= upperBound else { return [] }
         
         var extrema = self.derivative.roots(in: range).sorted()
         
         extrema.append(upperBound)
-        extrema.append(lowerBound)
+        extrema.insert(lowerBound, at: 0)
         
         var result = [Double]()
         

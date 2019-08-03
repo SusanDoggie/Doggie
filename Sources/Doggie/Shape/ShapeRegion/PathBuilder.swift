@@ -99,7 +99,7 @@ extension InterscetionTable {
 extension InterscetionTable.Split {
     
     func almostEqual(_ other: InterscetionTable.Split) -> Bool {
-        return self == other || self.point.almostEqual(other.point) || (self.index == other.index && self.split.almostEqual(other.split))
+        return self == other || (self.index == other.index && self.split.almostEqual(other.split))
     }
     
     func almostEqual(_ other: InterscetionTable.Split, reference: Double) -> Bool {
@@ -129,7 +129,7 @@ extension InterscetionTable {
                         let lhs = Split(point_id: point_id, point: l_segment.point(l_split), index: l_idx, count: left.count, split: l_split)
                         let rhs = Split(point_id: point_id, point: r_segment.point(r_split), index: r_idx, count: right.count, split: r_split)
                         
-                        if left_split.values.contains(where: { $0.almostEqual(lhs, reference: reference) }) && right_split.values.contains(where: { $0.almostEqual(rhs, reference: reference) }) {
+                        if left_split.values.contains(where: { $0.almostEqual(lhs) }) && right_split.values.contains(where: { $0.almostEqual(rhs) }) {
                             continue
                         }
                         
