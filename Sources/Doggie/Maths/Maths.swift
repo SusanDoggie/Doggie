@@ -200,53 +200,6 @@ public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, 
 
 @inlinable
 @inline(__always)
-public func degree4decompose(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> ((Double, Double), (Double, Double)) {
-    if e.almostZero() {
-        let z = degree3decompose(b, c, d)
-        return ((z.0, 0), z.1)
-    }
-    let b2 = b * b
-    let c2 = c * c
-    let d2 = d * d
-    let bd = b * d
-    let bc = b * c
-    let de0 = c2 - 3 * bd + 12 * e
-    let de1 = 2 * c * c2 - 9 * bd * c + 27 * (b2 * e + d2) - 72 * e * c
-    let _4_de0_3 = 4 * de0 * de0 * de0
-    let de2 = de1 * de1 - _4_de0_3
-    let P = 8 * c - 3 * b2
-    let Q = b * b2 - 4 * bc + 8 * d
-    let p = 0.125 * P
-    let q = 0.125 * Q
-    let m = 0.25 * b
-    let S: Double
-    if de2.sign == .minus {
-        let phi = acos(de1 / sqrt(_4_de0_3))
-        let _S = -p + sqrt(de0) * cos(phi / 3)
-        S = 0.5 * sqrt(_S * 2 / 3)
-    } else {
-        let _S = de0.almostZero() && !de2.almostZero() ? cbrt(de1) : cbrt(0.5 * (de1 + sqrt(de2)))
-        if _S.almostZero() {
-            let _b = 2 * m
-            let _c = m * m
-            return ((_b, _c), (_b, _c))
-        }
-        if _S.sign == .minus {
-            let S = 0.25 * (_S + de0 / _S - 2 * p) / 3
-            return ((2 * m, m * m - S), (2 * m, m * m - S))
-        }
-        S = 0.5 * sqrt((_S + de0 / _S - 2 * p) / 3)
-    }
-    let _t = -4 * S * S - 2 * p
-    let t1 = _t + q / S
-    let t2 = _t - q / S
-    let k1 = m + S
-    let k2 = m - S
-    return ((2 * k1, k1 * k1 - 0.25 * t1), (2 * k2, k2 * k2 - 0.25 * t2))
-}
-
-@inlinable
-@inline(__always)
 public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero() {
         let z = Array(degree2roots(b, c))
@@ -280,10 +233,12 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
 @inlinable
 @inline(__always)
 public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
+    
     if e.almostZero() {
         let z = degree3roots(b, c, d)
         return z.contains(0) ? z : [0] + z
     }
+    
     if b.almostZero() && d.almostZero() { // biquadratic
         var result = [Double]()
         for z in degree2roots(c, e) {
@@ -297,8 +252,50 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
         return result
     }
     
-    let _d2 = degree4decompose(b, c, d, e)
-    return Array(Set(degree2roots(_d2.0.0, _d2.0.1).concat(degree2roots(_d2.1.0, _d2.1.1))))
+    let b2 = b * b
+    let c2 = c * c
+    let d2 = d * d
+    let bd = b * d
+    let bc = b * c
+    let de0 = c2 - 3 * bd + 12 * e
+    let de1 = 2 * c * c2 - 9 * bd * c + 27 * (b2 * e + d2) - 72 * e * c
+    let _4_de0_3 = 4 * de0 * de0 * de0
+    let de2 = de1 * de1 - _4_de0_3
+    let P = 8 * c - 3 * b2
+    let Q = b * b2 - 4 * bc + 8 * d
+    let p = 0.125 * P
+    let q = 0.125 * Q
+    let m = 0.25 * b
+    
+    let S: Double
+    if de2.sign == .minus {
+        let phi = acos(de1 / sqrt(_4_de0_3))
+        let _S = -p + sqrt(de0) * cos(phi / 3)
+        if _S.almostZero() {
+            return []
+        }
+        S = 0.5 * sqrt(_S * 2 / 3)
+    } else {
+        let _S = de0.almostZero() && !de2.almostZero() ? cbrt(de1) : cbrt(0.5 * (de1 + sqrt(de2)))
+        if _S.almostZero() {
+            let _b = 2 * m
+            let _c = m * m
+            return Array(Set(degree2roots(_b, _c).concat(degree2roots(_b, _c))))
+        }
+        if _S.sign == .minus {
+            let S = 0.25 * (_S + de0 / _S - 2 * p) / 3
+            return Array(Set(degree2roots(2 * m, m * m - S).concat(degree2roots(2 * m, m * m - S))))
+        }
+        S = 0.5 * sqrt((_S + de0 / _S - 2 * p) / 3)
+    }
+    
+    let _t = -4 * S * S - 2 * p
+    let t1 = _t + q / S
+    let t2 = _t - q / S
+    let k1 = m + S
+    let k2 = m - S
+    
+    return Array(Set(degree2roots(2 * k1, k1 * k1 - 0.25 * t1).concat(degree2roots(2 * k2, k2 * k2 - 0.25 * t2))))
 }
 
 // MARK: Interpolation

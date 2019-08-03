@@ -238,19 +238,22 @@ extension Polynomial {
         
         var result = [Double]()
         
-        for idx in extrema.indices.dropLast() {
+        for idx in extrema.indices.dropLast() where extrema[idx] != extrema[idx + 1] {
             
             let left = self.eval(extrema[idx])
             let right = self.eval(extrema[idx + 1])
             
             if left.almostZero(reference: extrema[idx]) {
+                
                 if !result.contains(extrema[idx]) {
                     result.append(extrema[idx])
                 }
                 
             } else if !right.almostZero(reference: extrema[idx + 1]) && left.sign != right.sign {
+                
                 var neg: Double
                 var pos: Double
+                
                 if left > 0 {
                     neg = extrema[idx + 1]
                     pos = extrema[idx]
@@ -263,19 +266,17 @@ extension Polynomial {
                 var posVal = self.eval(pos)
                 var previous = extrema[idx + 1]
                 
-                var eps = 1e-14
-                var iter = 0
+                var mid = 0.0
                 
-                while true {
-                    var mid = (pos * negVal - neg * posVal) / (negVal - posVal)
+                for _ in 0..<52 {
+                    mid = (pos * negVal - neg * posVal) / (negVal - posVal)
                     let u = 3.0 * abs(mid - previous)
                     let v = abs(neg - pos)
                     if u < v {
                         mid = 0.5 * (neg + pos)
                     }
                     let midVal = self.eval(mid)
-                    if midVal.almostZero(epsilon: eps, reference: mid) || pos.almostEqual(neg, epsilon: eps) {
-                        result.append(mid)
+                    if midVal.almostZero(epsilon: 1e-14, reference: mid) || pos.almostEqual(neg, epsilon: 1e-14) {
                         break
                     }
                     previous = mid
@@ -286,17 +287,20 @@ extension Polynomial {
                         pos = mid
                         posVal = midVal
                     }
-                    
-                    iter += 1
-                    if iter % 5000 == 0 {
-                        eps *= 2
-                    }
+                }
+                
+                if !result.contains(mid) {
+                    result.append(mid)
                 }
             }
         }
+        
         if let last = extrema.last, self.eval(last).almostZero(reference: last) {
-            result.append(last)
+            if !result.contains(last) {
+                result.append(last)
+            }
         }
+        
         return result
     }
 }
