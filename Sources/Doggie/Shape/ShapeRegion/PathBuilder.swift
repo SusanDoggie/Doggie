@@ -122,7 +122,7 @@ extension InterscetionTable {
             
             for (l_idx, l_segment) in left.bezier.indexed() where l_segment.boundary.isIntersect(r_segment.boundary.inset(dx: epsilon, dy: epsilon)) {
                 
-                if let intersect = l_segment.intersect(r_segment) {
+                if let intersect = l_segment.intersect(r_segment, reference: reference) {
                     
                     for (l_split, r_split) in intersect {
                         
@@ -258,7 +258,7 @@ extension Shape.Component {
         return segment.point(0.5)
     }
     
-    private func _contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
+    private func _contains(_ other: Shape.Component, reference: Double, hint: Set<Int> = []) -> Bool {
         
         if !self.boundary.isIntersect(other.boundary) {
             return false
@@ -270,7 +270,7 @@ extension Shape.Component {
         if hint.count == 0 {
             
             for index in 0..<other.count {
-                if self.bezier.allSatisfy({ !$0.overlap(other.bezier[index]) }) {
+                if self.bezier.allSatisfy({ !$0.overlap(other.bezier[index], reference: reference) }) {
                     return self.winding(other.bezier[index].point(0.5)) != 0
                 }
             }
@@ -305,14 +305,14 @@ extension Shape.Component {
             
         } else if check1 {
             
-            if self._contains(other, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
+            if self._contains(other, reference: reference, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
                 return .superset
             }
             return .none
             
         } else if check2 {
             
-            if other._contains(self, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
+            if other._contains(self, reference: reference, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
                 return .subset
             }
             return .none
@@ -415,10 +415,10 @@ extension Shape.Component {
         }
         
         if flag {
-            if self._contains(other, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
+            if self._contains(other, reference: reference, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
                 return .superset
             }
-            if other._contains(self, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
+            if other._contains(self, reference: reference, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
                 return .subset
             }
             return .none

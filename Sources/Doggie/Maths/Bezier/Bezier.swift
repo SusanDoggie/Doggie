@@ -594,12 +594,12 @@ extension Bezier where Element == Point {
         return det(n, bézout).polynomial
     }
     
-    public func overlap(_ other: Bezier) -> Bool {
-        return _resultant(other).allSatisfy { $0.almostZero() }
+    public func overlap(_ other: Bezier, reference: Double = 0) -> Bool {
+        return _resultant(other).allSatisfy { $0.almostZero(reference: reference) }
     }
     
-    public func intersect(_ other: Bezier, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
+    public func intersect(_ other: Bezier, in range: ClosedRange<Double> = -.infinity ... .infinity, reference: Double = 0) -> [Double]? {
         let resultant = _resultant(other)
-        return resultant.allSatisfy { $0.almostZero() } ? nil : resultant.roots(in: range)
+        return resultant.allSatisfy { $0.almostZero(reference: reference) } ? nil : resultant.roots(in: range)
     }
 }

@@ -477,38 +477,38 @@ extension CubicBezier where Element == Point {
         return _d + _e + _f
     }
     @inlinable
-    public func overlap(_ other: LineSegment<Element>) -> Bool {
+    public func overlap(_ other: LineSegment<Element>, reference: Double = 0) -> Bool {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() }
+        return det.allSatisfy { $0.almostZero(reference: reference) }
     }
     
     @inlinable
-    public func overlap(_ other: QuadBezier<Element>) -> Bool {
+    public func overlap(_ other: QuadBezier<Element>, reference: Double = 0) -> Bool {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() }
+        return det.allSatisfy { $0.almostZero(reference: reference) }
     }
     
     @inlinable
-    public func overlap(_ other: CubicBezier) -> Bool {
+    public func overlap(_ other: CubicBezier, reference: Double = 0) -> Bool {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() }
+        return det.allSatisfy { $0.almostZero(reference: reference) }
     }
     
     @inlinable
-    public func intersect(_ other: LineSegment<Element>, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
+    public func intersect(_ other: LineSegment<Element>, in range: ClosedRange<Double> = -.infinity ... .infinity, reference: Double = 0) -> [Double]? {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() } ? nil : det.roots(in: range)
+        return det.allSatisfy { $0.almostZero(reference: reference) } ? nil : det.roots(in: range)
     }
     
     @inlinable
-    public func intersect(_ other: QuadBezier<Element>, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
+    public func intersect(_ other: QuadBezier<Element>, in range: ClosedRange<Double> = -.infinity ... .infinity, reference: Double = 0) -> [Double]? {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() } ? nil : det.roots(in: range)
+        return det.allSatisfy { $0.almostZero(reference: reference) } ? nil : det.roots(in: range)
     }
     
     @inlinable
-    public func intersect(_ other: CubicBezier, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
+    public func intersect(_ other: CubicBezier, in range: ClosedRange<Double> = -.infinity ... .infinity, reference: Double = 0) -> [Double]? {
         let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() } ? nil : det.roots(in: range)
+        return det.allSatisfy { $0.almostZero(reference: reference) } ? nil : det.roots(in: range)
     }
 }

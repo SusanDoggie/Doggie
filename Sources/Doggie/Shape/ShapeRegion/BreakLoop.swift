@@ -23,6 +23,24 @@
 //  THE SOFTWARE.
 //
 
+extension Point {
+    
+    fileprivate func _round_to_float() -> Point {
+        return Point(x: Double(Float(x)), y: Double(Float(y)))
+    }
+}
+
+extension Shape.Component.BezierCollection.Element {
+    
+    fileprivate func _round_to_float() -> Shape.Component.BezierCollection.Element {
+        switch self.segment {
+        case let .line(p1): return Shape.Component.BezierCollection.Element(start._round_to_float(), p1._round_to_float())
+        case let .quad(p1, p2): return Shape.Component.BezierCollection.Element(start._round_to_float(), p1._round_to_float(), p2._round_to_float())
+        case let .cubic(p1, p2, p3): return Shape.Component.BezierCollection.Element(start._round_to_float(), p1._round_to_float(), p2._round_to_float(), p3._round_to_float())
+        }
+    }
+}
+
 extension Shape.Component {
     
     func breakLoop(reference: Double) -> [ShapeRegion.Solid] {
@@ -35,7 +53,7 @@ extension Shape.Component {
                 if !segment2.boundary.inset(dx: epsilon, dy: epsilon).isIntersect(segment1.boundary.inset(dx: epsilon, dy: epsilon)) {
                     continue
                 }
-                if let _intersects = segment1.intersect(segment2) {
+                if let _intersects = segment1.intersect(segment2, reference: reference) {
                     for _intersect in _intersects {
                         let s0 = InterscetionTable.Split(point: segment1.point(_intersect.0), index: index1, count: self.count, split: _intersect.0)
                         let s1 = InterscetionTable.Split(point: segment2.point(_intersect.1), index: index2, count: self.count, split: _intersect.1)
@@ -100,13 +118,14 @@ extension Shape.Component {
         
         for (left, right) in _points.rotateZip() {
             if left.0 == right.0 {
-                if let solid = ShapeRegion.Solid(segments: self.split_path(left.1, right.1), reference: reference) {
+                if let solid = ShapeRegion.Solid(segments: self.split_path(left.1, right.1).map { $0._round_to_float() }, reference: reference) {
                     result.append(solid)
                 }
             } else {
                 graph[from: left.0, to: right.0, default: []].append((left.1, right.1))
             }
         }
+        
         while let graph_first = graph.first {
             var path: [Int] = [graph_first.from, graph_first.to]
             while let last = path.last, let node = graph.nodes(from: last).first?.0 {
@@ -124,7 +143,7 @@ extension Shape.Component {
                             }
                         }
                     }
-                    if let solid = ShapeRegion.Solid(segments: segments, reference: reference) {
+                    if let solid = ShapeRegion.Solid(segments: segments.map { $0._round_to_float() }, reference: reference) {
                         result.append(solid)
                     }
                     if i == 0 {
@@ -136,6 +155,7 @@ extension Shape.Component {
                 }
             }
         }
+        
         return result
     }
 }
@@ -215,4 +235,3 @@ extension Shape {
         return solids.flatMap { $0.solid.breakLoop(reference: reference) }
     }
 }
-
