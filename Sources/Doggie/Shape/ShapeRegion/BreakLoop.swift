@@ -53,7 +53,7 @@ extension Shape.Component {
                 if !segment2.boundary.inset(dx: epsilon, dy: epsilon).isIntersect(segment1.boundary.inset(dx: epsilon, dy: epsilon)) {
                     continue
                 }
-                if let _intersects = segment1.intersect(segment2, reference: reference) {
+                if let _intersects = segment1.intersect(segment2) {
                     for _intersect in _intersects {
                         let s0 = InterscetionTable.Split(point: segment1.point(_intersect.0), index: index1, count: self.count, split: _intersect.0)
                         let s1 = InterscetionTable.Split(point: segment2.point(_intersect.1), index: index2, count: self.count, split: _intersect.1)
