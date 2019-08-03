@@ -26,18 +26,6 @@
 private let ShapeCacheNonZeroRegionKey = "ShapeCacheNonZeroRegionKey"
 private let ShapeCacheEvenOddRegionKey = "ShapeCacheEvenOddRegionKey"
 
-extension RandomAccessCollection where Index : SignedInteger {
-    
-    func indexMod(_ index: Index) -> Index {
-        if startIndex == endIndex {
-            return endIndex
-        }
-        let count = self.count
-        let offset = Int(index - startIndex) % count
-        return self.index(startIndex, offsetBy: offset < 0 ? offset + count : offset)
-    }
-}
-
 extension Collection where SubSequence : Collection {
     
     func rotateZip() -> Zip2Sequence<Self, LazyConcatCollection<Self.SubSequence, Self.SubSequence>> {

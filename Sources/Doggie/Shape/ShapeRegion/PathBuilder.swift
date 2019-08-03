@@ -166,26 +166,55 @@ extension InterscetionTable {
         _left_segments = left_segments
         _right_segments = right_segments
         
-        for (start, end) in left_segments {
+        for (l_start, l_end) in left_segments {
             
-            guard let idx = right_segments.index(forKey: start) else { continue }
+            guard let idx = right_segments.index(forKey: l_start) else { continue }
             
             let r_start = right_segments[idx].key
             let r_end = right_segments[idx].value
             
-            guard r_end == end else { continue }
-            guard let _overlap = overlap[InterscetionTable.Overlap(left: start.index, right: r_start.index)] else { continue }
+            guard r_end == l_end else { continue }
             
-            left_segments[start] = nil
-            right_segments[r_start] = nil
+            if overlap[InterscetionTable.Overlap(left: l_start.index, right: r_start.index)] == true {
+                
+                left_segments[l_start] = nil
+                right_segments[r_start] = nil
+                
+                if let _start = left_segments.first(where: { $0.value == l_start })?.key {
+                    left_segments[_start] = l_end
+                }
+                if let _start = right_segments.first(where: { $0.value == r_start })?.key {
+                    right_segments[_start] = r_end
+                }
+            }
+        }
+        
+        for (l_start, l_end) in left_segments {
             
-            if _overlap {
-                if let new_start = left_segments.first(where: { $0.value == start })?.key {
-                    left_segments[new_start] = end
-                }
-                if let new_start = right_segments.first(where: { $0.value == r_start })?.key {
-                    right_segments[new_start] = r_end
-                }
+            guard let idx = right_segments.index(forKey: l_end) else { continue }
+            
+            let r_start = right_segments[idx].key
+            let r_end = right_segments[idx].value
+            
+            guard r_end == l_start else { continue }
+            
+            var l_end_index = l_end.split == 0 ? l_end.index - 1 : l_end.index
+            var r_end_index = r_end.split == 0 ? r_end.index - 1 : r_end.index
+            
+            if l_end_index < 0 {
+                l_end_index += left.count
+            }
+            if r_end_index < 0 {
+                r_end_index += right.count
+            }
+            
+            let l_range = l_start.index...(l_start.index <= l_end_index ? l_end_index : l_end_index + left.count)
+            let r_range = r_start.index...(r_start.index <= r_end_index ? r_end_index : r_end_index + right.count)
+            let check = l_range.allSatisfy { l_idx in r_range.contains { r_idx in overlap[InterscetionTable.Overlap(left: l_idx % left.count, right: r_idx % right.count)] == false } }
+            
+            if check {
+                left_segments[l_start] = nil
+                right_segments[r_start] = nil
             }
         }
     }
