@@ -78,7 +78,7 @@ extension Tensor {
     @inline(__always)
     public var magnitude: Scalar {
         get {
-            return self.reduce(0) { $0 + $1 * $1 }.squareRoot()
+            return self.reduce { fma($1, $1, $0) }?.squareRoot() ?? 0
         }
         set {
             let m = self.magnitude
@@ -110,5 +110,5 @@ public func abs<T : Tensor>(_ x: T) -> T.Scalar {
 @inlinable
 @inline(__always)
 public func dot<T : Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
-    return lhs.combined(rhs) { $0 * $1 }.reduce(0) { $0 + $1 }
+    return lhs.combined(rhs) { $0 * $1 }.reduce { $0 + $1 } ?? 0
 }

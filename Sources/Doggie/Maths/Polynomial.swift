@@ -180,9 +180,19 @@ extension Polynomial {
     public func eval(_ x: Double) -> Double {
         switch x {
         case 0: return self[0]
-        case 1: return coeffs.reduce(0, +)
-        default: return coeffs.reversed().reduce(0) { x * $0 + $1 }
+        case 1: return coeffs.reduce(+) ?? 0
+        default: return coeffs.reversed().reduce { fma(x, $0, $1) } ?? 0
         }
+    }
+    
+    @inlinable
+    public func eval(_ x: Complex) -> Complex {
+        return coeffs.reversed().reduce(Complex()) { x * $0 + $1 }
+    }
+    
+    @inlinable
+    public func substitute(_ x: Polynomial) -> Polynomial {
+        return coeffs.reversed().reduce([]) { x * $0 + $1 }
     }
 }
 
@@ -216,7 +226,6 @@ extension Polynomial {
     func _root(_ range: ClosedRange<Double>) -> [Double] {
         
         let _d = degree & 1
-        
         let upperBound = Swift.min(range.upperBound, coeffs.dropLast().lazy.map { -$0 }.max().map { 1 + $0 } ?? 1)
         let lowerBound = Swift.max(range.lowerBound, coeffs.dropLast().enumerated().lazy.map { $0 & 1 == _d ? -$1 : $1 }.max().map { -1 - $0 } ?? -1)
         
