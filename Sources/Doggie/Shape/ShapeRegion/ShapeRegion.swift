@@ -184,10 +184,10 @@ extension Shape.Component {
         case .subset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
         case .none: return nil
         case let .regions(left, right): return left.union(right, reference: reference)
-        case let .loops(loops):
-            let _solid = loops.outer.lazy.filter { $0.solid.area.sign == self.area.sign }.max { abs($0.area) }
+        case let .loops(outer, _):
+            let _solid = outer.lazy.filter { $0.solid.area.sign == self.area.sign }.max { abs($0.area) }
             guard let solid = _solid?.solid else { return ShapeRegion() }
-            let holes = ShapeRegion(solids: loops.outer.filter { $0.solid.area.sign != self.area.sign })
+            let holes = ShapeRegion(solids: outer.filter { $0.solid.area.sign != self.area.sign })
             return ShapeRegion(solids: [ShapeRegion.Solid(solid: solid, holes: holes)])
         }
     }
@@ -198,7 +198,7 @@ extension Shape.Component {
         case .superset: return ShapeRegion(solid: ShapeRegion.Solid(solid: other))
         case .none: return ShapeRegion()
         case let .regions(left, right): return left.intersection(right, reference: reference)
-        case let .loops(loops): return ShapeRegion(solids: loops.inner)
+        case let .loops(_, inner): return ShapeRegion(solids: inner)
         }
     }
     func _subtracting(_ other: Shape.Component, reference: Double) -> (ShapeRegion?, Bool) {
@@ -208,7 +208,7 @@ extension Shape.Component {
         case .superset: return (nil, true)
         case .none: return (nil, false)
         case let .regions(left, right): return (left.subtracting(right, reference: reference), false)
-        case let .loops(loops): return (ShapeRegion(solids: loops.outer), false)
+        case let .loops(outer, _): return (ShapeRegion(solids: outer), false)
         }
     }
 }

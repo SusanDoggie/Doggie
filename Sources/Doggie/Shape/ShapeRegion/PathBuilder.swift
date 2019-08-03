@@ -27,22 +27,12 @@ private let ShapeCacheInterscetionResultKey = "ShapeCacheInterscetionResultKey"
 
 enum InterscetionResult {
     
-    struct Loop {
-        
-        var outer: [ShapeRegion.Solid]
-        var inner: [ShapeRegion.Solid]
-        
-        func reversed() -> Loop {
-            return Loop(outer: outer.map { $0.reversed() }, inner: inner.map { $0.reversed() })
-        }
-    }
-    
     case none
     case equal
     case superset
     case subset
     case regions(ShapeRegion, ShapeRegion)
-    case loops(Loop)
+    case loops([ShapeRegion.Solid], [ShapeRegion.Solid])
 }
 
 struct InterscetionTable {
@@ -443,7 +433,7 @@ extension Shape.Component {
         let _outer = outer.compactMap { ShapeRegion.Solid(segments: $0, reference: reference) }
         let _inner = inner.compactMap { ShapeRegion.Solid(segments: $0, reference: reference) }
         
-        return .loops(InterscetionResult.Loop(outer: _outer, inner: _inner))
+        return .loops(_outer, _inner)
     }
     
     private var interscetionResultCache: WeakDictionary<Shape.Component.CacheArray, [Int: InterscetionResult]> {
@@ -465,7 +455,7 @@ extension Shape.Component {
                 case .superset: return .subset
                 case .subset: return .superset
                 case let .regions(lhs, rhs): return .regions(rhs, lhs)
-                case let .loops(loops): return self.area.sign == other.area.sign ? .loops(loops) : .loops(loops.reversed())
+                case let .loops(outer, inner): return self.area.sign == other.area.sign ? .loops(outer, inner) : .loops(inner, outer)
                 }
             } else {
                 interscetionResultCache[other.cache] = self._process(other, reference: reference)
