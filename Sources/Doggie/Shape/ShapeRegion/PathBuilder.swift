@@ -287,7 +287,7 @@ extension Shape.Component {
     
     private func _breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)], reference: Double) -> ShapeRegion {
         guard !points.isEmpty else { return ShapeRegion(solid: ShapeRegion.Solid(solid: self)) }
-        return ShapeRegion(solids: self.breakLoop(points, reference: reference))
+        return self.breakLoop(points, reference: reference).reduce(ShapeRegion()) { $0.union(ShapeRegion(solid: $1)) }
     }
     
     private func _process(_ other: Shape.Component, reference: Double) -> InterscetionResult {
