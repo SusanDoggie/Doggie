@@ -159,12 +159,12 @@ extension InterscetionTable {
         _left_segments = left_segments
         _right_segments = right_segments
         
-        for (l_start, l_end) in left_segments {
+        for (l_start, l_end) in _left_segments {
             
-            guard let idx = right_segments.index(forKey: l_start) else { continue }
+            guard let idx = _right_segments.index(forKey: l_start) else { continue }
             
-            let r_start = right_segments[idx].key
-            let r_end = right_segments[idx].value
+            let r_start = _right_segments[idx].key
+            let r_end = _right_segments[idx].value
             
             guard r_end == l_end else { continue }
             
@@ -188,12 +188,12 @@ extension InterscetionTable {
             }
         }
         
-        for (l_start, l_end) in left_segments {
+        for (l_start, l_end) in _left_segments {
             
-            guard let idx = right_segments.index(forKey: l_end) else { continue }
+            guard let idx = _right_segments.index(forKey: l_end) else { continue }
             
-            let r_start = right_segments[idx].key
-            let r_end = right_segments[idx].value
+            let r_start = _right_segments[idx].key
+            let r_end = _right_segments[idx].value
             
             guard r_end == l_start else { continue }
             
@@ -312,10 +312,11 @@ extension Shape.Component {
         
         guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left, reference: reference), other._breakLoop(table.looping_right, reference: reference)) }
         
-        let check1 = !table.left_overlap.isStrictSubset(of: table._left_segments.map { InterscetionTable.Segment(from: $0.point_id, to: $1.point_id) })
-        let check2 = !table.right_overlap.isStrictSubset(of: table._right_segments.map { InterscetionTable.Segment(from: $0.point_id, to: $1.point_id) })
+        let check1 = !table._left_segments.isEmpty && !table.left_overlap.isStrictSubset(of: table._left_segments.map { InterscetionTable.Segment(from: $0.point_id, to: $1.point_id) })
+        let check2 = !table._right_segments.isEmpty && !table.right_overlap.isStrictSubset(of: table._right_segments.map { InterscetionTable.Segment(from: $0.point_id, to: $1.point_id) })
         
         if check1 && check2 {
+            
             return .equal
             
         } else if check1 {
@@ -478,6 +479,31 @@ extension Shape.Component {
                 }
             } else {
                 interscetionResultCache[other.cache] = self._process(other, reference: reference)
+                
+                if let debug_container = debug_container {
+                    
+                    debug_counter += 1
+                    
+                    let url = debug_container.appendingPathComponent("process \(debug_counter)")
+                    
+                    try? self.preview().tiffRepresentation()?.write(to: url.appendingPathComponent("self.tif"), withIntermediateDirectories: true)
+                    try? other.preview().tiffRepresentation()?.write(to: url.appendingPathComponent("other.tif"), withIntermediateDirectories: true)
+                    
+                    switch interscetionResultCache[other.cache]! {
+                    case .none: print("process \(debug_counter): none")
+                    case .equal: print("process \(debug_counter): equal")
+                    case .superset: print("process \(debug_counter): superset")
+                    case .subset: print("process \(debug_counter): subset")
+                    case let .regions(lhs, rhs):
+                        print("process \(debug_counter): regions")
+                        try? lhs.preview().tiffRepresentation()?.write(to: url.appendingPathComponent("lhs.tif"), withIntermediateDirectories: true)
+                        try? rhs.preview().tiffRepresentation()?.write(to: url.appendingPathComponent("rhs.tif"), withIntermediateDirectories: true)
+                    case let .loops(outer, inner):
+                        print("process \(debug_counter): loops")
+                        try? Shape(outer.map { $0.solid }).preview().tiffRepresentation()?.write(to: url.appendingPathComponent("outer.tif"), withIntermediateDirectories: true)
+                        try? Shape(inner.map { $0.solid }).preview().tiffRepresentation()?.write(to: url.appendingPathComponent("inner.tif"), withIntermediateDirectories: true)
+                    }
+                }
             }
         }
         return interscetionResultCache[other.cache]!
@@ -493,5 +519,12 @@ extension WeakDictionary where Key == Shape.Component.CacheArray, Value == [Int:
         set {
             self[key.list, default: [:]][key.index] = newValue
         }
+    }
+}
+
+public var debug_counter = 0
+public var debug_container: URL? {
+    didSet {
+        debug_counter = 0
     }
 }
