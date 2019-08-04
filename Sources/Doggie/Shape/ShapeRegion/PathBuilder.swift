@@ -103,6 +103,14 @@ extension InterscetionTable.Split {
     }
 }
 
+extension Shape.Component {
+    
+    fileprivate func almost_equal(_ s0: InterscetionTable.Split, _ s1: InterscetionTable.Split, reference: Double) -> Bool {
+        return ShapeRegion.Solid(segments: self.split_path(s0, s1), reference: reference) == nil ||
+            ShapeRegion.Solid(segments: self.split_path(s1, s0), reference: reference) == nil
+    }
+}
+
 extension InterscetionTable {
     
     init(_ left: Shape.Component, _ right: Shape.Component, reference: Double) {
@@ -129,8 +137,8 @@ extension InterscetionTable {
                             continue
                         }
                         
-                        let _lhs = right_split.values.lazy.compactMap { $0.almostEqual(rhs, reference: reference) ? left_split[$0.point_id] : nil }.first { !$0.almostEqual(lhs) }
-                        let _rhs = left_split.values.lazy.compactMap { $0.almostEqual(lhs, reference: reference) ? right_split[$0.point_id] : nil }.first { !$0.almostEqual(rhs) }
+                        let _lhs = right_split.values.lazy.compactMap { $0.almostEqual(rhs, reference: reference) ? left_split[$0.point_id] : nil }.first { !left.almost_equal($0, lhs, reference: reference) }
+                        let _rhs = left_split.values.lazy.compactMap { $0.almostEqual(lhs, reference: reference) ? right_split[$0.point_id] : nil }.first { !right.almost_equal($0, rhs, reference: reference) }
                         
                         if let _lhs = _lhs {
                             looping_left.append((_lhs, lhs))
@@ -303,7 +311,7 @@ extension Shape.Component {
     
     private func _breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)], reference: Double) -> ShapeRegion {
         guard !points.isEmpty else { return ShapeRegion(solid: ShapeRegion.Solid(solid: self)) }
-        return self.breakLoop(points, reference: reference).reduce(ShapeRegion()) { $0.union(ShapeRegion(solid: $1)) }
+        return ShapeRegion(solids: self.breakLoop(points, reference: reference))
     }
     
     private func _process(_ other: Shape.Component, reference: Double) -> InterscetionResult {
