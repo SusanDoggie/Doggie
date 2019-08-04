@@ -168,35 +168,15 @@ extension InterscetionTable {
             
             guard r_end == l_end else { continue }
             
-            do {
-                
-                let segments = left.split_path(l_start, l_end) + right.split_path(r_start, r_end).map { $0.reversed() }.reversed()
-                
-                if ShapeRegion.Solid(segments: segments, reference: reference) == nil {
-                    
-                    if let _start = left_segments.first(where: { $0.value == l_start })?.key {
-                        left_segments[_start] = left_segments[l_start]
-                    }
-                    if let _start = right_segments.first(where: { $0.value == r_start })?.key {
-                        right_segments[_start] = right_segments[r_start]
-                    }
-                    
-                    left_segments[l_start] = nil
-                    right_segments[r_start] = nil
-                    
-                    left_overlap.insert(Segment(from: l_start.point_id, to: l_end.point_id))
-                    right_overlap.insert(Segment(from: r_start.point_id, to: r_end.point_id))
-                    
-                    continue
-                }
-            }
+            let segments = left.split_path(l_start, l_end) + right.split_path(r_start, r_end).map { $0.reversed() }.reversed()
             
-            if overlap[InterscetionTable.Overlap(left: l_start.index, right: r_start.index)] == true {
+            if ShapeRegion.Solid(segments: segments, reference: reference) == nil ||
+                overlap[InterscetionTable.Overlap(left: l_start.index, right: r_start.index)] == true {
                 
-                if let _start = left_segments.first(where: { $0.value == l_start })?.key {
+                if let _start = left_segments.first(where: { $0.value == l_start })?.key, _start != left_segments[l_start] {
                     left_segments[_start] = left_segments[l_start]
                 }
-                if let _start = right_segments.first(where: { $0.value == r_start })?.key {
+                if let _start = right_segments.first(where: { $0.value == r_start })?.key, _start != right_segments[r_start] {
                     right_segments[_start] = right_segments[r_start]
                 }
                 
@@ -205,8 +185,6 @@ extension InterscetionTable {
                 
                 left_overlap.insert(Segment(from: l_start.point_id, to: l_end.point_id))
                 right_overlap.insert(Segment(from: r_start.point_id, to: r_end.point_id))
-                
-                continue
             }
         }
         
@@ -342,8 +320,8 @@ extension Shape.Component {
             
         } else if check1 {
             
-            let is_outer_right = table.right_segments.lazy.compactMap { !$0.almostEqual($1) ? self.winding(other.mid_point($0, table._right_segments[$0]!)) == 0 : nil }.first
-            if is_outer_right.map({ $0 == false }) ?? self._contains(other) {
+            let is_inner_right = table.right_segments.contains { !$0.almostEqual($1) && self.winding(other.mid_point($0, table._right_segments[$0]!)) != 0 }
+            if is_inner_right || (table.right_segments.isEmpty && self._contains(other)) {
                 return .superset
             }
             
@@ -351,8 +329,8 @@ extension Shape.Component {
             
         } else if check2 {
             
-            let is_outer_left = table.left_segments.lazy.compactMap { !$0.almostEqual($1) ? other.winding(self.mid_point($0, table._left_segments[$0]!)) == 0 : nil }.first
-            if is_outer_left.map({ $0 == false }) ?? other._contains(self) {
+            let is_inner_left = table.left_segments.contains { !$0.almostEqual($1) && other.winding(self.mid_point($0, table._left_segments[$0]!)) != 0 }
+            if is_inner_left || (table.left_segments.isEmpty && other._contains(self)) {
                 return .subset
             }
             
@@ -463,8 +441,8 @@ extension Shape.Component {
                 return .subset
             }
             
-            let is_outer_right = table.right_segments.lazy.compactMap { !$0.almostEqual($1) ? self.winding(other.mid_point($0, table._right_segments[$0]!)) == 0 : nil }.first
-            if is_outer_right.map({ $0 == false }) ?? self._contains(other) {
+            let is_inner_right = table.right_segments.contains { !$0.almostEqual($1) && self.winding(other.mid_point($0, table._right_segments[$0]!)) != 0 }
+            if is_inner_right || (table.right_segments.isEmpty && self._contains(other)) {
                 return .superset
             }
             
