@@ -736,9 +736,6 @@ extension SVGContext {
     
     private func _draw(image: SVGImageProtocol, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
         
-        self.beginTransparencyLayer()
-        defer { self.endTransparencyLayer() }
-        
         let key = image.imageTableKey
         
         let id: String
