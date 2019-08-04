@@ -140,7 +140,7 @@ extension ShapeRegion.Solid {
         guard segments.count > 0 else { return nil }
         
         let solid = Shape.Component(start: segments[0].start, closed: true, segments: segments.map { $0.segment })
-        guard !solid.area.almostZero(reference: reference) else { return nil }
+        guard !sqrt(abs(solid.area)).almostZero(reference: reference) else { return nil }
         
         self.init(solid: solid)
     }
@@ -314,7 +314,7 @@ extension ShapeRegion {
             return ShapeRegion()
         }
         
-        return ShapeRegion(solids: self.solids.flatMap { other.intersection($0, reference: reference) })
+        return ShapeRegion(solids: other.solids.flatMap { self.intersection($0, reference: reference) })
     }
     fileprivate func subtracting(_ other: ShapeRegion.Solid, reference: Double) -> [ShapeRegion.Solid] {
         
@@ -325,16 +325,7 @@ extension ShapeRegion {
             return self.solids
         }
         
-        var result: [ShapeRegion.Solid] = []
-        result.reserveCapacity(solids.count)
-        for solid in self.solids {
-            if solid.boundary.isIntersect(other.boundary) {
-                result.append(contentsOf: solid.subtracting(other, reference: reference))
-            } else {
-                result.append(solid)
-            }
-        }
-        return result
+        return self.solids.flatMap { $0.subtracting(other, reference: reference) }
     }
     fileprivate func subtracting(_ other: ShapeRegion, reference: Double) -> ShapeRegion {
         
@@ -345,16 +336,7 @@ extension ShapeRegion {
             return self
         }
         
-        var result: [Solid] = []
-        result.reserveCapacity(solids.count)
-        for solid in self.solids {
-            if solid.boundary.isIntersect(other.boundary) {
-                result.append(contentsOf: other.solids.reduce([solid]) { remains, other in remains.flatMap { $0.subtracting(other, reference: reference) } })
-            } else {
-                result.append(solid)
-            }
-        }
-        return ShapeRegion(solids: result)
+        return other.solids.reduce(self) { ShapeRegion(solids: $0.subtracting($1, reference: reference)) }
     }
     fileprivate func symmetricDifference(_ other: ShapeRegion, reference: Double) -> ShapeRegion {
         

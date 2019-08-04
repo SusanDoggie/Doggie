@@ -196,7 +196,8 @@ extension Shape {
                             if check_1 && check_4 {
                                 
                                 let split = segment.split(b)
-                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.0), reference: reference) {
+                                let (s, t) = split.0.split(0.5)
+                                if let loop = ShapeRegion.Solid(segments: [s, t], reference: reference) {
                                     solids.append(loop)
                                 }
                                 segment = split.1
@@ -204,7 +205,8 @@ extension Shape {
                             } else if check_2 && check_3 {
                                 
                                 let split = segment.split(a)
-                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split.1), reference: reference) {
+                                let (s, t) = split.1.split(0.5)
+                                if let loop = ShapeRegion.Solid(segments: [s, t], reference: reference) {
                                     solids.append(loop)
                                 }
                                 segment = split.0
@@ -212,7 +214,8 @@ extension Shape {
                             } else if check_2 && check_4 {
                                 
                                 let split = segment.split([a, b])
-                                if let loop = ShapeRegion.Solid(segments: CollectionOfOne(split[1]), reference: reference) {
+                                let (s, t) = split[1].split(0.5)
+                                if let loop = ShapeRegion.Solid(segments: [s, t], reference: reference) {
                                     solids.append(loop)
                                 }
                                 path.append(split[0])
