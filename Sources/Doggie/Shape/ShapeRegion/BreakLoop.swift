@@ -156,7 +156,7 @@ extension Shape.Component {
             }
         }
         
-        return result
+        return result.filter { $0.area > abs(reference) * 0.000001 }
     }
 }
 
