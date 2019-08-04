@@ -98,7 +98,7 @@ extension InterscetionTable.Split {
         return self == other || (self.index == other.index && self.split.almostEqual(other.split))
     }
     
-    func almostEqual(_ other: InterscetionTable.Split, reference: Double) -> Bool {
+    fileprivate func almostEqual(_ other: InterscetionTable.Split, reference: Double) -> Bool {
         return self == other || self.point.almostEqual(other.point, reference: reference) || (self.index == other.index && self.split.almostEqual(other.split))
     }
 }
