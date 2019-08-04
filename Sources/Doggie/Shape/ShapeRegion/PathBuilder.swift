@@ -129,8 +129,8 @@ extension InterscetionTable {
                             continue
                         }
                         
-                        let _lhs = right_split.values.first(where: { $0.almostEqual(rhs, reference: reference) }).flatMap { left_split[$0.point_id] }
-                        let _rhs = left_split.values.first(where: { $0.almostEqual(lhs, reference: reference) }).flatMap { right_split[$0.point_id] }
+                        let _lhs = right_split.values.lazy.compactMap { $0.almostEqual(rhs, reference: reference) ? left_split[$0.point_id] : nil }.first { !$0.almostEqual(lhs) }
+                        let _rhs = left_split.values.lazy.compactMap { $0.almostEqual(lhs, reference: reference) ? right_split[$0.point_id] : nil }.first { !$0.almostEqual(rhs) }
                         
                         if let _lhs = _lhs {
                             looping_left.append((_lhs, lhs))
