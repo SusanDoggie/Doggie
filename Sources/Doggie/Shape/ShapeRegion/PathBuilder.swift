@@ -479,31 +479,6 @@ extension Shape.Component {
                 }
             } else {
                 interscetionResultCache[other.cache] = self._process(other, reference: reference)
-                
-                if let debug_container = debug_container {
-                    
-                    debug_counter += 1
-                    
-                    let url = debug_container.appendingPathComponent("process \(debug_counter)")
-                    
-                    try? self.preview().tiffRepresentation()?.write(to: url.appendingPathComponent("self.tif"), withIntermediateDirectories: true)
-                    try? other.preview().tiffRepresentation()?.write(to: url.appendingPathComponent("other.tif"), withIntermediateDirectories: true)
-                    
-                    switch interscetionResultCache[other.cache]! {
-                    case .none: print("process \(debug_counter): none")
-                    case .equal: print("process \(debug_counter): equal")
-                    case .superset: print("process \(debug_counter): superset")
-                    case .subset: print("process \(debug_counter): subset")
-                    case let .regions(lhs, rhs):
-                        print("process \(debug_counter): regions")
-                        try? lhs.preview().tiffRepresentation()?.write(to: url.appendingPathComponent("lhs.tif"), withIntermediateDirectories: true)
-                        try? rhs.preview().tiffRepresentation()?.write(to: url.appendingPathComponent("rhs.tif"), withIntermediateDirectories: true)
-                    case let .loops(outer, inner):
-                        print("process \(debug_counter): loops")
-                        try? Shape(outer.map { $0.solid }).preview().tiffRepresentation()?.write(to: url.appendingPathComponent("outer.tif"), withIntermediateDirectories: true)
-                        try? Shape(inner.map { $0.solid }).preview().tiffRepresentation()?.write(to: url.appendingPathComponent("inner.tif"), withIntermediateDirectories: true)
-                    }
-                }
             }
         }
         return interscetionResultCache[other.cache]!
@@ -519,12 +494,5 @@ extension WeakDictionary where Key == Shape.Component.CacheArray, Value == [Int:
         set {
             self[key.list, default: [:]][key.index] = newValue
         }
-    }
-}
-
-public var debug_counter = 0
-public var debug_container: URL? {
-    didSet {
-        debug_counter = 0
     }
 }
