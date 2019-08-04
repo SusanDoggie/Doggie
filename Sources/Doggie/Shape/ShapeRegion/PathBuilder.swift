@@ -153,8 +153,8 @@ extension InterscetionTable {
         
         guard looping_left.isEmpty && looping_right.isEmpty else { return }
         
-        left_segments = Dictionary(uniqueKeysWithValues: left_split.values.sorted().rotateZip())
-        right_segments = Dictionary(uniqueKeysWithValues: right_split.values.sorted().rotateZip())
+        left_segments = left_split.count > 1 ? Dictionary(uniqueKeysWithValues: left_split.values.sorted().rotateZip()) : [:]
+        right_segments = right_split.count > 1 ? Dictionary(uniqueKeysWithValues: right_split.values.sorted().rotateZip()) : [:]
         
         _left_segments = left_segments
         _right_segments = right_segments
