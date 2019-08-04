@@ -217,6 +217,15 @@ func split_check(_ t: (Double, Double?)) -> (Double, Double)? {
 extension Shape.Component.BezierCollection.Element {
     
     @inlinable
+    public func reversed() -> Shape.Component.BezierCollection.Element {
+        switch self.segment {
+        case let .line(p1): return Shape.Component.BezierCollection.Element(p1, start)
+        case let .quad(p1, p2): return Shape.Component.BezierCollection.Element(p2, p1, start)
+        case let .cubic(p1, p2, p3): return Shape.Component.BezierCollection.Element(p3, p2, p1, start)
+        }
+    }
+    
+    @inlinable
     public func length(_ t: Double = 1) -> Double {
         switch self.segment {
         case let .line(p1): return LineSegment(start, p1).length(t)

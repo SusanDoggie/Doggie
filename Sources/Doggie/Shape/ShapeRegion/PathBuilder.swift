@@ -46,8 +46,8 @@ struct InterscetionTable {
     var looping_left: [(Split, Split)] = []
     var looping_right: [(Split, Split)] = []
     
-    var left_overlap: Set<Int> = []
-    var right_overlap: Set<Int> = []
+    var left_overlap: Set<Segment> = []
+    var right_overlap: Set<Segment> = []
 }
 
 extension InterscetionTable {
@@ -77,6 +77,12 @@ extension InterscetionTable {
         static func < (lhs: InterscetionTable.Split, rhs: InterscetionTable.Split) -> Bool {
             return (lhs.index, lhs.split) < (rhs.index, rhs.split)
         }
+    }
+    
+    struct Segment : Hashable {
+        
+        let from: Int
+        let to: Int
     }
     
     struct Overlap : Hashable {
@@ -147,9 +153,6 @@ extension InterscetionTable {
         
         guard looping_left.isEmpty && looping_right.isEmpty else { return }
         
-        left_overlap = Set(overlap.map { $0.key.left })
-        right_overlap = Set(overlap.map { $0.key.right })
-        
         left_segments = Dictionary(uniqueKeysWithValues: left_split.values.sorted().rotateZip())
         right_segments = Dictionary(uniqueKeysWithValues: right_split.values.sorted().rotateZip())
         
@@ -165,17 +168,45 @@ extension InterscetionTable {
             
             guard r_end == l_end else { continue }
             
+            do {
+                
+                let segments = left.split_path(l_start, l_end) + right.split_path(r_start, r_end).map { $0.reversed() }.reversed()
+                
+                if ShapeRegion.Solid(segments: segments, reference: reference) == nil {
+                    
+                    if let _start = left_segments.first(where: { $0.value == l_start })?.key {
+                        left_segments[_start] = left_segments[l_start]
+                    }
+                    if let _start = right_segments.first(where: { $0.value == r_start })?.key {
+                        right_segments[_start] = right_segments[r_start]
+                    }
+                    
+                    left_segments[l_start] = nil
+                    right_segments[r_start] = nil
+                    
+                    left_overlap.insert(Segment(from: l_start.point_id, to: l_end.point_id))
+                    right_overlap.insert(Segment(from: r_start.point_id, to: r_end.point_id))
+                    
+                    continue
+                }
+            }
+            
             if overlap[InterscetionTable.Overlap(left: l_start.index, right: r_start.index)] == true {
+                
+                if let _start = left_segments.first(where: { $0.value == l_start })?.key {
+                    left_segments[_start] = left_segments[l_start]
+                }
+                if let _start = right_segments.first(where: { $0.value == r_start })?.key {
+                    right_segments[_start] = right_segments[r_start]
+                }
                 
                 left_segments[l_start] = nil
                 right_segments[r_start] = nil
                 
-                if let _start = left_segments.first(where: { $0.value == l_start })?.key {
-                    left_segments[_start] = l_end
-                }
-                if let _start = right_segments.first(where: { $0.value == r_start })?.key {
-                    right_segments[_start] = r_end
-                }
+                left_overlap.insert(Segment(from: l_start.point_id, to: l_end.point_id))
+                right_overlap.insert(Segment(from: r_start.point_id, to: r_end.point_id))
+                
+                continue
             }
         }
         
@@ -193,8 +224,13 @@ extension InterscetionTable {
                 let segments = left.split_path(l_start, l_end) + right.split_path(r_start, r_end)
                 
                 if ShapeRegion.Solid(segments: segments, reference: reference) == nil {
+                    
                     left_segments[l_start] = nil
                     right_segments[r_start] = nil
+                    
+                    left_overlap.insert(Segment(from: l_start.point_id, to: l_end.point_id))
+                    right_overlap.insert(Segment(from: r_start.point_id, to: r_end.point_id))
+                    
                     continue
                 }
             }
@@ -216,8 +252,13 @@ extension InterscetionTable {
                 let check = l_range.allSatisfy { l_idx in r_range.contains { r_idx in overlap[InterscetionTable.Overlap(left: l_idx % left.count, right: r_idx % right.count)] == false } }
                 
                 if check {
+                    
                     left_segments[l_start] = nil
                     right_segments[r_start] = nil
+                    
+                    left_overlap.insert(Segment(from: l_start.point_id, to: l_end.point_id))
+                    right_overlap.insert(Segment(from: r_start.point_id, to: r_end.point_id))
+                    
                     continue
                 }
             }
@@ -264,7 +305,7 @@ extension Shape.Component {
         return segments[lengths.lastIndex(where: { $0 < half }) ?? 0].point(0.5)
     }
     
-    private func _contains(_ other: Shape.Component, hint: Set<Int> = []) -> Bool {
+    private func _contains(_ other: Shape.Component) -> Bool {
         
         if !self.boundary.isIntersect(other.boundary) {
             return false
@@ -273,19 +314,10 @@ extension Shape.Component {
             return false
         }
         
-        if hint.count == 0 {
-            
-            for index in 0..<other.count {
-                if self.bezier.allSatisfy({ !$0.overlap(other.bezier[index]) }) {
-                    return self.winding(other.bezier[index].point(0.5)) != 0
-                }
+        for index in 0..<other.count {
+            if self.bezier.allSatisfy({ !$0.overlap(other.bezier[index]) }) {
+                return self.winding(other.bezier[index].point(0.5)) != 0
             }
-            
-            return false
-        }
-        
-        if let index = hint.max(by: { other.bezier[$0].length() }) {
-            return self.winding(other.bezier[index].point(0.5)) != 0
         }
         
         return false
@@ -302,25 +334,28 @@ extension Shape.Component {
         
         guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left, reference: reference), other._breakLoop(table.looping_right, reference: reference)) }
         
-        let check1 = !table.left_overlap.isStrictSubset(of: 0..<self.count)
-        let check2 = !table.right_overlap.isStrictSubset(of: 0..<other.count)
+        let check1 = !table.left_overlap.isStrictSubset(of: table._left_segments.map { InterscetionTable.Segment(from: $0.point_id, to: $1.point_id) })
+        let check2 = !table.right_overlap.isStrictSubset(of: table._right_segments.map { InterscetionTable.Segment(from: $0.point_id, to: $1.point_id) })
         
         if check1 && check2 {
-            
             return .equal
             
         } else if check1 {
             
-            if self._contains(other, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
+            let is_outer_right = table.right_segments.lazy.compactMap { !$0.almostEqual($1) ? self.winding(other.mid_point($0, table._right_segments[$0]!)) == 0 : nil }.first
+            if is_outer_right.map({ $0 == false }) ?? self._contains(other) {
                 return .superset
             }
+            
             return .none
             
         } else if check2 {
             
-            if other._contains(self, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
+            let is_outer_left = table.left_segments.lazy.compactMap { !$0.almostEqual($1) ? other.winding(self.mid_point($0, table._left_segments[$0]!)) == 0 : nil }.first
+            if is_outer_left.map({ $0 == false }) ?? other._contains(self) {
                 return .subset
             }
+            
             return .none
         }
         
@@ -332,6 +367,7 @@ extension Shape.Component {
         
         let reverse = self.area.sign != other.area.sign
         
+        var _is_outer_left: Bool?
         var flag = true
         
         while let (start, current) = left_segments.first {
@@ -344,6 +380,7 @@ extension Shape.Component {
             
             var is_left = true
             let is_outer_left = other.winding(self.mid_point(start, table._left_segments[start]!)) == 0
+            _is_outer_left = is_outer_left
             
             var breaker = 0
             
@@ -421,19 +458,23 @@ extension Shape.Component {
         }
         
         if flag {
-            if self._contains(other, hint: Set(0..<other.count).subtracting(table.right_overlap)) {
-                return .superset
-            }
-            if other._contains(self, hint: Set(0..<self.count).subtracting(table.left_overlap)) {
+            
+            if _is_outer_left.map({ $0 == false }) ?? other._contains(self) {
                 return .subset
             }
+            
+            let is_outer_right = table.right_segments.lazy.compactMap { !$0.almostEqual($1) ? self.winding(other.mid_point($0, table._right_segments[$0]!)) == 0 : nil }.first
+            if is_outer_right.map({ $0 == false }) ?? self._contains(other) {
+                return .superset
+            }
+            
             return .none
         }
         
         let _outer = outer.compactMap { ShapeRegion.Solid(segments: $0, reference: reference) }
         let _inner = inner.compactMap { ShapeRegion.Solid(segments: $0, reference: reference) }
         
-        return .loops(_outer, _inner)
+        return .loops(_outer.makeContiguousBuffer(), _inner.makeContiguousBuffer())
     }
     
     private var interscetionResultCache: WeakDictionary<Shape.Component.CacheArray, [Int: InterscetionResult]> {

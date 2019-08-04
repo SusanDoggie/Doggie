@@ -232,6 +232,6 @@ extension Shape {
             }
         }
         
-        return solids.flatMap { $0.solid.breakLoop(reference: reference) }
+        return solids.flatMap { $0.solid.breakLoop(reference: reference) }.makeContiguousBuffer()
     }
 }
