@@ -403,7 +403,7 @@ extension CubicBezier where Element == Point {
     }
     
     @inlinable
-    func _intersect(_ other: LineSegment<Element>) -> Polynomial {
+    public func _intersect(_ other: LineSegment<Element>) -> Polynomial {
         
         let a = p0 - other.p0
         let (b, c, d) = _polynomial
@@ -418,7 +418,7 @@ extension CubicBezier where Element == Point {
     }
     
     @inlinable
-    func _intersect(_ other: QuadBezier<Element>) -> Polynomial {
+    public func _intersect(_ other: QuadBezier<Element>) -> Polynomial {
         
         let a = p0 - other.p0
         let (b, c, d) = _polynomial
@@ -441,7 +441,7 @@ extension CubicBezier where Element == Point {
     }
     
     @inlinable
-    func _intersect(_ other: CubicBezier) -> Polynomial {
+    public func _intersect(_ other: CubicBezier) -> Polynomial {
         
         let a = p0 - other.p0
         let (b, c, d) = _polynomial
@@ -478,20 +478,17 @@ extension CubicBezier where Element == Point {
     }
     @inlinable
     public func overlap(_ other: LineSegment<Element>) -> Bool {
-        let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() }
+        return self._intersect(other).allSatisfy { $0.almostZero() }
     }
     
     @inlinable
     public func overlap(_ other: QuadBezier<Element>) -> Bool {
-        let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() }
+        return self._intersect(other).allSatisfy { $0.almostZero() }
     }
     
     @inlinable
     public func overlap(_ other: CubicBezier) -> Bool {
-        let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() }
+        return self._intersect(other).allSatisfy { $0.almostZero() }
     }
     
     @inlinable

@@ -416,7 +416,7 @@ extension QuadBezier where Element == Point {
 extension QuadBezier where Element == Point {
     
     @inlinable
-    func _intersect(_ other: LineSegment<Element>) -> Polynomial {
+    public func _intersect(_ other: LineSegment<Element>) -> Polynomial {
         
         let a = p0 - other.p0
         let b = 2 * (p1 - p0)
@@ -432,7 +432,7 @@ extension QuadBezier where Element == Point {
     }
     
     @inlinable
-    func _intersect(_ other: QuadBezier) -> Polynomial {
+    public func _intersect(_ other: QuadBezier) -> Polynomial {
         
         let a = p0 - other.p0
         let b = 2 * (p1 - p0)
@@ -457,14 +457,12 @@ extension QuadBezier where Element == Point {
     
     @inlinable
     public func overlap(_ other: LineSegment<Element>) -> Bool {
-        let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() }
+        return self._intersect(other).allSatisfy { $0.almostZero() }
     }
     
     @inlinable
     public func overlap(_ other: QuadBezier) -> Bool {
-        let det = self._intersect(other)
-        return det.allSatisfy { $0.almostZero() }
+        return self._intersect(other) { $0.almostZero() }
     }
     
     @inlinable

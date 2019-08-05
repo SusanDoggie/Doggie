@@ -539,7 +539,7 @@ private enum BézoutElement {
 
 extension Bezier where Element == Point {
     
-    private func _resultant(_ other: Bezier) -> Polynomial {
+    public func _intersect(_ other: Bezier) -> Polynomial {
         
         let p1_x = self.x.polynomial
         let p1_y = self.y.polynomial
@@ -595,11 +595,11 @@ extension Bezier where Element == Point {
     }
     
     public func overlap(_ other: Bezier) -> Bool {
-        return _resultant(other).allSatisfy { $0.almostZero() }
+        return self._intersect(other).allSatisfy { $0.almostZero() }
     }
     
     public func intersect(_ other: Bezier, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double]? {
-        let resultant = _resultant(other)
+        let resultant = self._intersect(other)
         return resultant.allSatisfy { $0.almostZero() } ? nil : resultant.roots(in: range)
     }
 }
