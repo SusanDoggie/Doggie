@@ -462,7 +462,7 @@ extension QuadBezier where Element == Point {
     
     @inlinable
     public func overlap(_ other: QuadBezier) -> Bool {
-        return self._intersect(other) { $0.almostZero() }
+        return self._intersect(other).allSatisfy { $0.almostZero() }
     }
     
     @inlinable
