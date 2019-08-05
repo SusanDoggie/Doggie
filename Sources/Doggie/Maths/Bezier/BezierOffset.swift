@@ -115,7 +115,6 @@ extension LineSegment where Element == Point {
         let r1 = abs(a1)
         
         guard a0.sign == a1.sign || a0 == 0 || a1 == 0 else { return nil }
-        guard r1 >= r0 else { return LineSegment(p1, p0).offset(-a1, -a0).map { LineSegment($0.p1, $0.p0) } }
         
         let d = p1 - p0
         let m = d.magnitude
@@ -123,7 +122,7 @@ extension LineSegment where Element == Point {
         
         let _r = r1 - r0
         
-        guard m > _r && !m.almostEqual(_r) else { return nil }
+        guard m > abs(_r) && !m.almostEqual(abs(_r)) else { return nil }
         
         let a = asin(_r / m)
         
