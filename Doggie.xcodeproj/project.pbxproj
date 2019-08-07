@@ -48,6 +48,20 @@
 		0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2CA1F1904EB0020E750 /* Signature.swift */; };
 		08AC2DE82253B4FB00EC847F /* PDFContextFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */; };
 		08B085491E9A20720037DECE /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B085471E9A20720037DECE /* Algorithm.swift */; };
+		08B0C00C22FABE1A005C1035 /* SVGTurbulenceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0BFFF22FABE1A005C1035 /* SVGTurbulenceEffect.swift */; };
+		08B0C00D22FABE1A005C1035 /* SVGConvolveMatrixEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00022FABE1A005C1035 /* SVGConvolveMatrixEffect.swift */; };
+		08B0C00E22FABE1A005C1035 /* SVGDisplacementMapEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00122FABE1A005C1035 /* SVGDisplacementMapEffect.swift */; };
+		08B0C00F22FABE1A005C1035 /* SVGLightingEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00222FABE1A005C1035 /* SVGLightingEffect.swift */; };
+		08B0C01022FABE1A005C1035 /* SVGColorMatrixEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00322FABE1A005C1035 /* SVGColorMatrixEffect.swift */; };
+		08B0C01122FABE1A005C1035 /* SVGFloodEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00422FABE1A005C1035 /* SVGFloodEffect.swift */; };
+		08B0C01222FABE1A005C1035 /* SVGMergeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00522FABE1A005C1035 /* SVGMergeEffect.swift */; };
+		08B0C01322FABE1A005C1035 /* SVGTileEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00622FABE1A005C1035 /* SVGTileEffect.swift */; };
+		08B0C01422FABE1A005C1035 /* SVGMorphologyEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00722FABE1A005C1035 /* SVGMorphologyEffect.swift */; };
+		08B0C01522FABE1A005C1035 /* SVGBlendEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00822FABE1A005C1035 /* SVGBlendEffect.swift */; };
+		08B0C01622FABE1A005C1035 /* SVGOffsetEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00922FABE1A005C1035 /* SVGOffsetEffect.swift */; };
+		08B0C01722FABE1A005C1035 /* SVGComponentTransferEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00A22FABE1A005C1035 /* SVGComponentTransferEffect.swift */; };
+		08B0C01822FABE1A005C1035 /* SVGGaussianBlurEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C00B22FABE1A005C1035 /* SVGGaussianBlurEffect.swift */; };
+		08B0C01A22FABEA5005C1035 /* SVGEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0C01922FABEA4005C1035 /* SVGEffect.swift */; };
 		08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B457E51EDD3223007AA4F0 /* Arithmetic.swift */; };
 		08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A301ED07A2400F8D423 /* ColorSpace.swift */; };
 		08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */; };
@@ -353,6 +367,20 @@
 		0889F2CA1F1904EB0020E750 /* Signature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Signature.swift; sourceTree = "<group>"; };
 		08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextFunction.swift; sourceTree = "<group>"; };
 		08B085471E9A20720037DECE /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Algorithm.swift; sourceTree = "<group>"; };
+		08B0BFFF22FABE1A005C1035 /* SVGTurbulenceEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGTurbulenceEffect.swift; sourceTree = "<group>"; };
+		08B0C00022FABE1A005C1035 /* SVGConvolveMatrixEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGConvolveMatrixEffect.swift; sourceTree = "<group>"; };
+		08B0C00122FABE1A005C1035 /* SVGDisplacementMapEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGDisplacementMapEffect.swift; sourceTree = "<group>"; };
+		08B0C00222FABE1A005C1035 /* SVGLightingEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGLightingEffect.swift; sourceTree = "<group>"; };
+		08B0C00322FABE1A005C1035 /* SVGColorMatrixEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGColorMatrixEffect.swift; sourceTree = "<group>"; };
+		08B0C00422FABE1A005C1035 /* SVGFloodEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGFloodEffect.swift; sourceTree = "<group>"; };
+		08B0C00522FABE1A005C1035 /* SVGMergeEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGMergeEffect.swift; sourceTree = "<group>"; };
+		08B0C00622FABE1A005C1035 /* SVGTileEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGTileEffect.swift; sourceTree = "<group>"; };
+		08B0C00722FABE1A005C1035 /* SVGMorphologyEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGMorphologyEffect.swift; sourceTree = "<group>"; };
+		08B0C00822FABE1A005C1035 /* SVGBlendEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGBlendEffect.swift; sourceTree = "<group>"; };
+		08B0C00922FABE1A005C1035 /* SVGOffsetEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGOffsetEffect.swift; sourceTree = "<group>"; };
+		08B0C00A22FABE1A005C1035 /* SVGComponentTransferEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGComponentTransferEffect.swift; sourceTree = "<group>"; };
+		08B0C00B22FABE1A005C1035 /* SVGGaussianBlurEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGGaussianBlurEffect.swift; sourceTree = "<group>"; };
+		08B0C01922FABEA4005C1035 /* SVGEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGEffect.swift; sourceTree = "<group>"; };
 		08B457E51EDD3223007AA4F0 /* Arithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Arithmetic.swift; sourceTree = "<group>"; };
 		08B68A301ED07A2400F8D423 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ColorSpace.swift; sourceTree = "<group>"; };
 		08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = LinearToneColorSpace.swift; sourceTree = "<group>"; };
@@ -790,6 +818,27 @@
 			path = Tests/DoggieTests;
 			sourceTree = "<group>";
 		};
+		08B0BFFE22FABE1A005C1035 /* SVGEffect */ = {
+			isa = PBXGroup;
+			children = (
+				08B0C01922FABEA4005C1035 /* SVGEffect.swift */,
+				08B0BFFF22FABE1A005C1035 /* SVGTurbulenceEffect.swift */,
+				08B0C00022FABE1A005C1035 /* SVGConvolveMatrixEffect.swift */,
+				08B0C00122FABE1A005C1035 /* SVGDisplacementMapEffect.swift */,
+				08B0C00222FABE1A005C1035 /* SVGLightingEffect.swift */,
+				08B0C00322FABE1A005C1035 /* SVGColorMatrixEffect.swift */,
+				08B0C00422FABE1A005C1035 /* SVGFloodEffect.swift */,
+				08B0C00522FABE1A005C1035 /* SVGMergeEffect.swift */,
+				08B0C00622FABE1A005C1035 /* SVGTileEffect.swift */,
+				08B0C00722FABE1A005C1035 /* SVGMorphologyEffect.swift */,
+				08B0C00822FABE1A005C1035 /* SVGBlendEffect.swift */,
+				08B0C00922FABE1A005C1035 /* SVGOffsetEffect.swift */,
+				08B0C00A22FABE1A005C1035 /* SVGComponentTransferEffect.swift */,
+				08B0C00B22FABE1A005C1035 /* SVGGaussianBlurEffect.swift */,
+			);
+			path = SVGEffect;
+			sourceTree = "<group>";
+		};
 		08B68A2F1ED07A2400F8D423 /* ColorSpace */ = {
 			isa = PBXGroup;
 			children = (
@@ -846,6 +895,7 @@
 			isa = PBXGroup;
 			children = (
 				0A1D45382244E968001A4967 /* SVGContext.swift */,
+				08B0BFFE22FABE1A005C1035 /* SVGEffect */,
 			);
 			path = SVGContext;
 			sourceTree = "<group>";
@@ -1458,9 +1508,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08B0C01122FABE1A005C1035 /* SVGFloodEffect.swift in Sources */,
 				0A94BE9D1F1087EA00F1BCD2 /* ImageRep.swift in Sources */,
 				0A967E531F132DC0007E38E4 /* PNGEncoder.swift in Sources */,
 				0A1158471EF4E04700EFE3E3 /* iccTagData.swift in Sources */,
+				08B0C00F22FABE1A005C1035 /* SVGLightingEffect.swift in Sources */,
 				0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */,
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
 				0A2DFE1D217D65CF00E6EEA4 /* SFNTFEAT.swift in Sources */,
@@ -1476,8 +1528,10 @@
 				0AFC4E371F72716900E5FD5A /* SDXMLDocument.swift in Sources */,
 				0A80D1481E66A7000003BB44 /* RangeSet.swift in Sources */,
 				0A8F4F6D1F6273390062FD11 /* CFFCharStrings.swift in Sources */,
+				08B0C01822FABE1A005C1035 /* SVGGaussianBlurEffect.swift in Sources */,
 				0A8535311F5911D0006FB85D /* CFF2Decoder.swift in Sources */,
 				0A9F99441F56734A0008D36D /* SFNTNAME.swift in Sources */,
+				08B0C00E22FABE1A005C1035 /* SVGDisplacementMapEffect.swift in Sources */,
 				0A78E1F91E98B20A00BD91AB /* Geometry.swift in Sources */,
 				0A9CD5911EEB9A2700094148 /* CIEXYZColorSpace.swift in Sources */,
 				0A9ED9D41F5CF5B000205C1B /* SFNTOS2.swift in Sources */,
@@ -1533,6 +1587,7 @@
 				0A8D863F1F7DF13E00F9530E /* ColorProtocol.swift in Sources */,
 				086CBF3422B53C0D00D9460E /* Crypto.swift in Sources */,
 				0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */,
+				08B0C01222FABE1A005C1035 /* SVGMergeEffect.swift in Sources */,
 				0AF5676620D26AC9003B243B /* YxyColorModel.swift in Sources */,
 				0A9F993F1F56649C0008D36D /* SFNTPOST.swift in Sources */,
 				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
@@ -1620,6 +1675,7 @@
 				0A7E3E951F5FD3E40020A507 /* OTFGDEF.swift in Sources */,
 				0A7E3E971F5FD8C90020A507 /* OTFScriptList.swift in Sources */,
 				08458AFD1E2E627600D01813 /* Move.swift in Sources */,
+				08B0C01A22FABEA5005C1035 /* SVGEffect.swift in Sources */,
 				0A1DC92121DCB866007DCFC7 /* CooleyTukey2D.swift in Sources */,
 				0AFC4E351F72715600E5FD5A /* SDXMLElement.swift in Sources */,
 				0AA33B6020942B5900317F54 /* SimplexNoise.swift in Sources */,
@@ -1636,12 +1692,17 @@
 				0AFC4E331F7268AE00E5FD5A /* SDXMLParser.swift in Sources */,
 				0ADAA3B620CB6FFF006682EA /* LazyConcatCollection.swift in Sources */,
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
+				08B0C00C22FABE1A005C1035 /* SVGTurbulenceEffect.swift in Sources */,
 				0A63C9622251E92600993714 /* PDFContext.swift in Sources */,
 				0AB380F320A5374A00A8CBD7 /* Texture.swift in Sources */,
+				08B0C01522FABE1A005C1035 /* SVGBlendEffect.swift in Sources */,
 				0A9CD5951EEB9A2A00094148 /* CalibratedGrayColorSpace.swift in Sources */,
 				08458B5F1E2E627600D01813 /* Lock.swift in Sources */,
 				0AB076A321831104007BCD62 /* RawPixelProtocol.swift in Sources */,
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
+				08B0C01722FABE1A005C1035 /* SVGComponentTransferEffect.swift in Sources */,
+				08B0C01022FABE1A005C1035 /* SVGColorMatrixEffect.swift in Sources */,
+				08B0C01622FABE1A005C1035 /* SVGOffsetEffect.swift in Sources */,
 				0A8535351F5937DA006FB85D /* CFFFontFace.swift in Sources */,
 				08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */,
 				0A7C9D052022D01400927674 /* Cache.swift in Sources */,
@@ -1657,6 +1718,7 @@
 				08458AFF1E2E627600D01813 /* SafeFunction.swift in Sources */,
 				0A8EDDCE1F19E26D00C917CC /* iccXYZNumber.swift in Sources */,
 				0A8EDDC61F19B7F900C917CC /* iccMatrix.swift in Sources */,
+				08B0C01322FABE1A005C1035 /* SVGTileEffect.swift in Sources */,
 				0A39A6BC1ED9347C00804004 /* DrawShape.swift in Sources */,
 				0AD4B6D01F61394D00A9A6B8 /* CFFEncoding.swift in Sources */,
 				0ABFA6C91FC67CB6009D42E2 /* ByteCodable.swift in Sources */,
@@ -1667,6 +1729,7 @@
 				0A0F72132193F39C00BCC39B /* Resampling.swift in Sources */,
 				08458AF51E2E627600D01813 /* CircularConvolve.swift in Sources */,
 				0A1DC92321DCB885007DCFC7 /* CircularConvolve2D.swift in Sources */,
+				08B0C00D22FABE1A005C1035 /* SVGConvolveMatrixEffect.swift in Sources */,
 				0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */,
 				0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
@@ -1726,6 +1789,7 @@
 				0A8D86431F7DFCFC00F9530E /* ImageProtocol.swift in Sources */,
 				0A8EDDC31F19B67800C917CC /* iccLUTTransform.swift in Sources */,
 				08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */,
+				08B0C01422FABE1A005C1035 /* SVGMorphologyEffect.swift in Sources */,
 				0A63C95F2251E92600993714 /* PDFDictionary.swift in Sources */,
 				0A9CD5841EEB989700094148 /* AdobeRGB.swift in Sources */,
 				0A4714AA21D9D03400650284 /* SVGNoiseGenerator.swift in Sources */,

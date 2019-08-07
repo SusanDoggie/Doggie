@@ -42,6 +42,8 @@ private struct SVGContextStyles {
     var renderingIntent: RenderingIntent = .default
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default
     
+    var effect: SVGEffect = SVGEffect()
+    
 }
 
 private struct GraphicState {
@@ -68,7 +70,7 @@ private struct SVGContextState {
     var elements: [SDXMLElement] = []
     
     var visibleBound: Rect?
-    var objectBound: Rect?
+    var objectBound: Shape?
     
     var defs: [SDXMLElement] = []
     var imageTable: [SVGContext.ImageTableKey: String] = [:]
@@ -113,6 +115,7 @@ extension SVGContext {
         self.styles.shadowBlur = 0
         self.styles.compositingMode = .default
         self.styles.blendMode = .default
+        self.styles.effect = SVGEffect()
     }
 }
 
@@ -306,6 +309,15 @@ extension SVGContext {
             current_layer.styles.chromaticAdaptationAlgorithm = newValue
         }
     }
+    
+    public var effect: SVGEffect {
+        get {
+            return current_layer.styles.effect
+        }
+        set {
+            current_layer.styles.effect = newValue
+        }
+    }
 }
 
 private func getDataString(_ x: Double ...) -> String {
@@ -424,130 +436,101 @@ extension SVGContext {
 
 extension SVGContext {
     
-    private func apply_style(_ element: inout SDXMLElement, _ visibleBound: inout Rect, _ objectBound: Rect, options: StyleOptions) {
+    private func apply_style(_ element: inout SDXMLElement, _ visibleBound: inout Rect, _ objectBound: Shape, _ object_transform: SDTransform) {
         
-        var style: [String: String] = self.blendMode == .normal || !options.contains(.isolate) ? [:] : ["isolation": "isolate"]
+        var style: [String: String] = self.blendMode == .normal ? [:] : ["isolation": "isolate"]
         
-        if let transform = self.transform.attributeStr(), options.contains(.transform) {
-            element.setAttribute(for: "transform", value: transform)
-        }
+        let _objectBound = objectBound.boundary
         
-        if self.opacity < 1 && options.contains(.opacity) {
-            element.setAttribute(for: "opacity", value: "\(self.opacity)")
-        }
-        
-        if options.contains(.blendMode) {
-            switch self.blendMode {
-            case .normal: break
-            case .multiply:
-                style["mix-blend-mode"] = "multiply"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "multiply")
-            case .screen:
-                style["mix-blend-mode"] = "screen"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "screen")
-            case .overlay:
-                style["mix-blend-mode"] = "overlay"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "overlay")
-            case .darken:
-                style["mix-blend-mode"] = "darken"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "darken")
-            case .lighten:
-                style["mix-blend-mode"] = "lighten"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "lighten")
-            case .colorDodge:
-                style["mix-blend-mode"] = "color-dodge"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "colorDodge")
-            case .colorBurn:
-                style["mix-blend-mode"] = "color-burn"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "colorBurn")
-            case .softLight:
-                style["mix-blend-mode"] = "soft-light"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "softLight")
-            case .hardLight:
-                style["mix-blend-mode"] = "hard-light"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "hardLight")
-            case .difference:
-                style["mix-blend-mode"] = "difference"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "difference")
-            case .exclusion:
-                style["mix-blend-mode"] = "exclusion"
-                element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "exclusion")
-            default: break
+        if self.effect.output != nil && _objectBound.width != 0 && _objectBound.height != 0 {
+            
+            let _transform = self.transform.inverse
+            var _visibleBound = Rect.bound(visibleBound.points.map { $0 * _transform })
+            
+            if let filter = self._effect_element("FILTER", self.effect, &_visibleBound, (objectBound * _transform).boundary) {
+                
+                visibleBound = Rect.bound(_visibleBound.points.map { $0 * transform })
+                
+                element.setAttribute(for: "transform", value: (object_transform * _transform).attributeStr())
+                element = SDXMLElement(name: "g", elements: [element])
+                
+                element.setAttribute(for: "filter", value: "url(#\(filter))")
+                element.setAttribute(for: "transform", value: self.transform.attributeStr())
             }
         }
         
-        if options.contains(.clip), let clip = self.current_layer.state.clip {
+        if self.shadowColor.opacity > 0 && self.shadowBlur > 0 && _objectBound.width != 0 && _objectBound.height != 0 {
+            
+            if !element.attributes(for: "transform").isEmpty {
+                element = SDXMLElement(name: "g", elements: [element])
+            }
+            
+            let gaussian_blur_uuid = UUID()
+            let offset_uuid = UUID()
+            let flood_uuid = UUID()
+            let blend_uuid = UUID()
+            
+            var effect: SVGEffect = [
+                gaussian_blur_uuid: SVGGaussianBlurEffect(source: .sourceAlpha, stdDeviation: 0.5 * self.shadowBlur),
+                offset_uuid: SVGOffsetEffect(source: .reference(gaussian_blur_uuid), offset: self.shadowOffset),
+                flood_uuid: SVGFloodEffect(color: self.shadowColor),
+                blend_uuid: SVGBlendEffect(source: .reference(flood_uuid), source2: .reference(offset_uuid), mode: .in),
+            ]
+            
+            effect.output = SVGMergeEffect(sources: [.reference(blend_uuid), .source])
+            
+            if let filter = self._effect_element("SHADOW", effect, &visibleBound, _objectBound) {
+                element.setAttribute(for: "filter", value: "url(#\(filter))")
+            }
+        }
+        
+        if self.opacity < 1 {
+            element.setAttribute(for: "opacity", value: "\(self.opacity)")
+        }
+        
+        switch self.blendMode {
+        case .normal: break
+        case .multiply:
+            style["mix-blend-mode"] = "multiply"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "multiply")
+        case .screen:
+            style["mix-blend-mode"] = "screen"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "screen")
+        case .overlay:
+            style["mix-blend-mode"] = "overlay"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "overlay")
+        case .darken:
+            style["mix-blend-mode"] = "darken"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "darken")
+        case .lighten:
+            style["mix-blend-mode"] = "lighten"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "lighten")
+        case .colorDodge:
+            style["mix-blend-mode"] = "color-dodge"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "colorDodge")
+        case .colorBurn:
+            style["mix-blend-mode"] = "color-burn"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "colorBurn")
+        case .softLight:
+            style["mix-blend-mode"] = "soft-light"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "softLight")
+        case .hardLight:
+            style["mix-blend-mode"] = "hard-light"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "hardLight")
+        case .difference:
+            style["mix-blend-mode"] = "difference"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "difference")
+        case .exclusion:
+            style["mix-blend-mode"] = "exclusion"
+            element.setAttribute(for: "adobe-blending-mode", namespace: "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/", value: "exclusion")
+        default: break
+        }
+        
+        if let clip = self.current_layer.state.clip {
             switch clip {
             case let .clip(id): element.setAttribute(for: "clip-path", value: "url(#\(id))")
             case let .mask(id): element.setAttribute(for: "mask", value: "url(#\(id))")
             }
-        }
-        
-        if options.contains(.shadow), self.shadowColor.opacity > 0 && self.shadowBlur > 0 && objectBound.width != 0 && objectBound.height != 0 {
-            
-            let id = new_name("SHADOW")
-            
-            let shadowBound = visibleBound.inset(dx: -ceil(3 * self.shadowBlur), dy: -ceil(3 * self.shadowBlur)).offset(dx: self.shadowOffset.width, dy: self.shadowOffset.height)
-            visibleBound = visibleBound.union(shadowBound)
-            
-            let x = 100 * (visibleBound.x - objectBound.x) / objectBound.width
-            let y = 100 * (visibleBound.y - objectBound.y) / objectBound.height
-            let width = 100 * visibleBound.width / objectBound.width
-            let height = 100 * visibleBound.height / objectBound.height
-            
-            let _x = floor(x)
-            let _y = floor(y)
-            let _width = _x == x ? ceil(width) : ceil(width + 1)
-            let _height = _y == y ? ceil(height) : ceil(height + 1)
-            
-            var filter = SDXMLElement(name: "filter", attributes: [
-                "id": id,
-                "filterUnits": "objectBoundingBox",
-                "x": _decimal_formatter(_x) + "%",
-                "y": _decimal_formatter(_y) + "%",
-                "width": _decimal_formatter(_width) + "%",
-                "height": _decimal_formatter(_height) + "%",
-                ])
-            
-            filter.append(SDXMLElement(name: "feGaussianBlur", attributes: [
-                "in": "SourceAlpha",
-                "stdDeviation": _decimal_formatter(0.5 * self.shadowBlur),
-                ]))
-            
-            filter.append(SDXMLElement(name: "feOffset", attributes: [
-                "dx": _decimal_formatter(self.shadowOffset.width),
-                "dy": _decimal_formatter(self.shadowOffset.height),
-                "result": "offsetblur",
-                ]))
-            
-            let color = self.shadowColor.convert(to: ColorSpace.sRGB, intent: renderingIntent)
-            
-            let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
-            let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
-            let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
-            
-            var flood = SDXMLElement(name: "feFlood", attributes: [
-                "flood-color": "rgb(\(red),\(green),\(blue))",
-                ])
-            
-            if color.opacity < 1 {
-                flood.setAttribute(for: "flood-opacity", value: _decimal_formatter(color.opacity))
-            }
-            
-            filter.append(flood)
-            
-            filter.append(SDXMLElement(name: "feComposite", attributes: [
-                "in2": "offsetblur",
-                "operator": "in",
-                ]))
-            filter.append(SDXMLElement(name: "feMerge", elements: [
-                SDXMLElement(name: "feMergeNode"),
-                SDXMLElement(name: "feMergeNode", attributes: ["in": "SourceGraphic"]),
-                ]))
-            
-            defs.append(filter)
-            
-            element.setAttribute(for: "filter", value: "url(#\(id))")
         }
         
         if style.count != 0 {
@@ -558,51 +541,19 @@ extension SVGContext {
             element.setAttribute(for: "style", value: style.joined(separator: "; "))
         }
     }
-}
-
-extension SVGContext {
     
-    public struct StyleOptions: OptionSet, Hashable {
-        
-        public var rawValue: Int
-        
-        public init(rawValue: Int) {
-            self.rawValue = rawValue
-        }
-        
-        public static let isolate           = StyleOptions(rawValue: 1 << 0)
-        public static let transform         = StyleOptions(rawValue: 1 << 1)
-        public static let opacity           = StyleOptions(rawValue: 1 << 2)
-        public static let blendMode         = StyleOptions(rawValue: 1 << 3)
-        public static let compositingMode   = StyleOptions(rawValue: 1 << 4)
-        public static let shadow            = StyleOptions(rawValue: 1 << 5)
-        public static let clip              = StyleOptions(rawValue: 1 << 6)
-        
-        public static let all: StyleOptions = [.allWithoutTransform, .transform]
-        public static let allWithoutTransform: StyleOptions = [.isolate, .opacity, .blendMode, .compositingMode, .shadow, .clip]
-    }
-    
-    private func append(_ newElement: SDXMLElement, _ visibleBound: Rect, _ objectBound: Rect, options: StyleOptions) {
+    private func append(_ newElement: SDXMLElement, _ visibleBound: Rect, _ objectBound: Shape, _ object_transform: SDTransform) {
+        guard !self.transform.determinant.almostZero() else { return }
         var newElement = newElement
         var visibleBound = visibleBound
-        self.apply_style(&newElement, &visibleBound, objectBound, options: options)
+        self.apply_style(&newElement, &visibleBound, objectBound, object_transform)
         self.current_layer.state.elements.append(newElement)
         self.current_layer.state.visibleBound = self.current_layer.state.visibleBound.map { $0.union(visibleBound) } ?? visibleBound
-        self.current_layer.state.objectBound = self.current_layer.state.objectBound.map { $0.union(objectBound) } ?? objectBound
+        self.current_layer.state.objectBound = self.current_layer.state.objectBound.map { $0.identity + objectBound.identity } ?? objectBound
     }
     
-    private func append(_ newElement: SDXMLElement, _ objectBound: Rect, options: StyleOptions) {
-        self.append(newElement, objectBound, objectBound, options: options)
-    }
-    
-    public func append(_ newElement: SDXMLElement, options: StyleOptions = []) {
-        self.append(newElement, self.viewBox, options: options)
-    }
-    
-    public func append<S : Sequence>(contentsOf newElements: S, options: StyleOptions = []) where S.Element == SDXMLElement {
-        for newElement in newElements {
-            self.append(newElement, options: options)
-        }
+    private func append(_ newElement: SDXMLElement, _ objectBound: Shape, _ object_transform: SDTransform) {
+        self.append(newElement, objectBound.boundary, objectBound, object_transform)
     }
 }
 
@@ -633,7 +584,7 @@ extension SVGContext {
                 guard let visibleBound = next.state.visibleBound else { return }
                 guard let objectBound = next.state.objectBound else { return }
                 
-                self.append(SDXMLElement(name: "g", elements: next.state.elements), visibleBound, objectBound, options: .allWithoutTransform)
+                self.append(SDXMLElement(name: "g", elements: next.state.elements), visibleBound, objectBound, .identity)
             }
         }
     }
@@ -654,6 +605,8 @@ extension SVGContext {
     
     public func draw<C : ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
+        guard !self.transform.determinant.almostZero() else { return }
+        
         let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
         
@@ -668,7 +621,7 @@ extension SVGContext {
             element.setAttribute(for: "fill-opacity", value: "\(color.opacity)")
         }
         
-        self.append(element, shape.boundary, options: .allWithoutTransform)
+        self.append(element, shape, .identity)
     }
 }
 
@@ -736,6 +689,8 @@ extension SVGContext {
     
     private func _draw(image: SVGImageProtocol, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
         
+        guard !self.transform.determinant.almostZero() else { return }
+        
         let key = image.imageTableKey
         
         let id: String
@@ -769,8 +724,8 @@ extension SVGContext {
         let transform = transform * self.transform
         element.setAttribute(for: "transform", value: transform.attributeStr())
         
-        let _bound = Rect.bound(Rect(x: 0, y: 0, width: image.width, height: image.height).points.map { $0 * transform })
-        self.append(element, _bound, options: .allWithoutTransform)
+        let _bound = Shape(rect: Rect(x: 0, y: 0, width: image.width, height: image.height)) * transform
+        self.append(element, _bound, transform)
     }
     
     public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
@@ -909,6 +864,8 @@ extension SVGContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
         
+        guard !self.transform.determinant.almostZero() else { return }
+        
         if shape.reduce(0, { $0 + $1.count }) == 0 {
             return
         }
@@ -927,7 +884,7 @@ extension SVGContext {
             element.setAttribute(for: "fill-opacity", value: "\(gradient.opacity)")
         }
         
-        self.append(element, shape.boundary, options: .allWithoutTransform)
+        self.append(element, shape, .identity)
     }
 }
 
@@ -939,6 +896,8 @@ extension SVGContext {
     }
     
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, spreadMethod: GradientSpreadMode) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
         
         let id = new_name("GRADIENT")
         
@@ -979,7 +938,7 @@ extension SVGContext {
             "height": _decimal_formatter(viewBox.height),
             ])
         
-        self.append(rect, self.viewBox, options: .allWithoutTransform)
+        self.append(rect, Shape(rect: self.viewBox), .identity)
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
@@ -988,6 +947,8 @@ extension SVGContext {
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, spreadMethod: GradientSpreadMode) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
         
         let id = new_name("GRADIENT")
         
@@ -1034,7 +995,533 @@ extension SVGContext {
             "height": _decimal_formatter(viewBox.height),
             ])
         
-        self.append(rect, self.viewBox, options: .allWithoutTransform)
+        self.append(rect, Shape(rect: self.viewBox), .identity)
     }
 }
 
+extension SVGContext {
+    
+    private func _effect_element(_ type: String, _ effect: SVGEffect, _ visibleBound: inout Rect, _ objectBound: Rect) -> String? {
+        
+        guard let output = effect.output as? SVGEffectSerializable else { return nil }
+        
+        let id = new_name(type)
+        var _filter = SDXMLElement(name: "filter", attributes: ["id": id])
+        
+        visibleBound = effect.visibleBound(visibleBound).union(visibleBound)
+        
+        if objectBound.width != 0 && objectBound.height != 0 {
+            
+            let x = 100 * (visibleBound.x - objectBound.x) / objectBound.width
+            let y = 100 * (visibleBound.y - objectBound.y) / objectBound.height
+            let width = 100 * visibleBound.width / objectBound.width
+            let height = 100 * visibleBound.height / objectBound.height
+            
+            let _x = floor(x)
+            let _y = floor(y)
+            let _width = _x == x ? ceil(width) : ceil(width + 1)
+            let _height = _y == y ? ceil(height) : ceil(height + 1)
+            
+            _filter.setAttribute(for: "filterUnits", value: "objectBoundingBox")
+            _filter.setAttribute(for: "primitiveUnits", value: "userSpaceOnUse")
+            _filter.setAttribute(for: "x", value: _decimal_formatter(_x) + "%")
+            _filter.setAttribute(for: "y", value: _decimal_formatter(_y) + "%")
+            _filter.setAttribute(for: "width", value: _decimal_formatter(_width) + "%")
+            _filter.setAttribute(for: "height", value: _decimal_formatter(_height) + "%")
+        }
+        
+        effect.enumerate { uuid, primitive in
+            
+            if let _primitive = primitive as? SVGEffectSerializable, var element = _primitive.toXMLElement() {
+                
+                element.setAttribute(for: "result", value: uuid.uuidString)
+                
+                if let region = primitive.region {
+                    element.setAttribute(for: "x", value: _decimal_formatter(region.x))
+                    element.setAttribute(for: "y", value: _decimal_formatter(region.y))
+                    element.setAttribute(for: "width", value: _decimal_formatter(region.width))
+                    element.setAttribute(for: "height", value: _decimal_formatter(region.height))
+                }
+                
+                _filter.append(element)
+            }
+        }
+        
+        if let element = output.toXMLElement() {
+            _filter.append(element)
+        }
+        
+        defs.append(_filter)
+        
+        return id
+    }
+}
+
+private protocol SVGEffectSerializable {
+    
+    func toXMLElement() -> SDXMLElement?
+}
+
+extension SVGFloodEffect : SVGEffectSerializable {
+    
+    private func create_color<C : ColorProtocol>(_ color: C) -> String {
+        
+        let color = color.convert(to: ColorSpace.sRGB, intent: .default)
+        
+        let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
+        let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
+        let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
+        
+        return "rgb(\(red),\(green),\(blue))"
+    }
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter = SDXMLElement(name: "feFlood", attributes: ["flood-color": create_color(color)])
+        
+        if self.color.opacity < 1 {
+            filter.setAttribute(for: "flood-opacity", value: _decimal_formatter(self.color.opacity))
+        }
+        
+        return filter
+    }
+}
+
+extension SVGBlendEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter: SDXMLElement
+        
+        switch mode {
+        case .normal: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "normal"])
+            
+        case .in: filter = SDXMLElement(name: "feComposite", attributes: ["operator": "in"])
+        case .out: filter = SDXMLElement(name: "feComposite", attributes: ["operator": "out"])
+        case .atop: filter = SDXMLElement(name: "feComposite", attributes: ["operator": "atop"])
+        case .xor: filter = SDXMLElement(name: "feComposite", attributes: ["operator": "xor"])
+            
+        case .multiply: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "multiply"])
+        case .screen: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "screen"])
+        case .overlay: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "overlay"])
+        case .darken: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "darken"])
+        case .lighten: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "lighten"])
+        case .colorDodge: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "color-dodge"])
+        case .colorBurn: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "color-burn"])
+        case .softLight: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "soft-light"])
+        case .hardLight: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "hard-light"])
+        case .difference: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "difference"])
+        case .exclusion: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "exclusion"])
+            
+        case .hue: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "hue"])
+        case .saturation: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "saturation"])
+        case .color: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "color"])
+        case .luminosity: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "luminosity"])
+            
+        case let .arithmetic(k1, k2, k3, k4):
+            filter = SDXMLElement(name: "feComposite", attributes: ["operator": "arithmetic"])
+            filter.setAttribute(for: "k1", value: _decimal_formatter(k1))
+            filter.setAttribute(for: "k2", value: _decimal_formatter(k2))
+            filter.setAttribute(for: "k3", value: _decimal_formatter(k3))
+            filter.setAttribute(for: "k4", value: _decimal_formatter(k4))
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        switch self.source2 {
+        case .source: filter.setAttribute(for: "in2", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in2", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in2", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
+
+extension SVGMergeEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter = SDXMLElement(name: "feMerge")
+        
+        for source in self.sources {
+            var node = SDXMLElement(name: "feMergeNode")
+            switch source {
+            case .source: node.setAttribute(for: "in", value: "SourceGraphic")
+            case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+            case let .reference(uuid): node.setAttribute(for: "in", value: uuid.uuidString)
+            }
+            filter.append(node)
+        }
+        
+        return filter
+    }
+}
+
+extension SVGColorMatrixEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        let matrix = [
+            red.0, red.1, red.2, red.3, red.4,
+            green.0, green.1, green.2, green.3, green.4,
+            blue.0, blue.1, blue.2, blue.3, blue.4,
+            alpha.0, alpha.1, alpha.2, alpha.3, alpha.4,
+            ].map { _decimal_formatter($0) }
+        
+        var filter = SDXMLElement(name: "feColorMatrix", attributes: ["type": "matrix", "values": matrix.joined(separator: " ")])
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
+
+extension SVGComponentTransfer.TransferFunction {
+    
+    fileprivate func toXMLElement(_ node: String) -> SDXMLElement {
+        
+        switch self {
+        case .identity: return SDXMLElement(name: node, attributes: ["type": "identity"])
+            
+        case let .table(values):
+            
+            let _values = values.map { _decimal_formatter($0) }.joined(separator: " ")
+            
+            return SDXMLElement(name: node, attributes: ["type": "table", "tableValues": _values])
+            
+        case let .discrete(values):
+            
+            let _values = values.map { _decimal_formatter($0) }.joined(separator: " ")
+            
+            return SDXMLElement(name: node, attributes: ["type": "discrete", "tableValues": _values])
+            
+        case let .gamma(amplitude, exponent, offset):
+            
+            var element = SDXMLElement(name: node)
+            
+            if exponent == 1 {
+                element.setAttribute(for: "type", value: "linear")
+                element.setAttribute(for: "slope", value: _decimal_formatter(amplitude))
+                element.setAttribute(for: "intercept", value: _decimal_formatter(offset))
+            } else {
+                element.setAttribute(for: "type", value: "gamma")
+                element.setAttribute(for: "amplitude", value: _decimal_formatter(amplitude))
+                element.setAttribute(for: "exponent", value: _decimal_formatter(exponent))
+                element.setAttribute(for: "offset", value: _decimal_formatter(offset))
+            }
+            
+            return element
+        }
+    }
+}
+
+extension SVGComponentTransfer : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter = SDXMLElement(name: "feComponentTransfer", elements: [
+            red.toXMLElement("feFuncR"),
+            green.toXMLElement("feFuncG"),
+            blue.toXMLElement("feFuncB"),
+            alpha.toXMLElement("feFuncA"),
+            ])
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
+
+extension SVGConvolveMatrixEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        let matrix = self.matrix.map { _decimal_formatter($0) }
+        var filter = SDXMLElement(name: "feConvolveMatrix", attributes: ["kernelMatrix": matrix.joined(separator: " "), "order": orderX == orderY ? "\(orderX)" : "\(orderX) \(orderY)"])
+        
+        if bias != 0 {
+            filter.setAttribute(for: "bias", value: _decimal_formatter(bias))
+        }
+        
+        filter.setAttribute(for: "preserveAlpha", value: "\(preserveAlpha)")
+        
+        switch edgeMode {
+        case .duplicate: filter.setAttribute(for: "edgeMode", value: "duplicate")
+        case .wrap: filter.setAttribute(for: "edgeMode", value: "wrap")
+        case .none: filter.setAttribute(for: "edgeMode", value: "none")
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
+
+extension SVGTurbulenceEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter = SDXMLElement(name: "feTurbulence", attributes: [
+            "stitchTiles": stitchTiles ? "stitch" : "noStitch",
+            "seed": "\(seed)",
+            "numOctaves": "\(numOctaves)",
+            ])
+        
+        switch self.type {
+        case .turbulence: filter.setAttribute(for: "type", value: "turbulence")
+        case .fractalNoise: filter.setAttribute(for: "type", value: "fractalNoise")
+        }
+        
+        if baseFrequency.width == baseFrequency.height {
+            filter.setAttribute(for: "baseFrequency", value: _decimal_formatter(baseFrequency.width))
+        } else {
+            filter.setAttribute(for: "baseFrequency", value: "\(_decimal_formatter(baseFrequency.width)) \(_decimal_formatter(baseFrequency.height))")
+        }
+        
+        return filter
+    }
+}
+
+extension SVGGaussianBlurEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter = SDXMLElement(name: "feGaussianBlur")
+        
+        if stdDeviation.width == stdDeviation.height {
+            filter.setAttribute(for: "stdDeviation", value: _decimal_formatter(stdDeviation.width))
+        } else {
+            filter.setAttribute(for: "stdDeviation", value: "\(_decimal_formatter(stdDeviation.width)) \(_decimal_formatter(stdDeviation.height))")
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
+
+extension SVGOffsetEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter = SDXMLElement(name: "feOffset", attributes: [
+            "dx": _decimal_formatter(offset.width),
+            "dy": _decimal_formatter(offset.height),
+            ])
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
+
+extension SVGDisplacementMapEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter = SDXMLElement(name: "feDisplacementMap", attributes: ["scale": _decimal_formatter(scale)])
+        
+        switch xChannelSelector {
+        case 0: filter.setAttribute(for: "xChannelSelector", value: "R")
+        case 1: filter.setAttribute(for: "xChannelSelector", value: "G")
+        case 2: filter.setAttribute(for: "xChannelSelector", value: "B")
+        case 3: filter.setAttribute(for: "xChannelSelector", value: "A")
+        default: break
+        }
+        switch yChannelSelector {
+        case 0: filter.setAttribute(for: "yChannelSelector", value: "R")
+        case 1: filter.setAttribute(for: "yChannelSelector", value: "G")
+        case 2: filter.setAttribute(for: "yChannelSelector", value: "B")
+        case 3: filter.setAttribute(for: "yChannelSelector", value: "A")
+        default: break
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        switch self.displacement {
+        case .source: filter.setAttribute(for: "in2", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in2", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in2", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
+
+extension SVGMorphologyEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter = SDXMLElement(name: "feMorphology")
+        
+        if radius.width == radius.height {
+            filter.setAttribute(for: "radius", value: _decimal_formatter(radius.width))
+        } else {
+            filter.setAttribute(for: "radius", value: "\(_decimal_formatter(radius.width)) \(_decimal_formatter(radius.height))")
+        }
+        
+        switch mode {
+        case .erode: filter.setAttribute(for: "operator", value: "erode")
+        case .dilate: filter.setAttribute(for: "operator", value: "dilate")
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
+
+extension SVGTileEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        var filter = SDXMLElement(name: "feTile")
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
+
+private protocol SVGLightSourceSerializable {
+    
+    func toXMLElement() -> SDXMLElement
+}
+
+extension SVGPointLight : SVGLightSourceSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement {
+        
+        return SDXMLElement(name: "fePointLight", attributes: [
+            "x": _decimal_formatter(location.x),
+            "y": _decimal_formatter(location.y),
+            "z": _decimal_formatter(location.z),
+            ])
+    }
+}
+
+extension SVGSpotLight : SVGLightSourceSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement {
+        
+        return SDXMLElement(name: "feSpotLight", attributes: [
+            "x": _decimal_formatter(location.x),
+            "y": _decimal_formatter(location.y),
+            "z": _decimal_formatter(location.z),
+            "pointsAtX": _decimal_formatter(direction.x),
+            "pointsAtY": _decimal_formatter(direction.y),
+            "pointsAtZ": _decimal_formatter(direction.z),
+            "specularExponent": _decimal_formatter(specularExponent),
+            "limitingConeAngle": _decimal_formatter(limitingConeAngle * 180 / .pi),
+            ])
+    }
+}
+
+extension SVGDistantLight : SVGLightSourceSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement {
+        
+        return SDXMLElement(name: "feDistantLight", attributes: [
+            "azimuth": _decimal_formatter(azimuth * 180 / .pi),
+            "elevation": _decimal_formatter(elevation * 180 / .pi),
+            ])
+    }
+}
+
+extension SVGDiffuseLightingEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
+        let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
+        let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
+        
+        var element = SDXMLElement(name: "feDiffuseLighting", attributes: [
+            "surfaceScale": _decimal_formatter(surfaceScale),
+            "diffuseConstant": _decimal_formatter(diffuseConstant),
+            "lighting-color": "rgb(\(red),\(green),\(blue))"
+            ])
+        
+        for light in self.light {
+            if let light = light as? SVGLightSourceSerializable {
+                element.append(light.toXMLElement())
+            }
+        }
+        
+        switch self.source {
+        case .source: element.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: element.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): element.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return element
+    }
+}
+
+extension SVGSpecularLightingEffect : SVGEffectSerializable {
+    
+    fileprivate func toXMLElement() -> SDXMLElement? {
+        
+        let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
+        let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
+        let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
+        
+        var element = SDXMLElement(name: "feSpecularLighting", attributes: [
+            "surfaceScale": _decimal_formatter(surfaceScale),
+            "specularConstant": _decimal_formatter(specularConstant),
+            "specularExponent": _decimal_formatter(specularExponent),
+            "lighting-color": "rgb(\(red),\(green),\(blue))"
+            ])
+        
+        for light in self.light {
+            if let light = light as? SVGLightSourceSerializable {
+                element.append(light.toXMLElement())
+            }
+        }
+        
+        switch self.source {
+        case .source: element.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: element.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): element.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return element
+    }
+}
