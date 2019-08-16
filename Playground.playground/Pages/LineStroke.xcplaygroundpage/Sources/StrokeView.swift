@@ -1,0 +1,95 @@
+
+import Cocoa
+import Doggie
+
+public class StrokeView: NSView, NSGestureRecognizerDelegate {
+    
+    public var p0: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p1: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    public var p2: Point = Point() {
+        didSet {
+            self.setNeedsDisplay(frame)
+        }
+    }
+    
+    var target: Int = -1
+    
+    public override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        
+        let pan = NSPanGestureRecognizer(target: self, action: #selector(handleGesture))
+        pan.delegate = self
+        
+        self.addGestureRecognizer(pan)
+        
+        p0 = Point(x: frame.width * 0.1, y: frame.height * 0.1)
+        p1 = Point(x: frame.width * 0.9, y: frame.height * 0.1)
+        p2 = Point(x: frame.width * 0.1, y: frame.height * 0.9)
+    }
+    
+    public override func draw(_ dirtyRect: NSRect) {
+        
+        NSColor.white.setFill()
+        dirtyRect.fill()
+        
+        func drawPoint(_ context: CGContext, _ point: Point) {
+            context.strokeEllipse(in: CGRect(x: point.x - 2, y: point.y - 2, width: 4, height: 4))
+        }
+        
+        if let context = NSGraphicsContext.current?.cgContext {
+            
+            let shape: Shape = [Shape.Component(start: p0, segments: [.line(p1), .line(p2)])]
+            
+            context.addPath(shape.strokePath(width: 50, cap: .round, join: .round).cgPath)
+            context.setFillColor(NSColor(calibratedWhite: 0.9, alpha: 1).cgColor)
+            context.fillPath()
+            
+            context.addPath(shape.strokePath(width: 50, cap: .round, join: .round).cgPath)
+            context.setStrokeColor(NSColor.red.cgColor)
+            context.strokePath()
+            
+            context.addPath(shape)
+            context.setStrokeColor(NSColor.purple.cgColor)
+            context.strokePath()
+            
+            context.setStrokeColor(NSColor.blue.cgColor)
+            
+            drawPoint(context, p0)
+            drawPoint(context, p1)
+            drawPoint(context, p2)
+            
+        }
+        
+        super.draw(dirtyRect)
+    }
+    
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    func handleGesture(_ sender: NSPanGestureRecognizer) {
+        
+        switch sender.state {
+        case .began:
+            let location = sender.location(in: self)
+            target = [p0, p1, p2].map { (Point(location) - $0).magnitude }.enumerated().min { $0.1 }?.0 ?? -1
+        case .changed:
+            switch target {
+            case 0: p0 = Point(sender.location(in: self))
+            case 1: p1 = Point(sender.location(in: self))
+            case 2: p2 = Point(sender.location(in: self))
+            default: break
+            }
+        default: break
+        }
+    }
+}
