@@ -115,6 +115,7 @@ extension LineSegment where Element == Point {
         let r1 = abs(a1)
         
         guard a0.sign == a1.sign || a0 == 0 || a1 == 0 else { return nil }
+        let signed = (a0 != 0 && a0.sign == .minus) || a1.sign == .minus
         
         let d = p1 - p0
         let m = d.magnitude
@@ -128,7 +129,7 @@ extension LineSegment where Element == Point {
         
         let x1, y1, x2, y2: Double
         
-        if a0.sign == .minus || a1.sign == .minus {
+        if signed {
             x1 = r0 * cos(0.5 * .pi + a)
             y1 = r0 * sin(0.5 * .pi + a)
             x2 = r1 * cos(0.5 * .pi + a)
@@ -220,7 +221,11 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let m2 = self._offset_point(a, 0.75 * (t - s) + s) else { return }
             guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { return }
             
-            try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
+            if a.sign == angle.sign {
+                try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
+            } else {
+                try calback(s...t, CubicBezier(q0, q0 - abs(c0) * d0, q3 + abs(c1) * d3, q3))
+            }
         }
     }
     
@@ -367,7 +372,12 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let m2 = _offset_point(0.75 * (t - s) + s) else { return }
             guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { return }
             
-            try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
+            let angle_signed = angle.sign == .minus
+            if signed == angle_signed {
+                try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
+            } else {
+                try calback(s...t, CubicBezier(q0, q0 - abs(c0) * d0, q3 + abs(c1) * d3, q3))
+            }
         }
     }
     
@@ -375,7 +385,9 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     public func offset(_ a0: Double, _ a1: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
         if a0.almostEqual(a1) { return try self.offset(a0, calback) }
+        
         guard a0.sign == a1.sign || a0 == 0 || a1 == 0 else { return }
+        let signed = (a0 != 0 && a0.sign == .minus) || a1.sign == .minus
         
         let length = self._length(1)
         guard let tangent = LineSegment(Point(), Point(x: length, y: 0)).offset(a0, a1) else { return }
@@ -392,10 +404,10 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
             let c = t - s
             if c > 0.1 {
-                try segment._offset(a0.sign == .minus || a1.sign == .minus, { _offset_point($0 * c + s) }) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
+                try segment._offset(signed, { _offset_point($0 * c + s) }) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             } else {
-                try segment._offset2(a0.sign == .minus || a1.sign == .minus, { _offset_point($0 * c + s) }, 0...0.5, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
-                try segment._offset2(a0.sign == .minus || a1.sign == .minus, { _offset_point($0 * c + s) }, 0.5...1, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
+                try segment._offset2(signed, { _offset_point($0 * c + s) }, 0...0.5, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
+                try segment._offset2(signed, { _offset_point($0 * c + s) }, 0.5...1, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             }
         }
     }
