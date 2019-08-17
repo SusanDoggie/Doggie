@@ -40,14 +40,33 @@ extension Decimal {
     @inlinable
     @inline(__always)
     public func rounded(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
-        var result = self
-        result.round(scale: scale, roundingMode: roundingMode)
+        var x = self
+        var result = Decimal()
+        NSDecimalRound(&result, &x, scale, roundingMode)
         return result
     }
     
     @inlinable
     @inline(__always)
     public mutating func round(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .plain) {
-        withUnsafeMutablePointer(to: &self) { NSDecimalRound($0, $0, scale, roundingMode) }
+        self = self.rounded(scale: scale, roundingMode: roundingMode)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func raising(toPower power: Int, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
+        var x = self
+        var result = Decimal()
+        NSDecimalPower(&result, &x, power, roundingMode)
+        return result
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func multiplying(byPowerOf10 power: Int16, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
+        var x = self
+        var result = Decimal()
+        NSDecimalMultiplyByPowerOf10(&result, &x, power, roundingMode)
+        return result
     }
 }
