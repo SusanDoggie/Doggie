@@ -324,7 +324,7 @@ private func getDataString(_ x: Double ...) -> String {
     return getDataString(x)
 }
 private func getDataString(_ x: [Double]) -> String {
-    return x.map { _decimal_formatter($0) }.joined(separator: " ")
+    return x.map { "\(Decimal($0).rounded(scale: 9))" }.joined(separator: " ")
 }
 
 extension SDTransform {
@@ -359,17 +359,17 @@ extension SVGContext {
         switch resolution.unit {
         case .point:
             
-            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))pt")
-            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))pt")
-            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))pt")
-            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))pt")
+            body.setAttribute(for: "x", value: "\(Decimal(x).rounded(scale: 9))pt")
+            body.setAttribute(for: "y", value: "\(Decimal(y).rounded(scale: 9))pt")
+            body.setAttribute(for: "width", value: "\(Decimal(width).rounded(scale: 9))pt")
+            body.setAttribute(for: "height", value: "\(Decimal(height).rounded(scale: 9))pt")
             
         case .pica:
             
-            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))pc")
-            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))pc")
-            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))pc")
-            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))pc")
+            body.setAttribute(for: "x", value: "\(Decimal(x).rounded(scale: 9))pc")
+            body.setAttribute(for: "y", value: "\(Decimal(y).rounded(scale: 9))pc")
+            body.setAttribute(for: "width", value: "\(Decimal(width).rounded(scale: 9))pc")
+            body.setAttribute(for: "height", value: "\(Decimal(height).rounded(scale: 9))pc")
             
         case .meter:
             
@@ -378,31 +378,31 @@ extension SVGContext {
             let width = resolution.unit.convert(length: width, to: .centimeter)
             let height = resolution.unit.convert(length: height, to: .centimeter)
             
-            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))cm")
-            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))cm")
-            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))cm")
-            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))cm")
+            body.setAttribute(for: "x", value: "\(Decimal(x).rounded(scale: 9))cm")
+            body.setAttribute(for: "y", value: "\(Decimal(y).rounded(scale: 9))cm")
+            body.setAttribute(for: "width", value: "\(Decimal(width).rounded(scale: 9))cm")
+            body.setAttribute(for: "height", value: "\(Decimal(height).rounded(scale: 9))cm")
             
         case .centimeter:
             
-            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))cm")
-            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))cm")
-            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))cm")
-            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))cm")
+            body.setAttribute(for: "x", value: "\(Decimal(x).rounded(scale: 9))cm")
+            body.setAttribute(for: "y", value: "\(Decimal(y).rounded(scale: 9))cm")
+            body.setAttribute(for: "width", value: "\(Decimal(width).rounded(scale: 9))cm")
+            body.setAttribute(for: "height", value: "\(Decimal(height).rounded(scale: 9))cm")
             
         case .millimeter:
             
-            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))mm")
-            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))mm")
-            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))mm")
-            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))mm")
+            body.setAttribute(for: "x", value: "\(Decimal(x).rounded(scale: 9))mm")
+            body.setAttribute(for: "y", value: "\(Decimal(y).rounded(scale: 9))mm")
+            body.setAttribute(for: "width", value: "\(Decimal(width).rounded(scale: 9))mm")
+            body.setAttribute(for: "height", value: "\(Decimal(height).rounded(scale: 9))mm")
             
         case .inch:
             
-            body.setAttribute(for: "x", value: "\(_decimal_formatter(x))in")
-            body.setAttribute(for: "y", value: "\(_decimal_formatter(y))in")
-            body.setAttribute(for: "width", value: "\(_decimal_formatter(width))in")
-            body.setAttribute(for: "height", value: "\(_decimal_formatter(height))in")
+            body.setAttribute(for: "x", value: "\(Decimal(x).rounded(scale: 9))in")
+            body.setAttribute(for: "y", value: "\(Decimal(y).rounded(scale: 9))in")
+            body.setAttribute(for: "width", value: "\(Decimal(width).rounded(scale: 9))in")
+            body.setAttribute(for: "height", value: "\(Decimal(height).rounded(scale: 9))in")
         }
         
         let dateFormatter = DateFormatter()
@@ -809,20 +809,20 @@ extension SVGContext {
             var element = SDXMLElement(name: "linearGradient", attributes: [
                 "id": id,
                 "gradientUnits": "objectBoundingBox",
-                "x1": _decimal_formatter(gradient.start.x),
-                "y1": _decimal_formatter(gradient.start.y),
-                "x2": _decimal_formatter(gradient.end.x),
-                "y2": _decimal_formatter(gradient.end.y),
+                "x1": "\(Decimal(gradient.start.x).rounded(scale: 9))",
+                "y1": "\(Decimal(gradient.start.y).rounded(scale: 9))",
+                "x2": "\(Decimal(gradient.end.x).rounded(scale: 9))",
+                "y2": "\(Decimal(gradient.end.y).rounded(scale: 9))",
                 ])
             
             element.setAttribute(for: "gradientTransform", value: gradient.transform.attributeStr())
             
             for stop in gradient.stops {
                 var _stop = SDXMLElement(name: "stop")
-                _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
+                _stop.setAttribute(for: "offset", value: "\(Decimal(stop.offset).rounded(scale: 9))")
                 _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
                 if stop.color.opacity < 1 {
-                    _stop.setAttribute(for: "stop-opacity", value: _decimal_formatter(stop.color.opacity))
+                    _stop.setAttribute(for: "stop-opacity", value: "\(Decimal(stop.color.opacity).rounded(scale: 9))")
                 }
                 element.append(_stop)
             }
@@ -837,7 +837,7 @@ extension SVGContext {
             var element = SDXMLElement(name: "radialGradient", attributes: [
                 "id": id,
                 "gradientUnits": "objectBoundingBox",
-                "fx": _decimal_formatter(0.5 + magnitude),
+                "fx": "\(Decimal(0.5 + magnitude).rounded(scale: 9))",
                 "fy": "0.5",
                 "cx": "0.5",
                 "cy": "0.5",
@@ -848,10 +848,10 @@ extension SVGContext {
             
             for stop in gradient.stops {
                 var _stop = SDXMLElement(name: "stop")
-                _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
+                _stop.setAttribute(for: "offset", value: "\(Decimal(stop.offset).rounded(scale: 9))")
                 _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
                 if stop.color.opacity < 1 {
-                    _stop.setAttribute(for: "stop-opacity", value: _decimal_formatter(stop.color.opacity))
+                    _stop.setAttribute(for: "stop-opacity", value: "\(Decimal(stop.color.opacity).rounded(scale: 9))")
                 }
                 element.append(_stop)
             }
@@ -904,10 +904,10 @@ extension SVGContext {
         var element = SDXMLElement(name: "linearGradient", attributes: [
             "id": id,
             "gradientUnits": "userSpaceOnUse",
-            "x1": _decimal_formatter(start.x),
-            "y1": _decimal_formatter(start.y),
-            "x2": _decimal_formatter(end.x),
-            "y2": _decimal_formatter(end.y),
+            "x1": "\(Decimal(start.x).rounded(scale: 9))",
+            "y1": "\(Decimal(start.y).rounded(scale: 9))",
+            "x2": "\(Decimal(end.x).rounded(scale: 9))",
+            "y2": "\(Decimal(end.y).rounded(scale: 9))",
             ])
         
         switch spreadMethod {
@@ -920,10 +920,10 @@ extension SVGContext {
         
         for (_, stop) in stops.indexed().sorted(by: { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }) {
             var _stop = SDXMLElement(name: "stop")
-            _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
+            _stop.setAttribute(for: "offset", value: "\(Decimal(stop.offset).rounded(scale: 9))")
             _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
             if stop.color.opacity < 1 {
-                _stop.setAttribute(for: "stop-opacity", value: _decimal_formatter(stop.color.opacity))
+                _stop.setAttribute(for: "stop-opacity", value: "\(Decimal(stop.color.opacity).rounded(scale: 9))")
             }
             element.append(_stop)
         }
@@ -932,10 +932,10 @@ extension SVGContext {
         
         let rect = SDXMLElement(name: "rect", attributes: [
             "fill": "url(#\(id))",
-            "x": _decimal_formatter(viewBox.x),
-            "y": _decimal_formatter(viewBox.y),
-            "width": _decimal_formatter(viewBox.width),
-            "height": _decimal_formatter(viewBox.height),
+            "x": "\(Decimal(viewBox.x).rounded(scale: 9))",
+            "y": "\(Decimal(viewBox.y).rounded(scale: 9))",
+            "width": "\(Decimal(viewBox.width).rounded(scale: 9))",
+            "height": "\(Decimal(viewBox.height).rounded(scale: 9))",
             ])
         
         self.append(rect, Shape(rect: self.viewBox), .identity)
@@ -958,12 +958,12 @@ extension SVGContext {
         var element = SDXMLElement(name: "radialGradient", attributes: [
             "id": id,
             "gradientUnits": "userSpaceOnUse",
-            "fx": _decimal_formatter(0.5 + magnitude),
+            "fx": "\(Decimal(0.5 + magnitude).rounded(scale: 9))",
             "fy": "0.5",
             "cx": "0.5",
             "cy": "0.5",
-            "fr": _decimal_formatter(startRadius),
-            "r": _decimal_formatter(endRadius),
+            "fr": "\(Decimal(startRadius).rounded(scale: 9))",
+            "r": "\(Decimal(endRadius).rounded(scale: 9))",
             ])
         
         switch spreadMethod {
@@ -977,10 +977,10 @@ extension SVGContext {
         
         for (_, stop) in stops.indexed().sorted(by: { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }) {
             var _stop = SDXMLElement(name: "stop")
-            _stop.setAttribute(for: "offset", value: _decimal_formatter(stop.offset))
+            _stop.setAttribute(for: "offset", value: "\(Decimal(stop.offset).rounded(scale: 9))")
             _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
             if stop.color.opacity < 1 {
-                _stop.setAttribute(for: "stop-opacity", value: _decimal_formatter(stop.color.opacity))
+                _stop.setAttribute(for: "stop-opacity", value: "\(Decimal(stop.color.opacity).rounded(scale: 9))")
             }
             element.append(_stop)
         }
@@ -989,10 +989,10 @@ extension SVGContext {
         
         let rect = SDXMLElement(name: "rect", attributes: [
             "fill": "url(#\(id))",
-            "x": _decimal_formatter(viewBox.x),
-            "y": _decimal_formatter(viewBox.y),
-            "width": _decimal_formatter(viewBox.width),
-            "height": _decimal_formatter(viewBox.height),
+            "x": "\(Decimal(viewBox.x).rounded(scale: 9))",
+            "y": "\(Decimal(viewBox.y).rounded(scale: 9))",
+            "width": "\(Decimal(viewBox.width).rounded(scale: 9))",
+            "height": "\(Decimal(viewBox.height).rounded(scale: 9))",
             ])
         
         self.append(rect, Shape(rect: self.viewBox), .identity)
@@ -1024,10 +1024,10 @@ extension SVGContext {
             
             _filter.setAttribute(for: "filterUnits", value: "objectBoundingBox")
             _filter.setAttribute(for: "primitiveUnits", value: "userSpaceOnUse")
-            _filter.setAttribute(for: "x", value: _decimal_formatter(_x) + "%")
-            _filter.setAttribute(for: "y", value: _decimal_formatter(_y) + "%")
-            _filter.setAttribute(for: "width", value: _decimal_formatter(_width) + "%")
-            _filter.setAttribute(for: "height", value: _decimal_formatter(_height) + "%")
+            _filter.setAttribute(for: "x", value: "\(Decimal(_x).rounded(scale: 9))" + "%")
+            _filter.setAttribute(for: "y", value: "\(Decimal(_y).rounded(scale: 9))" + "%")
+            _filter.setAttribute(for: "width", value: "\(Decimal(_width).rounded(scale: 9))" + "%")
+            _filter.setAttribute(for: "height", value: "\(Decimal(_height).rounded(scale: 9))" + "%")
         }
         
         effect.enumerate { uuid, primitive in
@@ -1037,10 +1037,10 @@ extension SVGContext {
                 element.setAttribute(for: "result", value: uuid.uuidString)
                 
                 if let region = primitive.region {
-                    element.setAttribute(for: "x", value: _decimal_formatter(region.x))
-                    element.setAttribute(for: "y", value: _decimal_formatter(region.y))
-                    element.setAttribute(for: "width", value: _decimal_formatter(region.width))
-                    element.setAttribute(for: "height", value: _decimal_formatter(region.height))
+                    element.setAttribute(for: "x", value: "\(Decimal(region.x).rounded(scale: 9))")
+                    element.setAttribute(for: "y", value: "\(Decimal(region.y).rounded(scale: 9))")
+                    element.setAttribute(for: "width", value: "\(Decimal(region.width).rounded(scale: 9))")
+                    element.setAttribute(for: "height", value: "\(Decimal(region.height).rounded(scale: 9))")
                 }
                 
                 _filter.append(element)
@@ -1080,7 +1080,7 @@ extension SVGFloodEffect : SVGEffectSerializable {
         var filter = SDXMLElement(name: "feFlood", attributes: ["flood-color": create_color(color)])
         
         if self.color.opacity < 1 {
-            filter.setAttribute(for: "flood-opacity", value: _decimal_formatter(self.color.opacity))
+            filter.setAttribute(for: "flood-opacity", value: "\(Decimal(self.color.opacity).rounded(scale: 9))")
         }
         
         return filter
@@ -1120,10 +1120,10 @@ extension SVGBlendEffect : SVGEffectSerializable {
             
         case let .arithmetic(k1, k2, k3, k4):
             filter = SDXMLElement(name: "feComposite", attributes: ["operator": "arithmetic"])
-            filter.setAttribute(for: "k1", value: _decimal_formatter(k1))
-            filter.setAttribute(for: "k2", value: _decimal_formatter(k2))
-            filter.setAttribute(for: "k3", value: _decimal_formatter(k3))
-            filter.setAttribute(for: "k4", value: _decimal_formatter(k4))
+            filter.setAttribute(for: "k1", value: "\(Decimal(k1).rounded(scale: 9))")
+            filter.setAttribute(for: "k2", value: "\(Decimal(k2).rounded(scale: 9))")
+            filter.setAttribute(for: "k3", value: "\(Decimal(k3).rounded(scale: 9))")
+            filter.setAttribute(for: "k4", value: "\(Decimal(k4).rounded(scale: 9))")
         }
         
         switch self.source {
@@ -1171,7 +1171,7 @@ extension SVGColorMatrixEffect : SVGEffectSerializable {
             green.0, green.1, green.2, green.3, green.4,
             blue.0, blue.1, blue.2, blue.3, blue.4,
             alpha.0, alpha.1, alpha.2, alpha.3, alpha.4,
-            ].map { _decimal_formatter($0) }
+            ].map { "\(Decimal($0).rounded(scale: 9))" }
         
         var filter = SDXMLElement(name: "feColorMatrix", attributes: ["type": "matrix", "values": matrix.joined(separator: " ")])
         
@@ -1194,13 +1194,13 @@ extension SVGComponentTransfer.TransferFunction {
             
         case let .table(values):
             
-            let _values = values.map { _decimal_formatter($0) }.joined(separator: " ")
+            let _values = values.map { "\(Decimal($0).rounded(scale: 9))" }.joined(separator: " ")
             
             return SDXMLElement(name: node, attributes: ["type": "table", "tableValues": _values])
             
         case let .discrete(values):
             
-            let _values = values.map { _decimal_formatter($0) }.joined(separator: " ")
+            let _values = values.map { "\(Decimal($0).rounded(scale: 9))" }.joined(separator: " ")
             
             return SDXMLElement(name: node, attributes: ["type": "discrete", "tableValues": _values])
             
@@ -1210,13 +1210,13 @@ extension SVGComponentTransfer.TransferFunction {
             
             if exponent == 1 {
                 element.setAttribute(for: "type", value: "linear")
-                element.setAttribute(for: "slope", value: _decimal_formatter(amplitude))
-                element.setAttribute(for: "intercept", value: _decimal_formatter(offset))
+                element.setAttribute(for: "slope", value: "\(Decimal(amplitude).rounded(scale: 9))")
+                element.setAttribute(for: "intercept", value: "\(Decimal(offset).rounded(scale: 9))")
             } else {
                 element.setAttribute(for: "type", value: "gamma")
-                element.setAttribute(for: "amplitude", value: _decimal_formatter(amplitude))
-                element.setAttribute(for: "exponent", value: _decimal_formatter(exponent))
-                element.setAttribute(for: "offset", value: _decimal_formatter(offset))
+                element.setAttribute(for: "amplitude", value: "\(Decimal(amplitude).rounded(scale: 9))")
+                element.setAttribute(for: "exponent", value: "\(Decimal(exponent).rounded(scale: 9))")
+                element.setAttribute(for: "offset", value: "\(Decimal(offset).rounded(scale: 9))")
             }
             
             return element
@@ -1249,11 +1249,11 @@ extension SVGConvolveMatrixEffect : SVGEffectSerializable {
     
     fileprivate func toXMLElement() -> SDXMLElement? {
         
-        let matrix = self.matrix.map { _decimal_formatter($0) }
+        let matrix = self.matrix.map { "\(Decimal($0).rounded(scale: 9))" }
         var filter = SDXMLElement(name: "feConvolveMatrix", attributes: ["kernelMatrix": matrix.joined(separator: " "), "order": orderX == orderY ? "\(orderX)" : "\(orderX) \(orderY)"])
         
         if bias != 0 {
-            filter.setAttribute(for: "bias", value: _decimal_formatter(bias))
+            filter.setAttribute(for: "bias", value: "\(Decimal(bias).rounded(scale: 9))")
         }
         
         filter.setAttribute(for: "preserveAlpha", value: "\(preserveAlpha)")
@@ -1290,9 +1290,9 @@ extension SVGTurbulenceEffect : SVGEffectSerializable {
         }
         
         if baseFrequency.width == baseFrequency.height {
-            filter.setAttribute(for: "baseFrequency", value: _decimal_formatter(baseFrequency.width))
+            filter.setAttribute(for: "baseFrequency", value: "\(Decimal(baseFrequency.width).rounded(scale: 9))")
         } else {
-            filter.setAttribute(for: "baseFrequency", value: "\(_decimal_formatter(baseFrequency.width)) \(_decimal_formatter(baseFrequency.height))")
+            filter.setAttribute(for: "baseFrequency", value: "\(Decimal(baseFrequency.width).rounded(scale: 9)) \(Decimal(baseFrequency.height).rounded(scale: 9))")
         }
         
         return filter
@@ -1306,9 +1306,9 @@ extension SVGGaussianBlurEffect : SVGEffectSerializable {
         var filter = SDXMLElement(name: "feGaussianBlur")
         
         if stdDeviation.width == stdDeviation.height {
-            filter.setAttribute(for: "stdDeviation", value: _decimal_formatter(stdDeviation.width))
+            filter.setAttribute(for: "stdDeviation", value: "\(Decimal(stdDeviation.width).rounded(scale: 9))")
         } else {
-            filter.setAttribute(for: "stdDeviation", value: "\(_decimal_formatter(stdDeviation.width)) \(_decimal_formatter(stdDeviation.height))")
+            filter.setAttribute(for: "stdDeviation", value: "\(Decimal(stdDeviation.width).rounded(scale: 9)) \(Decimal(stdDeviation.height).rounded(scale: 9))")
         }
         
         switch self.source {
@@ -1326,8 +1326,8 @@ extension SVGOffsetEffect : SVGEffectSerializable {
     fileprivate func toXMLElement() -> SDXMLElement? {
         
         var filter = SDXMLElement(name: "feOffset", attributes: [
-            "dx": _decimal_formatter(offset.width),
-            "dy": _decimal_formatter(offset.height),
+            "dx": "\(Decimal(offset.width).rounded(scale: 9))",
+            "dy": "\(Decimal(offset.height).rounded(scale: 9))",
             ])
         
         switch self.source {
@@ -1344,7 +1344,7 @@ extension SVGDisplacementMapEffect : SVGEffectSerializable {
     
     fileprivate func toXMLElement() -> SDXMLElement? {
         
-        var filter = SDXMLElement(name: "feDisplacementMap", attributes: ["scale": _decimal_formatter(scale)])
+        var filter = SDXMLElement(name: "feDisplacementMap", attributes: ["scale": "\(Decimal(scale).rounded(scale: 9))"])
         
         switch xChannelSelector {
         case 0: filter.setAttribute(for: "xChannelSelector", value: "R")
@@ -1384,9 +1384,9 @@ extension SVGMorphologyEffect : SVGEffectSerializable {
         var filter = SDXMLElement(name: "feMorphology")
         
         if radius.width == radius.height {
-            filter.setAttribute(for: "radius", value: _decimal_formatter(radius.width))
+            filter.setAttribute(for: "radius", value: "\(Decimal(radius.width).rounded(scale: 9))")
         } else {
-            filter.setAttribute(for: "radius", value: "\(_decimal_formatter(radius.width)) \(_decimal_formatter(radius.height))")
+            filter.setAttribute(for: "radius", value: "\(Decimal(radius.width).rounded(scale: 9)) \(Decimal(radius.height).rounded(scale: 9))")
         }
         
         switch mode {
@@ -1430,9 +1430,9 @@ extension SVGPointLight : SVGLightSourceSerializable {
     fileprivate func toXMLElement() -> SDXMLElement {
         
         return SDXMLElement(name: "fePointLight", attributes: [
-            "x": _decimal_formatter(location.x),
-            "y": _decimal_formatter(location.y),
-            "z": _decimal_formatter(location.z),
+            "x": "\(Decimal(location.x).rounded(scale: 9))",
+            "y": "\(Decimal(location.y).rounded(scale: 9))",
+            "z": "\(Decimal(location.z).rounded(scale: 9))",
             ])
     }
 }
@@ -1442,14 +1442,14 @@ extension SVGSpotLight : SVGLightSourceSerializable {
     fileprivate func toXMLElement() -> SDXMLElement {
         
         return SDXMLElement(name: "feSpotLight", attributes: [
-            "x": _decimal_formatter(location.x),
-            "y": _decimal_formatter(location.y),
-            "z": _decimal_formatter(location.z),
-            "pointsAtX": _decimal_formatter(direction.x),
-            "pointsAtY": _decimal_formatter(direction.y),
-            "pointsAtZ": _decimal_formatter(direction.z),
-            "specularExponent": _decimal_formatter(specularExponent),
-            "limitingConeAngle": _decimal_formatter(limitingConeAngle * 180 / .pi),
+            "x": "\(Decimal(location.x).rounded(scale: 9))",
+            "y": "\(Decimal(location.y).rounded(scale: 9))",
+            "z": "\(Decimal(location.z).rounded(scale: 9))",
+            "pointsAtX": "\(Decimal(direction.x).rounded(scale: 9))",
+            "pointsAtY": "\(Decimal(direction.y).rounded(scale: 9))",
+            "pointsAtZ": "\(Decimal(direction.z).rounded(scale: 9))",
+            "specularExponent": "\(Decimal(specularExponent).rounded(scale: 9))",
+            "limitingConeAngle": "\(Decimal(limitingConeAngle * 180 / .pi).rounded(scale: 9))",
             ])
     }
 }
@@ -1459,8 +1459,8 @@ extension SVGDistantLight : SVGLightSourceSerializable {
     fileprivate func toXMLElement() -> SDXMLElement {
         
         return SDXMLElement(name: "feDistantLight", attributes: [
-            "azimuth": _decimal_formatter(azimuth * 180 / .pi),
-            "elevation": _decimal_formatter(elevation * 180 / .pi),
+            "azimuth": "\(Decimal(azimuth * 180 / .pi).rounded(scale: 9))",
+            "elevation": "\(Decimal(elevation * 180 / .pi).rounded(scale: 9))",
             ])
     }
 }
@@ -1474,8 +1474,8 @@ extension SVGDiffuseLightingEffect : SVGEffectSerializable {
         let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
         
         var element = SDXMLElement(name: "feDiffuseLighting", attributes: [
-            "surfaceScale": _decimal_formatter(surfaceScale),
-            "diffuseConstant": _decimal_formatter(diffuseConstant),
+            "surfaceScale": "\(Decimal(surfaceScale).rounded(scale: 9))",
+            "diffuseConstant": "\(Decimal(diffuseConstant).rounded(scale: 9))",
             "lighting-color": "rgb(\(red),\(green),\(blue))"
             ])
         
@@ -1504,9 +1504,9 @@ extension SVGSpecularLightingEffect : SVGEffectSerializable {
         let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
         
         var element = SDXMLElement(name: "feSpecularLighting", attributes: [
-            "surfaceScale": _decimal_formatter(surfaceScale),
-            "specularConstant": _decimal_formatter(specularConstant),
-            "specularExponent": _decimal_formatter(specularExponent),
+            "surfaceScale": "\(Decimal(surfaceScale).rounded(scale: 9))",
+            "specularConstant": "\(Decimal(specularConstant).rounded(scale: 9))",
+            "specularExponent": "\(Decimal(specularExponent).rounded(scale: 9))",
             "lighting-color": "rgb(\(red),\(green),\(blue))"
             ])
         

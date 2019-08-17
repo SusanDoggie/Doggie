@@ -219,28 +219,28 @@ extension PDFContext {
             let _mirrored_margin = page._mirrored_margin
             
             let media = [
-                _decimal_round(_media.x),
-                _decimal_round(_media.y),
-                _decimal_round(_media.width),
-                _decimal_round(_media.height),
+                Decimal(_media.x).rounded(scale: 9),
+                Decimal(_media.y).rounded(scale: 9),
+                Decimal(_media.width).rounded(scale: 9),
+                Decimal(_media.height).rounded(scale: 9),
             ]
             let bleed = [
-                _decimal_round(_mirrored_bleed.x),
-                _decimal_round(_mirrored_bleed.y),
-                _decimal_round(_mirrored_bleed.width),
-                _decimal_round(_mirrored_bleed.height),
+                Decimal(_mirrored_bleed.x).rounded(scale: 9),
+                Decimal(_mirrored_bleed.y).rounded(scale: 9),
+                Decimal(_mirrored_bleed.width).rounded(scale: 9),
+                Decimal(_mirrored_bleed.height).rounded(scale: 9),
             ]
             let trim = [
-                _decimal_round(_mirrored_trim.x),
-                _decimal_round(_mirrored_trim.y),
-                _decimal_round(_mirrored_trim.width),
-                _decimal_round(_mirrored_trim.height),
+                Decimal(_mirrored_trim.x).rounded(scale: 9),
+                Decimal(_mirrored_trim.y).rounded(scale: 9),
+                Decimal(_mirrored_trim.width).rounded(scale: 9),
+                Decimal(_mirrored_trim.height).rounded(scale: 9),
             ]
             let margin = [
-                _decimal_round(_mirrored_margin.x),
-                _decimal_round(_mirrored_margin.y),
-                _decimal_round(_mirrored_margin.width),
-                _decimal_round(_mirrored_margin.height),
+                Decimal(_mirrored_margin.x).rounded(scale: 9),
+                Decimal(_mirrored_margin.y).rounded(scale: 9),
+                Decimal(_mirrored_margin.width).rounded(scale: 9),
+                Decimal(_mirrored_margin.height).rounded(scale: 9),
             ]
             
             var dict = [
@@ -293,7 +293,7 @@ extension PDFContext.Page {
         
         guard let iccData = colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
         
-        let _rangeOfComponents = (0..<colorSpace.numberOfComponents).map { colorSpace.rangeOfComponent($0) }.flatMap { [_decimal_round($0.lowerBound), _decimal_round($0.upperBound)] }
+        let _rangeOfComponents = (0..<colorSpace.numberOfComponents).map { colorSpace.rangeOfComponent($0) }.flatMap { [Decimal($0.lowerBound).rounded(scale: 9), Decimal($0.upperBound).rounded(scale: 9)] }
         
         let iccBased = PDFContext._write(stream: iccData, [
             "N": "\(colorSpace.numberOfComponents)",
@@ -313,8 +313,8 @@ extension PDFContext.Page {
             case 2, 3: _function = PDFContext._write(shading.function.pdf_object, to: &data, xref: &xref)
             case 4:
                 
-                let _domain = shading.function.domain.flatMap { [_decimal_round($0.lowerBound), _decimal_round($0.upperBound)] }
-                let _range = shading.function.range.flatMap { [_decimal_round($0.lowerBound), _decimal_round($0.upperBound)] }
+                let _domain = shading.function.domain.flatMap { [Decimal($0.lowerBound).rounded(scale: 9), Decimal($0.upperBound).rounded(scale: 9)] }
+                let _range = shading.function.range.flatMap { [Decimal($0.lowerBound).rounded(scale: 9), Decimal($0.upperBound).rounded(scale: 9)] }
                 
                 _function = PDFContext._write(stream: shading.function.postscript, [
                     "FunctionType": "\(shading.function.type)",
@@ -386,10 +386,10 @@ extension PDFContext.Page {
         
         let _bbox = self.media.standardized
         let bbox = [
-            _decimal_round(_bbox.x),
-            _decimal_round(_bbox.y),
-            _decimal_round(_bbox.width),
-            _decimal_round(_bbox.height),
+            Decimal(_bbox.x).rounded(scale: 9),
+            Decimal(_bbox.y).rounded(scale: 9),
+            Decimal(_bbox.width).rounded(scale: 9),
+            Decimal(_bbox.height).rounded(scale: 9),
         ]
         
         for (name, commands) in mask {

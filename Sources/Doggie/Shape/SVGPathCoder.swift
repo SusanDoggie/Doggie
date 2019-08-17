@@ -346,7 +346,7 @@ extension Shape {
 @inline(__always)
 private func getDataString(_ x: [Double]) -> String {
     var str = ""
-    for _x in x.map({ _decimal_formatter($0) }) {
+    for _x in x.map({ "\(Decimal($0).rounded(scale: 9))" }) {
         if !str.isEmpty && _x.first != "-" {
             str.append(" ")
         }
@@ -432,7 +432,7 @@ extension Shape.Segment {
         
         if let lastControl = lastControl {
             let d = p + lastControl - 2 * relative
-            return _decimal_round(d.x) == 0 && _decimal_round(d.y) == 0
+            return Decimal(d.x).rounded(scale: 9) == 0 && Decimal(d.y).rounded(scale: 9) == 0
         }
         return false
     }
@@ -444,10 +444,10 @@ extension Shape.Segment {
             
             var currentState = currentState
             let str: String
-            if _decimal_round(relative.x) == _decimal_round(point.x) {
+            if Decimal(relative.x).rounded(scale: 9) == Decimal(point.x).rounded(scale: 9) {
                 str = getPathDataString(currentState == 1 ? nil : "V", point.y)
                 currentState = 1
-            } else if _decimal_round(relative.y) == _decimal_round(point.y) {
+            } else if Decimal(relative.y).rounded(scale: 9) == Decimal(point.y).rounded(scale: 9) {
                 str = getPathDataString(currentState == 3 ? nil : "H", point.x)
                 currentState = 3
             } else {
@@ -489,10 +489,10 @@ extension Shape.Segment {
             
             var currentState = currentState
             let str: String
-            if _decimal_round(relative.x) == _decimal_round(point.x) {
+            if Decimal(relative.x).rounded(scale: 9) == Decimal(point.x).rounded(scale: 9) {
                 str = getPathDataString(currentState == 2 ? nil : "v", point.y - relative.y)
                 currentState = 2
-            } else if _decimal_round(relative.y) == _decimal_round(point.y) {
+            } else if Decimal(relative.y).rounded(scale: 9) == Decimal(point.y).rounded(scale: 9) {
                 str = getPathDataString(currentState == 4 ? nil : "h", point.x - relative.x)
                 currentState = 4
             } else {

@@ -74,12 +74,12 @@ extension PDFContext.Page {
         
         let transform = .reflectY(0.5) * .scale(x: Double(image.width), y: Double(image.height)) * transform * _mirrored_transform
         let _transform = [
-            _decimal_formatter(transform.a),
-            _decimal_formatter(transform.d),
-            _decimal_formatter(transform.b),
-            _decimal_formatter(transform.e),
-            _decimal_formatter(transform.c),
-            _decimal_formatter(transform.f),
+            "\(Decimal(transform.a).rounded(scale: 9))",
+            "\(Decimal(transform.d).rounded(scale: 9))",
+            "\(Decimal(transform.b).rounded(scale: 9))",
+            "\(Decimal(transform.e).rounded(scale: 9))",
+            "\(Decimal(transform.c).rounded(scale: 9))",
+            "\(Decimal(transform.f).rounded(scale: 9))",
         ]
         
         current_layer.state.commands += "q\n"

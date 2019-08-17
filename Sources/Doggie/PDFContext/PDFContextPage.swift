@@ -470,7 +470,7 @@ extension PDFContext.Page {
         
         for component in shape.identity {
             
-            commands += "\(_decimal_round(component.start.x)) \(_decimal_round(component.start.y)) m\n"
+            commands += "\(Decimal(component.start.x).rounded(scale: 9)) \(Decimal(component.start.y).rounded(scale: 9)) m\n"
             
             var current_point = component.start
             
@@ -478,7 +478,7 @@ extension PDFContext.Page {
                 switch segment {
                 case let .line(p1):
                     
-                    commands += "\(_decimal_round(p1.x)) \(_decimal_round(p1.y)) l\n"
+                    commands += "\(Decimal(p1.x).rounded(scale: 9)) \(Decimal(p1.y).rounded(scale: 9)) l\n"
                     current_point = p1
                     
                 case let .quad(p1, p2):
@@ -486,15 +486,15 @@ extension PDFContext.Page {
                     let cubic = QuadBezier(current_point, p1, p2).elevated()
                     
                     if cubic.p1 == current_point {
-                        commands += "\(_decimal_round(cubic.p2.x)) \(_decimal_round(cubic.p2.y))\n"
-                        commands += "\(_decimal_round(cubic.p3.x)) \(_decimal_round(cubic.p3.y)) v\n"
+                        commands += "\(Decimal(cubic.p2.x).rounded(scale: 9)) \(Decimal(cubic.p2.y).rounded(scale: 9))\n"
+                        commands += "\(Decimal(cubic.p3.x).rounded(scale: 9)) \(Decimal(cubic.p3.y).rounded(scale: 9)) v\n"
                     } else if cubic.p2 == current_point {
-                        commands += "\(_decimal_round(cubic.p1.x)) \(_decimal_round(cubic.p1.y))\n"
-                        commands += "\(_decimal_round(cubic.p3.x)) \(_decimal_round(cubic.p3.y)) y\n"
+                        commands += "\(Decimal(cubic.p1.x).rounded(scale: 9)) \(Decimal(cubic.p1.y).rounded(scale: 9))\n"
+                        commands += "\(Decimal(cubic.p3.x).rounded(scale: 9)) \(Decimal(cubic.p3.y).rounded(scale: 9)) y\n"
                     } else {
-                        commands += "\(_decimal_round(cubic.p1.x)) \(_decimal_round(cubic.p1.y))\n"
-                        commands += "\(_decimal_round(cubic.p2.x)) \(_decimal_round(cubic.p2.y))\n"
-                        commands += "\(_decimal_round(cubic.p3.x)) \(_decimal_round(cubic.p3.y)) c\n"
+                        commands += "\(Decimal(cubic.p1.x).rounded(scale: 9)) \(Decimal(cubic.p1.y).rounded(scale: 9))\n"
+                        commands += "\(Decimal(cubic.p2.x).rounded(scale: 9)) \(Decimal(cubic.p2.y).rounded(scale: 9))\n"
+                        commands += "\(Decimal(cubic.p3.x).rounded(scale: 9)) \(Decimal(cubic.p3.y).rounded(scale: 9)) c\n"
                     }
                     
                     current_point = p2
@@ -502,15 +502,15 @@ extension PDFContext.Page {
                 case let .cubic(p1, p2, p3):
                     
                     if p1 == current_point {
-                        commands += "\(_decimal_round(p2.x)) \(_decimal_round(p2.y))\n"
-                        commands += "\(_decimal_round(p3.x)) \(_decimal_round(p3.y)) v\n"
+                        commands += "\(Decimal(p2.x).rounded(scale: 9)) \(Decimal(p2.y).rounded(scale: 9))\n"
+                        commands += "\(Decimal(p3.x).rounded(scale: 9)) \(Decimal(p3.y).rounded(scale: 9)) v\n"
                     } else if p2 == current_point {
-                        commands += "\(_decimal_round(p1.x)) \(_decimal_round(p1.y))\n"
-                        commands += "\(_decimal_round(p3.x)) \(_decimal_round(p3.y)) y\n"
+                        commands += "\(Decimal(p1.x).rounded(scale: 9)) \(Decimal(p1.y).rounded(scale: 9))\n"
+                        commands += "\(Decimal(p3.x).rounded(scale: 9)) \(Decimal(p3.y).rounded(scale: 9)) y\n"
                     } else {
-                        commands += "\(_decimal_round(p1.x)) \(_decimal_round(p1.y))\n"
-                        commands += "\(_decimal_round(p2.x)) \(_decimal_round(p2.y))\n"
-                        commands += "\(_decimal_round(p3.x)) \(_decimal_round(p3.y)) c\n"
+                        commands += "\(Decimal(p1.x).rounded(scale: 9)) \(Decimal(p1.y).rounded(scale: 9))\n"
+                        commands += "\(Decimal(p2.x).rounded(scale: 9)) \(Decimal(p2.y).rounded(scale: 9))\n"
+                        commands += "\(Decimal(p3.x).rounded(scale: 9)) \(Decimal(p3.y).rounded(scale: 9)) c\n"
                     }
                     
                     current_point = p3
@@ -525,7 +525,7 @@ extension PDFContext.Page {
     
     func set_opacity(_ opacity: Double) {
         
-        let gstate = "/ca \(_decimal_round(opacity))"
+        let gstate = "/ca \(Decimal(opacity).rounded(scale: 9))"
         if extGState[gstate] == nil {
             extGState[gstate] = "Gs\(extGState.count + 1)"
         }
@@ -581,7 +581,7 @@ extension PDFContext.Page {
         set_opacity(color.opacity * self.opacity)
         
         let color = color.convert(to: colorSpace, intent: renderingIntent)
-        let _color = (0..<color.numberOfComponents - 1).lazy.map { _decimal_formatter(color.component($0)) }.joined(separator: " ")
+        let _color = (0..<color.numberOfComponents - 1).lazy.map { "\(Decimal(color.component($0)).rounded(scale: 9))" }.joined(separator: " ")
         
         if current_layer.state.currentStyle.color != _color {
             current_layer.state.commands += "\(_color) sc\n"
@@ -721,12 +721,12 @@ extension PDFContext.Page {
         
         let transform = _mirrored_transform
         let _transform = [
-            _decimal_formatter(transform.a),
-            _decimal_formatter(transform.d),
-            _decimal_formatter(transform.b),
-            _decimal_formatter(transform.e),
-            _decimal_formatter(transform.c),
-            _decimal_formatter(transform.f),
+            "\(Decimal(transform.a).rounded(scale: 9))",
+            "\(Decimal(transform.d).rounded(scale: 9))",
+            "\(Decimal(transform.b).rounded(scale: 9))",
+            "\(Decimal(transform.e).rounded(scale: 9))",
+            "\(Decimal(transform.c).rounded(scale: 9))",
+            "\(Decimal(transform.f).rounded(scale: 9))",
         ]
         
         current_layer.state.commands += "q\n"
@@ -802,12 +802,12 @@ extension PDFContext.Page {
         
         let transform = _mirrored_transform
         let _transform = [
-            _decimal_formatter(transform.a),
-            _decimal_formatter(transform.d),
-            _decimal_formatter(transform.b),
-            _decimal_formatter(transform.e),
-            _decimal_formatter(transform.c),
-            _decimal_formatter(transform.f),
+            "\(Decimal(transform.a).rounded(scale: 9))",
+            "\(Decimal(transform.d).rounded(scale: 9))",
+            "\(Decimal(transform.b).rounded(scale: 9))",
+            "\(Decimal(transform.e).rounded(scale: 9))",
+            "\(Decimal(transform.c).rounded(scale: 9))",
+            "\(Decimal(transform.f).rounded(scale: 9))",
         ]
         
         current_layer.state.commands += "q\n"
@@ -883,12 +883,12 @@ extension PDFContext.Page {
         
         let transform = _mirrored_transform
         let _transform = [
-            _decimal_formatter(transform.a),
-            _decimal_formatter(transform.d),
-            _decimal_formatter(transform.b),
-            _decimal_formatter(transform.e),
-            _decimal_formatter(transform.c),
-            _decimal_formatter(transform.f),
+            "\(Decimal(transform.a).rounded(scale: 9))",
+            "\(Decimal(transform.d).rounded(scale: 9))",
+            "\(Decimal(transform.b).rounded(scale: 9))",
+            "\(Decimal(transform.e).rounded(scale: 9))",
+            "\(Decimal(transform.c).rounded(scale: 9))",
+            "\(Decimal(transform.f).rounded(scale: 9))",
         ]
         
         current_layer.state.commands += "q\n"
