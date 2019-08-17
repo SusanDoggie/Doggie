@@ -65,6 +65,7 @@
 		08B457E71EDD3223007AA4F0 /* Arithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B457E51EDD3223007AA4F0 /* Arithmetic.swift */; };
 		08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A301ED07A2400F8D423 /* ColorSpace.swift */; };
 		08B68A3B1ED07A8300F8D423 /* LinearToneColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */; };
+		08FE035E2307C339005B08B0 /* PathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FE035D2307C338005B08B0 /* PathCoder.swift */; };
 		0A00F05321BA17F200CAF48C /* AvailableColorSpaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A00F05221BA17F200CAF48C /* AvailableColorSpaces.swift */; };
 		0A00F05521BA192E00CAF48C /* CoreText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A00F05421BA192E00CAF48C /* CoreText.swift */; };
 		0A0697591E4D6659005CF664 /* Graphic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A0697571E4D6659005CF664 /* Graphic.swift */; };
@@ -79,7 +80,7 @@
 		0A1DC92121DCB866007DCFC7 /* CooleyTukey2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DC92021DCB866007DCFC7 /* CooleyTukey2D.swift */; };
 		0A1DC92321DCB885007DCFC7 /* CircularConvolve2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1DC92221DCB885007DCFC7 /* CircularConvolve2D.swift */; };
 		0A20DD5020C91C570067558F /* BezierProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A20DD4F20C91C570067558F /* BezierProtocol.swift */; };
-		0A21070E1E5BEEBB00F1E00E /* PathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2107081E5BEEBB00F1E00E /* PathCoder.swift */; };
+		0A21070E1E5BEEBB00F1E00E /* SVGPathCoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2107081E5BEEBB00F1E00E /* SVGPathCoder.swift */; };
 		0A2107121E5BEEBB00F1E00E /* PathStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */; };
 		0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21070C1E5BEEBB00F1E00E /* Shape.swift */; };
 		0A21118F20CA58F2003CA6BC /* JPEGQuantization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A21118E20CA58F2003CA6BC /* JPEGQuantization.swift */; };
@@ -385,6 +386,7 @@
 		08B68A301ED07A2400F8D423 /* ColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ColorSpace.swift; sourceTree = "<group>"; };
 		08B68A391ED07A8300F8D423 /* LinearToneColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = LinearToneColorSpace.swift; sourceTree = "<group>"; };
 		08BFF9B91B0715ED00EC88CB /* FourierTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FourierTest.swift; sourceTree = "<group>"; };
+		08FE035D2307C338005B08B0 /* PathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathCoder.swift; sourceTree = "<group>"; };
 		0A00F05221BA17F200CAF48C /* AvailableColorSpaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvailableColorSpaces.swift; sourceTree = "<group>"; };
 		0A00F05421BA192E00CAF48C /* CoreText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreText.swift; sourceTree = "<group>"; };
 		0A0697571E4D6659005CF664 /* Graphic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Graphic.swift; sourceTree = "<group>"; };
@@ -398,7 +400,7 @@
 		0A1DC92021DCB866007DCFC7 /* CooleyTukey2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CooleyTukey2D.swift; sourceTree = "<group>"; };
 		0A1DC92221DCB885007DCFC7 /* CircularConvolve2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularConvolve2D.swift; sourceTree = "<group>"; };
 		0A20DD4F20C91C570067558F /* BezierProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierProtocol.swift; sourceTree = "<group>"; };
-		0A2107081E5BEEBB00F1E00E /* PathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PathCoder.swift; sourceTree = "<group>"; };
+		0A2107081E5BEEBB00F1E00E /* SVGPathCoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SVGPathCoder.swift; sourceTree = "<group>"; };
 		0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = PathStroke.swift; sourceTree = "<group>"; };
 		0A21070C1E5BEEBB00F1E00E /* Shape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Shape.swift; sourceTree = "<group>"; };
 		0A21118E20CA58F2003CA6BC /* JPEGQuantization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JPEGQuantization.swift; sourceTree = "<group>"; };
@@ -903,7 +905,8 @@
 		0A2107071E5BEEBB00F1E00E /* Shape */ = {
 			isa = PBXGroup;
 			children = (
-				0A2107081E5BEEBB00F1E00E /* PathCoder.swift */,
+				08FE035D2307C338005B08B0 /* PathCoder.swift */,
+				0A2107081E5BEEBB00F1E00E /* SVGPathCoder.swift */,
 				0A21070A1E5BEEBB00F1E00E /* PathStroke.swift */,
 				0835846722E2A8CA00901986 /* VariableRoundStroke.swift */,
 				0A21070C1E5BEEBB00F1E00E /* Shape.swift */,
@@ -1662,7 +1665,7 @@
 				0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */,
 				0AAA7CF220B8EC950080D1BE /* Exported.swift in Sources */,
 				0A8535301F5911CD006FB85D /* CFF2INDEX.swift in Sources */,
-				0A21070E1E5BEEBB00F1E00E /* PathCoder.swift in Sources */,
+				0A21070E1E5BEEBB00F1E00E /* SVGPathCoder.swift in Sources */,
 				08458B591E2E627600D01813 /* Atomic.swift in Sources */,
 				0ADAA3B020CB6FC2006682EA /* LazyScanSequence.swift in Sources */,
 				0A8D4F2820C9076800921F91 /* BezierArc.swift in Sources */,
@@ -1702,6 +1705,7 @@
 				08458B351E2E627600D01813 /* Ellipse.swift in Sources */,
 				08B0C01722FABE1A005C1035 /* SVGComponentTransferEffect.swift in Sources */,
 				08B0C01022FABE1A005C1035 /* SVGColorMatrixEffect.swift in Sources */,
+				08FE035E2307C339005B08B0 /* PathCoder.swift in Sources */,
 				08B0C01622FABE1A005C1035 /* SVGOffsetEffect.swift in Sources */,
 				0A8535351F5937DA006FB85D /* CFFFontFace.swift in Sources */,
 				08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */,

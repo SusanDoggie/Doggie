@@ -23,507 +23,313 @@
 //  THE SOFTWARE.
 //
 
-private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequence where I.Element == String {
-    
-    var iterator: I
-    var current: String!
-    
-    @inlinable
-    @inline(__always)
-    init(_ iterator: I) {
-        self.iterator = iterator
-    }
-    
-    @inlinable
-    @inline(__always)
-    init<S : Sequence>(_ sequence: S) where S.Iterator == I {
-        self.iterator = sequence.makeIterator()
-    }
-    
-    @inlinable
-    @inline(__always)
-    @discardableResult
-    mutating func next() -> String? {
-        current = iterator.next()
-        return current
-    }
-}
-
-private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?\\d*\\.?\\d+([eE][+-]?\\d+)?"
-
 extension Shape {
     
-    @_fixed_layout
-    public struct ParserError : Error {
-        
-        var command: String?
-    }
-    
-    @inline(__always)
-    private func toDouble(_ str: String?) throws -> Double {
-        
-        if str != nil, let val = Double(str!) {
-            return val
-        }
-        throw ParserError(command: str)
-    }
-    
-    @inline(__always)
-    private func toInt(_ str: String?) throws -> Int {
-        
-        if str != nil, let val = Int(str!) {
-            return val
-        }
-        throw ParserError(command: str)
-    }
-    
-    public init(code: String) throws {
+    public init?(data: Data) {
         self.init()
         
-        var g = PathDataScanner(code.match(regex: pathDataMatcher))
-        var component = Component()
-        var relative = Point()
-        var lastcontrol = Point()
-        var lastbezier = 0
+        var data = data
+        var last = Point()
+        var last_control = Point()
         
-        let commandsymbol = Array("MmLlHhVvCcSsQqTtAaZz".utf8)
+        func decode_point(_ data: inout Data) -> Point? {
+            guard let x = try? data.decode(BEUInt64.self) else { return nil }
+            guard let y = try? data.decode(BEUInt64.self) else { return nil }
+            return Point(x: Double(bitPattern: UInt64(x)), y: Double(bitPattern: UInt64(y)))
+        }
         
-        g.next()
-        while let command = g.current {
-            g.next()
+        while let command = data.popFirst() {
             switch command {
-            case "M":
-                repeat {
-                    if component.count != 0 {
-                        self.append(component)
-                        component.removeAll(keepingCapacity: true)
-                        component.isClosed = false
-                    }
-                    let move = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
-                    component.start = move
-                    relative = move
-                    lastcontrol = move
-                    lastbezier = 0
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "m":
-                repeat {
-                    if component.count != 0 {
-                        self.append(component)
-                        component.removeAll(keepingCapacity: true)
-                        component.isClosed = false
-                    }
-                    let move = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    component.start = move
-                    relative = move
-                    lastcontrol = move
-                    lastbezier = 0
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "L":
-                repeat {
-                    let line = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
-                    relative = line
-                    lastcontrol = line
-                    lastbezier = 0
-                    component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "l":
-                repeat {
-                    let line = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    relative = line
-                    lastcontrol = line
-                    lastbezier = 0
-                    component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "H":
-                repeat {
-                    let line = Point(x: try toDouble(g.current), y: relative.y)
-                    relative = line
-                    lastcontrol = line
-                    lastbezier = 0
-                    component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "h":
-                repeat {
-                    let line = Point(x: try toDouble(g.current) + relative.x, y: relative.y)
-                    relative = line
-                    lastcontrol = line
-                    lastbezier = 0
-                    component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "V":
-                repeat {
-                    let line = Point(x: relative.x, y: try toDouble(g.current))
-                    relative = line
-                    lastcontrol = line
-                    lastbezier = 0
-                    component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "v":
-                repeat {
-                    let line = Point(x: relative.x, y: try toDouble(g.current) + relative.y)
-                    relative = line
-                    lastcontrol = line
-                    lastbezier = 0
-                    component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "C":
-                repeat {
-                    let p1 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
-                    let p2 = Point(x: try toDouble(g.next()), y: try toDouble(g.next()))
-                    let p3 = Point(x: try toDouble(g.next()), y: try toDouble(g.next()))
-                    relative = p3
-                    lastcontrol = p2
-                    lastbezier = 2
-                    component.append(.cubic(p1, p2, p3))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "c":
-                repeat {
-                    let p1 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    let p2 = Point(x: try toDouble(g.next()) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    let p3 = Point(x: try toDouble(g.next()) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    relative = p3
-                    lastcontrol = p2
-                    lastbezier = 2
-                    component.append(.cubic(p1, p2, p3))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "S":
-                repeat {
-                    let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
-                    let p2 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
-                    let p3 = Point(x: try toDouble(g.next()), y: try toDouble(g.next()))
-                    relative = p3
-                    lastcontrol = p2
-                    lastbezier = 2
-                    component.append(.cubic(p1, p2, p3))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "s":
-                repeat {
-                    let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
-                    let p2 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    let p3 = Point(x: try toDouble(g.next()) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    relative = p3
-                    lastcontrol = p2
-                    lastbezier = 2
-                    component.append(.cubic(p1, p2, p3))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "Q":
-                repeat {
-                    let p1 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
-                    let p2 = Point(x: try toDouble(g.next()), y: try toDouble(g.next()))
-                    relative = p2
-                    lastcontrol = p1
-                    lastbezier = 1
-                    component.append(.quad(p1, p2))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "q":
-                repeat {
-                    let p1 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    let p2 = Point(x: try toDouble(g.next()) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    relative = p2
-                    lastcontrol = p1
-                    lastbezier = 1
-                    component.append(.quad(p1, p2))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "T":
-                repeat {
-                    let p1 = lastbezier == 1 ? 2 * relative - lastcontrol : relative
-                    let p2 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
-                    relative = p2
-                    lastcontrol = p1
-                    lastbezier = 1
-                    component.append(.quad(p1, p2))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "t":
-                repeat {
-                    let p1 = lastbezier == 1 ? 2 * relative - lastcontrol : relative
-                    let p2 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
-                    relative = p2
-                    lastcontrol = p1
-                    lastbezier = 1
-                    component.append(.quad(p1, p2))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "A":
-                repeat {
-                    let rx = try toDouble(g.current)
-                    let ry = try toDouble(g.next())
-                    let rotate = try toDouble(g.next())
-                    let largeArc: Bool
-                    let sweep: Bool
-                    if let val = g.next() {
-                        switch val {
-                        case "0":
-                            largeArc = false
-                            sweep = try toInt(g.next()) != 0
-                        case "1":
-                            largeArc = true
-                            sweep = try toInt(g.next()) != 0
-                        case "00":
-                            largeArc = false
-                            sweep = false
-                        case "01":
-                            largeArc = false
-                            sweep = true
-                        case "10":
-                            largeArc = true
-                            sweep = false
-                        case "11":
-                            largeArc = true
-                            sweep = true
-                        default: throw ParserError(command: val)
-                        }
-                    } else {
-                        throw ParserError(command: nil)
-                    }
-                    let x = try toDouble(g.next())
-                    let y = try toDouble(g.next())
-                    relative = Point(x: x, y: y)
-                    lastcontrol = Point(x: x, y: y)
-                    lastbezier = 0
-                    component.arc(to: Point(x: x, y: y), radius: Radius(x: rx, y: ry), rotate: .pi * rotate / 180, largeArc: largeArc, sweep: sweep)
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "a":
-                repeat {
-                    let rx = try toDouble(g.current)
-                    let ry = try toDouble(g.next())
-                    let rotate = try toDouble(g.next())
-                    let largeArc: Bool
-                    let sweep: Bool
-                    if let val = g.next() {
-                        switch val {
-                        case "0":
-                            largeArc = false
-                            sweep = try toInt(g.next()) != 0
-                        case "1":
-                            largeArc = true
-                            sweep = try toInt(g.next()) != 0
-                        case "00":
-                            largeArc = false
-                            sweep = false
-                        case "01":
-                            largeArc = false
-                            sweep = true
-                        case "10":
-                            largeArc = true
-                            sweep = false
-                        case "11":
-                            largeArc = true
-                            sweep = true
-                        default: throw ParserError(command: val)
-                        }
-                    } else {
-                        throw ParserError(command: nil)
-                    }
-                    let x = try toDouble(g.next()) + relative.x
-                    let y = try toDouble(g.next()) + relative.y
-                    relative = Point(x: x, y: y)
-                    lastcontrol = Point(x: x, y: y)
-                    lastbezier = 0
-                    component.arc(to: Point(x: x, y: y), radius: Radius(x: rx, y: ry), rotate: .pi * rotate / 180, largeArc: largeArc, sweep: sweep)
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
-            case "Z", "z":
-                if component.count != 0 {
-                    component.isClosed = true
-                    self.append(component)
-                    component.removeAll(keepingCapacity: true)
-                    component.isClosed = false
-                    relative = component.start
-                    lastcontrol = component.start
-                    lastbezier = 0
+            case 0: self.close()
+            case 1:
+                
+                guard let p0 = decode_point(&data) else { return nil }
+                
+                self.move(to: p0)
+                last = p0
+                last_control = p0
+                
+            case 2:
+                
+                guard let count = try? data.decode(UInt8.self) else { return nil }
+                
+                for _ in 0..<count {
+                    
+                    guard let p1 = decode_point(&data) else { return nil }
+                    
+                    self.line(to: p1)
+                    last = p1
+                    last_control = p1
                 }
-            default:
-                throw ParserError(command: command)
+                
+            case 3:
+                
+                guard let count = try? data.decode(UInt8.self) else { return nil }
+                
+                for _ in 0..<count {
+                    
+                    guard let p2 = decode_point(&data) else { return nil }
+                    
+                    let p1 = 2 * last - last_control
+                    
+                    self.quad(to: p2, control: p1)
+                    last = p2
+                    last_control = p1
+                }
+                
+            case 4:
+                
+                guard let count = try? data.decode(UInt8.self) else { return nil }
+                
+                for _ in 0..<count {
+                    
+                    guard let p1 = decode_point(&data) else { return nil }
+                    guard let p2 = decode_point(&data) else { return nil }
+                    
+                    self.quad(to: p2, control: p1)
+                    last = p2
+                    last_control = p1
+                }
+                
+            case 5:
+                
+                guard let count = try? data.decode(UInt8.self) else { return nil }
+                
+                for _ in 0..<count {
+                    
+                    guard let p3 = decode_point(&data) else { return nil }
+                    
+                    let p1 = 2 * last - last_control
+                    let p2 = p1
+                    
+                    self.curve(to: p3, control1: p1, control2: p2)
+                    last = p3
+                    last_control = p2
+                }
+                
+            case 6:
+                
+                guard let count = try? data.decode(UInt8.self) else { return nil }
+                
+                for _ in 0..<count {
+                    
+                    guard let p2 = decode_point(&data) else { return nil }
+                    guard let p3 = decode_point(&data) else { return nil }
+                    
+                    let p1 = 2 * last - last_control
+                    
+                    self.curve(to: p3, control1: p1, control2: p2)
+                    last = p3
+                    last_control = p2
+                }
+                
+            case 7:
+                
+                guard let count = try? data.decode(UInt8.self) else { return nil }
+                
+                for _ in 0..<count {
+                    
+                    guard let m = try? data.decode(BEUInt64.self) else { return nil }
+                    guard let p3 = decode_point(&data) else { return nil }
+                    
+                    let p1 = Double(bitPattern: UInt64(m)) * (last - last_control).unit + last
+                    let p2 = p1
+                    
+                    self.curve(to: p3, control1: p1, control2: p2)
+                    last = p3
+                    last_control = p2
+                }
+                
+            case 8:
+                
+                guard let count = try? data.decode(UInt8.self) else { return nil }
+                
+                for _ in 0..<count {
+                    
+                    guard let m = try? data.decode(BEUInt64.self) else { return nil }
+                    guard let p2 = decode_point(&data) else { return nil }
+                    guard let p3 = decode_point(&data) else { return nil }
+                    
+                    let p1 = Double(bitPattern: UInt64(m)) * (last - last_control).unit + last
+                    
+                    self.curve(to: p3, control1: p1, control2: p2)
+                    last = p3
+                    last_control = p2
+                }
+                
+            case 9:
+                
+                guard let count = try? data.decode(UInt8.self) else { return nil }
+                
+                for _ in 0..<count {
+                    
+                    guard let p1 = decode_point(&data) else { return nil }
+                    guard let p3 = decode_point(&data) else { return nil }
+                    
+                    let p2 = p1
+                    
+                    self.curve(to: p3, control1: p1, control2: p2)
+                    last = p3
+                    last_control = p2
+                }
+                
+            case 10:
+                
+                guard let count = try? data.decode(UInt8.self) else { return nil }
+                
+                for _ in 0..<count {
+                    
+                    guard let p1 = decode_point(&data) else { return nil }
+                    guard let p2 = decode_point(&data) else { return nil }
+                    guard let p3 = decode_point(&data) else { return nil }
+                    
+                    self.curve(to: p3, control1: p1, control2: p2)
+                    last = p3
+                    last_control = p2
+                }
+                
+            default: return nil
+            }
+        }
+    }
+    
+    public var data: Data {
+        
+        var data = Data()
+        var buffer = Data()
+        
+        for component in self {
+            
+            data.append(1)
+            data.encode(BEUInt64(component.start.x.bitPattern))
+            data.encode(BEUInt64(component.start.y.bitPattern))
+            
+            var last = component.start
+            var last_control = component.start
+            var last_command: UInt8 = 1
+            var counter: UInt8 = 0
+            
+            buffer.removeAll(keepingCapacity: true)
+            
+            func encode_command(_ c: UInt8) {
+                guard last_command != c || counter == .max else { return }
+                if counter != 0 {
+                    data.append(last_command)
+                    data.append(counter)
+                    data.append(buffer)
+                }
+                last_command = c
+                counter = 0
+                buffer.removeAll(keepingCapacity: true)
+            }
+            
+            for segment in component {
+                switch segment {
+                case let .line(p1):
+                    
+                    encode_command(2)
+                    buffer.encode(BEUInt64(p1.x.bitPattern))
+                    buffer.encode(BEUInt64(p1.y.bitPattern))
+                    
+                    last = p1
+                    last_control = p1
+                    counter += 1
+                    
+                case let .quad(p1, p2):
+                    
+                    if p1.almostEqual(2 * last - last_control) {
+                        encode_command(3)
+                        buffer.encode(BEUInt64(p2.x.bitPattern))
+                        buffer.encode(BEUInt64(p2.y.bitPattern))
+                    } else {
+                        encode_command(4)
+                        buffer.encode(BEUInt64(p1.x.bitPattern))
+                        buffer.encode(BEUInt64(p1.y.bitPattern))
+                        buffer.encode(BEUInt64(p2.x.bitPattern))
+                        buffer.encode(BEUInt64(p2.y.bitPattern))
+                    }
+                    
+                    last = p2
+                    last_control = p1
+                    counter += 1
+                    
+                case let .cubic(p1, p2, p3):
+                    
+                    if p1.almostEqual(2 * last - last_control) {
+                        
+                        if p1.almostEqual(p2) {
+                            
+                            encode_command(5)
+                            buffer.encode(BEUInt64(p3.x.bitPattern))
+                            buffer.encode(BEUInt64(p3.y.bitPattern))
+                            
+                        } else {
+                            
+                            encode_command(6)
+                            buffer.encode(BEUInt64(p2.x.bitPattern))
+                            buffer.encode(BEUInt64(p2.y.bitPattern))
+                            buffer.encode(BEUInt64(p3.x.bitPattern))
+                            buffer.encode(BEUInt64(p3.y.bitPattern))
+                        }
+                        
+                    } else if (p1 - last).unit.almostEqual((last - last_control).unit) {
+                        
+                        if p1.almostEqual(p2) {
+                            
+                            encode_command(7)
+                            buffer.encode(BEUInt64(p1.distance(to: last).bitPattern))
+                            buffer.encode(BEUInt64(p3.x.bitPattern))
+                            buffer.encode(BEUInt64(p3.y.bitPattern))
+                            
+                        } else {
+                            
+                            encode_command(8)
+                            buffer.encode(BEUInt64(p1.distance(to: last).bitPattern))
+                            buffer.encode(BEUInt64(p2.x.bitPattern))
+                            buffer.encode(BEUInt64(p2.y.bitPattern))
+                            buffer.encode(BEUInt64(p3.x.bitPattern))
+                            buffer.encode(BEUInt64(p3.y.bitPattern))
+                        }
+                        
+                    } else {
+                        
+                        if p1.almostEqual(p2) {
+                            
+                            encode_command(9)
+                            buffer.encode(BEUInt64(p1.x.bitPattern))
+                            buffer.encode(BEUInt64(p1.y.bitPattern))
+                            buffer.encode(BEUInt64(p3.x.bitPattern))
+                            buffer.encode(BEUInt64(p3.y.bitPattern))
+                            
+                        } else {
+                            
+                            encode_command(10)
+                            buffer.encode(BEUInt64(p1.x.bitPattern))
+                            buffer.encode(BEUInt64(p1.y.bitPattern))
+                            buffer.encode(BEUInt64(p2.x.bitPattern))
+                            buffer.encode(BEUInt64(p2.y.bitPattern))
+                            buffer.encode(BEUInt64(p3.x.bitPattern))
+                            buffer.encode(BEUInt64(p3.y.bitPattern))
+                        }
+                    }
+                    
+                    last = p3
+                    last_control = p2
+                    counter += 1
+                }
+            }
+            
+            if counter != 0 {
+                data.append(last_command)
+                data.append(counter)
+                data.append(buffer)
+            }
+            
+            if component.isClosed {
+                data.append(0)
             }
         }
         
-        if component.count != 0 {
-            self.append(component)
-        }
-        
-        self.makeContiguousBuffer()
-    }
-}
-
-@inline(__always)
-private func getDataString(_ x: [Double]) -> String {
-    var str = ""
-    for _x in x.map({ _decimal_formatter($0) }) {
-        if !str.isEmpty && _x.first != "-" {
-            str.append(" ")
-        }
-        _x.write(to: &str)
-    }
-    return str
-}
-
-@inline(__always)
-private func getPathDataString(_ command: Character?, _ x: Double ...) -> String {
-    var result = ""
-    command?.write(to: &result)
-    let dataStr = getDataString(x)
-    if result.isEmpty && !dataStr.isEmpty && dataStr.first != "-" {
-        result.append(" ")
-    }
-    dataStr.write(to: &result)
-    return result
-}
-
-extension Shape {
-    
-    public func encode() -> String {
-        
-        var data = ""
-        var currentState = -1
-        var start = Point()
-        var relative = Point()
-        var lastControl: Point?
-        for item in self {
-            item.serialize(&currentState, start: &start, relative: &relative, lastControl: &lastControl, &data)
-        }
         return data
-    }
-}
-
-extension Shape.Component {
-    
-    fileprivate func serialize(_ currentState: inout Int, start: inout Point, relative: inout Point, lastControl: inout Point?, _ data: inout String) {
-        
-        let move1 = getPathDataString("M", self.start.x, self.start.y)
-        let move2 = getPathDataString("m", self.start.x - relative.x, self.start.y - relative.y)
-        
-        currentState = 0
-        start = self.start
-        relative = self.start
-        lastControl = nil
-        
-        if move1.count <= move2.count {
-            move1.write(to: &data)
-        } else {
-            move2.write(to: &data)
-        }
-        
-        for item in self {
-            let _serialize1 = item.serialize1(currentState, relative, lastControl)
-            let _serialize2 = item.serialize2(currentState, relative, lastControl)
-            if _serialize1.0.count <= _serialize2.0.count {
-                _serialize1.0.write(to: &data)
-                currentState = _serialize1.1
-                relative = _serialize1.2
-                lastControl = _serialize1.3
-            } else {
-                _serialize2.0.write(to: &data)
-                currentState = _serialize2.1
-                relative = _serialize2.2
-                lastControl = _serialize2.3
-            }
-        }
-        
-        if self.isClosed {
-            data.append("z")
-            relative = self.start
-        }
-    }
-    
-}
-
-extension Shape.Segment {
-    
-    @inline(__always)
-    fileprivate func isSmooth(_ p: Point, _ relative: Point, _ lastControl: Point?) -> Bool {
-        
-        if let lastControl = lastControl {
-            let d = p + lastControl - 2 * relative
-            return _decimal_round(d.x) == 0 && _decimal_round(d.y) == 0
-        }
-        return false
-    }
-    
-    fileprivate func serialize1(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
-        
-        switch self {
-        case let .line(point):
-            
-            var currentState = currentState
-            let str: String
-            if _decimal_round(relative.x) == _decimal_round(point.x) {
-                str = getPathDataString(currentState == 1 ? nil : "V", point.y)
-                currentState = 1
-            } else if _decimal_round(relative.y) == _decimal_round(point.y) {
-                str = getPathDataString(currentState == 3 ? nil : "H", point.x)
-                currentState = 3
-            } else {
-                str = getPathDataString(currentState == 5 ? nil : "L", point.x, point.y)
-                currentState = 5
-            }
-            return (str, currentState, point, nil)
-        case let .quad(p1, p2):
-            
-            var currentState = currentState
-            let str: String
-            if isSmooth(p1, relative, lastControl) && 7...10 ~= currentState {
-                str = getPathDataString(currentState == 7 ? nil : "T", p2.x, p2.y)
-                currentState = 7
-            } else {
-                str = getPathDataString(currentState == 9 ? nil : "Q", p1.x, p1.y, p2.x, p2.y)
-                currentState = 9
-            }
-            return (str, currentState, p2, p1)
-        case let .cubic(p1, p2, p3):
-            
-            var currentState = currentState
-            let str: String
-            if isSmooth(p1, relative, lastControl) && 11...14 ~= currentState {
-                str = getPathDataString(currentState == 11 ? nil : "S", p2.x, p2.y, p3.x, p3.y)
-                currentState = 11
-            } else {
-                str = getPathDataString(currentState == 13 ? nil : "C", p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
-                currentState = 13
-            }
-            return (str, currentState, p3, p2)
-        }
-    }
-    
-    fileprivate func serialize2(_ currentState: Int, _ relative: Point, _ lastControl: Point?) -> (String, Int, Point, Point?) {
-        
-        switch self {
-        case let .line(point):
-            
-            var currentState = currentState
-            let str: String
-            if _decimal_round(relative.x) == _decimal_round(point.x) {
-                str = getPathDataString(currentState == 2 ? nil : "v", point.y - relative.y)
-                currentState = 2
-            } else if _decimal_round(relative.y) == _decimal_round(point.y) {
-                str = getPathDataString(currentState == 4 ? nil : "h", point.x - relative.x)
-                currentState = 4
-            } else {
-                str = getPathDataString(currentState == 6 ? nil : "l", point.x - relative.x, point.y - relative.y)
-                currentState = 6
-            }
-            return (str, currentState, point, nil)
-        case let .quad(p1, p2):
-            
-            var currentState = currentState
-            let str: String
-            if isSmooth(p1, relative, lastControl) && 7...10 ~= currentState {
-                str = getPathDataString(currentState == 8 ? nil : "t", p2.x - relative.x, p2.y - relative.y)
-                currentState = 8
-            } else {
-                str = getPathDataString(currentState == 10 ? nil : "q", p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y)
-                currentState = 10
-            }
-            return (str, currentState, p2, p1)
-        case let .cubic(p1, p2, p3):
-            
-            var currentState = currentState
-            let str: String
-            if isSmooth(p1, relative, lastControl) && 11...14 ~= currentState {
-                str = getPathDataString(currentState == 12 ? nil : "s", p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
-                currentState = 12
-            } else {
-                str = getPathDataString(currentState == 14 ? nil : "c", p1.x - relative.x, p1.y - relative.y, p2.x - relative.x, p2.y - relative.y, p3.x - relative.x, p3.y - relative.y)
-                currentState = 14
-            }
-            return (str, currentState, p3, p2)
-        }
     }
 }
