@@ -219,28 +219,28 @@ extension PDFContext {
             let _mirrored_margin = page._mirrored_margin
             
             let media = [
-                Decimal(_media.x).rounded(scale: 9),
-                Decimal(_media.y).rounded(scale: 9),
-                Decimal(_media.width).rounded(scale: 9),
-                Decimal(_media.height).rounded(scale: 9),
+                Decimal(_media.minX).rounded(scale: 9),
+                Decimal(_media.minY).rounded(scale: 9),
+                Decimal(_media.maxX).rounded(scale: 9),
+                Decimal(_media.maxY).rounded(scale: 9),
             ]
             let bleed = [
-                Decimal(_mirrored_bleed.x).rounded(scale: 9),
-                Decimal(_mirrored_bleed.y).rounded(scale: 9),
-                Decimal(_mirrored_bleed.width).rounded(scale: 9),
-                Decimal(_mirrored_bleed.height).rounded(scale: 9),
+                Decimal(_mirrored_bleed.minX).rounded(scale: 9),
+                Decimal(_mirrored_bleed.minY).rounded(scale: 9),
+                Decimal(_mirrored_bleed.maxX).rounded(scale: 9),
+                Decimal(_mirrored_bleed.maxY).rounded(scale: 9),
             ]
             let trim = [
-                Decimal(_mirrored_trim.x).rounded(scale: 9),
-                Decimal(_mirrored_trim.y).rounded(scale: 9),
-                Decimal(_mirrored_trim.width).rounded(scale: 9),
-                Decimal(_mirrored_trim.height).rounded(scale: 9),
+                Decimal(_mirrored_trim.minX).rounded(scale: 9),
+                Decimal(_mirrored_trim.minY).rounded(scale: 9),
+                Decimal(_mirrored_trim.maxX).rounded(scale: 9),
+                Decimal(_mirrored_trim.maxY).rounded(scale: 9),
             ]
             let margin = [
-                Decimal(_mirrored_margin.x).rounded(scale: 9),
-                Decimal(_mirrored_margin.y).rounded(scale: 9),
-                Decimal(_mirrored_margin.width).rounded(scale: 9),
-                Decimal(_mirrored_margin.height).rounded(scale: 9),
+                Decimal(_mirrored_margin.minX).rounded(scale: 9),
+                Decimal(_mirrored_margin.minY).rounded(scale: 9),
+                Decimal(_mirrored_margin.maxX).rounded(scale: 9),
+                Decimal(_mirrored_margin.maxY).rounded(scale: 9),
             ]
             
             var dict = [
@@ -386,10 +386,10 @@ extension PDFContext.Page {
         
         let _bbox = self.media.standardized
         let bbox = [
-            Decimal(_bbox.x).rounded(scale: 9),
-            Decimal(_bbox.y).rounded(scale: 9),
-            Decimal(_bbox.width).rounded(scale: 9),
-            Decimal(_bbox.height).rounded(scale: 9),
+            Decimal(_bbox.minX).rounded(scale: 9),
+            Decimal(_bbox.minY).rounded(scale: 9),
+            Decimal(_bbox.maxX).rounded(scale: 9),
+            Decimal(_bbox.maxY).rounded(scale: 9),
         ]
         
         for (name, commands) in mask {
