@@ -137,18 +137,22 @@ extension InterscetionTable {
                             continue
                         }
                         
-                        let _lhs = right_split.values.lazy.compactMap { $0.almostEqual(rhs, reference: reference) ? left_split[$0.point_id] : nil }.first { !left.almost_equal($0, lhs, reference: reference) }
-                        let _rhs = left_split.values.lazy.compactMap { $0.almostEqual(lhs, reference: reference) ? right_split[$0.point_id] : nil }.first { !right.almost_equal($0, rhs, reference: reference) }
+                        let _lhs = right_split.values.compactMap { $0.almostEqual(rhs, reference: reference) ? left_split[$0.point_id] : nil }
+                        let _rhs = left_split.values.compactMap { $0.almostEqual(lhs, reference: reference) ? right_split[$0.point_id] : nil }
                         
-                        if let _lhs = _lhs {
-                            looping_left.append((_lhs, lhs))
-                        } else {
+                        if _lhs.isEmpty && _rhs.isEmpty {
+                            
                             left_split[point_id] = lhs
-                        }
-                        if let _rhs = _rhs {
-                            looping_right.append((_rhs, rhs))
-                        } else {
                             right_split[point_id] = rhs
+                            
+                        } else {
+                            
+                            if let _lhs = _lhs.first(where: { !left.almost_equal($0, lhs, reference: reference) }) {
+                                looping_left.append((_lhs, lhs))
+                            }
+                            if let _rhs = _rhs.first(where: { !right.almost_equal($0, rhs, reference: reference) }) {
+                                looping_right.append((_rhs, rhs))
+                            }
                         }
                         
                         point_id += 1
