@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct WeakSet<Element: AnyObject> : Collection, SetAlgebra {
     
     @usableFromInline
@@ -41,7 +41,7 @@ public struct WeakSet<Element: AnyObject> : Collection, SetAlgebra {
 
 extension WeakSet {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct ElementContainer {
         
@@ -54,7 +54,7 @@ extension WeakSet {
         }
     }
     
-    @_fixed_layout
+    @frozen
     public struct Index : Comparable {
         
         @usableFromInline

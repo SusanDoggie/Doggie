@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct QuadBezier<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
     
     public typealias Scalar = Double

@@ -105,7 +105,7 @@ public func isPrime(_ n: UInt) -> Bool {
 
 // MARK: Polynomial
 
-@_fixed_layout
+@frozen
 public struct Degree2Roots : Sequence, IteratorProtocol {
     
     public var values: (Double?, Double?)

@@ -715,7 +715,7 @@ extension UInt : SDAtomicProtocol {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct Atomic<Instance> {
     
     @usableFromInline
@@ -745,7 +745,7 @@ public struct Atomic<Instance> {
 
 extension Atomic {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     class Base {
         

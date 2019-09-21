@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct SVGNoiseGenerator {
     
     public let seed: Int
@@ -109,7 +109,7 @@ extension SVGNoiseGenerator {
 
 extension SVGNoiseGenerator {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct StitchInfo {
         

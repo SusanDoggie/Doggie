@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
     
     public typealias Pixel = Float64ColorPixel<RawPixel.Model>

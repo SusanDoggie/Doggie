@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
     
     public var m00: Element

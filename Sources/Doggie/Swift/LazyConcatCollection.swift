@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : IteratorProtocol, Sequence where G1.Element == G2.Element {
     
     @usableFromInline
@@ -62,7 +62,7 @@ public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : Itera
     }
 }
 
-@_fixed_layout
+@frozen
 public struct LazyConcatSequence<S1 : Sequence, S2 : Sequence> : LazySequenceProtocol where S1.Element == S2.Element {
     
     @usableFromInline
@@ -100,7 +100,7 @@ public struct LazyConcatSequence<S1 : Sequence, S2 : Sequence> : LazySequencePro
     
 }
 
-@_fixed_layout
+@frozen
 public struct ConcatCollectionIndex<I1 : Comparable, I2 : Comparable> : Comparable {
     
     @usableFromInline
@@ -131,7 +131,7 @@ public func < <I1, I2>(lhs: ConcatCollectionIndex<I1, I2>, rhs: ConcatCollection
     return (lhs.currect1, lhs.currect2) < (rhs.currect1, rhs.currect2)
 }
 
-@_fixed_layout
+@frozen
 public struct LazyConcatCollection<S1 : Collection, S2 : Collection> : LazyCollectionProtocol where S1.Element == S2.Element {
     
     public typealias Iterator = ConcatIterator<S1.Iterator, S2.Iterator>

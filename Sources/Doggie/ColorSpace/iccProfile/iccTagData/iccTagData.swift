@@ -25,7 +25,7 @@
 
 extension iccProfile {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct TagData {
         

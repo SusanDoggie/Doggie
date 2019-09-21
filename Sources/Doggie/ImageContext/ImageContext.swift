@@ -74,7 +74,7 @@ private struct GraphicState {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct ImageContextState {
     

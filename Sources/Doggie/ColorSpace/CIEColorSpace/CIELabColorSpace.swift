@@ -36,7 +36,7 @@ extension ColorSpace where Model == LabColorModel {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct CIELabColorSpace : ColorSpaceBaseProtocol {
     

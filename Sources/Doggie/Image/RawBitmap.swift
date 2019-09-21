@@ -31,7 +31,7 @@ extension AnyImage {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct RawBitmap {
     
     public let bitsPerPixel: Int
@@ -80,7 +80,7 @@ public struct RawBitmap {
 
 extension RawBitmap {
     
-    @_fixed_layout
+    @frozen
     public struct Channel {
         
         public let index: Int

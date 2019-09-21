@@ -41,7 +41,7 @@ extension ColorSpace where Model == RGBColorModel {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
@@ -138,7 +138,7 @@ extension CalibratedRGBColorSpace {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     

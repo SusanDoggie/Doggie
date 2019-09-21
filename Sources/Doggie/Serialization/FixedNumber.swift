@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
@@ -50,7 +50,7 @@ extension Fixed8Number : SignedNumeric where BitPattern : SignedNumeric {
     
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
@@ -77,7 +77,7 @@ extension Fixed14Number : SignedNumeric where BitPattern : SignedNumeric {
     
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     
@@ -104,7 +104,7 @@ extension Fixed16Number : SignedNumeric where BitPattern : SignedNumeric {
     
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
     

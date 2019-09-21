@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByArrayLiteral {
     
     @usableFromInline
@@ -52,7 +52,7 @@ public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByAr
 
 extension FontCollection {
     
-    @_fixed_layout
+    @frozen
     public struct Index : Comparable, Hashable {
         
         @usableFromInline
@@ -69,7 +69,7 @@ extension FontCollection {
         }
     }
     
-    @_fixed_layout
+    @frozen
     public struct Iterator : IteratorProtocol {
         
         @usableFromInline

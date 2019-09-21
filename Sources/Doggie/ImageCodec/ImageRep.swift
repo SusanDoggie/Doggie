@@ -55,7 +55,7 @@ extension ImageRepBase {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct ImageRep {
     
     public let originalData: Data?

@@ -36,7 +36,7 @@ extension ColorSpace where Model == YxyColorModel {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct CIEYxyColorSpace : ColorSpaceBaseProtocol {
     

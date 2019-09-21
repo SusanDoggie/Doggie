@@ -63,7 +63,7 @@ extension LabColorModel : PCSColorModel {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProtocol, A2BTransform: iccTransform, B2ATransform: iccTransform> : ColorSpaceBaseProtocol where Connection.Model : PCSColorModel {
     

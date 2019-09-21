@@ -27,6 +27,8 @@
 
 @_exported import Foundation
 
+@_exported import FoundationXML
+
 @_exported import Dispatch
 
 #if canImport(Darwin)

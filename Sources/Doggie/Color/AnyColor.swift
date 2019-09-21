@@ -80,7 +80,7 @@ extension Color : AnyColorBaseProtocol {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct AnyColor : ColorProtocol, Hashable {
     
     @usableFromInline

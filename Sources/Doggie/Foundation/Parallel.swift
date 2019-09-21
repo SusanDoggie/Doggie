@@ -85,8 +85,6 @@ extension RandomAccessCollection {
         
         let count = self.count
         
-        #if swift(>=5.1)
-        
         return Array(unsafeUninitializedCapacity: count) { buffer, initializedCount in
             guard let buffer = buffer.baseAddress else { return }
             DispatchQueue.concurrentPerform(iterations: count) {
@@ -94,19 +92,6 @@ extension RandomAccessCollection {
             }
             initializedCount = count
         }
-        
-        #else
-        
-        let buffer = UnsafeMutablePointer<T>.allocate(capacity: count)
-        DispatchQueue.concurrentPerform(iterations: count) {
-            (buffer + $0).initialize(to: transform(self[self.index(startIndex, offsetBy: $0)]))
-        }
-        let result = ContiguousArray(UnsafeMutableBufferPointer(start: buffer, count: count))
-        buffer.deinitialize(count: count)
-        buffer.deallocate()
-        return Array(result)
-        
-        #endif
     }
     
     /// Returns an array containing the results of mapping the given closure
@@ -133,8 +118,6 @@ extension RandomAccessCollection {
         
         let count = self.count
         
-        #if swift(>=5.1)
-        
         return Array(unsafeUninitializedCapacity: count) { buffer, initializedCount in
             guard let buffer = buffer.baseAddress else { return }
             DispatchQueue.concurrentPerform(iterations: count, threads: threads) {
@@ -142,18 +125,5 @@ extension RandomAccessCollection {
             }
             initializedCount = count
         }
-        
-        #else
-        
-        let buffer = UnsafeMutablePointer<T>.allocate(capacity: count)
-        DispatchQueue.concurrentPerform(iterations: count, threads: threads) {
-            (buffer + $0).initialize(to: transform(self[self.index(startIndex, offsetBy: $0)]))
-        }
-        let result = ContiguousArray(UnsafeMutableBufferPointer(start: buffer, count: count))
-        buffer.deinitialize(count: count)
-        buffer.deallocate()
-        return Array(result)
-        
-        #endif
     }
 }

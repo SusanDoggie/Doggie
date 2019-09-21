@@ -108,7 +108,7 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct AnyColorSpace : ColorSpaceProtocol, Hashable {
 
     @usableFromInline

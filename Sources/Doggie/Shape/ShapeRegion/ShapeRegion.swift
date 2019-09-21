@@ -33,7 +33,7 @@ extension Collection where SubSequence : Collection {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct ShapeRegion {
     
     fileprivate let solids: [Solid]
@@ -57,7 +57,7 @@ public struct ShapeRegion {
         self.boundary = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
     }
     
-    @_fixed_layout
+    @frozen
     public struct Solid {
         
         public let solid: Shape.Component

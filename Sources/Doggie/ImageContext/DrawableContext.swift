@@ -235,7 +235,7 @@ public enum GradientSpreadMode : CaseIterable {
     case `repeat`
 }
 
-@_fixed_layout
+@frozen
 public struct GradientStop<Color: ColorProtocol> {
     
     public var offset: Double
@@ -304,7 +304,7 @@ public enum GradientType : CaseIterable {
     case radial
 }
 
-@_fixed_layout
+@frozen
 public struct Gradient<Color: ColorProtocol> {
     
     public var type: GradientType

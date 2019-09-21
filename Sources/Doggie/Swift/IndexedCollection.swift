@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct IndexedIterator<C : Collection> : IteratorProtocol {
     
     public let base: C
@@ -46,7 +46,7 @@ public struct IndexedIterator<C : Collection> : IteratorProtocol {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct IndexedCollection<C : Collection> : Collection {
     
     public let base: C

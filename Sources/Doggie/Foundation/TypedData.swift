@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct TypedData<T> : RandomAccessCollection {
     
     public var data: Data

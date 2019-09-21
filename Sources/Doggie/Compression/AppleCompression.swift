@@ -51,7 +51,7 @@ public class AppleCompression : CompressionCodec {
 @available(OSX 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)
 extension AppleCompression {
     
-    @_fixed_layout
+    @frozen
     public struct Error : Swift.Error {
         
     }

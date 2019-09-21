@@ -143,7 +143,7 @@ extension ColorSpaceBaseProtocol {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct ColorSpace<Model : ColorModelProtocol> : ColorSpaceProtocol, Hashable {
     
     @usableFromInline

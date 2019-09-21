@@ -51,7 +51,7 @@ extension Deflate {
         case fixed
     }
     
-    @_fixed_layout
+    @frozen
     public struct Level: RawRepresentable {
         
         public var rawValue: Int32

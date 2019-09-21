@@ -28,7 +28,7 @@ enum GraphError : Error, CaseIterable {
     case keyCollision
 }
 
-@_fixed_layout
+@frozen
 public struct Graph<Node : Hashable, Link> : Collection {
     
     public typealias Iterator = GraphIterator<Node, Link>
@@ -412,7 +412,7 @@ extension Graph where Node == AnyHashable {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct GraphIndex<Node : Hashable, Link> : Hashable, Comparable {
     
     @usableFromInline
@@ -448,7 +448,7 @@ public func < <Node, Link>(lhs: GraphIndex<Node, Link>, rhs: GraphIndex<Node, Li
     return false
 }
 
-@_fixed_layout
+@frozen
 public struct GraphIterator<Node : Hashable, Link> : IteratorProtocol, Sequence {
     
     public typealias Element = (from: Node, to: Node, value: Link)

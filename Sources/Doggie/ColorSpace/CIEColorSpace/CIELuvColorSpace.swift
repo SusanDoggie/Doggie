@@ -36,7 +36,7 @@ extension ColorSpace where Model == LuvColorModel {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct CIELuvColorSpace : ColorSpaceBaseProtocol {
     

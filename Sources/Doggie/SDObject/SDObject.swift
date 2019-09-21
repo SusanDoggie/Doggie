@@ -38,7 +38,7 @@ public enum SDObjectType : Hashable {
     case unknown(UInt8)
 }
 
-@_fixed_layout
+@frozen
 public struct SDObject {
     
     @usableFromInline
@@ -670,7 +670,7 @@ extension SDObject {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct SDUndecodedObject {
     

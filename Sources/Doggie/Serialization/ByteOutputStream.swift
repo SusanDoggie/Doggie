@@ -41,7 +41,7 @@ public protocol ByteOutputStreamable {
     func write<Target: ByteOutputStream>(to stream: inout Target)
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct _ByteOutputStream: ByteOutputStream {
     

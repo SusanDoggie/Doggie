@@ -115,7 +115,7 @@ extension Image : AnyImageBaseProtocol {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct AnyImage : ImageProtocol {
     
     @usableFromInline

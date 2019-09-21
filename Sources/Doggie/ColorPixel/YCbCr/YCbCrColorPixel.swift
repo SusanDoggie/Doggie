@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct YCbCrColorPixel : ColorPixelProtocol {
     
     public var a: UInt8

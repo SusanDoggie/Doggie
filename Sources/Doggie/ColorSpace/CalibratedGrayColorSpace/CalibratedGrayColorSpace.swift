@@ -44,7 +44,7 @@ extension ColorSpace where Model == GrayColorModel {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct CalibratedGrayColorSpace : ColorSpaceBaseProtocol {
     

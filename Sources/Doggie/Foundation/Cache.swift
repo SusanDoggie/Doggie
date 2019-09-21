@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral {
     
     public typealias Index = Dictionary<Key, Any>.Index
@@ -60,7 +60,7 @@ public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral 
 
 extension Cache {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     class Base {
         

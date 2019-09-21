@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct RGBA32ColorPixel : ColorPixelProtocol {
     
     public var r: UInt8

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct RangeSet<Bound : Comparable> : Equatable {
     
     @usableFromInline

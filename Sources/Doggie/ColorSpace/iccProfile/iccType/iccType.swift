@@ -25,7 +25,7 @@
 
 extension iccProfile {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct Header : ByteCodable {
         
@@ -184,7 +184,7 @@ extension iccProfile {
 
 extension iccProfile.Header {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct ClassSignature: SignatureProtocol {
         
@@ -205,7 +205,7 @@ extension iccProfile.Header {
         static let namedColor: ClassSignature                = "nmcl"
     }
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct ColorSpaceSignature: SignatureProtocol {
         
@@ -250,7 +250,7 @@ extension iccProfile.Header {
 
 extension iccProfile {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct TagSignature : SignatureProtocol {
         
@@ -332,7 +332,7 @@ extension iccProfile {
 
 extension iccProfile {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct TagType : SignatureProtocol {
         

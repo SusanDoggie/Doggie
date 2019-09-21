@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol {
     
     public let width: Int

@@ -510,7 +510,7 @@ extension iccLUTTransform {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct OneDimensionalLUT {
     
@@ -548,7 +548,7 @@ struct OneDimensionalLUT {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct MultiDimensionalLUT {
     

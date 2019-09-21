@@ -39,7 +39,7 @@ protocol iccTransform {
     func convertLinearFromConnection<Model: ColorModelProtocol, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct iccMonochromeTransform : iccTransform {
     
@@ -115,7 +115,7 @@ struct iccMonochromeTransform : iccTransform {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct iccMatrixTransform : iccTransform {
     
@@ -207,7 +207,7 @@ struct iccMatrixTransform : iccTransform {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct iccLUT0Transform : iccTransform {
     
@@ -305,7 +305,7 @@ struct iccLUT0Transform : iccTransform {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct iccLUT1Transform : iccTransform {
     
@@ -387,7 +387,7 @@ struct iccLUT1Transform : iccTransform {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct iccLUT2Transform : iccTransform {
     
@@ -488,7 +488,7 @@ struct iccLUT2Transform : iccTransform {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct iccLUT3Transform : iccTransform {
     
@@ -581,7 +581,7 @@ struct iccLUT3Transform : iccTransform {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct iccLUT4Transform : iccTransform {
     

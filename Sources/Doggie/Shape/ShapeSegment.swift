@@ -25,7 +25,7 @@
 
 extension Shape.Component {
     
-    @_fixed_layout
+    @frozen
     public struct BezierCollection: RandomAccessCollection, MutableCollection {
         
         public typealias Indices = Range<Int>
@@ -65,7 +65,7 @@ extension Shape.Component {
             }
         }
         
-        @_fixed_layout
+        @frozen
         public struct Element {
             
             public var start: Point

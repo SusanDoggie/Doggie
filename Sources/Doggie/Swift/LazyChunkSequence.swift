@@ -31,7 +31,7 @@ extension RandomAccessCollection {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct LazyChunkSequence<Base : RandomAccessCollection> : IteratorProtocol, LazySequenceProtocol {
     
     @usableFromInline

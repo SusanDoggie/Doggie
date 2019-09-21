@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct iccNamedColor : ByteDecodable {
     

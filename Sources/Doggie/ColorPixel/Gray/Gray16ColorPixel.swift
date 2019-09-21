@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct Gray16ColorPixel : ColorPixelProtocol {
     
     public var w: UInt8

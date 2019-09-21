@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtocol {
     
@@ -73,7 +73,7 @@ public protocol ImageContextRenderVertex {
     static func * (lhs: Double, rhs: Self) -> Self
 }
 
-@_fixed_layout
+@frozen
 public struct ImageContextRenderStageIn<Vertex : ImageContextRenderVertex> {
     
     public var vertex: Vertex
@@ -134,7 +134,7 @@ public protocol ImageContextRenderPipelineShader {
     func render(projection: (StageIn.Position) -> Point, stageIn: (StageIn, StageIn, StageIn), stageOut: (StageOut, StageOut, StageOut) -> Void)
 }
 
-@_fixed_layout
+@frozen
 public struct ImageContextRenderPipeline<Generator: ImageContextRenderTriangleGenerator, Shader: ImageContextRenderPipelineShader> : ImageContextRenderTriangleGenerator where Generator.Vertex == Shader.StageIn {
     
     public typealias Vertex = Shader.StageOut
@@ -330,7 +330,7 @@ extension ImageContext {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct OrthographicProjectMatrix {
     
     public var nearZ: Double
@@ -357,7 +357,7 @@ extension ImageContext {
     }
 }
 
-@_fixed_layout
+@frozen
 public struct PerspectiveProjectMatrix {
     
     public var angle: Double
@@ -383,7 +383,7 @@ public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Point {
     return Point(x: lhs.x * cotan * _w, y: lhs.y * cotan * _w)
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct _PerspectiveProjectTriangleGenerator<Base : ImageContextRenderTriangleGenerator> : ImageContextRenderTriangleGenerator where Base.Vertex.Position == Vector {
     
@@ -405,7 +405,7 @@ struct _PerspectiveProjectTriangleGenerator<Base : ImageContextRenderTriangleGen
 
 extension _PerspectiveProjectTriangleGenerator {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct _Vertex : ImageContextRenderVertex {
         
@@ -488,7 +488,7 @@ extension ImageContext {
     }
 }
 
-@_fixed_layout
+@frozen
 @usableFromInline
 struct _RenderTriangleSequence<Base: Sequence, Vertex: ImageContextRenderVertex> : ImageContextRenderTriangleGenerator where Base.Element == (Vertex, Vertex, Vertex) {
     

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     public typealias Indices = Range<Int>
@@ -37,7 +37,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         case cubic(Point, Point, Point)
     }
     
-    @_fixed_layout
+    @frozen
     public struct Component {
         
         public var start: Point
@@ -310,7 +310,7 @@ extension Shape.Cache {
 
 extension Shape.Component {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct Cache {
         
@@ -357,7 +357,7 @@ extension Shape.Component {
 
 extension Shape.Component.CacheArray {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct Element {
         

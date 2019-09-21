@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct WeakDictionary<Key: AnyObject, Value> : Collection {
     
     public typealias Element = (key: Key, value: Value)
@@ -43,7 +43,7 @@ public struct WeakDictionary<Key: AnyObject, Value> : Collection {
 
 extension WeakDictionary {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct ValueContainer {
         
@@ -60,7 +60,7 @@ extension WeakDictionary {
         }
     }
     
-    @_fixed_layout
+    @frozen
     public struct Index : Comparable {
         
         @usableFromInline

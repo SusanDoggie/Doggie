@@ -32,7 +32,7 @@ public enum MemoryAdvise : CaseIterable {
     case dontNeed
 }
 
-@_fixed_layout
+@frozen
 public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     public typealias Indices = Range<Int>
@@ -528,7 +528,7 @@ extension MappedBuffer : Hashable where Element : Hashable {
 
 extension MappedBuffer {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     struct _Box {
         
@@ -639,7 +639,7 @@ extension Data {
 
 extension MappedBuffer {
     
-    @_fixed_layout
+    @frozen
     @usableFromInline
     class Base {
         

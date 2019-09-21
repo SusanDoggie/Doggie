@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct Size: Hashable {
     
     public var width: Double
@@ -179,7 +179,7 @@ public func -= (lhs: inout Size, rhs: Size) {
     lhs.height -= rhs.height
 }
 
-@_fixed_layout
+@frozen
 public struct Rect: Hashable {
     
     public var origin : Point

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & FloatingMathProtocol> {
     
     @usableFromInline

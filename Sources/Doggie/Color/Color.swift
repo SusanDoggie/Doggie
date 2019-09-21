@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct Color<Model : ColorModelProtocol> : ColorProtocol, Hashable {
     
     public var colorSpace: Doggie.ColorSpace<Model>

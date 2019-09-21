@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-@_fixed_layout
+@frozen
 public struct Float64ColorPixel<Model : ColorModelProtocol> : _FloatComponentPixel {
     
     public typealias ColorComponents = Model
