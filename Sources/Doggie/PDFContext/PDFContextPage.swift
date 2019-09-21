@@ -84,7 +84,7 @@ struct PDFContextState {
 
 extension PDFContext {
     
-    class Page {
+    final class Page {
         
         let media: Rect
         let bleed: Rect

@@ -27,7 +27,11 @@
 
 @_exported import Foundation
 
+#if canImport(FoundationXML)
+
 @_exported import FoundationXML
+
+#endif
 
 @_exported import Dispatch
 

@@ -47,7 +47,7 @@ public struct SDXMLElement {
     
     let _string: String
     
-    class _Tree {
+    final class _Tree {
         
         let root: SDXMLDocument?
         let parent: SDXMLElement?

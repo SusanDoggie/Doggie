@@ -73,7 +73,7 @@ public struct ImageRep {
 extension ImageRep {
     
     @usableFromInline
-    class Cache {
+    final class Cache {
         
         let lck = SDLock()
         

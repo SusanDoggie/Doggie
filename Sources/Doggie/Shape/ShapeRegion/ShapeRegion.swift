@@ -136,7 +136,7 @@ extension ShapeRegion.Solid {
     
     init?<S : Sequence>(segments: S, reference: Double) where S.Element == Segment {
         
-        var segments = segments.filter { !$0._invisible(reference: reference) }
+        let segments = segments.filter { !$0._invisible(reference: reference) }
         guard segments.count > 0 else { return nil }
         
         let solid = Shape.Component(start: segments[0].start, closed: true, segments: segments.map { $0.segment })

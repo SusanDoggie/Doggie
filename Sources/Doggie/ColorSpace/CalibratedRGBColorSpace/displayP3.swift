@@ -23,9 +23,8 @@
 //  THE SOFTWARE.
 //
 
-@frozen
 @usableFromInline
-class _displayP3: CalibratedRGBColorSpace {
+final class _displayP3: CalibratedRGBColorSpace {
     
     @inlinable
     init() {

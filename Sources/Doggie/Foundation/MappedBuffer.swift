@@ -639,9 +639,8 @@ extension Data {
 
 extension MappedBuffer {
     
-    @frozen
     @usableFromInline
-    class Base {
+    final class Base {
         
         @usableFromInline
         let fd: Int32

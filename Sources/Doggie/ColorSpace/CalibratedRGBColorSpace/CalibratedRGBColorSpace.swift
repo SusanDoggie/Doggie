@@ -41,7 +41,6 @@ extension ColorSpace where Model == RGBColorModel {
     }
 }
 
-@frozen
 @usableFromInline
 class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
@@ -138,9 +137,8 @@ extension CalibratedRGBColorSpace {
     }
 }
 
-@frozen
 @usableFromInline
-class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
+final class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     
     @usableFromInline
     let gamma: (Double, Double, Double)

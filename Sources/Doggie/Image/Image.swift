@@ -120,7 +120,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
 }
 
 @usableFromInline
-class ImageCache {
+final class ImageCache {
     
     @usableFromInline
     let lck = SDLock()

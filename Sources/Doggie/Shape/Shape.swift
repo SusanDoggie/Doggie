@@ -258,7 +258,7 @@ extension Shape {
 extension Shape {
     
     @usableFromInline
-    class Cache {
+    final class Cache {
         
         let lck = SDLock()
         
@@ -343,7 +343,7 @@ extension Shape.Component {
 extension Shape.Component {
     
     @usableFromInline
-    class CacheArray {
+    final class CacheArray {
         
         let lck = SDLock()
         var storage: [Element]

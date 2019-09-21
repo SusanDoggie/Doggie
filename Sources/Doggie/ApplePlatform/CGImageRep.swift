@@ -58,7 +58,7 @@ public struct CGImageRep {
 extension CGImageRep {
     
     @usableFromInline
-    class Cache {
+    final class Cache {
         
         let lck = SDLock()
         

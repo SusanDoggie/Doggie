@@ -60,9 +60,8 @@ public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral 
 
 extension Cache {
     
-    @frozen
     @usableFromInline
-    class Base {
+    final class Base {
         
         @usableFromInline
         let lck = SDLock()

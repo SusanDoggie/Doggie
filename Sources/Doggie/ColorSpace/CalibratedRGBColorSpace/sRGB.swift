@@ -23,9 +23,8 @@
 //  THE SOFTWARE.
 //
 
-@frozen
 @usableFromInline
-class _sRGB: CalibratedRGBColorSpace {
+final class _sRGB: CalibratedRGBColorSpace {
     
     @inlinable
     init() {

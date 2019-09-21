@@ -42,7 +42,7 @@ extension SDXMLDocument {
     }
 }
 
-class SDXMLParser : XMLParser, XMLParserDelegate {
+final class SDXMLParser : XMLParser, XMLParserDelegate {
     
     var document = SDXMLDocument()
     var stack: [(SDXMLElement, [String: String])] = []
