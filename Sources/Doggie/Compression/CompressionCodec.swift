@@ -42,23 +42,23 @@ extension CompressionCodec {
 extension CompressionCodec {
     
     @inlinable
-    public func process<S : UnsafeBufferProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where S.Element == UInt8, C.Element == UInt8 {
+    public func process<S : ContiguousBytes, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where C.Element == UInt8 {
         try process(source) { output.append(contentsOf: $0) }
     }
     
     @inlinable
-    public func final<S : UnsafeBufferProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where S.Element == UInt8, C.Element == UInt8 {
+    public func final<S : ContiguousBytes, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where C.Element == UInt8 {
         try final(source) { output.append(contentsOf: $0) }
     }
     
     @inlinable
-    public func process<S : UnsafeBufferProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws where S.Element == UInt8 {
-        try source.withUnsafeBufferPointer { try process($0, callback) }
+    public func process<S : ContiguousBytes>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+        try source.withUnsafeBytes { try process($0.bindMemory(to: UInt8.self), callback) }
     }
     
     @inlinable
-    public func final<S : UnsafeBufferProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws where S.Element == UInt8 {
-        try source.withUnsafeBufferPointer { try final($0, callback) }
+    public func final<S : ContiguousBytes>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+        try source.withUnsafeBytes { try final($0.bindMemory(to: UInt8.self), callback) }
     }
 }
 

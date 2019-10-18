@@ -95,7 +95,6 @@
 		0A26A0921FA98A1B008BEADB /* CompressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A26A0901FA98994008BEADB /* CompressionTest.swift */; };
 		0A2DFE1D217D65CF00E6EEA4 /* SFNTFEAT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */; };
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
-		0A34FBEA20AAE683001CE2F3 /* UnsafeBufferProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */; };
 		0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36612A1EEA54AB00216A26 /* CGPath.swift */; };
 		0A3674B421634DC800175580 /* CGImageRep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3674B321634DC800175580 /* CGImageRep.swift */; };
 		0A39436A1F4A77A700573372 /* Trigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3943691F4A77A700573372 /* Trigger.swift */; };
@@ -416,7 +415,6 @@
 		0A26A0901FA98994008BEADB /* CompressionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CompressionTest.swift; sourceTree = "<group>"; };
 		0A2DFE1C217D65CF00E6EEA4 /* SFNTFEAT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFNTFEAT.swift; sourceTree = "<group>"; };
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Tensor.swift; sourceTree = "<group>"; };
-		0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeBufferProtocol.swift; sourceTree = "<group>"; };
 		0A36612A1EEA54AB00216A26 /* CGPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGPath.swift; sourceTree = "<group>"; };
 		0A3674B321634DC800175580 /* CGImageRep.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGImageRep.swift; sourceTree = "<group>"; };
 		0A3943691F4A77A700573372 /* Trigger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Trigger.swift; sourceTree = "<group>"; };
@@ -1376,7 +1374,6 @@
 				0ADAA3AD20CB6FAB006682EA /* LazyChunkSequence.swift */,
 				0ADAA3AF20CB6FC2006682EA /* LazyScanSequence.swift */,
 				0A80D1461E66A7000003BB44 /* RangeSet.swift */,
-				0A34FBE920AAE683001CE2F3 /* UnsafeBufferProtocol.swift */,
 				0AC94FF421D472570085AFA4 /* RawBitPattern.swift */,
 				0A53E4541E35AEF80060FB83 /* Integer.swift */,
 				083136692307EC740068194F /* Decimal.swift */,
@@ -1790,7 +1787,6 @@
 				0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */,
 				0A9F28281EF0D9DF00E69976 /* XYZColorModel.swift in Sources */,
 				0889F2C91F18FF1D0020E750 /* FixedNumber.swift in Sources */,
-				0A34FBEA20AAE683001CE2F3 /* UnsafeBufferProtocol.swift in Sources */,
 				0A1C14281EF3C5A5001ADB7F /* ICCColorSpace.swift in Sources */,
 				0A06975C1E4D66A3005CF664 /* CoreImage.swift in Sources */,
 				0A967E551F132DC0007E38E4 /* JPEG2000Encoder.swift in Sources */,

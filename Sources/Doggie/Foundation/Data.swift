@@ -95,3 +95,25 @@ extension Data {
     }
 }
 
+extension Data {
+    
+    @inlinable
+    public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<UInt8>) throws -> R) rethrows -> R {
+        return try self.withUnsafeBytes { try body($0.bindMemory(to: UInt8.self)) }
+    }
+    
+    @inlinable
+    public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<UInt8>) throws -> R) rethrows -> R {
+        
+        return try self.withUnsafeMutableBytes { (bytes: UnsafeMutableRawBufferPointer) in
+            
+            var buf = bytes.bindMemory(to: UInt8.self)
+            let copy = buf
+            
+            defer { precondition(buf.baseAddress == copy.baseAddress) }
+            defer { precondition(buf.count == copy.count) }
+            
+            return try body(&buf)
+        }
+    }
+}

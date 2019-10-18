@@ -31,8 +31,8 @@ public protocol ByteOutputStream {
 extension ByteOutputStream {
     
     @inlinable
-    mutating func write<Buffer: UnsafeBufferProtocol>(_ buffer: Buffer) where Buffer.Element == UInt8 {
-        buffer.withUnsafeBufferPointer { self.write(UnsafeRawBufferPointer($0)) }
+    mutating func write<Buffer: ContiguousBytes>(_ buffer: Buffer) {
+        buffer.withUnsafeBytes { self.write($0) }
     }
 }
 

@@ -503,6 +503,10 @@ extension MappedBuffer {
     }
 }
 
+extension MappedBuffer : ContiguousBytes where Element == UInt8 {
+    
+}
+
 extension MappedBuffer : Equatable where Element : Equatable {
     
     @inlinable

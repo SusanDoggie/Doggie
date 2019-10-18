@@ -58,3 +58,19 @@ public struct OptionOneCollection<T> : RandomAccessCollection {
         return value == nil ? 0 : 1
     }
 }
+
+extension OptionOneCollection: Equatable where T : Equatable {
+    
+}
+
+extension OptionOneCollection: Hashable where T : Hashable {
+    
+}
+
+extension OptionOneCollection : ContiguousBytes where Element == UInt8 {
+    
+    @inlinable
+    public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
+        return try value.map { try Swift.withUnsafeBytes(of: $0) { try body($0) } } ?? body(UnsafeRawBufferPointer(start: nil, count: 0))
+    }
+}
