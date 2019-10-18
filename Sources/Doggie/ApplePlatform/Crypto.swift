@@ -59,52 +59,44 @@ extension Crypto {
         public var status: CCCryptorStatus
     }
     
-    public static func encrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ data: Data, _ iv: Data? = nil) throws -> Data {
-        
-        var result = Data(count: data.count + algorithm.blockSize)
-        var length = 0
-        
-        var status: CCCryptorStatus = 0
-        
-        result.withUnsafeMutableBytes { result in key.withUnsafeBytes { key in data.withUnsafeBytes { data in
-            
-            if let iv = iv {
-                iv.withUnsafeBytes { iv in
-                    status = CCCrypt(CCOperation(kCCEncrypt), algorithm.rawValue, CCOptions(options.rawValue), key.baseAddress, key.count, iv.baseAddress, data.baseAddress, data.count, result.baseAddress, result.count, &length)
-                }
-            } else {
-                status = CCCrypt(CCOperation(kCCEncrypt), algorithm.rawValue, CCOptions(options.rawValue), key.baseAddress, key.count, nil, data.baseAddress, data.count, result.baseAddress, result.count, &length)
-            }
-            
-            } } }
-        
-        guard status == kCCSuccess else  { throw Error(status: status) }
-        
-        return result.prefix(length)
+    public static func encrypt<K : ContiguousBytes, D : ContiguousBytes>(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: K, _ data: D) throws -> Data {
+        return try encrypt(algorithm, options, key, data, EmptyCollection())
     }
     
-    public static func decrypt(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: Data, _ data: Data, _ iv: Data? = nil) throws -> Data {
+    public static func encrypt<K : ContiguousBytes, D : ContiguousBytes, I : ContiguousBytes>(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: K, _ data: D, _ iv: I) throws -> Data {
         
-        var result = Data(count: data.count + algorithm.blockSize)
-        var length = 0
-        
-        var status: CCCryptorStatus = 0
-        
-        result.withUnsafeMutableBytes { result in key.withUnsafeBytes { key in data.withUnsafeBytes { data in
+        return try key.withUnsafeBytes { key in try data.withUnsafeBytes { data in try iv.withUnsafeBytes { iv in
             
-            if let iv = iv {
-                iv.withUnsafeBytes { iv in
-                    status = CCCrypt(CCOperation(kCCDecrypt), algorithm.rawValue, CCOptions(options.rawValue), key.baseAddress, key.count, iv.baseAddress, data.baseAddress, data.count, result.baseAddress, result.count, &length)
-                }
-            } else {
-                status = CCCrypt(CCOperation(kCCDecrypt), algorithm.rawValue, CCOptions(options.rawValue), key.baseAddress, key.count, nil, data.baseAddress, data.count, result.baseAddress, result.count, &length)
-            }
+            var result = Data(count: data.count + algorithm.blockSize)
+            var length = 0
+            
+            let status = result.withUnsafeMutableBytes { CCCrypt(CCOperation(kCCEncrypt), algorithm.rawValue, CCOptions(options.rawValue), key.baseAddress, key.count, iv.baseAddress, data.baseAddress, data.count, $0.baseAddress, $0.count, &length) }
+            
+            guard status == kCCSuccess else  { throw Error(status: status) }
+            
+            return result.prefix(length)
             
             } } }
+    }
+    
+    public static func decrypt<K : ContiguousBytes, D : ContiguousBytes>(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: K, _ data: D) throws -> Data {
+        return try decrypt(algorithm, options, key, data, EmptyCollection())
+    }
+    
+    public static func decrypt<K : ContiguousBytes, D : ContiguousBytes, I : ContiguousBytes>(_ algorithm: CryptorAlgorithm, _ options: CryptorOptions, _ key: K, _ data: D, _ iv: I) throws -> Data {
         
-        guard status == kCCSuccess else  { throw Error(status: status) }
-        
-        return result.prefix(length)
+        return try key.withUnsafeBytes { key in try data.withUnsafeBytes { data in try iv.withUnsafeBytes { iv in
+            
+            var result = Data(count: data.count + algorithm.blockSize)
+            var length = 0
+            
+            let status = result.withUnsafeMutableBytes { CCCrypt(CCOperation(kCCDecrypt), algorithm.rawValue, CCOptions(options.rawValue), key.baseAddress, key.count, iv.baseAddress, data.baseAddress, data.count, $0.baseAddress, $0.count, &length) }
+            
+            guard status == kCCSuccess else  { throw Error(status: status) }
+            
+            return result.prefix(length)
+            
+            } } }
     }
 }
 
@@ -147,42 +139,48 @@ extension Crypto {
         return Data(referencing: immutableReference)
     }()
     
-    public static func symmetricKeyWrap(_ algorithm: WrappingAlgorithm, _ key: Data, _ encryptionKey: Data, _ iv: Data = Crypto.rfc3394) throws -> Data {
-        
-        let outputSize = CCSymmetricWrappedSize(algorithm.rawValue, key.count)
-        var result = Data(count: outputSize)
-        
-        var length = outputSize
-        
-        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in encryptionKey.withUnsafeBufferPointer { encryptionKey in iv.withUnsafeBufferPointer { iv in
-            
-            CCSymmetricKeyWrap(algorithm.rawValue, iv.baseAddress, iv.count, encryptionKey.baseAddress, encryptionKey.count, key.baseAddress, key.count, result.baseAddress, &length)
-            
-            } } } }
-        
-        guard status == kCCSuccess else  { throw Error(status: status) }
-        
-        return result.prefix(upTo: length)
-        
+    public static func symmetricKeyWrap<K : ContiguousBytes, E : ContiguousBytes>(_ algorithm: WrappingAlgorithm, _ key: K, _ encryptionKey: E) throws -> Data {
+        return try symmetricKeyWrap(algorithm, key, encryptionKey, rfc3394)
     }
     
-    public static func symmetricKeyUnwrap(_ algorithm: WrappingAlgorithm, _ key: Data, _ encryptionKey: Data, _ iv: Data = Crypto.rfc3394) throws -> Data {
+    public static func symmetricKeyWrap<K : ContiguousBytes, E : ContiguousBytes, I : ContiguousBytes>(_ algorithm: WrappingAlgorithm, _ key: K, _ encryptionKey: E, _ iv: I) throws -> Data {
         
-        let outputSize = CCSymmetricUnwrappedSize(algorithm.rawValue, key.count)
-        var result = Data(count: outputSize)
-        
-        var length = outputSize
-        
-        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in encryptionKey.withUnsafeBufferPointer { encryptionKey in iv.withUnsafeBufferPointer { iv in
+        return try key.withUnsafeBytes { key in try encryptionKey.withUnsafeBytes { encryptionKey in try iv.withUnsafeBytes { iv in
             
-            CCSymmetricKeyUnwrap(algorithm.rawValue, iv.baseAddress, iv.count, encryptionKey.baseAddress, encryptionKey.count, key.baseAddress, key.count, result.baseAddress, &length)
+            let outputSize = CCSymmetricWrappedSize(algorithm.rawValue, key.count)
+            var result = Data(count: outputSize)
             
-            } } } }
+            var length = outputSize
+            
+            let status = result.withUnsafeMutableBufferPointer { CCSymmetricKeyWrap(algorithm.rawValue, iv.bindMemory(to: UInt8.self).baseAddress, iv.count, encryptionKey.bindMemory(to: UInt8.self).baseAddress, encryptionKey.count, key.bindMemory(to: UInt8.self).baseAddress, key.count, $0.baseAddress, &length) }
+            
+            guard status == kCCSuccess else  { throw Error(status: status) }
+            
+            return result.prefix(upTo: length)
+            
+            } } }
+    }
+    
+    public static func symmetricKeyUnwrap<K : ContiguousBytes, E : ContiguousBytes>(_ algorithm: WrappingAlgorithm, _ key: K, _ encryptionKey: E) throws -> Data {
+        return try symmetricKeyUnwrap(algorithm, key, encryptionKey, rfc3394)
+    }
+    
+    public static func symmetricKeyUnwrap<K : ContiguousBytes, E : ContiguousBytes, I : ContiguousBytes>(_ algorithm: WrappingAlgorithm, _ key: K, _ encryptionKey: E, _ iv: I) throws -> Data {
         
-        guard status == kCCSuccess else  { throw Error(status: status) }
-        
-        return result.prefix(upTo: length)
-        
+        return try key.withUnsafeBytes { key in try encryptionKey.withUnsafeBytes { encryptionKey in try iv.withUnsafeBytes { iv in
+            
+            let outputSize = CCSymmetricUnwrappedSize(algorithm.rawValue, key.count)
+            var result = Data(count: outputSize)
+            
+            var length = outputSize
+            
+            let status = result.withUnsafeMutableBufferPointer { CCSymmetricKeyUnwrap(algorithm.rawValue, iv.bindMemory(to: UInt8.self).baseAddress, iv.count, encryptionKey.bindMemory(to: UInt8.self).baseAddress, encryptionKey.count, key.bindMemory(to: UInt8.self).baseAddress, key.count, $0.baseAddress, &length) }
+            
+            guard status == kCCSuccess else  { throw Error(status: status) }
+            
+            return result.prefix(upTo: length)
+            
+            } } }
     }
 }
 
@@ -215,15 +213,15 @@ extension Crypto {
         return Int(CCCalibratePBKDF(algorithm.rawValue, keyLength, saltLength, pseudoRandomAlgorithm.rawValue, derivedKeyLength, UInt32(msec)))
     }
     
-    public static func PBKDF(_ algorithm: PBKDFAlgorithm, _ pseudoRandomAlgorithm: PseudoRandomAlgorithm, _ key: Data, _ salt: Data, _ derivedKeyLength: Int, _ round: Int) throws -> Data {
+    public static func PBKDF<K : ContiguousBytes, S : ContiguousBytes>(_ algorithm: PBKDFAlgorithm, _ pseudoRandomAlgorithm: PseudoRandomAlgorithm, _ key: K, _ salt: S, _ derivedKeyLength: Int, _ round: Int) throws -> Data {
         
         var result = Data(count: derivedKeyLength)
         
-        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBufferPointer { key in key.withMemoryRebound(to: Int8.self) { key in salt.withUnsafeBufferPointer { salt in
+        let status = result.withUnsafeMutableBufferPointer { result in key.withUnsafeBytes { key in salt.withUnsafeBytes { salt in
             
-            CCKeyDerivationPBKDF(algorithm.rawValue, key.baseAddress, key.count, salt.baseAddress, salt.count, pseudoRandomAlgorithm.rawValue, uint(round), result.baseAddress, result.count)
+            CCKeyDerivationPBKDF(algorithm.rawValue, key.bindMemory(to: Int8.self).baseAddress, key.count, salt.bindMemory(to: UInt8.self).baseAddress, salt.count, pseudoRandomAlgorithm.rawValue, uint(round), result.baseAddress, result.count)
             
-            } } } }
+            } } }
         
         guard status == kCCSuccess else  { throw Error(status: status) }
         
@@ -309,39 +307,39 @@ extension Crypto {
 
 extension Crypto {
     
-    public static func md5(_ data: Data) -> Data {
+    public static func md5<S : ContiguousBytes>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_MD5_DIGEST_LENGTH))
-        digest.withUnsafeMutableBytes { digest in data.withUnsafeBytes { _ = CC_MD5($0.baseAddress, CC_LONG(data.count), digest.baseAddress!.assumingMemoryBound(to: UInt8.self)) } }
+        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_MD5($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
         return digest
     }
     
-    public static func sha1(_ data: Data) -> Data {
+    public static func sha1<S : ContiguousBytes>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA1_DIGEST_LENGTH))
-        digest.withUnsafeMutableBytes { digest in data.withUnsafeBytes { _ = CC_SHA1($0.baseAddress, CC_LONG(data.count), digest.baseAddress!.assumingMemoryBound(to: UInt8.self)) } }
+        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA1($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
         return digest
     }
     
-    public static func sha224(_ data: Data) -> Data {
+    public static func sha224<S : ContiguousBytes>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA224_DIGEST_LENGTH))
-        digest.withUnsafeMutableBytes { digest in data.withUnsafeBytes { _ = CC_SHA224($0.baseAddress, CC_LONG(data.count), digest.baseAddress!.assumingMemoryBound(to: UInt8.self)) } }
+        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA224($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
         return digest
     }
     
-    public static func sha256(_ data: Data) -> Data {
+    public static func sha256<S : ContiguousBytes>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA256_DIGEST_LENGTH))
-        digest.withUnsafeMutableBytes { digest in data.withUnsafeBytes { _ = CC_SHA256($0.baseAddress, CC_LONG(data.count), digest.baseAddress!.assumingMemoryBound(to: UInt8.self)) } }
+        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA256($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
         return digest
     }
     
-    public static func sha384(_ data: Data) -> Data {
+    public static func sha384<S : ContiguousBytes>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA384_DIGEST_LENGTH))
-        digest.withUnsafeMutableBytes { digest in data.withUnsafeBytes { _ = CC_SHA384($0.baseAddress, CC_LONG(data.count), digest.baseAddress!.assumingMemoryBound(to: UInt8.self)) } }
+        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA384($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
         return digest
     }
     
-    public static func sha512(_ data: Data) -> Data {
+    public static func sha512<S : ContiguousBytes>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA512_DIGEST_LENGTH))
-        digest.withUnsafeMutableBytes { digest in data.withUnsafeBytes { _ = CC_SHA512($0.baseAddress, CC_LONG(data.count), digest.baseAddress!.assumingMemoryBound(to: UInt8.self)) } }
+        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA512($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
         return digest
     }
 }
