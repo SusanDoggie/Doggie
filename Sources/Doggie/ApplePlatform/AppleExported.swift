@@ -25,7 +25,7 @@
 
 #if canImport(Compression)
 
-import Compression
+@_exported import Compression
 
 #endif
 
