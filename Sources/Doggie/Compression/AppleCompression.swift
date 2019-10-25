@@ -25,8 +25,6 @@
 
 #if canImport(Compression)
 
-import Compression
-
 @available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)
 public class AppleCompression : CompressionCodec {
     
