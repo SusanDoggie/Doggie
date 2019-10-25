@@ -286,7 +286,8 @@ struct PNGDecoder : ImageRepDecoder {
                 
                 do {
                     
-                    try decompressor.final(data) { decoder.decode($0) { result.append(contentsOf: $0) } }
+                    try decompressor.process(data) { decoder.decode($0) { result.append(contentsOf: $0) } }
+                    try decompressor.final { decoder.decode($0) { result.append(contentsOf: $0) } }
                     decoder.final { result.append(contentsOf: $0) }
                     
                 } catch {
@@ -416,7 +417,7 @@ struct PNGDecoder : ImageRepDecoder {
                         
                         var pass: Int?
                         
-                        try decompressor.final(data) { data in
+                        func scanner(_ data: UnsafeBufferPointer<UInt8>) {
                             
                             interlace_state.scan(data) { state, data in
                                 
@@ -428,6 +429,9 @@ struct PNGDecoder : ImageRepDecoder {
                                 decoder?.decode(data) { filling3(state, $0) }
                             }
                         }
+                        
+                        try decompressor.process(data, scanner)
+                        try decompressor.final(scanner)
                         
                         decoder?.final { filling3(interlace_state, $0) }
                     }

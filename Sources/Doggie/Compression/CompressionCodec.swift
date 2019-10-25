@@ -33,36 +33,14 @@ public protocol CompressionCodec: AnyObject {
 extension CompressionCodec {
     
     @inlinable
-    public func final(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
-        try process(source, callback)
-        try final(callback)
-    }
-}
-
-extension CompressionCodec {
-    
-    @inlinable
-    public func process<S : DataProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where C.Element == UInt8 {
-        try process(source) { output.append(contentsOf: $0) }
-    }
-    
-    @inlinable
-    public func final<S : DataProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where C.Element == UInt8 {
-        try final(source) { output.append(contentsOf: $0) }
-    }
-    
-    @inlinable
     public func process<S : DataProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         try source.regions.forEach { try $0.withUnsafeBytes { try process($0.bindMemory(to: UInt8.self), callback) } }
     }
     
     @inlinable
-    public func final<S : DataProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
-        try source.regions.forEach { try $0.withUnsafeBytes { try final($0.bindMemory(to: UInt8.self), callback) } }
+    public func process<S : DataProtocol, C : RangeReplaceableCollection>(_ source: S, _ output: inout C) throws where C.Element == UInt8 {
+        try process(source) { output.append(contentsOf: $0) }
     }
-}
-
-extension CompressionCodec {
     
     @inlinable
     public func final<C : RangeReplaceableCollection>(_ output: inout C) throws where C.Element == UInt8 {
@@ -75,7 +53,8 @@ extension CompressionCodec {
     @inlinable
     public func process(_ source: Data) throws -> Data {
         var result = Data(capacity: source.count)
-        try self.final(source, &result)
+        try self.process(source, &result)
+        try self.final(&result)
         return result
     }
 }
