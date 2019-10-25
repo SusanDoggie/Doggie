@@ -40,7 +40,6 @@
 		08458B5F1E2E627600D01813 /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEE1E2E627600D01813 /* Lock.swift */; };
 		08458B611E2E627600D01813 /* SDTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* SDTask.swift */; };
 		084912E122F4199100C2EC0F /* ShapePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084912E022F4199100C2EC0F /* ShapePreview.swift */; };
-		086CBF3422B53C0D00D9460E /* Crypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086CBF3322B53C0D00D9460E /* Crypto.swift */; };
 		086CBF3A22B53D1200D9460E /* WeakSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086CBF3922B53D1200D9460E /* WeakSet.swift */; };
 		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
 		086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* GradientMesh.swift */; };
@@ -359,7 +358,6 @@
 		08458AEE1E2E627600D01813 /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Lock.swift; sourceTree = "<group>"; };
 		08458AEF1E2E627600D01813 /* SDTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SDTask.swift; sourceTree = "<group>"; };
 		084912E022F4199100C2EC0F /* ShapePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapePreview.swift; sourceTree = "<group>"; };
-		086CBF3322B53C0D00D9460E /* Crypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crypto.swift; sourceTree = "<group>"; };
 		086CBF3922B53D1200D9460E /* WeakSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakSet.swift; sourceTree = "<group>"; };
 		086F06481EDC623D00BA70C8 /* Rasterizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rasterizer.swift; sourceTree = "<group>"; };
 		086F064B1EDC65D600BA70C8 /* GradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GradientMesh.swift; sourceTree = "<group>"; };
@@ -888,7 +886,6 @@
 				0AE762541EE9475400E926D5 /* CGColorSpace.swift */,
 				0A3D5C621EEA498E00A9CDEA /* CGColor.swift */,
 				0A11968B212A74DD00B2D4DB /* Metal.swift */,
-				086CBF3322B53C0D00D9460E /* Crypto.swift */,
 			);
 			path = ApplePlatform;
 			sourceTree = "<group>";
@@ -1588,7 +1585,6 @@
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
 				08458B451E2E627600D01813 /* Actor.swift in Sources */,
 				0A8D863F1F7DF13E00F9530E /* ColorProtocol.swift in Sources */,
-				086CBF3422B53C0D00D9460E /* Crypto.swift in Sources */,
 				0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */,
 				08B0C01222FABE1A005C1035 /* SVGMergeEffect.swift in Sources */,
 				0AF5676620D26AC9003B243B /* YxyColorModel.swift in Sources */,
