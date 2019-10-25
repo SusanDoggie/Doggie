@@ -263,9 +263,12 @@ extension Crypto {
         case SHA512
     }
     
-    public static func HMAC(_ algorithm: HMACAlgorithm, _ key: Data, _ message: Data) -> Data {
+    public static func HMAC<K : ContiguousBytes, D : DataProtocol>(_ algorithm: HMACAlgorithm, _ key: K, _ message: D) -> Data {
         var result = Data(count: algorithm.digestLength)
-        result.withUnsafeMutableBytes { result in key.withUnsafeBytes { key in message.withUnsafeBytes { message in CCHmac(algorithm.rawValue, key.baseAddress, key.count, message.baseAddress, message.count, result.baseAddress) } } }
+        var context = CCHmacContext()
+        key.withUnsafeBytes { CCHmacInit(&context, algorithm.rawValue, $0.baseAddress, $0.count) }
+        message.regions.forEach { $0.withUnsafeBytes { CCHmacUpdate(&context, $0.baseAddress, $0.count) } }
+        result.withUnsafeMutableBytes { CCHmacFinal(&context, $0.baseAddress) }
         return result
     }
 }
@@ -307,39 +310,58 @@ extension Crypto {
 
 extension Crypto {
     
-    public static func md5<S : ContiguousBytes>(_ data: S) -> Data {
+    private static func digest<S : DataProtocol, CTX>(_ data: S, _ context: CTX, _ init: (UnsafeMutablePointer<CTX>?) -> Int32, _ update: (UnsafeMutablePointer<CTX>?, UnsafeRawPointer?, CC_LONG) -> Int32, _ final: (UnsafeMutablePointer<UInt8>?, UnsafeMutablePointer<CTX>?) -> Int32, _ digest: inout Data) {
+        var context = context
+        _ = `init`(&context)
+        data.regions.forEach { $0.withUnsafeBytes { _ = update(&context, $0.baseAddress, CC_LONG($0.count)) } }
+        _ = digest.withUnsafeMutableBufferPointer { digest in final(digest.baseAddress, &context) }
+    }
+    
+    public static func md2<S : DataProtocol>(_ data: S) -> Data {
+        var digest = Data(count: Int(CC_MD2_DIGEST_LENGTH))
+        Crypto.digest(data, CC_MD2_CTX(), CC_MD2_Init, CC_MD2_Update, CC_MD2_Final, &digest)
+        return digest
+    }
+    
+    public static func md4<S : DataProtocol>(_ data: S) -> Data {
+        var digest = Data(count: Int(CC_MD4_DIGEST_LENGTH))
+        Crypto.digest(data, CC_MD4_CTX(), CC_MD4_Init, CC_MD4_Update, CC_MD4_Final, &digest)
+        return digest
+    }
+    
+    public static func md5<S : DataProtocol>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_MD5_DIGEST_LENGTH))
-        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_MD5($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
+        Crypto.digest(data, CC_MD5_CTX(), CC_MD5_Init, CC_MD5_Update, CC_MD5_Final, &digest)
         return digest
     }
     
-    public static func sha1<S : ContiguousBytes>(_ data: S) -> Data {
+    public static func sha1<S : DataProtocol>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA1_DIGEST_LENGTH))
-        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA1($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
+        Crypto.digest(data, CC_SHA1_CTX(), CC_SHA1_Init, CC_SHA1_Update, CC_SHA1_Final, &digest)
         return digest
     }
     
-    public static func sha224<S : ContiguousBytes>(_ data: S) -> Data {
+    public static func sha224<S : DataProtocol>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA224_DIGEST_LENGTH))
-        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA224($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
+        Crypto.digest(data, CC_SHA256_CTX(), CC_SHA224_Init, CC_SHA224_Update, CC_SHA224_Final, &digest)
         return digest
     }
     
-    public static func sha256<S : ContiguousBytes>(_ data: S) -> Data {
+    public static func sha256<S : DataProtocol>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA256_DIGEST_LENGTH))
-        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA256($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
+        Crypto.digest(data, CC_SHA256_CTX(), CC_SHA256_Init, CC_SHA256_Update, CC_SHA256_Final, &digest)
         return digest
     }
     
-    public static func sha384<S : ContiguousBytes>(_ data: S) -> Data {
+    public static func sha384<S : DataProtocol>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA384_DIGEST_LENGTH))
-        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA384($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
+        Crypto.digest(data, CC_SHA512_CTX(), CC_SHA384_Init, CC_SHA384_Update, CC_SHA384_Final, &digest)
         return digest
     }
     
-    public static func sha512<S : ContiguousBytes>(_ data: S) -> Data {
+    public static func sha512<S : DataProtocol>(_ data: S) -> Data {
         var digest = Data(count: Int(CC_SHA512_DIGEST_LENGTH))
-        digest.withUnsafeMutableBufferPointer { digest in data.withUnsafeBytes { _ = CC_SHA512($0.baseAddress, CC_LONG($0.count), digest.baseAddress) } }
+        Crypto.digest(data, CC_SHA512_CTX(), CC_SHA512_Init, CC_SHA512_Update, CC_SHA512_Final, &digest)
         return digest
     }
 }

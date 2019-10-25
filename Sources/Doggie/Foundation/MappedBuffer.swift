@@ -507,6 +507,14 @@ extension MappedBuffer : ContiguousBytes where Element == UInt8 {
     
 }
 
+extension MappedBuffer : DataProtocol where Element == UInt8 {
+    
+    @inlinable
+    public var regions: CollectionOfOne<MappedBuffer<UInt8>> {
+        return CollectionOfOne(self)
+    }
+}
+
 extension MappedBuffer : Equatable where Element : Equatable {
     
     @inlinable

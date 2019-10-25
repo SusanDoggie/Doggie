@@ -27,28 +27,34 @@
 
 import Compression
 
-@available(OSX 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)
+@available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)
 public class AppleCompression : CompressionCodec {
     
-    private var stream: UnsafeMutablePointer<compression_stream>
+    private var stream: compression_stream
+    
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+    public convenience init(_ operation: Compression.FilterOperation, _ algorithm: Compression.Algorithm) throws {
+        try self.init(operation.rawValue, algorithm.rawValue)
+    }
     
     public init(_ operation: compression_stream_operation, _ algorithm: compression_algorithm) throws {
         
-        self.stream = UnsafeMutablePointer.allocate(capacity: 1)
+        self.stream = compression_stream(
+            dst_ptr: UnsafeMutablePointer<UInt8>(bitPattern: -1)!,
+            dst_size: 0,
+            src_ptr: UnsafeMutablePointer<UInt8>(bitPattern: -1)!,
+            src_size: 0,
+            state: nil)
         
-        guard compression_stream_init(stream, operation, algorithm) == COMPRESSION_STATUS_OK else {
-            self.stream.deallocate()
-            throw Error()
-        }
+        guard compression_stream_init(&stream, operation, algorithm) == COMPRESSION_STATUS_OK else { throw Error() }
     }
     
     deinit {
-        compression_stream_destroy(stream)
-        self.stream.deallocate()
+        compression_stream_destroy(&stream)
     }
 }
 
-@available(OSX 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)
+@available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)
 extension AppleCompression {
     
     @frozen
@@ -57,7 +63,7 @@ extension AppleCompression {
     }
 }
 
-@available(OSX 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)
+@available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)
 extension AppleCompression {
     
     private static let empty = [UInt8](repeating: 0, count: 4096)
@@ -70,16 +76,16 @@ extension AppleCompression {
             
             repeat {
                 
-                stream.pointee.dst_ptr = buf.baseAddress!
-                stream.pointee.dst_size = 4096
+                stream.dst_ptr = buf.baseAddress!
+                stream.dst_size = 4096
                 
-                let status = compression_stream_process(stream, flag)
+                let status = compression_stream_process(&stream, flag)
                 
                 guard status == COMPRESSION_STATUS_OK || status == COMPRESSION_STATUS_END else { throw Error() }
                 
-                callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - stream.pointee.dst_size)))
+                callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - stream.dst_size)))
                 
-            } while stream.pointee.src_size != 0 || stream.pointee.dst_size == 0
+            } while stream.src_size != 0 || stream.dst_size == 0
         }
     }
     
@@ -87,8 +93,8 @@ extension AppleCompression {
         
         guard let _source = source.baseAddress, source.count != 0 else { return }
         
-        stream.pointee.src_ptr = _source
-        stream.pointee.src_size = source.count
+        stream.src_ptr = _source
+        stream.src_size = source.count
         
         try _process(0, callback)
     }
@@ -97,8 +103,8 @@ extension AppleCompression {
         
         try AppleCompression.empty.withUnsafeBufferPointer { empty in
             
-            stream.pointee.src_ptr = empty.baseAddress!
-            stream.pointee.src_size = 0
+            stream.src_ptr = empty.baseAddress!
+            stream.src_size = 0
             
             try _process(Int32(COMPRESSION_STREAM_FINALIZE.rawValue), callback)
         }

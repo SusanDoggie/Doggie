@@ -27,7 +27,7 @@
 
 import Metal
 
-@available(OSX 10.11, iOS 8.3, tvOS 9.0, *)
+@available(macOS 10.11, iOS 8.3, tvOS 9.0, *)
 extension MTLComputeCommandEncoder {
     
     public func setBuffer(_ buffer: Data, index: Int) {
@@ -52,7 +52,7 @@ extension MTLComputeCommandEncoder {
     }
 }
 
-@available(OSX 10.11, iOS 8.0, tvOS 9.0, *)
+@available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
 extension MTLComputeCommandEncoder {
     
     public func setBuffer<T>(_ buffer: MappedBuffer<T>, offset: Int, index: Int) {
@@ -60,7 +60,7 @@ extension MTLComputeCommandEncoder {
     }
 }
 
-@available(OSX 10.11, iOS 8.0, tvOS 9.0, *)
+@available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
 extension MTLDevice {
     
     public func makeBuffer<T>(_ buffer: MappedBuffer<T>, options: MTLResourceOptions = []) -> MTLBuffer? {
@@ -71,7 +71,7 @@ extension MTLDevice {
     }
 }
 
-@available(OSX 10.13, iOS 11.0, tvOS 11.0, *)
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension MTLDevice {
     
     private func makeTexture<T>(_ buffer: MappedBuffer<T>, descriptor: MTLTextureDescriptor, options: MTLResourceOptions) -> MTLTexture? {

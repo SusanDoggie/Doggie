@@ -31,8 +31,8 @@ public protocol ByteOutputStream {
 extension ByteOutputStream {
     
     @inlinable
-    mutating func write<Buffer: ContiguousBytes>(_ buffer: Buffer) {
-        buffer.withUnsafeBytes { self.write($0) }
+    mutating func write<Buffer: DataProtocol>(_ buffer: Buffer) {
+        buffer.regions.forEach { $0.withUnsafeBytes { self.write($0) } }
     }
 }
 

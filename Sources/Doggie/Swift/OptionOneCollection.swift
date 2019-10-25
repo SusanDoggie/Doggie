@@ -74,3 +74,11 @@ extension OptionOneCollection : ContiguousBytes where Element == UInt8 {
         return try value.map { try Swift.withUnsafeBytes(of: $0) { try body($0) } } ?? body(UnsafeRawBufferPointer(start: nil, count: 0))
     }
 }
+
+extension OptionOneCollection : DataProtocol where Element == UInt8 {
+    
+    @inlinable
+    public var regions: CollectionOfOne<OptionOneCollection<UInt8>> {
+        return CollectionOfOne(self)
+    }
+}
