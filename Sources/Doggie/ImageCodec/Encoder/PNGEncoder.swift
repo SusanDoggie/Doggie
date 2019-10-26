@@ -29,14 +29,14 @@ struct PNGEncoder : ImageRepEncoder {
         
         var result = MappedBuffer<UInt8>(fileBacked: true)
         
-        result.encode(0x89 as UInt8)
-        result.encode(0x50 as UInt8)
-        result.encode(0x4E as UInt8)
-        result.encode(0x47 as UInt8)
-        result.encode(0x0D as UInt8)
-        result.encode(0x0A as UInt8)
-        result.encode(0x1A as UInt8)
-        result.encode(0x0A as UInt8)
+        result.append(0x89)
+        result.append(0x50)
+        result.append(0x4E)
+        result.append(0x47)
+        result.append(0x0D)
+        result.append(0x0A)
+        result.append(0x1A)
+        result.append(0x0A)
         
         for chunk in chunks.appended(PNGChunk(signature: "IEND", data: Data())) {
             result.encode(BEUInt32(chunk.data.count))
@@ -78,8 +78,8 @@ struct PNGEncoder : ImageRepEncoder {
             var iccp = Data()
             
             iccp.append("Doggie ICC profile".data(using: .isoLatin1)!)
-            iccp.encode(0 as UInt8)
-            iccp.encode(0 as UInt8)
+            iccp.append(0)
+            iccp.append(0)
             iccp.append(data)
             
             return PNGChunk(signature: "iCCP", data: iccp)
@@ -96,7 +96,7 @@ struct PNGEncoder : ImageRepEncoder {
         
         phys.encode(BEUInt32(round(resolution.horizontal).clamped(to: 0...4294967295)))
         phys.encode(BEUInt32(round(resolution.vertical).clamped(to: 0...4294967295)))
-        phys.encode(0 as UInt8)
+        phys.append(0)
         
         return PNGChunk(signature: "pHYs", data: phys)
     }
