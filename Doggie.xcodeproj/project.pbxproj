@@ -1455,7 +1455,6 @@
 				TargetAttributes = {
 					087FE5B41A372D97005A2E9E = {
 						CreatedOnToolsVersion = 6.1.1;
-						DevelopmentTeam = MPZ83Y3AFN;
 						DevelopmentTeamName = "Chai Fung Cheng";
 						LastSwiftMigration = 0900;
 					};
