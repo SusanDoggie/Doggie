@@ -23,9 +23,79 @@
 //  THE SOFTWARE.
 //
 
+public protocol ByteOutputStream {
+    
+    mutating func write(_ bytes: UnsafeRawBufferPointer)
+}
+
+public protocol ByteOutputStreamable {
+    
+    func write<Target: ByteOutputStream>(to stream: inout Target)
+}
+
 public protocol ByteDecodable {
     
     init(from: inout Data) throws
+}
+
+public typealias ByteCodable = ByteOutputStreamable & ByteDecodable
+
+extension ByteOutputStream {
+    
+    @inlinable
+    public mutating func write<Buffer: DataProtocol>(_ buffer: Buffer) {
+        buffer.regions.forEach { $0.withUnsafeBytes { self.write($0) } }
+    }
+}
+
+@frozen
+@usableFromInline
+struct _ByteOutputStream: ByteOutputStream {
+    
+    @usableFromInline
+    let sink: (UnsafeRawBufferPointer) -> Void
+    
+    @inlinable
+    init(sink: @escaping (UnsafeRawBufferPointer) -> Void) {
+        self.sink = sink
+    }
+    
+    @inlinable
+    func write(_ bytes: UnsafeRawBufferPointer) {
+        sink(bytes)
+    }
+}
+
+extension ByteOutputStreamable {
+    
+    @inlinable
+    public func enumerateBytes(_ body: (UnsafeRawBufferPointer) -> Void) {
+        withoutActuallyEscaping(body) {
+            var stream = _ByteOutputStream(sink: $0)
+            self.write(to: &stream)
+        }
+    }
+    
+    @inlinable
+    public func write<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
+        self.enumerateBytes { data.append(contentsOf: $0) }
+    }
+}
+
+extension RangeReplaceableCollection where Element == UInt8 {
+    
+    @inlinable
+    public mutating func encode<T: ByteOutputStreamable>(_ value: T) {
+        value.write(to: &self)
+    }
+}
+
+extension ByteOutputStream {
+    
+    @inlinable
+    public mutating func encode<T: ByteOutputStreamable>(_ value: T) {
+        value.write(to: &self)
+    }
 }
 
 extension ByteDecodable {
@@ -36,8 +106,6 @@ extension ByteDecodable {
         try self.init(from: &data)
     }
 }
-
-public typealias ByteCodable = ByteOutputStreamable & ByteDecodable
 
 public enum ByteDecodeError : Error, CaseIterable {
     
@@ -52,7 +120,7 @@ extension Data {
     }
 }
 
-extension FixedWidthInteger {
+extension FixedWidthInteger where Self : ByteDecodable {
     
     @inlinable
     public init(from data: inout Data) throws {
@@ -60,6 +128,9 @@ extension FixedWidthInteger {
         guard data.count >= size else { throw ByteDecodeError.endOfData }
         self = data.popFirst(size).load(as: Self.self)
     }
+}
+
+extension FixedWidthInteger where Self : ByteOutputStreamable {
     
     @inlinable
     public func write<Target: ByteOutputStream>(to stream: inout Target) {

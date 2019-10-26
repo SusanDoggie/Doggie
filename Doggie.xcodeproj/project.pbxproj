@@ -129,7 +129,6 @@
 		0A53E47D1E35AEF80060FB83 /* Regex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A53E45C1E35AEF80060FB83 /* Regex.swift */; };
 		0A55505721D7014E0035AF94 /* WeakDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55505621D7014E0035AF94 /* WeakDictionary.swift */; };
 		0A55505921D70E620035AF94 /* ObjectiveC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55505821D70E620035AF94 /* ObjectiveC.swift */; };
-		0A55AE6E20BFF98400FC951F /* ByteOutputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */; };
 		0A592E07225346F200E55388 /* PDFContextShading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A592E06225346F100E55388 /* PDFContextShading.swift */; };
 		0A5DEDD71F7B60D600A45B4B /* Resolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DEDD61F7B60D600A45B4B /* Resolution.swift */; };
 		0A5DF8FB225452FA00110895 /* PDFContextPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A5DF8FA225452FA00110895 /* PDFContextPage.swift */; };
@@ -448,7 +447,6 @@
 		0A53E45C1E35AEF80060FB83 /* Regex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Regex.swift; sourceTree = "<group>"; };
 		0A55505621D7014E0035AF94 /* WeakDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeakDictionary.swift; sourceTree = "<group>"; };
 		0A55505821D70E620035AF94 /* ObjectiveC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectiveC.swift; sourceTree = "<group>"; };
-		0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteOutputStream.swift; sourceTree = "<group>"; };
 		0A592E06225346F100E55388 /* PDFContextShading.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextShading.swift; sourceTree = "<group>"; };
 		0A5DEDD61F7B60D600A45B4B /* Resolution.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Resolution.swift; sourceTree = "<group>"; };
 		0A5DF8FA225452FA00110895 /* PDFContextPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextPage.swift; sourceTree = "<group>"; };
@@ -1018,7 +1016,6 @@
 				0889F2C71F18FF1D0020E750 /* FixedNumber.swift */,
 				0889F2CA1F1904EB0020E750 /* Signature.swift */,
 				0ABFA6C81FC67CB6009D42E2 /* ByteCodable.swift */,
-				0A55AE6D20BFF98400FC951F /* ByteOutputStream.swift */,
 			);
 			path = Serialization;
 			sourceTree = "<group>";
@@ -1520,7 +1517,6 @@
 				0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */,
 				086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */,
 				0A9F28321EF0E0CF00E69976 /* DeviceNColorModel.swift in Sources */,
-				0A55AE6E20BFF98400FC951F /* ByteOutputStream.swift in Sources */,
 				0AD7FA311EBDA86A001C9B21 /* ShapeWinding.swift in Sources */,
 				0AD3E62F1F53D9FC003CC21A /* Font.swift in Sources */,
 				0AB23E461F22E4980033462E /* RawBitmap.swift in Sources */,
