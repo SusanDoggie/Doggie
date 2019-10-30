@@ -58,20 +58,10 @@ public struct CMYColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return cyan
-            case 1: return magenta
-            case 2: return yellow
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: cyan = newValue
-            case 1: magenta = newValue
-            case 2: yellow = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -259,20 +249,10 @@ extension CMYColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return cyan
-                case 1: return magenta
-                case 2: return yellow
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: cyan = newValue
-                case 1: magenta = newValue
-                case 2: yellow = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }

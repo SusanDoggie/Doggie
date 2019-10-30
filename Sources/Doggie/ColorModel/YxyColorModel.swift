@@ -72,20 +72,10 @@ public struct YxyColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return luminance
-            case 1: return x
-            case 2: return y
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: luminance = newValue
-            case 1: x = newValue
-            case 2: y = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -221,20 +211,10 @@ extension YxyColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return luminance
-                case 1: return x
-                case 2: return y
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: luminance = newValue
-                case 1: x = newValue
-                case 2: y = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }

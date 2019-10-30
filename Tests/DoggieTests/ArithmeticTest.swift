@@ -177,4 +177,123 @@ class ArithmeticTest: XCTestCase {
         _testTensorOperation(DeviceFColorModel.self)
         
     }
+    
+    func _testColorPixelOperation_1<T: _FloatComponentPixel>(_: T.Type, _ operation: (T, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
+        
+        var a = T()
+        var b = T()
+        
+        for i in 0..<T.numberOfComponents {
+            a.setComponent(i, .random(in: -200..<200))
+            b.setComponent(i, .random(in: -200..<200))
+        }
+        
+        let result = operation(a, b)
+        
+        for i in 0..<T.Model.numberOfComponents {
+            XCTAssertEqual(check(a._color[i], b._color[i]), result._color[i])
+        }
+        XCTAssertEqual(check(a._opacity, b._opacity), result._opacity)
+    }
+    
+    func _testColorPixelOperation_2<T: _FloatComponentPixel>(_: T.Type, _ operation: (T.Scalar, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
+        
+        let a = T.Scalar.random(in: -200..<200)
+        var b = T()
+        
+        for i in 0..<T.numberOfComponents {
+            b.setComponent(i, .random(in: -200..<200))
+        }
+        
+        let result = operation(a, b)
+        
+        for i in 0..<T.Model.numberOfComponents {
+            XCTAssertEqual(check(a, b._color[i]), result._color[i])
+        }
+        XCTAssertEqual(check(a, b._opacity), result._opacity)
+    }
+    
+    func _testColorPixelOperation_3<T: _FloatComponentPixel>(_: T.Type, _ operation: (T, T.Scalar) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
+        
+        var a = T()
+        let b = T.Scalar.random(in: -200..<200)
+        
+        for i in 0..<T.numberOfComponents {
+            a.setComponent(i, .random(in: -200..<200))
+        }
+        
+        let result = operation(a, b)
+        
+        for i in 0..<T.Model.numberOfComponents {
+            XCTAssertEqual(check(a._color[i], b), result._color[i])
+        }
+        XCTAssertEqual(check(a._opacity, b), result._opacity)
+    }
+    
+    func _testColorPixelOperation<T: _FloatComponentPixel>(_: T.Type) where T.Scalar.RawSignificand : FixedWidthInteger {
+        
+        _testColorPixelOperation_1(T.self, +, +)
+        _testColorPixelOperation_1(T.self, -, -)
+        _testColorPixelOperation_2(T.self, *, *)
+        _testColorPixelOperation_3(T.self, *, *)
+        _testColorPixelOperation_3(T.self, /, /)
+        
+    }
+    
+    func testFloat32ColorPixelOperation() {
+        
+        _testColorPixelOperation(Float32ColorPixel<GrayColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<XYZColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<YxyColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<LabColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<LuvColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<YCbCrColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<CMYColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<CMYKColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<RGBColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<Device2ColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<Device3ColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<Device4ColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<Device5ColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<Device6ColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<Device7ColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<Device8ColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<Device9ColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<DeviceAColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<DeviceBColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<DeviceCColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<DeviceDColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<DeviceEColorModel>.self)
+        _testColorPixelOperation(Float32ColorPixel<DeviceFColorModel>.self)
+        
+    }
+    
+    func testFloat64ColorPixelOperation() {
+        
+        _testColorPixelOperation(Float64ColorPixel<GrayColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<XYZColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<YxyColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<LabColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<LuvColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<YCbCrColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<CMYColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<CMYKColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<RGBColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<Device2ColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<Device3ColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<Device4ColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<Device5ColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<Device6ColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<Device7ColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<Device8ColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<Device9ColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<DeviceAColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<DeviceBColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<DeviceCColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<DeviceDColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<DeviceEColorModel>.self)
+        _testColorPixelOperation(Float64ColorPixel<DeviceFColorModel>.self)
+        
+    }
+    
 }

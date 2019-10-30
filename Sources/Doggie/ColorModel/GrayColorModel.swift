@@ -53,16 +53,10 @@ public struct GrayColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return white
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: white = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -137,13 +131,13 @@ extension GrayColorModel {
     
     public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
         
+        public typealias Indices = Range<Int>
+        
         @inlinable
         @inline(__always)
         public static var numberOfComponents: Int {
             return 1
         }
-        
-        public typealias Indices = Range<Int>
         
         public var white: Scalar
         
@@ -172,16 +166,10 @@ extension GrayColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return white
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: white = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }

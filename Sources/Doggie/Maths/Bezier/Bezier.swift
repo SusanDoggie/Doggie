@@ -26,8 +26,6 @@
 @frozen
 public struct Bezier<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
     
-    public typealias Scalar = Double
-    
     @usableFromInline
     var points: [Element]
     
@@ -141,8 +139,6 @@ extension Bezier {
 extension Bezier {
     
     public typealias Indices = Range<Int>
-    
-    public typealias Index = Int
     
     @inlinable
     public var startIndex: Int {

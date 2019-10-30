@@ -78,20 +78,10 @@ public struct LuvColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return lightness
-            case 1: return u
-            case 2: return v
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: lightness = newValue
-            case 1: u = newValue
-            case 2: v = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -226,20 +216,10 @@ extension LuvColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return lightness
-                case 1: return u
-                case 2: return v
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: lightness = newValue
-                case 1: u = newValue
-                case 2: v = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }

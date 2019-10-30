@@ -164,6 +164,12 @@ extension ImageContext {
 
 extension ImageContext {
     
+    public var clipStencilTexture: StencilTexture<Double> {
+        let current_layer = self.current_layer
+        let pixels = current_layer.state.clip ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        return StencilTexture(width: image.width, height: image.height, pixels: pixels, resamplingAlgorithm: .default)
+    }
+    
     public func withUnsafeMutableClipBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
         
         let current_layer = self.current_layer
@@ -366,6 +372,12 @@ public enum ImageContextRenderDepthCompareMode : CaseIterable {
 }
 
 extension ImageContext {
+    
+    public var depthStencilTexture: StencilTexture<Double> {
+        let current_layer = self.current_layer
+        let pixels = current_layer.state.depth ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        return StencilTexture(width: image.width, height: image.height, pixels: pixels, resamplingAlgorithm: .default)
+    }
     
     public func withUnsafeMutableDepthBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
         

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar : BinaryFloatingPoint, Index == Int {
+public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar == Double, Element.Scalar == Double, Index == Int {
     
     associatedtype Elevated : BezierProtocol where Elevated.Scalar == Self.Scalar, Elevated.Element == Self.Element
     

@@ -26,8 +26,6 @@
 @frozen
 public struct LineSegment<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
     
-    public typealias Scalar = Double
-    
     public var p0: Element
     public var p1: Element
     
@@ -49,6 +47,7 @@ public struct LineSegment<Element : ScalarMultiplicative> : BezierProtocol where
 extension Bezier {
     
     @inlinable
+    @inline(__always)
     public init(_ bezier: LineSegment<Element>) {
         self.init(bezier.p0, bezier.p1)
     }
@@ -107,32 +106,25 @@ extension LineSegment {
     
     public typealias Indices = Range<Int>
     
-    public typealias Index = Int
-    
     @inlinable
+    @inline(__always)
     public var startIndex: Int {
         return 0
     }
     @inlinable
+    @inline(__always)
     public var endIndex: Int {
         return 2
     }
     
     @inlinable
+    @inline(__always)
     public subscript(position: Int) -> Element {
         get {
-            switch position {
-            case 0: return p0
-            case 1: return p1
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Element.self)[position] }
         }
         set {
-            switch position {
-            case 0: p0 = newValue
-            case 1: p1 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Element.self)[position] = newValue }
         }
     }
 }
@@ -140,11 +132,13 @@ extension LineSegment {
 extension LineSegment {
     
     @inlinable
+    @inline(__always)
     public var start: Element {
         return p0
     }
     
     @inlinable
+    @inline(__always)
     public var end: Element {
         return p1
     }
@@ -179,6 +173,7 @@ extension LineSegment {
 extension LineSegment where Element == Double {
     
     @inlinable
+    @inline(__always)
     public var polynomial: Polynomial {
         let a = p0
         let b = p1 - p0
@@ -189,6 +184,7 @@ extension LineSegment where Element == Double {
 extension LineSegment where Element == Point {
     
     @inlinable
+    @inline(__always)
     public func closest(_ point: Point, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double] {
         let a = p0 - point
         let b = p1 - p0
@@ -199,6 +195,7 @@ extension LineSegment where Element == Point {
 extension LineSegment where Element == Point {
     
     @inlinable
+    @inline(__always)
     public var area: Double {
         return 0.5 * (p0.x * p1.y - p0.y * p1.x)
     }
@@ -222,6 +219,7 @@ extension LineSegment where Element: Tensor {
 extension LineSegment where Element == Point {
     
     @inlinable
+    @inline(__always)
     public var boundary: Rect {
         let minX = Swift.min(p0.x, p1.x)
         let minY = Swift.min(p0.y, p1.y)

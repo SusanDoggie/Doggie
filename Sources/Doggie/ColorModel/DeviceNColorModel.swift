@@ -63,18 +63,10 @@ public struct Device2ColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -150,20 +142,10 @@ public struct Device3ColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -245,22 +227,10 @@ public struct Device4ColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -349,24 +319,10 @@ public struct Device5ColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -467,26 +423,10 @@ public struct Device6ColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -594,28 +534,10 @@ public struct Device7ColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            case 6: return component_6
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            case 6: component_6 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -731,30 +653,10 @@ public struct Device8ColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            case 6: return component_6
-            case 7: return component_7
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            case 6: component_6 = newValue
-            case 7: component_7 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -876,32 +778,10 @@ public struct Device9ColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            case 6: return component_6
-            case 7: return component_7
-            case 8: return component_8
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            case 6: component_6 = newValue
-            case 7: component_7 = newValue
-            case 8: component_8 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -1030,34 +910,10 @@ public struct DeviceAColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            case 6: return component_6
-            case 7: return component_7
-            case 8: return component_8
-            case 9: return component_9
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            case 6: component_6 = newValue
-            case 7: component_7 = newValue
-            case 8: component_8 = newValue
-            case 9: component_9 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -1194,36 +1050,10 @@ public struct DeviceBColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            case 6: return component_6
-            case 7: return component_7
-            case 8: return component_8
-            case 9: return component_9
-            case 10: return component_10
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            case 6: component_6 = newValue
-            case 7: component_7 = newValue
-            case 8: component_8 = newValue
-            case 9: component_9 = newValue
-            case 10: component_10 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -1366,38 +1196,10 @@ public struct DeviceCColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            case 6: return component_6
-            case 7: return component_7
-            case 8: return component_8
-            case 9: return component_9
-            case 10: return component_10
-            case 11: return component_11
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            case 6: component_6 = newValue
-            case 7: component_7 = newValue
-            case 8: component_8 = newValue
-            case 9: component_9 = newValue
-            case 10: component_10 = newValue
-            case 11: component_11 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -1547,40 +1349,10 @@ public struct DeviceDColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            case 6: return component_6
-            case 7: return component_7
-            case 8: return component_8
-            case 9: return component_9
-            case 10: return component_10
-            case 11: return component_11
-            case 12: return component_12
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            case 6: component_6 = newValue
-            case 7: component_7 = newValue
-            case 8: component_8 = newValue
-            case 9: component_9 = newValue
-            case 10: component_10 = newValue
-            case 11: component_11 = newValue
-            case 12: component_12 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -1738,42 +1510,10 @@ public struct DeviceEColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            case 6: return component_6
-            case 7: return component_7
-            case 8: return component_8
-            case 9: return component_9
-            case 10: return component_10
-            case 11: return component_11
-            case 12: return component_12
-            case 13: return component_13
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            case 6: component_6 = newValue
-            case 7: component_7 = newValue
-            case 8: component_8 = newValue
-            case 9: component_9 = newValue
-            case 10: component_10 = newValue
-            case 11: component_11 = newValue
-            case 12: component_12 = newValue
-            case 13: component_13 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -1937,44 +1677,10 @@ public struct DeviceFColorModel : ColorModelProtocol {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return component_0
-            case 1: return component_1
-            case 2: return component_2
-            case 3: return component_3
-            case 4: return component_4
-            case 5: return component_5
-            case 6: return component_6
-            case 7: return component_7
-            case 8: return component_8
-            case 9: return component_9
-            case 10: return component_10
-            case 11: return component_11
-            case 12: return component_12
-            case 13: return component_13
-            case 14: return component_14
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: component_0 = newValue
-            case 1: component_1 = newValue
-            case 2: component_2 = newValue
-            case 3: component_3 = newValue
-            case 4: component_4 = newValue
-            case 5: component_5 = newValue
-            case 6: component_6 = newValue
-            case 7: component_7 = newValue
-            case 8: component_8 = newValue
-            case 9: component_9 = newValue
-            case 10: component_10 = newValue
-            case 11: component_11 = newValue
-            case 12: component_12 = newValue
-            case 13: component_13 = newValue
-            case 14: component_14 = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
 }
@@ -2125,18 +1831,10 @@ extension Device2ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -2241,20 +1939,10 @@ extension Device3ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -2368,22 +2056,10 @@ extension Device4ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -2507,24 +2183,10 @@ extension Device5ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -2663,26 +2325,10 @@ extension Device6ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -2831,28 +2477,10 @@ extension Device7ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                case 6: return component_6
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                case 6: component_6 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -3012,30 +2640,10 @@ extension Device8ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                case 6: return component_6
-                case 7: return component_7
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                case 6: component_6 = newValue
-                case 7: component_7 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -3204,32 +2812,10 @@ extension Device9ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                case 6: return component_6
-                case 7: return component_7
-                case 8: return component_8
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                case 6: component_6 = newValue
-                case 7: component_7 = newValue
-                case 8: component_8 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -3408,34 +2994,10 @@ extension DeviceAColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                case 6: return component_6
-                case 7: return component_7
-                case 8: return component_8
-                case 9: return component_9
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                case 6: component_6 = newValue
-                case 7: component_7 = newValue
-                case 8: component_8 = newValue
-                case 9: component_9 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -3625,36 +3187,10 @@ extension DeviceBColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                case 6: return component_6
-                case 7: return component_7
-                case 8: return component_8
-                case 9: return component_9
-                case 10: return component_10
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                case 6: component_6 = newValue
-                case 7: component_7 = newValue
-                case 8: component_8 = newValue
-                case 9: component_9 = newValue
-                case 10: component_10 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -3853,38 +3389,10 @@ extension DeviceCColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                case 6: return component_6
-                case 7: return component_7
-                case 8: return component_8
-                case 9: return component_9
-                case 10: return component_10
-                case 11: return component_11
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                case 6: component_6 = newValue
-                case 7: component_7 = newValue
-                case 8: component_8 = newValue
-                case 9: component_9 = newValue
-                case 10: component_10 = newValue
-                case 11: component_11 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -4093,40 +3601,10 @@ extension DeviceDColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                case 6: return component_6
-                case 7: return component_7
-                case 8: return component_8
-                case 9: return component_9
-                case 10: return component_10
-                case 11: return component_11
-                case 12: return component_12
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                case 6: component_6 = newValue
-                case 7: component_7 = newValue
-                case 8: component_8 = newValue
-                case 9: component_9 = newValue
-                case 10: component_10 = newValue
-                case 11: component_11 = newValue
-                case 12: component_12 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -4346,42 +3824,10 @@ extension DeviceEColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                case 6: return component_6
-                case 7: return component_7
-                case 8: return component_8
-                case 9: return component_9
-                case 10: return component_10
-                case 11: return component_11
-                case 12: return component_12
-                case 13: return component_13
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                case 6: component_6 = newValue
-                case 7: component_7 = newValue
-                case 8: component_8 = newValue
-                case 9: component_9 = newValue
-                case 10: component_10 = newValue
-                case 11: component_11 = newValue
-                case 12: component_12 = newValue
-                case 13: component_13 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }
@@ -4610,44 +4056,10 @@ extension DeviceFColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                switch position {
-                case 0: return component_0
-                case 1: return component_1
-                case 2: return component_2
-                case 3: return component_3
-                case 4: return component_4
-                case 5: return component_5
-                case 6: return component_6
-                case 7: return component_7
-                case 8: return component_8
-                case 9: return component_9
-                case 10: return component_10
-                case 11: return component_11
-                case 12: return component_12
-                case 13: return component_13
-                case 14: return component_14
-                default: fatalError()
-                }
+                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
             }
             set {
-                switch position {
-                case 0: component_0 = newValue
-                case 1: component_1 = newValue
-                case 2: component_2 = newValue
-                case 3: component_3 = newValue
-                case 4: component_4 = newValue
-                case 5: component_5 = newValue
-                case 6: component_6 = newValue
-                case 7: component_7 = newValue
-                case 8: component_8 = newValue
-                case 9: component_9 = newValue
-                case 10: component_10 = newValue
-                case 11: component_11 = newValue
-                case 12: component_12 = newValue
-                case 13: component_13 = newValue
-                case 14: component_14 = newValue
-                default: fatalError()
-                }
+                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
     }

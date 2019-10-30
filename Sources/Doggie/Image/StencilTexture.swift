@@ -92,6 +92,15 @@ extension StencilTexture {
     }
 }
 
+extension Image where Pixel : ScalarMultiplicative, Pixel.Scalar : BinaryFloatingPoint, Pixel.Scalar : FloatingMathProtocol {
+    
+    @inlinable
+    @inline(__always)
+    public init(texture: StencilTexture<Pixel.Scalar>, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, background: Pixel, foreground: Pixel) {
+        self.init(width: texture.width, height: texture.height, resolution: resolution, pixels: texture.pixels.map { LinearInterpolate($0, background, foreground) }, colorSpace: colorSpace)
+    }
+}
+
 extension StencilTexture {
     
     @inlinable

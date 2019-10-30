@@ -7,7 +7,9 @@ extension ArithmeticTest {
     // to regenerate.
     static let __allTests__ArithmeticTest = [
         ("testColorOperation", testColorOperation),
+        ("testFloat32ColorPixelOperation", testFloat32ColorPixelOperation),
         ("testFloat32ComponentsOperation", testFloat32ComponentsOperation),
+        ("testFloat64ColorPixelOperation", testFloat64ColorPixelOperation),
         ("testFloat64ComponentsOperation", testFloat64ComponentsOperation),
         ("testTensorOperation", testTensorOperation),
     ]

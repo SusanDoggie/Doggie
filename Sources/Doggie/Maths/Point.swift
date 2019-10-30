@@ -135,18 +135,10 @@ extension Point : Tensor {
     @inline(__always)
     public subscript(position: Int) -> Double {
         get {
-            switch position {
-            case 0: return x
-            case 1: return y
-            default: fatalError()
-            }
+            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
         }
         set {
-            switch position {
-            case 0: x = newValue
-            case 1: y = newValue
-            default: fatalError()
-            }
+            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
     }
     
