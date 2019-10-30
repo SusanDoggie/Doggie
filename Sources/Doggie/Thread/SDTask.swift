@@ -24,7 +24,7 @@
 //
 
 public let SDDefaultDispatchQueue: DispatchQueue = {
-    if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+    if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
         return DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent, autoreleaseFrequency: .workItem)
     } else {
         return DispatchQueue(label: "com.SusanDoggie.Thread", attributes: .concurrent)

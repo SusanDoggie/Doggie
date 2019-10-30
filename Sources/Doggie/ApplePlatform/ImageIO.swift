@@ -25,6 +25,9 @@
 
 #if canImport(CoreGraphics) && canImport(ImageIO) && canImport(AVFoundation)
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+let kUTTypeHEIC = AVFileType.heic as CFString
+
 public struct CGImageAnimationFrame {
     
     public var image: CGImage
@@ -123,7 +126,7 @@ extension CGImage {
             
         case .heic:
             
-            guard #available(OSX 10.13, iOS 11.0, tvOS 11.0, *) else { return nil }
+            guard #available(macOS 10.13, iOS 11.0, tvOS 11.0, *) else { return nil }
             
             #if os(watchOS)
             
@@ -131,7 +134,7 @@ extension CGImage {
             
             #else
             
-            type = AVFileType.heic as CFString
+            type = kUTTypeHEIC
             
             #endif
         }

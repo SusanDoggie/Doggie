@@ -33,7 +33,7 @@ extension ColorSpace {
         
         return self.cache.load(for: ColorSpaceCacheCGColorSpaceKey) {
             
-            if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+            if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
                 
                 return self.iccData.map { CGColorSpace(iccData: $0 as CFData) }
                 
@@ -49,7 +49,7 @@ extension AnyColorSpace {
     
     public init?(cgColorSpace: CGColorSpace) {
         
-        if #available(OSX 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+        if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
             
             guard let iccData = cgColorSpace.copyICCData() as Data? else { return nil }
             

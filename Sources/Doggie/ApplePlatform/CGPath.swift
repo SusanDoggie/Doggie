@@ -127,7 +127,7 @@ extension CGPath {
     
     fileprivate func _copy<Other: BezierPathConvertible>(to path: inout Other) {
         
-        if #available(OSX 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
+        if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
             
             var _path = path
             

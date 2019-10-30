@@ -46,12 +46,12 @@ protocol CGImageRepBase {
 
 public struct CGImageRep {
     
-    private let shape: CGImageRepBase
+    private let base: CGImageRepBase
     
     private let cache = Cache()
     
-    private init(shape: CGImageRepBase) {
-        self.shape = shape
+    private init(base: CGImageRepBase) {
+        self.base = base
     }
 }
 
@@ -76,20 +76,20 @@ extension CGImageRep {
     
     public init?(data: Data) {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
-        self.shape = source
+        self.base = source
     }
 }
 
 extension CGImageRep {
     
     public var numberOfPages: Int {
-        return shape.numberOfPages
+        return base.numberOfPages
     }
     
     public func page(_ index: Int) -> CGImageRep {
         return cache.lck.synchronized {
             if cache.pages[index] == nil {
-                cache.pages[index] = CGImageRep(shape: shape.page(index))
+                cache.pages[index] = CGImageRep(base: base.page(index))
             }
             return cache.pages[index]!
         }
@@ -98,7 +98,7 @@ extension CGImageRep {
     public var cgImage: CGImage? {
         return cache.lck.synchronized {
             if cache.image == nil {
-                cache.image = shape.cgImage
+                cache.image = base.cgImage
             }
             return cache.image
         }
@@ -108,22 +108,22 @@ extension CGImageRep {
 extension CGImageRep {
     
     public var width: Int {
-        return shape.width
+        return base.width
     }
     
     public var height: Int {
-        return shape.height
+        return base.height
     }
     
     public var resolution: Resolution {
-        return shape.resolution
+        return base.resolution
     }
 }
 
 extension CGImageRep {
     
     public var properties: [CFString : Any] {
-        return shape.properties
+        return base.properties
     }
 }
 
@@ -152,10 +152,12 @@ extension CGImageRep {
         case appleICNS
         
         case icon
+        
+        case heic
     }
     
     public var mediaType: MediaType? {
-        return shape.mediaType
+        return base.mediaType
     }
 }
 
@@ -255,7 +257,10 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
     }
     
     var mediaType: CGImageRep.MediaType? {
-        switch CGImageSourceGetType(source) {
+        
+        guard let type = CGImageSourceGetType(source) else { return nil }
+        
+        switch type {
         case kUTTypeImage: return .image
         case kUTTypeJPEG: return .jpeg
         case kUTTypeJPEG2000: return .jpeg2000
@@ -267,7 +272,19 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         case kUTTypeAppleICNS: return .appleICNS
         case kUTTypeBMP: return .bmp
         case kUTTypeICO: return .icon
-        default: return nil
+        default:
+            
+            if #available(macOS 10.13, iOS 11.0, tvOS 11.0, *) {
+                
+                switch type {
+                case kUTTypeHEIC: return .heic
+                default: return nil
+                }
+                
+            } else {
+                
+                return nil
+            }
         }
     }
     
