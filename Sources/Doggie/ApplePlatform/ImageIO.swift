@@ -190,6 +190,19 @@ extension CGImage {
             }
         }
     }
+    
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
+    public static func animatedHEICRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
+        
+        return CGImage.withImageDestination(kUTTypeHEIC, frames.count) { imageDestination in
+            
+            CGImageDestinationSetProperties(imageDestination, [kCGImagePropertyHEICSDictionary: [kCGImagePropertyHEICSLoopCount: loop]] as CFDictionary)
+            
+            for frame in frames {
+                CGImageDestinationAddImage(imageDestination, frame.image, [kCGImagePropertyHEICSDictionary: [kCGImagePropertyHEICSDelayTime: frame.delay]] as CFDictionary)
+            }
+        }
+    }
 }
 
 extension CGImage {
@@ -200,6 +213,11 @@ extension CGImage {
     
     public static func animatedPNGRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
         return self.animatedPNGRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
+    }
+    
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
+    public static func animatedHEICRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
+        return self.animatedHEICRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }
 }
 
