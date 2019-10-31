@@ -39,17 +39,42 @@ public struct CGImageAnimationFrame {
     }
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension AVDepthData {
+    
+    public convenience init(texture: StencilTexture<Float>, metadata: CGImageMetadata? = nil) throws {
+        
+        var description: [AnyHashable: Any] = [:]
+        
+        description[kCGImagePropertyPixelFormat] = kCVPixelFormatType_DepthFloat32
+        description[kCGImagePropertyWidth] = texture.width
+        description[kCGImagePropertyHeight] = texture.height
+        description[kCGImagePropertyBytesPerRow] = 4 * texture.width
+        
+        var dictionary: [AnyHashable: Any] = [
+            kCGImageAuxiliaryDataInfoData: texture.pixels.data as CFData,
+            kCGImageAuxiliaryDataInfoDataDescription: description
+        ]
+        
+        if let metadata = metadata {
+            dictionary[kCGImageAuxiliaryDataInfoMetadata] = metadata
+        }
+        
+        try self.init(fromDictionaryRepresentation: dictionary)
+    }
+}
+
 extension CGImage {
     
     private static func withImageDestination(_ type: CFString, _ count: Int, callback: (CGImageDestination) -> Void) -> Data? {
         
         let data = NSMutableData()
         
-        guard let imageDestination = CGImageDestinationCreateWithData(data, type, count, nil) else { return nil }
+        guard let destination = CGImageDestinationCreateWithData(data, type, count, nil) else { return nil }
         
-        callback(imageDestination)
+        callback(destination)
         
-        guard CGImageDestinationFinalize(imageDestination) else { return nil }
+        guard CGImageDestinationFinalize(destination) else { return nil }
         
         return data as Data
     }
@@ -83,6 +108,8 @@ extension CGImage {
         case interlaced
         
         case resolution
+        
+        case depthData
     }
     
     public struct PNGCompressionFilter: OptionSet {
@@ -174,7 +201,20 @@ extension CGImage {
             _properties[kCGImageDestinationLossyCompressionQuality] = compressionQuality
         }
         
-        return CGImage.withImageDestination(type, 1) { CGImageDestinationAddImage($0, self, _properties as CFDictionary) }
+        return CGImage.withImageDestination(type, 1) { destination in
+            
+            CGImageDestinationAddImage(destination, self, _properties as CFDictionary)
+            
+            if #available(macOS 10.13, iOS 11.0, tvOS 11.0, *), let depthData = properties[.depthData] as? AVDepthData {
+                
+                var auxDataType: NSString?
+                let auxData = depthData.dictionaryRepresentation(forAuxiliaryDataType: &auxDataType)
+                
+                if let auxDataType = auxDataType, let auxData = auxData {
+                    CGImageDestinationAddAuxiliaryDataInfo(destination, auxDataType, auxData as CFDictionary)
+                }
+            }
+        }
     }
     
     public func tiffRepresentation(compression: TIFFCompressionScheme = .none, resolution: Resolution = .default) -> Data? {
@@ -194,24 +234,24 @@ extension CGImage {
     
     public static func animatedGIFRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
         
-        return CGImage.withImageDestination(kUTTypeGIF, frames.count) { imageDestination in
+        return CGImage.withImageDestination(kUTTypeGIF, frames.count) { destination in
             
-            CGImageDestinationSetProperties(imageDestination, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: loop]] as CFDictionary)
+            CGImageDestinationSetProperties(destination, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: loop]] as CFDictionary)
             
             for frame in frames {
-                CGImageDestinationAddImage(imageDestination, frame.image, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: frame.delay]] as CFDictionary)
+                CGImageDestinationAddImage(destination, frame.image, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: frame.delay]] as CFDictionary)
             }
         }
     }
     
     public static func animatedPNGRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
         
-        return CGImage.withImageDestination(kUTTypePNG, frames.count) { imageDestination in
+        return CGImage.withImageDestination(kUTTypePNG, frames.count) { destination in
             
-            CGImageDestinationSetProperties(imageDestination, [kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGLoopCount: loop]] as CFDictionary)
+            CGImageDestinationSetProperties(destination, [kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGLoopCount: loop]] as CFDictionary)
             
             for frame in frames {
-                CGImageDestinationAddImage(imageDestination, frame.image, [kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGDelayTime: frame.delay]] as CFDictionary)
+                CGImageDestinationAddImage(destination, frame.image, [kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGDelayTime: frame.delay]] as CFDictionary)
             }
         }
     }
@@ -219,12 +259,12 @@ extension CGImage {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 4.0, *)
     public static func animatedHEICRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
         
-        return CGImage.withImageDestination(kUTTypeHEIC, frames.count) { imageDestination in
+        return CGImage.withImageDestination(kUTTypeHEIC, frames.count) { destination in
             
-            CGImageDestinationSetProperties(imageDestination, [kCGImagePropertyHEICSDictionary: [kCGImagePropertyHEICSLoopCount: loop]] as CFDictionary)
+            CGImageDestinationSetProperties(destination, [kCGImagePropertyHEICSDictionary: [kCGImagePropertyHEICSLoopCount: loop]] as CFDictionary)
             
             for frame in frames {
-                CGImageDestinationAddImage(imageDestination, frame.image, [kCGImagePropertyHEICSDictionary: [kCGImagePropertyHEICSDelayTime: frame.delay]] as CFDictionary)
+                CGImageDestinationAddImage(destination, frame.image, [kCGImagePropertyHEICSDictionary: [kCGImagePropertyHEICSDelayTime: frame.delay]] as CFDictionary)
             }
         }
     }

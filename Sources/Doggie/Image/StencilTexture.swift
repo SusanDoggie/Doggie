@@ -73,6 +73,17 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     
     @inlinable
     @inline(__always)
+    public init<P>(texture: StencilTexture<P>) {
+        self.width = texture.width
+        self.height = texture.height
+        self.resamplingAlgorithm = texture.resamplingAlgorithm
+        self.horizontalWrappingMode = texture.horizontalWrappingMode
+        self.verticalWrappingMode = texture.verticalWrappingMode
+        self._pixels = texture.pixels as? MappedBuffer<T> ?? texture.pixels.map(T.init)
+    }
+    
+    @inlinable
+    @inline(__always)
     public init<P>(texture: Texture<P>) {
         self.width = texture.width
         self.height = texture.height
