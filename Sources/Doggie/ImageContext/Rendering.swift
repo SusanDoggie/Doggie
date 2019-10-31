@@ -84,18 +84,15 @@ public struct ImageContextRenderStageIn<Vertex : ImageContextRenderVertex> {
     
     public var projection: Point
     
-    public var facing: Double
-    
     public var depth: Double
     
     @inlinable
     @inline(__always)
-    init(vertex: Vertex, triangle: (Vertex.Position, Vertex.Position, Vertex.Position), barycentric: Vector, projection: Point, facing: Double, depth: Double) {
+    init(vertex: Vertex, triangle: (Vertex.Position, Vertex.Position, Vertex.Position), barycentric: Vector, projection: Point, depth: Double) {
         self.vertex = vertex
         self.triangle = triangle
         self.barycentric = barycentric
         self.projection = projection
-        self.facing = facing
         self.depth = depth
     }
 }
@@ -114,7 +111,7 @@ extension ImageContextRenderStageIn where Vertex.Position == Vector {
     @inlinable
     @inline(__always)
     public var normal: Vector {
-        return cross(triangle.1 - triangle.0, triangle.2 - triangle.0)
+        return cross(triangle.2 - triangle.0, triangle.1 - triangle.0)
     }
 }
 
@@ -243,12 +240,10 @@ extension ImageContext {
                 let p1 = projection(_v1)
                 let p2 = projection(_v2)
                 
-                let facing = cross(p1 - p0, p2 - p0)
-                
                 switch cullingMode {
                 case .none: break
-                case .front: guard facing < 0 else { return }
-                case .back: guard facing > 0 else { return }
+                case .front: guard cross(p2 - p0, p1 - p0) < 0 else { return }
+                case .back: guard cross(p2 - p0, p1 - p0) > 0 else { return }
                 }
                 
                 let _p0 = p0 * transform
@@ -281,11 +276,12 @@ extension ImageContext {
                             }
                             
                             depth_ptr.pointee = _depth
-                            if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, facing: facing, depth: _depth)) {
+                            
+                            if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, depth: _depth)) {
                                 return source
                             }
                             
-                        } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, facing: facing, depth: 0)) {
+                        } else if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, depth: 0)) {
                             return source
                         }
                         
@@ -464,7 +460,6 @@ extension ImageContextRenderStageIn {
         self.triangle = stageIn.triangle
         self.barycentric = stageIn.barycentric
         self.projection = stageIn.projection
-        self.facing = stageIn.facing
         self.depth = stageIn.depth
     }
 }

@@ -34,13 +34,13 @@ public func texturedCube(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     let matrix = Matrix.rotateY(.pi / 6) * Matrix.rotateX(.pi / 6) * Matrix.translate(x: 0, y: 0, z: 100)
     
     let v0 = Vector(x: 25, y: 25, z: -25) * matrix
-    let v1 = Vector(x: -25, y: 25, z: -25) * matrix
+    let v1 = Vector(x: 25, y: -25, z: -25) * matrix
     let v2 = Vector(x: -25, y: -25, z: -25) * matrix
-    let v3 = Vector(x: 25, y: -25, z: -25) * matrix
+    let v3 = Vector(x: -25, y: 25, z: -25) * matrix
     let v4 = Vector(x: 25, y: 25, z: 25) * matrix
-    let v5 = Vector(x: -25, y: 25, z: 25) * matrix
+    let v5 = Vector(x: 25, y: -25, z: 25) * matrix
     let v6 = Vector(x: -25, y: -25, z: 25) * matrix
-    let v7 = Vector(x: 25, y: -25, z: 25) * matrix
+    let v7 = Vector(x: -25, y: 25, z: 25) * matrix
     
     // face v0, v1, v2, v3
     let t0 = (UVVertex(position: v0, uv: Point(x: 0, y: 0)), UVVertex(position: v1, uv: Point(x: 1, y: 0)), UVVertex(position: v2, uv: Point(x: 1, y: 1)))

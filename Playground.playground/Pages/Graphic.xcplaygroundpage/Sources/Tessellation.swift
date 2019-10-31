@@ -126,7 +126,7 @@ public func tessellation(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         
         do {
             
-            let light_position = Vector(x: -100, y: 100, z: -10)
+            let light_position = Vector(x: 100, y: -100, z: -70)
             let light_color = RGBColorModel(red: 1.0, green: 1.0, blue: 1.0)
             
             let d = position - light_position
@@ -145,7 +145,7 @@ public func tessellation(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
         
         do {
             
-            let light_position = Vector(x: 250, y: -200, z: 30)
+            let light_position = Vector(x: -250, y: 200, z: 30)
             let light_color = RGBColorModel(red: 0.9, green: 0.7, blue: 0.4)
             
             let d = position - light_position
