@@ -641,6 +641,8 @@ extension ImageRep.MediaType {
         switch self {
         case .bmp: return "image/bmp"
         case .gif: return "image/gif"
+        case .heic: return "image/heic"
+        case .heif: return "image/heif"
         case .jpeg: return "image/jpeg"
         case .jpeg2000: return "image/jp2"
         case .png: return "image/png"
