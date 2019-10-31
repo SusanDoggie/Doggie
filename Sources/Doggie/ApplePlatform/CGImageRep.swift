@@ -33,7 +33,7 @@ protocol CGImageRepBase {
     
     var resolution: Resolution { get }
     
-    var mediaType: CGImageRep.MediaType? { get }
+    var mediaType: CGImage.MediaType? { get }
     
     var numberOfPages: Int { get }
     
@@ -129,34 +129,7 @@ extension CGImageRep {
 
 extension CGImageRep {
     
-    public enum MediaType : String, CaseIterable {
-        
-        case image
-        
-        case pict
-        
-        case bmp
-        
-        case gif
-        
-        case jpeg
-        
-        case jpeg2000
-        
-        case png
-        
-        case tiff
-        
-        case quickTimeImage
-        
-        case appleICNS
-        
-        case icon
-        
-        case heic
-    }
-    
-    public var mediaType: MediaType? {
+    public var mediaType: CGImage.MediaType? {
         return base.mediaType
     }
 }
@@ -256,36 +229,8 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         return 1...4 ~= orientation ? resolution : Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit)
     }
     
-    var mediaType: CGImageRep.MediaType? {
-        
-        guard let type = CGImageSourceGetType(source) else { return nil }
-        
-        switch type {
-        case kUTTypeImage: return .image
-        case kUTTypeJPEG: return .jpeg
-        case kUTTypeJPEG2000: return .jpeg2000
-        case kUTTypeTIFF: return .tiff
-        case kUTTypePICT: return .pict
-        case kUTTypeGIF: return .gif
-        case kUTTypePNG: return .png
-        case kUTTypeQuickTimeImage: return .quickTimeImage
-        case kUTTypeAppleICNS: return .appleICNS
-        case kUTTypeBMP: return .bmp
-        case kUTTypeICO: return .icon
-        default:
-            
-            if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
-                
-                switch type {
-                case kUTTypeHEIC: return .heic
-                default: return nil
-                }
-                
-            } else {
-                
-                return nil
-            }
-        }
+    var mediaType: CGImage.MediaType? {
+        return CGImageSourceGetType(source).map { CGImage.MediaType(rawValue: $0 as String) }
     }
     
     func page(_ index: Int) -> CGImageRepBase {

@@ -23,10 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreGraphics) && canImport(ImageIO) && canImport(AVFoundation)
-
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
-let kUTTypeHEIC = AVFileType.heic as CFString
+#if canImport(CoreGraphics) && canImport(ImageIO)
 
 public struct CGImageAnimationFrame {
     
@@ -42,7 +39,7 @@ public struct CGImageAnimationFrame {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension AVDepthData {
     
-    public convenience init(texture: StencilTexture<Float>, metadata: CGImageMetadata? = nil) throws {
+    public convenience init<T>(texture: StencilTexture<T>, metadata: CGImageMetadata? = nil) throws {
         
         var description: [AnyHashable: Any] = [:]
         
@@ -51,14 +48,39 @@ extension AVDepthData {
         description[kCGImagePropertyHeight] = texture.height
         description[kCGImagePropertyBytesPerRow] = 4 * texture.width
         
+        let pixels = texture.pixels as? MappedBuffer<Float> ?? texture.pixels.map(Float.init)
+        
         var dictionary: [AnyHashable: Any] = [
-            kCGImageAuxiliaryDataInfoData: texture.pixels.data as CFData,
+            kCGImageAuxiliaryDataInfoData: pixels.data as CFData,
             kCGImageAuxiliaryDataInfoDataDescription: description
         ]
         
         if let metadata = metadata {
             dictionary[kCGImageAuxiliaryDataInfoMetadata] = metadata
         }
+        
+        try self.init(fromDictionaryRepresentation: dictionary)
+    }
+}
+
+@available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
+extension AVPortraitEffectsMatte {
+    
+    public convenience init<T>(texture: StencilTexture<T>) throws {
+        
+        var description: [AnyHashable: Any] = [:]
+        
+        description[kCGImagePropertyPixelFormat] = kCVPixelFormatType_OneComponent8
+        description[kCGImagePropertyWidth] = texture.width
+        description[kCGImagePropertyHeight] = texture.height
+        description[kCGImagePropertyBytesPerRow] = texture.width
+        
+        let pixels = texture.pixels.map { UInt8(($0 * 255).clamped(to: 0...255).rounded()) }
+        
+        let dictionary: [AnyHashable: Any] = [
+            kCGImageAuxiliaryDataInfoData: pixels.data as CFData,
+            kCGImageAuxiliaryDataInfoDataDescription: description
+        ]
         
         try self.init(fromDictionaryRepresentation: dictionary)
     }
@@ -82,21 +104,35 @@ extension CGImage {
 
 extension CGImage {
     
-    public enum MediaType : String, CaseIterable {
+    public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral {
         
-        case bmp
+        public var rawValue: String
         
-        case gif
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
         
-        case jpeg
+        public init(stringLiteral value: String) {
+            self.rawValue = value
+        }
         
-        case jpeg2000
+        public static let bmp        = MediaType(rawValue: kUTTypeBMP as String)
+        public static let gif        = MediaType(rawValue: kUTTypeGIF as String)
+        public static let jpeg       = MediaType(rawValue: kUTTypeJPEG as String)
+        public static let jpeg2000   = MediaType(rawValue: kUTTypeJPEG2000 as String)
+        public static let png        = MediaType(rawValue: kUTTypePNG as String)
+        public static let tiff       = MediaType(rawValue: kUTTypeTIFF as String)
         
-        case png
+        #if canImport(AVFoundation)
         
-        case tiff
+        @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
+        public static let heif       = MediaType(rawValue: AVFileType.heif.rawValue)
         
-        case heic
+        @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
+        public static let heic       = MediaType(rawValue: AVFileType.heic.rawValue)
+        
+        #endif
+        
     }
     
     public enum PropertyKey : Int, CaseIterable {
@@ -110,6 +146,9 @@ extension CGImage {
         case resolution
         
         case depthData
+        
+        case matteData
+        
     }
     
     public struct PNGCompressionFilter: OptionSet {
@@ -140,17 +179,10 @@ extension CGImage {
     
     public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
         
-        let type: CFString
         var _properties: [CFString: Any] = [:]
         
         switch storageType {
-        case .bmp: type = kUTTypeBMP
-        case .gif: type = kUTTypeGIF
-        case .jpeg: type = kUTTypeJPEG
-        case .jpeg2000: type = kUTTypeJPEG2000
         case .png:
-            
-            type = kUTTypePNG
             
             var _png_properties: [CFString: Any] = [:]
             
@@ -170,8 +202,6 @@ extension CGImage {
             
         case .tiff:
             
-            type = kUTTypeTIFF
-            
             var _tiff_properties: [CFString: Any] = [:]
             
             if let compression = properties[.compression] as? TIFFCompressionScheme {
@@ -184,11 +214,7 @@ extension CGImage {
             
             _properties[kCGImagePropertyTIFFDictionary] = _tiff_properties
             
-        case .heic:
-            
-            guard #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) else { return nil }
-            
-            type = kUTTypeHEIC
+        default: break
         }
         
         if let resolution = properties[.resolution] as? Resolution {
@@ -201,19 +227,34 @@ extension CGImage {
             _properties[kCGImageDestinationLossyCompressionQuality] = compressionQuality
         }
         
-        return CGImage.withImageDestination(type, 1) { destination in
+        return CGImage.withImageDestination(storageType.rawValue as CFString, 1) { destination in
             
             CGImageDestinationAddImage(destination, self, _properties as CFDictionary)
             
+            #if canImport(AVFoundation)
+            
             if #available(macOS 10.13, iOS 11.0, tvOS 11.0, *), let depthData = properties[.depthData] as? AVDepthData {
                 
-                var auxDataType: NSString?
-                let auxData = depthData.dictionaryRepresentation(forAuxiliaryDataType: &auxDataType)
+                var type: NSString?
+                let dictionary = depthData.dictionaryRepresentation(forAuxiliaryDataType: &type)
                 
-                if let auxDataType = auxDataType, let auxData = auxData {
-                    CGImageDestinationAddAuxiliaryDataInfo(destination, auxDataType, auxData as CFDictionary)
+                if let type = type, let dictionary = dictionary {
+                    CGImageDestinationAddAuxiliaryDataInfo(destination, type, dictionary as CFDictionary)
                 }
             }
+            
+            if #available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *), let matteData = properties[.matteData] as? AVPortraitEffectsMatte {
+                
+                var type: NSString?
+                let dictionary = matteData.dictionaryRepresentation(forAuxiliaryDataType: &type)
+                
+                if let type = type, let dictionary = dictionary {
+                    CGImageDestinationAddAuxiliaryDataInfo(destination, type, dictionary as CFDictionary)
+                }
+            }
+            
+            #endif
+            
         }
     }
     
@@ -256,10 +297,12 @@ extension CGImage {
         }
     }
     
+    #if canImport(AVFoundation)
+    
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 4.0, *)
     public static func animatedHEICRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
         
-        return CGImage.withImageDestination(kUTTypeHEIC, frames.count) { destination in
+        return CGImage.withImageDestination(AVFileType.heic as CFString, frames.count) { destination in
             
             CGImageDestinationSetProperties(destination, [kCGImagePropertyHEICSDictionary: [kCGImagePropertyHEICSLoopCount: loop]] as CFDictionary)
             
@@ -268,6 +311,9 @@ extension CGImage {
             }
         }
     }
+    
+    #endif
+    
 }
 
 extension CGImage {
@@ -280,10 +326,15 @@ extension CGImage {
         return self.animatedPNGRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }
     
+    #if canImport(AVFoundation)
+    
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 4.0, *)
     public static func animatedHEICRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
         return self.animatedHEICRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }
+    
+    #endif
+    
 }
 
 #endif
