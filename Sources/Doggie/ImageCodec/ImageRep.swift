@@ -187,19 +187,27 @@ extension ImageRep {
 
 extension ImageRep {
     
-    public enum MediaType : String, CaseIterable {
+    public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral {
         
-        case bmp
+        public var rawValue: String
         
-        case gif
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
         
-        case jpeg
+        public init(stringLiteral value: String) {
+            self.rawValue = value
+        }
         
-        case jpeg2000
+        public static let bmp: MediaType        = "com.microsoft.bmp"
+        public static let gif: MediaType        = "com.compuserve.gif"
+        public static let heic: MediaType       = "public.heic"
+        public static let heif: MediaType       = "public.heif"
+        public static let jpeg: MediaType       = "public.jpeg"
+        public static let jpeg2000: MediaType   = "public.jpeg-2000"
+        public static let png: MediaType        = "public.png"
+        public static let tiff: MediaType       = "public.tiff"
         
-        case png
-        
-        case tiff
     }
     
     public var mediaType: MediaType? {
@@ -240,6 +248,7 @@ extension ImageRep {
         case .jpeg2000: Encoder = JPEG2000Encoder.self
         case .png: Encoder = PNGEncoder.self
         case .tiff: Encoder = TIFFEncoder.self
+        default: return nil
         }
         
         return Encoder.encode(image: image, properties: properties)

@@ -104,37 +104,6 @@ extension CGImage {
 
 extension CGImage {
     
-    public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral {
-        
-        public var rawValue: String
-        
-        public init(rawValue: String) {
-            self.rawValue = rawValue
-        }
-        
-        public init(stringLiteral value: String) {
-            self.rawValue = value
-        }
-        
-        public static let bmp        = MediaType(rawValue: kUTTypeBMP as String)
-        public static let gif        = MediaType(rawValue: kUTTypeGIF as String)
-        public static let jpeg       = MediaType(rawValue: kUTTypeJPEG as String)
-        public static let jpeg2000   = MediaType(rawValue: kUTTypeJPEG2000 as String)
-        public static let png        = MediaType(rawValue: kUTTypePNG as String)
-        public static let tiff       = MediaType(rawValue: kUTTypeTIFF as String)
-        
-        #if canImport(AVFoundation)
-        
-        @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
-        public static let heif       = MediaType(rawValue: AVFileType.heif.rawValue)
-        
-        @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
-        public static let heic       = MediaType(rawValue: AVFileType.heic.rawValue)
-        
-        #endif
-        
-    }
-    
     public enum PropertyKey : Int, CaseIterable {
         
         case compression
@@ -177,7 +146,7 @@ extension CGImage {
         case packBits
     }
     
-    public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: ImageRep.MediaType, properties: [PropertyKey : Any]) -> Data? {
         
         var _properties: [CFString: Any] = [:]
         

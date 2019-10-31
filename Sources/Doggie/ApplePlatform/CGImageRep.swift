@@ -33,7 +33,7 @@ protocol CGImageRepBase {
     
     var resolution: Resolution { get }
     
-    var mediaType: CGImage.MediaType? { get }
+    var mediaType: ImageRep.MediaType? { get }
     
     var numberOfPages: Int { get }
     
@@ -129,7 +129,7 @@ extension CGImageRep {
 
 extension CGImageRep {
     
-    public var mediaType: CGImage.MediaType? {
+    public var mediaType: ImageRep.MediaType? {
         return base.mediaType
     }
 }
@@ -229,8 +229,8 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         return 1...4 ~= orientation ? resolution : Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit)
     }
     
-    var mediaType: CGImage.MediaType? {
-        return CGImageSourceGetType(source).map { CGImage.MediaType(rawValue: $0 as String) }
+    var mediaType: ImageRep.MediaType? {
+        return CGImageSourceGetType(source).map { ImageRep.MediaType(rawValue: $0 as String) }
     }
     
     func page(_ index: Int) -> CGImageRepBase {
