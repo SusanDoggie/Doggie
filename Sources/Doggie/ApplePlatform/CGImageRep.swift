@@ -274,7 +274,7 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         case kUTTypeICO: return .icon
         default:
             
-            if #available(macOS 10.13, iOS 11.0, tvOS 11.0, *) {
+            if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
                 
                 switch type {
                 case kUTTypeHEIC: return .heic

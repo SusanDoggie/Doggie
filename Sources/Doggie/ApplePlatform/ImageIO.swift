@@ -25,7 +25,7 @@
 
 #if canImport(CoreGraphics) && canImport(ImageIO) && canImport(AVFoundation)
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 let kUTTypeHEIC = AVFileType.heic as CFString
 
 public struct CGImageAnimationFrame {
@@ -85,6 +85,23 @@ extension CGImage {
         case resolution
     }
     
+    public struct PNGCompressionFilter: OptionSet {
+        
+        public var rawValue: Int32
+        
+        public init(rawValue: Int32) {
+            self.rawValue = rawValue
+        }
+        
+        public static let none      = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_NONE)
+        public static let sub       = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_SUB)
+        public static let up        = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_UP)
+        public static let average   = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_AVG)
+        public static let paeth     = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_PAETH)
+        
+        public static let all: PNGCompressionFilter = [.none, .sub, .up, .average, .paeth]
+    }
+    
     public enum TIFFCompressionScheme : CaseIterable {
         
         case none
@@ -108,35 +125,43 @@ extension CGImage {
             
             type = kUTTypePNG
             
+            var _png_properties: [CFString: Any] = [:]
+            
             if properties[.interlaced] as? Bool == true {
-                _properties[kCGImagePropertyPNGDictionary] = [kCGImagePropertyPNGInterlaceType: 1]
+                _png_properties[kCGImagePropertyPNGInterlaceType] = 1
             }
+            
+            if #available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *), let compression = properties[.compression] as? PNGCompressionFilter {
+                if compression.isEmpty {
+                    _png_properties[kCGImagePropertyPNGCompressionFilter] = IMAGEIO_PNG_NO_FILTERS
+                } else {
+                    _png_properties[kCGImagePropertyPNGCompressionFilter] = compression.rawValue
+                }
+            }
+            
+            _properties[kCGImagePropertyPNGDictionary] = _png_properties
             
         case .tiff:
             
             type = kUTTypeTIFF
             
+            var _tiff_properties: [CFString: Any] = [:]
+            
             if let compression = properties[.compression] as? TIFFCompressionScheme {
                 switch compression {
                 case .none: break
-                case .lzw: _properties[kCGImagePropertyTIFFDictionary] = [kCGImagePropertyTIFFCompression: 5]
-                case .packBits: _properties[kCGImagePropertyTIFFDictionary] = [kCGImagePropertyTIFFCompression: 32773]
+                case .lzw: _tiff_properties[kCGImagePropertyTIFFCompression] = 5
+                case .packBits: _tiff_properties[kCGImagePropertyTIFFCompression] = 32773
                 }
             }
             
+            _properties[kCGImagePropertyTIFFDictionary] = _tiff_properties
+            
         case .heic:
             
-            guard #available(macOS 10.13, iOS 11.0, tvOS 11.0, *) else { return nil }
-            
-            #if os(watchOS)
-            
-            return nil
-            
-            #else
+            guard #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) else { return nil }
             
             type = kUTTypeHEIC
-            
-            #endif
         }
         
         if let resolution = properties[.resolution] as? Resolution {
@@ -156,8 +181,8 @@ extension CGImage {
         return self.representation(using: .tiff, properties: [.compression: compression, .resolution: resolution])
     }
     
-    public func pngRepresentation(interlaced: Bool = false, resolution: Resolution = .default) -> Data? {
-        return self.representation(using: .png, properties: [.interlaced: interlaced, .resolution: resolution])
+    public func pngRepresentation(interlaced: Bool = false, compression: PNGCompressionFilter = .all, resolution: Resolution = .default) -> Data? {
+        return self.representation(using: .png, properties: [.interlaced: interlaced, .compression: compression, .resolution: resolution])
     }
     
     public func jpegRepresentation(compressionQuality: Double, resolution: Resolution = .default) -> Data? {
@@ -191,7 +216,7 @@ extension CGImage {
         }
     }
     
-    @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 4.0, *)
     public static func animatedHEICRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
         
         return CGImage.withImageDestination(kUTTypeHEIC, frames.count) { imageDestination in
@@ -215,7 +240,7 @@ extension CGImage {
         return self.animatedPNGRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }
     
-    @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 4.0, *)
     public static func animatedHEICRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
         return self.animatedHEICRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }
