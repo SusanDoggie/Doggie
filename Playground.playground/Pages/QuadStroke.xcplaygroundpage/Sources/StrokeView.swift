@@ -89,7 +89,7 @@ public class StrokeView: NSView, NSGestureRecognizerDelegate {
                 drawPoint(context, bezier.eval(t))
                 
                 let frame = CGRect(origin: CGPoint(bezier.eval(t).offset(dx: 10, dy: 10)), size: CGSize(width: 500, height: -500))
-                let text = NSAttributedString(string: "\(_decimal_round(bezier.curvature(t)))", attributes: [.foregroundColor: NSColor.red])
+                let text = NSAttributedString(string: "\(Decimal(bezier.curvature(t)).rounded(scale: 9))", attributes: [.foregroundColor: NSColor.red])
                 context.draw(text, in: CGPath(rect: frame, transform: nil))
             }
             
