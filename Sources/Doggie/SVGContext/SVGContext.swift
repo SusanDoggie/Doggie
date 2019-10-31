@@ -637,7 +637,7 @@ private protocol SVGImageProtocol {
 
 extension ImageRep.MediaType {
     
-    fileprivate var svg_base64_string: String {
+    fileprivate var media_type_string: String? {
         switch self {
         case .bmp: return "image/bmp"
         case .gif: return "image/gif"
@@ -645,6 +645,7 @@ extension ImageRep.MediaType {
         case .jpeg2000: return "image/jp2"
         case .png: return "image/png"
         case .tiff: return "image/tiff"
+        default: return nil
         }
     }
 }
@@ -656,8 +657,9 @@ extension Image: SVGImageProtocol {
     }
     
     fileprivate func base64(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+        guard let mediaType = storageType.media_type_string else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
-        return "data:\(storageType.svg_base64_string);base64," + data.base64EncodedString()
+        return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
 
@@ -668,8 +670,9 @@ extension AnyImage: SVGImageProtocol {
     }
     
     fileprivate func base64(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+        guard let mediaType = storageType.media_type_string else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
-        return "data:\(storageType.svg_base64_string);base64," + data.base64EncodedString()
+        return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
 
@@ -680,8 +683,9 @@ extension ImageRep: SVGImageProtocol {
     }
     
     fileprivate func base64(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
-        guard let mediaType = self.mediaType, let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).base64(using: storageType, properties: properties) }
-        return "data:\(mediaType.svg_base64_string);base64," + data.base64EncodedString()
+        guard let mediaType = self.mediaType?.media_type_string else { return nil }
+        guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).base64(using: storageType, properties: properties) }
+        return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
 
