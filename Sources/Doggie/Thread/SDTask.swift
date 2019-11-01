@@ -147,7 +147,7 @@ extension SDTask {
         let worker = result.createWorker(qos: qos, flags: flags) { storage }
         result.worker = worker
         queue.asyncAfter(deadline: deadline, qos: qos, flags: flags) {
-            storage = self.storage
+            storage = self.lck.synchronized { self.storage }
             worker.perform()
         }
         return result
@@ -165,7 +165,7 @@ extension SDTask {
         let worker = result.createWorker(qos: qos, flags: flags) { storage }
         result.worker = worker
         queue.asyncAfter(wallDeadline: wallDeadline, qos: qos, flags: flags) {
-            storage = self.storage
+            storage = self.lck.synchronized { self.storage }
             worker.perform()
         }
         return result
