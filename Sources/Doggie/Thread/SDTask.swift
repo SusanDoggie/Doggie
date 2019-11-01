@@ -135,45 +135,6 @@ extension SDTask {
 
 extension SDTask {
     
-    @discardableResult
-    public func wait(deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
-        return self.wait(queue: queue, deadline: deadline, qos: qos, flags: flags)
-    }
-    
-    @discardableResult
-    public func wait(queue: DispatchQueue, deadline: DispatchTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
-        var storage: Result?
-        let result = SDTask<Result?>(queue: queue)
-        let worker = result.createWorker(qos: qos, flags: flags) { storage }
-        result.worker = worker
-        queue.asyncAfter(deadline: deadline, qos: qos, flags: flags) {
-            storage = self.lck.synchronized { self.storage }
-            worker.perform()
-        }
-        return result
-    }
-    
-    @discardableResult
-    public func wait(wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
-        return self.wait(queue: queue, wallDeadline: wallDeadline, qos: qos, flags: flags)
-    }
-    
-    @discardableResult
-    public func wait(queue: DispatchQueue, wallDeadline: DispatchWallTime, qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = []) -> SDTask<Result?> {
-        var storage: Result?
-        let result = SDTask<Result?>(queue: queue)
-        let worker = result.createWorker(qos: qos, flags: flags) { storage }
-        result.worker = worker
-        queue.asyncAfter(wallDeadline: wallDeadline, qos: qos, flags: flags) {
-            storage = self.lck.synchronized { self.storage }
-            worker.perform()
-        }
-        return result
-    }
-}
-
-extension SDTask {
-    
     /// Suspend if `result` satisfies `predicate`.
     @discardableResult
     public func suspend(qos: DispatchQoS = .unspecified, flags: DispatchWorkItemFlags = [], where predicate: @escaping (Result) -> Bool) -> SDTask<Result> {
