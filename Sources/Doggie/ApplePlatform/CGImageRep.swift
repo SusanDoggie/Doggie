@@ -42,6 +42,8 @@ protocol CGImageRepBase {
     func page(_ index: Int) -> CGImageRepBase
     
     var cgImage: CGImage? { get }
+    
+    func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]?
 }
 
 public struct CGImageRep {
@@ -103,7 +105,39 @@ extension CGImageRep {
             return cache.image
         }
     }
+    
+    public func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]? {
+        return base.auxiliaryDataInfo(type)
+    }
 }
+
+#if canImport(AVFoundation)
+
+extension CGImageRep {
+    
+    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+    public var disparityData: AVDepthData? {
+        guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypeDisparity as String) else { return nil }
+        return try? AVDepthData(fromDictionaryRepresentation: info)
+    }
+    
+    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+    public var depthData: AVDepthData? {
+        guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypeDepth as String) else { return nil }
+        return try? AVDepthData(fromDictionaryRepresentation: info)
+    }
+}
+
+extension CGImageRep {
+    
+    @available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
+    public var portraitEffectsMatte: AVPortraitEffectsMatte? {
+        guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypePortraitEffectsMatte as String) else { return nil }
+        return try? AVPortraitEffectsMatte(fromDictionaryRepresentation: info)
+    }
+}
+
+#endif
 
 extension CGImageRep {
     
@@ -239,6 +273,11 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
     
     var cgImage: CGImage? {
         return CGImageSourceCreateImageAtIndex(source, index, nil)
+    }
+    
+    func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]? {
+        guard #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) else { return nil }
+        return CGImageSourceCopyAuxiliaryDataInfoAtIndex(source, index, type as CFString) as? [String : AnyObject]
     }
 }
 
