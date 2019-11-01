@@ -38,7 +38,7 @@ public class SDTask<Result> {
     
     private let lck = SDConditionLock()
     
-    private var storage = Atomic<Result?>(value: nil)
+    private var storage: Result?
     
     private init(queue: DispatchQueue) {
         self.queue = queue
@@ -50,8 +50,9 @@ extension SDTask {
     private func createWorker(qos: DispatchQoS, flags: DispatchWorkItemFlags, block: @escaping () -> Result?) -> DispatchWorkItem {
         return DispatchWorkItem(qos: qos, flags: flags) { [weak self] in
             let value = block()
-            if let _self = self {
-                _self.storage.value = value
+            guard let _self = self else { return }
+            _self.lck.synchronized {
+                _self.storage = value
                 _self.lck.broadcast()
             }
         }
@@ -94,21 +95,18 @@ extension SDTask {
     
     /// Return `true` iff task is completed.
     public var completed: Bool {
-        return storage.value != nil
+        return lck.synchronized { storage != nil }
     }
     
     @discardableResult
     public func wait(until time: DispatchWallTime) -> Bool {
-        return lck.wait(for: completed, until: time)
+        return lck.wait(for: storage != nil, until: time)
     }
     
     /// Result of task.
     public var result: Result {
-        if let value = storage.value {
-            return value
-        }
-        lck.wait(for: completed)
-        return storage.value!
+        lck.wait(for: storage != nil)
+        return storage!
     }
 }
 
@@ -128,7 +126,7 @@ extension SDTask {
         let worker = result.createWorker(qos: qos, flags: flags) { storage.map(block) }
         result.worker = worker
         self.worker.notify(qos: qos, flags: flags, queue: queue) {
-            storage = self.storage.value
+            storage = self.storage
             worker.perform()
         }
         return result
@@ -149,7 +147,7 @@ extension SDTask {
         let worker = result.createWorker(qos: qos, flags: flags) { storage }
         result.worker = worker
         queue.asyncAfter(deadline: deadline, qos: qos, flags: flags) {
-            storage = self.storage.value
+            storage = self.storage
             worker.perform()
         }
         return result
@@ -167,7 +165,7 @@ extension SDTask {
         let worker = result.createWorker(qos: qos, flags: flags) { storage }
         result.worker = worker
         queue.asyncAfter(wallDeadline: wallDeadline, qos: qos, flags: flags) {
-            storage = self.storage.value
+            storage = self.storage
             worker.perform()
         }
         return result
@@ -190,7 +188,7 @@ extension SDTask {
         let worker = result.createWorker(qos: qos, flags: flags) { storage }
         result.worker = worker
         self.worker.notify(qos: qos, flags: flags, queue: queue) {
-            if let value = self.storage.value, !predicate(value) {
+            if let value = self.storage, !predicate(value) {
                 storage = value
             }
             worker.perform()

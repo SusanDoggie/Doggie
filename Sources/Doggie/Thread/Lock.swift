@@ -143,6 +143,7 @@ extension SDLock {
             pthread_cond_wait(&cond._cond, &_mtx)
         }
     }
+    
     fileprivate func _wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
         let _time = -Int64(bitPattern: time.rawValue)
         let sec = _time / 1000000000
@@ -160,15 +161,12 @@ extension SDLock {
 extension SDLock {
     
     public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool) {
-        self.synchronized {
-            self._wait(cond, for: predicate())
-        }
+        self.synchronized { self._wait(cond, for: predicate()) }
     }
+    
     @discardableResult
     public func wait(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime) -> Bool {
-        return self.synchronized {
-            self._wait(cond, for: predicate(), until: time)
-        }
+        return self.synchronized { self._wait(cond, for: predicate(), until: time) }
     }
 }
 
@@ -212,11 +210,9 @@ extension SDLock {
     @inlinable
     @discardableResult
     public func synchronized<R>(_ cond: SDCondition, for predicate: @autoclosure () -> Bool, until time: DispatchWallTime, block: () throws -> R) rethrows -> R? {
-        if self.lock(cond, for: predicate(), until: time) {
-            defer { self.unlock() }
-            return try block()
-        }
-        return nil
+        guard self.lock(cond, for: predicate(), until: time) else { return nil }
+        defer { self.unlock() }
+        return try block()
     }
 }
 
@@ -230,14 +226,10 @@ public class SDConditionLock : SDLock {
 extension SDConditionLock {
     
     public func signal() {
-        super.synchronized {
-            cond.signal()
-        }
+        super.synchronized { cond.signal() }
     }
     public func broadcast() {
-        super.synchronized {
-            cond.broadcast()
-        }
+        super.synchronized { cond.broadcast() }
     }
     public func wait(for predicate: @autoclosure () -> Bool) {
         self.wait(cond, for: predicate())

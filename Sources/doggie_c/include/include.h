@@ -26,7 +26,6 @@
 #ifndef include_h
 #define include_h
 
-#include "c11_atomic.h"
 #include <zlib.h>
 
 #endif /* include_h */
