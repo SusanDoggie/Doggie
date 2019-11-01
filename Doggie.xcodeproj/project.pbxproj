@@ -33,7 +33,6 @@
 		08458B3F1E2E627600D01813 /* Rect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADC1E2E627600D01813 /* Rect.swift */; };
 		08458B411E2E627600D01813 /* SDTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADD1E2E627600D01813 /* SDTransform.swift */; };
 		08458B431E2E627600D01813 /* Vector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADE1E2E627600D01813 /* Vector.swift */; };
-		08458B451E2E627600D01813 /* Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458ADF1E2E627600D01813 /* Actor.swift */; };
 		08458B591E2E627600D01813 /* Atomic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEB1E2E627600D01813 /* Atomic.swift */; };
 		08458B5B1E2E627600D01813 /* AtomicQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEC1E2E627600D01813 /* AtomicQueue.swift */; };
 		08458B5D1E2E627600D01813 /* AtomicStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AED1E2E627600D01813 /* AtomicStack.swift */; };
@@ -96,7 +95,6 @@
 		0A32D9991F28825F0027F384 /* Tensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A32D9971F28825F0027F384 /* Tensor.swift */; };
 		0A36612C1EEA54AB00216A26 /* CGPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A36612A1EEA54AB00216A26 /* CGPath.swift */; };
 		0A3674B421634DC800175580 /* CGImageRep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3674B321634DC800175580 /* CGImageRep.swift */; };
-		0A39436A1F4A77A700573372 /* Trigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3943691F4A77A700573372 /* Trigger.swift */; };
 		0A39A6B61ED9342C00804004 /* ImageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B41ED9342C00804004 /* ImageContext.swift */; };
 		0A39A6B91ED9345100804004 /* DrawImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6B71ED9345100804004 /* DrawImage.swift */; };
 		0A39A6BC1ED9347C00804004 /* DrawShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A39A6BA1ED9347C00804004 /* DrawShape.swift */; };
@@ -350,7 +348,6 @@
 		08458ADC1E2E627600D01813 /* Rect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rect.swift; sourceTree = "<group>"; };
 		08458ADD1E2E627600D01813 /* SDTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SDTransform.swift; sourceTree = "<group>"; };
 		08458ADE1E2E627600D01813 /* Vector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Vector.swift; sourceTree = "<group>"; };
-		08458ADF1E2E627600D01813 /* Actor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Actor.swift; sourceTree = "<group>"; };
 		08458AEB1E2E627600D01813 /* Atomic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Atomic.swift; sourceTree = "<group>"; };
 		08458AEC1E2E627600D01813 /* AtomicQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AtomicQueue.swift; sourceTree = "<group>"; };
 		08458AED1E2E627600D01813 /* AtomicStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AtomicStack.swift; sourceTree = "<group>"; };
@@ -414,7 +411,6 @@
 		0A32D9971F28825F0027F384 /* Tensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Tensor.swift; sourceTree = "<group>"; };
 		0A36612A1EEA54AB00216A26 /* CGPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = CGPath.swift; sourceTree = "<group>"; };
 		0A3674B321634DC800175580 /* CGImageRep.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGImageRep.swift; sourceTree = "<group>"; };
-		0A3943691F4A77A700573372 /* Trigger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Trigger.swift; sourceTree = "<group>"; };
 		0A39A6B41ED9342C00804004 /* ImageContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = ImageContext.swift; sourceTree = "<group>"; };
 		0A39A6B71ED9345100804004 /* DrawImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawImage.swift; sourceTree = "<group>"; };
 		0A39A6BA1ED9347C00804004 /* DrawShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DrawShape.swift; sourceTree = "<group>"; };
@@ -735,8 +731,6 @@
 				08458AED1E2E627600D01813 /* AtomicStack.swift */,
 				08458AEE1E2E627600D01813 /* Lock.swift */,
 				08458AEF1E2E627600D01813 /* SDTask.swift */,
-				0A3943691F4A77A700573372 /* Trigger.swift */,
-				08458ADF1E2E627600D01813 /* Actor.swift */,
 			);
 			path = Thread;
 			sourceTree = "<group>";
@@ -1578,7 +1572,6 @@
 				0A8535331F591C57006FB85D /* CFFDICT.swift in Sources */,
 				0A251C632101849A00E31473 /* SDObject.swift in Sources */,
 				08458B411E2E627600D01813 /* SDTransform.swift in Sources */,
-				08458B451E2E627600D01813 /* Actor.swift in Sources */,
 				0A8D863F1F7DF13E00F9530E /* ColorProtocol.swift in Sources */,
 				0A9F99471F568FD40008D36D /* SFNTPlatform.swift in Sources */,
 				08B0C01222FABE1A005C1035 /* SVGMergeEffect.swift in Sources */,
@@ -1601,7 +1594,6 @@
 				0A2107121E5BEEBB00F1E00E /* PathStroke.swift in Sources */,
 				08458B371E2E627600D01813 /* Maths.swift in Sources */,
 				0A8BBFD51FCC19D100BBD273 /* SDXMLAttribute.swift in Sources */,
-				0A39436A1F4A77A700573372 /* Trigger.swift in Sources */,
 				08458B3B1E2E627600D01813 /* Point.swift in Sources */,
 				08B085491E9A20720037DECE /* Algorithm.swift in Sources */,
 				0A5E8D4E1F57CC07000D51E3 /* SFNTMAXP.swift in Sources */,

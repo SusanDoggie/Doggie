@@ -47,13 +47,13 @@ open class AtomicQueue<Instance> {
     
     public func push(_ newElement: Instance) {
         let new = AtomicQueueContainer(next: nil, value: newElement)
-        var cachedTail = tail
+        var tail = self.tail
         while true {
-            let _tail = cachedTail.next.fetchSelf()
-            if _tail.value != nil {
-                cachedTail = _tail.value!
-            } else if cachedTail.next.compareSet(old: _tail.current, new: new) {
-                tail = new
+            let _tail = tail.next.fetchSelf()
+            if let next = _tail.value {
+                tail = next
+            } else if tail.next.compareSet(old: _tail.current, new: new) {
+                self.tail = new
                 return
             }
         }

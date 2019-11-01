@@ -746,7 +746,7 @@ public struct Atomic<Instance> {
 extension Atomic {
     
     @usableFromInline
-    class Base {
+    final class Base {
         
         @usableFromInline
         var value: Instance
