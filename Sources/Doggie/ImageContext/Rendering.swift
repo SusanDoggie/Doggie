@@ -242,8 +242,8 @@ extension ImageContext {
                 
                 switch cullingMode {
                 case .none: break
-                case .front: guard cross(p1 - p0, p2 - p0) < 0 else { return }
-                case .back: guard cross(p1 - p0, p2 - p0) > 0 else { return }
+                case .front: guard cross(p1 - p0, p2 - p0) > 0 else { return }
+                case .back: guard cross(p1 - p0, p2 - p0) < 0 else { return }
                 }
                 
                 let _p0 = p0 * transform
