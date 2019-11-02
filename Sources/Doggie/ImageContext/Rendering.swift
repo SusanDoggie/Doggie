@@ -111,7 +111,7 @@ extension ImageContextRenderStageIn where Vertex.Position == Vector {
     @inlinable
     @inline(__always)
     public var normal: Vector {
-        return cross(triangle.2 - triangle.0, triangle.1 - triangle.0)
+        return cross(triangle.1 - triangle.0, triangle.2 - triangle.0)
     }
 }
 
@@ -242,8 +242,8 @@ extension ImageContext {
                 
                 switch cullingMode {
                 case .none: break
-                case .front: guard cross(p2 - p0, p1 - p0) < 0 else { return }
-                case .back: guard cross(p2 - p0, p1 - p0) > 0 else { return }
+                case .front: guard cross(p1 - p0, p2 - p0) < 0 else { return }
+                case .back: guard cross(p1 - p0, p2 - p0) > 0 else { return }
                 }
                 
                 let _p0 = p0 * transform

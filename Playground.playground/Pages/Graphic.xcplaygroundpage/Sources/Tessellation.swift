@@ -82,14 +82,14 @@ public func tessellation(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     let c = 0.5519150244935105707435627227925666423361803947243089
     
     let v0 = Vector(x: 1, y: 0, z: 0)
-    let v1 = Vector(x: 1, y: c, z: 0)
-    let v2 = Vector(x: c, y: 1, z: 0)
-    let v3 = Vector(x: 0, y: 1, z: 0)
-    let v4 = Vector(x: 0, y: 1, z: c)
-    let v5 = Vector(x: 0, y: c, z: 1)
-    let v6 = Vector(x: 0, y: 0, z: 1)
-    let v7 = Vector(x: c, y: 0, z: 1)
-    let v8 = Vector(x: 1, y: 0, z: c)
+    let v1 = Vector(x: 1, y: 0, z: c)
+    let v2 = Vector(x: c, y: 0, z: 1)
+    let v3 = Vector(x: 0, y: 0, z: 1)
+    let v4 = Vector(x: 0, y: c, z: 1)
+    let v5 = Vector(x: 0, y: 1, z: c)
+    let v6 = Vector(x: 0, y: 1, z: 0)
+    let v7 = Vector(x: c, y: 1, z: 0)
+    let v8 = Vector(x: 1, y: c, z: 0)
     let v9 = Vector(x: 0.9, y: 0.9, z: 0.9)
     
     let matrix = Matrix.scale(25) * Matrix.rotateY(.pi / 6) * Matrix.rotateX(.pi / 6) * Matrix.translate(x: 0, y: 0, z: 100)

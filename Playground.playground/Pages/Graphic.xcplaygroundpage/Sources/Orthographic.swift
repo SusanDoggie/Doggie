@@ -33,13 +33,13 @@ public func orthographicProject(width: Int, height: Int) -> Image<ARGB32ColorPix
     let c7 = Float64ColorPixel(red: 1, green: 1, blue: 1, opacity: 1)
     
     let v0 = ColorVertex(position: Vector(x: 1, y: 1, z: -1) * matrix, color: c0)
-    let v1 = ColorVertex(position: Vector(x: 1, y: -1, z: -1) * matrix, color: c1)
+    let v1 = ColorVertex(position: Vector(x: -1, y: 1, z: -1) * matrix, color: c1)
     let v2 = ColorVertex(position: Vector(x: -1, y: -1, z: -1) * matrix, color: c5)
-    let v3 = ColorVertex(position: Vector(x: -1, y: 1, z: -1) * matrix, color: c3)
+    let v3 = ColorVertex(position: Vector(x: 1, y: -1, z: -1) * matrix, color: c3)
     let v4 = ColorVertex(position: Vector(x: 1, y: 1, z: 1) * matrix, color: c2)
-    let v5 = ColorVertex(position: Vector(x: 1, y: -1, z: 1) * matrix, color: c4)
+    let v5 = ColorVertex(position: Vector(x: -1, y: 1, z: 1) * matrix, color: c4)
     let v6 = ColorVertex(position: Vector(x: -1, y: -1, z: 1) * matrix, color: c7)
-    let v7 = ColorVertex(position: Vector(x: -1, y: 1, z: 1) * matrix, color: c6)
+    let v7 = ColorVertex(position: Vector(x: 1, y: -1, z: 1) * matrix, color: c6)
     
     // face v0, v1, v2, v3
     let t0 = (v0, v1, v2)
