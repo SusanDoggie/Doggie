@@ -23,14 +23,6 @@ let task2 = task.then { a -> Int in
     return a + 1
 }
 
-task.wait(deadline: .now() + 1).then {
-    $0
-}
-
-task.wait(deadline: .now() + 2).then {
-    $0
-}
-
 task.wait(until: .now() + 1)
 
 task.result   // 5
