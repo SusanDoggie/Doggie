@@ -194,6 +194,7 @@ extension Font : CustomStringConvertible {
 
 extension Font {
     
+    @frozen
     public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral {
         
         public var rawValue: String
@@ -212,7 +213,12 @@ extension Font {
         
     }
     
-    public func representation(using storageType: Font.MediaType) -> Data? {
+    public enum PropertyKey : CaseIterable {
+        
+        case deflateLevel
+    }
+    
+    public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
         
         let Encoder: FontFaceEncoder.Type
         
@@ -222,7 +228,7 @@ extension Font {
         default: return nil
         }
         
-        return Encoder.encode(table: base.table)
+        return Encoder.encode(table: base.table, properties: properties)
     }
 }
 

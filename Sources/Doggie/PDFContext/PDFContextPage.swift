@@ -598,8 +598,8 @@ extension PDFContext.Page {
 
 extension PDFContext.Page {
     
-    func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, compression: PDFContext.CompressionScheme) {
-        self._draw(image: image.convert(to: colorSpace, intent: renderingIntent), transform: transform, compression: compression)
+    func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, properties: [PDFContext.PropertyKey : Any]) {
+        self._draw(image: image.convert(to: colorSpace, intent: renderingIntent), transform: transform, properties: properties)
     }
 }
 

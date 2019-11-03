@@ -65,12 +65,14 @@ extension PDFContext {
         return xref.count
     }
     
-    static func _write(stream: Data, _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
+    static func _write(stream: Data, properties: [PropertyKey : Any], _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
+        
+        let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         
         var dictionary = dictionary
         var stream = stream
         
-        if dictionary["Filter"] == nil, let compressed = try? Deflate(windowBits: 15).process(stream) {
+        if dictionary["Filter"] == nil, deflate_level != .none, let compressed = try? Deflate(level: deflate_level, windowBits: 15).process(stream) {
             stream = compressed
             dictionary["Filter"] = "/FlateDecode"
         }
@@ -89,13 +91,15 @@ extension PDFContext {
         return xref.count
     }
     
-    static func _write(stream: String, _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
+    static func _write(stream: String, properties: [PropertyKey : Any], _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
+        
+        let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         
         var dictionary = dictionary
         
         xref.append(data.count)
         
-        if dictionary["Filter"] == nil, let compressed = try? Deflate(windowBits: 15).process(stream._utf8_data) {
+        if dictionary["Filter"] == nil, deflate_level != .none, let compressed = try? Deflate(level: deflate_level, windowBits: 15).process(stream._utf8_data) {
             
             dictionary["Filter"] = "/FlateDecode"
             dictionary["Length"] = "\(compressed.count)"
@@ -175,7 +179,7 @@ extension PDFContext {
             """)
     }
     
-    public func data() throws -> Data {
+    public func data(properties: [PropertyKey : Any] = [:]) throws -> Data {
         
         var data = Data()
         data.append(utf8: "%PDF-1.3\n")
@@ -205,8 +209,8 @@ extension PDFContext {
         let groups = PDFContext.Page.XObjectGroup(transparency_layer: xobj_group, mask: mask_group)
         
         let _pages_contents = try self.pages.map { try PageContent(
-            resources: $0.write_resources(xobjectGroup: groups, to: &data, xref: &xref),
-            commands: $0.write_commands(to: &data, xref: &xref))
+            resources: $0.write_resources(xobjectGroup: groups, properties: properties, to: &data, xref: &xref),
+            commands: $0.write_commands(properties: properties, to: &data, xref: &xref))
         }
         
         let _parent = xref.count + self.pages.count + 1
@@ -289,13 +293,13 @@ extension PDFContext.Page {
         var mask: Int
     }
     
-    func write_resources(xobjectGroup: XObjectGroup, to data: inout Data, xref: inout [Int]) throws -> Int {
+    func write_resources(xobjectGroup: XObjectGroup, properties: [PDFContext.PropertyKey : Any], to data: inout Data, xref: inout [Int]) throws -> Int {
         
         guard let iccData = colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
         
         let _rangeOfComponents = (0..<colorSpace.numberOfComponents).map { colorSpace.rangeOfComponent($0) }.flatMap { [Decimal($0.lowerBound).rounded(scale: 9), Decimal($0.upperBound).rounded(scale: 9)] }
         
-        let iccBased = PDFContext._write(stream: iccData, [
+        let iccBased = PDFContext._write(stream: iccData, properties: properties, [
             "N": "\(colorSpace.numberOfComponents)",
             "Range": "[\n\(_rangeOfComponents.lazy.map { "\($0)" }.joined(separator: "\n"))\n]",
             ], to: &data, xref: &xref)
@@ -316,7 +320,7 @@ extension PDFContext.Page {
                 let _domain = shading.function.domain.flatMap { [Decimal($0.lowerBound).rounded(scale: 9), Decimal($0.upperBound).rounded(scale: 9)] }
                 let _range = shading.function.range.flatMap { [Decimal($0.lowerBound).rounded(scale: 9), Decimal($0.upperBound).rounded(scale: 9)] }
                 
-                _function = PDFContext._write(stream: shading.function.postscript, [
+                _function = PDFContext._write(stream: shading.function.postscript, properties: properties, [
                     "FunctionType": "\(shading.function.type)",
                     "Domain": "[\n\(_domain.lazy.map { "\($0)" }.joined(separator: "\n"))\n]",
                     "Range": "[\n\(_range.lazy.map { "\($0)" }.joined(separator: "\n"))\n]",
@@ -367,7 +371,7 @@ extension PDFContext.Page {
                 mask.table["Type"] = "/XObject"
                 mask.table["Subtype"] = "/Image"
                 
-                let xobj = PDFContext._write(stream: mask.data, mask.table, to: &data, xref: &xref)
+                let xobj = PDFContext._write(stream: mask.data, properties: properties, mask.table, to: &data, xref: &xref)
                 image.table["SMask"] = "\(xobj) 0 R"
             }
             
@@ -378,7 +382,7 @@ extension PDFContext.Page {
                 image.table["ColorSpace"] = "\(_colorSpaceRef) 0 R"
             }
             
-            let xobj = PDFContext._write(stream: image.data, image.table, to: &data, xref: &xref)
+            let xobj = PDFContext._write(stream: image.data, properties: properties, image.table, to: &data, xref: &xref)
             xobject_table[name] = "\(xobj) 0 R"
         }
         
@@ -404,7 +408,7 @@ extension PDFContext.Page {
                 "Group": "\(xobjectGroup.mask) 0 R",
             ]
             
-            let xobj = PDFContext._write(stream: commands, dictionary, to: &data, xref: &xref)
+            let xobj = PDFContext._write(stream: commands, properties: properties, dictionary, to: &data, xref: &xref)
             
             let sMask = PDFContext._write([
                 "Type": "/Mask",
@@ -429,7 +433,7 @@ extension PDFContext.Page {
                 "Group": "\(xobjectGroup.transparency_layer) 0 R",
             ]
             
-            let xobj = PDFContext._write(stream: commands, dictionary, to: &data, xref: &xref)
+            let xobj = PDFContext._write(stream: commands, properties: properties, dictionary, to: &data, xref: &xref)
             xobject_table[name] = "\(xobj) 0 R"
         }
         
@@ -444,7 +448,7 @@ extension PDFContext.Page {
             ], to: &data, xref: &xref)
     }
     
-    func write_commands(to data: inout Data, xref: inout [Int]) throws -> Int {
-        return PDFContext._write(stream: finalize(), to: &data, xref: &xref)
+    func write_commands(properties: [PDFContext.PropertyKey : Any], to data: inout Data, xref: inout [Int]) throws -> Int {
+        return PDFContext._write(stream: finalize(), properties: properties, to: &data, xref: &xref)
     }
 }

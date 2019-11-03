@@ -187,6 +187,7 @@ extension ImageRep {
 
 extension ImageRep {
     
+    @frozen
     public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral {
         
         public var rawValue: String
@@ -223,6 +224,8 @@ extension ImageRep {
         case compression
         
         case compressionQuality
+        
+        case deflateLevel
         
         case interlaced
     }

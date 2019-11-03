@@ -57,6 +57,8 @@ struct TIFFEncoder : ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         
+        let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
+        
         let bitsPerChannel: Int
         let photometric: Int
         var pixelData: MappedBuffer<UInt8>
@@ -166,7 +168,7 @@ struct TIFFEncoder : ImageRepEncoder {
         case .deflate:
             do {
                 var compressed = MappedBuffer<UInt8>(fileBacked: true)
-                let deflate = try Deflate(windowBits: 15)
+                let deflate = try Deflate(level: deflate_level, windowBits: 15)
                 try deflate.process(pixelData, &compressed)
                 try deflate.final(&compressed)
                 pixelData = compressed

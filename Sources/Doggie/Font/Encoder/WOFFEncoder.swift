@@ -25,7 +25,9 @@
 
 struct WOFFEncoder : FontFaceEncoder {
     
-    static func encode(table: [Signature<BEUInt32>: Data]) -> Data? {
+    static func encode(table: [Signature<BEUInt32>: Data], properties: [Font.PropertyKey : Any]) -> Data? {
+        
+        let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         
         let _table = table.sorted { $0.key.rawValue }
         
@@ -78,8 +80,14 @@ struct WOFFEncoder : FontFaceEncoder {
                 data[data.startIndex + 11] = UInt8(checksum & 0xFF)
             }
             
-            let _compressed = try? Deflate(windowBits: 15).process(data)
-            let compressed = _compressed ?? data
+            let compressed: Data
+            
+            switch deflate_level {
+            case .none: compressed = data
+            default:
+                let _compressed = try? Deflate(level: deflate_level, windowBits: 15).process(data)
+                compressed = _compressed ?? data
+            }
             
             let record = WOFFTableRecord(tag: tag, offset: BEUInt32(offset + body.count), compLength: BEUInt32(compressed.count), origLength: BEUInt32(origLength), origChecksum: BEUInt32(checkSum))
             

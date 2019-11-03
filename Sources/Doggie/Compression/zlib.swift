@@ -51,19 +51,12 @@ extension Deflate {
         case fixed
     }
     
-    @frozen
-    public struct Level: RawRepresentable {
+    public enum Level : CaseIterable {
         
-        public var rawValue: Int32
-        
-        public init(rawValue: Int32) {
-            self.rawValue = rawValue
-        }
-        
-        public static var `default` = Level(rawValue: Z_DEFAULT_COMPRESSION)
-        public static var speed = Level(rawValue: Z_BEST_SPEED)
-        public static var compact = Level(rawValue: Z_BEST_COMPRESSION)
-        public static var noCompression = Level(rawValue: Z_NO_COMPRESSION)
+        case `default`
+        case speed
+        case compact
+        case none
     }
 }
 
@@ -76,6 +69,18 @@ extension Deflate.Strategy {
         case .huffmanOnly: return Z_HUFFMAN_ONLY
         case .rle: return Z_RLE
         case .fixed: return Z_FIXED
+        }
+    }
+}
+
+extension Deflate.Level {
+    
+    var rawValue: Int32 {
+        switch self {
+        case .default: return Z_DEFAULT_COMPRESSION
+        case .speed: return Z_BEST_SPEED
+        case .compact: return Z_BEST_COMPRESSION
+        case .none: return Z_NO_COMPRESSION
         }
     }
 }

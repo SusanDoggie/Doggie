@@ -25,7 +25,7 @@
 
 extension PDFContext.Page {
     
-    func _draw(image: AnyImage, transform: SDTransform, compression: PDFContext.CompressionScheme) {
+    func _draw(image: AnyImage, transform: SDTransform, properties: [PDFContext.PropertyKey : Any]) {
         
         let key = image.imageTableKey
         
@@ -37,7 +37,7 @@ extension PDFContext.Page {
             
         } else {
             
-            guard var stream = image.pdf_data(compression: compression) else { return }
+            guard var stream = image.pdf_data(properties: properties) else { return }
             
             stream.0.table["DecodeParms"] = """
             <<
@@ -100,7 +100,7 @@ private protocol PDFImageProtocol {
     
     var imageTableKey: PDFContext.ImageTableKey { get }
     
-    func pdf_data(compression: PDFContext.CompressionScheme) -> (PDFContext.ImageStream, PDFContext.ImageStream?)?
+    func pdf_data(properties: [PDFContext.PropertyKey : Any]) -> (PDFContext.ImageStream, PDFContext.ImageStream?)?
 }
 
 extension AnyImage: PDFImageProtocol {
@@ -109,7 +109,9 @@ extension AnyImage: PDFImageProtocol {
         return PDFContext.ImageTableKey(self)
     }
     
-    fileprivate func pdf_data(compression: PDFContext.CompressionScheme) -> (PDFContext.ImageStream, PDFContext.ImageStream?)? {
+    fileprivate func pdf_data(properties: [PDFContext.PropertyKey : Any]) -> (PDFContext.ImageStream, PDFContext.ImageStream?)? {
+        
+        let compression = properties[.compression] as? PDFContext.CompressionScheme ?? .noPrediction
         
         var table: [String: String] = ["Columns": "\(width)", "Colors": "\(colorSpace.numberOfComponents)"]
         let color: Data
