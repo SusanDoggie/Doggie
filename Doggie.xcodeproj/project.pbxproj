@@ -40,6 +40,9 @@
 		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
 		086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* GradientMesh.swift */; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		088841DE236EAF09000E17FF /* FontFaceEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841DD236EAF09000E17FF /* FontFaceEncoder.swift */; };
+		088841E2236EB46D000E17FF /* OTFEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841E1236EB46D000E17FF /* OTFEncoder.swift */; };
+		088841E4236EB478000E17FF /* WOFFEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841E3236EB478000E17FF /* WOFFEncoder.swift */; };
 		0889F2C91F18FF1D0020E750 /* FixedNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2C71F18FF1D0020E750 /* FixedNumber.swift */; };
 		0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0889F2CA1F1904EB0020E750 /* Signature.swift */; };
 		08AC2DE82253B4FB00EC847F /* PDFContextFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */; };
@@ -351,6 +354,9 @@
 		086F064B1EDC65D600BA70C8 /* GradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GradientMesh.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoggieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		088841DD236EAF09000E17FF /* FontFaceEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontFaceEncoder.swift; sourceTree = "<group>"; };
+		088841E1236EB46D000E17FF /* OTFEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTFEncoder.swift; sourceTree = "<group>"; };
+		088841E3236EB478000E17FF /* WOFFEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WOFFEncoder.swift; sourceTree = "<group>"; };
 		0889F2C71F18FF1D0020E750 /* FixedNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = FixedNumber.swift; sourceTree = "<group>"; };
 		0889F2CA1F1904EB0020E750 /* Signature.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Signature.swift; sourceTree = "<group>"; };
 		08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextFunction.swift; sourceTree = "<group>"; };
@@ -773,6 +779,16 @@
 				087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		088841DC236EAEAE000E17FF /* Encoder */ = {
+			isa = PBXGroup;
+			children = (
+				088841DD236EAF09000E17FF /* FontFaceEncoder.swift */,
+				088841E1236EB46D000E17FF /* OTFEncoder.swift */,
+				088841E3236EB478000E17FF /* WOFFEncoder.swift */,
+			);
+			path = Encoder;
 			sourceTree = "<group>";
 		};
 		08AF77AE1A3A10510042491F /* Tests */ = {
@@ -1319,6 +1335,7 @@
 				0AD3E62E1F53D9FC003CC21A /* Font.swift */,
 				0A5E8D411F56B428000D51E3 /* FontCollection.swift */,
 				0AD3E6331F53DAE3003CC21A /* Decoder */,
+				088841DC236EAEAE000E17FF /* Encoder */,
 			);
 			path = Font;
 			sourceTree = "<group>";
@@ -1523,6 +1540,7 @@
 				0A8EDDC01F19B1CD00C917CC /* iccCurve.swift in Sources */,
 				0AB2E23E1F17766C00B0CA84 /* zlib.swift in Sources */,
 				0A00F05321BA17F200CAF48C /* AvailableColorSpaces.swift in Sources */,
+				088841DE236EAF09000E17FF /* FontFaceEncoder.swift in Sources */,
 				0A8ABC1420E48BA600A2634A /* TextureProtocol.swift in Sources */,
 				0A8EDDD41F19E74000C917CC /* iccTextDescription.swift in Sources */,
 				08458B3F1E2E627600D01813 /* Rect.swift in Sources */,
@@ -1595,6 +1613,7 @@
 				0A831A931F18952C0007932A /* ImageRepEncoder.swift in Sources */,
 				0A8535271F58F757006FB85D /* CFFDecoder.swift in Sources */,
 				0A7A1FB21F04FC230016B3FB /* ARGB32ColorPixel.swift in Sources */,
+				088841E4236EB478000E17FF /* WOFFEncoder.swift in Sources */,
 				0A2406741F38109900B0EC28 /* iccNamedColor.swift in Sources */,
 				0A9ED9D71F5D360E00205C1B /* SFNTGLYF.swift in Sources */,
 				0AE9686921F5C6D700FCA4C1 /* LaplacianOfGaussian.swift in Sources */,
@@ -1701,6 +1720,7 @@
 				08B0C00D22FABE1A005C1035 /* SVGConvolveMatrixEffect.swift in Sources */,
 				0889F2CC1F1904EB0020E750 /* Signature.swift in Sources */,
 				0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */,
+				088841E2236EB46D000E17FF /* OTFEncoder.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
 				0AD3E6351F53DB6C003CC21A /* OpenTypeDecoder.swift in Sources */,
 				0A74D68A20047BF700330C86 /* GaussianBlur.swift in Sources */,

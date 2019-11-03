@@ -47,35 +47,68 @@ struct OpenTypeDecoder : FontDecoder {
     }
 }
 
-struct OTFHeader : ByteDecodable {
+struct OTFHeader : ByteCodable {
     
-    var version: BEUInt32
+    var version: Signature<BEUInt32>
     var numTables: BEUInt16
     var searchRange: BEUInt16
     var entrySelector: BEUInt16
     var rangeShift: BEUInt16
     
+    init(version: Signature<BEUInt32>, numTables: Int) {
+        self.version = version
+        self.numTables = BEUInt16(numTables)
+        self.searchRange = BEUInt16(numTables.hibit * 16)
+        self.entrySelector = BEUInt16(log2(numTables))
+        self.rangeShift = BEUInt16(numTables * 16) - searchRange
+    }
+    
     init(from data: inout Data) throws {
-        self.version = try data.decode(BEUInt32.self)
+        self.version = try data.decode(Signature<BEUInt32>.self)
         self.numTables = try data.decode(BEUInt16.self)
         self.searchRange = try data.decode(BEUInt16.self)
         self.entrySelector = try data.decode(BEUInt16.self)
         self.rangeShift = try data.decode(BEUInt16.self)
     }
+    
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
+        stream.encode(version)
+        stream.encode(numTables)
+        stream.encode(searchRange)
+        stream.encode(entrySelector)
+        stream.encode(rangeShift)
+    }
 }
 
-struct OTFTableRecord : ByteDecodable {
+struct OTFTableRecord : ByteCodable {
     
     var tag: Signature<BEUInt32>
     var checkSum: BEUInt32
     var offset: BEUInt32
     var length: BEUInt32
     
+    init(tag: Signature<BEUInt32>,
+         checkSum: BEUInt32,
+         offset: BEUInt32,
+         length: BEUInt32) {
+        self.tag = tag
+        self.checkSum = checkSum
+        self.offset = offset
+        self.length = length
+    }
+    
     init(from data: inout Data) throws {
         self.tag = try data.decode(Signature<BEUInt32>.self)
         self.checkSum = try data.decode(BEUInt32.self)
         self.offset = try data.decode(BEUInt32.self)
         self.length = try data.decode(BEUInt32.self)
+    }
+    
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
+        stream.encode(tag)
+        stream.encode(checkSum)
+        stream.encode(offset)
+        stream.encode(length)
     }
 }
 

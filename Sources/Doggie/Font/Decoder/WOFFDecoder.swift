@@ -40,17 +40,17 @@ struct WOFFDecoder : FontDecoder {
             if record.compLength == record.origLength {
                 table[record.tag] = data.dropFirst(Int(record.offset)).prefix(Int(record.origLength))
             } else {
-                table[record.tag] = try Inflate().process(data.dropFirst(Int(record.offset)).prefix(Int(record.compLength)))
+                table[record.tag] = try Inflate().process(data.dropFirst(Int(record.offset)).prefix(Int(record.compLength))).prefix(Int(record.origLength))
             }
         }
         self.faces = [try SFNTFontFace(table: table)]
     }
 }
 
-struct WOFFHeader : ByteDecodable {
+struct WOFFHeader : ByteCodable {
     
     var signature: Signature<BEUInt32>
-    var flavor: BEUInt32
+    var flavor: Signature<BEUInt32>
     var length: BEUInt32
     var numTables: BEUInt16
     var reserved: BEUInt16
@@ -63,9 +63,37 @@ struct WOFFHeader : ByteDecodable {
     var privOffset: BEUInt32
     var privLength: BEUInt32
     
+    init(signature: Signature<BEUInt32>,
+         flavor: Signature<BEUInt32>,
+         length: BEUInt32,
+         numTables: BEUInt16,
+         reserved: BEUInt16,
+         totalSfntSize: BEUInt32,
+         majorVersion: BEUInt16,
+         minorVersion: BEUInt16,
+         metaOffset: BEUInt32,
+         metaLength: BEUInt32,
+         metaOrigLength: BEUInt32,
+         privOffset: BEUInt32,
+         privLength: BEUInt32) {
+        self.signature = signature
+        self.flavor = flavor
+        self.length = length
+        self.numTables = numTables
+        self.reserved = reserved
+        self.totalSfntSize = totalSfntSize
+        self.majorVersion = majorVersion
+        self.minorVersion = minorVersion
+        self.metaOffset = metaOffset
+        self.metaLength = metaLength
+        self.metaOrigLength = metaOrigLength
+        self.privOffset = privOffset
+        self.privLength = privLength
+    }
+    
     init(from data: inout Data) throws {
         self.signature = try data.decode(Signature<BEUInt32>.self)
-        self.flavor = try data.decode(BEUInt32.self)
+        self.flavor = try data.decode(Signature<BEUInt32>.self)
         self.length = try data.decode(BEUInt32.self)
         self.numTables = try data.decode(BEUInt16.self)
         self.reserved = try data.decode(BEUInt16.self)
@@ -78,9 +106,25 @@ struct WOFFHeader : ByteDecodable {
         self.privOffset = try data.decode(BEUInt32.self)
         self.privLength = try data.decode(BEUInt32.self)
     }
+    
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
+        stream.encode(signature)
+        stream.encode(flavor)
+        stream.encode(length)
+        stream.encode(numTables)
+        stream.encode(reserved)
+        stream.encode(totalSfntSize)
+        stream.encode(majorVersion)
+        stream.encode(minorVersion)
+        stream.encode(metaOffset)
+        stream.encode(metaLength)
+        stream.encode(metaOrigLength)
+        stream.encode(privOffset)
+        stream.encode(privLength)
+    }
 }
 
-struct WOFFTableRecord : ByteDecodable {
+struct WOFFTableRecord : ByteCodable {
     
     var tag: Signature<BEUInt32>
     var offset: BEUInt32
@@ -88,12 +132,32 @@ struct WOFFTableRecord : ByteDecodable {
     var origLength: BEUInt32
     var origChecksum: BEUInt32
     
+    init(tag: Signature<BEUInt32>,
+         offset: BEUInt32,
+         compLength: BEUInt32,
+         origLength: BEUInt32,
+         origChecksum: BEUInt32) {
+        self.tag = tag
+        self.offset = offset
+        self.compLength = compLength
+        self.origLength = origLength
+        self.origChecksum = origChecksum
+    }
+    
     init(from data: inout Data) throws {
         self.tag = try data.decode(Signature<BEUInt32>.self)
         self.offset = try data.decode(BEUInt32.self)
         self.compLength = try data.decode(BEUInt32.self)
         self.origLength = try data.decode(BEUInt32.self)
         self.origChecksum = try data.decode(BEUInt32.self)
+    }
+    
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
+        stream.encode(tag)
+        stream.encode(offset)
+        stream.encode(compLength)
+        stream.encode(origLength)
+        stream.encode(origChecksum)
     }
 }
 

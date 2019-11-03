@@ -25,6 +25,8 @@
 
 protocol FontFaceBase {
     
+    var table: [Signature<BEUInt32>: Data] { get }
+    
     var isVariationSelectors: Bool { get }
     var isGraphic: Bool { get }
     
@@ -187,6 +189,40 @@ extension Font : CustomStringConvertible {
     
     public var description: String {
         return "Font(name: \(self.fontName), pointSize: \(self.pointSize))"
+    }
+}
+
+extension Font {
+    
+    public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral {
+        
+        public var rawValue: String
+        
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
+        
+        public init(stringLiteral value: String) {
+            self.rawValue = value
+        }
+        
+        public static let ttf: MediaType        = "public.truetype-ttf-font"
+        public static let otf: MediaType        = "public.opentype-font"
+        public static let woff: MediaType       = "org.w3c.woff"
+        
+    }
+    
+    public func representation(using storageType: Font.MediaType) -> Data? {
+        
+        let Encoder: FontFaceEncoder.Type
+        
+        switch storageType {
+        case .ttf, .otf: Encoder = OTFEncoder.self
+        case .woff: Encoder = WOFFEncoder.self
+        default: return nil
+        }
+        
+        return Encoder.encode(table: base.table)
     }
 }
 
