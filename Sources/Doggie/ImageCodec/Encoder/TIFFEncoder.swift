@@ -72,7 +72,11 @@ struct TIFFEncoder : ImageRepEncoder {
         
         switch compression {
         case .none: predictor = 1
-        case .deflate: predictor = 2
+        case .deflate:
+            switch deflate_level {
+            case .none: predictor = 1
+            default: predictor = 2
+            }
         }
         
         switch image.colorSpace.base {
@@ -166,14 +170,18 @@ struct TIFFEncoder : ImageRepEncoder {
         switch compression {
         case .none: break
         case .deflate:
-            do {
-                var compressed = MappedBuffer<UInt8>(fileBacked: true)
-                let deflate = try Deflate(level: deflate_level, windowBits: 15)
-                try deflate.process(pixelData, &compressed)
-                try deflate.final(&compressed)
-                pixelData = compressed
-            } catch {
-                return nil
+            switch deflate_level {
+            case .none: break
+            default:
+                do {
+                    var compressed = MappedBuffer<UInt8>(fileBacked: true)
+                    let deflate = try Deflate(level: deflate_level, windowBits: 15)
+                    try deflate.process(pixelData, &compressed)
+                    try deflate.final(&compressed)
+                    pixelData = compressed
+                } catch {
+                    return nil
+                }
             }
         }
         
@@ -193,7 +201,11 @@ struct TIFFEncoder : ImageRepEncoder {
         encode(tag: .ImageHeight, type: 3, value: [image.height], &data)
         switch compression {
         case .none: encode(tag: .Compression, type: 3, value: [1], &data)
-        case .deflate: encode(tag: .Compression, type: 3, value: [8], &data)
+        case .deflate:
+            switch deflate_level {
+            case .none: encode(tag: .Compression, type: 3, value: [1], &data)
+            default: encode(tag: .Compression, type: 3, value: [8], &data)
+            }
         }
         encode(tag: .Predictor, type: 3, value: [predictor], &data)
         encode(tag: .PlanarConfiguration, type: 3, value: [1], &data)
