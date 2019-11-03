@@ -81,15 +81,23 @@ struct WOFFEncoder : FontFaceEncoder {
             }
             
             let compressed: Data
+            let compLength: Int
             
             switch deflate_level {
-            case .none: compressed = data
+            case .none:
+                compressed = data
+                compLength = origLength
             default:
-                let _compressed = try? Deflate(level: deflate_level, windowBits: 15).process(data)
-                compressed = _compressed ?? data
+                if let _compressed = try? Deflate(level: deflate_level, windowBits: 15).process(data), _compressed.count < origLength {
+                    compressed = _compressed
+                    compLength = _compressed.count
+                } else {
+                    compressed = data
+                    compLength = origLength
+                }
             }
             
-            let record = WOFFTableRecord(tag: tag, offset: BEUInt32(offset + body.count), compLength: BEUInt32(compressed.count), origLength: BEUInt32(origLength), origChecksum: BEUInt32(checkSum))
+            let record = WOFFTableRecord(tag: tag, offset: BEUInt32(offset + body.count), compLength: BEUInt32(compLength), origLength: BEUInt32(origLength), origChecksum: BEUInt32(checkSum))
             
             records.encode(record)
             body.append(compressed)

@@ -37,7 +37,7 @@ struct WOFFDecoder : FontDecoder {
         var table: [Signature<BEUInt32>: Data] = [:]
         for _ in 0..<Int(header.numTables) {
             let record = try _header.decode(WOFFTableRecord.self)
-            if record.compLength == record.origLength {
+            if record.compLength >= record.origLength {
                 table[record.tag] = data.dropFirst(Int(record.offset)).prefix(Int(record.origLength))
             } else {
                 table[record.tag] = try Inflate().process(data.dropFirst(Int(record.offset)).prefix(Int(record.compLength))).prefix(Int(record.origLength))
