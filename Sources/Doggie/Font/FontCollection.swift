@@ -218,8 +218,8 @@ extension FontCollection {
         
         let decoders: [FontDecoder.Type] = [
             TTCDecoder.self,
-            OpenTypeDecoder.self,
             WOFFDecoder.self,
+            OpenTypeDecoder.self,
             ]
         
         for Decoder in decoders {

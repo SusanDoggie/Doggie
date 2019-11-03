@@ -37,6 +37,7 @@ struct WOFFEncoder : FontFaceEncoder {
         sfnt_buffer.encode(sfnt_header)
         
         var sfnt_bodies: [Data] = []
+        var sfnt_checkSum: [UInt32] = []
         
         for (tag, var data) in _table {
             
@@ -51,10 +52,12 @@ struct WOFFEncoder : FontFaceEncoder {
                 data[data.startIndex + 11] = 0
             }
             
-            let record = OTFTableRecord(tag: tag, checkSum: BEUInt32(OTFEncoder.CalcTableChecksum(data)), offset: BEUInt32(sfnt_offset), length: BEUInt32(length))
+            let checkSum = OTFEncoder.CalcTableChecksum(data)
+            let record = OTFTableRecord(tag: tag, checkSum: BEUInt32(checkSum), offset: BEUInt32(sfnt_offset), length: BEUInt32(length))
             
             sfnt_buffer.encode(record)
             sfnt_bodies.append(data)
+            sfnt_checkSum.append(checkSum)
             sfnt_offset += data.count
         }
         
@@ -62,7 +65,7 @@ struct WOFFEncoder : FontFaceEncoder {
         var records = Data(capacity: 20 * table.count)
         var body = Data()
         
-        for (tag, var data) in _table {
+        for ((tag, var data), checkSum) in zip(_table, sfnt_checkSum) {
             
             let origLength = data.count
             data.count = data.count.align(4)
@@ -78,7 +81,7 @@ struct WOFFEncoder : FontFaceEncoder {
             let _compressed = try? Deflate(windowBits: 15).process(data)
             let compressed = _compressed ?? data
             
-            let record = WOFFTableRecord(tag: tag, offset: BEUInt32(offset + body.count), compLength: BEUInt32(compressed.count), origLength: BEUInt32(origLength), origChecksum: BEUInt32(OTFEncoder.CalcTableChecksum(data)))
+            let record = WOFFTableRecord(tag: tag, offset: BEUInt32(offset + body.count), compLength: BEUInt32(compressed.count), origLength: BEUInt32(origLength), origChecksum: BEUInt32(checkSum))
             
             records.encode(record)
             body.append(compressed)
