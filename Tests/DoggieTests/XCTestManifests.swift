@@ -238,7 +238,6 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(ArithmeticTest.__allTests__ArithmeticTest),
         testCase(CollectionTest.__allTests__CollectionTest),
         testCase(ColorSpaceTest.__allTests__ColorSpaceTest),
-        testCase(CompressionTest.__allTests__CompressionTest),
         testCase(FontTest.__allTests__FontTest),
         testCase(FourierTest.__allTests__FourierTest),
         testCase(ImageCodecTest.__allTests__ImageCodecTest),
