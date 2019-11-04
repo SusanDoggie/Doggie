@@ -647,13 +647,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		081D092523701C9000E54659 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		08458AB01E2E627600D01813 /* Accelerate */ = {
 			isa = PBXGroup;
 			children = (
@@ -778,7 +771,6 @@
 				0858DA401C0550B7007FA426 /* Doggie */,
 				08AF77AE1A3A10510042491F /* Tests */,
 				087FE5971A372D5B005A2E9E /* Products */,
-				081D092523701C9000E54659 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
