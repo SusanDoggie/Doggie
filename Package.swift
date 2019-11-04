@@ -35,11 +35,10 @@ let package = Package(
         .library(name: "Doggie", type: .dynamic, targets: ["Doggie"]),
         ],
     dependencies: [
-        .package(url: "https://github.com/SusanDoggie/SwiftBrotli.git", .branch("master")),
+        .package(url: "https://github.com/SusanDoggie/SwiftCompression.git", .branch("master")),
     ],
     targets: [
-        .target(name: "doggie_c", dependencies: []),
-        .target(name: "Doggie", dependencies: ["doggie_c", "SwiftBrotli"]),
+        .target(name: "Doggie", dependencies: ["SwiftCompression"]),
         .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
         ]
 )

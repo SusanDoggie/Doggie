@@ -23,12 +23,6 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(Compression)
-
-@_exported import Compression
-
-#endif
-
 #if canImport(CoreGraphics)
 
 @_exported import CoreGraphics

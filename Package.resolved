@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftCompression",
+        "repositoryURL": "https://github.com/SusanDoggie/SwiftCompression.git",
+        "state": {
+          "branch": "master",
+          "revision": "22d345bb11e592a575adabfe99e773d91966932b",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-@_exported import doggie_c
-
 @_exported import Foundation
+
+@_exported import SwiftCompression
 
 #if canImport(FoundationXML)
 
