@@ -9,8 +9,7 @@
 /* Begin PBXBuildFile section */
 		0805A95620B2F85D001A5974 /* ShapeTweening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0805A95520B2F85D001A5974 /* ShapeTweening.swift */; };
 		080AE2732259031400004032 /* TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080AE2722259031400004032 /* TypedData.swift */; };
-		081D0907236FE41300E54659 /* SwiftCompression in Frameworks */ = {isa = PBXBuildFile; productRef = 081D0906236FE41300E54659 /* SwiftCompression */; };
-		081D0908236FE41300E54659 /* SwiftCompression in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 081D0906236FE41300E54659 /* SwiftCompression */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		081D092923701D4D00E54659 /* SwiftCompression in Frameworks */ = {isa = PBXBuildFile; productRef = 081D092823701D4D00E54659 /* SwiftCompression */; };
 		0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0821D6401EED58FC007E42F5 /* Rendering.swift */; };
 		0831366A2307EC740068194F /* Decimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083136692307EC740068194F /* Decimal.swift */; };
 		0835846822E2A8CB00901986 /* VariableRoundStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0835846722E2A8CA00901986 /* VariableRoundStroke.swift */; };
@@ -323,7 +322,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				081D0908236FE41300E54659 /* SwiftCompression in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -634,7 +632,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				081D0907236FE41300E54659 /* SwiftCompression in Frameworks */,
+				081D092923701D4D00E54659 /* SwiftCompression in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -649,6 +647,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		081D092523701C9000E54659 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		08458AB01E2E627600D01813 /* Accelerate */ = {
 			isa = PBXGroup;
 			children = (
@@ -773,6 +778,7 @@
 				0858DA401C0550B7007FA426 /* Doggie */,
 				08AF77AE1A3A10510042491F /* Tests */,
 				087FE5971A372D5B005A2E9E /* Products */,
+				081D092523701C9000E54659 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1398,7 +1404,7 @@
 			);
 			name = Doggie;
 			packageProductDependencies = (
-				081D0906236FE41300E54659 /* SwiftCompression */,
+				081D092823701D4D00E54659 /* SwiftCompression */,
 			);
 			productName = Doggie_Mac;
 			productReference = 087FE5B51A372D97005A2E9E /* Doggie.framework */;
@@ -2146,7 +2152,7 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		081D0906236FE41300E54659 /* SwiftCompression */ = {
+		081D092823701D4D00E54659 /* SwiftCompression */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 081D0905236FE41300E54659 /* XCRemoteSwiftPackageReference "SwiftCompression" */;
 			productName = SwiftCompression;
