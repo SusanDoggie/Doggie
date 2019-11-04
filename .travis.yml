@@ -18,6 +18,9 @@ matrix:
       env: DESTINATION="platform=tvOS Simulator,name=Apple TV 4K" SDK=appletvsimulator USE_XCODEBUILD=true
     - os: osx
       osx_image: xcode11
+      env: DESTINATION="platform=watchOS Simulator,name=Apple Watch Series 5 - 40mm" SDK=watchsimulator USE_XCODEBUILD=true
+    - os: osx
+      osx_image: xcode11
     - os: linux
       services: docker
       env: DOCKER_IMAGE=ubuntu:16.04
