@@ -36,6 +36,8 @@ public struct CGImageAnimationFrame {
     }
 }
 
+#if !os(watchOS)
+
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension AVDepthData {
     
@@ -62,6 +64,8 @@ extension AVDepthData {
         try self.init(fromDictionaryRepresentation: dictionary)
     }
 }
+
+#endif
 
 @available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
 extension AVPortraitEffectsMatte {
@@ -202,6 +206,8 @@ extension CGImage {
             
             #if canImport(AVFoundation)
             
+            #if !os(watchOS)
+
             if #available(macOS 10.13, iOS 11.0, tvOS 11.0, *), let depthData = properties[.depthData] as? AVDepthData {
                 
                 var type: NSString?
@@ -211,6 +217,8 @@ extension CGImage {
                     CGImageDestinationAddAuxiliaryDataInfo(destination, type, dictionary as CFDictionary)
                 }
             }
+            
+            #endif
             
             if #available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *), let matteData = properties[.matteData] as? AVPortraitEffectsMatte {
                 
@@ -268,7 +276,7 @@ extension CGImage {
     
     #if canImport(AVFoundation)
     
-    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 4.0, *)
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public static func animatedHEICRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
         
         return CGImage.withImageDestination(AVFileType.heic as CFString, frames.count) { destination in
@@ -297,7 +305,7 @@ extension CGImage {
     
     #if canImport(AVFoundation)
     
-    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 4.0, *)
+    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public static func animatedHEICRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
         return self.animatedHEICRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }

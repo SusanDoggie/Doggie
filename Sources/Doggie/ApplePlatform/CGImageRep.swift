@@ -113,6 +113,8 @@ extension CGImageRep {
 
 #if canImport(AVFoundation)
 
+#if !os(watchOS)
+
 extension CGImageRep {
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
@@ -127,6 +129,8 @@ extension CGImageRep {
         return try? AVDepthData(fromDictionaryRepresentation: info)
     }
 }
+
+#endif
 
 extension CGImageRep {
     
