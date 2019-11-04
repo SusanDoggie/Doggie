@@ -3,12 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0805A95620B2F85D001A5974 /* ShapeTweening.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0805A95520B2F85D001A5974 /* ShapeTweening.swift */; };
 		080AE2732259031400004032 /* TypedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 080AE2722259031400004032 /* TypedData.swift */; };
+		081D0900236FDD6900E54659 /* SwiftBrotli in Frameworks */ = {isa = PBXBuildFile; productRef = 081D08FF236FDD6900E54659 /* SwiftBrotli */; };
+		081D0901236FDD6900E54659 /* SwiftBrotli in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 081D08FF236FDD6900E54659 /* SwiftBrotli */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		081D0904236FDD9F00E54659 /* brotli.swift in Sources */ = {isa = PBXBuildFile; fileRef = 081D0903236FDD9F00E54659 /* brotli.swift */; };
 		0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0821D6401EED58FC007E42F5 /* Rendering.swift */; };
 		0831366A2307EC740068194F /* Decimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083136692307EC740068194F /* Decimal.swift */; };
 		0835846822E2A8CB00901986 /* VariableRoundStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0835846722E2A8CA00901986 /* VariableRoundStroke.swift */; };
@@ -319,9 +322,24 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		081D0902236FDD6A00E54659 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				081D0901236FDD6900E54659 /* SwiftBrotli in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0805A95520B2F85D001A5974 /* ShapeTweening.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeTweening.swift; sourceTree = "<group>"; };
 		080AE2722259031400004032 /* TypedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedData.swift; sourceTree = "<group>"; };
+		081D0903236FDD9F00E54659 /* brotli.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = brotli.swift; sourceTree = "<group>"; };
 		0821D6401EED58FC007E42F5 /* Rendering.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rendering.swift; sourceTree = "<group>"; };
 		083136692307EC740068194F /* Decimal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Decimal.swift; sourceTree = "<group>"; };
 		0835846722E2A8CA00901986 /* VariableRoundStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariableRoundStroke.swift; sourceTree = "<group>"; };
@@ -629,6 +647,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				081D0900236FDD6900E54659 /* SwiftBrotli in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1314,6 +1333,7 @@
 			children = (
 				0A92C7B11E56A52E0090EBFC /* CompressionCodec.swift */,
 				0AB2E23C1F17766C00B0CA84 /* zlib.swift */,
+				081D0903236FDD9F00E54659 /* brotli.swift */,
 				0AE67D0B21A544EC004E21F2 /* AppleCompression.swift */,
 			);
 			path = Compression;
@@ -1408,12 +1428,16 @@
 				087FE5B11A372D97005A2E9E /* Frameworks */,
 				087FE5B21A372D97005A2E9E /* Headers */,
 				087FE5B31A372D97005A2E9E /* Resources */,
+				081D0902236FDD6A00E54659 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = Doggie;
+			packageProductDependencies = (
+				081D08FF236FDD6900E54659 /* SwiftBrotli */,
+			);
 			productName = Doggie_Mac;
 			productReference = 087FE5B51A372D97005A2E9E /* Doggie.framework */;
 			productType = "com.apple.product-type.framework";
@@ -1467,6 +1491,9 @@
 				Base,
 			);
 			mainGroup = 087FE58A1A372D23005A2E9E;
+			packageReferences = (
+				081D08FE236FDD6900E54659 /* XCRemoteSwiftPackageReference "SwiftBrotli" */,
+			);
 			productRefGroup = 087FE5971A372D5B005A2E9E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1756,6 +1783,7 @@
 				0AADB89620AC0BA400F3BF17 /* PNGInterlace.swift in Sources */,
 				0835846822E2A8CB00901986 /* VariableRoundStroke.swift in Sources */,
 				0A9CD58B1EEB98E600094148 /* sRGB.swift in Sources */,
+				081D0904236FDD9F00E54659 /* brotli.swift in Sources */,
 				0A792C771FDA2996003C0290 /* BreakLoop.swift in Sources */,
 				0AD3E6321F53DA9B003CC21A /* FontDecoder.swift in Sources */,
 				0A44F77E21F72C0700383140 /* BilateralFilter.swift in Sources */,
@@ -1869,14 +1897,39 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "$(PROJECT_FILE_PATH)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=appletvos*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=appletvsimulator*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=iphoneos*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=iphonesimulator*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "$(inherited) @executable_path/../Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=watchos*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=watchsimulator*]" = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=appletvos*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=appletvsimulator*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=watchos*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=watchsimulator*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LLVM_LTO = YES_THIN;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1938,21 +1991,47 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "$(PROJECT_FILE_PATH)/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @loader_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=appletvos*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=appletvsimulator*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=iphoneos*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=iphonesimulator*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "$(inherited) @executable_path/../Frameworks $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=watchos*]" = "$(inherited) @executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=watchsimulator*]" = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=appletvos*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=appletvsimulator*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=watchos*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=watchsimulator*]" = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LLVM_LTO = YES_THIN;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.SusanDoggie.$(TARGET_NAME)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "$(AVAILABLE_PLATFORMS)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -2099,6 +2178,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		081D08FE236FDD6900E54659 /* XCRemoteSwiftPackageReference "SwiftBrotli" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SusanDoggie/SwiftBrotli.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		081D08FF236FDD6900E54659 /* SwiftBrotli */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 081D08FE236FDD6900E54659 /* XCRemoteSwiftPackageReference "SwiftBrotli" */;
+			productName = SwiftBrotli;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 087FE58B1A372D23005A2E9E /* Project object */;
 }

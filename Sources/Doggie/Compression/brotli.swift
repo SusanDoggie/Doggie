@@ -1,6 +1,5 @@
-// swift-tools-version:5.1
 //
-//  Package.swift
+//  brotli.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -24,22 +23,4 @@
 //  THE SOFTWARE.
 //
 
-import PackageDescription
-
-let package = Package(
-    name: "Doggie",
-    platforms: [
-        .macOS(.v10_10), .iOS(.v8), .tvOS(.v9), .watchOS(.v2)
-    ],
-    products: [
-        .library(name: "Doggie", type: .dynamic, targets: ["Doggie"]),
-        ],
-    dependencies: [
-        .package(url: "https://github.com/SusanDoggie/SwiftBrotli.git", .branch("master")),
-    ],
-    targets: [
-        .target(name: "doggie_c", dependencies: []),
-        .target(name: "Doggie", dependencies: ["doggie_c", "SwiftBrotli"]),
-        .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
-        ]
-)
+import SwiftBrotli
