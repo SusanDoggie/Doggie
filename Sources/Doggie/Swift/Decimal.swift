@@ -57,7 +57,7 @@ extension Decimal {
     public func raising(toPower power: Int, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
         var x = self
         var result = Decimal()
-        NSDecimalPower(&result, &x, power, roundingMode)
+        _ = NSDecimalPower(&result, &x, power, roundingMode)
         return result
     }
     
@@ -66,7 +66,7 @@ extension Decimal {
     public func multiplying(byPowerOf10 power: Int16, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
         var x = self
         var result = Decimal()
-        NSDecimalMultiplyByPowerOf10(&result, &x, power, roundingMode)
+        _ = NSDecimalMultiplyByPowerOf10(&result, &x, power, roundingMode)
         return result
     }
 }
