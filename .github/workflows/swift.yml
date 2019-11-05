@@ -1,0 +1,29 @@
+name: Swift
+
+on: [push, pull_request]
+
+jobs:
+  macOS:
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build
+      run: swift build -c release
+    - name: Run tests
+      run: swift test -c release
+  xenial:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: docker://swift:xenial
+    - name: Build
+      run: swift build -c release
+    - name: Run tests
+      run: swift test -c release
+  bionic:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: docker://swift:bionic
+    - name: Build
+      run: swift build -c release
+    - name: Run tests
+      run: swift test -c release
