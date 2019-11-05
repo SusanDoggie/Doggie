@@ -6,23 +6,27 @@ jobs:
   macOS:
     runs-on: macOS-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@master
     - name: Build
       run: swift build -c release
     - name: Run tests
       run: swift test -c release
   xenial:
+    container: 
+      image: docker://swift:xenial
     runs-on: ubuntu-latest
     steps:
-    - uses: docker://swift:xenial
+    - uses: actions/checkout@master
     - name: Build
       run: swift build -c release
     - name: Run tests
       run: swift test -c release
   bionic:
+    container: 
+      image: docker://swift:bionic
     runs-on: ubuntu-latest
     steps:
-    - uses: docker://swift:bionic
+    - uses: actions/checkout@master
     - name: Build
       run: swift build -c release
     - name: Run tests
