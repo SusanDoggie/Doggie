@@ -1,9 +1,7 @@
-name: Swift
-
 on: [push, pull_request]
-
 jobs:
-  macOS:
+  platform:
+    name: macOS
     runs-on: macOS-latest
     strategy:
       matrix:
@@ -38,7 +36,8 @@ jobs:
         done
       env: 
         DESTINATION: ${{ matrix.destination }}
-  macOS SwiftPM:
+  macos:
+    name: macOS SwiftPM
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@master
@@ -46,7 +45,8 @@ jobs:
       run: swift build -c release
     - name: Run tests
       run: swift test -c release
-  Ubuntu:
+  ubuntu:
+    name: Ubuntu ${{ matrix.image }}
     container: 
       image: docker://swift:${{ matrix.image }}
     runs-on: ubuntu-latest
