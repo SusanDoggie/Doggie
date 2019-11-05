@@ -122,7 +122,7 @@ extension Shape {
     @inline(__always)
     func raster(width: Int, height: Int, stencil: inout MappedBuffer<Int16>) -> Rect {
         
-        assert(stencil.count == width * height, "incorrect size of stencil.")
+        precondition(stencil.count == width * height, "incorrect size of stencil.")
         
         if stencil.count == 0 {
             return Rect()

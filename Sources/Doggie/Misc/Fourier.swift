@@ -249,7 +249,7 @@ public func Radix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
     case 1:
         result = [Complex(buffer[0])]
     default:
-        assert(buffer.count.isPower2, "size of buffer must be power of 2.")
+        precondition(buffer.count.isPower2, "size of buffer must be power of 2.")
         if result.count != buffer.count {
             result.replace(with: repeatElement(Complex(0), count: buffer.count))
         }
@@ -266,7 +266,7 @@ public func InverseRadix2CooleyTukey(_ buffer: [Double], _ result: inout [Comple
     case 1:
         result = [Complex(buffer[0])]
     default:
-        assert(buffer.count.isPower2, "size of buffer must be power of 2.")
+        precondition(buffer.count.isPower2, "size of buffer must be power of 2.")
         if result.count != buffer.count {
             result.replace(with: repeatElement(Complex(0), count: buffer.count))
         }

@@ -26,7 +26,7 @@
 @inlinable
 @inline(__always)
 public func dot<T: FloatingPoint>(_ a: [T], _ b: [T]) -> T {
-    assert(a.count == b.count, "mismatch count of inputs.")
+    precondition(a.count == b.count, "mismatch count of inputs.")
     return Dot(a.count, a, 1, b, 1)
 }
 
@@ -34,7 +34,7 @@ public func dot<T: FloatingPoint>(_ a: [T], _ b: [T]) -> T {
 @inline(__always)
 public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
     var result = data
-    assert(data.count == row * column, "mismatch count of input.")
+    precondition(data.count == row * column, "mismatch count of input.")
     Transpose(row, column, data, 1, &result, 1)
     return result
 }
@@ -43,15 +43,15 @@ public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
 @inline(__always)
 public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ matrix: inout [T]) -> Bool {
     let column = matrix.count / row
-    assert(matrix.count % row == 0, "count of matrix is not multiples of row.")
-    assert(column > row, "count of column of matrix is less than or equal to row.")
+    precondition(matrix.count % row == 0, "count of matrix is not multiples of row.")
+    precondition(column > row, "count of column of matrix is less than or equal to row.")
     return MatrixElimination(row, column, &matrix, 1, 1)
 }
 
 @inlinable
 @inline(__always)
 public func Radix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
-    assert(buffer.count.isPower2, "size of buffer must be power of 2.")
+    precondition(buffer.count.isPower2, "size of buffer must be power of 2.")
     let _sqrt = sqrt(Double(buffer.count))
     if buffer.count == 1 {
         return buffer
@@ -63,7 +63,7 @@ public func Radix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
 @inlinable
 @inline(__always)
 public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
-    assert(buffer.count.isPower2, "size of buffer must be power of 2.")
+    precondition(buffer.count.isPower2, "size of buffer must be power of 2.")
     let _sqrt = sqrt(Double(buffer.count))
     if buffer.count == 1 {
         return buffer
@@ -77,8 +77,8 @@ public func InverseRadix2CooleyTukey(_ buffer: [Complex]) -> [Complex] {
 @inline(__always)
 public func Radix2FiniteImpulseFilter(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = signal
-    assert(signal.count.isPower2, "size of signal must be power of 2.")
-    assert(signal.count == kernel.count, "mismatch count of inputs.")
+    precondition(signal.count.isPower2, "size of signal must be power of 2.")
+    precondition(signal.count == kernel.count, "mismatch count of inputs.")
     Radix2FiniteImpulseFilter(log2(signal.count), signal, 1, signal.count, kernel, 1, &result, 1)
     return result
 }
@@ -86,8 +86,8 @@ public func Radix2FiniteImpulseFilter(_ signal: [Complex], _ kernel: [Complex]) 
 @inlinable
 @inline(__always)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ kernel: [T]) -> [T] where T : FloatingMathProtocol {
-    assert(signal.count.isPower2, "size of signal must be power of 2.")
-    assert(signal.count == kernel.count, "mismatch count of inputs.")
+    precondition(signal.count.isPower2, "size of signal must be power of 2.")
+    precondition(signal.count == kernel.count, "mismatch count of inputs.")
     if signal.count == 1 {
         return [signal[0] * kernel[0]]
     }
@@ -100,8 +100,8 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ kern
 @inlinable
 @inline(__always)
 public func Radix2CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
-    assert(signal.count.isPower2, "size of signal must be power of 2.")
-    assert(signal.count == kernel.count, "mismatch count of inputs.")
+    precondition(signal.count.isPower2, "size of signal must be power of 2.")
+    precondition(signal.count == kernel.count, "mismatch count of inputs.")
     if signal.count == 1 {
         return [signal[0] * kernel[0]]
     }
@@ -114,7 +114,7 @@ public func Radix2CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> 
 @inlinable
 @inline(__always)
 public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ n: T) -> [T] where T : FloatingMathProtocol {
-    assert(signal.count.isPower2, "size of signal must be power of 2.")
+    precondition(signal.count.isPower2, "size of signal must be power of 2.")
     if signal.count == 1 {
         return [T.pow(signal[0], n)]
     }
@@ -126,7 +126,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _
 @inlinable
 @inline(__always)
 public func Radix2PowerCircularConvolve(_ signal: [Complex], _ n: Double) -> [Complex] {
-    assert(signal.count.isPower2, "size of signal must be power of 2.")
+    precondition(signal.count.isPower2, "size of signal must be power of 2.")
     if signal.count == 1 {
         return [pow(signal[0], n)]
     }

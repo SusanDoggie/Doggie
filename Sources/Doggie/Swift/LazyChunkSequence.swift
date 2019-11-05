@@ -71,7 +71,7 @@ extension LazyCollectionProtocol where Elements : RandomAccessCollection {
     
     @inlinable
     public func chunked(by maxLength: Int) -> LazyChunkSequence<Elements> {
-        assert(maxLength != 0, "Sliced by zero-length.")
+        precondition(maxLength != 0, "Sliced by zero-length.")
         return LazyChunkSequence(base: elements, maxLength: maxLength, currentIndex: elements.startIndex)
     }
 }

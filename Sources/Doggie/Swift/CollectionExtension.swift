@@ -69,7 +69,7 @@ extension Collection where SubSequence == Self {
     
     @inlinable
     public mutating func popFirst(_ n: Int) -> SubSequence {
-        assert(n >= 0, "Can't drop a negative number of elements from a collection")
+        precondition(n >= 0, "Can't drop a negative number of elements from a collection")
         let result = self.prefix(n)
         self.removeFirst(Swift.min(self.count, n))
         return result
@@ -80,7 +80,7 @@ extension BidirectionalCollection where SubSequence == Self {
     
     @inlinable
     public mutating func popLast(_ n: Int) -> SubSequence {
-        assert(n >= 0, "Can't drop a negative number of elements from a collection")
+        precondition(n >= 0, "Can't drop a negative number of elements from a collection")
         let result = self.suffix(n)
         self.removeLast(Swift.min(self.count, n))
         return result
