@@ -49,6 +49,7 @@ public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
     @inlinable
     @inline(__always)
     init(width: Int, height: Int, pixels: MappedBuffer<RawPixel>, resamplingAlgorithm: ResamplingAlgorithm) {
+        precondition(_isPOD(RawPixel.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         precondition(width * height == pixels.count, "mismatch pixels count.")
@@ -61,6 +62,7 @@ public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
     @inlinable
     @inline(__always)
     public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: RawPixel = RawPixel(), fileBacked: Bool = false) {
+        precondition(_isPOD(RawPixel.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
@@ -72,6 +74,7 @@ public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
     @inlinable
     @inline(__always)
     public init<P>(texture: Texture<P>) where P.Model == RawPixel.Model {
+        precondition(_isPOD(RawPixel.self), "invalid pixel type.")
         self.width = texture.width
         self.height = texture.height
         self.resamplingAlgorithm = texture.resamplingAlgorithm

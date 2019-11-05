@@ -51,6 +51,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     @inlinable
     @inline(__always)
     init(width: Int, height: Int, pixels: MappedBuffer<T>, resamplingAlgorithm: ResamplingAlgorithm) {
+        precondition(_isPOD(T.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         precondition(width * height == pixels.count, "mismatch pixels count.")
@@ -63,6 +64,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     @inlinable
     @inline(__always)
     public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: T = 0, fileBacked: Bool = false) {
+        precondition(_isPOD(T.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
@@ -74,6 +76,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     @inlinable
     @inline(__always)
     public init<P>(texture: StencilTexture<P>) {
+        precondition(_isPOD(T.self), "invalid pixel type.")
         self.width = texture.width
         self.height = texture.height
         self.resamplingAlgorithm = texture.resamplingAlgorithm
@@ -85,6 +88,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     @inlinable
     @inline(__always)
     public init<P>(texture: Texture<P>) {
+        precondition(_isPOD(T.self), "invalid pixel type.")
         self.width = texture.width
         self.height = texture.height
         self.resamplingAlgorithm = texture.resamplingAlgorithm

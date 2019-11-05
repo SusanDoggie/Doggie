@@ -52,6 +52,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
     @inlinable
     @inline(__always)
     init(width: Int, height: Int, resolution: Resolution, pixels: MappedBuffer<Pixel>, colorSpace: ColorSpace<Pixel.Model>) {
+        precondition(_isPOD(Pixel.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         precondition(width * height == pixels.count, "mismatch pixels count.")
@@ -65,6 +66,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
     @inlinable
     @inline(__always)
     public init(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), fileBacked: Bool = false) {
+        precondition(_isPOD(Pixel.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
@@ -77,6 +79,7 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
     @inlinable
     @inline(__always)
     public init<P>(_ image: Image<P>) where P.Model == Pixel.Model {
+        precondition(_isPOD(Pixel.self), "invalid pixel type.")
         self.width = image.width
         self.height = image.height
         self.resolution = image.resolution
@@ -87,6 +90,8 @@ public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol
     @inlinable
     @inline(__always)
     public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
+        
+        precondition(_isPOD(Pixel.self), "invalid pixel type.")
         
         if image.colorSpace as? ColorSpace<Pixel.Model> == colorSpace {
             

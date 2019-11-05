@@ -30,6 +30,8 @@ class LayoutTest: XCTestCase {
     
     func _testLayout<T: Tensor>(_: T.Type) -> Bool {
         
+        guard _isPOD(T.self) else { return false }
+        
         guard MemoryLayout<T>.size == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }
         guard MemoryLayout<T>.stride == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }
         
@@ -53,6 +55,8 @@ class LayoutTest: XCTestCase {
     }
     
     func testComplexLayout() {
+        
+        XCTAssertTrue(_isPOD(Complex.self))
         
         XCTAssertEqual(MemoryLayout<Complex>.size, MemoryLayout<Double>.stride * 2)
         XCTAssertEqual(MemoryLayout<Complex>.stride, MemoryLayout<Double>.stride * 2)
@@ -140,6 +144,8 @@ class LayoutTest: XCTestCase {
     }
     
     func _testLayout<T: _FloatComponentPixel>(_: T.Type) -> Bool {
+        
+        guard _isPOD(T.self) else { return false }
         
         guard MemoryLayout<T>.size == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }
         guard MemoryLayout<T>.stride == MemoryLayout<T.Scalar>.stride * T.numberOfComponents else { return false }
