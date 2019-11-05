@@ -5,13 +5,47 @@ on: [push, pull_request]
 jobs:
   macOS:
     runs-on: macOS-latest
+    strategy:
+      matrix:
+        include:
+          - destination: 'platform=macOS'
+            sdk: macosx
+          - destination: 'platform=iOS Simulator,name=iPhone 11'
+            sdk: iphonesimulator
+          - destination: 'platform=tvOS Simulator,name=Apple TV 4K'
+            sdk: appletvsimulator
+    steps:
+    - uses: actions/checkout@master
+    - run: |
+        export XCODEBUILD_CONFIG="-configuration Release -sdk ${SDK}"
+        export SCHEMES=$(xcodebuild -list | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
+        echo "available scheme: ${SCHEMES}"
+      env: 
+        SDK: ${{ matrix.sdk }}
+    - name: Build
+      run: |
+        for SCHEME in ${SCHEMES}; do
+          echo "Building scheme ${SCHEME}"
+          xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} | xcpretty -f `xcpretty-travis-formatter`
+        done
+    - name: Run tests
+      run: |
+        for SCHEME in ${SCHEMES}; do
+          echo "Testing scheme ${SCHEME}"
+          xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} build-for-testing -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
+          xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" test-without-building -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
+        done
+      env: 
+        DESTINATION: ${{ matrix.destination }}
+  macOS SwiftPM:
+    runs-on: macOS-latest
     steps:
     - uses: actions/checkout@master
     - name: Build
       run: swift build -c release
     - name: Run tests
       run: swift test -c release
-  xenial:
+  Xenial:
     container: 
       image: docker://swift:xenial
     runs-on: ubuntu-latest
@@ -21,7 +55,7 @@ jobs:
       run: swift build -c release
     - name: Run tests
       run: swift test -c release
-  bionic:
+  Bionic:
     container: 
       image: docker://swift:bionic
     runs-on: ubuntu-latest
