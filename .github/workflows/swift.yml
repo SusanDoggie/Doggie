@@ -54,7 +54,7 @@ jobs:
       matrix:
         image: [xenial, bionic]
     steps:
-    - run: apt-get -y -q install libz-dev
+    - run: apt-get -q update && apt-get -y -q install libz-dev
     - run: |
         export DEBIAN_FRONTEND=noninteractive
         echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
