@@ -46,25 +46,13 @@ jobs:
       run: swift build -c release
     - name: Run tests
       run: swift test -c release
-  Xenial:
+  Ubuntu:
     container: 
-      image: docker://swift:xenial
+      image: docker://swift:${{ matrix.image }}
     runs-on: ubuntu-latest
-    steps:
-    - run: sudo -E apt-get -y -q install libz-dev
-    - run: |
-        export DEBIAN_FRONTEND=noninteractive
-        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
-        apt-get install -y fontconfig ttf-mscorefonts-installer
-    - uses: actions/checkout@master
-    - name: Build
-      run: swift build -c release
-    - name: Run tests
-      run: swift test -c release
-  Bionic:
-    container: 
-      image: docker://swift:bionic
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [xenial, bionic]
     steps:
     - run: sudo -E apt-get -y -q install libz-dev
     - run: |
