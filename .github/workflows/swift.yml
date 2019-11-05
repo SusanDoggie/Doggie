@@ -7,13 +7,14 @@ jobs:
     runs-on: macOS-latest
     strategy:
       matrix:
+        sdk: [macosx, iphonesimulator, appletvsimulator]
         include:
-          - destination: 'platform=macOS'
-            sdk: macosx
-          - destination: 'platform=iOS Simulator,name=iPhone 11'
-            sdk: iphonesimulator
-          - destination: 'platform=tvOS Simulator,name=Apple TV 4K'
-            sdk: appletvsimulator
+          - sdk: macosx
+            destination: 'platform=macOS'
+          - sdk: iphonesimulator
+            destination: 'platform=iOS Simulator,name=iPhone 11'
+          - sdk: appletvsimulator
+            destination: 'platform=tvOS Simulator,name=Apple TV 4K'
     steps:
     - uses: actions/checkout@master
     - run: |
