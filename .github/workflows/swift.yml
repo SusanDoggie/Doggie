@@ -50,6 +50,11 @@ jobs:
       image: docker://swift:xenial
     runs-on: ubuntu-latest
     steps:
+    - run: sudo -E apt-get -y -q install libz-dev
+    - run: |
+        export DEBIAN_FRONTEND=noninteractive
+        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+        apt-get install -y fontconfig ttf-mscorefonts-installer
     - uses: actions/checkout@master
     - name: Build
       run: swift build -c release
@@ -60,6 +65,11 @@ jobs:
       image: docker://swift:bionic
     runs-on: ubuntu-latest
     steps:
+    - run: sudo -E apt-get -y -q install libz-dev
+    - run: |
+        export DEBIAN_FRONTEND=noninteractive
+        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+        apt-get install -y fontconfig ttf-mscorefonts-installer
     - uses: actions/checkout@master
     - name: Build
       run: swift build -c release
