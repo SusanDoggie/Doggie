@@ -29,7 +29,7 @@ import PackageDescription
 let package = Package(
     name: "Doggie",
     products: [
-        .library(name: "Doggie", type: .dynamic, targets: ["Doggie"]),
+        .library(name: "Doggie", targets: ["Doggie"]),
         ],
     dependencies: [
         .package(url: "https://github.com/SusanDoggie/SwiftCompression.git", .branch("master")),
