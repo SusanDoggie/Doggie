@@ -2,52 +2,56 @@ name: Builder
 on: [push, pull_request]
 jobs:
   platform:
-    name: platform_${{ matrix.sdk }}
+    name: ${{ matrix.name }}
     runs-on: macOS-latest
     strategy:
       matrix:
         sdk: [macosx, iphonesimulator, appletvsimulator]
         include:
           - sdk: macosx
+            name: macOS
             destination: 'platform=macOS'
           - sdk: iphonesimulator
+            name: iOS
             destination: 'platform=iOS Simulator,name=iPhone 11'
           - sdk: appletvsimulator
+            name: tvOS
             destination: 'platform=tvOS Simulator,name=Apple TV 4K'
+    env:
+      DESTINATION: ${{ matrix.destination }}
+      XCODEBUILD_CONFIG: "-configuration Release -sdk ${{ matrix.sdk }}"
     steps:
     - uses: actions/checkout@master
-    - run: |
-        export XCODEBUILD_CONFIG="-configuration Release -sdk ${SDK}"
-        export SCHEMES=$(xcodebuild -list | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
-        echo "available scheme: ${SCHEMES}"
-      env: 
-        SDK: ${{ matrix.sdk }}
+      with:
+        submodules: recursive
     - name: Build
       run: |
+        SCHEMES=$(xcodebuild -list | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
         for SCHEME in ${SCHEMES}; do
           echo "Building scheme ${SCHEME}"
           xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} | xcpretty -f `xcpretty-travis-formatter`
         done
     - name: Run tests
       run: |
+        SCHEMES=$(xcodebuild -list | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
         for SCHEME in ${SCHEMES}; do
           echo "Testing scheme ${SCHEME}"
           xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} build-for-testing -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
           xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" test-without-building -enableCodeCoverage ${ENABLE_CODECOV} -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
         done
-      env: 
-        DESTINATION: ${{ matrix.destination }}
   macos:
-    name: macOS_swiftPM
+    name: macOS(SwiftPM)
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@master
+      with:
+        submodules: recursive
     - name: Build
       run: swift build -c release
     - name: Run tests
       run: swift test -c release
   ubuntu:
-    name: ubuntu_${{ matrix.image }}
+    name: ${{ matrix.image }}
     container: 
       image: docker://swift:${{ matrix.image }}
     runs-on: ubuntu-latest
