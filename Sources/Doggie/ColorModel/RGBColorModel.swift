@@ -129,10 +129,34 @@ extension RGBColorModel {
     
     @inlinable
     @inline(__always)
-    public init(_ hex: UInt32) {
-        self.red = Double((hex >> 16) & 0xFF) / 255
-        self.green = Double((hex >> 8) & 0xFF) / 255
-        self.blue = Double(hex & 0xFF) / 255
+    public init?<S : StringProtocol>(_ hex: S) {
+        
+        if hex.hasPrefix("#") {
+            self.init(hex.dropFirst())
+            return
+        }
+        
+        guard let color = UInt32(hex, radix: 16) else { return nil }
+        
+        switch hex.count {
+        case 3:
+            
+            let red = color & 0xF00
+            let green = color & 0xF0
+            let blue = color & 0xF
+            
+            self.init(red: Double((red >> 4) | (red >> 8)) / 255,
+                      green: Double(green | (green >> 4)) / 255,
+                      blue: Double((blue << 4) | blue) / 255)
+            
+        case 6:
+            
+            self.init(red: Double((color >> 16) & 0xFF) / 255,
+                      green: Double((color >> 8) & 0xFF) / 255,
+                      blue: Double(color & 0xFF) / 255)
+            
+        default: return nil
+        }
     }
 }
 
