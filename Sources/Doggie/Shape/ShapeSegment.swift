@@ -248,7 +248,8 @@ extension Shape.Component.BezierCollection.Element {
         case let .quad(p1, p2): result = QuadBezier(start, p1, p2).closest(p, in: -0.5...1.5)
         case let .cubic(p1, p2, p3): result = CubicBezier(start, p1, p2, p3).closest(p, in: -0.5...1.5)
         }
-        return result.lazy.filter { p.almostEqual(self.point($0)) }.compactMap(split_check).first
+        let point = self.point($0)
+        return result.lazy.filter { p.almostEqual(point) }.compactMap(split_check).first
     }
     
     @inlinable
