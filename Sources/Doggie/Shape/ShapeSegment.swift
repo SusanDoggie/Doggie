@@ -242,14 +242,12 @@ extension Shape.Component.BezierCollection.Element {
     
     @inlinable
     public func _closest(_ p: Point) -> Double? {
-        let result: [Double]
-        switch self.segment {
-        case let .line(p1): result = LineSegment(start, p1).closest(p, in: -0.5...1.5)
-        case let .quad(p1, p2): result = QuadBezier(start, p1, p2).closest(p, in: -0.5...1.5)
-        case let .cubic(p1, p2, p3): result = CubicBezier(start, p1, p2, p3).closest(p, in: -0.5...1.5)
-        }
         let point = self.point($0)
-        return result.lazy.filter { p.almostEqual(point) }.compactMap(split_check).first
+        switch self.segment {
+        case let .line(p1): return LineSegment(start, p1).closest(p, in: -0.5...1.5).lazy.compactMap(split_check).first { p.almostEqual(point) }
+        case let .quad(p1, p2): return QuadBezier(start, p1, p2).closest(p, in: -0.5...1.5).lazy.compactMap(split_check).first { p.almostEqual(point) }
+        case let .cubic(p1, p2, p3): return CubicBezier(start, p1, p2, p3).closest(p, in: -0.5...1.5).lazy.compactMap(split_check).first { p.almostEqual(point) }
+        }
     }
     
     @inlinable
