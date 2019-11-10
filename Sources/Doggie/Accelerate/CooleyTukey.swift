@@ -367,7 +367,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
 
 @inlinable
 @inline(__always)
-func _Radix2CooleyTukey_Orderd<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+func _Radix2CooleyTukey_Reorderd<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
     
     let count = 1 << level
     
@@ -376,7 +376,7 @@ func _Radix2CooleyTukey_Orderd<T: BinaryFloatingPoint>(_ level: Int, _ real: Uns
         var _i = imag
         let m_stride = stride << 4
         for _ in Swift.stride(from: 0, to: count, by: 16) {
-            Radix2CooleyTukey_Orderd_16(_r, _i, stride)
+            Radix2CooleyTukey_Reorderd_16(_r, _i, stride)
             _r += m_stride
             _i += m_stride
         }
@@ -489,7 +489,7 @@ func _Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePoin
             }
         }
         
-        _Radix2CooleyTukey_Orderd(level, _real, _imag, out_stride)
+        _Radix2CooleyTukey_Reorderd(level, _real, _imag, out_stride)
     }
 }
 
@@ -656,7 +656,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: Unsa
             }
         }
         
-        _Radix2CooleyTukey_Orderd(level, real, imag, stride)
+        _Radix2CooleyTukey_Reorderd(level, real, imag, stride)
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  Radix2CooleyTukey_Orderd_16.swift
+//  Radix2CooleyTukey_Reorderd_16.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-func Radix2CooleyTukey_Orderd_16<T: BinaryFloatingPoint>(_ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) {
+func Radix2CooleyTukey_Reorderd_16<T: BinaryFloatingPoint>(_ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) {
     
     var real = real
     var imag = imag
