@@ -30,12 +30,12 @@ let package = Package(
     name: "Doggie",
     products: [
         .library(name: "Doggie", targets: ["Doggie"]),
-        ],
+    ],
     dependencies: [
         .package(url: "https://github.com/SusanDoggie/SwiftCompression.git", .branch("master")),
     ],
     targets: [
         .target(name: "Doggie", dependencies: ["SwiftCompression"]),
         .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
-        ]
+    ]
 )

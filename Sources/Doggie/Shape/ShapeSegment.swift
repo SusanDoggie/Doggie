@@ -194,21 +194,21 @@ func split_check(_ t: Double) -> Double? {
 }
 @inlinable
 func split_check(_ t: (Double?, Double?)) -> (Double, Double)? {
-    if let lhs = t.0, let rhs = t.1 {
+    if let lhs = t.0.flatMap(split_check), let rhs = t.1.flatMap(split_check) {
         return (lhs, rhs)
     }
     return nil
 }
 @inlinable
 func split_check(_ t: (Double?, Double)) -> (Double, Double)? {
-    if let lhs = t.0, let rhs = split_check(t.1) {
+    if let lhs = t.0.flatMap(split_check), let rhs = split_check(t.1) {
         return (lhs, rhs)
     }
     return nil
 }
 @inlinable
 func split_check(_ t: (Double, Double?)) -> (Double, Double)? {
-    if let lhs = split_check(t.0), let rhs = t.1 {
+    if let lhs = split_check(t.0), let rhs = t.1.flatMap(split_check) {
         return (lhs, rhs)
     }
     return nil
@@ -255,27 +255,18 @@ extension Shape.Component.BezierCollection.Element {
     @inlinable
     public func points(_ t: [Double]) -> [Point] {
         switch self.segment {
-        case let .line(p1):
-            let bezier = LineSegment(start, p1)
-            return t.map { bezier.eval($0) }
-        case let .quad(p1, p2):
-            let bezier = QuadBezier(start, p1, p2)
-            return t.map { bezier.eval($0) }
-        case let .cubic(p1, p2, p3):
-            let bezier = CubicBezier(start, p1, p2, p3)
-            return t.map { bezier.eval($0) }
+        case let .line(p1): return t.map { LineSegment(start, p1).eval($0) }
+        case let .quad(p1, p2): return t.map { QuadBezier(start, p1, p2).eval($0) }
+        case let .cubic(p1, p2, p3): return t.map { CubicBezier(start, p1, p2, p3).eval($0) }
         }
     }
     
     @inlinable
-    func _closest(_ p: Point) -> LazyMapSequence<LazyFilterSequence<LazyMapSequence<[Double], Double?>>, Double> {
+    func _closest(_ p: Point) -> [Double] {
         switch self.segment {
-        case let .line(p1):
-            return LineSegment(start, p1).closest(p, in: -0.5...1.5).lazy.compactMap(split_check)
-        case let .quad(p1, p2):
-            return QuadBezier(start, p1, p2).closest(p, in: -0.5...1.5).lazy.compactMap(split_check)
-        case let .cubic(p1, p2, p3):
-            return CubicBezier(start, p1, p2, p3).closest(p, in: -0.5...1.5).lazy.compactMap(split_check)
+        case let .line(p1): return LineSegment(start, p1).closest(p, in: -0.5...1.5)
+        case let .quad(p1, p2): return QuadBezier(start, p1, p2).closest(p, in: -0.5...1.5)
+        case let .cubic(p1, p2, p3): return CubicBezier(start, p1, p2, p3).closest(p, in: -0.5...1.5)
         }
     }
     
@@ -292,12 +283,6 @@ extension Shape.Component.BezierCollection.Element {
             }
             return 1
         }
-    }
-    
-    @inlinable
-    func _fromPoint(_ p: Point) -> Double? {
-        let _closest = self._closest(p)
-        return _closest.first { p.almostEqual(self.point($0)) } ?? _closest.first
     }
     
     @inlinable
@@ -414,7 +399,7 @@ extension Shape.Component.BezierCollection.Element {
             switch other.segment {
             case let .line(q1):
                 if let p = LineSegment(start, p1).intersect(LineSegment(other.start, q1)) {
-                    result = [(fromPoint(p), other._fromPoint(p))].compactMap(split_check)
+                    result = [(fromPoint(p), other.fromPoint(p))].compactMap(split_check)
                 }
             case let .quad(q1, q2):
                 if let t = QuadBezier(other.start, q1, q2).intersect(LineSegment(start, p1), in: -0.5...1.5) {
@@ -429,11 +414,11 @@ extension Shape.Component.BezierCollection.Element {
             switch other.segment {
             case let .line(q1):
                 if let t = QuadBezier(start, p1, p2).intersect(LineSegment(other.start, q1), in: -0.5...1.5) {
-                    result = t.map { ($0, other._fromPoint(QuadBezier(start, p1, p2).eval($0))) }.compactMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(QuadBezier(start, p1, p2).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             case let .quad(q1, q2):
                 if let t = QuadBezier(start, p1, p2).intersect(QuadBezier(other.start, q1, q2), in: -0.5...1.5) {
-                    result = t.map { ($0, other._fromPoint(QuadBezier(start, p1, p2).eval($0))) }.compactMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(QuadBezier(start, p1, p2).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             case let .cubic(q1, q2, q3):
                 if let t = CubicBezier(other.start, q1, q2, q3).intersect(QuadBezier(start, p1, p2), in: -0.5...1.5) {
@@ -444,15 +429,15 @@ extension Shape.Component.BezierCollection.Element {
             switch other.segment {
             case let .line(q1):
                 if let t = CubicBezier(start, p1, p2, p3).intersect(LineSegment(other.start, q1), in: -0.5...1.5) {
-                    result = t.map { ($0, other._fromPoint(CubicBezier(start, p1, p2, p3).eval($0))) }.compactMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(CubicBezier(start, p1, p2, p3).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             case let .quad(q1, q2):
                 if let t = CubicBezier(start, p1, p2, p3).intersect(QuadBezier(other.start, q1, q2), in: -0.5...1.5) {
-                    result = t.map { ($0, other._fromPoint(CubicBezier(start, p1, p2, p3).eval($0))) }.compactMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(CubicBezier(start, p1, p2, p3).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             case let .cubic(q1, q2, q3):
                 if let t = CubicBezier(start, p1, p2, p3).intersect(CubicBezier(other.start, q1, q2, q3), in: -0.5...1.5) {
-                    result = t.map { ($0, other._fromPoint(CubicBezier(start, p1, p2, p3).eval($0))) }.compactMap(split_check).sorted { $0.0 }
+                    result = t.map { ($0, other.fromPoint(CubicBezier(start, p1, p2, p3).eval($0))) }.compactMap(split_check).sorted { $0.0 }
                 }
             }
         }
