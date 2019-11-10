@@ -277,8 +277,8 @@ extension Shape.Component.BezierCollection.Element {
     
     @inlinable
     public func closest(_ p: Point) -> Double {
-        let min = p.distance(to: self.start) < p.distance(to: self.end) ? 0 : 1
-        return self._closest(p) ?? min
+        let _min = p.distance(to: self.start) < p.distance(to: self.end) ? 0.0 : 1.0
+        return self._closest(p) ?? _min
     }
     
     @inlinable
