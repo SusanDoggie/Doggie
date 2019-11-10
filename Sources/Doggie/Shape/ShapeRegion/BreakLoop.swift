@@ -69,7 +69,7 @@ extension Shape.Component {
                         intersects.append((s0, s1))
                     }
                 } else {
-                    if let a = segment2.fromPoint(segment1.end) {
+                    if let a = segment2._closest(segment1.end) {
                         let s0 = InterscetionTable.Split(point: segment1.end, index: index1, count: self.count, split: 1)
                         let s1 = InterscetionTable.Split(point: segment2.point(a), index: index2, count: self.count, split: a)
                         if s0.almostEqual(s1) {
@@ -83,7 +83,7 @@ extension Shape.Component {
                         }
                         intersects.append((s0, s1))
                     }
-                    if let b = segment1.fromPoint(segment2.start) {
+                    if let b = segment1._closest(segment2.start) {
                         let s0 = InterscetionTable.Split(point: segment1.point(b), index: index1, count: self.count, split: b)
                         let s1 = InterscetionTable.Split(point: segment2.start, index: index2, count: self.count, split: 0)
                         if s0.almostEqual(s1) {
