@@ -27,7 +27,7 @@ public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point
     let a = p2.x - p0.x
     let b = p2.y - p0.y
     let c = m0.x * m2.y - m0.y * m2.x
-    if c == 0 {
+    if c.almostZero() {
         return 0.5 * (p0 + p2)
     }
     let d = a * m2.y - b * m2.x
