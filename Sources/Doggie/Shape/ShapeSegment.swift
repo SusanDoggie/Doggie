@@ -64,9 +64,9 @@ extension Shape {
         }
         
         @inlinable
-        public subscript(position: Int) -> BezierSegment {
+        public subscript(position: Int) -> Shape.BezierSegment {
             get {
-                return BezierSegment(start: position == 0 ? component.start : component[position - 1].end, segment: component[position])
+                return Shape.BezierSegment(start: position == 0 ? component.start : component[position - 1].end, segment: component[position])
             }
             set {
                 if position == 0 {
@@ -83,9 +83,9 @@ extension Shape {
 extension Shape.Component {
     
     @inlinable
-    public var bezier: BezierCollection {
+    public var bezier: Shape.BezierCollection {
         get {
-            return BezierCollection(component: self)
+            return Shape.BezierCollection(component: self)
         }
         set {
             self = newValue.component
