@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-extension Shape.Component {
+extension Shape {
     
     @frozen
     public struct BezierSegment {
@@ -78,6 +78,9 @@ extension Shape.Component {
             }
         }
     }
+}
+
+extension Shape.Component {
     
     @inlinable
     public var bezier: BezierCollection {
