@@ -51,11 +51,12 @@ public struct CubicBezierPatch<Element : ScalarMultiplicative> : Equatable where
         
         @inline(__always)
         func _eval(_ a: Element, _ b: Element, _ c: Element, _ d: Element, _ e: Element) -> Element {
-            let _a = 6 * a
-            let _b = 3 * b
-            let _c = 2 * c
-            let _d = 4 * d
-            return (_a + _b - _c - _d - e) / 9
+            let _a = 6 / 9 * a
+            let _b = 3 / 9 * b
+            let _c = 2 / 9 * c
+            let _d = 4 / 9 * d
+            let _e = e / 9
+            return _a + _b - _c - _d - _e
         }
         
         self.m00 = m00

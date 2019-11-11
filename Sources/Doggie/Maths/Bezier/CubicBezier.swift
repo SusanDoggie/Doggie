@@ -241,7 +241,8 @@ extension CubicBezier {
         let b = 3 * (p1 - p0)
         var c = 3 * (p2 + p0)
         c -= 6 * p1
-        let d = p3 - p0 + 3 * (p1 - p2)
+        var d = p3 - p0
+        d += 3 * (p1 - p2)
         return (b, c, d)
     }
 }
