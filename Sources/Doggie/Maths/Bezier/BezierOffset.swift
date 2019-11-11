@@ -228,17 +228,12 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             let q0 = self.eval(s).offset(dx: a * d0.y, dy: -a * d0.x)
             let q3 = self.eval(t).offset(dx: a * d3.y, dy: -a * d3.x)
             
-            if let m0 = self._offset_point(a, 0.25 * (t - s) + s),
-                let m1 = self._offset_point(a, 0.5 * (t - s) + s),
-                let m2 = self._offset_point(a, 0.75 * (t - s) + s),
-                let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]), c0 > 0 && c1 > 0 {
-                
-                try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
-                
-            } else {
-                
-                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, d3), q3).elevated())
-            }
+            guard let m0 = self._offset_point(a, 0.25 * (t - s) + s) else { continue }
+            guard let m1 = self._offset_point(a, 0.5 * (t - s) + s) else { continue }
+            guard let m2 = self._offset_point(a, 0.75 * (t - s) + s) else { continue }
+            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { continue }
+            
+            try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
             
             s = t
         }
@@ -282,20 +277,15 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             
         } else {
             
-            if let m0 = self._offset_point(a, 0.25 * (t - s) + s),
-                let m1 = self._offset_point(a, 0.5 * (t - s) + s),
-                let m2 = self._offset_point(a, 0.75 * (t - s) + s),
-                let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]), c0 > 0 && c1 > 0 {
-                
-                if a.sign == angle.sign {
-                    try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
-                } else {
-                    try calback(s...t, CubicBezier(q0, q0 - c0 * d0, q3 + c1 * d3, q3))
-                }
-                
+            guard let m0 = self._offset_point(a, 0.25 * (t - s) + s) else { return }
+            guard let m1 = self._offset_point(a, 0.5 * (t - s) + s) else { return }
+            guard let m2 = self._offset_point(a, 0.75 * (t - s) + s) else { return }
+            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { return }
+            
+            if a.sign == angle.sign {
+                try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
             } else {
-                
-                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, d3), q3).elevated())
+                try calback(s...t, CubicBezier(q0, q0 - abs(c0) * d0, q3 + abs(c1) * d3, q3))
             }
         }
     }
@@ -341,17 +331,12 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             let d0 = (q0 - self.eval(s)).unit * SDTransform.rotate(signed ? -0.5 * .pi : 0.5 * .pi)
             let d3 = (q3 - self.eval(t)).unit * SDTransform.rotate(signed ? -0.5 * .pi : 0.5 * .pi)
             
-            if let m0 = _offset_point(0.25 * (t - s) + s),
-                let m1 = _offset_point(0.5 * (t - s) + s),
-                let m2 = _offset_point(0.75 * (t - s) + s),
-                let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]), c0 > 0 && c1 > 0 {
-                
-                try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
-                
-            } else {
-                
-                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, d3), q3).elevated())
-            }
+            guard let m0 = _offset_point(0.25 * (t - s) + s) else { continue }
+            guard let m1 = _offset_point(0.5 * (t - s) + s) else { continue }
+            guard let m2 = _offset_point(0.75 * (t - s) + s) else { continue }
+            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { continue }
+            
+            try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
             
             s = t
         }
@@ -393,21 +378,16 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             
         } else {
             
-            if let m0 = _offset_point(0.25 * (t - s) + s),
-                let m1 = _offset_point(0.5 * (t - s) + s),
-                let m2 = _offset_point(0.75 * (t - s) + s),
-                let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]), c0 > 0 && c1 > 0 {
-                
-                let angle_signed = angle.sign == .minus
-                if signed == angle_signed {
-                    try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
-                } else {
-                    try calback(s...t, CubicBezier(q0, q0 - c0 * d0, q3 + c1 * d3, q3))
-                }
-                
+            guard let m0 = _offset_point(0.25 * (t - s) + s) else { return }
+            guard let m1 = _offset_point(0.5 * (t - s) + s) else { return }
+            guard let m2 = _offset_point(0.75 * (t - s) + s) else { return }
+            guard let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) else { return }
+            
+            let angle_signed = angle.sign == .minus
+            if signed == angle_signed {
+                try calback(s...t, CubicBezier(q0, q0 + abs(c0) * d0, q3 - abs(c1) * d3, q3))
             } else {
-                
-                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, d3), q3).elevated())
+                try calback(s...t, CubicBezier(q0, q0 - abs(c0) * d0, q3 + abs(c1) * d3, q3))
             }
         }
     }
