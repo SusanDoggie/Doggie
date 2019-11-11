@@ -321,7 +321,23 @@ extension Shape.Component {
         
         let table = InterscetionTable(self, other, reference: reference)
         
-        guard table.looping_left.isEmpty && table.looping_right.isEmpty else { return .regions(self._breakLoop(table.looping_left, reference: reference), other._breakLoop(table.looping_right, reference: reference)) }
+        guard table.looping_left.isEmpty && table.looping_right.isEmpty else {
+            
+            let left = self._breakLoop(table.looping_left, reference: reference)
+            let right = other._breakLoop(table.looping_right, reference: reference)
+            
+            if left.count == 1 && right.count == 1 {
+                if other._contains(self) {
+                    return .subset
+                }
+                if self._contains(other) {
+                    return .superset
+                }
+                return .none
+            }
+            
+            return .regions(left, right)
+        }
         
         let check1 = !table._left_segments.isEmpty && !table.left_overlap.isStrictSubset(of: table._left_segments.map { InterscetionTable.Segment(from: $0.point_id, to: $1.point_id) })
         let check2 = !table._right_segments.isEmpty && !table.right_overlap.isStrictSubset(of: table._right_segments.map { InterscetionTable.Segment(from: $0.point_id, to: $1.point_id) })
