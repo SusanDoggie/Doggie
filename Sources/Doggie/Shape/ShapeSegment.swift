@@ -214,6 +214,15 @@ extension Shape.Component.BezierCollection.Element {
     }
     
     @inlinable
+    public var area: Double {
+        switch self.segment {
+        case let .line(p1): return LineSegment(start, p1).area
+        case let .quad(p1, p2): return QuadBezier(start, p1, p2).area
+        case let .cubic(p1, p2, p3): return CubicBezier(start, p1, p2, p3).area
+        }
+    }
+    
+    @inlinable
     public func _invisible(reference: Double) -> Bool {
         switch self.segment {
         case let .line(p1): return start.almostEqual(p1, reference: reference)
@@ -376,41 +385,41 @@ extension Shape.Component.BezierCollection.Element {
                 }
             case let .quad(q1, q2):
                 if let t = QuadBezier(other.start, q1, q2).intersect(LineSegment(start, p1), in: -0.5...1.5) {
-                    result = t.compactMap { _filter(_closest(QuadBezier(other.start, q1, q2).eval($0)), $0) }
+                    result = t.compactMap { _filter(_closest(QuadBezier(other.start, q1, q2).eval($0)), split_check($0)) }
                 }
             case let .cubic(q1, q2, q3):
                 if let t = CubicBezier(other.start, q1, q2, q3).intersect(LineSegment(start, p1), in: -0.5...1.5) {
-                    result = t.compactMap { _filter(_closest(CubicBezier(other.start, q1, q2, q3).eval($0)), $0) }
+                    result = t.compactMap { _filter(_closest(CubicBezier(other.start, q1, q2, q3).eval($0)), split_check($0)) }
                 }
             }
         case let .quad(p1, p2):
             switch other.segment {
             case let .line(q1):
                 if let t = QuadBezier(start, p1, p2).intersect(LineSegment(other.start, q1), in: -0.5...1.5) {
-                    result = t.compactMap { _filter($0, other._closest(QuadBezier(start, p1, p2).eval($0))) }
+                    result = t.compactMap { _filter(split_check($0), other._closest(QuadBezier(start, p1, p2).eval($0))) }
                 }
             case let .quad(q1, q2):
                 if let t = QuadBezier(start, p1, p2).intersect(QuadBezier(other.start, q1, q2), in: -0.5...1.5) {
-                    result = t.compactMap { _filter($0, other._closest(QuadBezier(start, p1, p2).eval($0))) }
+                    result = t.compactMap { _filter(split_check($0), other._closest(QuadBezier(start, p1, p2).eval($0))) }
                 }
             case let .cubic(q1, q2, q3):
                 if let t = CubicBezier(other.start, q1, q2, q3).intersect(QuadBezier(start, p1, p2), in: -0.5...1.5) {
-                    result = t.compactMap { _filter(_closest(CubicBezier(other.start, q1, q2, q3).eval($0)), $0) }
+                    result = t.compactMap { _filter(_closest(CubicBezier(other.start, q1, q2, q3).eval($0)), split_check($0)) }
                 }
             }
         case let .cubic(p1, p2, p3):
             switch other.segment {
             case let .line(q1):
                 if let t = CubicBezier(start, p1, p2, p3).intersect(LineSegment(other.start, q1), in: -0.5...1.5) {
-                    result = t.compactMap { _filter($0, other._closest(CubicBezier(start, p1, p2, p3).eval($0))) }
+                    result = t.compactMap { _filter(split_check($0), other._closest(CubicBezier(start, p1, p2, p3).eval($0))) }
                 }
             case let .quad(q1, q2):
                 if let t = CubicBezier(start, p1, p2, p3).intersect(QuadBezier(other.start, q1, q2), in: -0.5...1.5) {
-                    result = t.compactMap { _filter($0, other._closest(CubicBezier(start, p1, p2, p3).eval($0))) }
+                    result = t.compactMap { _filter(split_check($0), other._closest(CubicBezier(start, p1, p2, p3).eval($0))) }
                 }
             case let .cubic(q1, q2, q3):
                 if let t = CubicBezier(start, p1, p2, p3).intersect(CubicBezier(other.start, q1, q2, q3), in: -0.5...1.5) {
-                    result = t.compactMap { _filter($0, other._closest(CubicBezier(start, p1, p2, p3).eval($0))) }
+                    result = t.compactMap { _filter(split_check($0), other._closest(CubicBezier(start, p1, p2, p3).eval($0))) }
                 }
             }
         }

@@ -30,18 +30,30 @@ extension Point {
     }
 }
 
+extension Shape.Segment {
+    
+    fileprivate func _round_to_float() -> Shape.Segment {
+        switch self {
+        case let .line(p1): return .line(p1._round_to_float())
+        case let .quad(p1, p2): return .quad(p1._round_to_float(), p2._round_to_float())
+        case let .cubic(p1, p2, p3): return .cubic(p1._round_to_float(), p2._round_to_float(), p3._round_to_float())
+        }
+    }
+    
+}
+
 extension Shape.Component.BezierCollection.Element {
     
     fileprivate func _round_to_float() -> Shape.Component.BezierCollection.Element {
-        switch self.segment {
-        case let .line(p1): return Shape.Component.BezierCollection.Element(start._round_to_float(), p1._round_to_float())
-        case let .quad(p1, p2): return Shape.Component.BezierCollection.Element(start._round_to_float(), p1._round_to_float(), p2._round_to_float())
-        case let .cubic(p1, p2, p3): return Shape.Component.BezierCollection.Element(start._round_to_float(), p1._round_to_float(), p2._round_to_float(), p3._round_to_float())
-        }
+        return Shape.Component.BezierCollection.Element(start: start._round_to_float(), segment: segment._round_to_float())
     }
 }
 
 extension Shape.Component {
+    
+    fileprivate func _round_to_float() -> Shape.Component {
+        return Shape.Component(start: start._round_to_float(), closed: isClosed, segments: segments.map { $0._round_to_float() })
+    }
     
     func breakLoop(reference: Double) -> [ShapeRegion.Solid] {
         
@@ -235,6 +247,6 @@ extension Shape {
             }
         }
         
-        return solids.flatMap { $0.solid.breakLoop(reference: reference) }.makeContiguousBuffer()
+        return solids.flatMap { $0.solid._round_to_float().breakLoop(reference: reference) }.makeContiguousBuffer()
     }
 }
