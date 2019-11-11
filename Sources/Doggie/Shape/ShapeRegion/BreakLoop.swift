@@ -42,10 +42,10 @@ extension Shape.Segment {
     
 }
 
-extension Shape.Component.BezierCollection.Element {
+extension Shape.BezierSegment {
     
-    fileprivate func _round_to_float() -> Shape.Component.BezierCollection.Element {
-        return Shape.Component.BezierCollection.Element(start: start._round_to_float(), segment: segment._round_to_float())
+    fileprivate func _round_to_float() -> Shape.BezierSegment {
+        return Shape.BezierSegment(start: start._round_to_float(), segment: segment._round_to_float())
     }
 }
 

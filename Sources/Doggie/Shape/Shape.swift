@@ -919,14 +919,21 @@ extension Shape {
 }
 
 @inlinable
+public func * (lhs: Shape.Segment, rhs: SDTransform) -> Shape.Segment {
+    switch lhs {
+    case let .line(p1): return .line(p1 * rhs)
+    case let .quad(p1, p2): return .quad(p1 * rhs, p2 * rhs)
+    case let .cubic(p1, p2, p3): return .cubic(p1 * rhs, p2 * rhs, p3 * rhs)
+    }
+}
+@inlinable
+public func *= (lhs: inout Shape.Segment, rhs: SDTransform) {
+    lhs = lhs * rhs
+}
+
+@inlinable
 public func * (lhs: Shape.Component, rhs: SDTransform) -> Shape.Component {
-    return Shape.Component(start: lhs.start * rhs, closed: lhs.isClosed, segments: lhs.segments.map {
-        switch $0 {
-        case let .line(p1): return .line(p1 * rhs)
-        case let .quad(p1, p2): return .quad(p1 * rhs, p2 * rhs)
-        case let .cubic(p1, p2, p3): return .cubic(p1 * rhs, p2 * rhs, p3 * rhs)
-        }
-    })
+    return Shape.Component(start: lhs.start * rhs, closed: lhs.isClosed, segments: lhs.segments.map { $0 * rhs })
 }
 
 @inlinable

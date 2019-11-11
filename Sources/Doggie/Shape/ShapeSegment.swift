@@ -26,6 +26,19 @@
 extension Shape.Component {
     
     @frozen
+    public struct BezierSegment {
+        
+        public var start: Point
+        public var segment: Shape.Segment
+        
+        @inlinable
+        public init(start: Point, segment: Shape.Segment) {
+            self.start = start
+            self.segment = segment
+        }
+    }
+    
+    @frozen
     public struct BezierCollection: RandomAccessCollection, MutableCollection {
         
         public typealias Indices = Range<Int>
@@ -51,9 +64,9 @@ extension Shape.Component {
         }
         
         @inlinable
-        public subscript(position: Int) -> Element {
+        public subscript(position: Int) -> BezierSegment {
             get {
-                return Element(start: position == 0 ? component.start : component[position - 1].end, segment: component[position])
+                return BezierSegment(start: position == 0 ? component.start : component[position - 1].end, segment: component[position])
             }
             set {
                 if position == 0 {
@@ -62,19 +75,6 @@ extension Shape.Component {
                     component[position - 1].end = newValue.start
                 }
                 component[position] = newValue.segment
-            }
-        }
-        
-        @frozen
-        public struct Element {
-            
-            public var start: Point
-            public var segment: Shape.Segment
-            
-            @inlinable
-            public init(start: Point, segment: Shape.Segment) {
-                self.start = start
-                self.segment = segment
             }
         }
     }
@@ -93,7 +93,7 @@ extension Shape.Component {
 extension Bezier where Element == Point {
     
     @inlinable
-    public init(_ bezier: Shape.Component.BezierCollection.Element) {
+    public init(_ bezier: Shape.BezierSegment) {
         switch bezier.segment {
         case let .line(p1): self.init(bezier.start, p1)
         case let .quad(p1, p2): self.init(bezier.start, p1, p2)
@@ -102,7 +102,7 @@ extension Bezier where Element == Point {
     }
 }
 
-extension Shape.Component.BezierCollection.Element {
+extension Shape.BezierSegment {
     
     @inlinable
     public var boundary: Rect {
@@ -114,7 +114,7 @@ extension Shape.Component.BezierCollection.Element {
     }
 }
 
-extension Shape.Component.BezierCollection.Element {
+extension Shape.BezierSegment {
     
     @inlinable
     public var end: Point {
@@ -127,7 +127,7 @@ extension Shape.Component.BezierCollection.Element {
     }
 }
 
-extension Shape.Component.BezierCollection.Element {
+extension Shape.BezierSegment {
     
     @inlinable
     public init(_ p0: Point, _ p1: Point) {
@@ -165,7 +165,7 @@ extension Shape.Component.BezierCollection.Element {
     }
 }
 
-extension Shape.Component.BezierCollection.Element {
+extension Shape.BezierSegment {
     
     @inlinable
     public init(_ bezier: LineSegment<Point>) {
@@ -193,14 +193,14 @@ func split_check(_ t: Double) -> Double? {
     return nil
 }
 
-extension Shape.Component.BezierCollection.Element {
+extension Shape.BezierSegment {
     
     @inlinable
-    public func reversed() -> Shape.Component.BezierCollection.Element {
+    public func reversed() -> Shape.BezierSegment {
         switch self.segment {
-        case let .line(p1): return Shape.Component.BezierCollection.Element(p1, start)
-        case let .quad(p1, p2): return Shape.Component.BezierCollection.Element(p2, p1, start)
-        case let .cubic(p1, p2, p3): return Shape.Component.BezierCollection.Element(p3, p2, p1, start)
+        case let .line(p1): return Shape.BezierSegment(p1, start)
+        case let .quad(p1, p2): return Shape.BezierSegment(p2, p1, start)
+        case let .cubic(p1, p2, p3): return Shape.BezierSegment(p3, p2, p1, start)
         }
     }
     
@@ -265,31 +265,31 @@ extension Shape.Component.BezierCollection.Element {
     }
     
     @inlinable
-    public func split(_ t: Double) -> (Shape.Component.BezierCollection.Element, Shape.Component.BezierCollection.Element) {
+    public func split(_ t: Double) -> (Shape.BezierSegment, Shape.BezierSegment) {
         switch self.segment {
         case let .line(p1):
             let _split = LineSegment(start, p1).split(t)
-            return (Shape.Component.BezierCollection.Element(_split.0), Shape.Component.BezierCollection.Element(_split.1))
+            return (Shape.BezierSegment(_split.0), Shape.BezierSegment(_split.1))
         case let .quad(p1, p2):
             let _split = QuadBezier(start, p1, p2).split(t)
-            return (Shape.Component.BezierCollection.Element(_split.0), Shape.Component.BezierCollection.Element(_split.1))
+            return (Shape.BezierSegment(_split.0), Shape.BezierSegment(_split.1))
         case let .cubic(p1, p2, p3):
             let _split = CubicBezier(start, p1, p2, p3).split(t)
-            return (Shape.Component.BezierCollection.Element(_split.0), Shape.Component.BezierCollection.Element(_split.1))
+            return (Shape.BezierSegment(_split.0), Shape.BezierSegment(_split.1))
         }
     }
     
     @inlinable
-    public func split(_ t: [Double]) -> [Shape.Component.BezierCollection.Element] {
+    public func split(_ t: [Double]) -> [Shape.BezierSegment] {
         switch self.segment {
-        case let .line(p1): return LineSegment(start, p1).split(t).map { Shape.Component.BezierCollection.Element($0) }
-        case let .quad(p1, p2): return QuadBezier(start, p1, p2).split(t).map { Shape.Component.BezierCollection.Element($0) }
-        case let .cubic(p1, p2, p3): return CubicBezier(start, p1, p2, p3).split(t).map { Shape.Component.BezierCollection.Element($0) }
+        case let .line(p1): return LineSegment(start, p1).split(t).map { Shape.BezierSegment($0) }
+        case let .quad(p1, p2): return QuadBezier(start, p1, p2).split(t).map { Shape.BezierSegment($0) }
+        case let .cubic(p1, p2, p3): return CubicBezier(start, p1, p2, p3).split(t).map { Shape.BezierSegment($0) }
         }
     }
     
     @inlinable
-    func _overlap(_ other: Shape.Component.BezierCollection.Element) -> Bool {
+    func _overlap(_ other: Shape.BezierSegment) -> Bool {
         
         guard !self.start.almostEqual(self.end) else { return false }
         guard !other.start.almostEqual(other.end) else { return false }
@@ -310,7 +310,7 @@ extension Shape.Component.BezierCollection.Element {
     }
     
     @inlinable
-    public func overlap(_ other: Shape.Component.BezierCollection.Element) -> Bool {
+    public func overlap(_ other: Shape.BezierSegment) -> Bool {
         
         switch self.segment {
         case let .line(p1):
@@ -364,7 +364,7 @@ extension Shape.Component.BezierCollection.Element {
     }
     
     @inlinable
-    public func intersect(_ other: Shape.Component.BezierCollection.Element) -> [(Double, Double)]? {
+    public func intersect(_ other: Shape.BezierSegment) -> [(Double, Double)]? {
         
         @inline(__always)
         func _filter(_ lhs: Double?, _ rhs: Double?) -> (Double, Double)? {

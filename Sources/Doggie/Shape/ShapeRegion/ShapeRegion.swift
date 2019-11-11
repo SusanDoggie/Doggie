@@ -132,7 +132,7 @@ extension ShapeRegion {
 
 extension ShapeRegion.Solid {
     
-    public typealias Segment = Shape.Component.BezierCollection.Element
+    public typealias Segment = Shape.BezierSegment
     
     init?<S : Sequence>(segments: S, reference: Double) where S.Element == Segment {
         
