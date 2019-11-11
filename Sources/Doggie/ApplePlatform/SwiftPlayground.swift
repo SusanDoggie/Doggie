@@ -117,8 +117,6 @@ extension AnyColor : CustomPlaygroundDisplayConvertible {
 
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
 
-import AppKit
-
 extension Shape : CustomPlaygroundDisplayConvertible {
     
     @inlinable
@@ -130,8 +128,6 @@ extension Shape : CustomPlaygroundDisplayConvertible {
 #endif
 
 #if canImport(UIKit)
-
-import UIKit
 
 extension Shape : CustomPlaygroundDisplayConvertible {
     

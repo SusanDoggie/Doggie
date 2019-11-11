@@ -202,8 +202,6 @@ extension Shape {
 
 #if canImport(UIKit)
 
-import UIKit
-
 extension UIBezierPath {
     
     public convenience init(_ shape: Shape) {
@@ -221,8 +219,6 @@ extension Shape {
 #endif
 
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
-
-import AppKit
 
 extension NSBezierPath: BezierPathConvertible {
     

@@ -25,8 +25,6 @@
 
 #if canImport(UIKit)
 
-import UIKit
-
 extension UIImage {
     
     public func fileBacked() -> UIImage? {

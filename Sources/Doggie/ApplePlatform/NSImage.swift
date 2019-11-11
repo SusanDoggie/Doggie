@@ -25,8 +25,6 @@
 
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
 
-import AppKit
-
 extension NSImage {
     
     public convenience init(cgImage image: CGImage) {
