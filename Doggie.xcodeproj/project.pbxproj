@@ -54,6 +54,7 @@
 		08458B5F1E2E627600D01813 /* Lock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEE1E2E627600D01813 /* Lock.swift */; };
 		08458B611E2E627600D01813 /* SDTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AEF1E2E627600D01813 /* SDTask.swift */; };
 		084912E122F4199100C2EC0F /* ShapePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084912E022F4199100C2EC0F /* ShapePreview.swift */; };
+		084AAA9E237D552B0001C526 /* NSItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084AAA9D237D552B0001C526 /* NSItemProvider.swift */; };
 		086CBF3A22B53D1200D9460E /* WeakSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086CBF3922B53D1200D9460E /* WeakSet.swift */; };
 		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
 		086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* GradientMesh.swift */; };
@@ -392,6 +393,7 @@
 		08458AEE1E2E627600D01813 /* Lock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Lock.swift; sourceTree = "<group>"; };
 		08458AEF1E2E627600D01813 /* SDTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = SDTask.swift; sourceTree = "<group>"; };
 		084912E022F4199100C2EC0F /* ShapePreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapePreview.swift; sourceTree = "<group>"; };
+		084AAA9D237D552B0001C526 /* NSItemProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSItemProvider.swift; sourceTree = "<group>"; };
 		086CBF3922B53D1200D9460E /* WeakSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakSet.swift; sourceTree = "<group>"; };
 		086F06481EDC623D00BA70C8 /* Rasterizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rasterizer.swift; sourceTree = "<group>"; };
 		086F064B1EDC65D600BA70C8 /* GradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GradientMesh.swift; sourceTree = "<group>"; };
@@ -738,6 +740,7 @@
 				086CBF3922B53D1200D9460E /* WeakSet.swift */,
 				0A792C9F1FDA9742003C0290 /* FileManager.swift */,
 				0A7C9D042022D01400927674 /* Cache.swift */,
+				084AAA9D237D552B0001C526 /* NSItemProvider.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -1611,6 +1614,7 @@
 				0AE762591EE9583400E926D5 /* CGImage.swift in Sources */,
 				0AE71A011EF517CA0086923C /* AnyImage.swift in Sources */,
 				0A7D3ADC1ECAD5890030DC26 /* BlendMode.swift in Sources */,
+				084AAA9E237D552B0001C526 /* NSItemProvider.swift in Sources */,
 				0A9F281F1EF0D9AA00E69976 /* CMYKColorModel.swift in Sources */,
 				0AA4D8451F63908200AFF16B /* AvailableFonts.swift in Sources */,
 				084912E122F4199100C2EC0F /* ShapePreview.swift in Sources */,
