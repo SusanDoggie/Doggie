@@ -142,7 +142,7 @@ extension NSItemProvider {
 
 #endif
 
-#if canImport(UIKit)
+#if os(iOS)
 
 @available(iOS 11.0, *)
 extension UIDragDropSession {
