@@ -169,4 +169,16 @@ extension UIPasteboard {
     }
 }
 
+@available(iOS 11.0, *)
+extension UIPasteConfiguration {
+    
+    public convenience init<Decoder: NSItemProviderDecoder>(forAccepting aType: Decoder.Type) {
+        self.init(forAccepting: _ReadingWrapper<Decoder>.self)
+    }
+    
+    public func addTypeIdentifiers<Decoder: NSItemProviderDecoder>(forAccepting aType: Decoder.Type) {
+        self.addTypeIdentifiers(forAccepting: _ReadingWrapper<Decoder>.self)
+    }
+}
+
 #endif
