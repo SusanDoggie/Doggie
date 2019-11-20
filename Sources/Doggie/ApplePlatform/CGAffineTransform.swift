@@ -1,5 +1,5 @@
 //
-//  Graphic.swift
+//  CGAffineTransform.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -22,63 +22,6 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 //
-
-extension CGPoint {
-    
-    public init(_ p: Point) {
-        self.init(x: CGFloat(p.x), y: CGFloat(p.y))
-    }
-}
-
-extension CGSize {
-    
-    public init(_ s: Size) {
-        self.init(width: CGFloat(s.width), height: CGFloat(s.height))
-    }
-}
-
-extension CGRect {
-    
-    public init(_ r: Rect) {
-        self.init(origin: CGPoint(r.origin), size: CGSize(r.size))
-    }
-}
-
-extension Point {
-    
-    public init(_ p: CGPoint) {
-        self.x = Double(p.x)
-        self.y = Double(p.y)
-    }
-    public init(x: CGFloat, y: CGFloat) {
-        self.x = Double(x)
-        self.y = Double(y)
-    }
-}
-
-extension Size {
-    
-    public init(_ s: CGSize) {
-        self.width = Double(s.width)
-        self.height = Double(s.height)
-    }
-    public init(width: CGFloat, height: CGFloat) {
-        self.width = Double(width)
-        self.height = Double(height)
-    }
-}
-
-extension Rect {
-    
-    public init(_ r: CGRect) {
-        self.origin = Point(r.origin)
-        self.size = Size(r.size)
-    }
-    public init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) {
-        self.origin = Point(x: x, y: y)
-        self.size = Size(width: width, height: height)
-    }
-}
 
 #if os(macOS)
 

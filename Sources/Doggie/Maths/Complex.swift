@@ -65,6 +65,15 @@ extension Complex {
     
     @inlinable
     @inline(__always)
+    public var conjugate: Complex {
+        return Complex(real: real, imag: -imag)
+    }
+}
+
+extension Complex {
+    
+    @inlinable
+    @inline(__always)
     public init(magnitude: Double, phase: Double) {
         self.real = magnitude * cos(phase)
         self.imag = magnitude * sin(phase)
