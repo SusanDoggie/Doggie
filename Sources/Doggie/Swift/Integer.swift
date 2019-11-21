@@ -141,6 +141,13 @@ func _scale_integer<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger
 
 @inlinable
 @inline(__always)
+public func positive_mod<T: BinaryInteger>(_ x: T, _ m: T) -> T {
+    let r = x % m
+    return r < 0 ? r + m : r
+}
+
+@inlinable
+@inline(__always)
 public func isqrt<T: FixedWidthInteger & UnsignedInteger>(_ x: T) -> T {
     if x < 2 {
         return x

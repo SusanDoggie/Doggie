@@ -77,26 +77,26 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ signa
 
 @inlinable
 @inline(__always)
-public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
+public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ oreal: UnsafeMutablePointer<T>, _ oimag: UnsafeMutablePointer<T>, _ out_stride: Int, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
     
     if _slowPath(signal_count == 0 || kernel_count == 0) {
-        var _real = _real
-        var _imag = _imag
+        var oreal = oreal
+        var oimag = oimag
         for _ in 0..<length {
-            _real.pointee = 0
-            _imag.pointee = 0
-            _real += out_stride
-            _imag += out_stride
+            oreal.pointee = 0
+            oimag.pointee = 0
+            oreal += out_stride
+            oimag += out_stride
         }
         return
     }
     
     var _sreal = treal
     var _simag = timag
-    var _kreal = _real
-    var _kimag = _imag
+    var _kreal = oreal
+    var _kimag = oimag
     
     let s_stride = temp_stride
     let k_stride = out_stride
@@ -118,7 +118,7 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ sreal
         _kimag += k_stride
     }
     
-    InverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, _real, _imag, out_stride)
+    InverseRadix2CooleyTukey(level, treal, timag, temp_stride, length, oreal, oimag, out_stride)
 }
 
 @inlinable
@@ -161,26 +161,26 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
 
 @inlinable
 @inline(__always)
-public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ n: T, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ n: T, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
     
     if _slowPath(in_count == 0) {
-        var _real = _real
-        var _imag = _imag
+        var out_real = out_real
+        var out_imag = out_imag
         for _ in 0..<length {
-            _real.pointee = 0
-            _imag.pointee = 0
-            _real += out_stride
-            _imag += out_stride
+            out_real.pointee = 0
+            out_imag.pointee = 0
+            out_real += out_stride
+            out_imag += out_stride
         }
         return
     }
     
-    Radix2CooleyTukey(level, real, imag, in_stride, in_count, _real, _imag, out_stride)
+    Radix2CooleyTukey(level, in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
     
-    var _treal = _real
-    var _timag = _imag
+    var _treal = out_real
+    var _timag = out_imag
     let m = 1 / T(length)
     for _ in 0..<length {
         let _r = _treal.pointee
@@ -193,7 +193,7 @@ public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ level: Int, _ 
         _timag += out_stride
     }
     
-    InverseRadix2CooleyTukey(level, _real, _imag, out_stride)
+    InverseRadix2CooleyTukey(level, out_real, out_imag, out_stride)
 }
 
 @inlinable
@@ -241,26 +241,26 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ si
 
 @inlinable
 @inline(__always)
-public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ oreal: UnsafeMutablePointer<T>, _ oimag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << level
     
     if _slowPath(signal_count == 0) {
-        var _real = _real
-        var _imag = _imag
+        var oreal = oreal
+        var oimag = oimag
         for _ in 0..<length {
-            _real.pointee = 0
-            _imag.pointee = 0
-            _real += out_stride
-            _imag += out_stride
+            oreal.pointee = 0
+            oimag.pointee = 0
+            oreal += out_stride
+            oimag += out_stride
         }
         return
     }
     
-    Radix2CooleyTukey(level, sreal, simag, signal_stride, signal_count, _real, _imag, out_stride)
+    Radix2CooleyTukey(level, sreal, simag, signal_stride, signal_count, oreal, oimag, out_stride)
     
-    var _oreal = _real
-    var _oimag = _imag
+    var _oreal = oreal
+    var _oimag = oimag
     var _kreal = kreal
     var _kimag = kimag
     
@@ -277,5 +277,5 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ sr
         _kimag += kernel_stride
     }
     
-    InverseRadix2CooleyTukey(level, _real, _imag, out_stride)
+    InverseRadix2CooleyTukey(level, oreal, oimag, out_stride)
 }

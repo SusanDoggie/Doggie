@@ -1,5 +1,5 @@
 //
-//  InverseRadix2CooleyTukey_2.swift
+//  InverseRadix2CooleyTukey_4.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -25,19 +25,27 @@
 
 @inlinable
 @inline(__always)
-func InverseRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+func InverseRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
-    var _real = _real
-    var _imag = _imag
+    var out_real = out_real
+    var out_imag = out_imag
     
     if _slowPath(in_count == 0) {
-        _real.pointee = 0
-        _imag.pointee = 0
-        _real += out_stride
-        _imag += out_stride
-        _real.pointee = 0
-        _imag.pointee = 0
+        out_real.pointee = 0
+        out_imag.pointee = 0
+        out_real += out_stride
+        out_imag += out_stride
+        out_real.pointee = 0
+        out_imag.pointee = 0
+        out_real += out_stride
+        out_imag += out_stride
+        out_real.pointee = 0
+        out_imag.pointee = 0
+        out_real += out_stride
+        out_imag += out_stride
+        out_real.pointee = 0
+        out_imag.pointee = 0
         return
     }
     
@@ -45,13 +53,33 @@ func InverseRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ i
     input += in_stride
     
     let b = in_count > 1 ? input.pointee : 0
+    input += in_stride
     
-    _real.pointee = a + b
-    _imag.pointee = 0
-    _real += out_stride
-    _imag += out_stride
+    let c = in_count > 2 ? input.pointee : 0
+    input += in_stride
     
-    _real.pointee = a - b
-    _imag.pointee = 0
+    let d = in_count > 3 ? input.pointee : 0
     
+    let e = a + c
+    let f = a - c
+    let g = b + d
+    let h = b - d
+    
+    out_real.pointee = e + g
+    out_imag.pointee = 0
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = f
+    out_imag.pointee = h
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = e - g
+    out_imag.pointee = 0
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = f
+    out_imag.pointee = -h
 }

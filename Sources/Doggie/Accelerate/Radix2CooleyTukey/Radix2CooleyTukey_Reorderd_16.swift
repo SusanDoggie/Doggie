@@ -27,88 +27,88 @@
 @inline(__always)
 func Radix2CooleyTukey_Reorderd_16<T: BinaryFloatingPoint>(_ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) {
     
-    var real = real
-    var imag = imag
-    var _real = real
-    var _imag = imag
+    var in_real = real
+    var in_imag = imag
+    var out_real = real
+    var out_imag = imag
     
-    let a1 = real.pointee
-    let a2 = imag.pointee
-    real += stride
-    imag += stride
+    let a1 = in_real.pointee
+    let a2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let b1 = real.pointee
-    let b2 = imag.pointee
-    real += stride
-    imag += stride
+    let b1 = in_real.pointee
+    let b2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let c1 = real.pointee
-    let c2 = imag.pointee
-    real += stride
-    imag += stride
+    let c1 = in_real.pointee
+    let c2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let d1 = real.pointee
-    let d2 = imag.pointee
-    real += stride
-    imag += stride
+    let d1 = in_real.pointee
+    let d2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let e1 = real.pointee
-    let e2 = imag.pointee
-    real += stride
-    imag += stride
+    let e1 = in_real.pointee
+    let e2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let f1 = real.pointee
-    let f2 = imag.pointee
-    real += stride
-    imag += stride
+    let f1 = in_real.pointee
+    let f2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let g1 = real.pointee
-    let g2 = imag.pointee
-    real += stride
-    imag += stride
+    let g1 = in_real.pointee
+    let g2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let h1 = real.pointee
-    let h2 = imag.pointee
-    real += stride
-    imag += stride
+    let h1 = in_real.pointee
+    let h2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let i1 = real.pointee
-    let i2 = imag.pointee
-    real += stride
-    imag += stride
+    let i1 = in_real.pointee
+    let i2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let j1 = real.pointee
-    let j2 = imag.pointee
-    real += stride
-    imag += stride
+    let j1 = in_real.pointee
+    let j2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let k1 = real.pointee
-    let k2 = imag.pointee
-    real += stride
-    imag += stride
+    let k1 = in_real.pointee
+    let k2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let l1 = real.pointee
-    let l2 = imag.pointee
-    real += stride
-    imag += stride
+    let l1 = in_real.pointee
+    let l2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let m1 = real.pointee
-    let m2 = imag.pointee
-    real += stride
-    imag += stride
+    let m1 = in_real.pointee
+    let m2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let n1 = real.pointee
-    let n2 = imag.pointee
-    real += stride
-    imag += stride
+    let n1 = in_real.pointee
+    let n2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let o1 = real.pointee
-    let o2 = imag.pointee
-    real += stride
-    imag += stride
+    let o1 = in_real.pointee
+    let o2 = in_imag.pointee
+    in_real += stride
+    in_imag += stride
     
-    let p1 = real.pointee
-    let p2 = imag.pointee
+    let p1 = in_real.pointee
+    let p2 = in_imag.pointee
     
     let a3 = a1 + b1
     let a4 = a2 + b2
@@ -236,81 +236,81 @@ func Radix2CooleyTukey_Reorderd_16<T: BinaryFloatingPoint>(_ real: UnsafeMutable
     let z2 = M_SIN_22_5 * p8 - M_COS_22_5 * p7
     let z3 = M_SIN_22_5 * p7 + M_COS_22_5 * p8
     
-    _real.pointee = a7 + i7
-    _imag.pointee = a8 + i8
-    _real += stride
-    _imag += stride
+    out_real.pointee = a7 + i7
+    out_imag.pointee = a8 + i8
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = b7 + w2
-    _imag.pointee = b8 + w3
-    _real += stride
-    _imag += stride
+    out_real.pointee = b7 + w2
+    out_imag.pointee = b8 + w3
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = c7 + q2
-    _imag.pointee = c8 + r2
-    _real += stride
-    _imag += stride
+    out_real.pointee = c7 + q2
+    out_imag.pointee = c8 + r2
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = d7 + x2
-    _imag.pointee = d8 + x3
-    _real += stride
-    _imag += stride
+    out_real.pointee = d7 + x2
+    out_imag.pointee = d8 + x3
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = e7 + m8
-    _imag.pointee = e8 - m7
-    _real += stride
-    _imag += stride
+    out_real.pointee = e7 + m8
+    out_imag.pointee = e8 - m7
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = f7 + y2
-    _imag.pointee = f8 - y3
-    _real += stride
-    _imag += stride
+    out_real.pointee = f7 + y2
+    out_imag.pointee = f8 - y3
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = g7 + s2
-    _imag.pointee = g8 - t2
-    _real += stride
-    _imag += stride
+    out_real.pointee = g7 + s2
+    out_imag.pointee = g8 - t2
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = h7 + z2
-    _imag.pointee = h8 - z3
-    _real += stride
-    _imag += stride
+    out_real.pointee = h7 + z2
+    out_imag.pointee = h8 - z3
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = a7 - i7
-    _imag.pointee = a8 - i8
-    _real += stride
-    _imag += stride
+    out_real.pointee = a7 - i7
+    out_imag.pointee = a8 - i8
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = b7 - w2
-    _imag.pointee = b8 - w3
-    _real += stride
-    _imag += stride
+    out_real.pointee = b7 - w2
+    out_imag.pointee = b8 - w3
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = c7 - q2
-    _imag.pointee = c8 - r2
-    _real += stride
-    _imag += stride
+    out_real.pointee = c7 - q2
+    out_imag.pointee = c8 - r2
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = d7 - x2
-    _imag.pointee = d8 - x3
-    _real += stride
-    _imag += stride
+    out_real.pointee = d7 - x2
+    out_imag.pointee = d8 - x3
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = e7 - m8
-    _imag.pointee = e8 + m7
-    _real += stride
-    _imag += stride
+    out_real.pointee = e7 - m8
+    out_imag.pointee = e8 + m7
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = f7 - y2
-    _imag.pointee = f8 + y3
-    _real += stride
-    _imag += stride
+    out_real.pointee = f7 - y2
+    out_imag.pointee = f8 + y3
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = g7 - s2
-    _imag.pointee = g8 + t2
-    _real += stride
-    _imag += stride
+    out_real.pointee = g7 - s2
+    out_imag.pointee = g8 + t2
+    out_real += stride
+    out_imag += stride
     
-    _real.pointee = h7 - z2
-    _imag.pointee = h8 + z3
+    out_real.pointee = h7 - z2
+    out_imag.pointee = h8 + z3
 }

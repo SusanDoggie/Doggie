@@ -25,10 +25,10 @@
 
 @inlinable
 @inline(__always)
-func HalfInverseRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+func HalfInverseRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
-    var real = real
-    var imag = imag
+    var in_real = in_real
+    var in_imag = in_imag
     var output = output
     
     if _slowPath(in_count == 0) {
@@ -66,43 +66,43 @@ func HalfInverseRadix2CooleyTukey_16<T: BinaryFloatingPoint>(_ real: UnsafePoint
         return
     }
     
-    let a1 = real.pointee
-    let b1 = imag.pointee
-    real += in_stride
-    imag += in_stride
+    let a1 = in_real.pointee
+    let b1 = in_imag.pointee
+    in_real += in_stride
+    in_imag += in_stride
     
-    let i1 = in_count > 1 ? real.pointee : 0
-    let i2 = in_count > 1 ? imag.pointee : 0
-    real += in_stride
-    imag += in_stride
+    let i1 = in_count > 1 ? in_real.pointee : 0
+    let i2 = in_count > 1 ? in_imag.pointee : 0
+    in_real += in_stride
+    in_imag += in_stride
     
-    let e1 = in_count > 2 ? real.pointee : 0
-    let e2 = in_count > 2 ? imag.pointee : 0
-    real += in_stride
-    imag += in_stride
+    let e1 = in_count > 2 ? in_real.pointee : 0
+    let e2 = in_count > 2 ? in_imag.pointee : 0
+    in_real += in_stride
+    in_imag += in_stride
     
-    let m1 = in_count > 3 ? real.pointee : 0
-    let m2 = in_count > 3 ? imag.pointee : 0
-    real += in_stride
-    imag += in_stride
+    let m1 = in_count > 3 ? in_real.pointee : 0
+    let m2 = in_count > 3 ? in_imag.pointee : 0
+    in_real += in_stride
+    in_imag += in_stride
     
-    let c1 = in_count > 4 ? real.pointee : 0
-    let c2 = in_count > 4 ? imag.pointee : 0
-    real += in_stride
-    imag += in_stride
+    let c1 = in_count > 4 ? in_real.pointee : 0
+    let c2 = in_count > 4 ? in_imag.pointee : 0
+    in_real += in_stride
+    in_imag += in_stride
     
-    let k1 = in_count > 5 ? real.pointee : 0
-    let k2 = in_count > 5 ? imag.pointee : 0
-    real += in_stride
-    imag += in_stride
+    let k1 = in_count > 5 ? in_real.pointee : 0
+    let k2 = in_count > 5 ? in_imag.pointee : 0
+    in_real += in_stride
+    in_imag += in_stride
     
-    let g1 = in_count > 6 ? real.pointee : 0
-    let g2 = in_count > 6 ? imag.pointee : 0
-    real += in_stride
-    imag += in_stride
+    let g1 = in_count > 6 ? in_real.pointee : 0
+    let g2 = in_count > 6 ? in_imag.pointee : 0
+    in_real += in_stride
+    in_imag += in_stride
     
-    let o1 = in_count > 7 ? real.pointee : 0
-    let o2 = in_count > 7 ? imag.pointee : 0
+    let o1 = in_count > 7 ? in_real.pointee : 0
+    let o2 = in_count > 7 ? in_imag.pointee : 0
     
     let a3 = a1 + b1
     let b3 = a1 - b1

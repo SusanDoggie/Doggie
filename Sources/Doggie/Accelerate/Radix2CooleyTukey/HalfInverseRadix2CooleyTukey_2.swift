@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-func HalfInverseRadix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+func HalfInverseRadix2CooleyTukey_2<T: FloatingPoint>(_ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var output = output
     
@@ -36,8 +36,8 @@ func HalfInverseRadix2CooleyTukey_2<T: FloatingPoint>(_ real: UnsafePointer<T>, 
         return
     }
     
-    let a = real.pointee
-    let b = imag.pointee
+    let a = in_real.pointee
+    let b = in_imag.pointee
     
     output.pointee = a + b
     output += out_stride
