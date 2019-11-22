@@ -1,5 +1,5 @@
 //
-//  HalfRadix2CooleyTukey_2.swift
+//  half_cooleytukey_4.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -25,30 +25,64 @@
 
 @inlinable
 @inline(__always)
-func HalfRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>) {
+func half_cooleytukey_forward_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
+    var out_real = out_real
+    var out_imag = out_imag
     
-    let a = input.pointee
+    let a =  input.pointee
     input += in_stride
     
     let b = in_count > 1 ? input.pointee : 0
+    input += in_stride
     
-    out_real.pointee = a + b
-    out_imag.pointee = a - b
+    let c = in_count > 2 ? input.pointee : 0
+    input += in_stride
+    
+    let d = in_count > 3 ? input.pointee : 0
+    
+    let e = a + c
+    let f = b + d
+    
+    out_real.pointee = e + f
+    out_imag.pointee = e - f
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = a - c
+    out_imag.pointee = d - b
 }
 
 @inlinable
 @inline(__always)
-func HalfInverseRadix2CooleyTukey_2<T: FloatingPoint>(_ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+func half_cooleytukey_inverse_4<T: FloatingPoint>(_ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
+    var in_real = in_real
+    var in_imag = in_imag
     var output = output
     
     let a = in_real.pointee
     let b = in_imag.pointee
+    in_real += in_stride
+    in_imag += in_stride
     
-    output.pointee = a + b
+    let c = in_count > 1 ? in_real.pointee : 0
+    let d = in_count > 1 ? in_imag.pointee : 0
+    
+    let e = a + b
+    let f = a - b
+    let g = c + c
+    let h = d + d
+    
+    output.pointee = e + g
     output += out_stride
     
-    output.pointee = a - b
+    output.pointee = f - h
+    output += out_stride
+    
+    output.pointee = e - g
+    output += out_stride
+    
+    output.pointee = f + h
 }

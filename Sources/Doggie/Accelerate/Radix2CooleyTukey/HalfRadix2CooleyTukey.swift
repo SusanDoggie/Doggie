@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-func _HalfRadix2CooleyTukeyTwiddling<T: BinaryFloatingPoint>(_ log2N: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+func cooleytukey_twiddling<T: BinaryFloatingPoint>(_ log2N: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
     
     let length = 1 << log2N
     let half = length >> 1
@@ -108,18 +108,18 @@ public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input:
         out_imag.pointee = 0
         
     case 1:
-        HalfRadix2CooleyTukey_2(input, in_stride, in_count, out_real, out_imag)
+        half_cooleytukey_forward_2(input, in_stride, in_count, out_real, out_imag)
     case 2:
-        HalfRadix2CooleyTukey_4(input, in_stride, in_count, out_real, out_imag, out_stride)
+        half_cooleytukey_forward_4(input, in_stride, in_count, out_real, out_imag, out_stride)
     case 3:
-        HalfRadix2CooleyTukey_8(input, in_stride, in_count, out_real, out_imag, out_stride)
+        half_cooleytukey_forward_8(input, in_stride, in_count, out_real, out_imag, out_stride)
     case 4:
-        HalfRadix2CooleyTukey_16(input, in_stride, in_count, out_real, out_imag, out_stride)
+        half_cooleytukey_forward_16(input, in_stride, in_count, out_real, out_imag, out_stride)
         
     default:
         let _in_count = in_count >> 1
-        _Radix2CooleyTukey(log2N - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
-        _HalfRadix2CooleyTukeyTwiddling(log2N, out_real, out_imag, out_stride)
+        cooleytukey_forward(log2N - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
+        cooleytukey_twiddling(log2N, out_real, out_imag, out_stride)
     }
 }
 @inlinable
@@ -131,16 +131,16 @@ public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ buffer
     case 0: break
         
     case 1:
-        HalfRadix2CooleyTukey_2(buffer, stride, 1, buffer, buffer + stride)
+        half_cooleytukey_forward_2(buffer, stride, 1, buffer, buffer + stride)
     case 2:
-        HalfRadix2CooleyTukey_4(buffer, stride, 2, buffer, buffer + stride, stride << 1)
+        half_cooleytukey_forward_4(buffer, stride, 2, buffer, buffer + stride, stride << 1)
     case 3:
-        HalfRadix2CooleyTukey_8(buffer, stride, 4, buffer, buffer + stride, stride << 1)
+        half_cooleytukey_forward_8(buffer, stride, 4, buffer, buffer + stride, stride << 1)
     case 4:
-        HalfRadix2CooleyTukey_16(buffer, stride, 8, buffer, buffer + stride, stride << 1)
+        half_cooleytukey_forward_16(buffer, stride, 8, buffer, buffer + stride, stride << 1)
         
     default:
         Radix2CooleyTukey(log2N - 1, buffer, buffer + stride, stride << 1)
-        _HalfRadix2CooleyTukeyTwiddling(log2N, buffer, buffer + stride, stride << 1)
+        cooleytukey_twiddling(log2N, buffer, buffer + stride, stride << 1)
     }
 }

@@ -48,20 +48,20 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input: Uns
         out_imag.pointee = 0
         
     case 1:
-        Radix2CooleyTukey_2(input, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_forward_2(input, in_stride, in_count, out_real, out_imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(input, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_forward_4(input, in_stride, in_count, out_real, out_imag, out_stride)
     case 3:
-        Radix2CooleyTukey_8(input, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_forward_8(input, in_stride, in_count, out_real, out_imag, out_stride)
     case 4:
-        Radix2CooleyTukey_16(input, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_forward_16(input, in_stride, in_count, out_real, out_imag, out_stride)
         
     default:
         let half = length >> 1
         let fourth = length >> 2
         
         let _in_count = in_count >> 1
-        _Radix2CooleyTukey(log2N - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
+        cooleytukey_forward(log2N - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = out_real
@@ -143,12 +143,12 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input: Uns
 @inline(__always)
 public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    _Radix2CooleyTukey(log2N, in_real, in_imag, in_stride, (in_count, in_count), out_real, out_imag, out_stride)
+    cooleytukey_forward(log2N, in_real, in_imag, in_stride, (in_count, in_count), out_real, out_imag, out_stride)
 }
 
 @inlinable
 @inline(__always)
-func _Radix2CooleyTukey_Reorderd<T: BinaryFloatingPoint>(_ log2N: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+func cooleytukey_forward_reorderd<T: BinaryFloatingPoint>(_ log2N: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
     
     let count = 1 << log2N
     
@@ -157,7 +157,7 @@ func _Radix2CooleyTukey_Reorderd<T: BinaryFloatingPoint>(_ log2N: Int, _ real: U
         var _i = imag
         let m_stride = stride << 4
         for _ in Swift.stride(from: 0, to: count, by: 16) {
-            Radix2CooleyTukey_Reorderd_16(_r, _i, stride)
+            cooleytukey_forward_reorderd_16(_r, _i, stride)
             _r += m_stride
             _i += m_stride
         }
@@ -224,7 +224,7 @@ func _Radix2CooleyTukey_Reorderd<T: BinaryFloatingPoint>(_ log2N: Int, _ real: U
 
 @inlinable
 @inline(__always)
-func _Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+func cooleytukey_forward<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
     let count = 1 << log2N
     
@@ -247,13 +247,13 @@ func _Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafeP
         out_imag.pointee = in_count.1 == 0 ? 0 : in_imag.pointee
         
     case 1:
-        Radix2CooleyTukey_2(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_forward_2(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
     case 2:
-        Radix2CooleyTukey_4(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_forward_4(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
     case 3:
-        Radix2CooleyTukey_8(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_forward_8(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
     case 4:
-        Radix2CooleyTukey_16(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_forward_16(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
         
     default:
         let offset = Int.bitWidth - log2N
@@ -270,7 +270,7 @@ func _Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafeP
             }
         }
         
-        _Radix2CooleyTukey_Reorderd(log2N, out_real, out_imag, out_stride)
+        cooleytukey_forward_reorderd(log2N, out_real, out_imag, out_stride)
     }
 }
 
@@ -285,13 +285,13 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ real: Unsa
     case 0: break
         
     case 1:
-        Radix2CooleyTukey_2(real, imag, stride, (count, count), real, imag, stride)
+        cooleytukey_forward_2(real, imag, stride, (count, count), real, imag, stride)
     case 2:
-        Radix2CooleyTukey_4(real, imag, stride, (count, count), real, imag, stride)
+        cooleytukey_forward_4(real, imag, stride, (count, count), real, imag, stride)
     case 3:
-        Radix2CooleyTukey_8(real, imag, stride, (count, count), real, imag, stride)
+        cooleytukey_forward_8(real, imag, stride, (count, count), real, imag, stride)
     case 4:
-        Radix2CooleyTukey_16(real, imag, stride, (count, count), real, imag, stride)
+        cooleytukey_forward_16(real, imag, stride, (count, count), real, imag, stride)
         
     default:
         
@@ -310,6 +310,6 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ real: Unsa
             }
         }
         
-        _Radix2CooleyTukey_Reorderd(log2N, real, imag, stride)
+        cooleytukey_forward_reorderd(log2N, real, imag, stride)
     }
 }

@@ -48,13 +48,13 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ inp
         out_imag.pointee = 0
         
     case 1:
-        InverseRadix2CooleyTukey_2(input, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_inverse_2(input, in_stride, in_count, out_real, out_imag, out_stride)
     case 2:
-        InverseRadix2CooleyTukey_4(input, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_inverse_4(input, in_stride, in_count, out_real, out_imag, out_stride)
     case 3:
-        InverseRadix2CooleyTukey_8(input, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_inverse_8(input, in_stride, in_count, out_real, out_imag, out_stride)
     case 4:
-        InverseRadix2CooleyTukey_16(input, in_stride, in_count, out_real, out_imag, out_stride)
+        cooleytukey_inverse_16(input, in_stride, in_count, out_real, out_imag, out_stride)
         
     default:
         let half = length >> 1
@@ -62,7 +62,7 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ inp
         
         
         let _in_count = in_count >> 1
-        _InverseRadix2CooleyTukey(log2N - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
+        cooleytukey_inverse(log2N - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = out_real
@@ -141,9 +141,9 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ inp
 
 @inlinable
 @inline(__always)
-func _InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+func cooleytukey_inverse<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    _Radix2CooleyTukey(log2N, in_imag, in_real, in_stride, (in_count.1, in_count.0), out_imag, out_real, out_stride)
+    cooleytukey_forward(log2N, in_imag, in_real, in_stride, (in_count.1, in_count.0), out_imag, out_real, out_stride)
 }
 
 @inlinable

@@ -33,13 +33,13 @@ public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _
         output.pointee = in_real.pointee
         
     case 1:
-        HalfInverseRadix2CooleyTukey_2(in_real, in_imag, 1, output, out_stride)
+        half_cooleytukey_inverse_2(in_real, in_imag, 1, output, out_stride)
     case 2:
-        HalfInverseRadix2CooleyTukey_4(in_real, in_imag, in_stride, 2, output, out_stride)
+        half_cooleytukey_inverse_4(in_real, in_imag, in_stride, 2, output, out_stride)
     case 3:
-        HalfInverseRadix2CooleyTukey_8(in_real, in_imag, in_stride, 4, output, out_stride)
+        half_cooleytukey_inverse_8(in_real, in_imag, in_stride, 4, output, out_stride)
     case 4:
-        HalfInverseRadix2CooleyTukey_16(in_real, in_imag, in_stride, 8, output, out_stride)
+        half_cooleytukey_inverse_16(in_real, in_imag, in_stride, 8, output, out_stride)
         
     default:
         let length = 1 << log2N
