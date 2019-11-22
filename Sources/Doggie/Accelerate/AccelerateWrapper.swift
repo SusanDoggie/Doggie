@@ -49,79 +49,79 @@ extension UnsafeMutablePointer where Pointee == Complex {
 
 @inlinable
 @inline(__always)
-public func HalfRadix2CooleyTukey(_ log2N: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    let length = 1 << log2N
+public func HalfRadix2CooleyTukey(_ log2n: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let length = 1 << log2n
     let half = length >> 1
-    output._reboundToDouble(capacity: half) { HalfRadix2CooleyTukey(log2N, input, in_stride, in_count, $0, $0.successor(), out_stride << 1) }
+    output._reboundToDouble(capacity: half) { HalfRadix2CooleyTukey(log2n, input, in_stride, in_count, $0, $0.successor(), out_stride << 1) }
 }
 @inlinable
 @inline(__always)
-public func HalfInverseRadix2CooleyTukey(_ log2N: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
-    let length = 1 << log2N
+public func HalfInverseRadix2CooleyTukey(_ log2n: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    let length = 1 << log2n
     let half = length >> 1
-    input._reboundToDouble(capacity: half) { _input in HalfInverseRadix2CooleyTukey(log2N, _input, _input.successor(), in_stride << 1, output, out_stride) }
+    input._reboundToDouble(capacity: half) { _input in HalfInverseRadix2CooleyTukey(log2n, _input, _input.successor(), in_stride << 1, output, out_stride) }
 }
 @inlinable
 @inline(__always)
-public func Radix2CooleyTukey(_ log2N: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    let length = 1 << log2N
-    output._reboundToDouble(capacity: length) { Radix2CooleyTukey(log2N, input, in_stride, in_count, $0, $0.successor(), out_stride << 1) }
+public func Radix2CooleyTukey(_ log2n: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let length = 1 << log2n
+    output._reboundToDouble(capacity: length) { Radix2CooleyTukey(log2n, input, in_stride, in_count, $0, $0.successor(), out_stride << 1) }
 }
 @inlinable
 @inline(__always)
-public func Radix2CooleyTukey(_ log2N: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    let length = 1 << log2N
-    input._reboundToDouble(capacity: in_count) { _input in output._reboundToDouble(capacity: length) { Radix2CooleyTukey(log2N, _input, _input.successor(), in_stride << 1, in_count, $0, $0.successor(), out_stride << 1) } }
+public func Radix2CooleyTukey(_ log2n: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let length = 1 << log2n
+    input._reboundToDouble(capacity: in_count) { _input in output._reboundToDouble(capacity: length) { Radix2CooleyTukey(log2n, _input, _input.successor(), in_stride << 1, in_count, $0, $0.successor(), out_stride << 1) } }
 }
 @inlinable
 @inline(__always)
-public func InverseRadix2CooleyTukey(_ log2N: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    let length = 1 << log2N
-    output._reboundToDouble(capacity: length) { InverseRadix2CooleyTukey(log2N, input, in_stride, in_count, $0, $0.successor(), out_stride << 1) }
+public func InverseRadix2CooleyTukey(_ log2n: Int, _ input: UnsafePointer<Double>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let length = 1 << log2n
+    output._reboundToDouble(capacity: length) { InverseRadix2CooleyTukey(log2n, input, in_stride, in_count, $0, $0.successor(), out_stride << 1) }
 }
 @inlinable
 @inline(__always)
-public func InverseRadix2CooleyTukey(_ log2N: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    let length = 1 << log2N
-    input._reboundToDouble(capacity: in_count) { _input in output._reboundToDouble(capacity: length) { InverseRadix2CooleyTukey(log2N, _input, _input.successor(), in_stride << 1, in_count, $0, $0.successor(), out_stride << 1) } }
+public func InverseRadix2CooleyTukey(_ log2n: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let length = 1 << log2n
+    input._reboundToDouble(capacity: in_count) { _input in output._reboundToDouble(capacity: length) { InverseRadix2CooleyTukey(log2n, _input, _input.successor(), in_stride << 1, in_count, $0, $0.successor(), out_stride << 1) } }
 }
 @inlinable
 @inline(__always)
-public func Radix2CooleyTukey(_ log2N: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
-    let length = 1 << log2N
-    buffer._reboundToDouble(capacity: length) { Radix2CooleyTukey(log2N, $0, $0.successor(), stride << 1) }
+public func Radix2CooleyTukey(_ log2n: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
+    let length = 1 << log2n
+    buffer._reboundToDouble(capacity: length) { Radix2CooleyTukey(log2n, $0, $0.successor(), stride << 1) }
 }
 @inlinable
 @inline(__always)
-public func InverseRadix2CooleyTukey(_ log2N: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
-    let length = 1 << log2N
-    buffer._reboundToDouble(capacity: length) { InverseRadix2CooleyTukey(log2N, $0, $0.successor(), stride << 1) }
+public func InverseRadix2CooleyTukey(_ log2n: Int, _ buffer: UnsafeMutablePointer<Complex>, _ stride: Int) {
+    let length = 1 << log2n
+    buffer._reboundToDouble(capacity: length) { InverseRadix2CooleyTukey(log2n, $0, $0.successor(), stride << 1) }
 }
 
 @inlinable
 @inline(__always)
-public func Radix2CircularConvolve(_ log2N: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
-    let length = 1 << log2N
-    signal._reboundToDouble(capacity: signal_count) { _signal in kernel._reboundToDouble(capacity: kernel_count) { _kernel in temp._reboundToDouble(capacity: length) { _temp in output._reboundToDouble(capacity: length) { Radix2CircularConvolve(log2N, _signal, _signal.successor(), signal_stride << 1, signal_count, _kernel, _kernel.successor(), kernel_stride << 1, kernel_count, $0, $0.successor(), out_stride << 1, _temp, _temp.successor(), temp_stride << 1) } } } }
+public func Radix2CircularConvolve(_ log2n: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int, _ temp: UnsafeMutablePointer<Complex>, _ temp_stride: Int) {
+    let length = 1 << log2n
+    signal._reboundToDouble(capacity: signal_count) { _signal in kernel._reboundToDouble(capacity: kernel_count) { _kernel in temp._reboundToDouble(capacity: length) { _temp in output._reboundToDouble(capacity: length) { Radix2CircularConvolve(log2n, _signal, _signal.successor(), signal_stride << 1, signal_count, _kernel, _kernel.successor(), kernel_stride << 1, kernel_count, $0, $0.successor(), out_stride << 1, _temp, _temp.successor(), temp_stride << 1) } } } }
 }
 @inlinable
 @inline(__always)
-public func Radix2PowerCircularConvolve(_ log2N: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    let length = 1 << log2N
-    input._reboundToDouble(capacity: in_count) { _input in output._reboundToDouble(capacity: length) { Radix2PowerCircularConvolve(log2N, _input, _input.successor(), in_stride << 1, in_count, n, $0, $0.successor(), out_stride << 1) } }
+public func Radix2PowerCircularConvolve(_ log2n: Int, _ input: UnsafePointer<Complex>, _ in_stride: Int, _ in_count: Int, _ n: Double, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let length = 1 << log2n
+    input._reboundToDouble(capacity: in_count) { _input in output._reboundToDouble(capacity: length) { Radix2PowerCircularConvolve(log2n, _input, _input.successor(), in_stride << 1, in_count, n, $0, $0.successor(), out_stride << 1) } }
 }
 
 @inlinable
 @inline(__always)
-public func Radix2FiniteImpulseFilter(_ log2N: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
-    let length = 1 << log2N
+public func Radix2FiniteImpulseFilter(_ log2n: Int, _ signal: UnsafePointer<Double>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Double>, _ out_stride: Int) {
+    let length = 1 << log2n
     let half = length >> 1
-    kernel._reboundToDouble(capacity: half) { Radix2FiniteImpulseFilter(log2N, signal, signal_stride, signal_count, $0, $0.successor(), kernel_stride << 1, output, out_stride) }
+    kernel._reboundToDouble(capacity: half) { Radix2FiniteImpulseFilter(log2n, signal, signal_stride, signal_count, $0, $0.successor(), kernel_stride << 1, output, out_stride) }
 }
 
 @inlinable
 @inline(__always)
-public func Radix2FiniteImpulseFilter(_ log2N: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
-    let length = 1 << log2N
-    signal._reboundToDouble(capacity: signal_count) { _signal in kernel._reboundToDouble(capacity: length) { _kernel in output._reboundToDouble(capacity: length) { Radix2FiniteImpulseFilter(log2N, _signal, _signal.successor(), signal_stride << 1, signal_count, _kernel, _kernel.successor(), kernel_stride << 1, $0, $0.successor(), out_stride << 1) } } }
+public func Radix2FiniteImpulseFilter(_ log2n: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
+    let length = 1 << log2n
+    signal._reboundToDouble(capacity: signal_count) { _signal in kernel._reboundToDouble(capacity: length) { _kernel in output._reboundToDouble(capacity: length) { Radix2FiniteImpulseFilter(log2n, _signal, _signal.successor(), signal_stride << 1, signal_count, _kernel, _kernel.successor(), kernel_stride << 1, $0, $0.successor(), out_stride << 1) } } }
 }

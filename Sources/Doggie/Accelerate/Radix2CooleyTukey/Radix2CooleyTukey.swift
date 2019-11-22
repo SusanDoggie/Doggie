@@ -25,9 +25,9 @@
 
 @inlinable
 @inline(__always)
-public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    let length = 1 << log2N
+    let length = 1 << log2n
     
     if _slowPath(in_count == 0) {
         var out_real = out_real
@@ -41,7 +41,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input: Uns
         return
     }
     
-    switch log2N {
+    switch log2n {
         
     case 0:
         out_real.pointee = in_count == 0 ? 0 : input.pointee
@@ -61,7 +61,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input: Uns
         let fourth = length >> 2
         
         let _in_count = in_count >> 1
-        cooleytukey_forward(log2N - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
+        cooleytukey_forward(log2n - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = out_real
@@ -141,16 +141,16 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input: Uns
 
 @inlinable
 @inline(__always)
-public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    cooleytukey_forward(log2N, in_real, in_imag, in_stride, (in_count, in_count), out_real, out_imag, out_stride)
+    cooleytukey_forward(log2n, in_real, in_imag, in_stride, (in_count, in_count), out_real, out_imag, out_stride)
 }
 
 @inlinable
 @inline(__always)
-func cooleytukey_forward_reorderd<T: BinaryFloatingPoint>(_ log2N: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+func cooleytukey_forward_reorderd<T: BinaryFloatingPoint>(_ log2n: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
     
-    let count = 1 << log2N
+    let count = 1 << log2n
     
     do {
         var _r = real
@@ -163,7 +163,7 @@ func cooleytukey_forward_reorderd<T: BinaryFloatingPoint>(_ log2N: Int, _ real: 
         }
     }
     
-    for s in 4..<log2N {
+    for s in 4..<log2n {
         
         let m = 2 << s
         let n = 1 << s
@@ -224,9 +224,9 @@ func cooleytukey_forward_reorderd<T: BinaryFloatingPoint>(_ log2N: Int, _ real: 
 
 @inlinable
 @inline(__always)
-func cooleytukey_forward<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+func cooleytukey_forward<T: BinaryFloatingPoint>(_ log2n: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    let count = 1 << log2N
+    let count = 1 << log2n
     
     if _slowPath(in_count.0 == 0 && in_count.1 == 0) {
         var out_real = out_real
@@ -240,7 +240,7 @@ func cooleytukey_forward<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: Unsafe
         return
     }
     
-    switch log2N {
+    switch log2n {
         
     case 0:
         out_real.pointee = in_count.0 == 0 ? 0 : in_real.pointee
@@ -256,7 +256,7 @@ func cooleytukey_forward<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: Unsafe
         cooleytukey_forward_16(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
         
     default:
-        let offset = Int.bitWidth - log2N
+        let offset = Int.bitWidth - log2n
         
         do {
             var in_real = in_real
@@ -270,17 +270,17 @@ func cooleytukey_forward<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: Unsafe
             }
         }
         
-        cooleytukey_forward_reorderd(log2N, out_real, out_imag, out_stride)
+        cooleytukey_forward_reorderd(log2n, out_real, out_imag, out_stride)
     }
 }
 
 @inlinable
 @inline(__always)
-public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
     
-    let count = 1 << log2N
+    let count = 1 << log2n
     
-    switch log2N {
+    switch log2n {
         
     case 0: break
         
@@ -296,7 +296,7 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ real: Unsa
     default:
         
         do {
-            let offset = Int.bitWidth - log2N
+            let offset = Int.bitWidth - log2n
             var _real = real
             var _imag = imag
             for i in 1..<count - 1 {
@@ -310,6 +310,6 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ real: Unsa
             }
         }
         
-        cooleytukey_forward_reorderd(log2N, real, imag, stride)
+        cooleytukey_forward_reorderd(log2n, real, imag, stride)
     }
 }

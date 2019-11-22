@@ -25,10 +25,10 @@
 
 @inlinable
 @inline(__always)
-public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2N: (Int, Int), _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int), _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    let width = 1 << log2N.0
-    let height = 1 << log2N.1
+    let width = 1 << log2n.0
+    let height = 1 << log2n.1
     let half_width = width >> 1
     
     let in_width = in_count.0
@@ -43,7 +43,7 @@ public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2N: (Int, Int),
         var out_imag = out_imag
         
         for _ in 0..<in_height {
-            HalfRadix2CooleyTukey(log2N.0, input, in_stride, in_width, out_real, out_imag, out_stride)
+            HalfRadix2CooleyTukey(log2n.0, input, in_stride, in_width, out_real, out_imag, out_stride)
             input += in_row_stride
             out_real += out_row_stride
             out_imag += out_row_stride
@@ -66,23 +66,23 @@ public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2N: (Int, Int),
         var out_real = out_real
         var out_imag = out_imag
         
-        HalfRadix2CooleyTukey(log2N.1, out_real, out_row_stride)
-        HalfRadix2CooleyTukey(log2N.1, out_imag, out_row_stride)
+        HalfRadix2CooleyTukey(log2n.1, out_real, out_row_stride)
+        HalfRadix2CooleyTukey(log2n.1, out_imag, out_row_stride)
         
         for _ in 1..<half_width {
             out_real += out_stride
             out_imag += out_stride
-            Radix2CooleyTukey(log2N.1, out_real, out_imag, out_row_stride)
+            Radix2CooleyTukey(log2n.1, out_real, out_imag, out_row_stride)
         }
     }
 }
 
 @inlinable
 @inline(__always)
-public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2N: (Int, Int), _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int), _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    let width = 1 << log2N.0
-    let height = 1 << log2N.1
+    let width = 1 << log2n.0
+    let height = 1 << log2n.1
     let half_width = width >> 1
     
     do {
@@ -95,15 +95,15 @@ public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2N: (Int
         let in_row_stride = in_stride * half_width
         let out_row_stride = _out_stride * half_width
         
-        HalfInverseRadix2CooleyTukey(log2N.1, in_real, in_real + in_row_stride, in_row_stride << 1, out_real, out_row_stride)
-        HalfInverseRadix2CooleyTukey(log2N.1, in_imag, in_imag + in_row_stride, in_row_stride << 1, out_imag, out_row_stride)
+        HalfInverseRadix2CooleyTukey(log2n.1, in_real, in_real + in_row_stride, in_row_stride << 1, out_real, out_row_stride)
+        HalfInverseRadix2CooleyTukey(log2n.1, in_imag, in_imag + in_row_stride, in_row_stride << 1, out_imag, out_row_stride)
         
         for _ in 1..<half_width {
             in_real += in_stride
             in_imag += in_stride
             out_real += _out_stride
             out_imag += _out_stride
-            InverseRadix2CooleyTukey(log2N.1, in_real, in_imag, in_row_stride, height, out_real, out_imag, out_row_stride)
+            InverseRadix2CooleyTukey(log2n.1, in_real, in_imag, in_row_stride, height, out_real, out_imag, out_row_stride)
         }
     }
     
@@ -113,7 +113,7 @@ public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2N: (Int
         let out_row_stride = out_stride * width
         
         for _ in 0..<height {
-            HalfInverseRadix2CooleyTukey(log2N.0, output, out_stride)
+            HalfInverseRadix2CooleyTukey(log2n.0, output, out_stride)
             output += out_row_stride
         }
     }

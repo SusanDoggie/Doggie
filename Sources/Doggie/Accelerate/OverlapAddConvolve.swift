@@ -68,7 +68,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & FloatingMathProt
         let half = fft_length >> 1
         var source = source
         
-        let log2N = log2(fft_length)
+        let log2n = log2(fft_length)
         
         buffer.withUnsafeMutableBufferPointer {
             
@@ -84,7 +84,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & FloatingMathProt
                 
                 let count = min(source.count, half)
                 
-                Radix2FiniteImpulseFilter(log2N, source.baseAddress!, 1, count, kreal, kimag, 1, temp, 1)
+                Radix2FiniteImpulseFilter(log2n, source.baseAddress!, 1, count, kreal, kimag, 1, temp, 1)
                 
                 vec_op(overlap_length, temp, 1, overlap, 1, temp, 1) { $0 + $1 }
                 Move(overlap_length, temp + count, 1, overlap, 1)
