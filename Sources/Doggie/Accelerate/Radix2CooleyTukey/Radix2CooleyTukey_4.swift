@@ -31,24 +31,6 @@ func Radix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_strid
     var out_real = out_real
     var out_imag = out_imag
     
-    if _slowPath(in_count == 0) {
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        return
-    }
-    
     let a = input.pointee
     input += in_stride
     
@@ -92,24 +74,6 @@ func Radix2CooleyTukey_4<T: FloatingPoint>(_ in_real: UnsafePointer<T>, _ in_ima
     var in_imag = in_imag
     var out_real = out_real
     var out_imag = out_imag
-    
-    if _slowPath(in_count.0 == 0 && in_count.1 == 0) {
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        return
-    }
     
     let a = in_real.pointee
     let b = in_imag.pointee
@@ -155,4 +119,47 @@ func Radix2CooleyTukey_4<T: FloatingPoint>(_ in_real: UnsafePointer<T>, _ in_ima
     
     out_real.pointee = k - p
     out_imag.pointee = l + o
+}
+
+@inlinable
+@inline(__always)
+func InverseRadix2CooleyTukey_4<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var out_real = out_real
+    var out_imag = out_imag
+    
+    let a = input.pointee
+    input += in_stride
+    
+    let b = in_count > 1 ? input.pointee : 0
+    input += in_stride
+    
+    let c = in_count > 2 ? input.pointee : 0
+    input += in_stride
+    
+    let d = in_count > 3 ? input.pointee : 0
+    
+    let e = a + c
+    let f = a - c
+    let g = b + d
+    let h = b - d
+    
+    out_real.pointee = e + g
+    out_imag.pointee = 0
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = f
+    out_imag.pointee = h
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = e - g
+    out_imag.pointee = 0
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = f
+    out_imag.pointee = -h
 }

@@ -31,40 +31,6 @@ func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in
     var out_real = out_real
     var out_imag = out_imag
     
-    if _slowPath(in_count == 0) {
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        return
-    }
-    
     let a1 = input.pointee
     input += in_stride
     
@@ -154,40 +120,6 @@ func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ in_real: UnsafePointer<T>, _ 
     var in_imag = in_imag
     var out_real = out_real
     var out_imag = out_imag
-    
-    if _slowPath(in_count.0 == 0 && in_count.1 == 0) {
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        return
-    }
     
     let a1 = in_real.pointee
     let a2 = in_imag.pointee
@@ -305,4 +237,93 @@ func Radix2CooleyTukey_8<T: BinaryFloatingPoint>(_ in_real: UnsafePointer<T>, _ 
     
     out_real.pointee = d5 + k
     out_imag.pointee = d6 + l
+}
+
+@inlinable
+@inline(__always)
+func InverseRadix2CooleyTukey_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var out_real = out_real
+    var out_imag = out_imag
+    
+    let a1 = input.pointee
+    input += in_stride
+    
+    let e1 = in_count > 1 ? input.pointee : 0
+    input += in_stride
+    
+    let c1 = in_count > 2 ? input.pointee : 0
+    input += in_stride
+    
+    let g1 = in_count > 3 ? input.pointee : 0
+    input += in_stride
+    
+    let b1 = in_count > 4 ? input.pointee : 0
+    input += in_stride
+    
+    let f1 = in_count > 5 ? input.pointee : 0
+    input += in_stride
+    
+    let d1 = in_count > 6 ? input.pointee : 0
+    input += in_stride
+    
+    let h1 = in_count > 7 ? input.pointee : 0
+    
+    let a3 = a1 + b1
+    let b3 = a1 - b1
+    let c3 = c1 + d1
+    let d3 = c1 - d1
+    let e3 = e1 + f1
+    let f3 = e1 - f1
+    let g3 = g1 + h1
+    let h3 = g1 - h1
+    
+    let a5 = a3 + c3
+    let c5 = a3 - c3
+    let e5 = e3 + g3
+    let g5 = e3 - g3
+    
+    let M_SQRT1_2 = 0.7071067811865475244008443621048490392848359376884740 as T
+    
+    let i = M_SQRT1_2 * (f3 - h3)
+    let j = M_SQRT1_2 * (h3 + f3)
+    
+    out_real.pointee = a5 + e5
+    out_imag.pointee = 0
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = b3 + i
+    out_imag.pointee = d3 + j
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = c5
+    out_imag.pointee = g5
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = b3 - i
+    out_imag.pointee = j - d3
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = a5 - e5
+    out_imag.pointee = 0
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = b3 - i
+    out_imag.pointee = d3 - j
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = c5
+    out_imag.pointee = -g5
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = b3 + i
+    out_imag.pointee = -d3 - j
 }

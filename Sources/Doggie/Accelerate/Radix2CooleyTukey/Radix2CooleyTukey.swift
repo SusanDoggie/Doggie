@@ -27,6 +27,20 @@
 @inline(__always)
 public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
+    let length = 1 << log2N
+    
+    if _slowPath(in_count == 0) {
+        var out_real = out_real
+        var out_imag = out_imag
+        for _ in 0..<length {
+            out_real.pointee = 0
+            out_imag.pointee = 0
+            out_real += out_stride
+            out_imag += out_stride
+        }
+        return
+    }
+    
     switch log2N {
         
     case 0:
@@ -43,21 +57,8 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input: Uns
         Radix2CooleyTukey_16(input, in_stride, in_count, out_real, out_imag, out_stride)
         
     default:
-        let length = 1 << log2N
         let half = length >> 1
         let fourth = length >> 2
-        
-        if _slowPath(in_count == 0) {
-            var out_real = out_real
-            var out_imag = out_imag
-            for _ in 0..<length {
-                out_real.pointee = 0
-                out_imag.pointee = 0
-                out_real += out_stride
-                out_imag += out_stride
-            }
-            return
-        }
         
         let _in_count = in_count >> 1
         _Radix2CooleyTukey(log2N - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
@@ -225,6 +226,20 @@ func _Radix2CooleyTukey_Reorderd<T: BinaryFloatingPoint>(_ log2N: Int, _ real: U
 @inline(__always)
 func _Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
+    let count = 1 << log2N
+    
+    if _slowPath(in_count.0 == 0 && in_count.1 == 0) {
+        var out_real = out_real
+        var out_imag = out_imag
+        for _ in 0..<count {
+            out_real.pointee = 0
+            out_imag.pointee = 0
+            out_real += out_stride
+            out_imag += out_stride
+        }
+        return
+    }
+    
     switch log2N {
         
     case 0:
@@ -241,20 +256,6 @@ func _Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafeP
         Radix2CooleyTukey_16(in_real, in_imag, in_stride, in_count, out_real, out_imag, out_stride)
         
     default:
-        let count = 1 << log2N
-        
-        if _slowPath(in_count.0 == 0 && in_count.1 == 0) {
-            var out_real = out_real
-            var out_imag = out_imag
-            for _ in 0..<count {
-                out_real.pointee = 0
-                out_imag.pointee = 0
-                out_real += out_stride
-                out_imag += out_stride
-            }
-            return
-        }
-        
         let offset = Int.bitWidth - log2N
         
         do {

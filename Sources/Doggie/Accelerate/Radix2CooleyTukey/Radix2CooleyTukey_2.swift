@@ -31,16 +31,6 @@ func Radix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_strid
     var out_real = out_real
     var out_imag = out_imag
     
-    if _slowPath(in_count == 0) {
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        out_real += out_stride
-        out_imag += out_stride
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        return
-    }
-    
     let a = input.pointee
     input += in_stride
     
@@ -89,5 +79,28 @@ func Radix2CooleyTukey_2<T: FloatingPoint>(_ in_real: UnsafePointer<T>, _ in_ima
     
     out_real.pointee = a - c
     out_imag.pointee = b - d
+    
+}
+
+@inlinable
+@inline(__always)
+func InverseRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var input = input
+    var out_real = out_real
+    var out_imag = out_imag
+    
+    let a = input.pointee
+    input += in_stride
+    
+    let b = in_count > 1 ? input.pointee : 0
+    
+    out_real.pointee = a + b
+    out_imag.pointee = 0
+    out_real += out_stride
+    out_imag += out_stride
+    
+    out_real.pointee = a - b
+    out_imag.pointee = 0
     
 }

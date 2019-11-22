@@ -27,12 +27,6 @@
 @inline(__always)
 func HalfRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>) {
     
-    if _slowPath(in_count == 0) {
-        out_real.pointee = 0
-        out_imag.pointee = 0
-        return
-    }
-    
     var input = input
     
     let a = input.pointee
@@ -42,4 +36,19 @@ func HalfRadix2CooleyTukey_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_s
     
     out_real.pointee = a + b
     out_imag.pointee = a - b
+}
+
+@inlinable
+@inline(__always)
+func HalfInverseRadix2CooleyTukey_2<T: FloatingPoint>(_ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+    
+    var output = output
+    
+    let a = in_real.pointee
+    let b = in_imag.pointee
+    
+    output.pointee = a + b
+    output += out_stride
+    
+    output.pointee = a - b
 }
