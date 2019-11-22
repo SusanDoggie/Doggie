@@ -65,9 +65,13 @@
 
 #endif
 
-#if canImport(AppKit) && !targetEnvironment(macCatalyst)
+#if canImport(AppKit)
+
+#if !targetEnvironment(macCatalyst)
 
 @_exported import AppKit
+
+#endif
 
 #endif
 
