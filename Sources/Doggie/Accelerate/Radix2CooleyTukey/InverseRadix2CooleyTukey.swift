@@ -25,9 +25,9 @@
 
 @inlinable
 @inline(__always)
-public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    switch level {
+    switch log2N {
         
     case 0:
         out_real.pointee = in_count == 0 ? 0 : input.pointee
@@ -43,7 +43,7 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ inp
         InverseRadix2CooleyTukey_16(input, in_stride, in_count, out_real, out_imag, out_stride)
         
     default:
-        let length = 1 << level
+        let length = 1 << log2N
         let half = length >> 1
         let fourth = length >> 2
         
@@ -60,7 +60,7 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ inp
         }
         
         let _in_count = in_count >> 1
-        _InverseRadix2CooleyTukey(level - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
+        _InverseRadix2CooleyTukey(log2N - 1, input, input + in_stride, in_stride << 1, (_in_count + in_count & 1, _in_count), out_real, out_imag, out_stride)
         
         let _out_stride = half * out_stride
         var op_r = out_real
@@ -139,21 +139,21 @@ public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ inp
 
 @inlinable
 @inline(__always)
-func _InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+func _InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    _Radix2CooleyTukey(level, in_imag, in_real, in_stride, (in_count.1, in_count.0), out_imag, out_real, out_stride)
+    _Radix2CooleyTukey(log2N, in_imag, in_real, in_stride, (in_count.1, in_count.0), out_imag, out_real, out_stride)
 }
 
 @inlinable
 @inline(__always)
-public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    Radix2CooleyTukey(level, in_imag, in_real, in_stride, in_count, out_imag, out_real, out_stride)
+    Radix2CooleyTukey(log2N, in_imag, in_real, in_stride, in_count, out_imag, out_real, out_stride)
 }
 
 @inlinable
 @inline(__always)
-public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+public func InverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
     
-    Radix2CooleyTukey(level, imag, real, stride)
+    Radix2CooleyTukey(log2N, imag, real, stride)
 }

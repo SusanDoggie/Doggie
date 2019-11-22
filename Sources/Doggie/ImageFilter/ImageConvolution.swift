@@ -149,13 +149,13 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
 
 @inlinable
 @inline(__always)
-func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ level: Int, _ row: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_row_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_row_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int) where T : FloatingMathProtocol {
+func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ log2N: Int, _ row: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_row_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_row_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int) where T : FloatingMathProtocol {
     var signal = signal
     var kreal = kreal
     var kimag = kimag
     var output = output
     for _ in 0..<row {
-        Radix2FiniteImpulseFilter(level, signal, signal_stride, signal_count, kreal, kimag, kernel_stride, output, out_stride)
+        Radix2FiniteImpulseFilter(log2N, signal, signal_stride, signal_count, kreal, kimag, kernel_stride, output, out_stride)
         signal += signal_row_stride
         kreal += kernel_row_stride
         kimag += kernel_row_stride
@@ -198,12 +198,12 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     
                     guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                     
-                    let level1 = log2(length1)
-                    let level2 = log2(length2)
+                    let log2N1 = log2(length1)
+                    let log2N2 = log2(length2)
                     
                     for _ in 0..<numberOfComponents {
                         
-                        Radix2CircularConvolve2D((level1, level2), source, numberOfComponents, (width, height), filter, 1, (filter_width, filter_height), buffer, 1, temp, 1)
+                        Radix2CircularConvolve2D((log2N1, log2N2), source, numberOfComponents, (width, height), filter, 1, (filter_width, filter_height), buffer, 1, temp, 1)
                         
                         do {
                             var buffer = buffer
@@ -257,8 +257,8 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     
                     guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                     
-                    let level1 = log2(length1)
-                    let level2 = log2(length2)
+                    let log2N1 = log2(length1)
+                    let log2N2 = log2(length2)
                     
                     let _kreal1 = buffer
                     let _kimag1 = buffer + 1
@@ -266,20 +266,20 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     let _kimag2 = _kreal2 + 1
                     let _temp = _kreal2 + length2
                     
-                    HalfRadix2CooleyTukey(level1, horizontal_filter, 1, horizontal_filter.count, _kreal1, _kimag1, 2)
+                    HalfRadix2CooleyTukey(log2N1, horizontal_filter, 1, horizontal_filter.count, _kreal1, _kimag1, 2)
                     
                     let _length1 = 1 / RawPixel.Scalar(length1)
                     vec_op(length1 << 1, _kreal1, 1, _kreal1, 1) { $0 * _length1 }
                     
-                    HalfRadix2CooleyTukey(level2, vertical_filter, 1, vertical_filter.count, _kreal2, _kimag2, 2)
+                    HalfRadix2CooleyTukey(log2N2, vertical_filter, 1, vertical_filter.count, _kreal2, _kimag2, 2)
                     
                     let _length2 = 1 / RawPixel.Scalar(length2)
                     vec_op(length2 << 1, _kreal2, 1, _kreal2, 1) { $0 * _length2 }
                     
                     for _ in 0..<numberOfComponents {
                         
-                        _Radix2FiniteImpulseFilter(level1, height, source, numberOfComponents, numberOfComponents * width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
-                        _Radix2FiniteImpulseFilter(level2, n_width, _temp, length1, 1, height, _kreal2, _kimag2, 2, 0, output, numberOfComponents * n_width, numberOfComponents)
+                        _Radix2FiniteImpulseFilter(log2N1, height, source, numberOfComponents, numberOfComponents * width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
+                        _Radix2FiniteImpulseFilter(log2N2, n_width, _temp, length1, 1, height, _kreal2, _kimag2, 2, 0, output, numberOfComponents * n_width, numberOfComponents)
                         
                         source += 1
                         output += 1
@@ -322,20 +322,20 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     
                     guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                     
-                    let level = log2(length)
+                    let log2N = log2(length)
                     
                     let _kreal = buffer
                     let _kimag = buffer + 1
                     let _temp = buffer + length
                     
-                    HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
+                    HalfRadix2CooleyTukey(log2N, filter, 1, filter.count, _kreal, _kimag, 2)
                     
                     let _length = 1 / RawPixel.Scalar(length)
                     vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
                     
                     for _ in 0..<numberOfComponents {
                         
-                        _Radix2FiniteImpulseFilter(level, height, source, numberOfComponents, numberOfComponents * width, width, _kreal, _kimag, 2, 0, _temp, 1, length)
+                        _Radix2FiniteImpulseFilter(log2N, height, source, numberOfComponents, numberOfComponents * width, width, _kreal, _kimag, 2, 0, _temp, 1, length)
                         
                         do {
                             var _temp = _temp
@@ -387,18 +387,18 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     
                     guard let output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                     
-                    let level = log2(length)
+                    let log2N = log2(length)
                     
                     let _kreal = buffer
                     let _kimag = buffer + 1
                     
-                    HalfRadix2CooleyTukey(level, filter, 1, filter.count, _kreal, _kimag, 2)
+                    HalfRadix2CooleyTukey(log2N, filter, 1, filter.count, _kreal, _kimag, 2)
                     
                     let _length = 1 / RawPixel.Scalar(length)
                     vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
                     
                     let row = width * numberOfComponents
-                    _Radix2FiniteImpulseFilter(level, row, source, row, 1, height, _kreal, _kimag, 2, 0, output, row, 1)
+                    _Radix2FiniteImpulseFilter(log2N, row, source, row, 1, height, _kreal, _kimag, 2, 0, output, row, 1)
                 }
             }
         }

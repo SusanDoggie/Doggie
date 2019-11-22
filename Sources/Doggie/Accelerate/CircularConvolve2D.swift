@@ -25,10 +25,10 @@
 
 @inlinable
 @inline(__always)
-public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ level: (Int, Int), _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: (Int, Int), _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: (Int, Int), _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
+public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ log2N: (Int, Int), _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: (Int, Int), _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: (Int, Int), _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
     
-    let width = 1 << level.0
-    let height = 1 << level.1
+    let width = 1 << log2N.0
+    let height = 1 << log2N.1
     let half_width = width >> 1
     let half_height = height >> 1
     
@@ -49,8 +49,8 @@ public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ level: (Int, Int)
     let s_stride = temp_stride << 1
     let k_stride = out_stride << 1
     
-    HalfRadix2CooleyTukey2D(level, signal, signal_stride, signal_count, _sreal, _simag, s_stride)
-    HalfRadix2CooleyTukey2D(level, kernel, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
+    HalfRadix2CooleyTukey2D(log2N, signal, signal_stride, signal_count, _sreal, _simag, s_stride)
+    HalfRadix2CooleyTukey2D(log2N, kernel, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
     
     let m = 1 / T(width * height)
     let s_row_stride = s_stride * half_width
@@ -118,5 +118,5 @@ public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ level: (Int, Int)
         }
     }
     
-    HalfInverseRadix2CooleyTukey2D(level, _sreal, _simag, s_stride, output, out_stride)
+    HalfInverseRadix2CooleyTukey2D(log2N, _sreal, _simag, s_stride, output, out_stride)
 }

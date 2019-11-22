@@ -25,9 +25,9 @@
 
 @inlinable
 @inline(__always)
-public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
     
-    switch level {
+    switch log2N {
         
     case 0:
         output.pointee = in_real.pointee
@@ -42,7 +42,7 @@ public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _
         HalfInverseRadix2CooleyTukey_16(in_real, in_imag, in_stride, 8, output, out_stride)
         
     default:
-        let length = 1 << level
+        let length = 1 << log2N
         let half = length >> 1
         let fourth = length >> 2
         
@@ -109,11 +109,11 @@ public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _
             _sin1 = _s1
         }
         
-        InverseRadix2CooleyTukey(level - 1, output, output + out_stride, tp_stride)
+        InverseRadix2CooleyTukey(log2N - 1, output, output + out_stride, tp_stride)
     }
 }
 @inlinable
 @inline(__always)
-public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ level: Int, _ buffer: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
-    HalfInverseRadix2CooleyTukey(level, buffer, buffer + stride, stride << 1, buffer, stride)
+public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2N: Int, _ buffer: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+    HalfInverseRadix2CooleyTukey(log2N, buffer, buffer + stride, stride << 1, buffer, stride)
 }
