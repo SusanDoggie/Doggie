@@ -218,9 +218,7 @@ extension Shape {
 
 #endif
 
-#if canImport(AppKit)
-
-#if !targetEnvironment(macCatalyst)
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
 
 extension NSBezierPath: BezierPathConvertible {
     
@@ -298,4 +296,3 @@ extension Shape {
 
 #endif
 
-#endif

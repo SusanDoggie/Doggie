@@ -23,9 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(AppKit)
-
-#if !targetEnvironment(macCatalyst)
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
 
 extension NSImage {
     
@@ -56,7 +54,5 @@ extension NSImage {
         return NSImage(cgImage: cgImage)
     }
 }
-
-#endif
 
 #endif
