@@ -84,8 +84,18 @@ extension CGImageRep {
 
 extension CGImageRep {
     
+    public init?(url: URL) {
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
+        self.base = source
+    }
+    
     public init?(data: Data) {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
+        self.base = source
+    }
+    
+    public init?(provider: CGDataProvider) {
+        guard let source = CGImageSourceCreateWithDataProvider(provider, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
         self.base = source
     }
 }
