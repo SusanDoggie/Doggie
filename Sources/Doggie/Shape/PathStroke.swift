@@ -152,17 +152,17 @@ extension Shape.StrokeBuffer {
                     let last_point = last!.end
                     let a = last!.endDirection.phase - 0.5 * .pi
                     let r = 0.5 * width
-                    let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.rotate(a) * r + last_point }
-                    buffer1.append(.cubic(bezierCircle[1], bezierCircle[2], bezierCircle[3]))
-                    buffer1.append(.cubic(bezierCircle[4], bezierCircle[5], bezierCircle[6]))
+                    let _bezier_circle = bezier_circle.lazy.map { $0 * SDTransform.rotate(a) * r + last_point }
+                    buffer1.append(.cubic(_bezier_circle[1], _bezier_circle[2], _bezier_circle[3]))
+                    buffer1.append(.cubic(_bezier_circle[4], _bezier_circle[5], _bezier_circle[6]))
                 }
                 do {
                     let start_point = first!.start
                     let a = first!.startDirection.phase - 0.5 * .pi
                     let r = -0.5 * width
-                    let bezierCircle = BezierCircle.lazy.map { $0 * SDTransform.rotate(a) * r + start_point }
-                    cap_buffer.append(.cubic(bezierCircle[1], bezierCircle[2], bezierCircle[3]))
-                    cap_buffer.append(.cubic(bezierCircle[4], bezierCircle[5], bezierCircle[6]))
+                    let _bezier_circle = bezier_circle.lazy.map { $0 * SDTransform.rotate(a) * r + start_point }
+                    cap_buffer.append(.cubic(_bezier_circle[1], _bezier_circle[2], _bezier_circle[3]))
+                    cap_buffer.append(.cubic(_bezier_circle[4], _bezier_circle[5], _bezier_circle[6]))
                 }
             case .square:
                 do {

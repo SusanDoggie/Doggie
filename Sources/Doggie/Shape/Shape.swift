@@ -678,12 +678,12 @@ extension Shape.Component {
         let t4 = transform * SDTransform.translate(x: x_padding, y: 0)
         
         let segments: [Shape.Segment] = [
-            .cubic(BezierCircle[1] * t1, BezierCircle[2] * t1, BezierCircle[3] * t1), .line(BezierCircle[3] * t2),
-            .cubic(BezierCircle[4] * t2, BezierCircle[5] * t2, BezierCircle[6] * t2), .line(BezierCircle[6] * t3),
-            .cubic(BezierCircle[7] * t3, BezierCircle[8] * t3, BezierCircle[9] * t3), .line(BezierCircle[9] * t4),
-            .cubic(BezierCircle[10] * t4, BezierCircle[11] * t4, BezierCircle[12] * t4)
+            .cubic(bezier_circle[1] * t1, bezier_circle[2] * t1, bezier_circle[3] * t1), .line(bezier_circle[3] * t2),
+            .cubic(bezier_circle[4] * t2, bezier_circle[5] * t2, bezier_circle[6] * t2), .line(bezier_circle[6] * t3),
+            .cubic(bezier_circle[7] * t3, bezier_circle[8] * t3, bezier_circle[9] * t3), .line(bezier_circle[9] * t4),
+            .cubic(bezier_circle[10] * t4, bezier_circle[11] * t4, bezier_circle[12] * t4)
         ]
-        self.init(start: BezierCircle[0] * t1, closed: true, segments: segments)
+        self.init(start: bezier_circle[0] * t1, closed: true, segments: segments)
     }
     
     @inlinable
@@ -691,12 +691,12 @@ extension Shape.Component {
         let rect = rect.standardized
         let transform = SDTransform.scale(x: 0.5 * rect.width, y: 0.5 * rect.height) * SDTransform.translate(x: rect.midX, y: rect.midY)
         let segments: [Shape.Segment] = [
-            .cubic(BezierCircle[1] * transform, BezierCircle[2] * transform, BezierCircle[3] * transform),
-            .cubic(BezierCircle[4] * transform, BezierCircle[5] * transform, BezierCircle[6] * transform),
-            .cubic(BezierCircle[7] * transform, BezierCircle[8] * transform, BezierCircle[9] * transform),
-            .cubic(BezierCircle[10] * transform, BezierCircle[11] * transform, BezierCircle[12] * transform)
+            .cubic(bezier_circle[1] * transform, bezier_circle[2] * transform, bezier_circle[3] * transform),
+            .cubic(bezier_circle[4] * transform, bezier_circle[5] * transform, bezier_circle[6] * transform),
+            .cubic(bezier_circle[7] * transform, bezier_circle[8] * transform, bezier_circle[9] * transform),
+            .cubic(bezier_circle[10] * transform, bezier_circle[11] * transform, bezier_circle[12] * transform)
         ]
-        self.init(start: BezierCircle[0] * transform, closed: true, segments: segments)
+        self.init(start: bezier_circle[0] * transform, closed: true, segments: segments)
     }
 }
 
