@@ -90,6 +90,13 @@ extension ImageRep {
 
 extension ImageRep {
     
+    public static var supportedMediaTypes: [ImageRep.MediaType] {
+        return [.bmp, .tiff, .png]
+    }
+}
+
+extension ImageRep {
+    
     public enum Error : Swift.Error {
         
         case UnknownFormat
@@ -107,7 +114,7 @@ extension ImageRep {
             TIFFDecoder.self,
             PNGDecoder.self,
             //JPEGDecoder.self,
-            ]
+        ]
         
         for Decoder in decoders {
             if let decoder = try Decoder.init(data: data) {

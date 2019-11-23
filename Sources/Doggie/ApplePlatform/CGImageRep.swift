@@ -76,6 +76,14 @@ extension CGImageRep {
 
 extension CGImageRep {
     
+    public static var supportedMediaTypes: [ImageRep.MediaType] {
+        let types = CGImageSourceCopyTypeIdentifiers() as? [String]
+        return types.map { ImageRep.MediaType(rawValue: $0) }
+    }
+}
+
+extension CGImageRep {
+    
     public init?(data: Data) {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
         self.base = source
