@@ -77,7 +77,7 @@ extension CGImageRep {
 extension CGImageRep {
     
     public static var supportedMediaTypes: [ImageRep.MediaType] {
-        let types = CGImageSourceCopyTypeIdentifiers() as? [String]
+        let types = CGImageSourceCopyTypeIdentifiers() as? [String] ?? []
         return types.map { ImageRep.MediaType(rawValue: $0) }
     }
 }
