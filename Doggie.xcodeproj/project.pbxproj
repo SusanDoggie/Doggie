@@ -62,6 +62,10 @@
 		08A342D62387F6DB00DE03DF /* half_cooleytukey_4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A342C92387F6DB00DE03DF /* half_cooleytukey_4.swift */; };
 		08A342D72387F6DB00DE03DF /* half_cooleytukey_16.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A342CA2387F6DB00DE03DF /* half_cooleytukey_16.swift */; };
 		08A342D82387F6DB00DE03DF /* cooleytukey_4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A342CB2387F6DB00DE03DF /* cooleytukey_4.swift */; };
+		08A8EEC2238AB59000A798CC /* CGImageSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A8EEC1238AB59000A798CC /* CGImageSource.swift */; };
+		08A8EEC4238AB5CF00A798CC /* CGImageDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A8EEC3238AB5CF00A798CC /* CGImageDestination.swift */; };
+		08A8EEC6238AB71000A798CC /* AVDepthData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A8EEC5238AB71000A798CC /* AVDepthData.swift */; };
+		08A8EEC8238AB71D00A798CC /* AVPortraitEffectsMatte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A8EEC7238AB71D00A798CC /* AVPortraitEffectsMatte.swift */; };
 		08AC2DE82253B4FB00EC847F /* PDFContextFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */; };
 		08B085491E9A20720037DECE /* Algorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B085471E9A20720037DECE /* Algorithm.swift */; };
 		08B0C00C22FABE1A005C1035 /* SVGTurbulenceEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08B0BFFF22FABE1A005C1035 /* SVGTurbulenceEffect.swift */; };
@@ -271,7 +275,7 @@
 		0AA8D463204E486700ED0175 /* SwiftPlayground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AA8D462204E486700ED0175 /* SwiftPlayground.swift */; };
 		0AAA7CF220B8EC950080D1BE /* Exported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF120B8EC950080D1BE /* Exported.swift */; };
 		0AAA7CF420B8EDA30080D1BE /* AppleExported.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */; };
-		0AABCC6320F9982F00D7BD78 /* ImageIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABCC6220F9982F00D7BD78 /* ImageIO.swift */; };
+		0AABCC6320F9982F00D7BD78 /* CGImageAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AABCC6220F9982F00D7BD78 /* CGImageAnimation.swift */; };
 		0AADB89320ABC5B700F3BF17 /* PNGFilter0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */; };
 		0AADB89620AC0BA400F3BF17 /* PNGInterlace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */; };
 		0AAF447720EF0F1300178EA2 /* ImageOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAF447620EF0F1300178EA2 /* ImageOrientation.swift */; };
@@ -400,6 +404,10 @@
 		08A342C92387F6DB00DE03DF /* half_cooleytukey_4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = half_cooleytukey_4.swift; sourceTree = "<group>"; };
 		08A342CA2387F6DB00DE03DF /* half_cooleytukey_16.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = half_cooleytukey_16.swift; sourceTree = "<group>"; };
 		08A342CB2387F6DB00DE03DF /* cooleytukey_4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = cooleytukey_4.swift; sourceTree = "<group>"; };
+		08A8EEC1238AB59000A798CC /* CGImageSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGImageSource.swift; sourceTree = "<group>"; };
+		08A8EEC3238AB5CF00A798CC /* CGImageDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGImageDestination.swift; sourceTree = "<group>"; };
+		08A8EEC5238AB71000A798CC /* AVDepthData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVDepthData.swift; sourceTree = "<group>"; };
+		08A8EEC7238AB71D00A798CC /* AVPortraitEffectsMatte.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPortraitEffectsMatte.swift; sourceTree = "<group>"; };
 		08AC2DE72253B4FB00EC847F /* PDFContextFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFContextFunction.swift; sourceTree = "<group>"; };
 		08B085471E9A20720037DECE /* Algorithm.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Algorithm.swift; sourceTree = "<group>"; };
 		08B0BFFF22FABE1A005C1035 /* SVGTurbulenceEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SVGTurbulenceEffect.swift; sourceTree = "<group>"; };
@@ -609,7 +617,7 @@
 		0AA8D462204E486700ED0175 /* SwiftPlayground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftPlayground.swift; sourceTree = "<group>"; };
 		0AAA7CF120B8EC950080D1BE /* Exported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exported.swift; sourceTree = "<group>"; };
 		0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleExported.swift; sourceTree = "<group>"; };
-		0AABCC6220F9982F00D7BD78 /* ImageIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageIO.swift; sourceTree = "<group>"; };
+		0AABCC6220F9982F00D7BD78 /* CGImageAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGImageAnimation.swift; sourceTree = "<group>"; };
 		0AADB89220ABC5B700F3BF17 /* PNGFilter0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGFilter0.swift; sourceTree = "<group>"; };
 		0AADB89520AC0BA400F3BF17 /* PNGInterlace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNGInterlace.swift; sourceTree = "<group>"; };
 		0AAF447620EF0F1300178EA2 /* ImageOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageOrientation.swift; sourceTree = "<group>"; };
@@ -846,6 +854,53 @@
 			path = Encoder;
 			sourceTree = "<group>";
 		};
+		08A8EEBD238AAF2A00A798CC /* Geometry */ = {
+			isa = PBXGroup;
+			children = (
+				0A0697571E4D6659005CF664 /* CGAffineTransform.swift */,
+				088D968F23852BAE0031DB95 /* CGPoint.swift */,
+				088D969123852C220031DB95 /* CGSize.swift */,
+				088D969323852C2D0031DB95 /* CGRect.swift */,
+				0A36612A1EEA54AB00216A26 /* CGPath.swift */,
+			);
+			path = Geometry;
+			sourceTree = "<group>";
+		};
+		08A8EEBE238AAF5000A798CC /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				0A06975A1E4D66A3005CF664 /* CoreImage.swift */,
+				0AE762571EE9583400E926D5 /* CGImage.swift */,
+				0A06975D1E4D6732005CF664 /* NSImage.swift */,
+				0A4101F621BFC31B00CD9CB7 /* UIImage.swift */,
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
+		08A8EEBF238AAF6700A798CC /* Graphic */ = {
+			isa = PBXGroup;
+			children = (
+				0A00F05421BA192E00CAF48C /* CoreText.swift */,
+				0A3FD861210079BC006D4737 /* CGContext.swift */,
+				0AE762541EE9475400E926D5 /* CGColorSpace.swift */,
+				0A3D5C621EEA498E00A9CDEA /* CGColor.swift */,
+			);
+			path = Graphic;
+			sourceTree = "<group>";
+		};
+		08A8EEC0238AB57100A798CC /* ImageIO */ = {
+			isa = PBXGroup;
+			children = (
+				08A8EEC5238AB71000A798CC /* AVDepthData.swift */,
+				08A8EEC7238AB71D00A798CC /* AVPortraitEffectsMatte.swift */,
+				0A3674B321634DC800175580 /* CGImageRep.swift */,
+				08A8EEC1238AB59000A798CC /* CGImageSource.swift */,
+				08A8EEC3238AB5CF00A798CC /* CGImageDestination.swift */,
+				0AABCC6220F9982F00D7BD78 /* CGImageAnimation.swift */,
+			);
+			path = ImageIO;
+			sourceTree = "<group>";
+		};
 		08AF77AE1A3A10510042491F /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -921,22 +976,11 @@
 				0AAA7CF320B8EDA30080D1BE /* AppleExported.swift */,
 				0AA8D462204E486700ED0175 /* SwiftPlayground.swift */,
 				0A55505821D70E620035AF94 /* ObjectiveC.swift */,
-				0A06975A1E4D66A3005CF664 /* CoreImage.swift */,
-				0A0697571E4D6659005CF664 /* CGAffineTransform.swift */,
-				088D968F23852BAE0031DB95 /* CGPoint.swift */,
-				088D969123852C220031DB95 /* CGSize.swift */,
-				088D969323852C2D0031DB95 /* CGRect.swift */,
-				0A36612A1EEA54AB00216A26 /* CGPath.swift */,
-				0AE762571EE9583400E926D5 /* CGImage.swift */,
-				0A00F05421BA192E00CAF48C /* CoreText.swift */,
-				0A3FD861210079BC006D4737 /* CGContext.swift */,
-				0AABCC6220F9982F00D7BD78 /* ImageIO.swift */,
-				0A3674B321634DC800175580 /* CGImageRep.swift */,
-				0A06975D1E4D6732005CF664 /* NSImage.swift */,
-				0A4101F621BFC31B00CD9CB7 /* UIImage.swift */,
-				0AE762541EE9475400E926D5 /* CGColorSpace.swift */,
-				0A3D5C621EEA498E00A9CDEA /* CGColor.swift */,
 				0A11968B212A74DD00B2D4DB /* Metal.swift */,
+				08A8EEBD238AAF2A00A798CC /* Geometry */,
+				08A8EEBE238AAF5000A798CC /* Image */,
+				08A8EEC0238AB57100A798CC /* ImageIO */,
+				08A8EEBF238AAF6700A798CC /* Graphic */,
 			);
 			path = ApplePlatform;
 			sourceTree = "<group>";
@@ -1629,6 +1673,7 @@
 				08B0C01222FABE1A005C1035 /* SVGMergeEffect.swift in Sources */,
 				0AF5676620D26AC9003B243B /* YxyColorModel.swift in Sources */,
 				0A9F993F1F56649C0008D36D /* SFNTPOST.swift in Sources */,
+				08A8EEC2238AB59000A798CC /* CGImageSource.swift in Sources */,
 				0A53E45F1E35AEF80060FB83 /* CollectionExtension.swift in Sources */,
 				0A7A4C021F739235005F44CD /* SDXMLString.swift in Sources */,
 				0A21F0251F061AE2009C4490 /* PixelBlender.swift in Sources */,
@@ -1747,6 +1792,7 @@
 				0A8535351F5937DA006FB85D /* CFFFontFace.swift in Sources */,
 				08B68A321ED07A2400F8D423 /* ColorSpace.swift in Sources */,
 				0A7C9D052022D01400927674 /* Cache.swift in Sources */,
+				08A8EEC8238AB71D00A798CC /* AVPortraitEffectsMatte.swift in Sources */,
 				0A8ABC1720E4A0EF00A2634A /* Underpainting.swift in Sources */,
 				0A55505721D7014E0035AF94 /* WeakDictionary.swift in Sources */,
 				0A74D68820047BA600330C86 /* ImageConvolution.swift in Sources */,
@@ -1785,6 +1831,7 @@
 				08458B611E2E627600D01813 /* SDTask.swift in Sources */,
 				0AE71A041EF51DF80086923C /* AnyColorSpace.swift in Sources */,
 				08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */,
+				08A8EEC6238AB71000A798CC /* AVDepthData.swift in Sources */,
 				0A8D4F2B20C912F800921F91 /* BezierOffset.swift in Sources */,
 				0A9EF65B21F061F600620647 /* BGRA32ColorPixel.swift in Sources */,
 				0A0697591E4D6659005CF664 /* CGAffineTransform.swift in Sources */,
@@ -1794,7 +1841,7 @@
 				0AC621CB20EDFBA500E5FF15 /* Gradient.swift in Sources */,
 				08458B391E2E627600D01813 /* Matrix.swift in Sources */,
 				08AC2DE82253B4FB00EC847F /* PDFContextFunction.swift in Sources */,
-				0AABCC6320F9982F00D7BD78 /* ImageIO.swift in Sources */,
+				0AABCC6320F9982F00D7BD78 /* CGImageAnimation.swift in Sources */,
 				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A8D4F1E20C8FD8400921F91 /* CubicBezier.swift in Sources */,
 				0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */,
@@ -1811,6 +1858,7 @@
 				0A9CD58B1EEB98E600094148 /* sRGB.swift in Sources */,
 				0A792C771FDA2996003C0290 /* BreakLoop.swift in Sources */,
 				0AD3E6321F53DA9B003CC21A /* FontDecoder.swift in Sources */,
+				08A8EEC4238AB5CF00A798CC /* CGImageDestination.swift in Sources */,
 				0A44F77E21F72C0700383140 /* BilateralFilter.swift in Sources */,
 				0AE719FB1EF50EEB0086923C /* AnyColor.swift in Sources */,
 				0A7E3E9B1F5FD9090020A507 /* OTFLookupList.swift in Sources */,

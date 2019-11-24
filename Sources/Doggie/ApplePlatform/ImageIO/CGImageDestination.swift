@@ -1,5 +1,5 @@
 //
-//  ImageIO.swift
+//  CGImageDestination.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -25,74 +25,9 @@
 
 #if canImport(CoreGraphics) && canImport(ImageIO)
 
-public struct CGImageAnimationFrame {
+extension CGImageRep {
     
-    public var image: CGImage
-    public var delay: Double
-    
-    public init(image: CGImage, delay: Double) {
-        self.image = image
-        self.delay = delay
-    }
-}
-
-#if !os(watchOS)
-
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension AVDepthData {
-    
-    public convenience init<T>(texture: StencilTexture<T>, metadata: CGImageMetadata? = nil) throws {
-        
-        var description: [AnyHashable: Any] = [:]
-        
-        description[kCGImagePropertyPixelFormat] = kCVPixelFormatType_DepthFloat32
-        description[kCGImagePropertyWidth] = texture.width
-        description[kCGImagePropertyHeight] = texture.height
-        description[kCGImagePropertyBytesPerRow] = 4 * texture.width
-        
-        let pixels = texture.pixels as? MappedBuffer<Float> ?? texture.pixels.map(Float.init)
-        
-        var dictionary: [AnyHashable: Any] = [
-            kCGImageAuxiliaryDataInfoData: pixels.data as CFData,
-            kCGImageAuxiliaryDataInfoDataDescription: description
-        ]
-        
-        if let metadata = metadata {
-            dictionary[kCGImageAuxiliaryDataInfoMetadata] = metadata
-        }
-        
-        try self.init(fromDictionaryRepresentation: dictionary)
-    }
-}
-
-#endif
-
-@available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
-extension AVPortraitEffectsMatte {
-    
-    public convenience init<T>(texture: StencilTexture<T>) throws {
-        
-        var description: [AnyHashable: Any] = [:]
-        
-        description[kCGImagePropertyPixelFormat] = kCVPixelFormatType_OneComponent8
-        description[kCGImagePropertyWidth] = texture.width
-        description[kCGImagePropertyHeight] = texture.height
-        description[kCGImagePropertyBytesPerRow] = texture.width
-        
-        let pixels = texture.pixels.map { UInt8(($0 * 255).clamped(to: 0...255).rounded()) }
-        
-        let dictionary: [AnyHashable: Any] = [
-            kCGImageAuxiliaryDataInfoData: pixels.data as CFData,
-            kCGImageAuxiliaryDataInfoDataDescription: description
-        ]
-        
-        try self.init(fromDictionaryRepresentation: dictionary)
-    }
-}
-
-extension CGImage {
-    
-    private static func withImageDestination(_ type: CFString, _ count: Int, callback: (CGImageDestination) -> Void) -> Data? {
+    static func withImageDestination(_ type: CFString, _ count: Int, callback: (CGImageDestination) -> Void) -> Data? {
         
         let data = NSMutableData()
         
@@ -106,7 +41,7 @@ extension CGImage {
     }
 }
 
-extension CGImage {
+extension CGImageRep {
     
     public enum PropertyKey : Int, CaseIterable {
         
@@ -115,8 +50,6 @@ extension CGImage {
         case compressionQuality
         
         case interlaced
-        
-        case resolution
         
         case depthData
         
@@ -190,24 +123,18 @@ extension CGImage {
         default: break
         }
         
-        if let resolution = properties[.resolution] as? Resolution {
-            let _resolution = resolution.convert(to: .inch)
-            _properties[kCGImagePropertyDPIWidth] = _resolution.horizontal
-            _properties[kCGImagePropertyDPIHeight] = _resolution.vertical
-        }
-        
         if let compressionQuality = properties[.compressionQuality] as? NSNumber {
             _properties[kCGImageDestinationLossyCompressionQuality] = compressionQuality
         }
         
-        return CGImage.withImageDestination(storageType.rawValue as CFString, 1) { destination in
+        return CGImageRep.withImageDestination(storageType.rawValue as CFString, 1) { destination in
             
-            CGImageDestinationAddImage(destination, self, _properties as CFDictionary)
+            self.base.copy(to: destination, properties: _properties)
             
             #if canImport(AVFoundation)
             
             #if !os(watchOS)
-
+            
             if #available(macOS 10.13, iOS 11.0, tvOS 11.0, *), let depthData = properties[.depthData] as? AVDepthData {
                 
                 var type: NSString?
@@ -231,87 +158,40 @@ extension CGImage {
             }
             
             #endif
-            
         }
     }
     
     public func tiffRepresentation(compression: TIFFCompressionScheme = .none, resolution: Resolution = .default) -> Data? {
-        return self.representation(using: .tiff, properties: [.compression: compression, .resolution: resolution])
+        return self.representation(using: .tiff, properties: [.compression: compression])
     }
     
     public func pngRepresentation(interlaced: Bool = false, compression: PNGCompressionFilter = .all, resolution: Resolution = .default) -> Data? {
-        return self.representation(using: .png, properties: [.interlaced: interlaced, .compression: compression, .resolution: resolution])
+        return self.representation(using: .png, properties: [.interlaced: interlaced, .compression: compression])
     }
     
     public func jpegRepresentation(compressionQuality: Double, resolution: Resolution = .default) -> Data? {
-        return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality, .resolution: resolution])
+        return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality])
     }
 }
 
 extension CGImage {
     
-    public static func animatedGIFRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
-        
-        return CGImage.withImageDestination(kUTTypeGIF, frames.count) { destination in
-            
-            CGImageDestinationSetProperties(destination, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: loop]] as CFDictionary)
-            
-            for frame in frames {
-                CGImageDestinationAddImage(destination, frame.image, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: frame.delay]] as CFDictionary)
-            }
-        }
+    public func representation(using storageType: ImageRep.MediaType, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey : Any]) -> Data? {
+        let imageRep = CGImageRep(cgImage: self, resolution: resolution)
+        return imageRep.representation(using: storageType, properties: properties)
     }
     
-    public static func animatedPNGRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
-        
-        return CGImage.withImageDestination(kUTTypePNG, frames.count) { destination in
-            
-            CGImageDestinationSetProperties(destination, [kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGLoopCount: loop]] as CFDictionary)
-            
-            for frame in frames {
-                CGImageDestinationAddImage(destination, frame.image, [kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGDelayTime: frame.delay]] as CFDictionary)
-            }
-        }
+    public func tiffRepresentation(resolution: Resolution = .default, compression: CGImageRep.TIFFCompressionScheme = .none) -> Data? {
+        return self.representation(using: .tiff, resolution: resolution, properties: [.compression: compression])
     }
     
-    #if canImport(AVFoundation)
-    
-    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    public static func animatedHEICRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
-        
-        return CGImage.withImageDestination(AVFileType.heic as CFString, frames.count) { destination in
-            
-            CGImageDestinationSetProperties(destination, [kCGImagePropertyHEICSDictionary: [kCGImagePropertyHEICSLoopCount: loop]] as CFDictionary)
-            
-            for frame in frames {
-                CGImageDestinationAddImage(destination, frame.image, [kCGImagePropertyHEICSDictionary: [kCGImagePropertyHEICSDelayTime: frame.delay]] as CFDictionary)
-            }
-        }
+    public func pngRepresentation(resolution: Resolution = .default, interlaced: Bool = false, compression: CGImageRep.PNGCompressionFilter = .all) -> Data? {
+        return self.representation(using: .png, resolution: resolution, properties: [.interlaced: interlaced, .compression: compression])
     }
     
-    #endif
-    
-}
-
-extension CGImage {
-    
-    public static func animatedGIFRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
-        return self.animatedGIFRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
+    public func jpegRepresentation(resolution: Resolution = .default, compressionQuality: Double) -> Data? {
+        return self.representation(using: .jpeg, resolution: resolution, properties: [.compressionQuality: compressionQuality])
     }
-    
-    public static func animatedPNGRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
-        return self.animatedPNGRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
-    }
-    
-    #if canImport(AVFoundation)
-    
-    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    public static func animatedHEICRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
-        return self.animatedHEICRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
-    }
-    
-    #endif
-    
 }
 
 #endif

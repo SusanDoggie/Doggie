@@ -1,5 +1,5 @@
 //
-//  CGImageRep.swift
+//  CGImageSource.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -24,171 +24,6 @@
 //
 
 #if canImport(CoreGraphics) && canImport(ImageIO)
-
-protocol CGImageRepBase {
-    
-    var width: Int { get }
-    
-    var height: Int { get }
-    
-    var resolution: Resolution { get }
-    
-    var mediaType: ImageRep.MediaType? { get }
-    
-    var numberOfPages: Int { get }
-    
-    var properties: [CFString : Any] { get }
-    
-    func page(_ index: Int) -> CGImageRepBase
-    
-    var cgImage: CGImage? { get }
-    
-    func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]?
-}
-
-public struct CGImageRep {
-    
-    private let base: CGImageRepBase
-    
-    private let cache = Cache()
-    
-    private init(base: CGImageRepBase) {
-        self.base = base
-    }
-}
-
-extension CGImageRep {
-    
-    @usableFromInline
-    final class Cache {
-        
-        let lck = SDLock()
-        
-        var image: CGImage?
-        var pages: [Int: CGImageRep]
-        
-        @usableFromInline
-        init() {
-            self.pages = [:]
-        }
-    }
-}
-
-extension CGImageRep {
-    
-    public static var supportedMediaTypes: [ImageRep.MediaType] {
-        let types = CGImageSourceCopyTypeIdentifiers() as? [String] ?? []
-        return types.map { ImageRep.MediaType(rawValue: $0) }
-    }
-}
-
-extension CGImageRep {
-    
-    public init?(url: URL) {
-        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
-        self.base = source
-    }
-    
-    public init?(data: Data) {
-        guard let source = CGImageSourceCreateWithData(data as CFData, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
-        self.base = source
-    }
-    
-    public init?(provider: CGDataProvider) {
-        guard let source = CGImageSourceCreateWithDataProvider(provider, nil).map(_CGImageSourceImageRepBase.init) else { return nil }
-        self.base = source
-    }
-}
-
-extension CGImageRep {
-    
-    public var numberOfPages: Int {
-        return base.numberOfPages
-    }
-    
-    public func page(_ index: Int) -> CGImageRep {
-        return cache.lck.synchronized {
-            if cache.pages[index] == nil {
-                cache.pages[index] = CGImageRep(base: base.page(index))
-            }
-            return cache.pages[index]!
-        }
-    }
-    
-    public var cgImage: CGImage? {
-        return cache.lck.synchronized {
-            if cache.image == nil {
-                cache.image = base.cgImage
-            }
-            return cache.image
-        }
-    }
-    
-    public func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]? {
-        return base.auxiliaryDataInfo(type)
-    }
-}
-
-#if canImport(AVFoundation)
-
-#if !os(watchOS)
-
-extension CGImageRep {
-    
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    public var disparityData: AVDepthData? {
-        guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypeDisparity as String) else { return nil }
-        return try? AVDepthData(fromDictionaryRepresentation: info)
-    }
-    
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    public var depthData: AVDepthData? {
-        guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypeDepth as String) else { return nil }
-        return try? AVDepthData(fromDictionaryRepresentation: info)
-    }
-}
-
-#endif
-
-extension CGImageRep {
-    
-    @available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
-    public var portraitEffectsMatte: AVPortraitEffectsMatte? {
-        guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypePortraitEffectsMatte as String) else { return nil }
-        return try? AVPortraitEffectsMatte(fromDictionaryRepresentation: info)
-    }
-}
-
-#endif
-
-extension CGImageRep {
-    
-    public var width: Int {
-        return base.width
-    }
-    
-    public var height: Int {
-        return base.height
-    }
-    
-    public var resolution: Resolution {
-        return base.resolution
-    }
-}
-
-extension CGImageRep {
-    
-    public var properties: [CFString : Any] {
-        return base.properties
-    }
-}
-
-extension CGImageRep {
-    
-    public var mediaType: ImageRep.MediaType? {
-        return base.mediaType
-    }
-}
 
 struct _CGImageSourceImageRepBase : CGImageRepBase {
     
@@ -300,6 +135,59 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
     func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]? {
         guard #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) else { return nil }
         return CGImageSourceCopyAuxiliaryDataInfoAtIndex(source, index, type as CFString) as? [String : AnyObject]
+    }
+    
+    func copy(to destination: CGImageDestination, properties: [CFString: Any]) {
+        CGImageDestinationAddImageFromSource(destination, source, index, properties as CFDictionary)
+    }
+}
+
+struct _CGImageRepBase : CGImageRepBase {
+    
+    let image: CGImage
+    let resolution: Resolution
+    
+    var width: Int {
+        return image.width
+    }
+    
+    var height: Int {
+        return image.height
+    }
+    
+    var mediaType: ImageRep.MediaType? {
+        return nil
+    }
+    
+    var numberOfPages: Int {
+        return 1
+    }
+    
+    var properties: [CFString : Any] {
+        return [:]
+    }
+    
+    func page(_ index: Int) -> CGImageRepBase {
+        precondition(index == 0, "Index out of range.")
+        return self
+    }
+    
+    var cgImage: CGImage? {
+        return image
+    }
+    
+    func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]? {
+        return nil
+    }
+    
+    func copy(to destination: CGImageDestination, properties: [CFString: Any]) {
+        
+        var properties = properties
+        let resolution = self.resolution.convert(to: .inch)
+        properties[kCGImagePropertyDPIWidth] = resolution.horizontal
+        properties[kCGImagePropertyDPIHeight] = resolution.vertical
+        
+        CGImageDestinationAddImage(destination, image, properties as CFDictionary)
     }
 }
 
