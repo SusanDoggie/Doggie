@@ -25,6 +25,8 @@
 
 extension CGRect {
     
+    @inlinable
+    @inline(__always)
     public init(_ r: Rect) {
         self.init(origin: CGPoint(r.origin), size: CGSize(r.size))
     }
@@ -32,13 +34,27 @@ extension CGRect {
 
 extension Rect {
     
+    @inlinable
+    @inline(__always)
     public init(_ r: CGRect) {
         self.origin = Point(r.origin)
         self.size = Size(r.size)
     }
+    
+    @inlinable
+    @inline(__always)
     public init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
+    }
+}
+
+extension CGRect {
+    
+    @inlinable
+    @inline(__always)
+    public var center: CGPoint {
+        return CGPoint(x: midX, y: midY)
     }
 }
 

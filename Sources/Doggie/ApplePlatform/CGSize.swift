@@ -25,6 +25,8 @@
 
 extension CGSize {
     
+    @inlinable
+    @inline(__always)
     public init(_ s: Size) {
         self.init(width: CGFloat(s.width), height: CGFloat(s.height))
     }
@@ -32,10 +34,15 @@ extension CGSize {
 
 extension Size {
     
+    @inlinable
+    @inline(__always)
     public init(_ s: CGSize) {
         self.width = Double(s.width)
         self.height = Double(s.height)
     }
+    
+    @inlinable
+    @inline(__always)
     public init(width: CGFloat, height: CGFloat) {
         self.width = Double(width)
         self.height = Double(height)

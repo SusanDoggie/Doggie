@@ -27,6 +27,8 @@
 
 extension AffineTransform {
     
+    @inlinable
+    @inline(__always)
     public init(_ transform: SDTransform) {
         self.init(
             m11: CGFloat(transform.a),
@@ -41,6 +43,8 @@ extension AffineTransform {
 
 extension SDTransform {
     
+    @inlinable
+    @inline(__always)
     public init(_ m: AffineTransform) {
         self.a = Double(m.m11)
         self.b = Double(m.m21)
@@ -58,6 +62,8 @@ extension SDTransform {
 
 extension CGAffineTransform {
     
+    @inlinable
+    @inline(__always)
     public init(_ m: SDTransform) {
         self.init(
             a: CGFloat(m.a),
@@ -72,6 +78,8 @@ extension CGAffineTransform {
 
 extension SDTransform {
     
+    @inlinable
+    @inline(__always)
     public init(_ m: CGAffineTransform) {
         self.a = Double(m.a)
         self.b = Double(m.c)

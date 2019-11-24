@@ -25,6 +25,8 @@
 
 extension CGPoint {
     
+    @inlinable
+    @inline(__always)
     public init(_ p: Point) {
         self.init(x: CGFloat(p.x), y: CGFloat(p.y))
     }
@@ -32,10 +34,15 @@ extension CGPoint {
 
 extension Point {
     
+    @inlinable
+    @inline(__always)
     public init(_ p: CGPoint) {
         self.x = Double(p.x)
         self.y = Double(p.y)
     }
+    
+    @inlinable
+    @inline(__always)
     public init(x: CGFloat, y: CGFloat) {
         self.x = Double(x)
         self.y = Double(y)
