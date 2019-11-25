@@ -267,14 +267,7 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     let _temp = _kreal2 + length2
                     
                     HalfRadix2CooleyTukey(log2n1, horizontal_filter, 1, horizontal_filter.count, _kreal1, _kimag1, 2)
-                    
-                    let _length1 = 1 / RawPixel.Scalar(length1)
-                    vec_op(length1 << 1, _kreal1, 1, _kreal1, 1) { $0 * _length1 }
-                    
                     HalfRadix2CooleyTukey(log2n2, vertical_filter, 1, vertical_filter.count, _kreal2, _kimag2, 2)
-                    
-                    let _length2 = 1 / RawPixel.Scalar(length2)
-                    vec_op(length2 << 1, _kreal2, 1, _kreal2, 1) { $0 * _length2 }
                     
                     for _ in 0..<numberOfComponents {
                         
@@ -329,9 +322,6 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     let _temp = buffer + length
                     
                     HalfRadix2CooleyTukey(log2n, filter, 1, filter.count, _kreal, _kimag, 2)
-                    
-                    let _length = 1 / RawPixel.Scalar(length)
-                    vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
                     
                     for _ in 0..<numberOfComponents {
                         
@@ -393,9 +383,6 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     let _kimag = buffer + 1
                     
                     HalfRadix2CooleyTukey(log2n, filter, 1, filter.count, _kreal, _kimag, 2)
-                    
-                    let _length = 1 / RawPixel.Scalar(length)
-                    vec_op(length << 1, buffer, 1, buffer, 1) { $0 * _length }
                     
                     let row = width * numberOfComponents
                     _Radix2FiniteImpulseFilter(log2n, row, source, row, 1, height, _kreal, _kimag, 2, 0, output, row, 1)

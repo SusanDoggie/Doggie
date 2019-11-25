@@ -33,10 +33,8 @@ public func Radix2CircularConvolveLength<T: FixedWidthInteger>(_ x: T, _ y: T) -
 @inline(__always)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ log2n: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
     
-    let length = 1 << log2n
-    let half = length >> 1
-    
     if _slowPath(signal_count == 0 || kernel_count == 0) {
+        let length = 1 << log2n
         var output = output
         for _ in 0..<length {
             output.pointee = 0
@@ -45,43 +43,20 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ log2n: Int, _ signa
         return
     }
     
-    var _sreal = temp
-    var _simag = temp + temp_stride
-    var _kreal = output
-    var _kimag = output + out_stride
+    let _kreal = temp
+    let _kimag = temp + temp_stride
+    let k_stride = temp_stride << 1
     
-    let s_stride = temp_stride << 1
-    let k_stride = out_stride << 1
-    
-    HalfRadix2CooleyTukey(log2n, signal, signal_stride, signal_count, _sreal, _simag, s_stride)
     HalfRadix2CooleyTukey(log2n, kernel, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
-    
-    let m = 1 / T(length)
-    _kreal.pointee *= m * _sreal.pointee
-    _kimag.pointee *= m * _simag.pointee
-    for _ in 1..<half {
-        _sreal += s_stride
-        _simag += s_stride
-        _kreal += k_stride
-        _kimag += k_stride
-        let _sr = _sreal.pointee
-        let _si = _simag.pointee
-        let _kr = m * _kreal.pointee
-        let _ki = m * _kimag.pointee
-        _kreal.pointee = _sr * _kr - _si * _ki
-        _kimag.pointee = _sr * _ki + _si * _kr
-    }
-    
-    HalfInverseRadix2CooleyTukey(log2n, output, out_stride)
+    Radix2FiniteImpulseFilter(log2n, signal, signal_stride, signal_count, _kreal, _kimag, k_stride, output, out_stride)
 }
 
 @inlinable
 @inline(__always)
 public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ log2n: Int, _ sreal: UnsafePointer<T>, _ simag: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: Int, _ oreal: UnsafeMutablePointer<T>, _ oimag: UnsafeMutablePointer<T>, _ out_stride: Int, _ treal: UnsafeMutablePointer<T>, _ timag: UnsafeMutablePointer<T>, _ temp_stride: Int) where T : FloatingMathProtocol {
     
-    let length = 1 << log2n
-    
     if _slowPath(signal_count == 0 || kernel_count == 0) {
+        let length = 1 << log2n
         var oreal = oreal
         var oimag = oimag
         for _ in 0..<length {
@@ -93,32 +68,8 @@ public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ log2n: Int, _ sreal
         return
     }
     
-    var _sreal = treal
-    var _simag = timag
-    var _kreal = oreal
-    var _kimag = oimag
-    
-    let s_stride = temp_stride
-    let k_stride = out_stride
-    
-    Radix2CooleyTukey(log2n, sreal, simag, signal_stride, signal_count, _sreal, _simag, s_stride)
-    Radix2CooleyTukey(log2n, kreal, kimag, kernel_stride, kernel_count, _kreal, _kimag, k_stride)
-    
-    let m = 1 / T(length)
-    for _ in 0..<length {
-        let _sr = _sreal.pointee
-        let _si = _simag.pointee
-        let _kr = m * _kreal.pointee
-        let _ki = m * _kimag.pointee
-        _sreal.pointee = _sr * _kr - _si * _ki
-        _simag.pointee = _sr * _ki + _si * _kr
-        _sreal += s_stride
-        _simag += s_stride
-        _kreal += k_stride
-        _kimag += k_stride
-    }
-    
-    InverseRadix2CooleyTukey(log2n, treal, timag, temp_stride, length, oreal, oimag, out_stride)
+    Radix2CooleyTukey(log2n, kreal, kimag, kernel_stride, kernel_count, treal, timag, temp_stride)
+    Radix2FiniteImpulseFilter(log2n, sreal, simag, signal_stride, signal_count, treal, timag, temp_stride, oreal, oimag, out_stride)
 }
 
 @inlinable
@@ -221,8 +172,9 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ log2n: Int, _ si
     
     HalfRadix2CooleyTukey(log2n, signal, signal_stride, signal_count, _treal, _timag, t_stride)
     
-    _treal.pointee *= _kreal.pointee
-    _timag.pointee *= _kimag.pointee
+    let m = 1 / T(length)
+    _treal.pointee *= m * _kreal.pointee
+    _timag.pointee *= m * _kimag.pointee
     for _ in 1..<half {
         _treal += t_stride
         _timag += t_stride
@@ -230,8 +182,8 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ log2n: Int, _ si
         _kimag += kernel_stride
         let _tr = _treal.pointee
         let _ti = _timag.pointee
-        let _kr = _kreal.pointee
-        let _ki = _kimag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
         _treal.pointee = _tr * _kr - _ti * _ki
         _timag.pointee = _tr * _ki + _ti * _kr
     }
@@ -264,11 +216,12 @@ public func Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ log2n: Int, _ sr
     var _kreal = kreal
     var _kimag = kimag
     
+    let m = 1 / T(length)
     for _ in 0..<length {
         let _tr = _oreal.pointee
         let _ti = _oimag.pointee
-        let _kr = _kreal.pointee
-        let _ki = _kimag.pointee
+        let _kr = m * _kreal.pointee
+        let _ki = m * _kimag.pointee
         _oreal.pointee = _tr * _kr - _ti * _ki
         _oimag.pointee = _tr * _ki + _ti * _kr
         _oreal += out_stride

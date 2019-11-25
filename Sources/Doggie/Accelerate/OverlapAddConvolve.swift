@@ -39,14 +39,11 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & FloatingMathProt
     @inline(__always)
     public init(kernel: [T]) {
         
-        let fft_length = Radix2CircularConvolveLength(kernel.count, kernel.count)
-        let half = fft_length >> 1
-        
-        let kernel = kernel.map { $0 / T(fft_length) }
-        
-        self.fft_length = fft_length
+        self.fft_length = Radix2CircularConvolveLength(kernel.count, kernel.count)
         self.overlap_length = kernel.count - 1
         self.buffer = Array(repeating: 0, count: fft_length << 1 + overlap_length)
+        
+        let half = fft_length >> 1
         
         buffer.withUnsafeMutableBufferPointer {
             
