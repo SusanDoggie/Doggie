@@ -63,12 +63,6 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
     
     @inlinable
     @inline(__always)
-    func _direct_convolution(_ horizontal_filter: [RawPixel.Scalar], _ vertical_filter: [RawPixel.Scalar]) -> Self {
-        return self._direct_convolution_horizontal(horizontal_filter)._direct_convolution_vertical(vertical_filter)
-    }
-    
-    @inlinable
-    @inline(__always)
     func _direct_convolution_horizontal(_ filter: [RawPixel.Scalar]) -> Self {
         
         let width = self.width
@@ -147,22 +141,6 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
     }
 }
 
-@inlinable
-@inline(__always)
-func _Radix2FiniteImpulseFilter<T: BinaryFloatingPoint>(_ log2n: Int, _ row: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_row_stride: Int, _ signal_count: Int, _ kreal: UnsafePointer<T>, _ kimag: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_row_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ out_row_stride: Int) where T : FloatingMathProtocol {
-    var signal = signal
-    var kreal = kreal
-    var kimag = kimag
-    var output = output
-    for _ in 0..<row {
-        Radix2FiniteImpulseFilter(log2n, signal, signal_stride, signal_count, kreal, kimag, kernel_stride, output, out_stride)
-        signal += signal_row_stride
-        kreal += kernel_row_stride
-        kimag += kernel_row_stride
-        output += out_row_stride
-    }
-}
-
 extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPixel.Scalar : BinaryFloatingPoint & FloatingMathProtocol {
     
     @inlinable
@@ -228,66 +206,6 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
     
     @inlinable
     @inline(__always)
-    func _cooleyTukey_convolution(_ horizontal_filter: [RawPixel.Scalar], _ vertical_filter: [RawPixel.Scalar]) -> Self {
-        
-        let width = self.width
-        let height = self.height
-        let numberOfComponents = self.numberOfComponents
-        
-        let n_width = width + horizontal_filter.count - 1
-        let n_height = height + vertical_filter.count - 1
-        
-        guard width > 0 && height > 0 else { return self }
-        
-        let length1 = Radix2CircularConvolveLength(width, horizontal_filter.count)
-        let length2 = Radix2CircularConvolveLength(height, vertical_filter.count)
-        
-        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length1 + length2 + length1 * height, fileBacked: self.fileBacked)
-        var result = MappedBuffer<RawPixel>(repeating: RawPixel.zero, count: n_width * length2, fileBacked: self.fileBacked)
-        
-        buffer.withUnsafeMutableBufferPointer {
-            
-            guard let buffer = $0.baseAddress else { return }
-            
-            self.withUnsafeBytes {
-                
-                guard var source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
-                
-                result.withUnsafeMutableBytes {
-                    
-                    guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
-                    
-                    let log2n1 = log2(length1)
-                    let log2n2 = log2(length2)
-                    
-                    let _kreal1 = buffer
-                    let _kimag1 = buffer + 1
-                    let _kreal2 = buffer + length1
-                    let _kimag2 = _kreal2 + 1
-                    let _temp = _kreal2 + length2
-                    
-                    HalfRadix2CooleyTukey(log2n1, horizontal_filter, 1, horizontal_filter.count, _kreal1, _kimag1, 2)
-                    HalfRadix2CooleyTukey(log2n2, vertical_filter, 1, vertical_filter.count, _kreal2, _kimag2, 2)
-                    
-                    for _ in 0..<numberOfComponents {
-                        
-                        _Radix2FiniteImpulseFilter(log2n1, height, source, numberOfComponents, numberOfComponents * width, width, _kreal1, _kimag1, 2, 0, _temp, 1, length1)
-                        _Radix2FiniteImpulseFilter(log2n2, n_width, _temp, length1, 1, height, _kreal2, _kimag2, 2, 0, output, numberOfComponents * n_width, numberOfComponents)
-                        
-                        source += 1
-                        output += 1
-                    }
-                }
-            }
-        }
-        
-        result.removeLast(result.count - n_width * n_height)
-        
-        return Self(width: n_width, height: n_height, pixels: result, resamplingAlgorithm: self.resamplingAlgorithm)
-    }
-    
-    @inlinable
-    @inline(__always)
     func _cooleyTukey_convolution_horizontal(_ filter: [RawPixel.Scalar]) -> Self {
         
         let width = self.width
@@ -300,8 +218,8 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
         
         let length = Radix2CircularConvolveLength(width, filter.count)
         
-        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length + length * height, fileBacked: self.fileBacked)
-        var result = Self(width: n_width, height: height, resamplingAlgorithm: self.resamplingAlgorithm, pixel: RawPixel.zero, fileBacked: self.fileBacked)
+        var buffer = MappedBuffer<RawPixel.Scalar>(repeating: 0, count: length, fileBacked: self.fileBacked)
+        var result = MappedBuffer<RawPixel>(repeating: RawPixel.zero, count: n_width * (height - 1) + length, fileBacked: self.fileBacked)
         
         buffer.withUnsafeMutableBufferPointer {
             
@@ -319,23 +237,20 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     
                     let _kreal = buffer
                     let _kimag = buffer + 1
-                    let _temp = buffer + length
+                    let source_row_stride = numberOfComponents * width
+                    let output_row_stride = numberOfComponents * n_width
                     
                     HalfRadix2CooleyTukey(log2n, filter, 1, filter.count, _kreal, _kimag, 2)
                     
                     for _ in 0..<numberOfComponents {
                         
-                        _Radix2FiniteImpulseFilter(log2n, height, source, numberOfComponents, numberOfComponents * width, width, _kreal, _kimag, 2, 0, _temp, 1, length)
+                        var _source = source
+                        var _output = output
                         
-                        do {
-                            var _temp = _temp
-                            var output = output
-                            let out_stride = numberOfComponents * n_width
-                            for _ in 0..<height {
-                                Move(n_width, _temp, 1, output, numberOfComponents)
-                                _temp += length
-                                output += out_stride
-                            }
+                        for _ in 0..<height {
+                            Radix2FiniteImpulseFilter(log2n, _source, numberOfComponents, width, _kreal, _kimag, 2, _output, numberOfComponents)
+                            _source += source_row_stride
+                            _output += output_row_stride
                         }
                         
                         source += 1
@@ -345,7 +260,9 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
             }
         }
         
-        return result
+        result.removeLast(result.count - n_width * height)
+        
+        return Self(width: n_width, height: height, pixels: result, resamplingAlgorithm: self.resamplingAlgorithm)
     }
     
     @inlinable
@@ -371,11 +288,11 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
             
             self.withUnsafeBytes {
                 
-                guard let source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
+                guard var source = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                 
                 result.withUnsafeMutableBytes {
                     
-                    guard let output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
+                    guard var output = $0.bindMemory(to: RawPixel.Scalar.self).baseAddress else { return }
                     
                     let log2n = log2(length)
                     
@@ -385,7 +302,11 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
                     HalfRadix2CooleyTukey(log2n, filter, 1, filter.count, _kreal, _kimag, 2)
                     
                     let row = width * numberOfComponents
-                    _Radix2FiniteImpulseFilter(log2n, row, source, row, 1, height, _kreal, _kimag, 2, 0, output, row, 1)
+                    for _ in 0..<row {
+                        Radix2FiniteImpulseFilter(log2n, source, row, height, _kreal, _kimag, 2, output, row)
+                        source += 1
+                        output += 1
+                    }
                 }
             }
         }
@@ -464,8 +385,8 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
             }
         default:
             switch algorithm {
-            case .direct: result = _direct_convolution(horizontal_filter, vertical_filter)
-            case .cooleyTukey: result = _cooleyTukey_convolution(horizontal_filter, vertical_filter)
+            case .direct: result = _direct_convolution_horizontal(horizontal_filter)._direct_convolution_vertical(vertical_filter)
+            case .cooleyTukey: result = _cooleyTukey_convolution_horizontal(horizontal_filter)._cooleyTukey_convolution_vertical(vertical_filter)
             }
         }
         
