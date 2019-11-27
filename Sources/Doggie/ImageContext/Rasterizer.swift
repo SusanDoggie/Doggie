@@ -83,9 +83,7 @@ extension RasterizeBufferProtocol {
     @inline(__always)
     func _rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Int, Int, Self) -> Void) {
         
-        if !Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) {
-            return
-        }
+        guard Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) else { return }
         
         @inline(__always)
         func scan(_ p0: Point, _ p1: Point, _ y: Double) -> (Double, Double)? {
