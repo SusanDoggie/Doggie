@@ -36,13 +36,13 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     
     @inlinable
     @inline(__always)
-    init(representingValue: Base) {
+    public init(representingValue: Base) {
         self.bitPattern = representingValue.bigEndian
     }
     
     @inlinable
     @inline(__always)
-    var representingValue: Base {
+    public var representingValue: Base {
         get {
             return Base(bigEndian: bitPattern)
         }
@@ -460,13 +460,13 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     
     @inlinable
     @inline(__always)
-    init(representingValue: Base) {
+    public init(representingValue: Base) {
         self.bitPattern = representingValue.littleEndian
     }
     
     @inlinable
     @inline(__always)
-    var representingValue: Base {
+    public var representingValue: Base {
         get {
             return Base(littleEndian: bitPattern)
         }
