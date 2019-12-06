@@ -25,7 +25,7 @@
 
 #if canImport(CoreGraphics)
 
-fileprivate let ShapeCacheCGPathKey = "ShapeCacheCGPathKey"
+private let ShapeCacheCGPathKey = "ShapeCacheCGPathKey"
 
 private protocol BezierPathConvertible {
     

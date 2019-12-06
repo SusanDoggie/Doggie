@@ -145,7 +145,7 @@ extension CGContext {
     }
 }
 
-fileprivate final class CGPatternCallbackContainer {
+private final class CGPatternCallbackContainer {
     
     static var CGPatternCallbackList = [UInt: CGPatternCallbackContainer]()
     

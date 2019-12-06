@@ -81,90 +81,157 @@ extension CGImage {
     }
 }
 
-fileprivate let ImageCacheCGImageKey = "ImageCacheCGImageKey"
+private struct CGImageData {
+    
+    let width: Int
+    let height: Int
+    
+    let bytesPerPixel: Int
+    let bitsPerComponent: Int
+    let bitmapInfo: UInt32
+    
+    let pixels: Data
+    
+    init<RawPixel : ColorPixelProtocol>(width: Int, height: Int, pixels: MappedBuffer<RawPixel>) {
+        
+        self.width = width
+        self.height = height
+        
+        switch pixels {
+            
+        case is MappedBuffer<Gray16ColorPixel>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 8
+            
+            let byteOrder = CGBitmapInfo.byteOrder16Big
+            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            self.pixels = pixels.data
+            
+        case is MappedBuffer<Gray32ColorPixel>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 16
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
+            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            self.pixels = pixels.data
+            
+        case is MappedBuffer<ARGB32ColorPixel>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 8
+            
+            let byteOrder = CGBitmapInfo.byteOrder32Big
+            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
+            
+            self.pixels = pixels.data
+            
+        case is MappedBuffer<RGBA32ColorPixel>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 8
+            
+            let byteOrder = CGBitmapInfo.byteOrder32Big
+            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            self.pixels = pixels.data
+            
+        case is MappedBuffer<BGRA32ColorPixel>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 8
+            
+            let byteOrder = CGBitmapInfo.byteOrder32Little
+            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
+            
+            self.pixels = pixels.data
+            
+        case is MappedBuffer<ARGB64ColorPixel>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 16
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
+            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
+            
+            self.pixels = pixels.data
+            
+        case is MappedBuffer<RGBA64ColorPixel>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 16
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
+            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            self.pixels = pixels.data
+            
+        case is MappedBuffer<Float32ColorPixel<RawPixel.Model>>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 32
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
+            self.bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            self.pixels = pixels.data
+            
+        default:
+            
+            self.bytesPerPixel = MemoryLayout<Float32ColorPixel<RawPixel.Model>>.stride
+            self.bitsPerComponent = 32
+            
+            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
+            self.bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            self.pixels = pixels.map(Float32ColorPixel<RawPixel.Model>.init).data
+        }
+    }
+    
+    func cgImage(colorSpace: CGColorSpace) -> CGImage? {
+        guard let providerRef = CGDataProvider(data: self.pixels as CFData) else { return nil }
+        return CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bytesPerPixel << 3, bytesPerRow: bytesPerPixel * width, space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), provider: providerRef, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
+    }
+}
+
+private let ImageCacheCGImageKey = "ImageCacheCGImageKey"
 
 extension Image {
     
     public var cgImage: CGImage? {
         
         return self.cache.load(for: ImageCacheCGImageKey) {
-            
-            let width = self.width
-            let height = self.height
-            
-            let bitsPerComponent: Int
-            let bitmapInfo: UInt32
-            
-            switch self {
-                
-            case is Image<Gray16ColorPixel>:
-                
-                bitsPerComponent = 8
-                
-                let byteOrder = CGBitmapInfo.byteOrder16Big
-                bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
-                
-            case is Image<Gray32ColorPixel>:
-                
-                bitsPerComponent = 16
-                
-                let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
-                bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
-                
-            case is Image<ARGB32ColorPixel>:
-                
-                bitsPerComponent = 8
-                
-                let byteOrder = CGBitmapInfo.byteOrder32Big
-                bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
-                
-            case is Image<RGBA32ColorPixel>:
-                
-                bitsPerComponent = 8
-                
-                let byteOrder = CGBitmapInfo.byteOrder32Big
-                bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
-                
-            case is Image<BGRA32ColorPixel>:
-                
-                bitsPerComponent = 8
-                
-                let byteOrder = CGBitmapInfo.byteOrder32Little
-                bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
-                
-            case is Image<ARGB64ColorPixel>:
-                
-                bitsPerComponent = 16
-                
-                let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
-                bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
-                
-            case is Image<RGBA64ColorPixel>:
-                
-                bitsPerComponent = 16
-                
-                let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
-                bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
-                
-            case is Image<Float32ColorPixel<Pixel.Model>>:
-                
-                bitsPerComponent = 32
-                
-                let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
-                bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
-                
-            default: return Image<Float32ColorPixel<Pixel.Model>>(self).cgImage
-            }
-            
             guard let colorSpace = self.colorSpace.cgColorSpace else { return nil }
-            guard let providerRef = CGDataProvider(data: self.pixels.data as CFData) else { return nil }
-            
-            let bytesPerPixel = MemoryLayout<Pixel>.stride
-            let bitsPerPixel = bytesPerPixel << 3
-            let bytesPerRow = bytesPerPixel * width
-            
-            return CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), provider: providerRef, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
+            let data = CGImageData(width: width, height: height, pixels: pixels)
+            return data.cgImage(colorSpace: colorSpace)
         }
+    }
+}
+
+extension Texture where RawPixel.Model == GrayColorModel {
+    
+    public var cgImage: CGImage? {
+        let data = CGImageData(width: width, height: height, pixels: pixels)
+        return data.cgImage(colorSpace: CGColorSpaceCreateDeviceGray())
+    }
+}
+
+extension Texture where RawPixel.Model == RGBColorModel {
+    
+    public var cgImage: CGImage? {
+        let data = CGImageData(width: width, height: height, pixels: pixels)
+        return data.cgImage(colorSpace: CGColorSpaceCreateDeviceRGB())
+    }
+}
+
+extension Texture where RawPixel.Model == CMYKColorModel {
+    
+    public var cgImage: CGImage? {
+        let data = CGImageData(width: width, height: height, pixels: pixels)
+        return data.cgImage(colorSpace: CGColorSpaceCreateDeviceCMYK())
     }
 }
 

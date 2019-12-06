@@ -25,7 +25,7 @@
 
 #if canImport(CoreGraphics)
 
-fileprivate let ColorSpaceCacheCGColorSpaceKey = "ColorSpaceCacheCGColorSpaceKey"
+private let ColorSpaceCacheCGColorSpaceKey = "ColorSpaceCacheCGColorSpaceKey"
 
 extension ColorSpace {
     
