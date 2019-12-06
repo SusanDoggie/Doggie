@@ -65,6 +65,12 @@
 
 #endif
 
+#if canImport(Metal)
+
+@_exported import Metal
+
+#endif
+
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
 
 @_exported import AppKit
