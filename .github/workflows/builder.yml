@@ -21,7 +21,7 @@ jobs:
       DESTINATION: ${{ matrix.destination }}
       XCODEBUILD_CONFIG: "-configuration Release -sdk ${{ matrix.sdk }}"
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
       with:
         submodules: recursive
     - name: Build
@@ -43,7 +43,7 @@ jobs:
     name: macOS(SwiftPM)
     runs-on: macOS-latest
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
       with:
         submodules: recursive
     - name: Build
@@ -64,7 +64,7 @@ jobs:
         export DEBIAN_FRONTEND=noninteractive
         echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
         apt-get install -y fontconfig ttf-mscorefonts-installer
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v1
     - name: Build
       run: swift build -c release
     - name: Run tests
