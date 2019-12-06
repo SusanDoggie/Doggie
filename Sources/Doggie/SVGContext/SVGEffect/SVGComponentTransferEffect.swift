@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SVGComponentTransfer : SVGEffectElement {
+public struct SVGComponentTransferEffect : SVGEffectElement {
     
     public var region: Rect?
     

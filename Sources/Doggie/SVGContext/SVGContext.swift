@@ -1191,7 +1191,7 @@ extension SVGColorMatrixEffect : SVGEffectSerializable {
     }
 }
 
-extension SVGComponentTransfer.TransferFunction {
+extension SVGComponentTransferEffect.TransferFunction {
     
     fileprivate func toXMLElement(_ node: String) -> SDXMLElement {
         
@@ -1230,7 +1230,7 @@ extension SVGComponentTransfer.TransferFunction {
     }
 }
 
-extension SVGComponentTransfer : SVGEffectSerializable {
+extension SVGComponentTransferEffect : SVGEffectSerializable {
     
     fileprivate func toXMLElement() -> SDXMLElement? {
         
