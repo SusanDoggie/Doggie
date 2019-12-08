@@ -86,8 +86,13 @@ extension AnyColorSpace {
     
     public init?(cgColorSpace: CGColorSpace) {
         
-        if #available(macOS 10.5, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
+        if #available(macOS 10.6, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
             switch cgColorSpace.name {
+            case CGColorSpace.genericGrayGamma2_2:
+                
+                self = AnyColorSpace.genericGamma22Gray
+                return
+                
             case CGColorSpace.sRGB:
                 
                 self = AnyColorSpace.sRGB
@@ -97,18 +102,7 @@ extension AnyColorSpace {
             }
         }
         
-        if #available(macOS 10.6, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
-            switch cgColorSpace.name {
-            case CGColorSpace.genericGrayGamma2_2:
-                
-                self = AnyColorSpace.genericGamma22Gray
-                return
-                
-            default: break
-            }
-        }
-        
-        if #available(macOS 10.11.2, iOS 9.3, tvOS 9.3, watchOS 2.3, *) {
+        if #available(macOS 10.11.2, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
             switch cgColorSpace.name {
             case CGColorSpace.displayP3:
                 
