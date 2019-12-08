@@ -40,6 +40,7 @@
 		086CBF3A22B53D1200D9460E /* WeakSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086CBF3922B53D1200D9460E /* WeakSet.swift */; };
 		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
 		086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* GradientMesh.swift */; };
+		0877CE71239D5B090074558A /* PredefinedColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0877CE70239D5B090074558A /* PredefinedColorSpace.swift */; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		088841DE236EAF09000E17FF /* FontFaceEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841DD236EAF09000E17FF /* FontFaceEncoder.swift */; };
 		088841E2236EB46D000E17FF /* OTFEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841E1236EB46D000E17FF /* OTFEncoder.swift */; };
@@ -381,6 +382,7 @@
 		086CBF3922B53D1200D9460E /* WeakSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakSet.swift; sourceTree = "<group>"; };
 		086F06481EDC623D00BA70C8 /* Rasterizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rasterizer.swift; sourceTree = "<group>"; };
 		086F064B1EDC65D600BA70C8 /* GradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GradientMesh.swift; sourceTree = "<group>"; };
+		0877CE70239D5B090074558A /* PredefinedColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PredefinedColorSpace.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoggieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		088841DD236EAF09000E17FF /* FontFaceEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontFaceEncoder.swift; sourceTree = "<group>"; };
@@ -947,6 +949,7 @@
 			children = (
 				0A8D86401F7DFCED00F9530E /* ColorSpaceProtocol.swift */,
 				0AE71A021EF51DF80086923C /* AnyColorSpace.swift */,
+				0877CE70239D5B090074558A /* PredefinedColorSpace.swift */,
 				0AC527DF1EEFEFF900FB239A /* iccProfile */,
 				08B68A301ED07A2400F8D423 /* ColorSpace.swift */,
 				0ABDF1A81F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift */,
@@ -1867,6 +1870,7 @@
 				0A967E501F132DC0007E38E4 /* BMPEncoder.swift in Sources */,
 				08458AFB1E2E627600D01813 /* DirectConvolve.swift in Sources */,
 				0A53E4671E35AEF80060FB83 /* Graph.swift in Sources */,
+				0877CE71239D5B090074558A /* PredefinedColorSpace.swift in Sources */,
 				0A06975F1E4D6732005CF664 /* NSImage.swift in Sources */,
 				0A5DFE4422546ADF00110895 /* ImageContextExtension.swift in Sources */,
 				0AB0DA121F3AEF8B0004E43F /* ShapeRegion.swift in Sources */,

@@ -31,28 +31,52 @@ extension ColorSpace {
     
     public var cgColorSpace : CGColorSpace? {
         
-        let _D50 = Point(x: 0.34567, y: 0.35850)
+        if #available(macOS 10.5, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
+            switch AnyColorSpace(self) {
+            case AnyColorSpace.sRGB: return CGColorSpace(name: CGColorSpace.sRGB)
+            default: break
+            }
+        }
         
-        switch self {
-        case AnyColorSpace(ColorSpace<XYZColorModel>.cieXYZ(white: _D50)): return CGColorSpace(name: CGColorSpace.genericXYZ)
-        case AnyColorSpace(ColorSpace<LabColorModel>.cieLab(white: _D50)): return CGColorSpace(name: CGColorSpace.genericLab)
-        case AnyColorSpace(ColorSpace<GrayColorModel>.genericGamma22Gray): return CGColorSpace(name: CGColorSpace.genericGrayGamma2_2)
-        case AnyColorSpace(ColorSpace<GrayColorModel>.genericGamma22Gray.linearTone): return CGColorSpace(name: CGColorSpace.linearGray)
-        case AnyColorSpace(ColorSpace<RGBColorModel>.sRGB): return CGColorSpace(name: CGColorSpace.sRGB)
-        case AnyColorSpace(ColorSpace<RGBColorModel>.sRGB.linearTone): return CGColorSpace(name: CGColorSpace.linearSRGB)
-        case AnyColorSpace(ColorSpace<RGBColorModel>.displayP3): return CGColorSpace(name: CGColorSpace.displayP3)
-        default:
+        if #available(macOS 10.6, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
+            switch AnyColorSpace(self) {
+            case AnyColorSpace.genericGamma22Gray: return CGColorSpace(name: CGColorSpace.genericGrayGamma2_2)
+            default: break
+            }
+        }
+        
+        if #available(macOS 10.11.2, iOS 9.3, tvOS 9.3, watchOS 2.3, *) {
+            switch AnyColorSpace(self) {
+            case AnyColorSpace.displayP3: return CGColorSpace(name: CGColorSpace.displayP3)
+            default: break
+            }
+        }
+        
+        if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+            switch AnyColorSpace(self) {
+            case AnyColorSpace.genericGamma22Gray.linearTone: return CGColorSpace(name: CGColorSpace.linearGray)
+            case AnyColorSpace.sRGB.linearTone: return CGColorSpace(name: CGColorSpace.linearSRGB)
+            default: break
+            }
+        }
+        
+        if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
+            switch AnyColorSpace(self) {
+            case AnyColorSpace.genericXYZ_D50: return CGColorSpace(name: CGColorSpace.genericXYZ)
+            case AnyColorSpace.genericLab_D50: return CGColorSpace(name: CGColorSpace.genericLab)
+            default: break
+            }
+        }
+        
+        return self.cache.load(for: ColorSpaceCacheCGColorSpaceKey) {
             
-            return self.cache.load(for: ColorSpaceCacheCGColorSpaceKey) {
+            if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
                 
-                if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-                    
-                    return self.iccData.map { CGColorSpace(iccData: $0 as CFData) }
-                    
-                } else {
-                    
-                    return self.iccData.flatMap { CGColorSpace(iccProfileData: $0 as CFData) }
-                }
+                return self.iccData.map { CGColorSpace(iccData: $0 as CFData) }
+                
+            } else {
+                
+                return self.iccData.flatMap { CGColorSpace(iccProfileData: $0 as CFData) }
             }
         }
     }
@@ -62,30 +86,82 @@ extension AnyColorSpace {
     
     public init?(cgColorSpace: CGColorSpace) {
         
-        let _D50 = Point(x: 0.34567, y: 0.35850)
-        
-        switch cgColorSpace.name {
-        case CGColorSpace.genericXYZ: self.init(ColorSpace<XYZColorModel>.cieXYZ(white: _D50))
-        case CGColorSpace.genericLab: self.init(ColorSpace<LabColorModel>.cieLab(white: _D50))
-        case CGColorSpace.genericGrayGamma2_2: self.init(ColorSpace<GrayColorModel>.genericGamma22Gray)
-        case CGColorSpace.linearGray: self.init(ColorSpace<GrayColorModel>.genericGamma22Gray.linearTone)
-        case CGColorSpace.sRGB: self.init(ColorSpace<RGBColorModel>.sRGB)
-        case CGColorSpace.linearSRGB: self.init(ColorSpace<RGBColorModel>.sRGB.linearTone)
-        case CGColorSpace.displayP3: self.init(ColorSpace<RGBColorModel>.displayP3)
-        default:
-            
-            if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+        if #available(macOS 10.5, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
+            switch cgColorSpace.name {
+            case CGColorSpace.sRGB:
                 
-                guard let iccData = cgColorSpace.copyICCData() as Data? else { return nil }
+                self = AnyColorSpace.sRGB
+                return
                 
-                try? self.init(iccData: iccData)
-                
-            } else {
-                
-                guard let iccData = cgColorSpace.iccData as Data? else { return nil }
-                
-                try? self.init(iccData: iccData)
+            default: break
             }
+        }
+        
+        if #available(macOS 10.6, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
+            switch cgColorSpace.name {
+            case CGColorSpace.genericGrayGamma2_2:
+                
+                self = AnyColorSpace.genericGamma22Gray
+                return
+                
+            default: break
+            }
+        }
+        
+        if #available(macOS 10.11.2, iOS 9.3, tvOS 9.3, watchOS 2.3, *) {
+            switch cgColorSpace.name {
+            case CGColorSpace.displayP3:
+                
+                self = AnyColorSpace.displayP3
+                return
+                
+            default: break
+            }
+        }
+        
+        if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+            switch cgColorSpace.name {
+            case CGColorSpace.linearGray:
+                
+                self = AnyColorSpace.genericGamma22Gray.linearTone
+                return
+                
+            case CGColorSpace.linearSRGB:
+                
+                self = AnyColorSpace.sRGB.linearTone
+                return
+                
+            default: break
+            }
+        }
+        
+        if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
+            switch cgColorSpace.name {
+            case CGColorSpace.genericXYZ:
+                
+                self = AnyColorSpace.genericXYZ_D50
+                return
+                
+            case CGColorSpace.genericLab:
+                
+                self = AnyColorSpace.genericLab_D50
+                return
+                
+            default: break
+            }
+        }
+        
+        if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+            
+            guard let iccData = cgColorSpace.copyICCData() as Data? else { return nil }
+            
+            try? self.init(iccData: iccData)
+            
+        } else {
+            
+            guard let iccData = cgColorSpace.iccData as Data? else { return nil }
+            
+            try? self.init(iccData: iccData)
         }
     }
 }
