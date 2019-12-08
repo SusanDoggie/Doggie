@@ -105,6 +105,11 @@ extension ColorSpace where Model == LuvColorModel {
 extension ColorSpace where Model == GrayColorModel {
     
     @inlinable
+    public static var genericGamma22Gray: ColorSpace {
+        return .calibratedGray(white: _D65, gamma: 2.2)
+    }
+    
+    @inlinable
     public static var `default`: ColorSpace {
         return .genericGamma22Gray
     }
