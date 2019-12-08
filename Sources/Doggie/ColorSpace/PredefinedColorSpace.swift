@@ -127,61 +127,61 @@ extension AnyColorSpace {
     
     @inlinable
     public static var genericXYZ_D50: AnyColorSpace {
-        return AnyColorSpace(.genericXYZ_D50)
+        return AnyColorSpace(ColorSpace.genericXYZ_D50)
     }
     
     @inlinable
     public static var genericXYZ: AnyColorSpace {
-        return AnyColorSpace(.genericXYZ)
+        return AnyColorSpace(ColorSpace.genericXYZ)
     }
     
     @inlinable
     public static var genericYxy_D50: AnyColorSpace {
-        return AnyColorSpace(.genericYxy_D50)
+        return AnyColorSpace(ColorSpace.genericYxy_D50)
     }
     
     @inlinable
     public static var genericYxy: AnyColorSpace {
-        return AnyColorSpace(.genericYxy)
+        return AnyColorSpace(ColorSpace.genericYxy)
     }
     
     @inlinable
     public static var genericLab_D50: AnyColorSpace {
-        return AnyColorSpace(.genericLab_D50)
+        return AnyColorSpace(ColorSpace.genericLab_D50)
     }
     
     @inlinable
     public static var genericLab: AnyColorSpace {
-        return AnyColorSpace(.genericLab)
+        return AnyColorSpace(ColorSpace.genericLab)
     }
     
     @inlinable
     public static var genericLuv_D50: AnyColorSpace {
-        return AnyColorSpace(.genericLuv_D50)
+        return AnyColorSpace(ColorSpace.genericLuv_D50)
     }
     
     @inlinable
     public static var genericLuv: AnyColorSpace {
-        return AnyColorSpace(.genericLuv)
+        return AnyColorSpace(ColorSpace.genericLuv)
     }
     
     @inlinable
     public static var genericGamma22Gray: AnyColorSpace {
-        return AnyColorSpace(.genericGamma22Gray)
+        return AnyColorSpace(ColorSpace.genericGamma22Gray)
     }
     
     @inlinable
     public static var sRGB: AnyColorSpace {
-        return AnyColorSpace(.sRGB)
+        return AnyColorSpace(ColorSpace.sRGB)
     }
     
     @inlinable
     public static var adobeRGB: AnyColorSpace {
-        return AnyColorSpace(.adobeRGB)
+        return AnyColorSpace(ColorSpace.adobeRGB)
     }
     
     @inlinable
     public static var displayP3: AnyColorSpace {
-        return AnyColorSpace(.displayP3)
+        return AnyColorSpace(ColorSpace.displayP3)
     }
 }
