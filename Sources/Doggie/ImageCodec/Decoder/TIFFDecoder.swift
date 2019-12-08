@@ -431,7 +431,7 @@ struct TIFFPage : ImageRepBase {
                 return AnyColorSpace(ColorSpace.calibratedRGB(white: _D65, red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600), gamma: 2.2))
             }
         case 4: return AnyColorSpace(ColorSpace.calibratedGray(white: _D65))
-        case 8, 9: return AnyColorSpace(ColorSpace.cieLab(white: Point(x: 0.34567, y: 0.35850)))
+        case 8, 9: return AnyColorSpace(ColorSpace.cieLab(white: _D50))
         default: throw ImageRep.Error.Unsupported("Unsupported color space.")
         }
     }

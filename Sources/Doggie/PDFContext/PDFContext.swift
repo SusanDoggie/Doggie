@@ -31,7 +31,7 @@ public class PDFContext : DrawableContext {
         self.pages = pages
     }
     
-    public init(media: Rect, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: AnyColorSpace = AnyColorSpace(.sRGB)) {
+    public init(media: Rect, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: AnyColorSpace = AnyColorSpace.sRGB) {
         let bleed = bleed ?? media
         let trim = trim ?? bleed
         let margin = margin ?? trim
@@ -47,7 +47,7 @@ extension PDFContext {
         self.init(media: media, bleed: bleed, trim: trim, margin: margin, colorSpace: AnyColorSpace(colorSpace))
     }
     
-    public convenience init(width: Double, height: Double, unit: Resolution.Unit = .point, colorSpace: AnyColorSpace = AnyColorSpace(.sRGB)) {
+    public convenience init(width: Double, height: Double, unit: Resolution.Unit = .point, colorSpace: AnyColorSpace = AnyColorSpace.sRGB) {
         let _width = unit.convert(length: width, to: .point)
         let _height = unit.convert(length: height, to: .point)
         self.init(media: Rect(x: 0, y: 0, width: _width, height: _height), colorSpace: colorSpace)

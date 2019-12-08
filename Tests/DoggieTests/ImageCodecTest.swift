@@ -48,7 +48,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 3, format: .unsigned, endianness: .big, bitRange: 24..<32),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA32ColorPixel>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA32ColorPixel>
         
         XCTAssertEqual(data, image?.pixels.data)
     }
@@ -75,7 +75,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 3, format: .unsigned, endianness: .big, bitRange: 24..<32),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA32ColorPixel>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA32ColorPixel>
         
         XCTAssertEqual(answer, image?.pixels.data)
     }
@@ -100,7 +100,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 3, format: .unsigned, endianness: .big, bitRange: 48..<64),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA64ColorPixel>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA64ColorPixel>
         
         XCTAssertNotNil(image)
         
@@ -140,7 +140,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 3, format: .unsigned, endianness: .big, bitRange: 48..<64),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA64ColorPixel>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA64ColorPixel>
         
         XCTAssertNotNil(image)
         
@@ -179,7 +179,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .unsigned, endianness: .big, bitRange: 11..<16),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA32ColorPixel>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA32ColorPixel>
         
         XCTAssertNotNil(image)
         
@@ -219,7 +219,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .unsigned, endianness: .big, bitRange: 11..<16),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA32ColorPixel>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA32ColorPixel>
         
         XCTAssertNotNil(image)
         
@@ -259,7 +259,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .unsigned, endianness: .big, bitRange: 16..<32),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA64ColorPixel>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<RGBA64ColorPixel>
         
         XCTAssertNotNil(image)
         
@@ -301,7 +301,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .float, endianness: .big, bitRange: 64..<96),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float32ColorPixel<RGBColorModel>>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float32ColorPixel<RGBColorModel>>
         
         XCTAssertNotNil(image)
         
@@ -342,7 +342,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .float, endianness: .little, bitRange: 64..<96),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float32ColorPixel<RGBColorModel>>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float32ColorPixel<RGBColorModel>>
         
         XCTAssertNotNil(image)
         
@@ -383,7 +383,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .float, endianness: .big, bitRange: 128..<192),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float64ColorPixel<RGBColorModel>>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float64ColorPixel<RGBColorModel>>
         
         XCTAssertNotNil(image)
         
@@ -424,7 +424,7 @@ class ImageCodecTest: XCTestCase {
             RawBitmap.Channel(index: 2, format: .float, endianness: .little, bitRange: 128..<192),
             ], data: data)
         
-        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace(.sRGB), bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float64ColorPixel<RGBColorModel>>
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float64ColorPixel<RGBColorModel>>
         
         XCTAssertNotNil(image)
         

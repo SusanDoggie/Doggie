@@ -24,7 +24,7 @@
 //
 
 @usableFromInline
-let PCSXYZ = CIEXYZColorSpace(white: Point(x: 0.34567, y: 0.35850))
+let PCSXYZ = CIEXYZColorSpace(white: _D50)
 
 @usableFromInline
 protocol PCSColorModel : ColorModelProtocol {

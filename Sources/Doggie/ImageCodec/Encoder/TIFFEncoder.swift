@@ -86,8 +86,8 @@ struct TIFFEncoder : ImageRepEncoder {
         default: photometric = 5
         }
         
-        let colorSpace = photometric == 8 ? AnyColorSpace(.cieLab(white: Point(x: 0.34567, y: 0.35850))) : image.colorSpace
-        guard let iccData = colorSpace.iccData else { return encode(image: AnyImage(Image<Float32ColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850)))), properties: properties) }
+        let colorSpace = photometric == 8 ? AnyColorSpace(.cieLab(white: _D50)) : image.colorSpace
+        guard let iccData = colorSpace.iccData else { return encode(image: AnyImage(Image<Float32ColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: _D50))), properties: properties) }
         
         let isOpaque = image.isOpaque
         let samplesPerPixel = isOpaque ? image.colorSpace.numberOfComponents : image.colorSpace.numberOfComponents + 1
@@ -156,10 +156,10 @@ struct TIFFEncoder : ImageRepEncoder {
             bitsPerChannel = 16
             
             if photometric == 8 {
-                if let image = image.base as? Image<Float64ColorPixel<LabColorModel>>, image.colorSpace == .cieLab(white: Point(x: 0.34567, y: 0.35850)) {
+                if let image = image.base as? Image<Float64ColorPixel<LabColorModel>>, image.colorSpace == .cieLab(white: _D50) {
                     pixelData = tiff_color_data(image, predictor, isOpaque)
                 } else {
-                    pixelData = tiff_color_data(Image<Float32ColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: Point(x: 0.34567, y: 0.35850))), predictor, isOpaque)
+                    pixelData = tiff_color_data(Image<Float32ColorPixel<LabColorModel>>(image: image, colorSpace: .cieLab(white: _D50)), predictor, isOpaque)
                 }
             } else {
                 guard let image = image.base as? TIFFRawRepresentable else { return nil }
