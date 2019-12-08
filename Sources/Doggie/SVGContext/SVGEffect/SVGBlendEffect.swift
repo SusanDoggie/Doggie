@@ -36,7 +36,7 @@ public struct SVGBlendEffect : SVGEffectElement {
         return [source, source2]
     }
     
-    public init(source: SVGEffect.Source, source2: SVGEffect.Source, mode: Mode) {
+    public init(source: SVGEffect.Source = .source, source2: SVGEffect.Source = .source, mode: Mode = .normal) {
         self.source = source
         self.source2 = source2
         self.mode = mode

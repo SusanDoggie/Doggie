@@ -39,7 +39,7 @@ public struct SVGDisplacementMapEffect : SVGEffectElement {
         return [source, displacement]
     }
     
-    public init(source: SVGEffect.Source, displacement: SVGEffect.Source, scale: Double, xChannelSelector: Int, yChannelSelector: Int) {
+    public init(source: SVGEffect.Source = .source, displacement: SVGEffect.Source = .source, scale: Double = 0, xChannelSelector: Int = 3, yChannelSelector: Int = 3) {
         self.source = source
         self.displacement = displacement
         self.scale = scale

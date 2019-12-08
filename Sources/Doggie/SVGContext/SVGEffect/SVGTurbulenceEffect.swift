@@ -37,7 +37,7 @@ public struct SVGTurbulenceEffect : SVGEffectElement {
         return []
     }
     
-    public init(type: SVGTurbulenceType, stitchTiles: Bool, seed: Int, baseFrequency: Size, numOctaves: Int) {
+    public init(type: SVGTurbulenceType = .turbulence, stitchTiles: Bool = false, seed: Int = 0, baseFrequency: Size = Size(), numOctaves: Int = 1) {
         self.type = type
         self.stitchTiles = stitchTiles
         self.seed = seed

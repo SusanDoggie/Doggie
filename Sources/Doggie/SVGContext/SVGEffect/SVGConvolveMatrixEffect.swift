@@ -40,7 +40,7 @@ public struct SVGConvolveMatrixEffect : SVGEffectElement {
         return [source]
     }
     
-    public init(source: SVGEffect.Source = .source, matrix: [Double], bias: Double, orderX: Int, orderY: Int, edgeMode: EdgeMode, preserveAlpha: Bool) {
+    public init(source: SVGEffect.Source = .source, matrix: [Double], bias: Double = 0, orderX: Int, orderY: Int, edgeMode: EdgeMode = .duplicate, preserveAlpha: Bool = false) {
         precondition(orderX > 0, "nonpositive width is not allowed.")
         precondition(orderY > 0, "nonpositive height is not allowed.")
         precondition(orderX * orderY == matrix.count, "mismatch matrix count.")

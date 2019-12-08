@@ -29,7 +29,7 @@ public struct SVGMergeEffect : SVGEffectElement {
     
     public var sources: [SVGEffect.Source]
     
-    public init(sources: [SVGEffect.Source]) {
+    public init(sources: [SVGEffect.Source] = []) {
         self.sources = sources
     }
     

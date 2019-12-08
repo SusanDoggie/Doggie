@@ -33,7 +33,7 @@ public struct SVGTileEffect : SVGEffectElement {
         return [source]
     }
     
-    public init(source: SVGEffect.Source) {
+    public init(source: SVGEffect.Source = .source) {
         self.source = source
     }
     

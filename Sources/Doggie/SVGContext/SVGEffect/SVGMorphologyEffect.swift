@@ -36,7 +36,7 @@ public struct SVGMorphologyEffect : SVGEffectElement {
         return [source]
     }
     
-    public init(source: SVGEffect.Source, radius: Size, mode: Mode) {
+    public init(source: SVGEffect.Source = .source, radius: Size = Size(), mode: Mode = .erode) {
         self.source = source
         self.radius = radius
         self.mode = mode
