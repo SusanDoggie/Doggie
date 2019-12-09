@@ -138,7 +138,7 @@ extension CalibratedRGBColorSpace {
 }
 
 @usableFromInline
-final class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
+class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     
     @usableFromInline
     let gamma: (Double, Double, Double)
