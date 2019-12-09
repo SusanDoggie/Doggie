@@ -24,7 +24,7 @@
 //
 
 @usableFromInline
-final class _adobeRGB: CalibratedRGBColorSpace {
+final class _adobeRGB: CalibratedGammaRGBColorSpace {
     
     @inlinable
     init() {

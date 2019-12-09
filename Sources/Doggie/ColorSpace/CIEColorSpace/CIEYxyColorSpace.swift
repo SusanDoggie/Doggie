@@ -65,7 +65,7 @@ extension CIEYxyColorSpace {
     
     @inlinable
     var localizedName: String? {
-        return "Doggie Yxy Profile (\(CIE1931(rawValue: white.point)))"
+        return "Doggie Yxy Profile (\(CIE1931(rawValue: cieXYZ.white.point)))"
     }
 }
 
