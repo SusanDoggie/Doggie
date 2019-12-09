@@ -28,7 +28,7 @@ final class _sRGB: CalibratedRGBColorSpace {
     
     @inlinable
     init() {
-        super.init(CIEXYZColorSpace(white: _D65), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600))
+        super.init(CIEXYZColorSpace(illuminant: CIE1931.D65), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600))
     }
     
     @inlinable
@@ -62,7 +62,7 @@ final class _sRGB: CalibratedRGBColorSpace {
     
     @inlinable
     override var localizedName: String? {
-        return "Doggie Calibrated RGB Color Space (sRGB)"
+        return "sRGB IEC61966-2.1"
     }
     
     @inlinable

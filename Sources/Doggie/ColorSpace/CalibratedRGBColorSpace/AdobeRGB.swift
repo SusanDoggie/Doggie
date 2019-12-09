@@ -23,7 +23,36 @@
 //  THE SOFTWARE.
 //
 
+@usableFromInline
+final class _adobeRGB: CalibratedRGBColorSpace {
+    
+    @inlinable
+    init() {
+        super.init(CIEXYZColorSpace(white: CIE1931.D65.rawValue, luminance: 160.00, contrastRatio: 287.9),
+                   red: Point(x: 0.6400, y: 0.3300),
+                   green: Point(x: 0.2100, y: 0.7100),
+                   blue: Point(x: 0.1500, y: 0.0600),
+                   gamma: (2.19921875, 2.19921875, 2.19921875))
+    }
+    
+    @inlinable
+    override var localizedName: String? {
+        return "Adobe RGB (1998)"
+    }
+    
+    @inlinable
+    override func __equalTo(_ other: CalibratedRGBColorSpace) -> Bool {
+        return type(of: other) == _adobeRGB.self
+    }
+    
+    @inlinable
+    override func hash(into hasher: inout Hasher) {
+        hasher.combine("CalibratedRGBColorSpace")
+        hasher.combine(".adobeRGB")
+    }
+}
+
 extension ColorSpace where Model == RGBColorModel {
     
-    public static let adobeRGB = ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: Point(x: 0.3127, y: 0.329), luminance: 160.00, contrastRatio: 287.9), red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.2100, y: 0.7100), blue: Point(x: 0.1500, y: 0.0600), gamma: (2.19921875, 2.19921875, 2.19921875)))
+    public static let adobeRGB = ColorSpace(base: _adobeRGB())
 }

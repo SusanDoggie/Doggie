@@ -12,6 +12,7 @@
 		081D092923701D4D00E54659 /* SwiftCompression in Frameworks */ = {isa = PBXBuildFile; productRef = 081D092823701D4D00E54659 /* SwiftCompression */; };
 		0821D6421EED58FC007E42F5 /* Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0821D6401EED58FC007E42F5 /* Rendering.swift */; };
 		0831366A2307EC740068194F /* Decimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083136692307EC740068194F /* Decimal.swift */; };
+		083550E3239E21CE0024CC1B /* Illuminant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 083550E2239E21CE0024CC1B /* Illuminant.swift */; };
 		0835846822E2A8CB00901986 /* VariableRoundStroke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0835846722E2A8CA00901986 /* VariableRoundStroke.swift */; };
 		08458AF11E2E627600D01813 /* AccelerateWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB11E2E627600D01813 /* AccelerateWrapper.swift */; };
 		08458AF31E2E627600D01813 /* AccelerateArithmetic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */; };
@@ -354,6 +355,7 @@
 		080AE2722259031400004032 /* TypedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedData.swift; sourceTree = "<group>"; };
 		0821D6401EED58FC007E42F5 /* Rendering.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rendering.swift; sourceTree = "<group>"; };
 		083136692307EC740068194F /* Decimal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Decimal.swift; sourceTree = "<group>"; };
+		083550E2239E21CE0024CC1B /* Illuminant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Illuminant.swift; sourceTree = "<group>"; };
 		0835846722E2A8CA00901986 /* VariableRoundStroke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariableRoundStroke.swift; sourceTree = "<group>"; };
 		08458AB11E2E627600D01813 /* AccelerateWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AccelerateWrapper.swift; sourceTree = "<group>"; };
 		08458AB21E2E627600D01813 /* AccelerateArithmetic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AccelerateArithmetic.swift; sourceTree = "<group>"; };
@@ -949,6 +951,7 @@
 			children = (
 				0A8D86401F7DFCED00F9530E /* ColorSpaceProtocol.swift */,
 				0AE71A021EF51DF80086923C /* AnyColorSpace.swift */,
+				083550E2239E21CE0024CC1B /* Illuminant.swift */,
 				0877CE70239D5B090074558A /* PredefinedColorSpace.swift */,
 				0AC527DF1EEFEFF900FB239A /* iccProfile */,
 				08B68A301ED07A2400F8D423 /* ColorSpace.swift */,
@@ -1825,6 +1828,7 @@
 				0ABDF1AA1F2B34E6007EC7B2 /* ChromaticAdaptationAlgorithm.swift in Sources */,
 				088841E2236EB46D000E17FF /* OTFEncoder.swift in Sources */,
 				08458B131E2E627600D01813 /* Fourier.swift in Sources */,
+				083550E3239E21CE0024CC1B /* Illuminant.swift in Sources */,
 				0AD3E6351F53DB6C003CC21A /* OpenTypeDecoder.swift in Sources */,
 				0A74D68A20047BF700330C86 /* GaussianBlur.swift in Sources */,
 				0AAA7CF420B8EDA30080D1BE /* AppleExported.swift in Sources */,

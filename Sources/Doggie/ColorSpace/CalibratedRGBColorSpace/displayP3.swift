@@ -28,7 +28,7 @@ final class _displayP3: CalibratedRGBColorSpace {
     
     @inlinable
     init() {
-        super.init(CIEXYZColorSpace(white: _D65), red: Point(x: 0.6800, y: 0.3200), green: Point(x: 0.2650, y: 0.6900), blue: Point(x: 0.1500, y: 0.0600))
+        super.init(CIEXYZColorSpace(white: CIE1931.D65.rawValue), red: Point(x: 0.6800, y: 0.3200), green: Point(x: 0.2650, y: 0.6900), blue: Point(x: 0.1500, y: 0.0600))
     }
     
     @inlinable
@@ -62,7 +62,7 @@ final class _displayP3: CalibratedRGBColorSpace {
     
     @inlinable
     override var localizedName: String? {
-        return "Doggie Calibrated RGB Color Space (DisplayP3)"
+        return "Display P3"
     }
     
     @inlinable

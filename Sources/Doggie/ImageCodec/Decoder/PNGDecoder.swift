@@ -167,7 +167,7 @@ struct PNGDecoder : ImageRepDecoder {
     var cHRM: (Point, Point, Point, Point) {
         
         guard let chrm = chunks.first(where: { $0.signature == "cHRM" }), chrm.data.count >= 32 else {
-            return (_D65, Point(x: 0.6400, y: 0.3300), Point(x: 0.3000, y: 0.6000), Point(x: 0.1500, y: 0.0600))
+            return (CIE1931.D65.rawValue, Point(x: 0.6400, y: 0.3300), Point(x: 0.3000, y: 0.6000), Point(x: 0.1500, y: 0.0600))
         }
         
         let whiteX = chrm.data.load(as: BEUInt32.self)
@@ -189,7 +189,7 @@ struct PNGDecoder : ImageRepDecoder {
     
     var _GrayColorSpace: ColorSpace<GrayColorModel> {
         
-        let _colorSpace = ColorSpace.calibratedGray(white: _D65, gamma: gAMA)
+        let _colorSpace = ColorSpace.calibratedGray(illuminant: CIE1931.D65, gamma: gAMA)
         
         guard let icc = chunks.first(where: { $0.signature == "iCCP" }) else { return _colorSpace }
         

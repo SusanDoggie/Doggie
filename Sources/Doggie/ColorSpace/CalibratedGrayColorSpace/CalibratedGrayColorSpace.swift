@@ -68,7 +68,7 @@ extension CalibratedGrayColorSpace {
     
     @inlinable
     var localizedName: String? {
-        return "Doggie Calibrated Gray Color Space (white = \(cieXYZ.white.point), gamma = \(gamma))"
+        return "Doggie Gray Gamma \(Decimal(gamma).rounded(scale: 9)) Profile (\(CIE1931(rawValue: cieXYZ.white.point)))"
     }
 }
 

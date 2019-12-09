@@ -23,22 +23,11 @@
 //  THE SOFTWARE.
 //
 
-@usableFromInline
-let _D50 = Point(x: 0.34567, y: 0.35850)
-
-@usableFromInline
-let _D65 = Point(x: 0.31271, y: 0.32902)
-
 extension ColorSpace where Model == XYZColorModel {
     
     @inlinable
-    public static var genericXYZ_D50: ColorSpace {
-        return .cieXYZ(white: _D50)
-    }
-    
-    @inlinable
     public static var genericXYZ: ColorSpace {
-        return .cieXYZ(white: _D65)
+        return .cieXYZ(illuminant: CIE1931.D50)
     }
     
     @inlinable
@@ -50,13 +39,8 @@ extension ColorSpace where Model == XYZColorModel {
 extension ColorSpace where Model == YxyColorModel {
     
     @inlinable
-    public static var genericYxy_D50: ColorSpace {
-        return .cieYxy(white: _D50)
-    }
-    
-    @inlinable
     public static var genericYxy: ColorSpace {
-        return .cieYxy(white: _D65)
+        return .cieYxy(illuminant: CIE1931.D50)
     }
     
     @inlinable
@@ -69,13 +53,8 @@ extension ColorSpace where Model == YxyColorModel {
 extension ColorSpace where Model == LabColorModel {
     
     @inlinable
-    public static var genericLab_D50: ColorSpace {
-        return .cieLab(white: _D50)
-    }
-    
-    @inlinable
     public static var genericLab: ColorSpace {
-        return .cieLab(white: _D65)
+        return .cieLab(illuminant: CIE1931.D50)
     }
     
     @inlinable
@@ -87,13 +66,8 @@ extension ColorSpace where Model == LabColorModel {
 extension ColorSpace where Model == LuvColorModel {
     
     @inlinable
-    public static var genericLuv_D50: ColorSpace {
-        return .cieLuv(white: _D50)
-    }
-    
-    @inlinable
     public static var genericLuv: ColorSpace {
-        return .cieLuv(white: _D65)
+        return .cieLuv(illuminant: CIE1931.D50)
     }
     
     @inlinable
@@ -106,7 +80,7 @@ extension ColorSpace where Model == GrayColorModel {
     
     @inlinable
     public static var genericGamma22Gray: ColorSpace {
-        return .calibratedGray(white: _D65, gamma: 2.2)
+        return .calibratedGray(illuminant: CIE1931.D65, gamma: 2.2)
     }
     
     @inlinable
@@ -126,18 +100,8 @@ extension ColorSpace where Model == RGBColorModel {
 extension AnyColorSpace {
     
     @inlinable
-    public static var genericXYZ_D50: AnyColorSpace {
-        return AnyColorSpace(ColorSpace.genericXYZ_D50)
-    }
-    
-    @inlinable
     public static var genericXYZ: AnyColorSpace {
         return AnyColorSpace(ColorSpace.genericXYZ)
-    }
-    
-    @inlinable
-    public static var genericYxy_D50: AnyColorSpace {
-        return AnyColorSpace(ColorSpace.genericYxy_D50)
     }
     
     @inlinable
@@ -146,18 +110,8 @@ extension AnyColorSpace {
     }
     
     @inlinable
-    public static var genericLab_D50: AnyColorSpace {
-        return AnyColorSpace(ColorSpace.genericLab_D50)
-    }
-    
-    @inlinable
     public static var genericLab: AnyColorSpace {
         return AnyColorSpace(ColorSpace.genericLab)
-    }
-    
-    @inlinable
-    public static var genericLuv_D50: AnyColorSpace {
-        return AnyColorSpace(ColorSpace.genericLuv_D50)
     }
     
     @inlinable
@@ -183,5 +137,143 @@ extension AnyColorSpace {
     @inlinable
     public static var displayP3: AnyColorSpace {
         return AnyColorSpace(ColorSpace.displayP3)
+    }
+}
+
+extension AnyColorSpace {
+    
+    @inlinable
+    public static func cieXYZ(white: Point) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieXYZ(white: white))
+    }
+    @inlinable
+    public static func cieYxy(white: Point) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieYxy(white: white))
+    }
+    @inlinable
+    public static func cieLab(white: Point) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieLab(white: white))
+    }
+    @inlinable
+    public static func cieLuv(white: Point) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieLuv(white: white))
+    }
+    
+    @inlinable
+    public static func calibratedGray(white: Point, gamma: Double = 1) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedGray(white: white, gamma: gamma))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point, gamma: Double) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue, gamma: gamma))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue, gamma: gamma))
+    }
+}
+
+extension ColorSpace where Model == XYZColorModel {
+    
+    @inlinable
+    public static func cieXYZ<I: Illuminant>(illuminant: I) -> ColorSpace {
+        return .cieXYZ(white: illuminant.rawValue)
+    }
+}
+
+extension ColorSpace where Model == YxyColorModel {
+    
+    @inlinable
+    public static func cieYxy<I: Illuminant>(illuminant: I) -> ColorSpace {
+        return .cieYxy(white: illuminant.rawValue)
+    }
+}
+
+extension ColorSpace where Model == LabColorModel {
+    
+    @inlinable
+    public static func cieLab<I: Illuminant>(illuminant: I) -> ColorSpace {
+        return .cieLab(white: illuminant.rawValue)
+    }
+}
+
+extension ColorSpace where Model == LuvColorModel {
+    
+    @inlinable
+    public static func cieLuv<I: Illuminant>(illuminant: I) -> ColorSpace {
+        return .cieLuv(white: illuminant.rawValue)
+    }
+}
+
+extension ColorSpace where Model == GrayColorModel {
+    
+    @inlinable
+    public static func calibratedGray<I: Illuminant>(illuminant: I, gamma: Double = 1) -> ColorSpace {
+        return .calibratedGray(white: illuminant.rawValue, gamma: gamma)
+    }
+}
+
+extension ColorSpace where Model == RGBColorModel {
+    
+    @inlinable
+    public static func calibratedRGB<I: Illuminant>(illuminant: I, red: Point, green: Point, blue: Point) -> ColorSpace {
+        return .calibratedRGB(white: illuminant.rawValue, red: red, green: green, blue: blue)
+    }
+    
+    @inlinable
+    public static func calibratedRGB<I: Illuminant>(illuminant: I, red: Point, green: Point, blue: Point, gamma: Double) -> ColorSpace {
+        return .calibratedRGB(white: illuminant.rawValue, red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma))
+    }
+    
+    @inlinable
+    public static func calibratedRGB<I: Illuminant>(illuminant: I, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> ColorSpace {
+        return .calibratedRGB(white: illuminant.rawValue, red: red, green: green, blue: blue, gamma: gamma)
+    }
+}
+
+extension AnyColorSpace {
+    
+    @inlinable
+    public static func cieXYZ<I: Illuminant>(illuminant: I) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieXYZ(illuminant: illuminant))
+    }
+    @inlinable
+    public static func cieYxy<I: Illuminant>(illuminant: I) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieYxy(illuminant: illuminant))
+    }
+    @inlinable
+    public static func cieLab<I: Illuminant>(illuminant: I) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieLab(illuminant: illuminant))
+    }
+    @inlinable
+    public static func cieLuv<I: Illuminant>(illuminant: I) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieLuv(illuminant: illuminant))
+    }
+    
+    @inlinable
+    public static func calibratedGray<I: Illuminant>(illuminant: I, gamma: Double = 1) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedGray(illuminant: illuminant, gamma: gamma))
+    }
+    
+    @inlinable
+    public static func calibratedRGB<I: Illuminant>(illuminant: I, red: Point, green: Point, blue: Point) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(illuminant: illuminant, red: red, green: green, blue: blue))
+    }
+    
+    @inlinable
+    public static func calibratedRGB<I: Illuminant>(illuminant: I, red: Point, green: Point, blue: Point, gamma: Double) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(illuminant: illuminant, red: red, green: green, blue: blue, gamma: gamma))
+    }
+    
+    @inlinable
+    public static func calibratedRGB<I: Illuminant>(illuminant: I, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(illuminant: illuminant, red: red, green: green, blue: blue, gamma: gamma))
     }
 }

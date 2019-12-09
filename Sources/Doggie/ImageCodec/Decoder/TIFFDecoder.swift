@@ -423,15 +423,15 @@ struct TIFFPage : ImageRepBase {
         }
         
         switch photometric {
-        case 0, 1: return AnyColorSpace(ColorSpace.calibratedGray(white: whitePoint ?? _D65, gamma: grayResponseCurve ?? 2.2))
+        case 0, 1: return AnyColorSpace.calibratedGray(white: whitePoint ?? CIE1931.D65.rawValue, gamma: grayResponseCurve ?? 2.2)
         case 2, 3:
             if let whitePoint = whitePoint, let (red, green, blue) = primaryChromaticities {
-                return AnyColorSpace(ColorSpace.calibratedRGB(white: whitePoint, red: red, green: green, blue: blue, gamma: 2.2))
+                return AnyColorSpace.calibratedRGB(white: whitePoint, red: red, green: green, blue: blue, gamma: 2.2)
             } else {
-                return AnyColorSpace(ColorSpace.calibratedRGB(white: _D65, red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600), gamma: 2.2))
+                return AnyColorSpace.calibratedRGB(illuminant: CIE1931.D65, red: Point(x: 0.6400, y: 0.3300), green: Point(x: 0.3000, y: 0.6000), blue: Point(x: 0.1500, y: 0.0600), gamma: 2.2)
             }
-        case 4: return AnyColorSpace(ColorSpace.calibratedGray(white: _D65))
-        case 8, 9: return AnyColorSpace.genericLab_D50
+        case 4: return AnyColorSpace.calibratedGray(illuminant: CIE1931.D65)
+        case 8, 9: return AnyColorSpace.genericLab
         default: throw ImageRep.Error.Unsupported("Unsupported color space.")
         }
     }

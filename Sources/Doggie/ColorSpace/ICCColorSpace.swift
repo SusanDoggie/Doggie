@@ -24,7 +24,7 @@
 //
 
 @usableFromInline
-let PCSXYZ = CIEXYZColorSpace(white: _D50)
+let PCSXYZ = CIEXYZColorSpace(white: CIE1931.D50.rawValue)
 
 @usableFromInline
 protocol PCSColorModel : ColorModelProtocol {

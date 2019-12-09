@@ -93,7 +93,7 @@ class CalibratedRGBColorSpace : ColorSpaceBaseProtocol {
     
     @inlinable
     var localizedName: String? {
-        return "Doggie Calibrated RGB Color Space (white = \(cieXYZ.white.point))"
+        return "Doggie RGB Profile (\(CIE1931(rawValue: cieXYZ.white.point)))"
     }
     
     @inlinable
@@ -171,7 +171,8 @@ final class CalibratedGammaRGBColorSpace: CalibratedRGBColorSpace {
     
     @inlinable
     override var localizedName: String? {
-        return "Doggie Calibrated RGB Color Space (white = \(cieXYZ.white.point), gamma = \(gamma))"
+        let _gamma = gamma.0 == gamma.1 && gamma.0 == gamma.2 ? "\(Decimal(gamma.0).rounded(scale: 9))" : "\(gamma)"
+        return "Doggie RGB Gamma \(_gamma) Profile (\(CIE1931(rawValue: cieXYZ.white.point)))"
     }
     
     @inlinable
