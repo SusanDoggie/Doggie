@@ -27,7 +27,8 @@ extension FileManager {
     
     public func fileUrls<S : Sequence>(_ urls: S) -> [URL] where S.Element == URL {
         
-        var result: Set<URL> = []
+        var result: [URL] = []
+        var result_set: Set<URL> = []
         
         var checked: Set<URL> = []
         var searchPaths = Array(urls)
@@ -65,11 +66,12 @@ extension FileManager {
                 }
                 
             } else {
-                result.insert(url)
+                result.append(url)
+                result_set.insert(url)
             }
         }
         
-        return result.sorted()
+        return result
     }
 }
 
