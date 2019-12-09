@@ -28,11 +28,8 @@
 extension AnyColorSpace {
     
     public static var availableColorSpaces: [AnyColorSpace] {
-        
         let directory = FileManager.default.urls(for: .libraryDirectory, in: .allDomainsMask).map { URL(fileURLWithFileSystemRepresentation: "ColorSync/Profiles/", isDirectory: true, relativeTo: $0) }
-        
-        let urls = Array(FileManager.default.fileUrls(directory))
-        return urls.parallelMap { try? AnyColorSpace(iccData: Data(contentsOf: $0, options: .alwaysMapped)) }.compactMap { $0 }
+        return FileManager.default.fileUrls(directory).parallelMap { try? AnyColorSpace(iccData: Data(contentsOf: $0, options: .alwaysMapped)) }.compactMap { $0 }
     }
 }
 
@@ -48,8 +45,7 @@ extension AnyColorSpace {
             URL(fileURLWithFileSystemRepresentation: ".color/icc/", isDirectory: true, relativeTo: FileManager.default.homeDirectoryForCurrentUser),
             ]
         
-        let urls = Array(FileManager.default.fileUrls(directory))
-        return urls.parallelMap { try? AnyColorSpace(iccData: Data(contentsOf: $0, options: .alwaysMapped)) }.compactMap { $0 }
+        return FileManager.default.fileUrls(directory).parallelMap { try? AnyColorSpace(iccData: Data(contentsOf: $0, options: .alwaysMapped)) }.compactMap { $0 }
     }
 }
 

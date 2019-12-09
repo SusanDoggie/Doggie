@@ -239,8 +239,7 @@ extension FontCollection {
         
         self.init()
         
-        let urls = Array(FileManager.default.fileUrls(urls))
-        let fonts = urls.parallelMap { try? FontCollection(data: Data(contentsOf: $0, options: .alwaysMapped)) }
+        let fonts = FileManager.default.fileUrls(urls).parallelMap { try? FontCollection(data: Data(contentsOf: $0, options: .alwaysMapped)) }
         
         for _fonts in fonts {
             if let _fonts = _fonts {
