@@ -30,7 +30,7 @@ extension FileManager {
         var result: [URL] = []
         
         var checked: Set<URL> = []
-        var searchPaths = Array(urls)
+        var searchPaths: [URL] = urls.reversed()
         
         while let url = searchPaths.popLast()?.standardized {
             
@@ -58,11 +58,7 @@ extension FileManager {
             if directory.boolValue {
                 
                 guard let enumerator = self.enumerator(at: url, includingPropertiesForKeys: nil, options: [], errorHandler: nil) else { continue }
-                
-                for url in enumerator {
-                    guard let url = url as? URL else { continue }
-                    searchPaths.append(url)
-                }
+                searchPaths.append(contentsOf: enumerator.compactMap { $0 as? URL }.reversed())
                 
             } else {
                 result.append(url)
