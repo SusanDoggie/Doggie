@@ -28,7 +28,6 @@ extension FileManager {
     public func fileUrls<S : Sequence>(_ urls: S) -> [URL] where S.Element == URL {
         
         var result: [URL] = []
-        var result_set: Set<URL> = []
         
         var checked: Set<URL> = []
         var searchPaths = Array(urls)
@@ -67,7 +66,6 @@ extension FileManager {
                 
             } else {
                 result.append(url)
-                result_set.insert(url)
             }
         }
         
