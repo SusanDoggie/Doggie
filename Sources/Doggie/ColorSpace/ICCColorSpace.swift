@@ -130,26 +130,31 @@ extension ICCColorSpace {
 extension ICCColorSpace {
     
     @usableFromInline
-    var localizedName: String? {
+    var _localizedName: String? {
         
-        if let description = profile[.ProfileDescription] {
-            
-            if let desc = description.text {
-                return desc
-            }
-            if let desc = description.textDescription {
-                return desc.ascii ?? desc.unicode
-            }
-            
-            let language = Locale.current.languageCode ?? "en"
-            let country = Locale.current.regionCode ?? "US"
-            
-            if let desc = description.multiLocalizedUnicode {
-                return desc.first(where: { $0.language.description == language && $0.country.description == country })?.2 ?? desc.first(where: { $0.language.description == language })?.2 ?? desc.first?.2
-            }
+        guard let description = profile[.ProfileDescription] else { return nil }
+        
+        if let desc = description.text {
+            return desc
+        }
+        if let desc = description.textDescription {
+            return desc.ascii ?? desc.unicode
+        }
+        
+        let language = Locale.current.languageCode ?? "en"
+        let country = Locale.current.regionCode ?? "US"
+        
+        if let desc = description.multiLocalizedUnicode {
+            return desc.first(where: { $0.language.description == language && $0.country.description == country })?.2 ?? desc.first(where: { $0.language.description == language })?.2 ?? desc.first?.2
         }
         
         return nil
+    }
+    
+    @usableFromInline
+    var localizedName: String? {
+        guard let _localizedName = self._localizedName else { return nil }
+        return _localizedName.hasSuffix("\0") ? String(_localizedName.dropLast()) : _localizedName
     }
 }
 
