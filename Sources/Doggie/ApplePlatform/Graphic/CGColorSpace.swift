@@ -63,7 +63,6 @@ extension ColorSpace {
         if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
             switch AnyColorSpace(self) {
             case AnyColorSpace.genericXYZ: return CGColorSpace(name: CGColorSpace.genericXYZ)
-            case AnyColorSpace.genericLab: return CGColorSpace(name: CGColorSpace.genericLab)
             default: break
             }
         }
@@ -134,11 +133,6 @@ extension AnyColorSpace {
             case CGColorSpace.genericXYZ:
                 
                 self = AnyColorSpace.genericXYZ
-                return
-                
-            case CGColorSpace.genericLab:
-                
-                self = AnyColorSpace.genericLab
                 return
                 
             default: break
