@@ -105,7 +105,7 @@ extension AnyColorSpace {
     private static func _init(cgColorSpace: CGColorSpace) -> AnyColorSpace? {
         
         if #available(macOS 10.6, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-            switch _cgColorSpace.name {
+            switch cgColorSpace.name {
             case CGColorSpace.genericGrayGamma2_2: return AnyColorSpace.genericGamma22Gray
             case CGColorSpace.sRGB: return AnyColorSpace.sRGB
             default: break
@@ -113,14 +113,14 @@ extension AnyColorSpace {
         }
         
         if #available(macOS 10.11.2, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-            switch _cgColorSpace.name {
+            switch cgColorSpace.name {
             case CGColorSpace.displayP3: return AnyColorSpace.displayP3
             default: break
             }
         }
         
         if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-            switch _cgColorSpace.name {
+            switch cgColorSpace.name {
             case CGColorSpace.linearGray: return AnyColorSpace.genericGamma22Gray.linearTone
             case CGColorSpace.linearSRGB: return AnyColorSpace.sRGB.linearTone
             default: break
@@ -128,7 +128,7 @@ extension AnyColorSpace {
         }
         
         if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
-            switch _cgColorSpace.name {
+            switch cgColorSpace.name {
             case CGColorSpace.genericXYZ: return AnyColorSpace.genericXYZ
             default: break
             }
@@ -139,7 +139,7 @@ extension AnyColorSpace {
     
     public init?(cgColorSpace: CGColorSpace) {
         
-        if let colorSpace = _init(cgColorSpace: cgColorSpace) {
+        if let colorSpace = AnyColorSpace._init(cgColorSpace: cgColorSpace) {
             self = colorSpace
             return
         }
