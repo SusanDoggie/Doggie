@@ -260,7 +260,9 @@ extension CIImage {
             var _matrix = Array(matrix.chunked(by: orderX).joined(separator: repeatElement(0, count: append_x)))
             _matrix.append(contentsOf: repeatElement(0, count: append_x + 5 * append_y))
             
-            return self.applyingFilter("CIConvolution5X5", parameters: ["inputWeights": CIVector(_matrix)]).transformed(by: CGAffineTransform(translationX: 0.5 * CGFloat(append_x), y: 0.5 * CGFloat(append_y)))
+            let convolved = self.applyingFilter("CIConvolution5X5", parameters: ["inputWeights": CIVector(_matrix)])
+            
+            return append_x == 0 && append_y == 0 ? convolved : convolved.transformed(by: CGAffineTransform(translationX: 0.5 * CGFloat(append_x), y: 0.5 * CGFloat(append_y)))
         }
         
         if orderX <= 7 && orderY <= 7 {
@@ -271,7 +273,9 @@ extension CIImage {
             var _matrix = Array(matrix.chunked(by: orderX).joined(separator: repeatElement(0, count: append_x)))
             _matrix.append(contentsOf: repeatElement(0, count: append_x + 7 * append_y))
             
-            return self.applyingFilter("CIConvolution7X7", parameters: ["inputWeights": CIVector(_matrix)]).transformed(by: CGAffineTransform(translationX: 0.5 * CGFloat(append_x), y: 0.5 * CGFloat(append_y)))
+            let convolved = self.applyingFilter("CIConvolution7X7", parameters: ["inputWeights": CIVector(_matrix)])
+            
+            return append_x == 0 && append_y == 0 ? convolved : convolved.transformed(by: CGAffineTransform(translationX: 0.5 * CGFloat(append_x), y: 0.5 * CGFloat(append_y)))
         }
         
         if orderX <= 9 && orderY <= 9, var (horizontal, vertical) = separate_convolution_filter(matrix, orderX, orderY) {
@@ -282,8 +286,10 @@ extension CIImage {
             horizontal.append(contentsOf: repeatElement(0, count: append_x))
             vertical.append(contentsOf: repeatElement(0, count: append_y))
             
-            return self.applyingFilter("CIConvolution9Horizontal", parameters: ["inputWeights": CIVector(horizontal.reversed())])
-                .applyingFilter("CIConvolution9Vertical", parameters: ["inputWeights": CIVector(vertical.reversed())]).transformed(by: CGAffineTransform(translationX: 0.5 * CGFloat(append_x), y: 0.5 * CGFloat(append_y)))
+            let convolved = self.applyingFilter("CIConvolution9Horizontal", parameters: ["inputWeights": CIVector(horizontal.reversed())])
+                .applyingFilter("CIConvolution9Vertical", parameters: ["inputWeights": CIVector(vertical.reversed())])
+            
+            return append_x == 0 && append_y == 0 ? convolved : convolved.transformed(by: CGAffineTransform(translationX: 0.5 * CGFloat(append_x), y: 0.5 * CGFloat(append_y)))
         }
         
         return nil
