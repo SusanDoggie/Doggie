@@ -141,12 +141,9 @@ extension SVGEffectElement {
             guard !checked.contains(uuid) else { return }
             guard let filter = elements[uuid] else { return }
             
-            var _elements = elements
-            _elements[uuid] = nil
-            
             checked.insert(uuid)
             
-            try filter.enumerate(&checked, _elements, body)
+            try filter.enumerate(&checked, elements.filter { $0.key != uuid }, body)
             try body(uuid, filter)
         }
     }
