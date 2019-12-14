@@ -50,6 +50,7 @@ extension SDXMLDocument : CustomStringConvertible {
     
     public func _description(prettyPrinted: Bool) -> String {
         return xml(prettyPrinted: prettyPrinted)
+    }
 }
 
 extension SDXMLElement : CustomStringConvertible {
