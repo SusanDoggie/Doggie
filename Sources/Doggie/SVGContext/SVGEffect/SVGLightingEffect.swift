@@ -31,7 +31,7 @@ public struct SVGPointLight : SVGLightSource {
     
     public var location: Vector
     
-    public init(location: Vector) {
+    public init(location: Vector = Vector()) {
         self.location = location
     }
 }

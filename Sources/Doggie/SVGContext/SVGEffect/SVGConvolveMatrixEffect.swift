@@ -63,3 +63,10 @@ public struct SVGConvolveMatrixEffect : SVGEffectElement {
         return sources[source]?.inset(dx: -0.5 * Double(orderX + 1), dy: -0.5 * Double(orderY + 1))
     }
 }
+
+extension SVGConvolveMatrixEffect {
+    
+    public init() {
+        self.init(matrix: [0, 0, 0, 0, 0, 0, 0, 0, 0], orderX: 3, orderY: 3)
+    }
+}

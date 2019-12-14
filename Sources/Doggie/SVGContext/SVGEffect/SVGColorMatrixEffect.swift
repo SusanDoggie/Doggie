@@ -54,3 +54,10 @@ public struct SVGColorMatrixEffect : SVGEffectElement {
         return sources[source]
     }
 }
+
+extension SVGColorMatrixEffect {
+    
+    public init() {
+        self.init(red: (1, 0, 0, 0, 0), green: (0, 1, 0, 0, 0), blue: (0, 0, 1, 0, 0), alpha: (0, 0, 0, 1, 0))
+    }
+}
