@@ -77,3 +77,58 @@ public struct SVGBlendEffect : SVGEffectElement {
         return source.union(source2)
     }
 }
+
+extension SVGBlendEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        var filter: SDXMLElement
+        
+        switch mode {
+        case .normal: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "normal"])
+            
+        case .in: filter = SDXMLElement(name: "feComposite", attributes: ["operator": "in"])
+        case .out: filter = SDXMLElement(name: "feComposite", attributes: ["operator": "out"])
+        case .atop: filter = SDXMLElement(name: "feComposite", attributes: ["operator": "atop"])
+        case .xor: filter = SDXMLElement(name: "feComposite", attributes: ["operator": "xor"])
+            
+        case .multiply: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "multiply"])
+        case .screen: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "screen"])
+        case .overlay: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "overlay"])
+        case .darken: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "darken"])
+        case .lighten: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "lighten"])
+        case .colorDodge: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "color-dodge"])
+        case .colorBurn: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "color-burn"])
+        case .softLight: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "soft-light"])
+        case .hardLight: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "hard-light"])
+        case .difference: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "difference"])
+        case .exclusion: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "exclusion"])
+            
+        case .hue: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "hue"])
+        case .saturation: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "saturation"])
+        case .color: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "color"])
+        case .luminosity: filter = SDXMLElement(name: "feBlend", attributes: ["mode": "luminosity"])
+            
+        case let .arithmetic(k1, k2, k3, k4):
+            filter = SDXMLElement(name: "feComposite", attributes: ["operator": "arithmetic"])
+            filter.setAttribute(for: "k1", value: "\(Decimal(k1).rounded(scale: 9))")
+            filter.setAttribute(for: "k2", value: "\(Decimal(k2).rounded(scale: 9))")
+            filter.setAttribute(for: "k3", value: "\(Decimal(k3).rounded(scale: 9))")
+            filter.setAttribute(for: "k4", value: "\(Decimal(k4).rounded(scale: 9))")
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        switch self.source2 {
+        case .source: filter.setAttribute(for: "in2", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in2", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in2", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}

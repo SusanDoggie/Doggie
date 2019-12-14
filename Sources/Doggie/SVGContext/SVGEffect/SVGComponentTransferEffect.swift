@@ -66,3 +66,63 @@ public struct SVGComponentTransferEffect : SVGEffectElement {
         return sources[source]
     }
 }
+
+extension SVGComponentTransferEffect.TransferFunction {
+    
+    fileprivate func xml_element(_ node: String) -> SDXMLElement {
+        
+        switch self {
+        case .identity: return SDXMLElement(name: node, attributes: ["type": "identity"])
+            
+        case let .table(values):
+            
+            let _values = values.map { "\(Decimal($0).rounded(scale: 9))" }.joined(separator: " ")
+            
+            return SDXMLElement(name: node, attributes: ["type": "table", "tableValues": _values])
+            
+        case let .discrete(values):
+            
+            let _values = values.map { "\(Decimal($0).rounded(scale: 9))" }.joined(separator: " ")
+            
+            return SDXMLElement(name: node, attributes: ["type": "discrete", "tableValues": _values])
+            
+        case let .gamma(amplitude, exponent, offset):
+            
+            var element = SDXMLElement(name: node)
+            
+            if exponent == 1 {
+                element.setAttribute(for: "type", value: "linear")
+                element.setAttribute(for: "slope", value: "\(Decimal(amplitude).rounded(scale: 9))")
+                element.setAttribute(for: "intercept", value: "\(Decimal(offset).rounded(scale: 9))")
+            } else {
+                element.setAttribute(for: "type", value: "gamma")
+                element.setAttribute(for: "amplitude", value: "\(Decimal(amplitude).rounded(scale: 9))")
+                element.setAttribute(for: "exponent", value: "\(Decimal(exponent).rounded(scale: 9))")
+                element.setAttribute(for: "offset", value: "\(Decimal(offset).rounded(scale: 9))")
+            }
+            
+            return element
+        }
+    }
+}
+
+extension SVGComponentTransferEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        var filter = SDXMLElement(name: "feComponentTransfer", elements: [
+            red.xml_element("feFuncR"),
+            green.xml_element("feFuncG"),
+            blue.xml_element("feFuncB"),
+            alpha.xml_element("feFuncA"),
+        ])
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}

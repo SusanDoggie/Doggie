@@ -37,3 +37,23 @@ public struct SVGMergeEffect : SVGEffectElement {
         return self.sources.compactMap { sources[$0] }.reduce { lhs, rhs in lhs.union(rhs) }
     }
 }
+
+extension SVGMergeEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        var filter = SDXMLElement(name: "feMerge")
+        
+        for source in self.sources {
+            var node = SDXMLElement(name: "feMergeNode")
+            switch source {
+            case .source: node.setAttribute(for: "in", value: "SourceGraphic")
+            case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+            case let .reference(uuid): node.setAttribute(for: "in", value: uuid.uuidString)
+            }
+            filter.append(node)
+        }
+        
+        return filter
+    }
+}

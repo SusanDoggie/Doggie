@@ -70,3 +70,32 @@ extension SVGConvolveMatrixEffect {
         self.init(matrix: [0, 0, 0, 0, 0, 0, 0, 0, 0], orderX: 3, orderY: 3)
     }
 }
+
+extension SVGConvolveMatrixEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        let matrix = self.matrix.map { "\(Decimal($0).rounded(scale: 9))" }
+        var filter = SDXMLElement(name: "feConvolveMatrix", attributes: ["kernelMatrix": matrix.joined(separator: " "), "order": orderX == orderY ? "\(orderX)" : "\(orderX) \(orderY)"])
+        
+        if bias != 0 {
+            filter.setAttribute(for: "bias", value: "\(Decimal(bias).rounded(scale: 9))")
+        }
+        
+        filter.setAttribute(for: "preserveAlpha", value: "\(preserveAlpha)")
+        
+        switch edgeMode {
+        case .duplicate: filter.setAttribute(for: "edgeMode", value: "duplicate")
+        case .wrap: filter.setAttribute(for: "edgeMode", value: "wrap")
+        case .none: filter.setAttribute(for: "edgeMode", value: "none")
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}

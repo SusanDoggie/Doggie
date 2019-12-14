@@ -55,3 +55,40 @@ public struct SVGDisplacementMapEffect : SVGEffectElement {
         return source.inset(dx: inset, dy: inset)
     }
 }
+
+extension SVGDisplacementMapEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        var filter = SDXMLElement(name: "feDisplacementMap", attributes: ["scale": "\(Decimal(scale).rounded(scale: 9))"])
+        
+        switch xChannelSelector {
+        case 0: filter.setAttribute(for: "xChannelSelector", value: "R")
+        case 1: filter.setAttribute(for: "xChannelSelector", value: "G")
+        case 2: filter.setAttribute(for: "xChannelSelector", value: "B")
+        case 3: filter.setAttribute(for: "xChannelSelector", value: "A")
+        default: break
+        }
+        switch yChannelSelector {
+        case 0: filter.setAttribute(for: "yChannelSelector", value: "R")
+        case 1: filter.setAttribute(for: "yChannelSelector", value: "G")
+        case 2: filter.setAttribute(for: "yChannelSelector", value: "B")
+        case 3: filter.setAttribute(for: "yChannelSelector", value: "A")
+        default: break
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        switch self.displacement {
+        case .source: filter.setAttribute(for: "in2", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in2", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in2", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}

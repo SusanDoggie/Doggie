@@ -25,6 +25,7 @@
 
 public protocol SVGLightSource {
     
+    var xml_element: SDXMLElement { get }
 }
 
 public struct SVGPointLight : SVGLightSource {
@@ -128,5 +129,102 @@ public struct SVGSpecularLightingEffect : SVGLightingEffect {
         self.specularExponent = specularExponent
         self.color = color
         self.light = light
+    }
+}
+
+extension SVGPointLight {
+    
+    public var xml_element: SDXMLElement {
+        
+        return SDXMLElement(name: "fePointLight", attributes: [
+            "x": "\(Decimal(location.x).rounded(scale: 9))",
+            "y": "\(Decimal(location.y).rounded(scale: 9))",
+            "z": "\(Decimal(location.z).rounded(scale: 9))",
+        ])
+    }
+}
+
+extension SVGSpotLight {
+    
+    public var xml_element: SDXMLElement {
+        
+        return SDXMLElement(name: "feSpotLight", attributes: [
+            "x": "\(Decimal(location.x).rounded(scale: 9))",
+            "y": "\(Decimal(location.y).rounded(scale: 9))",
+            "z": "\(Decimal(location.z).rounded(scale: 9))",
+            "pointsAtX": "\(Decimal(direction.x).rounded(scale: 9))",
+            "pointsAtY": "\(Decimal(direction.y).rounded(scale: 9))",
+            "pointsAtZ": "\(Decimal(direction.z).rounded(scale: 9))",
+            "specularExponent": "\(Decimal(specularExponent).rounded(scale: 9))",
+            "limitingConeAngle": "\(Decimal(limitingConeAngle * 180 / .pi).rounded(scale: 9))",
+        ])
+    }
+}
+
+extension SVGDistantLight {
+    
+    public var xml_element: SDXMLElement {
+        
+        return SDXMLElement(name: "feDistantLight", attributes: [
+            "azimuth": "\(Decimal(azimuth * 180 / .pi).rounded(scale: 9))",
+            "elevation": "\(Decimal(elevation * 180 / .pi).rounded(scale: 9))",
+        ])
+    }
+}
+
+extension SVGDiffuseLightingEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
+        let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
+        let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
+        
+        var element = SDXMLElement(name: "feDiffuseLighting", attributes: [
+            "surfaceScale": "\(Decimal(surfaceScale).rounded(scale: 9))",
+            "diffuseConstant": "\(Decimal(diffuseConstant).rounded(scale: 9))",
+            "lighting-color": "rgb(\(red),\(green),\(blue))"
+        ])
+        
+        for light in self.light {
+            element.append(light.xml_element)
+        }
+        
+        switch self.source {
+        case .source: element.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: element.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): element.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return element
+    }
+}
+
+extension SVGSpecularLightingEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
+        let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
+        let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
+        
+        var element = SDXMLElement(name: "feSpecularLighting", attributes: [
+            "surfaceScale": "\(Decimal(surfaceScale).rounded(scale: 9))",
+            "specularConstant": "\(Decimal(specularConstant).rounded(scale: 9))",
+            "specularExponent": "\(Decimal(specularExponent).rounded(scale: 9))",
+            "lighting-color": "rgb(\(red),\(green),\(blue))"
+        ])
+        
+        for light in self.light {
+            element.append(light.xml_element)
+        }
+        
+        switch self.source {
+        case .source: element.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: element.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): element.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return element
     }
 }

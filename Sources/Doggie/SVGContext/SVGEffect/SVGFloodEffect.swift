@@ -41,3 +41,28 @@ public struct SVGFloodEffect : SVGEffectElement {
         return nil
     }
 }
+
+extension SVGFloodEffect {
+    
+    private func create_color<C : ColorProtocol>(_ color: C) -> String {
+        
+        let color = color.convert(to: ColorSpace.sRGB, intent: .default)
+        
+        let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
+        let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
+        let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
+        
+        return "rgb(\(red),\(green),\(blue))"
+    }
+    
+    public var xml_element: SDXMLElement {
+        
+        var filter = SDXMLElement(name: "feFlood", attributes: ["flood-color": create_color(color)])
+        
+        if self.color.opacity < 1 {
+            filter.setAttribute(for: "flood-opacity", value: "\(Decimal(self.color.opacity).rounded(scale: 9))")
+        }
+        
+        return filter
+    }
+}

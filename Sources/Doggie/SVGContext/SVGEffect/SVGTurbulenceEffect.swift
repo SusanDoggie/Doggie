@@ -49,3 +49,28 @@ public struct SVGTurbulenceEffect : SVGEffectElement {
         return nil
     }
 }
+
+extension SVGTurbulenceEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        var filter = SDXMLElement(name: "feTurbulence", attributes: [
+            "stitchTiles": stitchTiles ? "stitch" : "noStitch",
+            "seed": "\(seed)",
+            "numOctaves": "\(numOctaves)",
+        ])
+        
+        switch self.type {
+        case .turbulence: filter.setAttribute(for: "type", value: "turbulence")
+        case .fractalNoise: filter.setAttribute(for: "type", value: "fractalNoise")
+        }
+        
+        if baseFrequency.width == baseFrequency.height {
+            filter.setAttribute(for: "baseFrequency", value: "\(Decimal(baseFrequency.width).rounded(scale: 9))")
+        } else {
+            filter.setAttribute(for: "baseFrequency", value: "\(Decimal(baseFrequency.width).rounded(scale: 9)) \(Decimal(baseFrequency.height).rounded(scale: 9))")
+        }
+        
+        return filter
+    }
+}

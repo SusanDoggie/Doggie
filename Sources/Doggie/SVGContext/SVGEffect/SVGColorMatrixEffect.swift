@@ -61,3 +61,26 @@ extension SVGColorMatrixEffect {
         self.init(red: (1, 0, 0, 0, 0), green: (0, 1, 0, 0, 0), blue: (0, 0, 1, 0, 0), alpha: (0, 0, 0, 1, 0))
     }
 }
+
+extension SVGColorMatrixEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        let matrix = [
+            red.0, red.1, red.2, red.3, red.4,
+            green.0, green.1, green.2, green.3, green.4,
+            blue.0, blue.1, blue.2, blue.3, blue.4,
+            alpha.0, alpha.1, alpha.2, alpha.3, alpha.4,
+            ].map { "\(Decimal($0).rounded(scale: 9))" }
+        
+        var filter = SDXMLElement(name: "feColorMatrix", attributes: ["type": "matrix", "values": matrix.joined(separator: " ")])
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}

@@ -45,15 +45,22 @@ extension SDXMLDocument {
 extension SDXMLDocument : CustomStringConvertible {
     
     public var description: String {
-        return xml()
+        return _description(prettyPrinted: false)
     }
+    
+    public func _description(prettyPrinted: Bool) -> String {
+        return xml(prettyPrinted: prettyPrinted)
 }
 
 extension SDXMLElement : CustomStringConvertible {
     
     public var description: String {
+        return _description(prettyPrinted: false)
+    }
+    
+    public func _description(prettyPrinted: Bool) -> String {
         var result = ""
-        self._xml("", prefixMap: [:], &result)
+        self._xml(prettyPrinted ? "\n" : "", prefixMap: [:], &result)
         return result
     }
 }

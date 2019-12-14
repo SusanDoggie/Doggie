@@ -44,3 +44,22 @@ public struct SVGOffsetEffect : SVGEffectElement {
         return sources[source]?.offset(dx: offset.width, dy: offset.height)
     }
 }
+
+extension SVGOffsetEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        var filter = SDXMLElement(name: "feOffset", attributes: [
+            "dx": "\(Decimal(offset.width).rounded(scale: 9))",
+            "dy": "\(Decimal(offset.height).rounded(scale: 9))",
+        ])
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}

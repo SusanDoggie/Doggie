@@ -82,6 +82,8 @@ public protocol SVGEffectElement {
     var sources: [SVGEffect.Source] { get }
     
     func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect?
+    
+    var xml_element: SDXMLElement { get }
 }
 
 extension SVGEffect {

@@ -51,3 +51,30 @@ public struct SVGMorphologyEffect : SVGEffectElement {
         return sources[source]?.inset(dx: -ceil(abs(radius.width)), dy: -ceil(abs(radius.height)))
     }
 }
+
+extension SVGMorphologyEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        var filter = SDXMLElement(name: "feMorphology")
+        
+        if radius.width == radius.height {
+            filter.setAttribute(for: "radius", value: "\(Decimal(radius.width).rounded(scale: 9))")
+        } else {
+            filter.setAttribute(for: "radius", value: "\(Decimal(radius.width).rounded(scale: 9)) \(Decimal(radius.height).rounded(scale: 9))")
+        }
+        
+        switch mode {
+        case .erode: filter.setAttribute(for: "operator", value: "erode")
+        case .dilate: filter.setAttribute(for: "operator", value: "dilate")
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}

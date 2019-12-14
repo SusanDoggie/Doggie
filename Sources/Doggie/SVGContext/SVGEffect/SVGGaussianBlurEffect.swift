@@ -49,3 +49,25 @@ public struct SVGGaussianBlurEffect : SVGEffectElement {
         return sources[source]?.inset(dx: -ceil(3 * abs(stdDeviation.width)), dy: -ceil(3 * abs(stdDeviation.height)))
     }
 }
+
+extension SVGGaussianBlurEffect {
+    
+    public var xml_element: SDXMLElement {
+        
+        var filter = SDXMLElement(name: "feGaussianBlur")
+        
+        if stdDeviation.width == stdDeviation.height {
+            filter.setAttribute(for: "stdDeviation", value: "\(Decimal(stdDeviation.width).rounded(scale: 9))")
+        } else {
+            filter.setAttribute(for: "stdDeviation", value: "\(Decimal(stdDeviation.width).rounded(scale: 9)) \(Decimal(stdDeviation.height).rounded(scale: 9))")
+        }
+        
+        switch self.source {
+        case .source: filter.setAttribute(for: "in", value: "SourceGraphic")
+        case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+        case let .reference(uuid): filter.setAttribute(for: "in", value: uuid.uuidString)
+        }
+        
+        return filter
+    }
+}
