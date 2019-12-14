@@ -1049,7 +1049,17 @@ extension SVGContext {
             _filter.append(element)
         }
         
-        if let element = effect.output?.xml_element {
+        if let primitive = effect.output {
+            
+            var element = primitive.xml_element
+            
+            if let region = primitive.region {
+                element.setAttribute(for: "x", value: "\(Decimal(region.x).rounded(scale: 9))")
+                element.setAttribute(for: "y", value: "\(Decimal(region.y).rounded(scale: 9))")
+                element.setAttribute(for: "width", value: "\(Decimal(region.width).rounded(scale: 9))")
+                element.setAttribute(for: "height", value: "\(Decimal(region.height).rounded(scale: 9))")
+            }
+            
             _filter.append(element)
         }
         
