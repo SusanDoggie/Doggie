@@ -25,6 +25,7 @@
 
 #if canImport(CoreImage) || canImport(QuartzCore)
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private struct GPUContextStyles {
     
     static let defaultShadowColor = CIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0 / 3.0)
@@ -43,6 +44,7 @@ private struct GPUContextStyles {
     
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private struct GraphicState {
     
     var clip: CIImage?
@@ -60,6 +62,7 @@ private struct GraphicState {
     }
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private struct GPUContextState {
     
     var clip: CIImage?
