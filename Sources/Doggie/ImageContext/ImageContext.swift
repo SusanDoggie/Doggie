@@ -472,7 +472,9 @@ extension ImageContext {
     public func beginTransparencyLayer() {
         
         if let next = self.next {
+            
             next.beginTransparencyLayer()
+            
         } else {
             
             let width = self.width
@@ -490,44 +492,43 @@ extension ImageContext {
     @inline(__always)
     public func endTransparencyLayer() {
         
-        if let next = self.next {
+        guard let next = self.next else { return }
+        
+        if next.next != nil {
             
-            if next.next != nil {
+            next.endTransparencyLayer()
+            
+        } else {
+            
+            let width = self.width
+            let height = self.height
+            
+            self.next = nil
+            
+            if width == 0 || height == 0 {
+                return
+            }
+            
+            guard next.state.isDirty else { return }
+            
+            if isShadow {
                 
-                next.endTransparencyLayer()
+                self._drawWithShadow(texture: Texture(image: next.image))
                 
             } else {
                 
-                let width = self.width
-                let height = self.height
-                
-                self.next = nil
-                
-                if width == 0 || height == 0 {
-                    return
-                }
-                
-                guard next.state.isDirty else { return }
-                
-                if isShadow {
+                next.image.withUnsafeBufferPointer { source in
                     
-                    self._drawWithShadow(texture: Texture(image: next.image))
+                    guard var source = source.baseAddress else { return }
                     
-                } else {
-                    
-                    next.image.withUnsafeBufferPointer { source in
+                    self._withUnsafePixelBlender { blender in
                         
-                        guard var source = source.baseAddress else { return }
+                        var blender = blender
                         
-                        self._withUnsafePixelBlender { blender in
-                            
-                            var blender = blender
-                            
-                            for _ in 0..<width * height {
-                                blender.draw { source.pointee }
-                                blender += 1
-                                source += 1
-                            }
+                        for _ in 0..<width * height {
+                            blender.draw { source.pointee }
+                            blender += 1
+                            source += 1
                         }
                     }
                 }
