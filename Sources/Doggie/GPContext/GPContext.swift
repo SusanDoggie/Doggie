@@ -356,9 +356,7 @@ extension GPContext {
         }
         
         guard shape.boundary.isIntersect(extent) else { return }
-        guard var mask = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
-        
-        mask = mask.cropped(to: extent)
+        guard let mask = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
         
         let layer = CIImage(color: color).cropped(to: extent).applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: mask])
         
@@ -399,9 +397,7 @@ extension GPContext {
         }
         
         guard shape.boundary.isIntersect(extent) else { return }
-        guard var clip = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
-        
-        clip = clip.cropped(to: extent)
+        guard let clip = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
         
         if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
             clip = clip.insertingIntermediate()
