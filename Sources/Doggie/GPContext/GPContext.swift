@@ -339,18 +339,19 @@ extension GPContext {
         }
         
         let rule: CGPathFillRule
-        
         switch winding {
         case .nonZero: rule = .winding
         case .evenOdd: rule = .evenOdd
         }
         
         guard shape.boundary.isIntersect(extent) else { return }
-        guard let mask = try? CGPathProcessorKernel.apply(withExtent: CGRect(extent), path: shape.cgPath, rule: rule) else { return }
+        guard var mask = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
         
-        let image = CIImage(color: color).cropped(to: extent).applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: mask])
+        mask = mask.cropped(to: extent)
         
-        self.draw_layer(image)
+        let layer = CIImage(color: color).cropped(to: extent).applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: mask])
+        
+        self.draw_layer(layer)
     }
 }
 
@@ -380,8 +381,16 @@ extension GPContext {
             return
         }
         
+        let rule: CGPathFillRule
+        switch winding {
+        case .nonZero: rule = .winding
+        case .evenOdd: rule = .evenOdd
+        }
+        
         guard shape.boundary.isIntersect(extent) else { return }
-        guard var clip = try? CGPathProcessorKernel.apply(withExtent: CGRect(extent), path: shape.cgPath, rule: .winding) else { return }
+        guard var clip = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
+        
+        clip = clip.cropped(to: extent)
         
         if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
             clip = clip.insertingIntermediate()
