@@ -1,5 +1,5 @@
 //
-//  GPUContextRendering.swift
+//  GPContextRendering.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -28,7 +28,7 @@
 private let context = CIContext()
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func makeImage() -> CGImage? {
         return context.createCGImage(image, from: CGRect(x: 0, y: 0, width: width, height: width))

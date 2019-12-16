@@ -1,5 +1,5 @@
 //
-//  GPUContext.swift
+//  GPContext.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -26,7 +26,7 @@
 #if canImport(CoreImage) || canImport(QuartzCore)
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-private struct GPUContextStyles {
+private struct GPContextStyles {
     
     static let defaultShadowColor = CIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0 / 3.0)
     
@@ -36,7 +36,7 @@ private struct GPUContextStyles {
     var shouldAntialias: Bool = true
     var antialias: Int = 5
     
-    var shadowColor: CIColor = GPUContextStyles.defaultShadowColor
+    var shadowColor: CIColor = GPContextStyles.defaultShadowColor
     var shadowOffset: Size = Size()
     var shadowBlur: Double = 0
     
@@ -49,21 +49,21 @@ private struct GraphicState {
     
     var clip: CIImage?
     
-    var styles: GPUContextStyles
+    var styles: GPContextStyles
     
-    init(context: GPUContext) {
+    init(context: GPContext) {
         self.clip = context.state.clip
         self.styles = context.styles
     }
     
-    func apply(to context: GPUContext) {
+    func apply(to context: GPContext) {
         context.state.clip = self.clip
         context.styles = self.styles
     }
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-private struct GPUContextState {
+private struct GPContextState {
     
     var clip: CIImage?
     
@@ -72,7 +72,7 @@ private struct GPUContextState {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-public class GPUContext {
+public class GPContext {
     
     public let width: Int
     
@@ -84,12 +84,12 @@ public class GPUContext {
         }
     }
     
-    fileprivate var state: GPUContextState = GPUContextState()
+    fileprivate var state: GPContextState = GPContextState()
     
-    fileprivate var styles: GPUContextStyles = GPUContextStyles()
+    fileprivate var styles: GPContextStyles = GPContextStyles()
     private var graphicStateStack: [GraphicState] = []
     
-    private var next: GPUContext?
+    private var next: GPContext?
     
     public init(width: Int, height: Int, image: CIImage = CIImage.empty()) {
         self.width = width
@@ -99,13 +99,13 @@ public class GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
-    private convenience init(copyStates context: GPUContext) {
+    private convenience init(copyStates context: GPContext) {
         self.init(width: context.width, height: context.height)
         self.styles = context.styles
         self.styles.opacity = 1
-        self.styles.shadowColor = GPUContextStyles.defaultShadowColor
+        self.styles.shadowColor = GPContextStyles.defaultShadowColor
         self.styles.shadowOffset = Size()
         self.styles.shadowBlur = 0
         self.styles.blendKernel = .sourceOver
@@ -113,19 +113,19 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     private static let black: CIImage = {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) { return CIImage.black }
         return CIImage(color: CIColor.black)
     }()
     
-    private var current_layer: GPUContext {
+    private var current_layer: GPContext {
         return next?.current_layer ?? self
     }
     
-    public func clone() -> GPUContext {
-        let clone = GPUContext(width: self.width, height: self.height, image: self.image)
+    public func clone() -> GPContext {
+        let clone = GPContext(width: self.width, height: self.height, image: self.image)
         clone.state = self.state
         clone.styles = self.styles
         clone.graphicStateStack = self.graphicStateStack
@@ -135,12 +135,12 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func clearClipBuffer(with value: Double = 1) {
         switch value {
         case 1: current_layer.state.clip = nil
-        case 0: current_layer.state.clip = GPUContext.black.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
+        case 0: current_layer.state.clip = GPContext.black.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
         default:
             let color = CIColor(red: CGFloat(value), green: CGFloat(value), blue: CGFloat(value), alpha: 1)
             current_layer.state.clip = CIImage(color: color).cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
@@ -153,7 +153,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func saveGraphicState() {
         graphicStateStack.append(GraphicState(context: current_layer))
@@ -165,7 +165,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public var opacity: Double {
         get {
@@ -240,7 +240,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     private func apply_clip(_ image: CIImage) -> CIImage {
         guard let clip = current_layer.state.clip else { return image }
@@ -277,7 +277,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func beginTransparencyLayer() {
         
@@ -294,7 +294,7 @@ extension GPUContext {
                 return
             }
             
-            self.next = GPUContext(copyStates: self)
+            self.next = GPContext(copyStates: self)
         }
     }
     
@@ -326,7 +326,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func draw(shape: Shape, winding: Shape.WindingRule, color: CIColor) {
         
@@ -356,7 +356,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func draw(image: CIImage, transform: SDTransform) {
         self.draw_layer(image.transformed(by: transform * self.transform))
@@ -364,7 +364,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func clip(shape: Shape, winding: Shape.WindingRule) {
         
@@ -395,9 +395,9 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
-    public func drawClip(body: (GPUContext) throws -> Void) rethrows {
+    public func drawClip(body: (GPContext) throws -> Void) rethrows {
         
         let width = self.width
         let height = self.height
@@ -406,13 +406,13 @@ extension GPUContext {
             return
         }
         
-        let _clip = GPUContext(copyStates: current_layer)
+        let _clip = GPContext(copyStates: current_layer)
         
         try body(_clip)
         
         if _clip.state.isDirty {
             
-            let black = GPUContext.black
+            let black = GPContext.black
             var clip = _clip.image.composited(over: black).cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
             
             if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {

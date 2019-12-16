@@ -42,10 +42,10 @@
 		086F064A1EDC623D00BA70C8 /* Rasterizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F06481EDC623D00BA70C8 /* Rasterizer.swift */; };
 		086F064D1EDC65D600BA70C8 /* GradientMesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 086F064B1EDC65D600BA70C8 /* GradientMesh.swift */; };
 		0877CE71239D5B090074558A /* PredefinedColorSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0877CE70239D5B090074558A /* PredefinedColorSpace.swift */; };
-		087ADABE23A7A82400BE40AF /* GPUContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADABB23A7A82400BE40AF /* GPUContext.swift */; };
-		087ADABF23A7A82400BE40AF /* GPUContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADABC23A7A82400BE40AF /* GPUContextExtension.swift */; };
 		087ADAC023A7A82400BE40AF /* CGPathProcessorKernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADABD23A7A82400BE40AF /* CGPathProcessorKernel.swift */; };
-		087ADADC23A7C94800BE40AF /* GPUContextRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADADB23A7C94800BE40AF /* GPUContextRendering.swift */; };
+		087ADB1423A7E3A400BE40AF /* GPContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADB1123A7E3A400BE40AF /* GPContext.swift */; };
+		087ADB1523A7E3A400BE40AF /* GPContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADB1223A7E3A400BE40AF /* GPContextExtension.swift */; };
+		087ADB1623A7E3A400BE40AF /* GPContextRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADB1323A7E3A400BE40AF /* GPContextRendering.swift */; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		088841DE236EAF09000E17FF /* FontFaceEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841DD236EAF09000E17FF /* FontFaceEncoder.swift */; };
 		088841E2236EB46D000E17FF /* OTFEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841E1236EB46D000E17FF /* OTFEncoder.swift */; };
@@ -389,10 +389,10 @@
 		086F06481EDC623D00BA70C8 /* Rasterizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Rasterizer.swift; sourceTree = "<group>"; };
 		086F064B1EDC65D600BA70C8 /* GradientMesh.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = GradientMesh.swift; sourceTree = "<group>"; };
 		0877CE70239D5B090074558A /* PredefinedColorSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PredefinedColorSpace.swift; sourceTree = "<group>"; };
-		087ADABB23A7A82400BE40AF /* GPUContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPUContext.swift; sourceTree = "<group>"; };
-		087ADABC23A7A82400BE40AF /* GPUContextExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPUContextExtension.swift; sourceTree = "<group>"; };
 		087ADABD23A7A82400BE40AF /* CGPathProcessorKernel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGPathProcessorKernel.swift; sourceTree = "<group>"; };
-		087ADADB23A7C94800BE40AF /* GPUContextRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUContextRendering.swift; sourceTree = "<group>"; };
+		087ADB1123A7E3A400BE40AF /* GPContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPContext.swift; sourceTree = "<group>"; };
+		087ADB1223A7E3A400BE40AF /* GPContextExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPContextExtension.swift; sourceTree = "<group>"; };
+		087ADB1323A7E3A400BE40AF /* GPContextRendering.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPContextRendering.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoggieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		088841DD236EAF09000E17FF /* FontFaceEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontFaceEncoder.swift; sourceTree = "<group>"; };
@@ -828,7 +828,7 @@
 				0A39A6B31ED9342C00804004 /* ImageContext */,
 				0A1D45372244E951001A4967 /* SVGContext */,
 				0A63C95A2251E92600993714 /* PDFContext */,
-				087ADABA23A7A82400BE40AF /* GPUContext */,
+				087ADABA23A7A82400BE40AF /* GPContext */,
 				0A74D68620047B7000330C86 /* ImageFilter */,
 				0AA33B6120942BD600317F54 /* Misc */,
 				08458AD41E2E627600D01813 /* Maths */,
@@ -839,15 +839,15 @@
 			path = Sources/Doggie;
 			sourceTree = "<group>";
 		};
-		087ADABA23A7A82400BE40AF /* GPUContext */ = {
+		087ADABA23A7A82400BE40AF /* GPContext */ = {
 			isa = PBXGroup;
 			children = (
-				087ADABB23A7A82400BE40AF /* GPUContext.swift */,
-				087ADABC23A7A82400BE40AF /* GPUContextExtension.swift */,
-				087ADADB23A7C94800BE40AF /* GPUContextRendering.swift */,
 				087ADABD23A7A82400BE40AF /* CGPathProcessorKernel.swift */,
+				087ADB1123A7E3A400BE40AF /* GPContext.swift */,
+				087ADB1223A7E3A400BE40AF /* GPContextExtension.swift */,
+				087ADB1323A7E3A400BE40AF /* GPContextRendering.swift */,
 			);
-			path = GPUContext;
+			path = GPContext;
 			sourceTree = "<group>";
 		};
 		087FE58A1A372D23005A2E9E = {
@@ -1617,6 +1617,7 @@
 				0A967E531F132DC0007E38E4 /* PNGEncoder.swift in Sources */,
 				0A1158471EF4E04700EFE3E3 /* iccTagData.swift in Sources */,
 				08B0C00F22FABE1A005C1035 /* SVGLightingEffect.swift in Sources */,
+				087ADB1523A7E3A400BE40AF /* GPContextExtension.swift in Sources */,
 				0A5E8D421F56B428000D51E3 /* FontCollection.swift in Sources */,
 				08458B3D1E2E627600D01813 /* Polynomial.swift in Sources */,
 				0A2DFE1D217D65CF00E6EEA4 /* SFNTFEAT.swift in Sources */,
@@ -1759,7 +1760,6 @@
 				0A00F05521BA192E00CAF48C /* CoreText.swift in Sources */,
 				08458B2F1E2E627600D01813 /* Image.swift in Sources */,
 				0AE9686721F59F8000FCA4C1 /* kMeansClustering.swift in Sources */,
-				087ADABF23A7A82400BE40AF /* GPUContextExtension.swift in Sources */,
 				086CBF3A22B53D1200D9460E /* WeakSet.swift in Sources */,
 				0A7F5B671F79F13600685AA0 /* MappedBuffer.swift in Sources */,
 				0A792C751FDA28DB003C0290 /* PathBuilder.swift in Sources */,
@@ -1823,9 +1823,9 @@
 				08A8EEC8238AB71D00A798CC /* AVPortraitEffectsMatte.swift in Sources */,
 				0A8ABC1720E4A0EF00A2634A /* Underpainting.swift in Sources */,
 				0A55505721D7014E0035AF94 /* WeakDictionary.swift in Sources */,
-				087ADABE23A7A82400BE40AF /* GPUContext.swift in Sources */,
 				0A74D68820047BA600330C86 /* ImageConvolution.swift in Sources */,
 				0A8ABC1020E4852B00A2634A /* StencilTexture.swift in Sources */,
+				087ADB1623A7E3A400BE40AF /* GPContextRendering.swift in Sources */,
 				0A7F24AD1EF37CD500EAD9C7 /* Endianness.swift in Sources */,
 				0ADAA3B820CB7019006682EA /* IndexedCollection.swift in Sources */,
 				0A71434420FC404D009DFFB5 /* DisplacementMap.swift in Sources */,
@@ -1874,7 +1874,6 @@
 				0AABCC6320F9982F00D7BD78 /* CGImageAnimation.swift in Sources */,
 				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A8D4F1E20C8FD8400921F91 /* CubicBezier.swift in Sources */,
-				087ADADC23A7C94800BE40AF /* GPUContextRendering.swift in Sources */,
 				0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */,
 				0A9CD58F1EEB9A2700094148 /* CIELabColorSpace.swift in Sources */,
 				0A63C95D2251E92600993714 /* PDFObject.swift in Sources */,
@@ -1913,6 +1912,7 @@
 				08B0C01422FABE1A005C1035 /* SVGMorphologyEffect.swift in Sources */,
 				0A63C95F2251E92600993714 /* PDFDictionary.swift in Sources */,
 				08A342D72387F6DB00DE03DF /* half_cooleytukey_16.swift in Sources */,
+				087ADB1423A7E3A400BE40AF /* GPContext.swift in Sources */,
 				08A342D02387F6DB00DE03DF /* cooleytukey_16.swift in Sources */,
 				08A342D12387F6DB00DE03DF /* half_cooleytukey_2.swift in Sources */,
 				0A9CD5841EEB989700094148 /* AdobeRGB.swift in Sources */,

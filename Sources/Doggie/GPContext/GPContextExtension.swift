@@ -1,5 +1,5 @@
 //
-//  GPUContextExtension.swift
+//  GPContextExtension.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -26,7 +26,7 @@
 #if canImport(CoreImage) || canImport(QuartzCore)
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func concatenate(_ transform: SDTransform) {
         self.transform = transform * self.transform
@@ -66,7 +66,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func clip(rect: Rect) {
         self.clip(shape: Shape(rect: rect), winding: .nonZero)
@@ -82,7 +82,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CIColor) {
         self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color)
@@ -90,7 +90,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func draw(rect: Rect, color: CIColor) {
         self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color)
@@ -113,7 +113,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func draw(shape: Shape, winding: Shape.WindingRule, color: CGColor) {
         self.draw(shape: shape, winding: winding, color: CIColor(cgColor: color))
@@ -121,7 +121,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
         self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color)
@@ -129,7 +129,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func draw(rect: Rect, color: CGColor) {
         self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color)
@@ -152,7 +152,7 @@ extension GPUContext {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPUContext {
+extension GPContext {
     
     public func draw(image: CGImage, in rect: Rect) {
         let rect = rect.standardized
