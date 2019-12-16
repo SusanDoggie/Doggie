@@ -25,6 +25,7 @@
 
 #if canImport(CoreImage) || canImport(QuartzCore)
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPUContext {
     
     public func concatenate(_ transform: SDTransform) {
@@ -64,6 +65,7 @@ extension GPUContext {
     }
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPUContext {
     
     public func clip(rect: Rect) {
@@ -79,6 +81,7 @@ extension GPUContext {
     }
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPUContext {
     
     public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CIColor) {
@@ -86,6 +89,7 @@ extension GPUContext {
     }
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPUContext {
     
     public func draw(rect: Rect, color: CIColor) {
