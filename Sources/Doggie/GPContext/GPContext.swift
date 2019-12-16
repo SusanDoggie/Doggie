@@ -397,7 +397,7 @@ extension GPContext {
         }
         
         guard shape.boundary.isIntersect(extent) else { return }
-        guard let clip = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
+        guard var clip = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
         
         if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
             clip = clip.insertingIntermediate()
