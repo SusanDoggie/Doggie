@@ -45,6 +45,7 @@
 		087ADABE23A7A82400BE40AF /* GPUContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADABB23A7A82400BE40AF /* GPUContext.swift */; };
 		087ADABF23A7A82400BE40AF /* GPUContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADABC23A7A82400BE40AF /* GPUContextExtension.swift */; };
 		087ADAC023A7A82400BE40AF /* CGPathProcessorKernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADABD23A7A82400BE40AF /* CGPathProcessorKernel.swift */; };
+		087ADADC23A7C94800BE40AF /* GPUContextRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADADB23A7C94800BE40AF /* GPUContextRendering.swift */; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		088841DE236EAF09000E17FF /* FontFaceEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841DD236EAF09000E17FF /* FontFaceEncoder.swift */; };
 		088841E2236EB46D000E17FF /* OTFEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841E1236EB46D000E17FF /* OTFEncoder.swift */; };
@@ -391,6 +392,7 @@
 		087ADABB23A7A82400BE40AF /* GPUContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPUContext.swift; sourceTree = "<group>"; };
 		087ADABC23A7A82400BE40AF /* GPUContextExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPUContextExtension.swift; sourceTree = "<group>"; };
 		087ADABD23A7A82400BE40AF /* CGPathProcessorKernel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGPathProcessorKernel.swift; sourceTree = "<group>"; };
+		087ADADB23A7C94800BE40AF /* GPUContextRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPUContextRendering.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoggieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		088841DD236EAF09000E17FF /* FontFaceEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontFaceEncoder.swift; sourceTree = "<group>"; };
@@ -842,6 +844,7 @@
 			children = (
 				087ADABB23A7A82400BE40AF /* GPUContext.swift */,
 				087ADABC23A7A82400BE40AF /* GPUContextExtension.swift */,
+				087ADADB23A7C94800BE40AF /* GPUContextRendering.swift */,
 				087ADABD23A7A82400BE40AF /* CGPathProcessorKernel.swift */,
 			);
 			path = GPUContext;
@@ -1871,6 +1874,7 @@
 				0AABCC6320F9982F00D7BD78 /* CGImageAnimation.swift in Sources */,
 				0A92063B1F14C83A00AF5C49 /* PNGDecoder.swift in Sources */,
 				0A8D4F1E20C8FD8400921F91 /* CubicBezier.swift in Sources */,
+				087ADADC23A7C94800BE40AF /* GPUContextRendering.swift in Sources */,
 				0AA6C73C20E6190400682EFA /* RGBA32ColorPixel.swift in Sources */,
 				0A9CD58F1EEB9A2700094148 /* CIELabColorSpace.swift in Sources */,
 				0A63C95D2251E92600993714 /* PDFObject.swift in Sources */,
