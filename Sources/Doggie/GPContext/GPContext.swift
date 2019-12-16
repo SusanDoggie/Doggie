@@ -87,10 +87,10 @@ public class GPContext {
     
     private var next: GPContext?
     
-    public init(width: Int, height: Int, image: CIImage = CIImage.empty()) {
+    public init(width: Int, height: Int) {
         self.width = width
         self.height = height
-        self.image = image.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
+        self.image = GPContext.clear.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
     }
 }
 
@@ -110,6 +110,11 @@ extension GPContext {
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
+    
+    private static let clear: CIImage = {
+        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) { return CIImage.clear }
+        return CIImage(color: CIColor.clear)
+    }()
     
     private static let black: CIImage = {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) { return CIImage.black }
@@ -244,7 +249,7 @@ extension GPContext {
     
     private func apply_clip(_ image: CIImage) -> CIImage {
         guard let clip = current_layer.state.clip else { return image }
-        return image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: clip])
+        return image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: clip])
     }
     
     private func blend_layer(_ layer: CIImage) {
@@ -264,7 +269,7 @@ extension GPContext {
             let shadow_color = CIImage(color: shadowColor)
             let shadow = layer.applyingGaussianBlur(sigma: 0.5 * shadowBlur).transformed(by: .translate(x: shadowOffset.width, y: shadowOffset.height))
             
-            let image = shadow_color.cropped(to: extent).applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: shadow])
+            let image = shadow_color.cropped(to: extent).applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: shadow])
             
             self.blend_layer(self.apply_clip(image))
         }
@@ -349,7 +354,7 @@ extension GPContext {
         
         mask = mask.cropped(to: extent)
         
-        let layer = CIImage(color: color).cropped(to: extent).applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: mask])
+        let layer = CIImage(color: color).cropped(to: extent).applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: mask])
         
         self.draw_layer(layer)
     }
