@@ -41,182 +41,10 @@ extension CIFilter {
     }
 }
 
-extension CIFilter {
+extension CGImage {
     
-    public static var EffectInvert: CIFilter {
-        let filter = CIFilter(name: "CIColorInvert")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var EffectChrome: CIFilter {
-        let filter = CIFilter(name: "CIPhotoEffectChrome")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var EffectFade: CIFilter {
-        let filter = CIFilter(name: "CIPhotoEffectFade")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var EffectInstant: CIFilter {
-        let filter = CIFilter(name: "CIPhotoEffectInstant")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var EffectMono: CIFilter {
-        let filter = CIFilter(name: "CIPhotoEffectMono")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var EffectNoir: CIFilter {
-        let filter = CIFilter(name: "CIPhotoEffectNoir")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var EffectProcess: CIFilter {
-        let filter = CIFilter(name: "CIPhotoEffectProcess")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var EffectTonal: CIFilter {
-        let filter = CIFilter(name: "CIPhotoEffectTonal")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var EffectTransfer: CIFilter {
-        let filter = CIFilter(name: "CIPhotoEffectTransfer")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var SRGBToneCurveToLinear: CIFilter {
-        let filter = CIFilter(name: "CISRGBToneCurveToLinear")!
-        filter.setDefaults()
-        return filter
-    }
-    public static var LinearToSRGBToneCurve: CIFilter {
-        let filter = CIFilter(name: "CILinearToSRGBToneCurve")!
-        filter.setDefaults()
-        return filter
-    }
-    public static func ExposureAdjust(ev: CGFloat = 0.0) -> CIFilter {
-        let filter = CIFilter(name: "CIExposureAdjust")!
-        filter.setDefaults()
-        filter["inputEV"] = ev
-        return filter
-    }
-    public static func ColorClamp(
-        min: CIVector = CIVector(x: 0, y: 0, z: 0, w: 0),
-        max: CIVector = CIVector(x: 1, y: 1, z: 1, w: 1)) -> CIFilter {
-        let filter = CIFilter(name: "CIColorClamp")!
-        filter.setDefaults()
-        filter["inputMinComponents"] = min
-        filter["inputMaxComponents"] = max
-        return filter
-    }
-    public static func ColorControls(
-        saturation: CGFloat = 1,
-        brightness: CGFloat = 0,
-        contrast: CGFloat = 1) -> CIFilter {
-        let filter = CIFilter(name: "CIColorControls")!
-        filter.setDefaults()
-        filter["inputSaturation"] = saturation
-        filter["inputBrightness"] = brightness
-        filter["inputContrast"] = contrast
-        return filter
-    }
-    public static func ColorMatrix(
-        red: CIVector = CIVector(x: 1, y: 0, z: 0, w: 0),
-        green: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0),
-        blue: CIVector = CIVector(x: 0, y: 0, z: 1, w: 0),
-        alpha: CIVector = CIVector(x: 0, y: 0, z: 0, w: 1),
-        bias: CIVector = CIVector(x: 0, y: 0, z: 0, w: 0)) -> CIFilter {
-        let filter = CIFilter(name: "CIColorMatrix")!
-        filter.setDefaults()
-        filter["inputRVector"] = red
-        filter["inputGVector"] = green
-        filter["inputBVector"] = blue
-        filter["inputAVector"] = alpha
-        filter["inputBiasVector"] = bias
-        return filter
-    }
-    public static func ColorPolynomial(
-        red: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0),
-        green: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0),
-        blue: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0),
-        alpha: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0)) -> CIFilter {
-        let filter = CIFilter(name: "CIColorPolynomial")!
-        filter.setDefaults()
-        filter["inputRedCoefficients"] = red
-        filter["inputGreenCoefficients"] = green
-        filter["inputBlueCoefficients"] = blue
-        filter["inputAlphaCoefficients"] = alpha
-        return filter
-    }
-    public static func GammaAdjust(power: CGFloat = 0.0) -> CIFilter {
-        let filter = CIFilter(name: "CIGammaAdjust")!
-        filter.setDefaults()
-        filter["inputPower"] = power
-        return filter
-    }
-    public static func HueAdjust(angle: CGFloat = 0.0) -> CIFilter {
-        let filter = CIFilter(name: "CIHueAdjust")!
-        filter.setDefaults()
-        filter["inputAngle"] = angle
-        return filter
-    }
-    public static func TemperatureTint(
-        neutral: CIVector = CIVector(x: 6500, y: 0),
-        target: CIVector = CIVector(x: 6500, y: 0)) -> CIFilter {
-        let filter = CIFilter(name: "CITemperatureAndTint")!
-        filter.setDefaults()
-        filter["inputNeutral"] = neutral
-        filter["inputTargetNeutral"] = target
-        return filter
-    }
-    public static func ToneCurve(
-        _ p0: CIVector = CIVector(x: 0, y: 0),
-        _ p1: CIVector = CIVector(x: 0.25, y: 0.25),
-        _ p2: CIVector = CIVector(x: 0.5, y: 0.5),
-        _ p3: CIVector = CIVector(x: 0.75, y: 0.75),
-        _ p4: CIVector = CIVector(x: 1, y: 1)) -> CIFilter {
-        let filter = CIFilter(name: "CIToneCurve")!
-        filter.setDefaults()
-        filter["inputPoint0"] = p0
-        filter["inputPoint1"] = p1
-        filter["inputPoint2"] = p2
-        filter["inputPoint3"] = p3
-        filter["inputPoint4"] = p4
-        return filter
-    }
-    public static func Vibrance(amount: CGFloat = 0.0) -> CIFilter {
-        let filter = CIFilter(name: "CIVibrance")!
-        filter.setDefaults()
-        filter["inputAmount"] = amount
-        return filter
-    }
-    public static func ColorPosterize(levels: CGFloat = 6.0) -> CIFilter {
-        let filter = CIFilter(name: "CIColorPosterize")!
-        filter.setDefaults()
-        filter["inputLevels"] = levels
-        return filter
-    }
-    public static func Vignette(radius: CGFloat = 1.0, intensity: CGFloat = 0.0) -> CIFilter {
-        let filter = CIFilter(name: "CIVignette")!
-        filter.setDefaults()
-        filter["inputRadius"] = radius
-        filter["inputIntensity"] = intensity
-        return filter
-    }
-}
-
-extension CIImage {
-    
-    public func applying(_ filter: CIFilter) -> CIImage {
-        var parameters: [String: Any] = [:]
-        for key in filter.inputKeys {
-            parameters[key] = filter[key]
-        }
-        return self.applyingFilter(filter.name, parameters: parameters)
+    public func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
+        return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
     }
 }
 
@@ -228,17 +56,6 @@ extension CIImage {
     
     public func cropped(to rect: Rect) -> CIImage {
         return self.cropped(to: CGRect(rect))
-    }
-}
-
-extension CGImage {
-    
-    public func applying(_ filter: CIFilter) -> CIImage {
-        return CIImage(cgImage: self).applying(filter)
-    }
-    
-    public func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
-        return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
     }
 }
 
@@ -298,7 +115,7 @@ extension CIImage {
 
 extension CIVector {
     
-    public convenience init<T: BinaryFloatingPoint>(_ values: [T]) {
+    public convenience init<C: Collection>(_ values: C) where C.Element : BinaryFloatingPoint {
         self.init(values: values.map { CGFloat($0) }, count: values.count)
     }
     
