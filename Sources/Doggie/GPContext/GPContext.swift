@@ -92,6 +92,12 @@ public class GPContext {
         self.height = height
         self.image = GPContext.clear.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
     }
+    
+    private init(width: Int, height: Int, image: CIImage) {
+        self.width = width
+        self.height = height
+        self.image = image
+    }
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
