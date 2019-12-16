@@ -112,4 +112,57 @@ extension GPUContext {
     }
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPUContext {
+    
+    public func draw(shape: Shape, winding: Shape.WindingRule, color: CGColor) {
+        self.draw(shape: shape, winding: winding, color: CIColor(cgColor: color))
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPUContext {
+    
+    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
+        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color)
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPUContext {
+    
+    public func draw(rect: Rect, color: CGColor) {
+        self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color)
+    }
+    public func draw(roundedRect rect: Rect, radius: Radius, color: CGColor) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, color: color)
+    }
+    public func draw(ellipseIn rect: Rect, color: CGColor) {
+        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color)
+    }
+    public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
+        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, color: color)
+    }
+    public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
+        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, color: color)
+    }
+    public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
+        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color)
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPUContext {
+    
+    public func draw(image: CGImage, in rect: Rect) {
+        let rect = rect.standardized
+        let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
+        self.draw(image: image, transform: transform)
+    }
+    
+    public func draw(image: CGImage, transform: SDTransform) {
+        self.draw(image: CIImage(cgImage: image), transform: transform)
+    }
+}
+
 #endif
