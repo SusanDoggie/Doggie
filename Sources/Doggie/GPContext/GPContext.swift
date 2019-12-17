@@ -81,6 +81,7 @@ public class GPContext {
     private var _image: CIImage {
         didSet {
             _image = _image.clamped(to: extent)
+            state.isDirty = true
         }
     }
     
@@ -100,7 +101,7 @@ public class GPContext {
     private init(width: Int, height: Int, image: CIImage) {
         self.width = width
         self.height = height
-        self._image = image.clamped(to: Rect(x: 0, y: 0, width: width, height: height))
+        self._image = image
     }
 }
 
@@ -150,6 +151,16 @@ extension GPContext {
     
     public var image: CIImage {
         return _image.cropped(to: extent)
+    }
+}
+
+extension CIImage {
+    
+    fileprivate func _insertingIntermediate() -> CIImage {
+        if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
+            return self.insertingIntermediate()
+        }
+        return self
     }
 }
 
@@ -263,8 +274,6 @@ extension GPContext {
     
     private func blend_layer(_ image: CIImage) {
         
-        current_layer.state.isDirty = true
-        
         if blendKernel === CIBlendKernel.sourceOver {
             
             if let clip = current_layer.state.clip {
@@ -315,8 +324,6 @@ extension GPContext {
     
     private func draw_shadow(_ image: CIImage, _ alpha_mask: Bool) {
         
-        current_layer.state.isDirty = true
-        
         guard shadowColor.alpha > 0 && shadowBlur > 0 else { return }
         
         let shadow = image.applyingGaussianBlur(sigma: 0.5 * shadowBlur).transformed(by: .translate(x: shadowOffset.width, y: shadowOffset.height))
@@ -363,8 +370,8 @@ extension GPContext {
             
             var layer = next._image
             
-            if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *), shadowColor.alpha > 0 && shadowBlur > 0 {
-                layer = layer.insertingIntermediate()
+            if shadowColor.alpha > 0 && shadowBlur > 0 {
+                layer = layer._insertingIntermediate()
             }
             
             self.draw_shadow(layer, true)
@@ -387,8 +394,8 @@ extension GPContext {
         guard !intersection.isNull else { return }
         guard var mask = try? CGPathProcessorKernel.apply(withExtent: intersection, path: path, rule: rule) else { return }
         
-        if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *), shadowColor.alpha > 0 && shadowBlur > 0 {
-            mask = mask.insertingIntermediate()
+        if shadowColor.alpha > 0 && shadowBlur > 0 {
+            mask = mask._insertingIntermediate()
         }
         
         self.draw_shadow(mask, false)
@@ -401,11 +408,8 @@ extension GPContext {
     
     public func draw(image: CIImage, transform: SDTransform) {
         
-        var image = image.transformed(by: transform * self.transform).cropped(to: extent)
-        
-        if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
-            image = image.insertingIntermediate()
-        }
+        var image = image.transformed(by: transform * self.transform)
+        image = image.clamped(to: extent)._insertingIntermediate()
         
         self.draw_shadow(image, true)
         self.blend_layer(image)
@@ -425,15 +429,9 @@ extension GPContext {
         let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
         
         guard !intersection.isNull else { return }
-        guard var clip = try? CGPathProcessorKernel.apply(withExtent: intersection, path: path, rule: rule) else { return }
+        guard let clip = try? CGPathProcessorKernel.apply(withExtent: intersection, path: path, rule: rule) else { return }
         
-        clip = clip.composited(over: GPContext.black)
-        
-        if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
-            clip = clip.insertingIntermediate()
-        }
-        
-        current_layer.state.clip = clip
+        current_layer.state.clip = clip.composited(over: GPContext.black)._insertingIntermediate()
     }
 }
 
@@ -453,13 +451,9 @@ extension GPContext {
         
         if _clip.state.isDirty {
             
-            var clip = _clip._image.applyingFilter("CIColorMonochrome", parameters: [kCIInputColorKey: CIColor.white]).composited(over: GPContext.black)
+            let clip = _clip._image.applyingFilter("CIColorMonochrome", parameters: [kCIInputColorKey: CIColor.white])
             
-            if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
-                clip = clip.insertingIntermediate()
-            }
-            
-            current_layer.state.clip = clip
+            current_layer.state.clip = clip.composited(over: GPContext.black)._insertingIntermediate()
             
         } else {
             current_layer.clearClipBuffer(with: 0)
@@ -481,8 +475,8 @@ extension GPContext {
         
         guard var layer = try? CGContextProcessorKernel.apply(withExtent: CGRect(extent), colorSpace: colorSpace, transform: CGAffineTransform(self.transform), callback: callback) else { return }
         
-        if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *), shadowColor.alpha > 0 && shadowBlur > 0 {
-            layer = layer.insertingIntermediate()
+        if shadowColor.alpha > 0 && shadowBlur > 0 {
+            layer = layer._insertingIntermediate()
         }
         
         self.draw_shadow(layer, true)
