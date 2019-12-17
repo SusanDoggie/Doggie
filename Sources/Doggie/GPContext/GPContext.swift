@@ -253,17 +253,25 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    private func apply_clip(_ image: CIImage) -> CIImage {
-        guard let clip = current_layer.state.clip else { return image }
-        return image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: clip])
-    }
-    
     private func blend_layer(_ layer: CIImage) {
+        
         current_layer.state.isDirty = true
-        current_layer.image = blendKernel.apply(foreground: layer, background: current_layer.image) ?? current_layer.image
+        
+        var layer = layer
+        
+        if let clip = current_layer.state.clip {
+            layer = layer.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: clip])
+        }
+        
+        if blendKernel === CIBlendKernel.sourceOver {
+            current_layer.image = layer.composited(over: current_layer.image)
+        } else {
+            current_layer.image = blendKernel.apply(foreground: layer, background: current_layer.image) ?? current_layer.image
+        }
     }
     
     private func draw_layer(_ layer: CIImage) {
+        
         var layer = layer
         
         if shadowColor.alpha > 0 && shadowBlur > 0 {
@@ -277,10 +285,10 @@ extension GPContext {
             
             let image = shadow_color.cropped(to: extent).applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: shadow])
             
-            self.blend_layer(self.apply_clip(image))
+            self.blend_layer(image)
         }
         
-        self.blend_layer(self.apply_clip(layer))
+        self.blend_layer(layer)
     }
 }
 
@@ -368,7 +376,14 @@ extension GPContext {
 extension GPContext {
     
     public func draw(image: CIImage, transform: SDTransform) {
-        self.draw_layer(image.transformed(by: transform * self.transform).cropped(to: extent))
+        
+        var image = image.transformed(by: transform * self.transform).cropped(to: extent)
+        
+        if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
+            image = image.insertingIntermediate()
+        }
+        
+        self.draw_layer(image)
     }
 }
 
@@ -399,6 +414,8 @@ extension GPContext {
         guard shape.boundary.isIntersect(extent) else { return }
         guard var clip = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
         
+        clip = clip.composited(over: GPContext.black.cropped(to: extent))
+        
         if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
             clip = clip.insertingIntermediate()
         }
@@ -425,8 +442,7 @@ extension GPContext {
         
         if _clip.state.isDirty {
             
-            let black = GPContext.black.cropped(to: extent)
-            var clip = _clip.image.composited(over: black)
+            var clip = _clip.image.composited(over: GPContext.black.cropped(to: extent))
             
             if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
                 clip = clip.insertingIntermediate()
