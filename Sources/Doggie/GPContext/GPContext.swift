@@ -477,6 +477,7 @@ extension GPContext {
         
         guard colorSpace.model == .rgb else { return }
         
+        let extent = self.extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         guard var layer = try? CGContextProcessorKernel.apply(withExtent: CGRect(extent), colorSpace: colorSpace, transform: CGAffineTransform(self.transform), callback: callback) else { return }
         
         if shadowColor.alpha > 0 && shadowBlur > 0 {
