@@ -229,7 +229,7 @@ extension GPContext {
     
     public func drawLinearGradient(colorSpace: CGColorSpace, components: [CGFloat], locations: [CGFloat], start startPoint: CGPoint, end endPoint: CGPoint, options: CGGradientDrawingOptions) {
         
-        guard components.count == locations.count else { return }
+        guard colorSpace.model == .rgb && components.count * 4 == locations.count else { return }
         
         guard let gradient = CGGradient(colorSpace: colorSpace, colorComponents: components, locations: locations, count: locations.count) else { return }
         
@@ -243,7 +243,7 @@ extension GPContext {
     
     public func drawRadialGradient(colorSpace: CGColorSpace, components: [CGFloat], locations: [CGFloat], startCenter: CGPoint, startRadius: CGFloat, endCenter: CGPoint, endRadius: CGFloat, options: CGGradientDrawingOptions) {
         
-        guard components.count == locations.count else { return }
+        guard colorSpace.model == .rgb && components.count * 4 == locations.count else { return }
         
         guard let gradient = CGGradient(colorSpace: colorSpace, colorComponents: components, locations: locations, count: locations.count) else { return }
         
