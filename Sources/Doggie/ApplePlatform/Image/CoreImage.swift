@@ -54,6 +54,7 @@ extension CIImage {
         return self.transformed(by: CGAffineTransform(transform))
     }
     
+    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     public func clamped(to rect: Rect) -> CIImage {
         return self.clamped(to: CGRect(rect))
     }
