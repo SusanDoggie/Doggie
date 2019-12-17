@@ -392,7 +392,9 @@ extension GPContext {
         let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
         
         guard !intersection.isNull else { return }
-        guard var mask = try? CGPathProcessorKernel.apply(withExtent: intersection, path: path, rule: rule) else { return }
+        
+        let extent = intersection.insetBy(dx: -.random(in: 1...2), dy: -.random(in: 1...2))
+        guard var mask = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule) else { return }
         
         if shadowColor.alpha > 0 && shadowBlur > 0 {
             mask = mask._insertingIntermediate()
@@ -429,7 +431,9 @@ extension GPContext {
         let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
         
         guard !intersection.isNull else { return }
-        guard let clip = try? CGPathProcessorKernel.apply(withExtent: intersection, path: path, rule: rule) else { return }
+        
+        let extent = intersection.insetBy(dx: -.random(in: 1...2), dy: -.random(in: 1...2))
+        guard let clip = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule) else { return }
         
         current_layer.state.clip = clip.composited(over: GPContext.black)._insertingIntermediate()
     }
