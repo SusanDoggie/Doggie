@@ -54,6 +54,10 @@ extension CIImage {
         return self.transformed(by: CGAffineTransform(transform))
     }
     
+    public func clamped(to rect: Rect) -> CIImage {
+        return self.clamped(to: CGRect(rect))
+    }
+    
     public func cropped(to rect: Rect) -> CIImage {
         return self.cropped(to: CGRect(rect))
     }

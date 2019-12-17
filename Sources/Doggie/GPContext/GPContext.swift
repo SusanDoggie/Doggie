@@ -78,7 +78,11 @@ public class GPContext {
     
     public let height: Int
     
-    private var _image: CIImage
+    private var _image: CIImage {
+        didSet {
+            _image = _image.clamped(to: extent)
+        }
+    }
     
     fileprivate var state: GPContextState = GPContextState()
     
@@ -96,7 +100,7 @@ public class GPContext {
     private init(width: Int, height: Int, image: CIImage) {
         self.width = width
         self.height = height
-        self._image = image
+        self._image = image.clamped(to: Rect(x: 0, y: 0, width: width, height: height))
     }
 }
 
@@ -268,9 +272,12 @@ extension GPContext {
         }
         
         if blendKernel === CIBlendKernel.sourceOver {
+            
             current_layer._image = layer.composited(over: current_layer._image)
-        } else {
-            current_layer._image = blendKernel.apply(foreground: layer, background: current_layer._image) ?? current_layer._image
+            
+        } else if let blended = blendKernel.apply(foreground: layer, background: current_layer._image) {
+            
+            current_layer._image = blended
         }
     }
     
