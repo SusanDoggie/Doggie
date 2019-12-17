@@ -31,15 +31,15 @@ private let context = CIContext()
 extension GPContext {
     
     public func makeImage() -> CGImage? {
-        return context.createCGImage(image, from: CGRect(x: 0, y: 0, width: width, height: width))
+        return context.createCGImage(image, from: CGRect(extent))
     }
     
     public func makeImage(format: CIFormat, colorSpace: CGColorSpace?) -> CGImage? {
-        return context.createCGImage(image, from: CGRect(x: 0, y: 0, width: width, height: width), format: format, colorSpace: colorSpace)
+        return context.createCGImage(image, from: CGRect(extent), format: format, colorSpace: colorSpace)
     }
     
     public func makeImage(format: CIFormat, colorSpace: CGColorSpace?, deferred: Bool) -> CGImage? {
-        return context.createCGImage(image, from: CGRect(x: 0, y: 0, width: width, height: width), format: format, colorSpace: colorSpace, deferred: deferred)
+        return context.createCGImage(image, from: CGRect(extent), format: format, colorSpace: colorSpace, deferred: deferred)
     }
 }
 
