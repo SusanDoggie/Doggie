@@ -78,7 +78,7 @@ public class GPContext {
     
     public let height: Int
     
-    public private(set) var image: CIImage
+    private var _image: CIImage
     
     fileprivate var state: GPContextState = GPContextState()
     
@@ -90,13 +90,13 @@ public class GPContext {
     public init(width: Int, height: Int) {
         self.width = width
         self.height = height
-        self.image = GPContext.clear.cropped(to: CGRect(x: 0, y: 0, width: width, height: height))
+        self._image = GPContext.clear
     }
     
     private init(width: Int, height: Int, image: CIImage) {
         self.width = width
         self.height = height
-        self.image = image
+        self._image = image
     }
 }
 
@@ -136,12 +136,16 @@ extension GPContext {
     }
     
     public func clone() -> GPContext {
-        let clone = GPContext(width: self.width, height: self.height, image: self.image)
+        let clone = GPContext(width: self.width, height: self.height, image: self._image)
         clone.state = self.state
         clone.styles = self.styles
         clone.graphicStateStack = self.graphicStateStack
         clone.next = self.next?.clone()
         return clone
+    }
+    
+    public var image: CIImage {
+        return _image.cropped(to: extent)
     }
 }
 
@@ -151,10 +155,10 @@ extension GPContext {
     public func clearClipBuffer(with value: Double = 1) {
         switch value {
         case 1: current_layer.state.clip = nil
-        case 0: current_layer.state.clip = GPContext.black.cropped(to: extent)
+        case 0: current_layer.state.clip = GPContext.black
         default:
             let color = CIColor(red: CGFloat(value), green: CGFloat(value), blue: CGFloat(value), alpha: 1)
-            current_layer.state.clip = CIImage(color: color).cropped(to: extent)
+            current_layer.state.clip = CIImage(color: color)
         }
     }
     
@@ -260,13 +264,13 @@ extension GPContext {
         var layer = layer
         
         if let clip = current_layer.state.clip {
-            layer = layer.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: clip])
+            layer = layer.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: clip])
         }
         
         if blendKernel === CIBlendKernel.sourceOver {
-            current_layer.image = layer.composited(over: current_layer.image)
+            current_layer._image = layer.composited(over: current_layer._image)
         } else {
-            current_layer.image = blendKernel.apply(foreground: layer, background: current_layer.image) ?? current_layer.image
+            current_layer._image = blendKernel.apply(foreground: layer, background: current_layer._image) ?? current_layer._image
         }
     }
     
@@ -283,7 +287,7 @@ extension GPContext {
             let shadow_color = CIImage(color: shadowColor)
             let shadow = layer.applyingGaussianBlur(sigma: 0.5 * shadowBlur).transformed(by: .translate(x: shadowOffset.width, y: shadowOffset.height))
             
-            let image = shadow_color.cropped(to: extent).applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: shadow])
+            let image = shadow_color.applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: shadow])
             
             self.blend_layer(image)
         }
@@ -335,7 +339,7 @@ extension GPContext {
             
             guard next.state.isDirty else { return }
             
-            self.draw_layer(next.image)
+            self.draw_layer(next._image)
         }
     }
     
@@ -366,7 +370,7 @@ extension GPContext {
         guard shape.boundary.isIntersect(extent) else { return }
         guard let mask = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
         
-        let layer = CIImage(color: color).cropped(to: extent).applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear.cropped(to: extent), kCIInputMaskImageKey: mask])
+        let layer = CIImage(color: color).applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
         
         self.draw_layer(layer)
     }
@@ -414,7 +418,7 @@ extension GPContext {
         guard shape.boundary.isIntersect(extent) else { return }
         guard var clip = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
         
-        clip = clip.composited(over: GPContext.black.cropped(to: extent))
+        clip = clip.composited(over: GPContext.black)
         
         if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
             clip = clip.insertingIntermediate()
@@ -442,7 +446,7 @@ extension GPContext {
         
         if _clip.state.isDirty {
             
-            var clip = _clip.image.composited(over: GPContext.black.cropped(to: extent))
+            var clip = _clip._image.applyingFilter("CIColorMonochrome", parameters: [kCIInputColorKey: CIColor.white]).composited(over: GPContext.black)
             
             if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
                 clip = clip.insertingIntermediate()
