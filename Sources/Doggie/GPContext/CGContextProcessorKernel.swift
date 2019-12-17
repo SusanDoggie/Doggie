@@ -46,7 +46,7 @@ final class CGContextProcessorKernel: CIImageProcessorKernel {
     
     class func apply(withExtent extent: CGRect, colorSpace: CGColorSpace, transform: CGAffineTransform, callback: @escaping (CGContext) throws -> Void) throws -> CIImage {
         let image = try self.apply(withExtent: extent, inputs: nil, arguments: ["info": Info(colorSpace: colorSpace, transform: transform, callback: callback)])
-        return image.matchedToWorkingSpace(from: info.colorSpace) ?? image
+        return image.matchedToWorkingSpace(from: colorSpace) ?? image
     }
     
     override class var outputFormat: CIFormat {
