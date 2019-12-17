@@ -46,6 +46,7 @@
 		087ADB1423A7E3A400BE40AF /* GPContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADB1123A7E3A400BE40AF /* GPContext.swift */; };
 		087ADB1523A7E3A400BE40AF /* GPContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADB1223A7E3A400BE40AF /* GPContextExtension.swift */; };
 		087ADB1623A7E3A400BE40AF /* GPContextRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADB1323A7E3A400BE40AF /* GPContextRendering.swift */; };
+		087E112823A8C79A008B6454 /* CGContextProcessorKernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087E112723A8C79A008B6454 /* CGContextProcessorKernel.swift */; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		088841DE236EAF09000E17FF /* FontFaceEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841DD236EAF09000E17FF /* FontFaceEncoder.swift */; };
 		088841E2236EB46D000E17FF /* OTFEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841E1236EB46D000E17FF /* OTFEncoder.swift */; };
@@ -393,6 +394,7 @@
 		087ADB1123A7E3A400BE40AF /* GPContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPContext.swift; sourceTree = "<group>"; };
 		087ADB1223A7E3A400BE40AF /* GPContextExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPContextExtension.swift; sourceTree = "<group>"; };
 		087ADB1323A7E3A400BE40AF /* GPContextRendering.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPContextRendering.swift; sourceTree = "<group>"; };
+		087E112723A8C79A008B6454 /* CGContextProcessorKernel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGContextProcessorKernel.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoggieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		088841DD236EAF09000E17FF /* FontFaceEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontFaceEncoder.swift; sourceTree = "<group>"; };
@@ -843,6 +845,7 @@
 			isa = PBXGroup;
 			children = (
 				087ADABD23A7A82400BE40AF /* CGPathProcessorKernel.swift */,
+				087E112723A8C79A008B6454 /* CGContextProcessorKernel.swift */,
 				087ADB1123A7E3A400BE40AF /* GPContext.swift */,
 				087ADB1223A7E3A400BE40AF /* GPContextExtension.swift */,
 				087ADB1323A7E3A400BE40AF /* GPContextRendering.swift */,
@@ -1807,6 +1810,7 @@
 				0A2107161E5BEEBB00F1E00E /* Shape.swift in Sources */,
 				08B0C00C22FABE1A005C1035 /* SVGTurbulenceEffect.swift in Sources */,
 				0A63C9622251E92600993714 /* PDFContext.swift in Sources */,
+				087E112823A8C79A008B6454 /* CGContextProcessorKernel.swift in Sources */,
 				0AB380F320A5374A00A8CBD7 /* Texture.swift in Sources */,
 				08B0C01522FABE1A005C1035 /* SVGBlendEffect.swift in Sources */,
 				0A9CD5951EEB9A2A00094148 /* CalibratedGrayColorSpace.swift in Sources */,

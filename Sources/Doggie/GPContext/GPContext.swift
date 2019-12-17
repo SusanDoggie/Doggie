@@ -428,4 +428,22 @@ extension GPContext {
     }
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
+    public func drawLayer(colorSpace: CGColorSpace, callback: @escaping (CGContext) throws -> Void) {
+        
+        let width = self.width
+        let height = self.height
+        
+        guard width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
+        
+        guard colorSpace.model == .rgb else { return }
+        
+        guard let layer = try? CGContextProcessorKernel.apply(withExtent: CGRect(extent), colorSpace: colorSpace, transform: CGAffineTransform(self.transform), callback: callback) else { return }
+        
+        self.draw_layer(layer)
+    }
+}
+
 #endif

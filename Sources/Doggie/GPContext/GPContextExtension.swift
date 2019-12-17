@@ -200,4 +200,84 @@ extension GPContext {
     }
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
+    public func draw<C>(_ image: Image<C>, in rect: Rect) {
+        guard let image = image.cgImage else { return }
+        self.draw(image: image, in: rect)
+    }
+    
+    public func draw(_ image: AnyImage, in rect: Rect) {
+        guard let image = image.cgImage else { return }
+        self.draw(image: image, in: rect)
+    }
+    
+    public func draw<C>(_ image: Image<C>, transform: SDTransform) {
+        guard let image = image.cgImage else { return }
+        self.draw(image: image, transform: transform)
+    }
+    
+    public func draw(_ image: AnyImage, transform: SDTransform) {
+        guard let image = image.cgImage else { return }
+        self.draw(image: image, transform: transform)
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
+    public func drawLinearGradient(colorSpace: CGColorSpace, components: [CGFloat], locations: [CGFloat], start startPoint: CGPoint, end endPoint: CGPoint, options: CGGradientDrawingOptions) {
+        
+        guard components.count == locations.count else { return }
+        
+        guard let gradient = CGGradient(colorSpace: colorSpace, colorComponents: components, locations: locations, count: locations.count) else { return }
+        
+        self.drawLayer(colorSpace: colorSpace) { context in
+            
+            context.setBlendMode(.copy)
+            
+            context.drawLinearGradient(gradient, start: startPoint, end: endPoint, options: options)
+        }
+    }
+    
+    public func drawRadialGradient(colorSpace: CGColorSpace, components: [CGFloat], locations: [CGFloat], startCenter: CGPoint, startRadius: CGFloat, endCenter: CGPoint, endRadius: CGFloat, options: CGGradientDrawingOptions) {
+        
+        guard components.count == locations.count else { return }
+        
+        guard let gradient = CGGradient(colorSpace: colorSpace, colorComponents: components, locations: locations, count: locations.count) else { return }
+        
+        self.drawLayer(colorSpace: colorSpace) { context in
+            
+            context.setBlendMode(.copy)
+            
+            context.drawRadialGradient(gradient, startCenter: startCenter, startRadius: startRadius, endCenter: endCenter, endRadius: endRadius, options: options)
+        }
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
+    public func drawLinearGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, end: Point, options: CGGradientDrawingOptions) {
+        
+        guard let cgColorSpace = colorSpace.cgColorSpace else { return }
+        let stops = stops.map { $0.convert(to: colorSpace) }
+        
+        let range = 0...colorSpace.numberOfComponents
+        
+        self.drawLinearGradient(colorSpace: cgColorSpace, components: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, start: CGPoint(start), end: CGPoint(end), options: options)
+    }
+    
+    public func drawRadialGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
+        
+        guard let cgColorSpace = colorSpace.cgColorSpace else { return }
+        let stops = stops.map { $0.convert(to: colorSpace) }
+        
+        let range = 0...colorSpace.numberOfComponents
+        
+        self.drawRadialGradient(colorSpace: cgColorSpace, components: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
+    }
+}
+
 #endif
