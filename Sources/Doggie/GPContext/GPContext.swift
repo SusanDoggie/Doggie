@@ -348,27 +348,17 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func draw(shape: Shape, winding: Shape.WindingRule, color: CIColor) {
+    public func draw(path: CGPath, rule: CGPathFillRule, color: CIColor) {
         
-        if shape.reduce(0, { $0 + $1.count }) == 0 {
+        if shape.reduce(0, { $0 + $1.count }) == 0 || width == 0 || height == 0 || self.transform.determinant.almostZero() {
             return
         }
         
-        var shape = shape
-        shape.transform *= self.transform
+        let path = path.transformed(by: self.transform)
+        let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
         
-        if width == 0 || height == 0 || shape.transform.determinant.almostZero() {
-            return
-        }
-        
-        let rule: CGPathFillRule
-        switch winding {
-        case .nonZero: rule = .winding
-        case .evenOdd: rule = .evenOdd
-        }
-        
-        guard shape.boundary.isIntersect(extent) else { return }
-        guard let mask = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
+        guard !intersection.isNull else { return }
+        guard let mask = try? CGPathProcessorKernel.apply(withExtent: intersection, path: path, rule: rule) else { return }
         
         let layer = CIImage(color: color).applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
         
@@ -394,29 +384,19 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func clip(shape: Shape, winding: Shape.WindingRule) {
+    public func clip(path: CGPath, rule: CGPathFillRule) {
         
         self.clearClipBuffer(with: 0)
         
-        if shape.reduce(0, { $0 + $1.count }) == 0 {
+        if shape.reduce(0, { $0 + $1.count }) == 0 || width == 0 || height == 0 || self.transform.determinant.almostZero() {
             return
         }
         
-        var shape = shape
-        shape.transform *= self.transform
+        let path = path.transformed(by: self.transform)
+        let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
         
-        if width == 0 || height == 0 || shape.transform.determinant.almostZero() {
-            return
-        }
-        
-        let rule: CGPathFillRule
-        switch winding {
-        case .nonZero: rule = .winding
-        case .evenOdd: rule = .evenOdd
-        }
-        
-        guard shape.boundary.isIntersect(extent) else { return }
-        guard var clip = try? CGPathProcessorKernel.apply(withExtent: CGRect(shape.boundary.intersect(extent)), path: shape.cgPath, rule: rule) else { return }
+        guard !intersection.isNull else { return }
+        guard var clip = try? CGPathProcessorKernel.apply(withExtent: intersection, path: path, rule: rule) else { return }
         
         clip = clip.composited(over: GPContext.black)
         

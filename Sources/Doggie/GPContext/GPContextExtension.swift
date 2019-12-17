@@ -28,6 +28,41 @@
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
+    public func stroke(path: CGPath, width: CGFloat, lineCap: CGLineCap, lineJoin: CGLineJoin, miterLimit: CGFloat, color: CIColor) {
+        let path = path.copy(strokingWithWidth: width, lineCap: lineCap, lineJoin: lineJoin, miterLimit: miterLimit)
+        self.draw(path: path, winding: .nonZero, color: color)
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
+    public func draw(shape: Shape, winding: Shape.WindingRule, color: CIColor) {
+        
+        let rule: CGPathFillRule
+        switch winding {
+        case .nonZero: rule = .winding
+        case .evenOdd: rule = .evenOdd
+        }
+        
+        self.draw(path: shape.cgPath, rule: rule, color: CIColor)
+    }
+    
+    public func clip(shape: Shape, winding: Shape.WindingRule) {
+        
+        let rule: CGPathFillRule
+        switch winding {
+        case .nonZero: rule = .winding
+        case .evenOdd: rule = .evenOdd
+        }
+        
+        self.clip(path: shape.cgPath, rule: rule)
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
     public func concatenate(_ transform: SDTransform) {
         self.transform = transform * self.transform
     }

@@ -171,20 +171,31 @@ extension CGPath {
     }
 }
 
+extension CGPath {
+    
+    public func transformed(by transform: CGAffineTransform) -> CGPath {
+        var transform = transform
+        return self.copy(using: &transform) ?? CGPath()
+    }
+    
+    public func transformed(by transform: SDTransform) -> CGPath {
+        return self.transformed(by: CGAffineTransform(transform))
+    }
+}
+
 extension Shape {
     
     public var cgPath : CGPath {
         
         return self.identity.cache.load(for: ShapeCacheCGPathKey) {
             
-            let _path: CGPath = self.cache.load(for: ShapeCacheCGPathKey) {
+            let path: CGPath = self.cache.load(for: ShapeCacheCGPathKey) {
                 var path = CGMutablePath()
                 self._copy(to: &path)
                 return path
             }
             
-            var _transform = CGAffineTransform(self.transform)
-            return _path.copy(using: &_transform) ?? _path
+            return path.transformed(by: self.transform)
         }
     }
 }
