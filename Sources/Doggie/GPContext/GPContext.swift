@@ -310,9 +310,7 @@ extension GPContext {
             let width = self.width
             let height = self.height
             
-            if width == 0 || height == 0 {
-                return
-            }
+            guard width != 0 && height != 0 else { return }
             
             self.next = GPContext(copyStates: self)
         }
@@ -333,11 +331,7 @@ extension GPContext {
             
             self.next = nil
             
-            if width == 0 || height == 0 {
-                return
-            }
-            
-            guard next.state.isDirty else { return }
+            guard width != 0 && height != 0 && next.state.isDirty else { return }
             
             self.draw_layer(next._image)
         }
@@ -350,9 +344,7 @@ extension GPContext {
     
     public func draw(path: CGPath, rule: CGPathFillRule, color: CIColor) {
         
-        if shape.reduce(0, { $0 + $1.count }) == 0 || width == 0 || height == 0 || self.transform.determinant.almostZero() {
-            return
-        }
+        guard !path.isEmpty && width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
         
         let path = path.transformed(by: self.transform)
         let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
@@ -388,9 +380,7 @@ extension GPContext {
         
         self.clearClipBuffer(with: 0)
         
-        if shape.reduce(0, { $0 + $1.count }) == 0 || width == 0 || height == 0 || self.transform.determinant.almostZero() {
-            return
-        }
+        guard !path.isEmpty && width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
         
         let path = path.transformed(by: self.transform)
         let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
@@ -416,9 +406,7 @@ extension GPContext {
         let width = self.width
         let height = self.height
         
-        if width == 0 || height == 0 {
-            return
-        }
+        guard width != 0 && height != 0 else { return }
         
         let _clip = GPContext(copyStates: current_layer)
         

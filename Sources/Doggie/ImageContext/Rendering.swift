@@ -219,9 +219,7 @@ extension ImageContext {
         let cullingMode = self.renderCullingMode
         let depthCompareMode = self.renderDepthCompareMode
         
-        if width == 0 || height == 0 || transform.determinant.almostZero() {
-            return
-        }
+        guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
         
         @inline(__always)
         func _render(rasterizer: ImageContextRenderBuffer<Pixel>, projection: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) {

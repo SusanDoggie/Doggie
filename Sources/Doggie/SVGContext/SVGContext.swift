@@ -872,9 +872,7 @@ extension SVGContext {
         
         guard !self.transform.determinant.almostZero() else { return }
         
-        if shape.reduce(0, { $0 + $1.count }) == 0 {
-            return
-        }
+        if shape.contains(where: { !$0.isEmpty }) { return }
         
         let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])

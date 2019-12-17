@@ -44,9 +44,7 @@ extension RasterizeBufferProtocol {
         
         let det = (p1.y - p2.y) * (p0.x - p2.x) + (p2.x - p1.x) * (p0.y - p2.y)
         
-        if det.almostZero() {
-            return
-        }
+        guard !det.almostZero() else { return }
         
         let _det = 1 / det
         

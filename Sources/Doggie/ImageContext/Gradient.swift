@@ -32,9 +32,7 @@ extension ImageContext {
         let width = self.width
         let height = self.height
         
-        if width == 0 || height == 0 || self.transform.determinant.almostZero() {
-            return
-        }
+        guard width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
         
         let transform = self.transform.inverse
         
@@ -100,9 +98,7 @@ extension ImageContext {
     @inline(__always)
     public func axialShading<P : ColorPixelProtocol>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
-        if start.almostEqual(end) {
-            return
-        }
+        guard !start.almostEqual(end) else { return }
         
         self._shading(startSpread: startSpread, endSpread: endSpread, mapping: { point -> Double? in
             
@@ -123,9 +119,7 @@ extension ImageContext {
     @inline(__always)
     public func radialShading<P : ColorPixelProtocol>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
-        if start.almostEqual(end) && startRadius.almostEqual(endRadius) {
-            return
-        }
+        guard !start.almostEqual(end) || !startRadius.almostEqual(endRadius) else { return }
         
         self._shading(startSpread: startSpread, endSpread: endSpread, mapping: { point -> Double? in
             

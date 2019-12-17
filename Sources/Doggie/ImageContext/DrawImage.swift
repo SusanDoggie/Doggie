@@ -37,9 +37,7 @@ extension ImageContext {
         let shouldAntialias = self.shouldAntialias
         let antialias = self.antialias
         
-        if width == 0 || height == 0 || s_width == 0 || s_height == 0 || transform.determinant.almostZero() {
-            return
-        }
+        guard width != 0 && height != 0 && s_width != 0 && s_height != 0 && !transform.determinant.almostZero() else { return }
         
         let _transform = transform.inverse
         
@@ -97,9 +95,7 @@ extension ImageContext {
         let shouldAntialias = self.shouldAntialias
         let antialias = self.antialias
         
-        if width == 0 || height == 0 || s_width == 0 || s_height == 0 || transform.determinant.almostZero() {
-            return
-        }
+        guard width != 0 && height != 0 && s_width != 0 && s_height != 0 && !transform.determinant.almostZero() else { return }
         
         let _transform = transform.inverse
         

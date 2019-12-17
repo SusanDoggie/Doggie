@@ -571,9 +571,7 @@ extension PDFContext.Page {
     
     func draw<C : ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
-        if shape.reduce(0, { $0 + $1.count }) == 0 {
-            return
-        }
+        if shape.contains(where: { !$0.isEmpty }) { return }
         
         let shape = shape * _mirrored_transform
         

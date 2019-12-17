@@ -30,7 +30,7 @@ extension GPContext {
     
     public func stroke(path: CGPath, width: CGFloat, lineCap: CGLineCap, lineJoin: CGLineJoin, miterLimit: CGFloat, color: CIColor) {
         let path = path.copy(strokingWithWidth: width, lineCap: lineCap, lineJoin: lineJoin, miterLimit: miterLimit)
-        self.draw(path: path, winding: .nonZero, color: color)
+        self.draw(path: path, rule: .winding, color: color)
     }
 }
 
@@ -45,7 +45,7 @@ extension GPContext {
         case .evenOdd: rule = .evenOdd
         }
         
-        self.draw(path: shape.cgPath, rule: rule, color: CIColor)
+        self.draw(path: shape.cgPath, rule: rule, color: color)
     }
     
     public func clip(shape: Shape, winding: Shape.WindingRule) {

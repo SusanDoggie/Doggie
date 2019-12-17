@@ -480,9 +480,7 @@ extension ImageContext {
             let width = self.width
             let height = self.height
             
-            if width == 0 || height == 0 {
-                return
-            }
+            guard width != 0 && height != 0 else { return }
             
             self.next = ImageContext(copyStates: self, colorSpace: colorSpace)
         }
@@ -505,11 +503,7 @@ extension ImageContext {
             
             self.next = nil
             
-            if width == 0 || height == 0 {
-                return
-            }
-            
-            guard next.state.isDirty else { return }
+            guard width != 0 && height != 0 && next.state.isDirty else { return }
             
             if isShadow {
                 
@@ -552,9 +546,7 @@ extension ImageContext {
         let width = self.width
         let height = self.height
         
-        if width == 0 || height == 0 {
-            return
-        }
+        guard width != 0 && height != 0 else { return }
         
         let _clip = ImageContext<P>(copyStates: current_layer, colorSpace: colorSpace)
         

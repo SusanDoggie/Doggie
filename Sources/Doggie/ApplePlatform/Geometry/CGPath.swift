@@ -175,7 +175,7 @@ extension CGPath {
     
     public func transformed(by transform: CGAffineTransform) -> CGPath {
         var transform = transform
-        return self.copy(using: &transform) ?? CGPath()
+        return self.copy(using: &transform) ?? CGMutablePath()
     }
     
     public func transformed(by transform: SDTransform) -> CGPath {

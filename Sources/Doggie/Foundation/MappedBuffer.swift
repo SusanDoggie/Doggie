@@ -204,9 +204,7 @@ extension MappedBuffer {
     @inline(__always)
     mutating func make_unique_if_need() {
         
-        if isKnownUniquelyReferenced(&base) {
-            return
-        }
+        guard !isKnownUniquelyReferenced(&base) else { return }
         
         let new_base = Base(capacity: base.capacity, fileBacked: self.fileBacked)
         

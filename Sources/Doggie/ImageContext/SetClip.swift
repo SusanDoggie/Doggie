@@ -31,9 +31,7 @@ extension ImageContext {
         
         self.clearClipBuffer(with: 0)
         
-        if shape.reduce(0, { $0 + $1.count }) == 0 {
-            return
-        }
+        if shape.contains(where: { !$0.isEmpty }) { return }
         
         let width = self.width
         let height = self.height
@@ -41,9 +39,7 @@ extension ImageContext {
         let shouldAntialias = self.shouldAntialias
         let antialias = self.antialias
         
-        if width == 0 || height == 0 || transform.determinant.almostZero() {
-            return
-        }
+        guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
         
         let (bound, stencil) = self._stencil(shape: shape)
         

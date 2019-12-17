@@ -104,9 +104,7 @@ extension ImageContext {
         let height = self.height
         let transform = self.transform
         
-        if width == 0 || height == 0 || transform.determinant.almostZero() {
-            return
-        }
+        guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
         
         let _c0 = Float64ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent))
         let _c1 = Float64ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent))
