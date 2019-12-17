@@ -261,45 +261,66 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    private func blend_layer(_ layer: CIImage) {
+    private func blend_layer(_ image: CIImage) {
         
         current_layer.state.isDirty = true
         
-        var layer = layer
-        
-        if let clip = current_layer.state.clip {
-            layer = layer.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: clip])
-        }
-        
         if blendKernel === CIBlendKernel.sourceOver {
             
-            current_layer._image = layer.composited(over: current_layer._image)
+            if let clip = current_layer.state.clip {
+                
+                current_layer._image = image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: current_layer._image, kCIInputMaskImageKey: clip])
+                
+            } else {
+                
+                current_layer._image = image.composited(over: current_layer._image)
+            }
             
-        } else if let blended = blendKernel.apply(foreground: layer, background: current_layer._image) {
+        } else {
             
-            current_layer._image = blended
+            var image = image
+            
+            if let clip = current_layer.state.clip {
+                image = image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: clip])
+            }
+            
+            if let blended = blendKernel.apply(foreground: image, background: current_layer._image) {
+                
+                current_layer._image = blended
+            }
         }
     }
     
-    private func draw_layer(_ layer: CIImage) {
+    private func draw_color_mask(_ mask: CIImage, _ color: CIColor, _ alpha_mask: Bool) {
         
-        var layer = layer
+        let filter = alpha_mask ? "CIBlendWithAlphaMask" : "CIBlendWithMask"
         
-        if shadowColor.alpha > 0 && shadowBlur > 0 {
+        if blendKernel === CIBlendKernel.sourceOver {
             
-            if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
-                layer = layer.insertingIntermediate()
+            var mask = mask
+            
+            if let clip = current_layer.state.clip {
+                mask = mask.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: clip])
             }
             
-            let shadow_color = CIImage(color: shadowColor)
-            let shadow = layer.applyingGaussianBlur(sigma: 0.5 * shadowBlur).transformed(by: .translate(x: shadowOffset.width, y: shadowOffset.height))
+            current_layer._image = CIImage(color: color).applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: current_layer._image, kCIInputMaskImageKey: mask])
             
-            let image = shadow_color.applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: shadow])
+        } else {
+            
+            let image = CIImage(color: color).applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
             
             self.blend_layer(image)
         }
+    }
+    
+    private func draw_shadow(_ image: CIImage, _ alpha_mask: Bool) {
         
-        self.blend_layer(layer)
+        current_layer.state.isDirty = true
+        
+        guard shadowColor.alpha > 0 && shadowBlur > 0 else { return }
+        
+        let shadow = image.applyingGaussianBlur(sigma: 0.5 * shadowBlur).transformed(by: .translate(x: shadowOffset.width, y: shadowOffset.height))
+        self.draw_color_mask(shadow, shadowColor, alpha_mask)
     }
 }
 
@@ -340,7 +361,14 @@ extension GPContext {
             
             guard width != 0 && height != 0 && next.state.isDirty else { return }
             
-            self.draw_layer(next._image)
+            var layer = next._image
+            
+            if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *), shadowColor.alpha > 0 && shadowBlur > 0 {
+                layer = layer.insertingIntermediate()
+            }
+            
+            self.draw_shadow(layer, true)
+            self.blend_layer(layer)
         }
     }
     
@@ -357,11 +385,14 @@ extension GPContext {
         let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
         
         guard !intersection.isNull else { return }
-        guard let mask = try? CGPathProcessorKernel.apply(withExtent: intersection, path: path, rule: rule) else { return }
+        guard var mask = try? CGPathProcessorKernel.apply(withExtent: intersection, path: path, rule: rule) else { return }
         
-        let layer = CIImage(color: color).applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
+        if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *), shadowColor.alpha > 0 && shadowBlur > 0 {
+            mask = mask.insertingIntermediate()
+        }
         
-        self.draw_layer(layer)
+        self.draw_shadow(mask, false)
+        self.draw_color_mask(mask, color, false)
     }
 }
 
@@ -376,7 +407,8 @@ extension GPContext {
             image = image.insertingIntermediate()
         }
         
-        self.draw_layer(image)
+        self.draw_shadow(image, true)
+        self.blend_layer(image)
     }
 }
 
@@ -447,9 +479,14 @@ extension GPContext {
         
         guard colorSpace.model == .rgb else { return }
         
-        guard let layer = try? CGContextProcessorKernel.apply(withExtent: CGRect(extent), colorSpace: colorSpace, transform: CGAffineTransform(self.transform), callback: callback) else { return }
+        guard var layer = try? CGContextProcessorKernel.apply(withExtent: CGRect(extent), colorSpace: colorSpace, transform: CGAffineTransform(self.transform), callback: callback) else { return }
         
-        self.draw_layer(layer)
+        if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *), shadowColor.alpha > 0 && shadowBlur > 0 {
+            layer = layer.insertingIntermediate()
+        }
+        
+        self.draw_shadow(layer, true)
+        self.blend_layer(layer)
     }
 }
 
