@@ -40,10 +40,12 @@ final class CGPathProcessorKernel: CIImageProcessorKernel {
         let path: CGPath
         
         let rule: CGPathFillRule
+        
+        let shouldAntialias: Bool
     }
     
-    class func apply(withExtent extent: CGRect, path: CGPath, rule: CGPathFillRule) throws -> CIImage {
-        let image = try self.apply(withExtent: extent, inputs: nil, arguments: ["info": Info(path: path, rule: rule)])
+    class func apply(withExtent extent: CGRect, path: CGPath, rule: CGPathFillRule, shouldAntialias: Bool) throws -> CIImage {
+        let image = try self.apply(withExtent: extent, inputs: nil, arguments: ["info": Info(path: path, rule: rule, shouldAntialias: shouldAntialias)])
         return image.applyingFilter("CIMaximumComponent", parameters: [:])
     }
     
@@ -63,6 +65,7 @@ final class CGPathProcessorKernel: CIImageProcessorKernel {
         context.translateBy(x: -output.region.minX, y: -output.region.minY)
         
         context.setBlendMode(.copy)
+        context.setShouldAntialias(info.shouldAntialias)
         
         context.addPath(info.path)
         context.fillPath(using: info.rule)

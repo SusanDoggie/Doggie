@@ -28,15 +28,14 @@
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private struct GPContextStyles {
     
-    static let defaultShadowColor = CIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0 / 3.0)
+    static let defaultShadowColor = CGColor(gray: 0.0, alpha: 1.0 / 3.0)
     
     var opacity: Double = 1
     var transform: SDTransform = SDTransform.identity
     
     var shouldAntialias: Bool = true
-    var antialias: Int = 5
     
-    var shadowColor: CIColor = GPContextStyles.defaultShadowColor
+    var shadowColor: CGColor = GPContextStyles.defaultShadowColor
     var shadowOffset: Size = Size()
     var shadowBlur: Double = 0
     
@@ -223,16 +222,8 @@ extension GPContext {
             current_layer.styles.shouldAntialias = newValue
         }
     }
-    public var antialias: Int {
-        get {
-            return current_layer.styles.antialias
-        }
-        set {
-            current_layer.styles.antialias = max(1, newValue)
-        }
-    }
     
-    public var shadowColor: CIColor {
+    public var shadowColor: CGColor {
         get {
             return current_layer.styles.shadowColor
         }
@@ -300,9 +291,28 @@ extension GPContext {
         }
     }
     
-    private func draw_color_mask(_ mask: CIImage, _ color: CIColor, _ alpha_mask: Bool) {
+    private func draw_layer(_ image: CIImage) {
+        
+        guard opacity > 0 else { return }
+        
+        var image = image
+        
+        if opacity < 1 {
+            let mask = CIColor(red: 1, green: 1, blue: 1, alpha: CGFloat(opacity))
+            image = image.applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
+        }
+        
+        self.blend_layer(image)
+    }
+    
+    private func draw_color_mask(_ mask: CIImage, _ color: CGColor, _ alpha_mask: Bool) {
+        
+        guard opacity > 0 else { return }
+        guard let color = opacity < 1 ? color.copy(alpha: color.alpha * CGFloat(opacity)) : color else { return }
         
         let filter = alpha_mask ? "CIBlendWithAlphaMask" : "CIBlendWithMask"
+        
+        let _color = CIImage(color: CIColor(cgColor: color))
         
         if blendKernel === CIBlendKernel.sourceOver {
             
@@ -312,11 +322,11 @@ extension GPContext {
                 mask = mask.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: clip])
             }
             
-            current_layer._image = CIImage(color: color).applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: current_layer._image, kCIInputMaskImageKey: mask])
+            current_layer._image = _color.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: current_layer._image, kCIInputMaskImageKey: mask])
             
         } else {
             
-            let image = CIImage(color: color).applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
+            let image = _color.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
             
             self.blend_layer(image)
         }
@@ -324,7 +334,7 @@ extension GPContext {
     
     private func draw_shadow(_ image: CIImage, _ alpha_mask: Bool) {
         
-        guard shadowColor.alpha > 0 && shadowBlur > 0 else { return }
+        guard shadowColor.alpha > 0 && shadowBlur > 0 && opacity > 0 else { return }
         
         let shadow = image.applyingGaussianBlur(sigma: 0.5 * shadowBlur).transformed(by: .translate(x: shadowOffset.width, y: shadowOffset.height))
         self.draw_color_mask(shadow, shadowColor, alpha_mask)
@@ -375,7 +385,7 @@ extension GPContext {
             }
             
             self.draw_shadow(layer, true)
-            self.blend_layer(layer)
+            self.draw_layer(layer)
         }
     }
     
@@ -384,7 +394,7 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func draw(path: CGPath, rule: CGPathFillRule, color: CIColor) {
+    public func draw(path: CGPath, rule: CGPathFillRule, color: CGColor) {
         
         guard !path.isEmpty && width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
         
@@ -394,7 +404,7 @@ extension GPContext {
         guard !intersection.isNull else { return }
         
         let extent = intersection.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        guard var mask = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule) else { return }
+        guard var mask = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule, shouldAntialias: self.shouldAntialias) else { return }
         
         if shadowColor.alpha > 0 && shadowBlur > 0 {
             mask = mask._insertingIntermediate()
@@ -414,7 +424,7 @@ extension GPContext {
         image = image.clamped(to: extent)._insertingIntermediate()
         
         self.draw_shadow(image, true)
-        self.blend_layer(image)
+        self.draw_layer(image)
     }
 }
 
@@ -433,7 +443,7 @@ extension GPContext {
         guard !intersection.isNull else { return }
         
         let extent = intersection.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        guard let clip = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule) else { return }
+        guard let clip = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule, shouldAntialias: self.shouldAntialias) else { return }
         
         current_layer.state.clip = clip.composited(over: GPContext.black)._insertingIntermediate()
     }
@@ -478,14 +488,14 @@ extension GPContext {
         guard colorSpace.model == .rgb else { return }
         
         let extent = self.extent.inset(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        guard var layer = try? CGContextProcessorKernel.apply(withExtent: CGRect(extent), colorSpace: colorSpace, transform: CGAffineTransform(self.transform), callback: callback) else { return }
+        guard var layer = try? CGContextProcessorKernel.apply(withExtent: CGRect(extent), colorSpace: colorSpace, transform: CGAffineTransform(self.transform), shouldAntialias: self.shouldAntialias, callback: callback) else { return }
         
         if shadowColor.alpha > 0 && shadowBlur > 0 {
             layer = layer._insertingIntermediate()
         }
         
         self.draw_shadow(layer, true)
-        self.blend_layer(layer)
+        self.draw_layer(layer)
     }
 }
 

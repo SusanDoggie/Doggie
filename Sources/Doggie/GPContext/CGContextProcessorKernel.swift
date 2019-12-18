@@ -41,11 +41,13 @@ final class CGContextProcessorKernel: CIImageProcessorKernel {
         
         let transform: CGAffineTransform
         
+        let shouldAntialias: Bool
+        
         let callback: (CGContext) throws -> Void
     }
     
-    class func apply(withExtent extent: CGRect, colorSpace: CGColorSpace, transform: CGAffineTransform, callback: @escaping (CGContext) throws -> Void) throws -> CIImage {
-        let image = try self.apply(withExtent: extent, inputs: nil, arguments: ["info": Info(colorSpace: colorSpace, transform: transform, callback: callback)])
+    class func apply(withExtent extent: CGRect, colorSpace: CGColorSpace, transform: CGAffineTransform, shouldAntialias: Bool, callback: @escaping (CGContext) throws -> Void) throws -> CIImage {
+        let image = try self.apply(withExtent: extent, inputs: nil, arguments: ["info": Info(colorSpace: colorSpace, transform: transform, shouldAntialias: shouldAntialias, callback: callback)])
         return image.matchedToWorkingSpace(from: colorSpace) ?? image
     }
     
@@ -65,6 +67,7 @@ final class CGContextProcessorKernel: CIImageProcessorKernel {
         context.translateBy(x: -output.region.minX, y: -output.region.minY)
         
         context.concatenate(info.transform)
+        context.setShouldAntialias(info.shouldAntialias)
         
         try info.callback(context)
     }

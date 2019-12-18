@@ -28,7 +28,7 @@
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func stroke(path: CGPath, width: CGFloat, lineCap: CGLineCap, lineJoin: CGLineJoin, miterLimit: CGFloat, color: CIColor) {
+    public func stroke(path: CGPath, width: CGFloat, lineCap: CGLineCap, lineJoin: CGLineJoin, miterLimit: CGFloat, color: CGColor) {
         let path = path.copy(strokingWithWidth: width, lineCap: lineCap, lineJoin: lineJoin, miterLimit: miterLimit)
         self.draw(path: path, rule: .winding, color: color)
     }
@@ -37,7 +37,7 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func draw(shape: Shape, winding: Shape.WindingRule, color: CIColor) {
+    public func draw(shape: Shape, winding: Shape.WindingRule, color: CGColor) {
         
         let rule: CGPathFillRule
         switch winding {
@@ -119,45 +119,6 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CIColor) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color)
-    }
-}
-
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPContext {
-    
-    public func draw(rect: Rect, color: CIColor) {
-        self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color)
-    }
-    public func draw(roundedRect rect: Rect, radius: Radius, color: CIColor) {
-        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, color: color)
-    }
-    public func draw(ellipseIn rect: Rect, color: CIColor) {
-        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color)
-    }
-    public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CIColor) {
-        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, color: color)
-    }
-    public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CIColor) {
-        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, color: color)
-    }
-    public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CIColor) {
-        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color)
-    }
-}
-
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPContext {
-    
-    public func draw(shape: Shape, winding: Shape.WindingRule, color: CGColor) {
-        self.draw(shape: shape, winding: winding, color: CIColor(cgColor: color))
-    }
-}
-
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPContext {
-    
     public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
         self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color)
     }
@@ -227,11 +188,7 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func drawLinearGradient(colorSpace: CGColorSpace, components: [CGFloat], locations: [CGFloat], start startPoint: CGPoint, end endPoint: CGPoint, options: CGGradientDrawingOptions) {
-        
-        guard colorSpace.model == .rgb && components.count == locations.count * 4 else { return }
-        
-        guard let gradient = CGGradient(colorSpace: colorSpace, colorComponents: components, locations: locations, count: locations.count) else { return }
+    public func drawLinearGradient(colorSpace: CGColorSpace, gradient: CGGradient, start startPoint: CGPoint, end endPoint: CGPoint, options: CGGradientDrawingOptions) {
         
         self.drawLayer(colorSpace: colorSpace) { context in
             
@@ -241,11 +198,7 @@ extension GPContext {
         }
     }
     
-    public func drawRadialGradient(colorSpace: CGColorSpace, components: [CGFloat], locations: [CGFloat], startCenter: CGPoint, startRadius: CGFloat, endCenter: CGPoint, endRadius: CGFloat, options: CGGradientDrawingOptions) {
-        
-        guard colorSpace.model == .rgb && components.count == locations.count * 4 else { return }
-        
-        guard let gradient = CGGradient(colorSpace: colorSpace, colorComponents: components, locations: locations, count: locations.count) else { return }
+    public func drawRadialGradient(colorSpace: CGColorSpace, gradient: CGGradient, startCenter: CGPoint, startRadius: CGFloat, endCenter: CGPoint, endRadius: CGFloat, options: CGGradientDrawingOptions) {
         
         self.drawLayer(colorSpace: colorSpace) { context in
             
@@ -265,8 +218,9 @@ extension GPContext {
         let stops = stops.map { $0.convert(to: colorSpace) }
         
         let range = 0...colorSpace.numberOfComponents
+        guard let gradient = CGGradient(colorSpace: cgColorSpace, colorComponents: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, count: stops.count) else { return }
         
-        self.drawLinearGradient(colorSpace: cgColorSpace, components: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, start: CGPoint(start), end: CGPoint(end), options: options)
+        self.drawLinearGradient(colorSpace: colorSpace, gradient: gradient, start: CGPoint(start), end: CGPoint(end), options: options)
     }
     
     public func drawRadialGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
@@ -275,8 +229,9 @@ extension GPContext {
         let stops = stops.map { $0.convert(to: colorSpace) }
         
         let range = 0...colorSpace.numberOfComponents
+        guard let gradient = CGGradient(colorSpace: cgColorSpace, colorComponents: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, count: stops.count) else { return }
         
-        self.drawRadialGradient(colorSpace: cgColorSpace, components: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
+        self.drawRadialGradient(colorSpace: colorSpace, gradient: gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
     }
 }
 
