@@ -265,30 +265,15 @@ extension GPContext {
     
     private func blend_layer(_ image: CIImage) {
         
-        if blendKernel === CIBlendKernel.sourceOver {
-            
-            if let clip = current_layer.state.clip {
-                
-                current_layer._image = image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: current_layer._image, kCIInputMaskImageKey: clip])
-                
-            } else {
-                
-                current_layer._image = image.composited(over: current_layer._image)
-            }
-            
-        } else {
-            
-            var image = image
-            
-            if let clip = current_layer.state.clip {
-                image = image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: clip])
-            }
-            
-            if let blended = blendKernel.apply(foreground: image, background: current_layer._image) {
-                
-                current_layer._image = blended
-            }
+        var image = image
+        
+        if let clip = current_layer.state.clip {
+            image = image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: clip])
         }
+        
+        guard let blended = blendKernel.apply(foreground: image, background: current_layer._image) else { return }
+            
+        current_layer._image = blended
     }
     
     private func draw_layer(_ image: CIImage) {
@@ -313,23 +298,9 @@ extension GPContext {
         let filter = alpha_mask ? "CIBlendWithAlphaMask" : "CIBlendWithMask"
         
         let _color = CIImage(color: CIColor(cgColor: color))
+        let image = _color.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
         
-        if blendKernel === CIBlendKernel.sourceOver {
-            
-            var mask = mask
-            
-            if let clip = current_layer.state.clip {
-                mask = mask.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: clip])
-            }
-            
-            current_layer._image = _color.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: current_layer._image, kCIInputMaskImageKey: mask])
-            
-        } else {
-            
-            let image = _color.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
-            
-            self.blend_layer(image)
-        }
+        self.blend_layer(image)
     }
     
     private func draw_shadow(_ image: CIImage, _ alpha_mask: Bool) {
