@@ -46,6 +46,7 @@
 		087ADB1423A7E3A400BE40AF /* GPContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADB1123A7E3A400BE40AF /* GPContext.swift */; };
 		087ADB1523A7E3A400BE40AF /* GPContextExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADB1223A7E3A400BE40AF /* GPContextExtension.swift */; };
 		087ADB1623A7E3A400BE40AF /* GPContextRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087ADB1323A7E3A400BE40AF /* GPContextRendering.swift */; };
+		087B2DBD23AA27630021482C /* CGGradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087B2DBC23AA27630021482C /* CGGradient.swift */; };
 		087E112823A8C79A008B6454 /* CGContextProcessorKernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 087E112723A8C79A008B6454 /* CGContextProcessorKernel.swift */; };
 		087FE5C01A372D97005A2E9E /* Doggie.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 087FE5B51A372D97005A2E9E /* Doggie.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		088841DE236EAF09000E17FF /* FontFaceEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 088841DD236EAF09000E17FF /* FontFaceEncoder.swift */; };
@@ -394,6 +395,7 @@
 		087ADB1123A7E3A400BE40AF /* GPContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPContext.swift; sourceTree = "<group>"; };
 		087ADB1223A7E3A400BE40AF /* GPContextExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPContextExtension.swift; sourceTree = "<group>"; };
 		087ADB1323A7E3A400BE40AF /* GPContextRendering.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPContextRendering.swift; sourceTree = "<group>"; };
+		087B2DBC23AA27630021482C /* CGGradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGGradient.swift; sourceTree = "<group>"; };
 		087E112723A8C79A008B6454 /* CGContextProcessorKernel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGContextProcessorKernel.swift; sourceTree = "<group>"; };
 		087FE5B51A372D97005A2E9E /* Doggie.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Doggie.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		087FE5BF1A372D97005A2E9E /* DoggieTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DoggieTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -911,6 +913,7 @@
 				0A3FD861210079BC006D4737 /* CGContext.swift */,
 				0AE762541EE9475400E926D5 /* CGColorSpace.swift */,
 				0A3D5C621EEA498E00A9CDEA /* CGColor.swift */,
+				087B2DBC23AA27630021482C /* CGGradient.swift */,
 			);
 			path = Graphic;
 			sourceTree = "<group>";
@@ -1680,6 +1683,7 @@
 				0A53E4791E35AEF80060FB83 /* Parallel.swift in Sources */,
 				0AC527E21EEFEFF900FB239A /* iccProfile.swift in Sources */,
 				0A94BE961F1087B600F1BCD2 /* BMPDecoder.swift in Sources */,
+				087B2DBD23AA27630021482C /* CGGradient.swift in Sources */,
 				0A967E511F132DC0007E38E4 /* JPEGEncoder.swift in Sources */,
 				0AC621C220EDF07100E5FF15 /* DrawableContext.swift in Sources */,
 				0A39A6B61ED9342C00804004 /* ImageContext.swift in Sources */,

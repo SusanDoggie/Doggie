@@ -124,22 +124,14 @@ extension CGContext {
     
     public func drawLinearGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
-        guard let cgColorSpace = colorSpace.cgColorSpace else { return }
-        let stops = stops.map { $0.convert(to: colorSpace) }
-        
-        let range = 0...colorSpace.numberOfComponents
-        guard let gradient = CGGradient(colorSpace: cgColorSpace, colorComponents: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, count: stops.count) else { return }
+        guard let gradient = CGGradient(colorSpace: colorSpace, stops: stops) else { return }
         
         self.drawLinearGradient(gradient, start: CGPoint(start), end: CGPoint(end), options: options)
     }
     
     public func drawRadialGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
         
-        guard let cgColorSpace = colorSpace.cgColorSpace else { return }
-        let stops = stops.map { $0.convert(to: colorSpace) }
-        
-        let range = 0...colorSpace.numberOfComponents
-        guard let gradient = CGGradient(colorSpace: cgColorSpace, colorComponents: stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }, locations: stops.map { CGFloat($0.offset) }, count: stops.count) else { return }
+        guard let gradient = CGGradient(colorSpace: colorSpace, stops: stops) else { return }
         
         self.drawRadialGradient(gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
     }
