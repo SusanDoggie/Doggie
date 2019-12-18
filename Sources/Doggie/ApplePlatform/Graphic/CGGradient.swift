@@ -25,24 +25,21 @@
 
 #if canImport(CoreGraphics)
 
-extension CGGradient {
+public func CGGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>]) -> CGGradient? {
     
-    public convenience init?<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>]) {
-        
-        guard let cgColorSpace = colorSpace.cgColorSpace else { return nil }
-        let stops = stops.map { $0.convert(to: colorSpace) }
-        
-        let range = 0...colorSpace.numberOfComponents
-        
-        let components = stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }
-        let locations = stops.map { CGFloat($0.offset) }
-        
-        self.init(colorSpace: cgColorSpace, colorComponents: components, locations: locations, count: stops.count)
-    }
+    guard let cgColorSpace = colorSpace.cgColorSpace else { return nil }
+    let stops = stops.map { $0.convert(to: colorSpace) }
     
-    public convenience init?<Model, C>(colorSpace: ColorSpace<Model>, stops: [GradientStop<C>]) {
-        self.init(colorSpace: AnyColorSpace(colorSpace), stops: stops)
-    }
+    let range = 0...colorSpace.numberOfComponents
+    
+    let components = stops.flatMap { stop in range.lazy.map { CGFloat(stop.color.component($0)) } }
+    let locations = stops.map { CGFloat($0.offset) }
+    
+    return CGGradient(colorSpace: cgColorSpace, colorComponents: components, locations: locations, count: stops.count)
+}
+
+public func CGGradient<Model, C>(colorSpace: ColorSpace<Model>, stops: [GradientStop<C>]) -> CGGradient? {
+    return CGGradient(colorSpace: AnyColorSpace(colorSpace), stops: stops)
 }
 
 #endif
