@@ -25,21 +25,21 @@
 
 #if canImport(CoreImage) || canImport(QuartzCore)
 
-private let context = CIContext()
+private let renderer = CIContext()
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func makeImage() -> CGImage? {
-        return context.createCGImage(image, from: CGRect(extent))
+        return renderer.createCGImage(image, from: CGRect(extent))
     }
     
     public func makeImage(format: CIFormat, colorSpace: CGColorSpace?) -> CGImage? {
-        return context.createCGImage(image, from: CGRect(extent), format: format, colorSpace: colorSpace)
+        return renderer.createCGImage(image, from: CGRect(extent), format: format, colorSpace: colorSpace)
     }
     
     public func makeImage(format: CIFormat, colorSpace: CGColorSpace?, deferred: Bool) -> CGImage? {
-        return context.createCGImage(image, from: CGRect(extent), format: format, colorSpace: colorSpace, deferred: deferred)
+        return renderer.createCGImage(image, from: CGRect(extent), format: format, colorSpace: colorSpace, deferred: deferred)
     }
 }
 
