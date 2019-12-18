@@ -283,7 +283,7 @@ extension GPContext {
         var image = image
         
         if opacity < 1 {
-            let mask = CIColor(red: 1, green: 1, blue: 1, alpha: CGFloat(opacity))
+            let mask = CIImage(color: CIColor(red: 1, green: 1, blue: 1, alpha: CGFloat(opacity)))
             image = image.applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
         }
         
