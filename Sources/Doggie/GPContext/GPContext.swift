@@ -28,7 +28,7 @@
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private struct GPContextStyles {
     
-    static let defaultShadowColor = CGColor(colorSpace: CGColorSpaceCreateDeviceGray(), components: [0.0 as CGFloat, 1.0 / 3.0])!
+    static let defaultShadowColor = CGColor(colorSpace: CGColorSpaceCreateDeviceGray(), components: [0.0 as CGFloat, 1.0 as CGFloat / 3.0])!
     
     var opacity: Double = 1
     var transform: SDTransform = SDTransform.identity
