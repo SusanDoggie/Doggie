@@ -124,14 +124,14 @@ extension CGContext {
     
     public func drawLinearGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
-        guard let gradient = CGGradient(colorSpace: colorSpace, stops: stops) else { return }
+        guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
         
         self.drawLinearGradient(gradient, start: CGPoint(start), end: CGPoint(end), options: options)
     }
     
     public func drawRadialGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
         
-        guard let gradient = CGGradient(colorSpace: colorSpace, stops: stops) else { return }
+        guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
         
         self.drawRadialGradient(gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
     }

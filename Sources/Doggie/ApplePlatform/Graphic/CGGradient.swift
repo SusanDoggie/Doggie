@@ -25,7 +25,7 @@
 
 #if canImport(CoreGraphics)
 
-public func CGGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>]) -> CGGradient? {
+public func CGGradientCreate<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>]) -> CGGradient? {
     
     guard let cgColorSpace = colorSpace.cgColorSpace else { return nil }
     let stops = stops.map { $0.convert(to: colorSpace) }
@@ -38,8 +38,8 @@ public func CGGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>]) -
     return CGGradient(colorSpace: cgColorSpace, colorComponents: components, locations: locations, count: stops.count)
 }
 
-public func CGGradient<Model, C>(colorSpace: ColorSpace<Model>, stops: [GradientStop<C>]) -> CGGradient? {
-    return CGGradient(colorSpace: AnyColorSpace(colorSpace), stops: stops)
+public func CGGradientCreate<Model, C>(colorSpace: ColorSpace<Model>, stops: [GradientStop<C>]) -> CGGradient? {
+    return CGGradientCreate(colorSpace: AnyColorSpace(colorSpace), stops: stops)
 }
 
 #endif

@@ -215,7 +215,7 @@ extension GPContext {
     public func drawLinearGradient(colorSpace: ColorSpace<RGBColorModel>, stops: [GradientStop<AnyColor>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
-        guard let gradient = CGGradient(colorSpace: colorSpace, stops: stops) else { return }
+        guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
         
         self.drawLinearGradient(colorSpace: cgColorSpace, gradient: gradient, start: CGPoint(start), end: CGPoint(end), options: options)
     }
@@ -223,7 +223,7 @@ extension GPContext {
     public func drawRadialGradient(colorSpace: ColorSpace<RGBColorModel>, stops: [GradientStop<AnyColor>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
-        guard let gradient = CGGradient(colorSpace: colorSpace, stops: stops) else { return }
+        guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
         
         self.drawRadialGradient(colorSpace: cgColorSpace, gradient: gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
     }
