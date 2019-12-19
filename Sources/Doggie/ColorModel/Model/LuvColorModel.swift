@@ -1,5 +1,5 @@
 //
-//  LabColorModel.swift
+//  LuvColorModel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct LabColorModel : ColorModelProtocol {
+public struct LuvColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -48,32 +48,31 @@ public struct LabColorModel : ColorModelProtocol {
     
     /// The lightness dimension.
     public var lightness: Double
-    /// The a color component.
-    public var a: Double
-    /// The b color component.
-    public var b: Double
+    /// The u color component.
+    public var u: Double
+    /// The v color component.
+    public var v: Double
     
     @inlinable
     @inline(__always)
     public init() {
         self.lightness = 0
-        self.a = 0
-        self.b = 0
+        self.u = 0
+        self.v = 0
     }
-    
     @inlinable
     @inline(__always)
-    public init(lightness: Double, a: Double, b: Double) {
+    public init(lightness: Double, u: Double, v: Double) {
         self.lightness = lightness
-        self.a = a
-        self.b = b
+        self.u = u
+        self.v = v
     }
     @inlinable
     @inline(__always)
     public init(lightness: Double, chroma: Double, hue: Double) {
         self.lightness = lightness
-        self.a = chroma * cos(2 * .pi * hue)
-        self.b = chroma * sin(2 * .pi * hue)
+        self.u = chroma * cos(2 * .pi * hue)
+        self.v = chroma * sin(2 * .pi * hue)
     }
     
     @inlinable
@@ -87,25 +86,25 @@ public struct LabColorModel : ColorModelProtocol {
     }
 }
 
-extension LabColorModel {
+extension LuvColorModel {
     
     @inlinable
     @inline(__always)
-    public static var black: LabColorModel {
-        return LabColorModel()
+    public static var black: LuvColorModel {
+        return LuvColorModel()
     }
 }
 
-extension LabColorModel {
+extension LuvColorModel {
     
     @inlinable
     @inline(__always)
     public var hue: Double {
         get {
-            return positive_mod(0.5 * atan2(b, a) / .pi, 1)
+            return positive_mod(0.5 * atan2(v, u) / .pi, 1)
         }
         set {
-            self = LabColorModel(lightness: lightness, chroma: chroma, hue: newValue)
+            self = LuvColorModel(lightness: lightness, chroma: chroma, hue: newValue)
         }
     }
     
@@ -113,20 +112,20 @@ extension LabColorModel {
     @inline(__always)
     public var chroma: Double {
         get {
-            return hypot(a, b)
+            return hypot(u, v)
         }
         set {
-            self = LabColorModel(lightness: lightness, chroma: newValue, hue: hue)
+            self = LuvColorModel(lightness: lightness, chroma: newValue, hue: hue)
         }
     }
 }
 
-extension LabColorModel {
+extension LuvColorModel {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Double) -> Double) -> LabColorModel {
-        return LabColorModel(lightness: transform(lightness), a: transform(a), b: transform(b))
+    public func map(_ transform: (Double) -> Double) -> LuvColorModel {
+        return LuvColorModel(lightness: transform(lightness), u: transform(u), v: transform(v))
     }
     
     @inlinable
@@ -134,43 +133,24 @@ extension LabColorModel {
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, lightness)
-        updateAccumulatingResult(&accumulator, a)
-        updateAccumulatingResult(&accumulator, b)
+        updateAccumulatingResult(&accumulator, u)
+        updateAccumulatingResult(&accumulator, v)
         return accumulator
     }
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: LabColorModel, _ transform: (Double, Double) -> Double) -> LabColorModel {
-        return LabColorModel(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
+    public func combined(_ other: LuvColorModel, _ transform: (Double, Double) -> Double) -> LuvColorModel {
+        return LuvColorModel(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
     }
 }
 
-extension LabColorModel {
+extension LuvColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.lightness = Double(floatComponents.lightness)
-        self.a = Double(floatComponents.a)
-        self.b = Double(floatComponents.b)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = LabColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -181,37 +161,37 @@ extension LabColorModel {
         }
         
         public var lightness: Scalar
-        public var a: Scalar
-        public var b: Scalar
+        public var u: Scalar
+        public var v: Scalar
         
         @inline(__always)
         public init() {
             self.lightness = 0
-            self.a = 0
-            self.b = 0
+            self.u = 0
+            self.v = 0
         }
         
         @inline(__always)
-        public init(lightness: Scalar, a: Scalar, b: Scalar) {
+        public init(lightness: Scalar, u: Scalar, v: Scalar) {
             self.lightness = lightness
-            self.a = a
-            self.b = b
+            self.u = u
+            self.v = v
         }
         
         @inlinable
         @inline(__always)
-        public init(_ color: LabColorModel) {
+        public init(_ color: LuvColorModel) {
             self.lightness = Scalar(color.lightness)
-            self.a = Scalar(color.a)
-            self.b = Scalar(color.b)
+            self.u = Scalar(color.u)
+            self.v = Scalar(color.v)
         }
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.lightness = Scalar(floatComponents.lightness)
-            self.a = Scalar(floatComponents.a)
-            self.b = Scalar(floatComponents.b)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.lightness = Scalar(components.lightness)
+            self.u = Scalar(components.u)
+            self.v = Scalar(components.v)
         }
         
         @inlinable
@@ -223,15 +203,26 @@ extension LabColorModel {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
+        
+        @inlinable
+        @inline(__always)
+        public var model: LuvColorModel {
+            get {
+                return LuvColorModel(lightness: Double(lightness), u: Double(u), v: Double(v))
+            }
+            set {
+                self = FloatComponents(newValue)
+            }
+        }
     }
 }
 
-extension LabColorModel.FloatComponents {
+extension LuvColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Scalar) -> Scalar) -> LabColorModel.FloatComponents<Scalar> {
-        return LabColorModel.FloatComponents(lightness: transform(lightness), a: transform(a), b: transform(b))
+    public func map(_ transform: (Scalar) -> Scalar) -> LuvColorModel.FloatComponents<Scalar> {
+        return LuvColorModel.FloatComponents(lightness: transform(lightness), u: transform(u), v: transform(v))
     }
     
     @inlinable
@@ -239,14 +230,14 @@ extension LabColorModel.FloatComponents {
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, lightness)
-        updateAccumulatingResult(&accumulator, a)
-        updateAccumulatingResult(&accumulator, b)
+        updateAccumulatingResult(&accumulator, u)
+        updateAccumulatingResult(&accumulator, v)
         return accumulator
     }
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: LabColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> LabColorModel.FloatComponents<Scalar> {
-        return LabColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), a: transform(self.a, other.a), b: transform(self.b, other.b))
+    public func combined(_ other: LuvColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> LuvColorModel.FloatComponents<Scalar> {
+        return LuvColorModel.FloatComponents(lightness: transform(self.lightness, other.lightness), u: transform(self.u, other.u), v: transform(self.v, other.v))
     }
 }

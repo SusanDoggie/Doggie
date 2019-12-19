@@ -35,7 +35,7 @@ public struct Float32ColorPixel<Model : ColorModelProtocol> : _FloatComponentPix
     @inlinable
     @inline(__always)
     public init(color: Model, opacity: Double = 1) {
-        self._color = color.float32Components
+        self._color = Model.Float32Components(color)
         self._opacity = Float(opacity)
     }
     
@@ -50,10 +50,10 @@ public struct Float32ColorPixel<Model : ColorModelProtocol> : _FloatComponentPix
     @inline(__always)
     public var color: Model {
         get {
-            return Model(floatComponents: _color)
+            return _color.model
         }
         set {
-            self._color = newValue.float32Components
+            self._color.model = newValue
         }
     }
 }

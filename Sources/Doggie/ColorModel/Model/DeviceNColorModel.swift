@@ -1770,26 +1770,8 @@ extension Device2ColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = Device2ColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -1823,9 +1805,9 @@ extension Device2ColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
         }
         
         @inlinable
@@ -1835,6 +1817,17 @@ extension Device2ColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: Device2ColorModel {
+            get {
+                return Device2ColorModel(Double(component_0), Double(component_1))
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -1872,27 +1865,8 @@ extension Device3ColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = Device3ColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -1930,10 +1904,10 @@ extension Device3ColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
         }
         
         @inlinable
@@ -1943,6 +1917,17 @@ extension Device3ColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: Device3ColorModel {
+            get {
+                return Device3ColorModel(Double(component_0), Double(component_1), Double(component_2))
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -1983,28 +1968,8 @@ extension Device4ColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = Device4ColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2046,11 +2011,11 @@ extension Device4ColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
         }
         
         @inlinable
@@ -2060,6 +2025,17 @@ extension Device4ColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: Device4ColorModel {
+            get {
+                return Device4ColorModel(Double(component_0), Double(component_1), Double(component_2), Double(component_3))
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -2103,29 +2079,8 @@ extension Device5ColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = Device5ColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2172,12 +2127,12 @@ extension Device5ColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
         }
         
         @inlinable
@@ -2187,6 +2142,20 @@ extension Device5ColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: Device5ColorModel {
+            get {
+                return Device5ColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -2239,30 +2208,8 @@ extension Device6ColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = Device6ColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2313,13 +2260,13 @@ extension Device6ColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
         }
         
         @inlinable
@@ -2329,6 +2276,20 @@ extension Device6ColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: Device6ColorModel {
+            get {
+                return Device6ColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -2384,31 +2345,8 @@ extension Device7ColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-        self.component_6 = Double(floatComponents.component_6)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = Device7ColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2464,14 +2402,14 @@ extension Device7ColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
-            self.component_6 = Scalar(floatComponents.component_6)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
+            self.component_6 = Scalar(components.component_6)
         }
         
         @inlinable
@@ -2481,6 +2419,21 @@ extension Device7ColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: Device7ColorModel {
+            get {
+                return Device7ColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5),
+                    Double(component_6)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -2541,32 +2494,8 @@ extension Device8ColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-        self.component_6 = Double(floatComponents.component_6)
-        self.component_7 = Double(floatComponents.component_7)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = Device8ColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2626,15 +2555,15 @@ extension Device8ColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
-            self.component_6 = Scalar(floatComponents.component_6)
-            self.component_7 = Scalar(floatComponents.component_7)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
+            self.component_6 = Scalar(components.component_6)
+            self.component_7 = Scalar(components.component_7)
         }
         
         @inlinable
@@ -2644,6 +2573,21 @@ extension Device8ColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: Device8ColorModel {
+            get {
+                return Device8ColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5),
+                    Double(component_6), Double(component_7)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -2707,33 +2651,8 @@ extension Device9ColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-        self.component_6 = Double(floatComponents.component_6)
-        self.component_7 = Double(floatComponents.component_7)
-        self.component_8 = Double(floatComponents.component_8)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = Device9ColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2797,16 +2716,16 @@ extension Device9ColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
-            self.component_6 = Scalar(floatComponents.component_6)
-            self.component_7 = Scalar(floatComponents.component_7)
-            self.component_8 = Scalar(floatComponents.component_8)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
+            self.component_6 = Scalar(components.component_6)
+            self.component_7 = Scalar(components.component_7)
+            self.component_8 = Scalar(components.component_8)
         }
         
         @inlinable
@@ -2816,6 +2735,21 @@ extension Device9ColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: Device9ColorModel {
+            get {
+                return Device9ColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5),
+                    Double(component_6), Double(component_7), Double(component_8)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -2882,34 +2816,8 @@ extension DeviceAColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-        self.component_6 = Double(floatComponents.component_6)
-        self.component_7 = Double(floatComponents.component_7)
-        self.component_8 = Double(floatComponents.component_8)
-        self.component_9 = Double(floatComponents.component_9)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = DeviceAColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2978,17 +2886,17 @@ extension DeviceAColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
-            self.component_6 = Scalar(floatComponents.component_6)
-            self.component_7 = Scalar(floatComponents.component_7)
-            self.component_8 = Scalar(floatComponents.component_8)
-            self.component_9 = Scalar(floatComponents.component_9)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
+            self.component_6 = Scalar(components.component_6)
+            self.component_7 = Scalar(components.component_7)
+            self.component_8 = Scalar(components.component_8)
+            self.component_9 = Scalar(components.component_9)
         }
         
         @inlinable
@@ -2998,6 +2906,22 @@ extension DeviceAColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: DeviceAColorModel {
+            get {
+                return DeviceAColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5),
+                    Double(component_6), Double(component_7), Double(component_8),
+                    Double(component_9)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -3069,35 +2993,8 @@ extension DeviceBColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-        self.component_6 = Double(floatComponents.component_6)
-        self.component_7 = Double(floatComponents.component_7)
-        self.component_8 = Double(floatComponents.component_8)
-        self.component_9 = Double(floatComponents.component_9)
-        self.component_10 = Double(floatComponents.component_10)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = DeviceBColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -3170,18 +3067,18 @@ extension DeviceBColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
-            self.component_6 = Scalar(floatComponents.component_6)
-            self.component_7 = Scalar(floatComponents.component_7)
-            self.component_8 = Scalar(floatComponents.component_8)
-            self.component_9 = Scalar(floatComponents.component_9)
-            self.component_10 = Scalar(floatComponents.component_10)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
+            self.component_6 = Scalar(components.component_6)
+            self.component_7 = Scalar(components.component_7)
+            self.component_8 = Scalar(components.component_8)
+            self.component_9 = Scalar(components.component_9)
+            self.component_10 = Scalar(components.component_10)
         }
         
         @inlinable
@@ -3191,6 +3088,22 @@ extension DeviceBColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: DeviceBColorModel {
+            get {
+                return DeviceBColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5),
+                    Double(component_6), Double(component_7), Double(component_8),
+                    Double(component_9), Double(component_10)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -3265,36 +3178,8 @@ extension DeviceCColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-        self.component_6 = Double(floatComponents.component_6)
-        self.component_7 = Double(floatComponents.component_7)
-        self.component_8 = Double(floatComponents.component_8)
-        self.component_9 = Double(floatComponents.component_9)
-        self.component_10 = Double(floatComponents.component_10)
-        self.component_11 = Double(floatComponents.component_11)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = DeviceCColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -3371,19 +3256,19 @@ extension DeviceCColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
-            self.component_6 = Scalar(floatComponents.component_6)
-            self.component_7 = Scalar(floatComponents.component_7)
-            self.component_8 = Scalar(floatComponents.component_8)
-            self.component_9 = Scalar(floatComponents.component_9)
-            self.component_10 = Scalar(floatComponents.component_10)
-            self.component_11 = Scalar(floatComponents.component_11)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
+            self.component_6 = Scalar(components.component_6)
+            self.component_7 = Scalar(components.component_7)
+            self.component_8 = Scalar(components.component_8)
+            self.component_9 = Scalar(components.component_9)
+            self.component_10 = Scalar(components.component_10)
+            self.component_11 = Scalar(components.component_11)
         }
         
         @inlinable
@@ -3393,6 +3278,22 @@ extension DeviceCColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: DeviceCColorModel {
+            get {
+                return DeviceCColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5),
+                    Double(component_6), Double(component_7), Double(component_8),
+                    Double(component_9), Double(component_10), Double(component_11)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -3470,37 +3371,8 @@ extension DeviceDColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-        self.component_6 = Double(floatComponents.component_6)
-        self.component_7 = Double(floatComponents.component_7)
-        self.component_8 = Double(floatComponents.component_8)
-        self.component_9 = Double(floatComponents.component_9)
-        self.component_10 = Double(floatComponents.component_10)
-        self.component_11 = Double(floatComponents.component_11)
-        self.component_12 = Double(floatComponents.component_12)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = DeviceDColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -3582,20 +3454,20 @@ extension DeviceDColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
-            self.component_6 = Scalar(floatComponents.component_6)
-            self.component_7 = Scalar(floatComponents.component_7)
-            self.component_8 = Scalar(floatComponents.component_8)
-            self.component_9 = Scalar(floatComponents.component_9)
-            self.component_10 = Scalar(floatComponents.component_10)
-            self.component_11 = Scalar(floatComponents.component_11)
-            self.component_12 = Scalar(floatComponents.component_12)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
+            self.component_6 = Scalar(components.component_6)
+            self.component_7 = Scalar(components.component_7)
+            self.component_8 = Scalar(components.component_8)
+            self.component_9 = Scalar(components.component_9)
+            self.component_10 = Scalar(components.component_10)
+            self.component_11 = Scalar(components.component_11)
+            self.component_12 = Scalar(components.component_12)
         }
         
         @inlinable
@@ -3605,6 +3477,23 @@ extension DeviceDColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: DeviceDColorModel {
+            get {
+                return DeviceDColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5),
+                    Double(component_6), Double(component_7), Double(component_8),
+                    Double(component_9), Double(component_10), Double(component_11),
+                    Double(component_12)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -3687,38 +3576,8 @@ extension DeviceEColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-        self.component_6 = Double(floatComponents.component_6)
-        self.component_7 = Double(floatComponents.component_7)
-        self.component_8 = Double(floatComponents.component_8)
-        self.component_9 = Double(floatComponents.component_9)
-        self.component_10 = Double(floatComponents.component_10)
-        self.component_11 = Double(floatComponents.component_11)
-        self.component_12 = Double(floatComponents.component_12)
-        self.component_13 = Double(floatComponents.component_13)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = DeviceEColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -3804,21 +3663,21 @@ extension DeviceEColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
-            self.component_6 = Scalar(floatComponents.component_6)
-            self.component_7 = Scalar(floatComponents.component_7)
-            self.component_8 = Scalar(floatComponents.component_8)
-            self.component_9 = Scalar(floatComponents.component_9)
-            self.component_10 = Scalar(floatComponents.component_10)
-            self.component_11 = Scalar(floatComponents.component_11)
-            self.component_12 = Scalar(floatComponents.component_12)
-            self.component_13 = Scalar(floatComponents.component_13)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
+            self.component_6 = Scalar(components.component_6)
+            self.component_7 = Scalar(components.component_7)
+            self.component_8 = Scalar(components.component_8)
+            self.component_9 = Scalar(components.component_9)
+            self.component_10 = Scalar(components.component_10)
+            self.component_11 = Scalar(components.component_11)
+            self.component_12 = Scalar(components.component_12)
+            self.component_13 = Scalar(components.component_13)
         }
         
         @inlinable
@@ -3828,6 +3687,23 @@ extension DeviceEColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: DeviceEColorModel {
+            get {
+                return DeviceEColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5),
+                    Double(component_6), Double(component_7), Double(component_8),
+                    Double(component_9), Double(component_10), Double(component_11),
+                    Double(component_12), Double(component_13)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
@@ -3913,39 +3789,8 @@ extension DeviceFColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.component_0 = Double(floatComponents.component_0)
-        self.component_1 = Double(floatComponents.component_1)
-        self.component_2 = Double(floatComponents.component_2)
-        self.component_3 = Double(floatComponents.component_3)
-        self.component_4 = Double(floatComponents.component_4)
-        self.component_5 = Double(floatComponents.component_5)
-        self.component_6 = Double(floatComponents.component_6)
-        self.component_7 = Double(floatComponents.component_7)
-        self.component_8 = Double(floatComponents.component_8)
-        self.component_9 = Double(floatComponents.component_9)
-        self.component_10 = Double(floatComponents.component_10)
-        self.component_11 = Double(floatComponents.component_11)
-        self.component_12 = Double(floatComponents.component_12)
-        self.component_13 = Double(floatComponents.component_13)
-        self.component_14 = Double(floatComponents.component_14)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = DeviceFColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -4035,22 +3880,22 @@ extension DeviceFColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.component_0 = Scalar(floatComponents.component_0)
-            self.component_1 = Scalar(floatComponents.component_1)
-            self.component_2 = Scalar(floatComponents.component_2)
-            self.component_3 = Scalar(floatComponents.component_3)
-            self.component_4 = Scalar(floatComponents.component_4)
-            self.component_5 = Scalar(floatComponents.component_5)
-            self.component_6 = Scalar(floatComponents.component_6)
-            self.component_7 = Scalar(floatComponents.component_7)
-            self.component_8 = Scalar(floatComponents.component_8)
-            self.component_9 = Scalar(floatComponents.component_9)
-            self.component_10 = Scalar(floatComponents.component_10)
-            self.component_11 = Scalar(floatComponents.component_11)
-            self.component_12 = Scalar(floatComponents.component_12)
-            self.component_13 = Scalar(floatComponents.component_13)
-            self.component_14 = Scalar(floatComponents.component_14)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.component_0 = Scalar(components.component_0)
+            self.component_1 = Scalar(components.component_1)
+            self.component_2 = Scalar(components.component_2)
+            self.component_3 = Scalar(components.component_3)
+            self.component_4 = Scalar(components.component_4)
+            self.component_5 = Scalar(components.component_5)
+            self.component_6 = Scalar(components.component_6)
+            self.component_7 = Scalar(components.component_7)
+            self.component_8 = Scalar(components.component_8)
+            self.component_9 = Scalar(components.component_9)
+            self.component_10 = Scalar(components.component_10)
+            self.component_11 = Scalar(components.component_11)
+            self.component_12 = Scalar(components.component_12)
+            self.component_13 = Scalar(components.component_13)
+            self.component_14 = Scalar(components.component_14)
         }
         
         @inlinable
@@ -4060,6 +3905,23 @@ extension DeviceFColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: DeviceFColorModel {
+            get {
+                return DeviceFColorModel(
+                    Double(component_0), Double(component_1), Double(component_2),
+                    Double(component_3), Double(component_4), Double(component_5),
+                    Double(component_6), Double(component_7), Double(component_8),
+                    Double(component_9), Double(component_10), Double(component_11),
+                    Double(component_12), Double(component_13), Double(component_14)
+                )
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }

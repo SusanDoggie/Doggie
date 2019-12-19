@@ -39,13 +39,6 @@ public struct Float64ColorPixel<Model : ColorModelProtocol> : _FloatComponentPix
         self.color = color
         self.opacity = opacity
     }
-    
-    @inlinable
-    @inline(__always)
-    public init<C : ColorPixelProtocol>(_ color: C) where C.Model == Model {
-        self.color = color.color
-        self.opacity = color.opacity
-    }
 }
 
 extension Float64ColorPixel {

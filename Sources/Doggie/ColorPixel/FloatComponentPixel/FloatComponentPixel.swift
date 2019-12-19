@@ -40,22 +40,16 @@ public protocol _FloatComponentPixel : ColorPixelProtocol, ScalarMultiplicative 
     func distance(to: Self) -> Scalar
 }
 
-extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
+extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : Doggie.ColorComponents {
     
     @inlinable
     @inline(__always)
     public init() {
         self.init(color: ColorComponents(), opacity: 0)
     }
-    
-    @inlinable
-    @inline(__always)
-    public init<C : ColorPixelProtocol>(_ color: C) where C.Model == Model {
-        self.init(color: color.color, opacity: color.opacity)
-    }
 }
 
-extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
+extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : Doggie.ColorComponents {
     
     @inlinable
     @inline(__always)
@@ -75,7 +69,7 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
     }
 }
 
-extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : _FloatColorComponents {
+extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : Doggie.ColorComponents {
     
     @inlinable
     @inline(__always)

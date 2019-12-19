@@ -1,5 +1,5 @@
 //
-//  YxyColorModel.swift
+//  YCbCrColorModel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2019 Susan Cheng. All rights reserved.
@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct YxyColorModel : ColorModelProtocol {
+public struct YCbCrColorModel : ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -43,30 +43,24 @@ public struct YxyColorModel : ColorModelProtocol {
         return 0...1
     }
     
-    public var luminance: Double
-    public var x: Double
     public var y: Double
+    public var cb: Double
+    public var cr: Double
     
     @inlinable
     @inline(__always)
     public init() {
-        self.luminance = 0
-        self.x = 0
         self.y = 0
+        self.cb = 0
+        self.cr = 0
     }
     
     @inlinable
     @inline(__always)
-    public init(luminance: Double, point: Point) {
-        self.init(luminance: luminance, x: point.x, y: point.y)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public init(luminance: Double, x: Double, y: Double) {
-        self.luminance = luminance
-        self.x = x
+    public init(y: Double, cb: Double, cr: Double) {
         self.y = y
+        self.cb = cb
+        self.cr = cr
     }
     
     @inlinable
@@ -80,91 +74,37 @@ public struct YxyColorModel : ColorModelProtocol {
     }
 }
 
-extension YxyColorModel {
-    
-    @inlinable
-    public init(_ xyz: XYZColorModel) {
-        self.luminance = xyz.luminance
-        let point = xyz.point
-        self.x = point.x
-        self.y = point.y
-    }
-}
-
-extension YxyColorModel {
+extension YCbCrColorModel {
     
     @inlinable
     @inline(__always)
-    public var point: Point {
-        get {
-            return Point(x: x, y: y)
-        }
-        set {
-            self.x = newValue.x
-            self.y = newValue.y
-        }
-    }
-}
-
-extension YxyColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public static var black: YxyColorModel {
-        return YxyColorModel()
-    }
-}
-
-extension YxyColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public func map(_ transform: (Double) -> Double) -> YxyColorModel {
-        return YxyColorModel(luminance: transform(luminance), x: transform(x), y: transform(y))
+    public func map(_ transform: (Double) -> Double) -> YCbCrColorModel {
+        return YCbCrColorModel(y: transform(y), cb: transform(cb), cr: transform(cr))
     }
     
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> ()) -> Result {
         var accumulator = initialResult
-        updateAccumulatingResult(&accumulator, luminance)
-        updateAccumulatingResult(&accumulator, x)
         updateAccumulatingResult(&accumulator, y)
+        updateAccumulatingResult(&accumulator, cb)
+        updateAccumulatingResult(&accumulator, cr)
         return accumulator
     }
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: YxyColorModel, _ transform: (Double, Double) -> Double) -> YxyColorModel {
-        return YxyColorModel(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
+    public func combined(_ other: YCbCrColorModel, _ transform: (Double, Double) -> Double) -> YCbCrColorModel {
+        return YCbCrColorModel(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
     }
 }
 
-extension YxyColorModel {
+extension YCbCrColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.luminance = Double(floatComponents.luminance)
-        self.x = Double(floatComponents.x)
-        self.y = Double(floatComponents.y)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = YxyColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -174,38 +114,38 @@ extension YxyColorModel {
             return 3
         }
         
-        public var luminance: Scalar
-        public var x: Scalar
         public var y: Scalar
+        public var cb: Scalar
+        public var cr: Scalar
         
         @inline(__always)
         public init() {
-            self.luminance = 0
-            self.x = 0
             self.y = 0
+            self.cb = 0
+            self.cr = 0
         }
         
         @inline(__always)
-        public init(luminance: Scalar, x: Scalar, y: Scalar) {
-            self.luminance = luminance
-            self.x = x
+        public init(y: Scalar, cb: Scalar, cr: Scalar) {
             self.y = y
+            self.cb = cb
+            self.cr = cr
         }
         
         @inlinable
         @inline(__always)
-        public init(_ color: YxyColorModel) {
-            self.luminance = Scalar(color.luminance)
-            self.x = Scalar(color.x)
+        public init(_ color: YCbCrColorModel) {
             self.y = Scalar(color.y)
+            self.cb = Scalar(color.cb)
+            self.cr = Scalar(color.cr)
         }
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.luminance = Scalar(floatComponents.luminance)
-            self.x = Scalar(floatComponents.x)
-            self.y = Scalar(floatComponents.y)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.y = Scalar(components.y)
+            self.cb = Scalar(components.cb)
+            self.cr = Scalar(components.cr)
         }
         
         @inlinable
@@ -217,30 +157,41 @@ extension YxyColorModel {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
             }
         }
+        
+        @inlinable
+        @inline(__always)
+        public var model: YCbCrColorModel {
+            get {
+                return YCbCrColorModel(y: Double(y), cb: Double(cb), cr: Double(cr))
+            }
+            set {
+                self = FloatComponents(newValue)
+            }
+        }
     }
 }
 
-extension YxyColorModel.FloatComponents {
+extension YCbCrColorModel.FloatComponents {
     
     @inlinable
     @inline(__always)
-    public func map(_ transform: (Scalar) -> Scalar) -> YxyColorModel.FloatComponents<Scalar> {
-        return YxyColorModel.FloatComponents(luminance: transform(luminance), x: transform(x), y: transform(y))
+    public func map(_ transform: (Scalar) -> Scalar) -> YCbCrColorModel.FloatComponents<Scalar> {
+        return YCbCrColorModel.FloatComponents(y: transform(y), cb: transform(cb), cr: transform(cr))
     }
     
     @inlinable
     @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> ()) -> Result {
         var accumulator = initialResult
-        updateAccumulatingResult(&accumulator, luminance)
-        updateAccumulatingResult(&accumulator, x)
         updateAccumulatingResult(&accumulator, y)
+        updateAccumulatingResult(&accumulator, cb)
+        updateAccumulatingResult(&accumulator, cr)
         return accumulator
     }
     
     @inlinable
     @inline(__always)
-    public func combined(_ other: YxyColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> YxyColorModel.FloatComponents<Scalar> {
-        return YxyColorModel.FloatComponents(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
+    public func combined(_ other: YCbCrColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> YCbCrColorModel.FloatComponents<Scalar> {
+        return YCbCrColorModel.FloatComponents(y: transform(self.y, other.y), cb: transform(self.cb, other.cb), cr: transform(self.cr, other.cr))
     }
 }

@@ -170,27 +170,8 @@ extension XYZColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.x = Double(floatComponents.x)
-        self.y = Double(floatComponents.y)
-        self.z = Double(floatComponents.z)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = XYZColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -228,10 +209,10 @@ extension XYZColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.x = Scalar(floatComponents.x)
-            self.y = Scalar(floatComponents.y)
-            self.z = Scalar(floatComponents.z)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.x = Scalar(components.x)
+            self.y = Scalar(components.y)
+            self.z = Scalar(components.z)
         }
         
         @inlinable
@@ -241,6 +222,17 @@ extension XYZColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: XYZColorModel {
+            get {
+                return XYZColorModel(x: Double(x), y: Double(y), z: Double(z))
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }

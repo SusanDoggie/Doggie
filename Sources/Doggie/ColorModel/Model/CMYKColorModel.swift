@@ -192,28 +192,8 @@ extension CMYKColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.cyan = Double(floatComponents.cyan)
-        self.magenta = Double(floatComponents.magenta)
-        self.yellow = Double(floatComponents.yellow)
-        self.black = Double(floatComponents.black)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = CMYKColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -255,11 +235,11 @@ extension CMYKColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.cyan = Scalar(floatComponents.cyan)
-            self.magenta = Scalar(floatComponents.magenta)
-            self.yellow = Scalar(floatComponents.yellow)
-            self.black = Scalar(floatComponents.black)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.cyan = Scalar(components.cyan)
+            self.magenta = Scalar(components.magenta)
+            self.yellow = Scalar(components.yellow)
+            self.black = Scalar(components.black)
         }
         
         @inlinable
@@ -269,6 +249,17 @@ extension CMYKColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: CMYKColorModel {
+            get {
+                return CMYKColorModel(cyan: Double(cyan), magenta: Double(magenta), yellow: Double(yellow), black: Double(black))
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }

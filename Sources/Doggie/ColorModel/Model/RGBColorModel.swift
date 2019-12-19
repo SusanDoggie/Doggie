@@ -302,27 +302,8 @@ extension RGBColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.red = Double(floatComponents.red)
-        self.green = Double(floatComponents.green)
-        self.blue = Double(floatComponents.blue)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = RGBColorModel(floatComponents: newValue)
-        }
-    }
-    
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -360,10 +341,10 @@ extension RGBColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.red = Scalar(floatComponents.red)
-            self.green = Scalar(floatComponents.green)
-            self.blue = Scalar(floatComponents.blue)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.red = Scalar(components.red)
+            self.green = Scalar(components.green)
+            self.blue = Scalar(components.blue)
         }
         
         @inlinable
@@ -373,6 +354,17 @@ extension RGBColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: RGBColorModel {
+            get {
+                return RGBColorModel(red: Double(red), green: Double(green), blue: Double(blue))
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }

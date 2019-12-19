@@ -112,24 +112,7 @@ extension GrayColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    @inlinable
-    @inline(__always)
-    public init<T>(floatComponents: FloatComponents<T>) {
-        self.white = Double(floatComponents.white)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var float32Components: Float32Components {
-        get {
-            return Float32Components(self)
-        }
-        set {
-            self = GrayColorModel(floatComponents: newValue)
-        }
-    }
-    
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : _FloatColorComponents {
+    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -159,8 +142,8 @@ extension GrayColorModel {
         
         @inlinable
         @inline(__always)
-        public init<T>(floatComponents: FloatComponents<T>) {
-            self.white = Scalar(floatComponents.white)
+        public init<T>(_ components: FloatComponents<T>) {
+            self.white = Scalar(components.white)
         }
         
         @inlinable
@@ -170,6 +153,17 @@ extension GrayColorModel {
             }
             set {
                 Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+            }
+        }
+        
+        @inlinable
+        @inline(__always)
+        public var model: GrayColorModel {
+            get {
+                return GrayColorModel(white: Double(white))
+            }
+            set {
+                self = FloatComponents(newValue)
             }
         }
     }
