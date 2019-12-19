@@ -212,7 +212,7 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func drawLinearGradient(colorSpace: ColorSpace<RGBColorModel>, stops: [GradientStop<AnyColor>], start: Point, end: Point, options: CGGradientDrawingOptions) {
+    public func drawLinearGradient<C>(colorSpace: ColorSpace<RGBColorModel>, stops: [GradientStop<C>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
         guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
@@ -220,12 +220,37 @@ extension GPContext {
         self.drawLinearGradient(colorSpace: cgColorSpace, gradient: gradient, start: CGPoint(start), end: CGPoint(end), options: options)
     }
     
-    public func drawRadialGradient(colorSpace: ColorSpace<RGBColorModel>, stops: [GradientStop<AnyColor>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
+    public func drawRadialGradient<C>(colorSpace: ColorSpace<RGBColorModel>, stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
         guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
         
         self.drawRadialGradient(colorSpace: cgColorSpace, gradient: gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>, colorSpace: ColorSpace<RGBColorModel>) {
+        
+        self.beginTransparencyLayer()
+        
+        self.clip(shape: shape, winding: winding)
+        
+        let boundary = shape.originalBoundary
+        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.x, y: boundary.y) * shape.transform
+        
+        self.concatenate(transform)
+        
+        let options: CGGradientDrawingOptions = [.drawsBeforeStartLocation, .drawsAfterEndLocation]
+        
+        switch gradient.type {
+        case .linear: self.drawLinearGradient(colorSpace: colorSpace, stops: gradient.stops, start: gradient.start, end: gradient.end, options: options)
+        case .radial: self.drawRadialGradient(colorSpace: colorSpace, stops: gradient.stops, start: gradient.start, startRadius: 0, end: gradient.end, endRadius: 0.5, options: options)
+        }
+        
+        self.endTransparencyLayer()
     }
 }
 

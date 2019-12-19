@@ -93,7 +93,7 @@ extension CGContext {
         try CGContextClipToDrawing(self, colorSpace: colorSpace, command: body)
     }
     
-    public func draw(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<AnyColor>, colorSpace: AnyColorSpace) {
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>, colorSpace: AnyColorSpace) {
         
         self.beginTransparencyLayer()
         
@@ -122,14 +122,14 @@ extension CGContext {
         self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, gradient: gradient, colorSpace: colorSpace)
     }
     
-    public func drawLinearGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, end: Point, options: CGGradientDrawingOptions) {
+    public func drawLinearGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
         guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
         
         self.drawLinearGradient(gradient, start: CGPoint(start), end: CGPoint(end), options: options)
     }
     
-    public func drawRadialGradient(colorSpace: AnyColorSpace, stops: [GradientStop<AnyColor>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
+    public func drawRadialGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
         
         guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
         
