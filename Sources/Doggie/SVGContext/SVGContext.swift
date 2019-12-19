@@ -739,7 +739,7 @@ extension SVGContext {
     
     public func clip(shape: Shape, winding: Shape.WindingRule) {
         
-        guard shape.reduce(0, { $0 + $1.count }) != 0 else {
+        guard shape.contains(where: { !$0.isEmpty }) else {
             current_layer.state.clip = nil
             return
         }
@@ -849,11 +849,10 @@ extension SVGContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        
-        guard shape.contains(where: { !$0.isEmpty }) else { return }
-        
         let shape = shape * self.transform
+        
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
         
         switch winding {

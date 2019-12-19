@@ -560,9 +560,9 @@ extension PDFContext.Page {
     
     func draw<C : ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
-        guard shape.contains(where: { !$0.isEmpty }) else { return }
-        
         let shape = shape * _mirrored_transform
+        
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
         
         set_blendmode()
         set_opacity(color.opacity * self.opacity)
@@ -602,7 +602,7 @@ extension PDFContext.Page {
     
     func clip(shape: Shape, winding: Shape.WindingRule) {
         
-        guard shape.reduce(0, { $0 + $1.count }) != 0 else {
+        guard shape.contains(where: { !$0.isEmpty }) else {
             self.resetClip()
             return
         }
