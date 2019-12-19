@@ -370,15 +370,6 @@ extension PDFContext.Page {
         }
     }
     
-    var resamplingAlgorithm: ResamplingAlgorithm {
-        get {
-            return current_layer.styles.resamplingAlgorithm
-        }
-        set {
-            current_layer.styles.resamplingAlgorithm = newValue
-        }
-    }
-    
     var renderingIntent: RenderingIntent {
         get {
             return current_layer.styles.renderingIntent
