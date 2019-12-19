@@ -49,7 +49,7 @@ public struct RGBA32ColorPixel : ColorPixelProtocol {
     }
     @inlinable
     @inline(__always)
-    public init(color: RGBColorModel, opacity: Double) {
+    public init(color: RGBColorModel, opacity: Double = 1) {
         self.r = UInt8((color.red * 255).clamped(to: 0...255).rounded())
         self.g = UInt8((color.green * 255).clamped(to: 0...255).rounded())
         self.b = UInt8((color.blue * 255).clamped(to: 0...255).rounded())

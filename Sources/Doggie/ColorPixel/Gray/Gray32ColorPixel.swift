@@ -44,7 +44,7 @@ public struct Gray32ColorPixel : ColorPixelProtocol {
     
     @inlinable
     @inline(__always)
-    public init(color: GrayColorModel, opacity: Double) {
+    public init(color: GrayColorModel, opacity: Double = 1) {
         self.w = UInt16((color.white * 65535).clamped(to: 0...65535).rounded())
         self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
     }

@@ -57,7 +57,7 @@ public struct ARGB64ColorPixel : ColorPixelProtocol {
     }
     @inlinable
     @inline(__always)
-    public init(color: RGBColorModel, opacity: Double) {
+    public init(color: RGBColorModel, opacity: Double = 1) {
         self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
         self.r = UInt16((color.red * 65535).clamped(to: 0...65535).rounded())
         self.g = UInt16((color.green * 65535).clamped(to: 0...65535).rounded())

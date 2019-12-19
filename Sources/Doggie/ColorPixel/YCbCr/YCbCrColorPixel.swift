@@ -41,7 +41,7 @@ public struct YCbCrColorPixel : ColorPixelProtocol {
     }
     @inlinable
     @inline(__always)
-    public init(color: YCbCrColorModel, opacity: Double) {
+    public init(color: YCbCrColorModel, opacity: Double = 1) {
         self.a = UInt8((opacity * 255).clamped(to: 0...255).rounded())
         self.y = UInt8((color.y * 255).clamped(to: 0...255).rounded())
         self.cb = UInt8((color.cb * 255).clamped(to: 0...255).rounded())
