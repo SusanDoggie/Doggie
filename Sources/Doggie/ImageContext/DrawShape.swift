@@ -29,7 +29,7 @@ extension ImageContext {
     @inline(__always)
     func draw(shape: Shape, color: Float64ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
         
-        if shape.contains(where: { !$0.isEmpty }) { return }
+        guard shape.contains(where: { !$0.isEmpty }) else { return }
         
         let width = self.width
         let height = self.height

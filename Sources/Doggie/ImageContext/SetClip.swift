@@ -31,7 +31,7 @@ extension ImageContext {
         
         self.clearClipBuffer(with: 0)
         
-        if shape.contains(where: { !$0.isEmpty }) { return }
+        guard shape.contains(where: { !$0.isEmpty }) else { return }
         
         let width = self.width
         let height = self.height
