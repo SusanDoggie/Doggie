@@ -48,6 +48,27 @@ public func doggie_pdf(blendMode: ColorBlendMode, compositingMode: ColorComposit
     return try? NSImage(data: context.data())
 }
 
+public func doggie_gpu(blendKernel: CIBlendKernel, opacity: Double) -> CIImage {
+    
+    let context = GPContext(width: 500, height: 500)
+    
+    context.transform = SDTransform.scale(5)
+    
+    context.draw(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), color: CGColor(red: 247/255, green: 217/255, blue: 12/255))
+    
+    context.stroke(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), width: 4, cap: .round, join: .round, color: CGColor.black)
+    
+    context.blendKernel = blendKernel
+    
+    context.opacity = opacity
+    
+    context.draw(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), color: CGColor(red: 234/255, green: 24/255, blue: 71/255))
+    
+    context.stroke(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), width: 4, cap: .round, join: .round, color: CGColor.black)
+    
+    return context.image
+}
+
 public func coregraphic(blendMode: CGBlendMode, opacity: Double) -> CGImage? {
     
     return CGImage.create(width: 500, height: 500) { context in

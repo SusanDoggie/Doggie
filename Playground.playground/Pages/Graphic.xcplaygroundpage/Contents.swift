@@ -42,3 +42,17 @@ radialGradient_pdf(width: 500, height: 500)
 linearGradient2_pdf(width: 500, height: 500)
 
 radialGradient2_pdf(width: 500, height: 500)
+
+circle_gpu(width: 500, height: 500)
+
+shadow_gpu(width: 500, height: 500)
+
+drum_gpu(width: 500, height: 500)
+
+linearGradient_gpu(width: 500, height: 500)
+
+radialGradient_gpu(width: 500, height: 500)
+
+linearGradient2_gpu(width: 500, height: 500)
+
+radialGradient2_gpu(width: 500, height: 500)

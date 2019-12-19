@@ -49,3 +49,27 @@ public func shadow_pdf(width: Int, height: Int) -> NSImage? {
     
     return try? NSImage(data: context.data())
 }
+
+public func shadow_gpu(width: Int, height: Int) -> CIImage {
+    
+    let context = GPContext(width: width, height: width)
+    
+    context.scale(5)
+    
+    context.draw(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), color: CGColor(red: 247/255, green: 217/255, blue: 12/255))
+    
+    context.stroke(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55), width: 1, cap: .round, join: .round, color: CGColor.black)
+    
+    context.shadowBlur = 10
+    context.shadowOffset = Size(width: 10, height: 10)
+    
+    context.beginTransparencyLayer()
+    
+    context.draw(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), color: CGColor(red: 234/255, green: 24/255, blue: 71/255))
+    
+    context.stroke(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55), width: 1, cap: .round, join: .round, color: CGColor.black)
+    
+    context.endTransparencyLayer()
+    
+    return context.image
+}

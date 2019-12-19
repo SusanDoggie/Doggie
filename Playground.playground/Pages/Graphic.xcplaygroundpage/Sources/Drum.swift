@@ -9,7 +9,7 @@ public func drum(width: Int, height: Int) -> Image<ARGB32ColorPixel> {
     
     let context = ImageContext<ARGB32ColorPixel>(width: width, height: height, colorSpace: ColorSpace.sRGB)
     
-    context.transform = SDTransform.scale(x: Double(width) / 100, y: Double(height) / 100)
+    context.scale(x: Double(width) / 100, y: Double(height) / 100)
     
     context.draw(shape: path, winding: .nonZero, color: RGBColorModel(red: 0/255, green: 0/255, blue: 0/255))
     
@@ -20,9 +20,20 @@ public func drum_pdf(width: Int, height: Int) -> NSImage? {
     
     let context = PDFContext(width: Double(width), height: Double(height), colorSpace: AnyColorSpace(.sRGB))
     
-    context.transform = SDTransform.scale(x: Double(width) / 100, y: Double(height) / 100)
+    context.scale(x: Double(width) / 100, y: Double(height) / 100)
     
     context.draw(shape: path, winding: .nonZero, color: AnyColor(red: 0/255, green: 0/255, blue: 0/255))
     
     return try? NSImage(data: context.data())
+}
+
+public func drum_gpu(width: Int, height: In) -> CIImage {
+    
+    let context = GPContext(width: width, height: width)
+    
+    context.scale(x: Double(width) / 100, y: Double(height) / 100)
+    
+    context.draw(shape: path, winding: .nonZero, color: CGColor(red: 0/255, green: 0/255, blue: 0/255))
+    
+    return context.image
 }
