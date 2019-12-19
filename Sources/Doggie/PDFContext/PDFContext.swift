@@ -176,15 +176,6 @@ extension PDFContext {
         }
     }
     
-    public var resamplingAlgorithm: ResamplingAlgorithm {
-        get {
-            return current_page.resamplingAlgorithm
-        }
-        set {
-            current_page.resamplingAlgorithm = newValue
-        }
-    }
-    
     public var renderingIntent: RenderingIntent {
         get {
             return current_page.renderingIntent

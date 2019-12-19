@@ -39,11 +39,7 @@ public protocol DrawableContext : AnyObject {
     
     var blendMode: ColorBlendMode { get set }
     
-    var resamplingAlgorithm: ResamplingAlgorithm { get set }
-    
     var renderingIntent: RenderingIntent { get set }
-    
-    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
     
     func saveGraphicState()
     

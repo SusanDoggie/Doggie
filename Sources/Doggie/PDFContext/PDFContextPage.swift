@@ -37,8 +37,6 @@ private struct PDFContextStyles {
     var compositingMode: ColorCompositingMode = .default
     var blendMode: ColorBlendMode = .default
     
-    var resamplingAlgorithm: ResamplingAlgorithm = .default
-    
     var renderingIntent: RenderingIntent = .default
     
 }

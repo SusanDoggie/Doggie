@@ -37,10 +37,7 @@ private struct SVGContextStyles {
     var compositingMode: ColorCompositingMode = .default
     var blendMode: ColorBlendMode = .default
     
-    var resamplingAlgorithm: ResamplingAlgorithm = .default
-    
     var renderingIntent: RenderingIntent = .default
-    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm = .default
     
     var effect: SVGEffect = SVGEffect()
     
@@ -283,30 +280,12 @@ extension SVGContext {
         }
     }
     
-    public var resamplingAlgorithm: ResamplingAlgorithm {
-        get {
-            return current_layer.styles.resamplingAlgorithm
-        }
-        set {
-            current_layer.styles.resamplingAlgorithm = newValue
-        }
-    }
-    
     public var renderingIntent: RenderingIntent {
         get {
             return current_layer.styles.renderingIntent
         }
         set {
             current_layer.styles.renderingIntent = newValue
-        }
-    }
-    
-    public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
-        get {
-            return current_layer.styles.chromaticAdaptationAlgorithm
-        }
-        set {
-            current_layer.styles.chromaticAdaptationAlgorithm = newValue
         }
     }
     
