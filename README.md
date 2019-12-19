@@ -112,10 +112,6 @@ image = DisplacementMap(image, turbulence, 0, 1, 50)
 
 Documents can find in [here](docs/index.md).
 
-## Playgrounds
-
-Check out the Doggie.xcworkspace and build the project. It's suggested building in Release mode for the performance.
-
 ## Status
 
 ### ColorSpace
