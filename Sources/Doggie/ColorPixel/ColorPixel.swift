@@ -83,7 +83,7 @@ extension ColorPixelProtocol {
     @inlinable
     @inline(__always)
     public init<C : ColorPixelProtocol>(_ color: C) where C.Model == Model {
-        self = color as? Self ?? Self(color: color.color, opacity: color.opacity)
+        self.init(color: color.color, opacity: color.opacity)
     }
 }
 
