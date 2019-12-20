@@ -30,6 +30,7 @@ public struct SVGConvolveMatrixEffect : SVGEffectElement {
     public var source: SVGEffect.Source
     
     public var matrix: [Double]
+    public var divisor: Double
     public var bias: Double
     public var orderX: Int
     public var orderY: Int
@@ -40,12 +41,13 @@ public struct SVGConvolveMatrixEffect : SVGEffectElement {
         return [source]
     }
     
-    public init(source: SVGEffect.Source = .source, matrix: [Double], bias: Double = 0, orderX: Int, orderY: Int, edgeMode: EdgeMode = .duplicate, preserveAlpha: Bool = false) {
+    public init(source: SVGEffect.Source = .source, matrix: [Double], divisor: Double = 1, bias: Double = 0, orderX: Int, orderY: Int, edgeMode: EdgeMode = .duplicate, preserveAlpha: Bool = false) {
         precondition(orderX > 0, "nonpositive width is not allowed.")
         precondition(orderY > 0, "nonpositive height is not allowed.")
         precondition(orderX * orderY == matrix.count, "mismatch matrix count.")
         self.source = source
         self.matrix = matrix
+        self.divisor = divisor
         self.bias = bias
         self.orderX = orderX
         self.orderY = orderY
@@ -78,6 +80,10 @@ extension SVGConvolveMatrixEffect {
         let matrix = self.matrix.map { "\(Decimal($0).rounded(scale: 9))" }
         var filter = SDXMLElement(name: "feConvolveMatrix", attributes: ["kernelMatrix": matrix.joined(separator: " "), "order": orderX == orderY ? "\(orderX)" : "\(orderX) \(orderY)"])
         
+        let sum = matrix.reduce(0, +)
+        if divisor != (sum == 0 ? 1 : sum) {
+            filter.setAttribute(for: "divisor", value: "\(Decimal(divisor).rounded(scale: 9))")
+        }
         if bias != 0 {
             filter.setAttribute(for: "bias", value: "\(Decimal(bias).rounded(scale: 9))")
         }
