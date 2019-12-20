@@ -77,12 +77,7 @@ public class GPContext {
     
     public let height: Int
     
-    private var _image: CIImage {
-        didSet {
-            _image = _image.clamped(to: extent)
-            state.isDirty = true
-        }
-    }
+    private var _image: CIImage
     
     fileprivate var state: GPContextState = GPContextState()
     
@@ -94,7 +89,7 @@ public class GPContext {
     public init(width: Int, height: Int) {
         self.width = width
         self.height = height
-        self._image = GPContext.clear
+        self._image = CIImage.empty()
     }
     
     private init(width: Int, height: Int, image: CIImage) {
@@ -121,11 +116,6 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    private static let clear: CIImage = {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) { return CIImage.clear }
-        return CIImage(color: CIColor.clear)
-    }()
-    
     private static let black: CIImage = {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) { return CIImage.black }
         return CIImage(color: CIColor.black)
@@ -149,7 +139,7 @@ extension GPContext {
     }
     
     public var image: CIImage {
-        return _image.cropped(to: extent)
+        return _image.clamped(to: extent).cropped(to: extent)
     }
 }
 
@@ -268,12 +258,13 @@ extension GPContext {
         var image = image
         
         if let clip = current_layer.state.clip {
-            image = image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: clip])
+            image = image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: clip])
         }
         
         guard let blended = blendKernel.apply(foreground: image, background: current_layer._image) else { return }
             
         current_layer._image = blended
+        current_layer.state.isDirty = true
     }
     
     private func draw_layer(_ image: CIImage) {
@@ -284,7 +275,7 @@ extension GPContext {
         
         if opacity < 1 {
             let mask = CIImage(color: CIColor(red: 1, green: 1, blue: 1, alpha: CGFloat(opacity)))
-            image = image.applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
+            image = image.applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: mask])
         }
         
         self.blend_layer(image)
@@ -298,7 +289,7 @@ extension GPContext {
         let filter = alpha_mask ? "CIBlendWithAlphaMask" : "CIBlendWithMask"
         
         let _color = CIImage(color: CIColor(cgColor: color))
-        let image = _color.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: GPContext.clear, kCIInputMaskImageKey: mask])
+        let image = _color.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: mask])
         
         self.blend_layer(image)
     }
