@@ -80,7 +80,7 @@ extension SVGConvolveMatrixEffect {
         let matrix = self.matrix.map { "\(Decimal($0).rounded(scale: 9))" }
         var filter = SDXMLElement(name: "feConvolveMatrix", attributes: ["kernelMatrix": matrix.joined(separator: " "), "order": orderX == orderY ? "\(orderX)" : "\(orderX) \(orderY)"])
         
-        let sum = matrix.reduce(0, +)
+        let sum = self.matrix.reduce(0, +)
         if divisor != (sum == 0 ? 1 : sum) {
             filter.setAttribute(for: "divisor", value: "\(Decimal(divisor).rounded(scale: 9))")
         }
