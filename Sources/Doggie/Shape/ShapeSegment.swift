@@ -184,18 +184,6 @@ extension Shape.BezierSegment {
     }
 }
 
-@inlinable
-func split_check(_ t: Double) -> Double? {
-    if t.almostZero() {
-        return 0
-    } else if (t - 1).almostZero() {
-        return 1
-    } else if 0...1 ~= t {
-        return t
-    }
-    return nil
-}
-
 extension Shape.BezierSegment {
     
     @inlinable
@@ -250,6 +238,15 @@ extension Shape.BezierSegment {
         case let .quad(p1, p2): return t.map { QuadBezier(start, p1, p2).eval($0) }
         case let .cubic(p1, p2, p3): return t.map { CubicBezier(start, p1, p2, p3).eval($0) }
         }
+    }
+    
+    @inlinable
+    func split_check(_ t: Double) -> Double? {
+        let p = self.point(t)
+        if t.almostZero() || start.almostEqual(p) { return 0 }
+        if (t - 1).almostZero() || end.almostEqual(p) { return 1 }
+        if 0...1 ~= t { return t }
+        return nil
     }
     
     @inlinable
