@@ -86,7 +86,7 @@ public protocol SVGEffectElement {
     
     var region: Rect? { get set }
     
-    var regionUnit: RegionUnit { get set }
+    var regionUnit: SVGEffect.RegionUnit { get set }
     
     var sources: [SVGEffect.Source] { get }
     
