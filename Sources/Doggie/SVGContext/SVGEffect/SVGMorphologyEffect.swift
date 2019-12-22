@@ -27,6 +27,8 @@ public struct SVGMorphologyEffect : SVGEffectElement {
     
     public var region: Rect?
     
+    public var regionUnit: RegionUnit = .objectBoundingBox
+    
     public var source: SVGEffect.Source
     
     public var radius: Size

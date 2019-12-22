@@ -1016,10 +1016,18 @@ extension SVGContext {
             element.setAttribute(for: "result", value: uuid.uuidString)
             
             if let region = primitive.region {
-                element.setAttribute(for: "x", value: "\(Decimal(region.x * objectBound.width + objectBound.x).rounded(scale: 9))")
-                element.setAttribute(for: "y", value: "\(Decimal(region.y * objectBound.height + objectBound.y).rounded(scale: 9))")
-                element.setAttribute(for: "width", value: "\(Decimal(region.width * objectBound.width).rounded(scale: 9))")
-                element.setAttribute(for: "height", value: "\(Decimal(region.height * objectBound.height).rounded(scale: 9))")
+                switch regionUnit {
+                case .userSpaceOnUse:
+                    element.setAttribute(for: "x", value: "\(Decimal(region.x).rounded(scale: 9))")
+                    element.setAttribute(for: "y", value: "\(Decimal(region.y).rounded(scale: 9))")
+                    element.setAttribute(for: "width", value: "\(Decimal(region.width).rounded(scale: 9))")
+                    element.setAttribute(for: "height", value: "\(Decimal(region.height).rounded(scale: 9))")
+                case .objectBoundingBox:
+                    element.setAttribute(for: "x", value: "\(Decimal(region.x * objectBound.width + objectBound.x).rounded(scale: 9))")
+                    element.setAttribute(for: "y", value: "\(Decimal(region.y * objectBound.height + objectBound.y).rounded(scale: 9))")
+                    element.setAttribute(for: "width", value: "\(Decimal(region.width * objectBound.width).rounded(scale: 9))")
+                    element.setAttribute(for: "height", value: "\(Decimal(region.height * objectBound.height).rounded(scale: 9))")
+                }
             }
             
             _filter.append(element)
@@ -1030,10 +1038,18 @@ extension SVGContext {
             var element = primitive.xml_element
             
             if let region = primitive.region {
-                element.setAttribute(for: "x", value: "\(Decimal(region.x * objectBound.width + objectBound.x).rounded(scale: 9))")
-                element.setAttribute(for: "y", value: "\(Decimal(region.y * objectBound.height + objectBound.y).rounded(scale: 9))")
-                element.setAttribute(for: "width", value: "\(Decimal(region.width * objectBound.width).rounded(scale: 9))")
-                element.setAttribute(for: "height", value: "\(Decimal(region.height * objectBound.height).rounded(scale: 9))")
+                switch regionUnit {
+                case .userSpaceOnUse:
+                    element.setAttribute(for: "x", value: "\(Decimal(region.x).rounded(scale: 9))")
+                    element.setAttribute(for: "y", value: "\(Decimal(region.y).rounded(scale: 9))")
+                    element.setAttribute(for: "width", value: "\(Decimal(region.width).rounded(scale: 9))")
+                    element.setAttribute(for: "height", value: "\(Decimal(region.height).rounded(scale: 9))")
+                case .objectBoundingBox:
+                    element.setAttribute(for: "x", value: "\(Decimal(region.x * objectBound.width + objectBound.x).rounded(scale: 9))")
+                    element.setAttribute(for: "y", value: "\(Decimal(region.y * objectBound.height + objectBound.y).rounded(scale: 9))")
+                    element.setAttribute(for: "width", value: "\(Decimal(region.width * objectBound.width).rounded(scale: 9))")
+                    element.setAttribute(for: "height", value: "\(Decimal(region.height * objectBound.height).rounded(scale: 9))")
+                }
             }
             
             _filter.append(element)

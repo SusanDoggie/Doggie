@@ -27,6 +27,8 @@ public struct SVGComponentTransferEffect : SVGEffectElement {
     
     public var region: Rect?
     
+    public var regionUnit: RegionUnit = .objectBoundingBox
+    
     public var source: SVGEffect.Source
     
     public var red: TransferFunction

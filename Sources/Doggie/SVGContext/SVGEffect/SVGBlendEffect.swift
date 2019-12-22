@@ -27,6 +27,8 @@ public struct SVGBlendEffect : SVGEffectElement {
     
     public var region: Rect?
     
+    public var regionUnit: RegionUnit = .objectBoundingBox
+    
     public var source: SVGEffect.Source
     public var source2: SVGEffect.Source
     

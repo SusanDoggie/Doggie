@@ -27,6 +27,8 @@ public struct SVGMergeEffect : SVGEffectElement {
     
     public var region: Rect?
     
+    public var regionUnit: RegionUnit = .objectBoundingBox
+    
     public var sources: [SVGEffect.Source]
     
     public init(sources: [SVGEffect.Source] = []) {

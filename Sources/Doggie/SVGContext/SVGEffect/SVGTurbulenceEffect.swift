@@ -27,6 +27,8 @@ public struct SVGTurbulenceEffect : SVGEffectElement {
     
     public var region: Rect?
     
+    public var regionUnit: RegionUnit = .objectBoundingBox
+    
     public var stitchTiles: Bool
     public var type: SVGTurbulenceType
     public var seed: Int

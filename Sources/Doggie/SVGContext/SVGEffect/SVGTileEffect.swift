@@ -27,6 +27,8 @@ public struct SVGTileEffect : SVGEffectElement {
     
     public var region: Rect?
     
+    public var regionUnit: RegionUnit = .objectBoundingBox
+    
     public var source: SVGEffect.Source
     
     public var sources: [SVGEffect.Source] {

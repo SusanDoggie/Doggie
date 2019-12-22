@@ -27,6 +27,8 @@ public struct SVGFloodEffect : SVGEffectElement {
     
     public var region: Rect?
     
+    public var regionUnit: RegionUnit = .objectBoundingBox
+    
     public var color : AnyColor
     
     public var sources: [SVGEffect.Source] {
