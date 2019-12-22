@@ -1016,7 +1016,7 @@ extension SVGContext {
             element.setAttribute(for: "result", value: uuid.uuidString)
             
             if let region = primitive.region {
-                switch regionUnit {
+                switch primitive.regionUnit {
                 case .userSpaceOnUse:
                     element.setAttribute(for: "x", value: "\(Decimal(region.x).rounded(scale: 9))")
                     element.setAttribute(for: "y", value: "\(Decimal(region.y).rounded(scale: 9))")
@@ -1038,7 +1038,7 @@ extension SVGContext {
             var element = primitive.xml_element
             
             if let region = primitive.region {
-                switch regionUnit {
+                switch primitive.regionUnit {
                 case .userSpaceOnUse:
                     element.setAttribute(for: "x", value: "\(Decimal(region.x).rounded(scale: 9))")
                     element.setAttribute(for: "y", value: "\(Decimal(region.y).rounded(scale: 9))")
