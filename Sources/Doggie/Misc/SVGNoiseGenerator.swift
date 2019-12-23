@@ -149,7 +149,7 @@ extension SVGNoiseGenerator {
     
     @inlinable
     @inline(__always)
-    func noise2(_ uLatticeSelector: UnsafePointer<Int>, _ fGradient: UnsafePointer<Point>, _ point: Point, _ stitchInfo: StitchInfo?) -> Double {
+    func noise2(_ uLatticeSelector: UnsafePointer<Int>, _ fGradient: UnsafePointer<Point>, _ point: Point, _ stitch: StitchInfo?) -> Double {
         
         var bx0, bx1, by0, by1, b00, b10, b01, b11: Int
         var rx0, rx1, ry0, ry1, sx, sy, a, b, t, u, v: Double
@@ -166,18 +166,18 @@ extension SVGNoiseGenerator {
         ry0 = t - Double(Int(t))
         ry1 = ry0 - 1.0
         
-        if let stitchInfo = stitchInfo {
-            if bx0 >= stitchInfo.wrapX {
-                bx0 -= stitchInfo.width
+        if let stitch = stitch {
+            if bx0 >= stitch.wrapX {
+                bx0 -= stitch.width
             }
-            if bx1 >= stitchInfo.wrapX {
-                bx1 -= stitchInfo.width
+            if bx1 >= stitch.wrapX {
+                bx1 -= stitch.width
             }
-            if by0 >= stitchInfo.wrapY {
-                by0 -= stitchInfo.height
+            if by0 >= stitch.wrapY {
+                by0 -= stitch.height
             }
-            if by1 >= stitchInfo.wrapY {
-                by1 -= stitchInfo.height
+            if by1 >= stitch.wrapY {
+                by1 -= stitch.height
             }
         }
         
@@ -213,7 +213,7 @@ extension SVGNoiseGenerator {
     @inline(__always)
     func _turbulence(_ uLatticeSelector: UnsafeBufferPointer<Int>, _ fGradient: UnsafeBufferPointer<Point>, _ channel: Int, _ point: Point, _ baseFreqX: Double, _ baseFreqY: Double, _ numOctaves: Int, _ fractalSum: Bool, _ stitchTile: Rect?) -> Double {
         
-        var stitchInfo: StitchInfo?
+        var stitch = StitchInfo()
         
         var baseFreqX = baseFreqX
         var baseFreqY = baseFreqY
@@ -239,11 +239,10 @@ extension SVGNoiseGenerator {
                 }
             }
             
-            stitchInfo = StitchInfo()
-            stitchInfo!.width = Int(stitchTile.width * baseFreqX + 0.5)
-            stitchInfo!.wrapX = Int(stitchTile.x * baseFreqX + 4096 + Double(stitchInfo!.width))
-            stitchInfo!.height = Int(stitchTile.height * baseFreqY + 0.5)
-            stitchInfo!.wrapY = Int(stitchTile.y * baseFreqY + 4096 + Double(stitchInfo!.height))
+            stitch.width = Int(stitchTile.width * baseFreqX + 0.5)
+            stitch.wrapX = Int(stitchTile.x * baseFreqX + 4096 + Double(stitch.width))
+            stitch.height = Int(stitchTile.height * baseFreqY + 0.5)
+            stitch.wrapY = Int(stitchTile.y * baseFreqY + 4096 + Double(stitch.height))
         }
         
         var fSum = 0.0
@@ -261,20 +260,20 @@ extension SVGNoiseGenerator {
         for _ in 0..<numOctaves {
             
             if fractalSum {
-                fSum += noise2(uLatticeSelector, fGradient, point, stitchInfo) / ratio
+                fSum += noise2(uLatticeSelector, fGradient, point, stitchTile == nil ? nil : stitch) / ratio
             } else {
-                fSum += fabs(noise2(uLatticeSelector, fGradient, point, stitchInfo)) / ratio
+                fSum += fabs(noise2(uLatticeSelector, fGradient, point, stitchTile == nil ? nil : stitch)) / ratio
             }
             
             point.x *= 2
             point.y *= 2
             ratio *= 2
             
-            if stitchInfo != nil {
-                stitchInfo!.width *= 2
-                stitchInfo!.wrapX = 2 * stitchInfo!.wrapX - 0x1000
-                stitchInfo!.height *= 2
-                stitchInfo!.wrapY = 2 * stitchInfo!.wrapY - 0x1000
+            if stitchTile != nil {
+                stitch.width *= 2
+                stitch.wrapX = 2 * stitch.wrapX - 0x1000
+                stitch.height *= 2
+                stitch.wrapY = 2 * stitch.wrapY - 0x1000
             }
         }
         
