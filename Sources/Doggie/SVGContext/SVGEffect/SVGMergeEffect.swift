@@ -50,7 +50,7 @@ extension SVGMergeEffect {
             var node = SDXMLElement(name: "feMergeNode")
             switch source {
             case .source: node.setAttribute(for: "in", value: "SourceGraphic")
-            case .sourceAlpha: filter.setAttribute(for: "in", value: "SourceAlpha")
+            case .sourceAlpha: node.setAttribute(for: "in", value: "SourceAlpha")
             case let .reference(uuid): node.setAttribute(for: "in", value: uuid.uuidString)
             }
             filter.append(node)
