@@ -28,11 +28,9 @@ public struct SVGNoiseGenerator {
     
     public let seed: Int
     
-    @usableFromInline
-    private(set) var uLatticeSelector: [Int]
+    public private(set) var uLatticeSelector: [Int]
     
-    @usableFromInline
-    private(set) var fGradient: [Point]
+    public private(set) var fGradient: [Point]
     
     public init(_ seed: Int) {
         
