@@ -71,6 +71,12 @@
 
 #endif
 
+#if canImport(MetalPerformanceShaders)
+
+@_exported import MetalPerformanceShaders
+
+#endif
+
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
 
 @_exported import AppKit
