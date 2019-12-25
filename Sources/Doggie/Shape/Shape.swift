@@ -700,13 +700,15 @@ extension Shape.Component {
     }
     
     @inlinable
-    public init<C : Collection>(polygon points: C) where C.Element == Point {
-        self.init(start: points.first ?? Point(), closed: true, segments: points.dropFirst().map { .line($0) })
+    public init?<C : Collection>(polygon points: C) where C.Element == Point {
+        guard let start = points.first else { return nil }
+        self.init(start: start, closed: true, segments: points.dropFirst().map { .line($0) })
     }
     
     @inlinable
-    public init<C : Collection>(polyline points: C) where C.Element == Point {
-        self.init(start: points.first ?? Point(), closed: false, segments: points.dropFirst().map { .line($0) })
+    public init?<C : Collection>(polyline points: C) where C.Element == Point {
+        guard let start = points.first else { return nil }
+        self.init(start: start, closed: false, segments: points.dropFirst().map { .line($0) })
     }
 }
 
@@ -734,12 +736,12 @@ extension Shape {
     
     @inlinable
     public init<C : Collection>(polygon points: C) where C.Element == Point {
-        self = [Component(polygon: points)]
+        self = Component(polygon: points).map { [$0] } ?? []
     }
     
     @inlinable
     public init<C : Collection>(polyline points: C) where C.Element == Point {
-        self = [Component(polyline: points)]
+        self = Component(polyline: points).map { [$0] } ?? []
     }
 }
 
