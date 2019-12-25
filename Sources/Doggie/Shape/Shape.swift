@@ -698,6 +698,16 @@ extension Shape.Component {
         ]
         self.init(start: bezier_circle[0] * transform, closed: true, segments: segments)
     }
+    
+    @inlinable
+    public init<C : Collection>(polygon points: C) where C.Element == Point {
+        self.init(start: points.first ?? Point(), closed: true, segments: points.dropFirst().map { .line($0) })
+    }
+    
+    @inlinable
+    public init<C : Collection>(polyline points: C) where C.Element == Point {
+        self.init(start: points.first ?? Point(), closed: false, segments: points.dropFirst().map { .line($0) })
+    }
 }
 
 extension Shape {
@@ -720,6 +730,16 @@ extension Shape {
     @inlinable
     public init(ellipseIn rect: Rect) {
         self = [Component(ellipseIn: rect)]
+    }
+    
+    @inlinable
+    public init<C : Collection>(polygon points: C) where C.Element == Point {
+        self = [Component(polygon: points)]
+    }
+    
+    @inlinable
+    public init<C : Collection>(polyline points: C) where C.Element == Point {
+        self = [Component(polyline: points)]
     }
 }
 
