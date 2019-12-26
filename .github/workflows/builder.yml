@@ -68,4 +68,4 @@ jobs:
     - name: Build
       run: swift build -c release
     - name: Run tests
-      run: swift test -c release
+      run: swift test -c release --enable-test-discovery --enable-index-store
