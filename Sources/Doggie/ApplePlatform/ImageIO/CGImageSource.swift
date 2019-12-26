@@ -37,10 +37,11 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         self.numberOfPages = numberOfPages
     }
     
-    init(source: CGImageSource) {
+    init?(source: CGImageSource) {
         self.source = source
         self.index = 0
         self.numberOfPages = CGImageSourceGetCount(source)
+        guard numberOfPages > 0 else { return nil }
     }
     
     var properties: [CFString : Any] {
