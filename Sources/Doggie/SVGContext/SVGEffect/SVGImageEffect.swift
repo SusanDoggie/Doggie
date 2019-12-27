@@ -40,19 +40,19 @@ public struct SVGImageEffect : SVGEffectElement {
     }
     
     public init(context: SVGContext) {
-        self.image = context
+        self._image = context
         self.storageType = .svg
         self.properties = [:]
     }
     
     public init(image: ImageRep, using storageType: MediaType = .png, properties: [ImageRep.PropertyKey : Any] = [:]) {
-        self.image = image
+        self._image = image
         self.storageType = storageType
         self.properties = properties
     }
     
     public init<Image : ImageProtocol>(image: Image, using storageType: MediaType = .png, properties: [ImageRep.PropertyKey : Any] = [:]) {
-        self.image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
+        self._image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
         self.storageType = storageType
         self.properties = properties
     }
@@ -75,7 +75,7 @@ extension SVGImageEffect {
         
         var filter = SDXMLElement(name: "feImage")
         
-        if let encoded = image.url_data(using: storageType, properties: properties) {
+        if let encoded = _image.url_data(using: storageType, properties: properties) {
             filter.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: encoded)
         }
         
