@@ -612,10 +612,10 @@ private protocol SVGImageProtocol {
     
     var imageTableKey: SVGContext.ImageTableKey { get }
     
-    func encode(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String?
+    func encode(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> String?
 }
 
-extension ImageRep.MediaType {
+extension MediaType {
     
     fileprivate var media_type_string: String? {
         switch self {
@@ -638,7 +638,7 @@ extension Image: SVGImageProtocol {
         return SVGContext.ImageTableKey(AnyImage(self))
     }
     
-    fileprivate func encode(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+    fileprivate func encode(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
         guard let mediaType = storageType.media_type_string else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
         return "data:\(mediaType);base64," + data.base64EncodedString()
@@ -651,7 +651,7 @@ extension AnyImage: SVGImageProtocol {
         return SVGContext.ImageTableKey(self)
     }
     
-    fileprivate func encode(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+    fileprivate func encode(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
         guard let mediaType = storageType.media_type_string else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
         return "data:\(mediaType);base64," + data.base64EncodedString()
@@ -664,7 +664,7 @@ extension ImageRep: SVGImageProtocol {
         return self.originalData.map { SVGContext.ImageTableKey($0) } ?? SVGContext.ImageTableKey(AnyImage(imageRep: self, fileBacked: true))
     }
     
-    fileprivate func encode(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+    fileprivate func encode(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
         guard let mediaType = self.mediaType?.media_type_string else { return nil }
         guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).encode(using: storageType, properties: properties) }
         return "data:\(mediaType);base64," + data.base64EncodedString()
@@ -673,7 +673,7 @@ extension ImageRep: SVGImageProtocol {
 
 extension SVGContext {
     
-    private func _draw(image: SVGImageProtocol, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
+    private func _draw(image: SVGImageProtocol, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
         
         guard !self.transform.determinant.almostZero() else { return }
         
@@ -714,7 +714,7 @@ extension SVGContext {
         self.append(element, _bound, transform)
     }
     
-    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
+    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
         let image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
         self._draw(image: image, transform: transform, using: storageType, properties: properties)
     }
@@ -723,7 +723,7 @@ extension SVGContext {
         self.draw(image: image, transform: transform, using: .png, properties: [:])
     }
     
-    public func draw(image: ImageRep, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
+    public func draw(image: ImageRep, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
         self._draw(image: image, transform: transform, using: storageType, properties: properties)
     }
     
