@@ -48,8 +48,10 @@ extension MediaType {
 extension Image: SVGImageProtocol {
     
     func url_data(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+        
         guard let mediaType = storageType.media_type_string else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
+        
         return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
@@ -57,8 +59,10 @@ extension Image: SVGImageProtocol {
 extension AnyImage: SVGImageProtocol {
     
     func url_data(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+        
         guard let mediaType = storageType.media_type_string else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
+        
         return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
@@ -66,16 +70,32 @@ extension AnyImage: SVGImageProtocol {
 extension ImageRep: SVGImageProtocol {
     
     func url_data(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+        
         guard let mediaType = self.mediaType?.media_type_string else { return nil }
         guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).url_data(using: storageType, properties: properties) }
+        
         return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
 
-extension SVGContext : SVGImageProtocol {
+struct SVGImageProvider : SVGImageProtocol {
+    
+    let viewBox: Rect
+    
+    let callback: (DrawableContext) -> Void
+    
+    init(viewBox: Rect, callback: @escaping (DrawableContext) -> Void) {
+        self.viewBox = viewBox
+        self.callback = callback
+    }
     
     func url_data(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+        
         guard storageType == .svg else { return nil }
-        return "data:image/svg+xml;utf8," + self.document.xml(prettyPrinted: false)
+        
+        let context = SVGContext(viewBox: viewBox)
+        self.callback(context)
+        
+        return "data:image/svg+xml;utf8," + context.document.xml(prettyPrinted: false)
     }
 }

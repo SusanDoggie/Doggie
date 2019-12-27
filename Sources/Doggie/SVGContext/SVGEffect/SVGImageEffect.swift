@@ -39,8 +39,8 @@ public struct SVGImageEffect : SVGEffectElement {
         return []
     }
     
-    public init(context: SVGContext) {
-        self._image = context
+    public init(viewBox: Rect, callback: @escaping (DrawableContext) -> Void) {
+        self._image = SVGImageProvider(viewBox: viewBox, callback: callback)
         self.storageType = .svg
         self.properties = [:]
     }
@@ -64,8 +64,18 @@ public struct SVGImageEffect : SVGEffectElement {
 
 extension SVGImageEffect {
     
-    public var image: Any {
-        return _image
+    public var image: Any? {
+        return _image is SVGImageProvider ? nil : _image
+    }
+    
+    public var viewBox: Rect? {
+        guard let provider = _image as? SVGImageProvider else { return nil }
+        return provider.viewBox
+    }
+    
+    public func render(to context: DrawableContext) {
+        guard let provider = _image as? SVGImageProvider else { return }
+        provider.callback(context)
     }
 }
 
