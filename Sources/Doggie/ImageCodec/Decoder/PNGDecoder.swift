@@ -238,7 +238,7 @@ struct PNGDecoder : ImageRepDecoder {
         }
     }
     
-    var mediaType: ImageRep.MediaType {
+    var mediaType: MediaType {
         return .png
     }
     

@@ -90,7 +90,7 @@ extension ImageRep {
 
 extension ImageRep {
     
-    public static var supportedMediaTypes: [ImageRep.MediaType] {
+    public static var supportedMediaTypes: [MediaType] {
         return [.bmp, .tiff, .png]
     }
 }
@@ -194,30 +194,6 @@ extension ImageRep {
 
 extension ImageRep {
     
-    @frozen
-    public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral {
-        
-        public var rawValue: String
-        
-        public init(rawValue: String) {
-            self.rawValue = rawValue
-        }
-        
-        public init(stringLiteral value: String) {
-            self.rawValue = value
-        }
-        
-        public static let bmp: MediaType        = "com.microsoft.bmp"
-        public static let gif: MediaType        = "com.compuserve.gif"
-        public static let heic: MediaType       = "public.heic"
-        public static let heif: MediaType       = "public.heif"
-        public static let jpeg: MediaType       = "public.jpeg"
-        public static let jpeg2000: MediaType   = "public.jpeg-2000"
-        public static let png: MediaType        = "public.png"
-        public static let tiff: MediaType       = "public.tiff"
-        
-    }
-    
     public var mediaType: MediaType? {
         guard let decoder = base as? ImageRepDecoder else { return nil }
         return decoder.mediaType
@@ -285,14 +261,14 @@ extension AnyImage {
 
 extension Image {
     
-    public func representation(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         return ImageRep(image: self).representation(using: storageType, properties: properties)
     }
 }
 
 extension AnyImage {
     
-    public func representation(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
         return ImageRep(image: self).representation(using: storageType, properties: properties)
     }
 }

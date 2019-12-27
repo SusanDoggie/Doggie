@@ -27,7 +27,7 @@ protocol ImageRepDecoder : ImageRepBase {
     
     init?(data: Data) throws
     
-    var mediaType: ImageRep.MediaType { get }
+    var mediaType: MediaType { get }
 }
 
 struct ImageRepDecoderBitStream : Sequence, IteratorProtocol {

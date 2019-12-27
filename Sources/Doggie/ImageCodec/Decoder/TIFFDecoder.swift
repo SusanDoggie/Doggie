@@ -52,7 +52,7 @@ struct TIFFDecoder : ImageRepDecoder {
         return defaultPage.colorSpace
     }
     
-    var mediaType: ImageRep.MediaType {
+    var mediaType: MediaType {
         return .tiff
     }
     

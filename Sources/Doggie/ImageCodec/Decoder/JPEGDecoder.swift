@@ -133,7 +133,7 @@ struct JPEGDecoder : ImageRepDecoder {
         return AnyColorSpace(_colorSpace)
     }
     
-    var mediaType: ImageRep.MediaType {
+    var mediaType: MediaType {
         return .jpeg
     }
     

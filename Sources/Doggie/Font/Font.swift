@@ -194,25 +194,6 @@ extension Font : CustomStringConvertible {
 
 extension Font {
     
-    @frozen
-    public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral {
-        
-        public var rawValue: String
-        
-        public init(rawValue: String) {
-            self.rawValue = rawValue
-        }
-        
-        public init(stringLiteral value: String) {
-            self.rawValue = value
-        }
-        
-        public static let ttf: MediaType        = "public.truetype-ttf-font"
-        public static let otf: MediaType        = "public.opentype-font"
-        public static let woff: MediaType       = "org.w3c.woff"
-        
-    }
-    
     public enum PropertyKey : CaseIterable {
         
         case deflateLevel

@@ -604,75 +604,39 @@ extension SVGContext {
     }
 }
 
-private protocol SVGImageProtocol {
+private protocol SVGBitmapProtocol: SVGImageProtocol {
     
     var width: Int { get }
+    
     var height: Int { get }
     
     var imageTableKey: SVGContext.ImageTableKey { get }
-    
-    func base64(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String?
 }
 
-extension ImageRep.MediaType {
-    
-    fileprivate var media_type_string: String? {
-        switch self {
-        case .bmp: return "image/bmp"
-        case .gif: return "image/gif"
-        case .heic: return "image/heic"
-        case .heif: return "image/heif"
-        case .jpeg: return "image/jpeg"
-        case .jpeg2000: return "image/jp2"
-        case .png: return "image/png"
-        case .tiff: return "image/tiff"
-        default: return nil
-        }
-    }
-}
-
-extension Image: SVGImageProtocol {
+extension Image: SVGBitmapProtocol {
     
     fileprivate var imageTableKey: SVGContext.ImageTableKey {
         return SVGContext.ImageTableKey(AnyImage(self))
     }
-    
-    fileprivate func base64(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
-        guard let mediaType = storageType.media_type_string else { return nil }
-        guard let data = self.representation(using: storageType, properties: properties) else { return nil }
-        return "data:\(mediaType);base64," + data.base64EncodedString()
-    }
 }
 
-extension AnyImage: SVGImageProtocol {
+extension AnyImage: SVGBitmapProtocol {
     
     fileprivate var imageTableKey: SVGContext.ImageTableKey {
         return SVGContext.ImageTableKey(self)
     }
-    
-    fileprivate func base64(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
-        guard let mediaType = storageType.media_type_string else { return nil }
-        guard let data = self.representation(using: storageType, properties: properties) else { return nil }
-        return "data:\(mediaType);base64," + data.base64EncodedString()
-    }
 }
 
-extension ImageRep: SVGImageProtocol {
+extension ImageRep: SVGBitmapProtocol {
     
     fileprivate var imageTableKey: SVGContext.ImageTableKey {
         return self.originalData.map { SVGContext.ImageTableKey($0) } ?? SVGContext.ImageTableKey(AnyImage(imageRep: self, fileBacked: true))
-    }
-    
-    fileprivate func base64(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
-        guard let mediaType = self.mediaType?.media_type_string else { return nil }
-        guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).base64(using: storageType, properties: properties) }
-        return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
 
 extension SVGContext {
     
-    private func _draw(image: SVGImageProtocol, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
+    private func _draw(image: SVGBitmapProtocol, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
         
         guard !self.transform.determinant.almostZero() else { return }
         
@@ -694,8 +658,8 @@ extension SVGContext {
                 "height": "\(image.height)",
                 ])
             
-            guard let base64 = image.base64(using: storageType, properties: properties) else { return }
-            _image.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: base64)
+            guard let encoded = image.url_data(using: storageType, properties: properties) else { return }
+            _image.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: encoded)
             
             defs.append(_image)
             
@@ -713,8 +677,8 @@ extension SVGContext {
         self.append(element, _bound, transform)
     }
     
-    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
-        let image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
+    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
+        let image = image as? SVGBitmapProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
         self._draw(image: image, transform: transform, using: storageType, properties: properties)
     }
     
@@ -722,7 +686,7 @@ extension SVGContext {
         self.draw(image: image, transform: transform, using: .png, properties: [:])
     }
     
-    public func draw(image: ImageRep, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
+    public func draw(image: ImageRep, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
         self._draw(image: image, transform: transform, using: storageType, properties: properties)
     }
     

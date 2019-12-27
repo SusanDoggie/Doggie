@@ -121,8 +121,8 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         return 1...4 ~= orientation ? resolution : Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit)
     }
     
-    var mediaType: ImageRep.MediaType? {
-        return CGImageSourceGetType(source).map { ImageRep.MediaType(rawValue: $0 as String) }
+    var mediaType: MediaType? {
+        return CGImageSourceGetType(source).map { MediaType(rawValue: $0 as String) }
     }
     
     func page(_ index: Int) -> CGImageRepBase {
@@ -156,7 +156,7 @@ struct _CGImageRepBase : CGImageRepBase {
         return image.height
     }
     
-    var mediaType: ImageRep.MediaType? {
+    var mediaType: MediaType? {
         return nil
     }
     

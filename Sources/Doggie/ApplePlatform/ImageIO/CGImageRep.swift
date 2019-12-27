@@ -33,7 +33,7 @@ protocol CGImageRepBase {
     
     var resolution: Resolution { get }
     
-    var mediaType: ImageRep.MediaType? { get }
+    var mediaType: MediaType? { get }
     
     var numberOfPages: Int { get }
     
@@ -78,14 +78,14 @@ extension CGImageRep {
 
 extension CGImageRep {
     
-    public static var supportedMediaTypes: [ImageRep.MediaType] {
+    public static var supportedMediaTypes: [MediaType] {
         let types = CGImageSourceCopyTypeIdentifiers() as? [String] ?? []
-        return types.map { ImageRep.MediaType(rawValue: $0) }
+        return types.map { MediaType(rawValue: $0) }
     }
     
-    public static var supportedDestinationMediaTypes: [ImageRep.MediaType] {
+    public static var supportedDestinationMediaTypes: [MediaType] {
         let types = CGImageDestinationCopyTypeIdentifiers() as? [String] ?? []
-        return types.map { ImageRep.MediaType(rawValue: $0) }
+        return types.map { MediaType(rawValue: $0) }
     }
 }
 
@@ -167,7 +167,7 @@ extension CGImageRep {
 
 extension CGImageRep {
     
-    public var mediaType: ImageRep.MediaType? {
+    public var mediaType: MediaType? {
         return base.mediaType
     }
 }

@@ -83,7 +83,7 @@ extension CGImageRep {
         case packBits
     }
     
-    public func representation(using storageType: ImageRep.MediaType, properties: [PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
         
         var _properties: [CFString: Any] = [:]
         
@@ -176,7 +176,7 @@ extension CGImageRep {
 
 extension CGImage {
     
-    public func representation(using storageType: ImageRep.MediaType, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey : Any]) -> Data? {
         let imageRep = CGImageRep(cgImage: self, resolution: resolution)
         return imageRep.representation(using: storageType, properties: properties)
     }

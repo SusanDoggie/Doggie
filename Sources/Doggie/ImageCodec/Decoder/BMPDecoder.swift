@@ -76,7 +76,7 @@ struct BMPDecoder : ImageRepDecoder {
         return AnyColorSpace(_colorSpace)
     }
     
-    var mediaType: ImageRep.MediaType {
+    var mediaType: MediaType {
         return .bmp
     }
     
