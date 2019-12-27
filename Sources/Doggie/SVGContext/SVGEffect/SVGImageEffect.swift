@@ -73,7 +73,7 @@ extension SVGImageEffect {
     
     public var xml_element: SDXMLElement {
         
-        var filter = SDXMLElement(name: "feImage")
+        var filter = SDXMLElement(name: "feImage", attributes: ["preserveAspectRatio": "none"])
         
         if let encoded = _image.url_data(using: storageType, properties: properties) {
             filter.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: encoded)
