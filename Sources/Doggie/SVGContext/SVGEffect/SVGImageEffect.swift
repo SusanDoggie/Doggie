@@ -29,32 +29,17 @@ public struct SVGImageEffect : SVGEffectElement {
     
     public var regionUnit: SVGEffect.RegionUnit = .objectBoundingBox
     
-    private let _image: SVGImageProtocol
+    public var viewBox: Rect
     
-    public let storageType: MediaType
-    
-    public let properties: [ImageRep.PropertyKey : Any]
+    public var callback: (DrawableContext) -> Void
     
     public var sources: [SVGEffect.Source] {
         return []
     }
     
     public init(viewBox: Rect, callback: @escaping (DrawableContext) -> Void) {
-        self._image = SVGImageProvider(viewBox: viewBox, callback: callback)
-        self.storageType = .svg
-        self.properties = [:]
-    }
-    
-    public init(image: ImageRep, using storageType: MediaType = .png, properties: [ImageRep.PropertyKey : Any] = [:]) {
-        self._image = image
-        self.storageType = storageType
-        self.properties = properties
-    }
-    
-    public init<Image : ImageProtocol>(image: Image, using storageType: MediaType = .png, properties: [ImageRep.PropertyKey : Any] = [:]) {
-        self._image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: .default) as Doggie.Image<ARGB32ColorPixel>
-        self.storageType = storageType
-        self.properties = properties
+        self.viewBox = viewBox
+        self.callback = callback
     }
     
     public func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect? {
@@ -64,30 +49,15 @@ public struct SVGImageEffect : SVGEffectElement {
 
 extension SVGImageEffect {
     
-    public var image: Any? {
-        return _image is SVGImageProvider ? nil : _image
-    }
-    
-    public var viewBox: Rect? {
-        guard let provider = _image as? SVGImageProvider else { return nil }
-        return provider.viewBox
-    }
-    
-    public func render(to context: DrawableContext) {
-        guard let provider = _image as? SVGImageProvider else { return }
-        provider.callback(context)
-    }
-}
-
-extension SVGImageEffect {
-    
     public var xml_element: SDXMLElement {
         
         var filter = SDXMLElement(name: "feImage", attributes: ["preserveAspectRatio": "none"])
         
-        if let encoded = _image.url_data(using: storageType, properties: properties) {
-            filter.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: encoded)
-        }
+        let context = SVGContext(viewBox: viewBox)
+        self.callback(context)
+        
+        let encoded = "data:image/svg+xml;utf8," + context.document.xml(prettyPrinted: false)
+        filter.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: encoded)
         
         return filter
     }

@@ -326,7 +326,7 @@ extension SVGContext {
             "xmlns:xlink": "http://www.w3.org/1999/xlink",
             "xmlns:a": "http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/",
             "style": "isolation: isolate;"
-            ])
+        ])
         
         body.setAttribute(for: "viewBox", value: getDataString(viewBox.x, viewBox.y, viewBox.width, viewBox.height))
         
@@ -604,39 +604,76 @@ extension SVGContext {
     }
 }
 
-private protocol SVGBitmapProtocol: SVGImageProtocol {
+private protocol SVGImageProtocol {
     
     var width: Int { get }
     
     var height: Int { get }
     
     var imageTableKey: SVGContext.ImageTableKey { get }
+    
+    func encode(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String?
 }
 
-extension Image: SVGBitmapProtocol {
+extension ImageRep.MediaType {
+    
+    fileprivate var media_type_string: String? {
+        switch self {
+        case .bmp: return "image/bmp"
+        case .gif: return "image/gif"
+        case .heic: return "image/heic"
+        case .heif: return "image/heif"
+        case .jpeg: return "image/jpeg"
+        case .jpeg2000: return "image/jp2"
+        case .png: return "image/png"
+        case .tiff: return "image/tiff"
+        default: return nil
+        }
+    }
+}
+
+extension Image: SVGImageProtocol {
     
     fileprivate var imageTableKey: SVGContext.ImageTableKey {
         return SVGContext.ImageTableKey(AnyImage(self))
     }
+    
+    fileprivate func encode(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+        guard let mediaType = storageType.media_type_string else { return nil }
+        guard let data = self.representation(using: storageType, properties: properties) else { return nil }
+        return "data:\(mediaType);base64," + data.base64EncodedString()
+    }
 }
 
-extension AnyImage: SVGBitmapProtocol {
+extension AnyImage: SVGImageProtocol {
     
     fileprivate var imageTableKey: SVGContext.ImageTableKey {
         return SVGContext.ImageTableKey(self)
     }
+    
+    fileprivate func encode(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+        guard let mediaType = storageType.media_type_string else { return nil }
+        guard let data = self.representation(using: storageType, properties: properties) else { return nil }
+        return "data:\(mediaType);base64," + data.base64EncodedString()
+    }
 }
 
-extension ImageRep: SVGBitmapProtocol {
+extension ImageRep: SVGImageProtocol {
     
     fileprivate var imageTableKey: SVGContext.ImageTableKey {
         return self.originalData.map { SVGContext.ImageTableKey($0) } ?? SVGContext.ImageTableKey(AnyImage(imageRep: self, fileBacked: true))
+    }
+    
+    fileprivate func encode(using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) -> String? {
+        guard let mediaType = self.mediaType?.media_type_string else { return nil }
+        guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).encode(using: storageType, properties: properties) }
+        return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
 
 extension SVGContext {
     
-    private func _draw(image: SVGBitmapProtocol, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
+    private func _draw(image: SVGImageProtocol, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
         
         guard !self.transform.determinant.almostZero() else { return }
         
@@ -656,9 +693,9 @@ extension SVGContext {
                 "id": id,
                 "width": "\(image.width)",
                 "height": "\(image.height)",
-                ])
+            ])
             
-            guard let encoded = image.url_data(using: storageType, properties: properties) else { return }
+            guard let encoded = image.encode(using: storageType, properties: properties) else { return }
             _image.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: encoded)
             
             defs.append(_image)
@@ -677,8 +714,8 @@ extension SVGContext {
         self.append(element, _bound, transform)
     }
     
-    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
-        let image = image as? SVGBitmapProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
+    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
+        let image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
         self._draw(image: image, transform: transform, using: storageType, properties: properties)
     }
     
@@ -686,7 +723,7 @@ extension SVGContext {
         self.draw(image: image, transform: transform, using: .png, properties: [:])
     }
     
-    public func draw(image: ImageRep, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
+    public func draw(image: ImageRep, transform: SDTransform, using storageType: ImageRep.MediaType, properties: [ImageRep.PropertyKey : Any]) {
         self._draw(image: image, transform: transform, using: storageType, properties: properties)
     }
     
@@ -762,7 +799,7 @@ extension SVGContext {
                 "y1": "\(Decimal(gradient.start.y).rounded(scale: 9))",
                 "x2": "\(Decimal(gradient.end.x).rounded(scale: 9))",
                 "y2": "\(Decimal(gradient.end.y).rounded(scale: 9))",
-                ])
+            ])
             
             element.setAttribute(for: "gradientTransform", value: gradient.transform.attributeStr())
             
@@ -790,7 +827,7 @@ extension SVGContext {
                 "fy": "0.5",
                 "cx": "0.5",
                 "cy": "0.5",
-                ])
+            ])
             
             let transform = SDTransform.translate(x: -0.5, y: -0.5) * SDTransform.rotate(phase) * SDTransform.translate(x: gradient.end.x, y: gradient.end.y) * gradient.transform
             element.setAttribute(for: "gradientTransform", value: transform.attributeStr())
@@ -854,7 +891,7 @@ extension SVGContext {
             "y1": "\(Decimal(start.y).rounded(scale: 9))",
             "x2": "\(Decimal(end.x).rounded(scale: 9))",
             "y2": "\(Decimal(end.y).rounded(scale: 9))",
-            ])
+        ])
         
         switch spreadMethod {
         case .reflect: element.setAttribute(for: "spreadMethod", value: "reflect")
@@ -882,7 +919,7 @@ extension SVGContext {
             "y": "\(Decimal(viewBox.y).rounded(scale: 9))",
             "width": "\(Decimal(viewBox.width).rounded(scale: 9))",
             "height": "\(Decimal(viewBox.height).rounded(scale: 9))",
-            ])
+        ])
         
         self.append(rect, Shape(rect: self.viewBox), .identity)
     }
@@ -910,7 +947,7 @@ extension SVGContext {
             "cy": "0.5",
             "fr": "\(Decimal(startRadius).rounded(scale: 9))",
             "r": "\(Decimal(endRadius).rounded(scale: 9))",
-            ])
+        ])
         
         switch spreadMethod {
         case .reflect: element.setAttribute(for: "spreadMethod", value: "reflect")
@@ -939,7 +976,7 @@ extension SVGContext {
             "y": "\(Decimal(viewBox.y).rounded(scale: 9))",
             "width": "\(Decimal(viewBox.width).rounded(scale: 9))",
             "height": "\(Decimal(viewBox.height).rounded(scale: 9))",
-            ])
+        ])
         
         self.append(rect, Shape(rect: self.viewBox), .identity)
     }
