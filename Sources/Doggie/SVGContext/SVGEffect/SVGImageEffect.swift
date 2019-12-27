@@ -49,6 +49,8 @@ public struct SVGImageEffect : SVGEffectElement {
 
 extension SVGImageEffect {
     
+    private static let allowedCharacters = CharacterSet(charactersIn: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ().!~*'-_")
+    
     public var xml_element: SDXMLElement {
         
         var filter = SDXMLElement(name: "feImage", attributes: ["preserveAspectRatio": "none"])
@@ -56,7 +58,8 @@ extension SVGImageEffect {
         let context = SVGContext(viewBox: viewBox)
         self.callback(context)
         
-        let encoded = "data:image/svg+xml;utf8," + context.document.xml(prettyPrinted: false)
+        let data = context.document.xml(prettyPrinted: false)
+        let encoded = "data:image/svg+xml;charset=utf-8," + data.addingPercentEncoding(withAllowedCharacters: SVGImageEffect.allowedCharacters)
         filter.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: encoded)
         
         return filter
