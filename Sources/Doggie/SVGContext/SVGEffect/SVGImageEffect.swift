@@ -52,7 +52,7 @@ public struct SVGImageEffect : SVGEffectElement {
     }
     
     public init<Image : ImageProtocol>(image: Image, using storageType: MediaType = .png, properties: [ImageRep.PropertyKey : Any] = [:]) {
-        self._image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
+        self._image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: .default) as Doggie.Image<ARGB32ColorPixel>
         self.storageType = storageType
         self.properties = properties
     }
