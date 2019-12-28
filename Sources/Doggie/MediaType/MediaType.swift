@@ -39,27 +39,37 @@ public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral
     
 extension MediaType {
     
-    public static let bmp: MediaType        = "com.microsoft.bmp"
-    public static let gif: MediaType        = "com.compuserve.gif"
-    public static let heic: MediaType       = "public.heic"
-    public static let heif: MediaType       = "public.heif"
-    public static let jpeg: MediaType       = "public.jpeg"
-    public static let jpeg2000: MediaType   = "public.jpeg-2000"
-    public static let png: MediaType        = "public.png"
-    public static let tiff: MediaType       = "public.tiff"
+    public static let bmp: MediaType                = "com.microsoft.bmp"
+    public static let gif: MediaType                = "com.compuserve.gif"
+    public static let heic: MediaType               = "public.heic"
+    public static let heif: MediaType               = "public.heif"
+    public static let jpeg: MediaType               = "public.jpeg"
+    public static let jpeg2000: MediaType           = "public.jpeg-2000"
+    public static let png: MediaType                = "public.png"
+    public static let tiff: MediaType               = "public.tiff"
     
 }
 
 extension MediaType {
     
-    public static let svg: MediaType        = "public.svg-image"
+    public static let svg: MediaType                = "public.svg-image"
+    public static let pdf: MediaType                = "com.adobe.pdf"
+    public static let postscript: MediaType         = "com.adobe.postscript"
     
 }
 
 extension MediaType {
     
-    public static let ttf: MediaType        = "public.truetype-ttf-font"
-    public static let otf: MediaType        = "public.opentype-font"
-    public static let woff: MediaType       = "org.w3c.woff"
+    public static let html: MediaType               = "public.html"
+    public static let xml: MediaType                = "public.xml"
+    public static let xhtml: MediaType              = "public.xhtml"
+    
+}
+
+extension MediaType {
+    
+    public static let ttf: MediaType                = "public.truetype-ttf-font"
+    public static let otf: MediaType                = "public.opentype-font"
+    public static let woff: MediaType               = "org.w3c.woff"
     
 }
