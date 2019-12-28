@@ -59,8 +59,8 @@ extension SVGImageEffect {
         self.callback(context)
         
         let data = context.document.xml(prettyPrinted: false)
-        let encoded = "data:image/svg+xml;charset=utf-8," + data.addingPercentEncoding(withAllowedCharacters: SVGImageEffect.allowedCharacters)
-        filter.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: encoded)
+        guard let encoded = data.addingPercentEncoding(withAllowedCharacters: SVGImageEffect.allowedCharacters) else { return filter }
+        filter.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: "data:image/svg+xml;charset=utf-8," + encoded)
         
         return filter
     }
