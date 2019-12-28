@@ -658,7 +658,7 @@ private protocol SVGImageProtocol {
     
     var imageTableKey: SVGContext.ImageTableKey? { get }
     
-    func encode(using storageType: MediaType, properties: Any) -> String?
+    func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String?
 }
 
 extension MediaType {
@@ -684,7 +684,7 @@ extension Image: SVGImageProtocol {
         return SVGContext.ImageTableKey(AnyImage(self))
     }
     
-    fileprivate func encode(using storageType: MediaType, properties: Any) -> String? {
+    fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
         guard let mediaType = storageType.media_type_string else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
@@ -698,7 +698,7 @@ extension AnyImage: SVGImageProtocol {
         return SVGContext.ImageTableKey(self)
     }
     
-    fileprivate func encode(using storageType: MediaType, properties: Any) -> String? {
+    fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
         guard let mediaType = storageType.media_type_string else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
@@ -712,7 +712,7 @@ extension ImageRep: SVGImageProtocol {
         return self.originalData.map { SVGContext.ImageTableKey($0) } ?? SVGContext.ImageTableKey(AnyImage(imageRep: self, fileBacked: true))
     }
     
-    fileprivate func encode(using storageType: MediaType, properties: Any) -> String? {
+    fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
         guard let mediaType = self.mediaType?.media_type_string else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).encode(using: storageType, properties: properties) }
@@ -722,7 +722,7 @@ extension ImageRep: SVGImageProtocol {
 
 extension SVGContext {
     
-    private func _draw(image: SVGImageProtocol, transform: SDTransform, using storageType: MediaType, properties: Any) {
+    private func _draw(image: SVGImageProtocol, transform: SDTransform, using storageType: MediaType, resolution: Resolution, properties: Any) {
         
         guard !self.transform.determinant.almostZero() else { return }
         
@@ -744,7 +744,7 @@ extension SVGContext {
                 "height": "\(image.height)",
             ])
             
-            guard let encoded = image.encode(using: storageType, properties: properties) else { return }
+            guard let encoded = image.encode(using: storageType, resolution: resolution, properties: properties) else { return }
             _image.setAttribute(for: "href", namespace: "http://www.w3.org/1999/xlink", value: encoded)
             
             defs.append(_image)
@@ -765,11 +765,11 @@ extension SVGContext {
     
     public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
         let image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
-        self._draw(image: image, transform: transform, using: storageType, properties: properties)
+        self._draw(image: image, transform: transform, using: storageType, resolution: image.resolution, properties: properties)
     }
     
     public func draw(image: ImageRep, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
-        self._draw(image: image, transform: transform, using: storageType, properties: properties)
+        self._draw(image: image, transform: transform, using: storageType, resolution: image.resolution, properties: properties)
     }
 }
 
@@ -792,10 +792,10 @@ extension CGImage: SVGImageProtocol {
         return SVGContext.ImageTableKey(self)
     }
     
-    fileprivate func encode(using storageType: MediaType, properties: Any) -> String? {
+    fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
         guard let mediaType = storageType.media_type_string else { return nil }
         guard let properties = properties as? [CGImageRep.PropertyKey : Any] else { return nil }
-        guard let data = self.representation(using: storageType, properties: properties) else { return nil }
+        guard let data = self.representation(using: storageType, resolution: resolution, properties: properties) else { return nil }
         return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
@@ -806,19 +806,19 @@ extension CGImageRep: SVGImageProtocol {
         return self.cgImage.map { SVGContext.ImageTableKey($0) }
     }
     
-    fileprivate func encode(using storageType: MediaType, properties: Any) -> String? {
-        return self.cgImage?.encode(using: storageType, properties: properties)
+    fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
+        return self.cgImage?.encode(using: storageType, resolution: resolution, properties: properties)
     }
 }
 
 extension SVGContext {
     
-    public func draw(image: CGImageRep, transform: SDTransform, using storageType: MediaType = .png, properties: [CGImageRep.PropertyKey : Any] = [:]) {
-        self._draw(image: image, transform: transform, using: storageType, properties: properties)
+    public func draw(image: CGImageRep, transform: SDTransform, using storageType: MediaType = .png, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey : Any] = [:]) {
+        self._draw(image: image, transform: transform, using: storageType, resolution: resolution, properties: properties)
     }
     
-    public func draw(image: CGImage, transform: SDTransform, using storageType: MediaType = .png, properties: [CGImageRep.PropertyKey : Any] = [:]) {
-        self._draw(image: image, transform: transform, using: storageType, properties: properties)
+    public func draw(image: CGImage, transform: SDTransform, using storageType: MediaType = .png, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey : Any] = [:]) {
+        self._draw(image: image, transform: transform, using: storageType, resolution: resolution, properties: properties)
     }
 }
 
