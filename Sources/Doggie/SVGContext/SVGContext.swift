@@ -185,7 +185,6 @@ extension SVGContext {
             case let .cgimage(image):
                 hasher.combine(ObjectIdentifier(image))
                 hasher.combine(2)
-            default: return false
             }
         }
         
