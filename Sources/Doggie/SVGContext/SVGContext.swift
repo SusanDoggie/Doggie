@@ -715,7 +715,7 @@ extension ImageRep: SVGImageProtocol {
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
         guard let mediaType = self.mediaType?.media_type_string else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
-        guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).encode(using: storageType, properties: properties) }
+        guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).encode(using: storageType, resolution: resolution, properties: properties) }
         return "data:\(mediaType);base64," + data.base64EncodedString()
     }
 }
@@ -764,8 +764,8 @@ extension SVGContext {
     }
     
     public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
-        let image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
-        self._draw(image: image, transform: transform, using: storageType, resolution: image.resolution, properties: properties)
+        let _image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
+        self._draw(image: _image, transform: transform, using: storageType, resolution: image.resolution, properties: properties)
     }
     
     public func draw(image: ImageRep, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
