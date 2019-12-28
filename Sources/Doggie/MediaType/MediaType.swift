@@ -36,7 +36,7 @@ public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral
         self.rawValue = value
     }
 }
-    
+
 extension MediaType {
     
     public static let bmp: MediaType                = "com.microsoft.bmp"
