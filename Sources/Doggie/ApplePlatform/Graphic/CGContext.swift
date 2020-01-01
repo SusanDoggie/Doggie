@@ -104,7 +104,7 @@ extension CGContext {
         }
         
         let boundary = shape.originalBoundary
-        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.x, y: boundary.y) * shape.transform
+        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
         
         self.concatenate(transform)
         

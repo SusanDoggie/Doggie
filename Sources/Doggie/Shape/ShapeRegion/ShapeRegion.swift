@@ -364,25 +364,25 @@ extension ShapeRegion {
     public func union(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
         let reference = bound.width * bound.height
-        let transform = SDTransform.translate(x: -bound.x, y: -bound.y)
+        let transform = SDTransform.translate(x: -bound.minX, y: -bound.minY)
         return (self * transform).union(other * transform, reference: reference) * transform.inverse
     }
     public func intersection(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
         let reference = bound.width * bound.height
-        let transform = SDTransform.translate(x: -bound.x, y: -bound.y)
+        let transform = SDTransform.translate(x: -bound.minX, y: -bound.minY)
         return (self * transform).intersection(other * transform, reference: reference) * transform.inverse
     }
     public func subtracting(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
         let reference = bound.width * bound.height
-        let transform = SDTransform.translate(x: -bound.x, y: -bound.y)
+        let transform = SDTransform.translate(x: -bound.minX, y: -bound.minY)
         return (self * transform).subtracting(other * transform, reference: reference) * transform.inverse
     }
     public func symmetricDifference(_ other: ShapeRegion) -> ShapeRegion {
         let bound = self.boundary.union(other.boundary)
         let reference = bound.width * bound.height
-        let transform = SDTransform.translate(x: -bound.x, y: -bound.y)
+        let transform = SDTransform.translate(x: -bound.minX, y: -bound.minY)
         return (self * transform).symmetricDifference(other * transform, reference: reference) * transform.inverse
     }
     
@@ -502,7 +502,7 @@ extension ShapeRegion {
             
             let bound = _path.boundary
             let reference = bound.width * bound.height
-            _path.transform = SDTransform.translate(x: -bound.x, y: -bound.y)
+            _path.transform = SDTransform.translate(x: -bound.minX, y: -bound.minY)
             
             switch winding {
             case .nonZero: region.addLoopWithNonZeroWinding(loops: _path.identity.breakLoop(), reference: reference)

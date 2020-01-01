@@ -32,7 +32,7 @@ extension Shape {
         
         let context = ImageContext<RGBA32ColorPixel>(width: Int(ceil(bound.width)), height: Int(ceil(bound.height)), colorSpace: .sRGB)
         
-        context.translate(x: -bound.x, y: -bound.y)
+        context.translate(x: -bound.minX, y: -bound.minY)
         
         let color = RGBColorModel(red: 0.0, green: 0.5, blue: 1.0)
         context.draw(shape: self, winding: .nonZero, color: color, opacity: 0.2)

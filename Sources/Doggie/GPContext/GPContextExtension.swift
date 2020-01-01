@@ -151,7 +151,6 @@ extension GPContext {
 extension GPContext {
     
     public func draw(image: CGImage, in rect: Rect) {
-        let rect = rect.standardized
         let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
         self.draw(image: image, transform: transform)
     }
@@ -239,7 +238,7 @@ extension GPContext {
         self.clip(shape: shape, winding: winding)
         
         let boundary = shape.originalBoundary
-        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.x, y: boundary.y) * shape.transform
+        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
         
         self.concatenate(transform)
         

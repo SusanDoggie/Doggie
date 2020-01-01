@@ -658,16 +658,15 @@ extension Shape.Component {
     
     @inlinable
     public init(rect: Rect) {
-        let points = rect.standardized.points
+        let points = rect.points
         self.init(start: points[0], closed: true, segments: [.line(points[1]), .line(points[2]), .line(points[3])])
     }
     
     @inlinable
     public init(roundedRect rect: Rect, radius: Radius) {
-        let rect = rect.standardized
         let x_radius = Swift.min(0.5 * rect.width, abs(radius.x))
         let y_radius = Swift.min(0.5 * rect.height, abs(radius.y))
-        let transform = SDTransform.scale(x: x_radius, y: y_radius) * SDTransform.translate(x: x_radius + rect.x, y: y_radius + rect.y)
+        let transform = SDTransform.scale(x: x_radius, y: y_radius) * SDTransform.translate(x: x_radius + rect.minX, y: y_radius + rect.minY)
         
         let x_padding = rect.width - 2 * x_radius
         let y_padding = rect.height - 2 * y_radius
@@ -688,7 +687,6 @@ extension Shape.Component {
     
     @inlinable
     public init(ellipseIn rect: Rect) {
-        let rect = rect.standardized
         let transform = SDTransform.scale(x: 0.5 * rect.width, y: 0.5 * rect.height) * SDTransform.translate(x: rect.midX, y: rect.midY)
         let segments: [Shape.Segment] = [
             .cubic(bezier_circle[1] * transform, bezier_circle[2] * transform, bezier_circle[3] * transform),

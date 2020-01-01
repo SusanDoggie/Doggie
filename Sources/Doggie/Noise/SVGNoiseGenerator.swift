@@ -238,9 +238,9 @@ extension SVGNoiseGenerator {
             }
             
             stitch.width = Int(stitchTile.width * baseFreqX + 0.5)
-            stitch.wrapX = Int(stitchTile.x * baseFreqX + 4096 + Double(stitch.width))
+            stitch.wrapX = Int(stitchTile.minX * baseFreqX + 4096 + Double(stitch.width))
             stitch.height = Int(stitchTile.height * baseFreqY + 0.5)
-            stitch.wrapY = Int(stitchTile.y * baseFreqY + 4096 + Double(stitch.height))
+            stitch.wrapY = Int(stitchTile.minY * baseFreqY + 4096 + Double(stitch.height))
         }
         
         var fSum = 0.0

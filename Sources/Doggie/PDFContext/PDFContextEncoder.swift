@@ -217,16 +217,15 @@ extension PDFContext {
         
         for (page, contents) in zip(self.pages, _pages_contents) {
             
-            let _media = page.media.standardized
             let _mirrored_bleed = page._mirrored_bleed
             let _mirrored_trim = page._mirrored_trim
             let _mirrored_margin = page._mirrored_margin
             
             let media = [
-                Decimal(_media.minX).rounded(scale: 9),
-                Decimal(_media.minY).rounded(scale: 9),
-                Decimal(_media.maxX).rounded(scale: 9),
-                Decimal(_media.maxY).rounded(scale: 9),
+                Decimal(page.media.minX).rounded(scale: 9),
+                Decimal(page.media.minY).rounded(scale: 9),
+                Decimal(page.media.maxX).rounded(scale: 9),
+                Decimal(page.media.maxY).rounded(scale: 9),
             ]
             let bleed = [
                 Decimal(_mirrored_bleed.minX).rounded(scale: 9),
@@ -388,12 +387,11 @@ extension PDFContext.Page {
         
         let _resources = xref.count + 3 + transparency_layers.count + mask.count << 1
         
-        let _bbox = self.media.standardized
         let bbox = [
-            Decimal(_bbox.minX).rounded(scale: 9),
-            Decimal(_bbox.minY).rounded(scale: 9),
-            Decimal(_bbox.maxX).rounded(scale: 9),
-            Decimal(_bbox.maxY).rounded(scale: 9),
+            Decimal(self.media.minX).rounded(scale: 9),
+            Decimal(self.media.minY).rounded(scale: 9),
+            Decimal(self.media.maxX).rounded(scale: 9),
+            Decimal(self.media.maxY).rounded(scale: 9),
         ]
         
         for (name, commands) in mask {

@@ -49,10 +49,6 @@ extension Rect {
     @inlinable
     @inline(__always)
     public func inset(by insets: EdgeInsets) -> Rect {
-        let rect = self.standardized
-        return Rect(x: rect.x + insets.left,
-                    y: rect.y + insets.top,
-                    width: rect.width - insets.left - insets.right,
-                    height: rect.height - insets.top - insets.bottom)
+        return Rect(x: minX + insets.left, y: minY + insets.top, width: width - insets.left - insets.right, height: height - insets.top - insets.bottom)
     }
 }

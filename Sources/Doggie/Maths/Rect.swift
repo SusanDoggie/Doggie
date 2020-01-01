@@ -63,7 +63,7 @@ extension Rect: CustomStringConvertible {
     @inlinable
     @inline(__always)
     public var description: String {
-        return "Rect(x: \(x), y: \(y), width: \(width), height: \(height))"
+        return "Rect(x: \(origin.x), y: \(origin.y), width: \(size.width), height: \(size.height))"
     }
 }
 
@@ -90,34 +90,12 @@ extension Rect {
     
     @inlinable
     @inline(__always)
-    public var x : Double {
-        get {
-            return origin.x
-        }
-        set {
-            origin.x = newValue
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var y : Double {
-        get {
-            return origin.y
-        }
-        set {
-            origin.y = newValue
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
     public var width : Double {
         get {
-            return size.width
+            return abs(size.width)
         }
         set {
-            size.width = newValue
+            size.width = size.width < 0 ? -newValue : newValue
         }
     }
     
@@ -125,10 +103,10 @@ extension Rect {
     @inline(__always)
     public var height : Double {
         get {
-            return size.height
+            return abs(size.height)
         }
         set {
-            size.height = newValue
+            size.height = size.height < 0 ? -newValue : newValue
         }
     }
 }
@@ -138,41 +116,41 @@ extension Rect {
     @inlinable
     @inline(__always)
     public var minX : Double {
-        return width < 0 ? x + width : x
+        return size.width < 0 ? origin.x + size.width : origin.x
     }
     @inlinable
     @inline(__always)
     public var minY : Double {
-        return height < 0 ? y + height : y
+        return size.height < 0 ? origin.y + size.height : origin.y
     }
     @inlinable
     @inline(__always)
     public var maxX : Double {
-        return width < 0 ? x : x + width
+        return size.width < 0 ? origin.x : origin.x + size.width
     }
     @inlinable
     @inline(__always)
     public var maxY : Double {
-        return height < 0 ? y : y + height
+        return size.height < 0 ? origin.y : origin.y + size.height
     }
     @inlinable
     @inline(__always)
     public var midX : Double {
         get {
-            return 0.5 * width + x
+            return 0.5 * size.width + origin.x
         }
         set {
-            x = newValue - 0.5 * width
+            origin.x = newValue - 0.5 * size.width
         }
     }
     @inlinable
     @inline(__always)
     public var midY : Double {
         get {
-            return 0.5 * height + y
+            return 0.5 * size.height + origin.y
         }
         set {
-            y = newValue - 0.5 * height
+            origin.y = newValue - 0.5 * size.height
         }
     }
     @inlinable
@@ -182,8 +160,8 @@ extension Rect {
             return Point(x: midX, y: midY)
         }
         set {
-            midX = newValue.x
-            midY = newValue.y
+            self.midX = newValue.x
+            self.midY = newValue.y
         }
     }
 }
@@ -193,7 +171,7 @@ extension Rect {
     @inlinable
     @inline(__always)
     public var standardized: Rect {
-        return Rect(x: minX, y: minY, width: abs(width), height: abs(height))
+        return Rect(x: minX, y: minY, width: width, height: height)
     }
 }
 
@@ -202,7 +180,7 @@ extension Rect {
     @inlinable
     @inline(__always)
     public func aspectFit(bound: Rect) -> Rect {
-        var rect = Rect(origin: Point(), size: self.size.aspectFit(bound.size))
+        var rect = Rect(origin: Point(), size: size.aspectFit(bound.size))
         rect.center = bound.center
         return rect
     }
@@ -210,7 +188,7 @@ extension Rect {
     @inlinable
     @inline(__always)
     public func aspectFill(bound: Rect) -> Rect {
-        var rect = Rect(origin: Point(), size: self.size.aspectFill(bound.size))
+        var rect = Rect(origin: Point(), size: size.aspectFill(bound.size))
         rect.center = bound.center
         return rect
     }
@@ -281,13 +259,12 @@ extension Rect {
     @inlinable
     @inline(__always)
     public func inset(dx: Double, dy: Double) -> Rect {
-        let rect = self.standardized
-        return Rect(x: rect.x + dx, y: rect.y + dy, width: rect.width - 2 * dx, height: rect.height - 2 * dy)
+        return Rect(x: minX + dx, y: minY + dy, width: width - 2 * dx, height: height - 2 * dy)
     }
     @inlinable
     @inline(__always)
     public func offset(dx: Double, dy: Double) -> Rect {
-        return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
+        return Rect(x: minX + dx, y: minY + dy, width: width, height: height)
     }
     @inlinable
     @inline(__always)
