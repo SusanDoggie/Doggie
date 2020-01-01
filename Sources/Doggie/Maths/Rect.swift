@@ -286,12 +286,6 @@ extension Rect {
     }
     @inlinable
     @inline(__always)
-    public func inset(top: Double, left: Double, right: Double, bottom: Double) -> Rect {
-        let rect = self.standardized
-        return Rect(x: rect.x + left, y: rect.y + top, width: rect.width - left - right, height: rect.height - top - bottom)
-    }
-    @inlinable
-    @inline(__always)
     public func offset(dx: Double, dy: Double) -> Rect {
         return Rect(x: self.x + dx, y: self.y + dy, width: self.width, height: self.height)
     }
