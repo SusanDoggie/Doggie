@@ -814,7 +814,7 @@ extension Shape : RangeReplaceableCollection {
 extension Shape {
     
     public var identity : Shape {
-        if transform == SDTransform.identity {
+        if transform == .identity {
             return self
         }
         return cache.lck.synchronized {

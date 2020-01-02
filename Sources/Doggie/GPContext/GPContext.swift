@@ -382,7 +382,11 @@ extension GPContext {
     
     public func draw(image: CIImage, transform: SDTransform) {
         
-        var image = image.transformed(by: transform * self.transform)
+        let transform = transform * self.transform
+        
+        guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
+        
+        var image = transform == .identity ? image : image.transformed(by: transform)
         image = image.clamped(to: extent)._insertingIntermediate()
         
         self.draw_shadow(image, true)
