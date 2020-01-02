@@ -95,7 +95,10 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _
                         for x in min_x...max_x {
                             
                             let _k = Float64ColorPixel(_kernel.pointee)
-                            let w = exp(_c0 * Double(x * x) + _c1 * Double(y * y) + _c2 * dot(_p, _k))
+                            let _x = _c0 * Double(x * x)
+                            let _y = _c1 * Double(y * y)
+                            let _z = _c2 * dot(_p, _k)
+                            let w = exp(_x + _y + _z)
                             
                             s += w * _k
                             t += w
@@ -188,7 +191,10 @@ public func BilateralFilter<Pixel : _FloatComponentPixel>(_ texture: Texture<Pix
                         for x in min_x...max_x {
                             
                             let _k = _kernel.pointee
-                            let w = Pixel.Scalar.exp(_c0 * Pixel.Scalar(x * x) + _c1 * Pixel.Scalar(y * y) + _c2 * dot(_p, _k))
+                            let _x = _c0 * Pixel.Scalar(x * x)
+                            let _y = _c1 * Pixel.Scalar(y * y)
+                            let _z = _c2 * dot(_p, _k)
+                            let w = Pixel.Scalar.exp(_x + _y + _z)
                             
                             s += w * _k
                             t += w
