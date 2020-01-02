@@ -45,11 +45,7 @@
 
 @_exported import CoreImage
 
-#endif
-
-#if canImport(QuartzCore)
-
-@_exported import QuartzCore
+@_exported import CoreImage.CIFilterBuiltins
 
 #endif
 

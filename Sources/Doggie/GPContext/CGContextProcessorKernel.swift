@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreImage) || canImport(QuartzCore)
+#if canImport(CoreImage)
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 final class CGContextProcessorKernel: CIImageProcessorKernel {

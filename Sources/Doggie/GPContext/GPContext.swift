@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreImage) || canImport(QuartzCore)
+#if canImport(CoreImage)
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private struct GPContextStyles {

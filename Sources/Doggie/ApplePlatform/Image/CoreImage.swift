@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreImage) || canImport(QuartzCore)
+#if canImport(CoreImage)
 
 extension CIFilter {
     
