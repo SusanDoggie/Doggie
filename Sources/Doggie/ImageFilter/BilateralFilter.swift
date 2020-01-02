@@ -32,8 +32,20 @@ public func BilateralFilter<Pixel>(_ image: Image<Pixel>, _ spatial: Double, _ r
 @inlinable
 @inline(__always)
 public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Double, _ range: Double) -> Texture<Pixel> {
+    return BilateralFilter(texture, Size(width: spatial, height: spatial), range)
+}
+
+@inlinable
+@inline(__always)
+public func BilateralFilter<Pixel>(_ image: Image<Pixel>, _ spatial: Size, _ range: Double) -> Image<Pixel> {
+    return Image(texture: BilateralFilter(Texture(image: image), spatial, range), resolution: image.resolution, colorSpace: image.colorSpace)
+}
+
+@inlinable
+@inline(__always)
+public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _ range: Double) -> Texture<Pixel> {
     
-    precondition(spatial > 0, "spatial is less than or equal to zero.")
+    precondition(spatial.width > 0 || spatial.height > 0, "spatial is less than or equal to zero.")
     precondition(range > 0, "range is less than or equal to zero.")
     
     @inline(__always)
@@ -42,15 +54,17 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Double,
         return d.color.reduce(d.opacity * d.opacity) { $0 + $1 * $1 }
     }
     
-    let _r = Int(ceil(6 * spatial)) >> 1
+    let _r0 = Int(ceil(6 * spatial.width)) >> 1
+    let _r1 = Int(ceil(6 * spatial.height)) >> 1
     
     var result = texture
     
     let width = texture.width
     let height = texture.height
     
-    let _c0 = -0.5 / (spatial * spatial)
-    let _c1 = -0.5 / (range * range)
+    let _c0 = -0.5 / (spatial.width * spatial.width)
+    let _c1 = -0.5 / (spatial.height * spatial.height)
+    let _c2 = -0.5 / (range * range)
     
     result.withUnsafeMutableBufferPointer {
         
@@ -62,13 +76,13 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Double,
             
             for j in 0..<height {
                 
-                let min_y = max(0, j - _r) - j
-                let max_y = min(height - 1, j + _r) - j
+                let min_y = max(0, j - _r1) - j
+                let max_y = min(height - 1, j + _r1) - j
                 
                 for i in 0..<width {
                     
-                    let min_x = max(0, i - _r) - i
-                    let max_x = min(width - 1, i + _r) - i
+                    let min_x = max(0, i - _r0) - i
+                    let max_x = min(width - 1, i + _r0) - i
                     
                     var kernel = texture + min_x + min_y * width
                     
@@ -81,7 +95,7 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Double,
                         for x in min_x...max_x {
                             
                             let _k = Float64ColorPixel(_kernel.pointee)
-                            let w = exp(_c0 * Double(x * x + y * y) + _c1 * dot(_p, _k))
+                            let w = exp(_c0 * Double(x * x) + _c1 * Double(y * y) + _c2 * dot(_p, _k))
                             
                             s += w * _k
                             t += w
@@ -111,8 +125,20 @@ public func BilateralFilter<Pixel : _FloatComponentPixel>(_ image: Image<Pixel>,
 @inlinable
 @inline(__always)
 public func BilateralFilter<Pixel : _FloatComponentPixel>(_ texture: Texture<Pixel>, _ spatial: Pixel.Scalar, _ range: Pixel.Scalar) -> Texture<Pixel> where Pixel.Scalar : FloatingMathProtocol {
+    return BilateralFilter(texture, Size(width: Double(spatial), height: Double(spatial)), Double(range))
+}
+
+@inlinable
+@inline(__always)
+public func BilateralFilter<Pixel : _FloatComponentPixel>(_ image: Image<Pixel>, _ spatial: Size, _ range: Double) -> Image<Pixel> where Pixel.Scalar : FloatingMathProtocol {
+    return Image(texture: BilateralFilter(Texture(image: image), spatial, range), resolution: image.resolution, colorSpace: image.colorSpace)
+}
+
+@inlinable
+@inline(__always)
+public func BilateralFilter<Pixel : _FloatComponentPixel>(_ texture: Texture<Pixel>, _ spatial: Size, _ range: Double) -> Texture<Pixel> where Pixel.Scalar : FloatingMathProtocol {
     
-    precondition(spatial > 0, "spatial is less than or equal to zero.")
+    precondition(spatial.width > 0 || spatial.height > 0, "spatial is less than or equal to zero.")
     precondition(range > 0, "range is less than or equal to zero.")
     
     @inline(__always)
@@ -121,15 +147,17 @@ public func BilateralFilter<Pixel : _FloatComponentPixel>(_ texture: Texture<Pix
         return d._color.reduce(d._opacity * d._opacity) { $0 + $1 * $1 }
     }
     
-    let _r = Int(ceil(6 * spatial)) >> 1
+    let _r0 = Int(ceil(6 * spatial.width)) >> 1
+    let _r1 = Int(ceil(6 * spatial.height)) >> 1
     
     var result = texture
     
     let width = texture.width
     let height = texture.height
     
-    let _c0 = -0.5 / (spatial * spatial)
-    let _c1 = -0.5 / (range * range)
+    let _c0 = -0.5 / Pixel.Scalar(spatial.width * spatial.width)
+    let _c1 = -0.5 / Pixel.Scalar(spatial.height * spatial.height)
+    let _c2 = -0.5 / Pixel.Scalar(range * range)
     
     result.withUnsafeMutableBufferPointer {
         
@@ -141,13 +169,13 @@ public func BilateralFilter<Pixel : _FloatComponentPixel>(_ texture: Texture<Pix
             
             for j in 0..<height {
                 
-                let min_y = max(0, j - _r) - j
-                let max_y = min(height - 1, j + _r) - j
+                let min_y = max(0, j - _r1) - j
+                let max_y = min(height - 1, j + _r1) - j
                 
                 for i in 0..<width {
                     
-                    let min_x = max(0, i - _r) - i
-                    let max_x = min(width - 1, i + _r) - i
+                    let min_x = max(0, i - _r0) - i
+                    let max_x = min(width - 1, i + _r0) - i
                     
                     var kernel = texture + min_x + min_y * width
                     
@@ -160,7 +188,7 @@ public func BilateralFilter<Pixel : _FloatComponentPixel>(_ texture: Texture<Pix
                         for x in min_x...max_x {
                             
                             let _k = _kernel.pointee
-                            let w = Pixel.Scalar.exp(_c0 * Pixel.Scalar(x * x + y * y) + _c1 * dot(_p, _k))
+                            let w = Pixel.Scalar.exp(_c0 * Pixel.Scalar(x * x) + _c1 * Pixel.Scalar(y * y) + _c2 * dot(_p, _k))
                             
                             s += w * _k
                             t += w
