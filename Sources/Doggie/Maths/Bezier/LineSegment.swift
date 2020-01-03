@@ -185,6 +185,26 @@ extension LineSegment where Element == Point {
     
     @inlinable
     @inline(__always)
+    public func _closest(_ point: Point) -> Double {
+        let a = p0 - point
+        let b = p1 - p0
+        let c = b.x * a.x + b.y * a.y
+        let d = b.x * b.x + b.y * b.y
+        return -c / d
+    }
+    @inlinable
+    @inline(__always)
+    public func distance(from point: Point) -> Double {
+        let d = p1 - p0
+        let m = p0.y * p1.x - p0.x * p1.y
+        return abs(d.y * point.x - d.x * point.y + m) / d.magnitude
+    }
+}
+
+extension LineSegment where Element == Point {
+    
+    @inlinable
+    @inline(__always)
     public func closest(_ point: Point, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double] {
         let a = p0 - point
         let b = p1 - p0
