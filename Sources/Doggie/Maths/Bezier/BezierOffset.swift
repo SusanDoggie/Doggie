@@ -235,7 +235,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             if let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
                 try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
             } else {
-                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated()))
+                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated())
             }
             
             s = t
@@ -288,13 +288,13 @@ extension BezierProtocol where Scalar == Double, Element == Point {
                 if let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
                     try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
                 } else {
-                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated()))
+                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated())
                 }
             } else {
                 if let (c0, c1) = CubicBezierFitting(q0, q3, -d0, d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
                     try calback(s...t, CubicBezier(q0, q0 - c0 * d0, q3 + c1 * d3, q3))
                 } else {
-                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, -d0, d3), q3).elevated()))
+                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, -d0, d3), q3).elevated())
                 }
             }
         }
@@ -348,7 +348,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             if let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
                 try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
             } else {
-                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated()))
+                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated())
             }
             
             s = t
@@ -401,13 +401,13 @@ extension BezierProtocol where Scalar == Double, Element == Point {
                 if let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
                     try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
                 } else {
-                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated()))
+                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated())
                 }
             } else {
                 if let (c0, c1) = CubicBezierFitting(q0, q3, -d0, d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
                     try calback(s...t, CubicBezier(q0, q0 - c0 * d0, q3 + c1 * d3, q3))
                 } else {
-                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, -d0, d3), q3).elevated()))
+                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, -d0, d3), q3).elevated())
                 }
             }
         }
