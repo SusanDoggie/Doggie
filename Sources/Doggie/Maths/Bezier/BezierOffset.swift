@@ -23,18 +23,18 @@
 //  THE SOFTWARE.
 //
 
-public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point) -> Point {
+public func QuadBezierFitting(_ p0: Point, _ p2: Point, _ m0: Point, _ m2: Point) -> QuadBezier<Point>? {
     let a = p2.x - p0.x
     let b = p2.y - p0.y
     let c = m0.x * m2.y - m0.y * m2.x
     if c.almostZero() {
-        return 0.5 * (p0 + p2)
+        return nil
     }
     let d = a * m2.y - b * m2.x
-    return p0 + m0 * d / c
+    return QuadBezier(p0, p0 + m0 * d / c, p2)
 }
 
-public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> (Double, Double)? {
+public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> CubicBezier<Point>? {
     
     var _a1 = 0.0
     var _b1 = 0.0
@@ -81,7 +81,7 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
     let u = (_c2 * _b1 - _c1 * _b2) * _t
     let v = (_c1 * _a2 - _c2 * _a1) * _t
     
-    return (u, v)
+    return CubicBezier(p0, p0 + u * m0, p3 + v * m1, p3)
 }
 
 extension BezierProtocol where Scalar == Double, Element == Point {
@@ -232,10 +232,12 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let m1 = self._offset_point(a, 0.5 * (t - s) + s) else { continue }
             guard let m2 = self._offset_point(a, 0.75 * (t - s) + s) else { continue }
             
-            if let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
-                try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
+            if let curve = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
+                try calback(s...t, curve)
+            } else if let curve = QuadBezierFitting(q0, q3, d0, -d3) {
+                try calback(s...t, curve.elevated())
             } else {
-                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated())
+                try calback(s...t, LineSegment(q0, q3).elevated().elevated())
             }
             
             s = t
@@ -285,16 +287,20 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let m2 = self._offset_point(a, 0.75 * (t - s) + s) else { return }
             
             if a.sign == angle.sign {
-                if let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
-                    try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
+                if let curve = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
+                    try calback(s...t, curve)
+                } else if let curve = QuadBezierFitting(q0, q3, d0, -d3) {
+                    try calback(s...t, curve.elevated())
                 } else {
-                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated())
+                    try calback(s...t, LineSegment(q0, q3).elevated().elevated())
                 }
             } else {
-                if let (c0, c1) = CubicBezierFitting(q0, q3, -d0, d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
-                    try calback(s...t, CubicBezier(q0, q0 - c0 * d0, q3 + c1 * d3, q3))
+                if let curve = CubicBezierFitting(q0, q3, -d0, d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
+                    try calback(s...t, curve)
+                } else if let curve = QuadBezierFitting(q0, q3, -d0, d3) {
+                    try calback(s...t, curve.elevated())
                 } else {
-                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, -d0, d3), q3).elevated())
+                    try calback(s...t, LineSegment(q0, q3).elevated().elevated())
                 }
             }
         }
@@ -345,10 +351,12 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let m1 = _offset_point(0.5 * (t - s) + s) else { continue }
             guard let m2 = _offset_point(0.75 * (t - s) + s) else { continue }
             
-            if let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
-                try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
+            if let curve = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
+                try calback(s...t, curve)
+            } else if let curve = QuadBezierFitting(q0, q3, d0, -d3) {
+                try calback(s...t, curve.elevated())
             } else {
-                try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated())
+                try calback(s...t, LineSegment(q0, q3).elevated().elevated())
             }
             
             s = t
@@ -398,16 +406,20 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             let angle_signed = angle.sign == .minus
             
             if signed == angle_signed {
-                if let (c0, c1) = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
-                    try calback(s...t, CubicBezier(q0, q0 + c0 * d0, q3 - c1 * d3, q3))
+                if let curve = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
+                    try calback(s...t, curve)
+                } else if let curve = QuadBezierFitting(q0, q3, d0, -d3) {
+                    try calback(s...t, curve.elevated())
                 } else {
-                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, d0, -d3), q3).elevated())
+                    try calback(s...t, LineSegment(q0, q3).elevated().elevated())
                 }
             } else {
-                if let (c0, c1) = CubicBezierFitting(q0, q3, -d0, d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
-                    try calback(s...t, CubicBezier(q0, q0 - c0 * d0, q3 + c1 * d3, q3))
+                if let curve = CubicBezierFitting(q0, q3, -d0, d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
+                    try calback(s...t, curve)
+                } else if let curve = QuadBezierFitting(q0, q3, -d0, d3) {
+                    try calback(s...t, curve.elevated())
                 } else {
-                    try calback(s...t, QuadBezier(q0, QuadBezierFitting(q0, q3, -d0, d3), q3).elevated())
+                    try calback(s...t, LineSegment(q0, q3).elevated().elevated())
                 }
             }
         }

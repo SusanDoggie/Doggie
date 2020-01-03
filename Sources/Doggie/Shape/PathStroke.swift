@@ -94,7 +94,7 @@ extension Shape.StrokeBuffer.Segment {
         }
     }
     
-    var startDirection: Point {
+    var start_direction: Point {
         switch self {
         case let .line(p0, p1): return p1 - p0
         case let .quad(p0, p1, p2):
@@ -116,7 +116,7 @@ extension Shape.StrokeBuffer.Segment {
         }
     }
     
-    var endDirection: Point {
+    var end_direction: Point {
         switch self {
         case let .line(p0, p1): return p1 - p0
         case let .quad(p0, p1, p2):
@@ -150,7 +150,7 @@ extension Shape.StrokeBuffer {
             case .round:
                 do {
                     let last_point = last!.end
-                    let a = last!.endDirection.phase - 0.5 * .pi
+                    let a = last!.end_direction.phase - 0.5 * .pi
                     let r = 0.5 * width
                     let _bezier_circle = bezier_circle.lazy.map { $0 * SDTransform.rotate(a) * r + last_point }
                     buffer1.append(.cubic(_bezier_circle[1], _bezier_circle[2], _bezier_circle[3]))
@@ -158,7 +158,7 @@ extension Shape.StrokeBuffer {
                 }
                 do {
                     let start_point = first!.start
-                    let a = first!.startDirection.phase - 0.5 * .pi
+                    let a = first!.start_direction.phase - 0.5 * .pi
                     let r = -0.5 * width
                     let _bezier_circle = bezier_circle.lazy.map { $0 * SDTransform.rotate(a) * r + start_point }
                     cap_buffer.append(.cubic(_bezier_circle[1], _bezier_circle[2], _bezier_circle[3]))
@@ -166,7 +166,7 @@ extension Shape.StrokeBuffer {
                 }
             case .square:
                 do {
-                    let d = last!.endDirection
+                    let d = last!.end_direction
                     let m = d.magnitude
                     let u = width * 0.5 * d.y / m
                     let v = -width * 0.5 * d.x / m
@@ -175,7 +175,7 @@ extension Shape.StrokeBuffer {
                     buffer1.append(.line(reverse_start))
                 }
                 do {
-                    let d = first!.startDirection
+                    let d = first!.start_direction
                     let m = d.magnitude
                     let u = -width * 0.5 * d.y / m
                     let v = width * 0.5 * d.x / m
@@ -199,15 +199,15 @@ extension Shape.StrokeBuffer {
     
     mutating func addJoin(_ segment: Segment) {
         
-        let ph0 = last!.endDirection.phase
-        let ph1 = segment.startDirection.phase
+        let ph0 = last!.end_direction.phase
+        let ph1 = segment.start_direction.phase
         let angle = (ph1 - ph0).remainder(dividingBy: 2 * .pi)
         if !angle.almostZero() {
             switch join {
             case let .miter(limit):
                 if limit * sin(0.5 * (.pi - abs(angle))) < 1 {
                     do {
-                        let d = segment.startDirection
+                        let d = segment.start_direction
                         let m = d.magnitude
                         let u = width * 0.5 * d.y / m
                         let v = -width * 0.5 * d.x / m
@@ -217,12 +217,12 @@ extension Shape.StrokeBuffer {
                 } else {
                     if angle > 0 {
                         do {
-                            let d0 = last!.endDirection
+                            let d0 = last!.end_direction
                             let m0 = d0.magnitude
                             let u0 = width * 0.5 * d0.y / m0
                             let v0 = -width * 0.5 * d0.x / m0
                             
-                            let d1 = segment.startDirection
+                            let d1 = segment.start_direction
                             let m1 = d1.magnitude
                             let u1 = width * 0.5 * d1.y / m1
                             let v1 = -width * 0.5 * d1.x / m1
@@ -239,19 +239,19 @@ extension Shape.StrokeBuffer {
                         buffer2.append(.line(reverse_start))
                     } else {
                         do {
-                            let d = segment.startDirection
+                            let d = segment.start_direction
                             let m = d.magnitude
                             let u = width * 0.5 * d.y / m
                             let v = -width * 0.5 * d.x / m
                             buffer1.append(.line(segment.start + Point(x: u, y: v)))
                         }
                         do {
-                            let d0 = segment.startDirection
+                            let d0 = segment.start_direction
                             let m0 = d0.magnitude
                             let u0 = -width * 0.5 * d0.y / m0
                             let v0 = width * 0.5 * d0.x / m0
                             
-                            let d1 = last!.endDirection
+                            let d1 = last!.end_direction
                             let m1 = d1.magnitude
                             let u1 = -width * 0.5 * d1.y / m1
                             let v1 = width * 0.5 * d1.x / m1
@@ -322,7 +322,7 @@ extension Shape.StrokeBuffer {
             switch join {
             case .bevel:
                 do {
-                    let d = segment.startDirection
+                    let d = segment.start_direction
                     let m = d.magnitude
                     let u = width * 0.5 * d.y / m
                     let v = -width * 0.5 * d.x / m
