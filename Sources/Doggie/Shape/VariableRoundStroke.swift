@@ -91,7 +91,7 @@ extension Shape.Component {
         var segments1: [Shape.Segment] = []
         var segments2: [Shape.Segment] = []
         
-        func add_round_node(_ p0: Point, _ p1: Point, _ center: Point, _ join: Bool, _ segments: inout [Shape.Segment]) {
+        func add_round_node(_ p0: Point, _ p1: Point, _ center: Point, _ join: Bool, _ reverse: Bool, _ segments: inout [Shape.Segment]) {
             
             guard !p0.almostEqual(p1) else { return }
             
@@ -104,14 +104,20 @@ extension Shape.Component {
             let angle = join ? (a1 - a0).remainder(dividingBy: 2 * .pi) : positive_mod(a1 - a0, 2 * .pi)
             let arc = BezierArc(angle).map { radius * $0 * SDTransform.rotate(a0) + center }
             
-            for i in 0..<arc.count / 3 {
-                segments.append(.cubic(arc[i * 3 + 1], arc[i * 3 + 2], arc[i * 3 + 3]))
+            if reverse {
+                for i in (0..<arc.count / 3).reversed() {
+                    segments.append(.cubic(arc[i * 3 + 1], arc[i * 3 + 2], arc[i * 3 + 3]))
+                }
+            } else {
+                for i in 0..<arc.count / 3 {
+                    segments.append(.cubic(arc[i * 3 + 1], arc[i * 3 + 2], arc[i * 3 + 3]))
+                }
             }
         }
         
         func flush(_ center: Point) {
             guard let l0 = segments1.last?.end else { return }
-            add_round_node(l0, reverse_start, center, false, &segments1)
+            add_round_node(l0, reverse_start, center, false, false, &segments1)
             result.append(Shape.Component(start: start, closed: true, segments: segments1 + segments2.reversed()))
             segments1.removeAll(keepingCapacity: true)
             segments2.removeAll(keepingCapacity: true)
@@ -127,10 +133,10 @@ extension Shape.Component {
                 }
                 
                 if let l0 = segments1.last?.end {
-                    add_round_node(l0, p0, last.center, true, &segments1)
-                    add_round_node(q1, reverse_start, last.center, true, &segments2)
+                    add_round_node(l0, p0, last.center, true, false, &segments1)
+                    add_round_node(q1, reverse_start, last.center, true, true, &segments2)
                 } else {
-                    add_round_node(q1, p0, last.center, false, &segments1)
+                    add_round_node(q1, p0, last.center, false, false, &segments1)
                     start = q1
                 }
                 reverse_start = q0
