@@ -37,7 +37,7 @@ public func LaplacianOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] wh
     
     for y in -s...s {
         for x in -s...s {
-            let k = _t * T(x * x + y * y) / -t
+            let k = T(x * x + y * y) / -t
             filter.append((1 + k) * T.exp(k) / c)
         }
     }
