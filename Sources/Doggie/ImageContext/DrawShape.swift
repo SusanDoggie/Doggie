@@ -69,7 +69,7 @@ extension ImageContext {
                         _stencil += antialias * _min_x + _min_y * _stencil_width2
                         
                         let _antialias2 = antialias * antialias
-                        let div = 1 / Float(_antialias2)
+                        let div = Float(_antialias2)
                         
                         for _ in _min_y..<_max_y {
                             
@@ -94,7 +94,7 @@ extension ImageContext {
                                 }
                                 
                                 if _p != 0 {
-                                    _buf.pointee = _p == _antialias2 ? 1 : div * Float(_p)
+                                    _buf.pointee = _p == _antialias2 ? 1 : Float(_p) / div
                                 }
                                 
                                 _buf += 1
@@ -119,7 +119,7 @@ extension ImageContext {
                         _stencil += antialias * _min_x + _min_y * _stencil_width2
                         
                         let _antialias2 = antialias * antialias
-                        let div = 1 / Double(_antialias2)
+                        let div = Double(_antialias2)
                         
                         for _ in _min_y..<_max_y {
                             
@@ -148,7 +148,7 @@ extension ImageContext {
                                     if _p != 0 {
                                         var color = color
                                         if _p != _antialias2 {
-                                            color.opacity *= div * Double(_p)
+                                            color.opacity *= Double(_p) / div
                                         }
                                         return color
                                     }

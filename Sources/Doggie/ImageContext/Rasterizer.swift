@@ -46,12 +46,10 @@ extension RasterizeBufferProtocol {
         
         guard !det.almostZero() else { return }
         
-        let _det = 1 / det
-        
-        let s0 = (p1.y - p2.y) * _det
-        let s1 = (p2.x - p1.x) * _det
-        let t0 = (p2.y - p0.y) * _det
-        let t1 = (p0.x - p2.x) * _det
+        let s0 = (p1.y - p2.y) / det
+        let s1 = (p2.x - p1.x) / det
+        let t0 = (p2.y - p0.y) / det
+        let t1 = (p0.x - p2.x) / det
         
         let s2 = s0 * p2.x + s1 * p2.y
         let t2 = t0 * p2.x + t1 * p2.y
@@ -89,9 +87,8 @@ extension RasterizeBufferProtocol {
             if d.almostZero() {
                 return nil
             }
-            let _d = 1 / d
-            let q = (p1.x - p0.x) * _d
-            let r = (p0.x * p1.y - p1.x * p0.y) * _d
+            let q = (p1.x - p0.x) / d
+            let r = (p0.x * p1.y - p1.x * p0.y) / d
             return (q * y + r, q)
         }
         

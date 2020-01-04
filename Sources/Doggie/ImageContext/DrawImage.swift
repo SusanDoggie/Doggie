@@ -48,7 +48,7 @@ extension ImageContext {
                 var blender = blender
                 
                 let __transform = SDTransform.scale(1 / Double(antialias)) * _transform
-                let div = 1 / Double(antialias * antialias)
+                let div = Double(antialias * antialias)
                 
                 stencil.withUnsafeStencilTexture { stencil in
                     for y in stride(from: 0, to: height * antialias, by: antialias) {
@@ -60,7 +60,7 @@ extension ImageContext {
                                         pixel += stencil.pixel(Point(x: _x, y: _y) * __transform)
                                     }
                                 }
-                                return Float64ColorPixel(color: color, opacity: Double(pixel) * div)
+                                return Float64ColorPixel(color: color, opacity: Double(pixel) / div)
                             }
                             blender += 1
                         }
@@ -106,7 +106,7 @@ extension ImageContext {
                 var blender = blender
                 
                 let __transform = SDTransform.scale(1 / Double(antialias)) * _transform
-                let div = 1 / Double(antialias * antialias)
+                let div = Double(antialias * antialias)
                 
                 texture.withUnsafeTexture { texture in
                     for y in stride(from: 0, to: height * antialias, by: antialias) {
@@ -118,7 +118,7 @@ extension ImageContext {
                                         pixel += texture.pixel(Point(x: _x, y: _y) * __transform)
                                     }
                                 }
-                                return pixel * div
+                                return pixel / div
                             }
                             blender += 1
                         }

@@ -209,8 +209,7 @@ public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ column: Int, _ mat
                 swap_ptr += row_offset
             } while true
         }
-        let _m = 1 / m
-        vec_op(column, current_row, stride_col, current_row, stride_col) { $0 * _m }
+        vec_op(column, current_row, stride_col, current_row, stride_col) { $0 / m }
         var scan = matrix
         while scan != endptr {
             if scan != current_row {

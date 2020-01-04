@@ -43,14 +43,12 @@ public func Underpainting<Pixel>(_ texture: Texture<Pixel>, _ expand: Double, _ 
     
     func _filter(_ blur: Float) -> [Float] {
         
-        let t = 2 * blur * blur
-        let _t = -1 / t
-        
         let s = Int(ceil(6 * blur)) >> 1
+        let t = 2 * blur * blur
         
         return (-s...s).map {
             let x = Float($0)
-            return exp(x * x * _t)
+            return exp(x * x / -t)
         }
     }
     

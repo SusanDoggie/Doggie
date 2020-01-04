@@ -76,12 +76,10 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
         return nil
     }
     
-    let _t = 1 / t
+    let u = (_c2 * _b1 - _c1 * _b2) / t
+    let v = (_c1 * _a2 - _c2 * _a1) / t
     
-    let u = (_c2 * _b1 - _c1 * _b2) * _t
-    let v = (_c1 * _a2 - _c2 * _a1) * _t
-    
-    return CubicBezier(p0, p0 + u * m0, p3 + v * m1, p3)
+    return u < 0 || v < 0 ? nil : CubicBezier(p0, p0 + u * m0, p3 + v * m1, p3)
 }
 
 extension BezierProtocol where Scalar == Double, Element == Point {
@@ -160,9 +158,9 @@ extension LineSegment where Element == Point {
             return nil
         }
         
-        let m = 1 / sqrt(_x * _x + _y * _y)
-        let s = a * _y * m
-        let t = -a * _x * m
+        let m = sqrt(_x * _x + _y * _y)
+        let s = a * _y / m
+        let t = -a * _x / m
         
         return LineSegment(p0 + Point(x: s, y: t), p1 + Point(x: s, y: t))
     }

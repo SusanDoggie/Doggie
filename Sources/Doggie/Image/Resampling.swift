@@ -131,7 +131,6 @@ extension _ResamplingImplement {
         case let .lanczos(a):
             
             let a = Pixel.Scalar(a)
-            let _a = 1 / a
             
             @inline(__always)
             func _kernel(_ x: Pixel.Scalar) -> Pixel.Scalar {
@@ -140,7 +139,7 @@ extension _ResamplingImplement {
                 }
                 if x < a {
                     let _x = .pi * x
-                    let _ax = _x * _a
+                    let _ax = _x / a
                     let u = Pixel.Scalar.sin(_x) * Pixel.Scalar.sin(_ax)
                     let v = _x * _x
                     return a * u / v

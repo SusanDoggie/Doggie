@@ -148,7 +148,7 @@ public func separate_convolution_filter<T: BinaryFloatingPoint>(_ filter: [T], _
                 
                 let j = i % width
                 i /= width
-                m = 1 / sqrt(abs(m))
+                m = sqrt(abs(m))
                 
                 do {
                     
@@ -156,7 +156,7 @@ public func separate_convolution_filter<T: BinaryFloatingPoint>(_ filter: [T], _
                     var _horizontal = horizontal
                     
                     for _ in 0..<width {
-                        _horizontal.pointee = _filter.pointee * m
+                        _horizontal.pointee = _filter.pointee / m
                         _filter += 1
                         _horizontal += 1
                     }

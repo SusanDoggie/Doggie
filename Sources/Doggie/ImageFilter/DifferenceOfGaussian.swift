@@ -30,19 +30,17 @@ public func DifferenceOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T, _ k: T) 
     precondition(sd > 0, "sd is less than or equal to zero.")
     precondition(k > 0, "k is less than or equal to zero.")
     
-    let t = 2 * sd * sd
-    let c = 1 / (.pi * t)
-    let _t = -1 / t
-    let _k2 = 1 / (k * k)
-    
     let s = Int(ceil(6 * max(sd, sd * k))) >> 1
+    let t = 2 * sd * sd
+    let c = .pi * t
+    let k2 = k * k
     
     var filter: [T] = []
     
     for y in -s...s {
         for x in -s...s {
-            let u = _t * T(x * x + y * y)
-            filter.append((T.exp(u * _k2) * _k2 - T.exp(u)) * c)
+            let u = T(x * x + y * y) / -t
+            filter.append((T.exp(u / k2) / k2 - T.exp(u)) / c)
         }
     }
     

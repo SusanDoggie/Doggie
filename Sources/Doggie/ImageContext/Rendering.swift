@@ -420,7 +420,7 @@ extension _PerspectiveProjectTriangleGenerator {
         @inline(__always)
         init(vertex: Base.Vertex) {
             self.w = 1 / vertex.position.z
-            self.v = w * vertex
+            self.v = vertex / vertex.position.z
         }
         
         @inlinable

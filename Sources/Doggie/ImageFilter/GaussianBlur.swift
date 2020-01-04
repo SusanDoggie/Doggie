@@ -29,15 +29,13 @@ public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] where T: 
     
     precondition(sd > 0, "sd is less than or equal to zero.")
     
-    let t = 2 * sd * sd
-    let c = 1 / sqrt(.pi * t)
-    let _t = -1 / t
-    
     let s = Int(ceil(6 * sd)) >> 1
+    let t = 2 * sd * sd
+    let c = sqrt(.pi * t)
     
     return (-s...s).map {
         let x = T($0)
-        return T.exp(x * x * _t) * c
+        return T.exp(x * x / -t) / c
     }
 }
 
