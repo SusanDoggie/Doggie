@@ -203,7 +203,7 @@ extension Shape.StrokeBuffer {
         
         let ph0 = last.end_direction.phase
         let ph1 = segment.start_direction.phase
-        let angle = _phase_diff(ph1, ph0)
+        let angle = _phase_diff(ph1, ph0, false)
         
         guard !angle.almostZero() else { return }
         
@@ -384,7 +384,7 @@ extension Shape {
     
     public func strokePath(width: Double, cap: LineCap, join: LineJoin) -> Shape {
         
-        var buffer = StrokeBuffer(width: width, cap: cap, join: join)
+        var buffer = StrokeBuffer(width: abs(width), cap: cap, join: join)
         buffer.path.reserveCapacity(self.count << 1)
         
         for item in self.identity {

@@ -82,6 +82,8 @@ extension Shape.Component {
         
         precondition(widths.count == self.count + 1, "invalid count of widths.")
         
+        let widths = widths.map { abs($0) }
+        
         var last = Circle(center: self.start, width: widths[0])
         var last_max: Circle?
         var result: [Shape.Component] = []
@@ -101,7 +103,7 @@ extension Shape.Component {
             let a0 = (p0 - center).phase
             let a1 = (p1 - center).phase
             
-            let angle = join ? _phase_diff(a1, a0) : positive_mod(a1 - a0, 2 * .pi)
+            let angle = join ? _phase_diff(a1, a0, false) : positive_mod(a1 - a0, 2 * .pi)
             let arc = BezierArc(angle).map { radius * $0 * SDTransform.rotate(a0) + center }
             
             if reverse {
