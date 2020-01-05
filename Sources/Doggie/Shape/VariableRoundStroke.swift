@@ -101,7 +101,7 @@ extension Shape.Component {
             let a0 = (p0 - center).phase
             let a1 = (p1 - center).phase
             
-            let angle = join ? (a1 - a0).remainder(dividingBy: 2 * .pi) : positive_mod(a1 - a0, 2 * .pi)
+            let angle = join ? _phase_diff(a1, a0) : positive_mod(a1 - a0, 2 * .pi)
             let arc = BezierArc(angle).map { radius * $0 * SDTransform.rotate(a0) + center }
             
             if reverse {

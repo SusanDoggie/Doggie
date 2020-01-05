@@ -23,6 +23,19 @@
 //  THE SOFTWARE.
 //
 
+@inlinable
+func _phase_diff(_ lhs: Double, _ rhs: Double) -> Double {
+    var diff = lhs - rhs
+    while diff < -.pi { diff += 2 * .pi }
+    while .pi < diff { diff -= 2 * .pi }
+    return diff
+}
+
+@inlinable
+func _phase_diff(_ lhs: Point, _ rhs: Point) -> Double {
+    return _phase_diff(lhs.phase, rhs.phase)
+}
+
 public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> CubicBezier<Point>? {
     
     var _a1 = 0.0
@@ -252,7 +265,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         let q0 = p0.offset(dx: a * d0.y, dy: -a * d0.x)
         let q3 = p3.offset(dx: a * d3.y, dy: -a * d3.x)
         
-        let angle = (d3.phase - d0.phase).remainder(dividingBy: 2 * .pi)
+        let angle = _phase_diff(d3, d0)
         
         if abs(angle) > 0.25 * .pi {
             
@@ -366,7 +379,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         let d0 = v0.unit * SDTransform.rotate(signed ? -0.5 * .pi : 0.5 * .pi)
         let d3 = v1.unit * SDTransform.rotate(signed ? -0.5 * .pi : 0.5 * .pi)
         
-        let angle = (d3.phase - d0.phase).remainder(dividingBy: 2 * .pi)
+        let angle = _phase_diff(d3, d0)
         
         if abs(angle) > 0.25 * .pi {
             
