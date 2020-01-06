@@ -100,7 +100,7 @@ public struct Font {
     public var pointSize: Double
     public var features: [FontFeature: Int]
     
-    private let cache: Cache
+    private var cache: Cache
     
     init?(_ base: FontFaceBase) {
         guard base.numberOfGlyphs > 0 else { return nil }
@@ -142,6 +142,17 @@ extension Font {
         
         var coveredCharacterSet: CharacterSet?
         var glyphs: [Int: [Shape.Component]] = [:]
+    }
+    
+    public mutating func clearCaches() {
+        if isKnownUniquelyReferenced(&cache) {
+            cache.lck.synchronized {
+                cache.coveredCharacterSet = nil
+                cache.glyphs = [:]
+            }
+        } else {
+            cache = Cache()
+        }
     }
 }
 

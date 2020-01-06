@@ -30,6 +30,14 @@ private let renderer = CIContext()
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
+    public func clearCaches() {
+        renderer.clearCaches()
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
     public func makeImage() -> CGImage? {
         return renderer.createCGImage(image, from: CGRect(extent))
     }
