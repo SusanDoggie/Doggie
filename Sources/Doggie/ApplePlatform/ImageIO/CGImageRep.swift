@@ -52,7 +52,7 @@ public struct CGImageRep {
     
     let base: CGImageRepBase
     
-    private var cache = Cache()
+    private let cache = Cache()
     
     private init(base: CGImageRepBase) {
         self.base = base
@@ -75,14 +75,10 @@ extension CGImageRep {
         }
     }
     
-    public mutating func clearCaches() {
-        if isKnownUniquelyReferenced(&cache) {
-            cache.lck.synchronized {
-                cache.image = nil
-                cache.pages = [:]
-            }
-        } else {
-            cache = Cache()
+    public func clearCaches() {
+        cache.lck.synchronized {
+            cache.image = nil
+            cache.pages = [:]
         }
     }
 }
