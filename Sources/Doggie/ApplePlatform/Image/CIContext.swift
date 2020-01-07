@@ -32,6 +32,8 @@ extension CIContext {
         let width = Int(ceil(fromRect.width))
         let height = Int(ceil(fromRect.height))
         
+        guard width > 0 && height > 0 else { return nil }
+        
         guard let cgColorSpace = colorSpace.cgColorSpace else { return nil }
         var result = Image<RGBA32ColorPixel>(width: width, height: height, colorSpace: colorSpace)
         
@@ -47,6 +49,8 @@ extension CIContext {
         
         let width = Int(ceil(fromRect.width))
         let height = Int(ceil(fromRect.height))
+        
+        guard width > 0 && height > 0 else { return nil }
         
         var result = Texture<RGBA32ColorPixel>(width: width, height: height)
         
@@ -67,6 +71,8 @@ extension CIContext {
         
         let width = Int(ceil(fromRect.width))
         let height = Int(ceil(fromRect.height))
+        
+        guard width > 0 && height > 0 else { return nil }
         
         var _buffer: CVPixelBuffer?
         let status = CVPixelBufferCreate(nil, width, height, kCVPixelFormatType_32RGBA, nil, &_buffer)
