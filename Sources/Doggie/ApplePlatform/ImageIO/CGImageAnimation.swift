@@ -38,7 +38,7 @@ public struct CGImageAnimationFrame {
 
 extension CGImage {
     
-    open static func animatedGIFRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
+    open class func animatedGIFRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
         
         return CGImageRep.withImageDestination(kUTTypeGIF, frames.count) { destination in
             
@@ -50,7 +50,7 @@ extension CGImage {
         }
     }
     
-    open static func animatedPNGRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
+    open class func animatedPNGRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
         
         return CGImageRep.withImageDestination(kUTTypePNG, frames.count) { destination in
             
@@ -65,7 +65,7 @@ extension CGImage {
     #if canImport(AVFoundation)
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    open static func animatedHEICRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
+    open class func animatedHEICRepresentation(loop: Int, frames: [CGImageAnimationFrame]) -> Data? {
         
         return CGImageRep.withImageDestination(AVFileType.heic as CFString, frames.count) { destination in
             
@@ -83,18 +83,18 @@ extension CGImage {
 
 extension CGImage {
     
-    open static func animatedGIFRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
+    open class func animatedGIFRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
         return self.animatedGIFRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }
     
-    open static func animatedPNGRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
+    open class func animatedPNGRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
         return self.animatedPNGRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }
     
     #if canImport(AVFoundation)
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    open static func animatedHEICRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
+    open class func animatedHEICRepresentation(loop: Int, delay: Double, frames: [CGImage]) -> Data? {
         return self.animatedHEICRepresentation(loop: loop, frames: frames.map { CGImageAnimationFrame(image: $0, delay: delay) })
     }
     

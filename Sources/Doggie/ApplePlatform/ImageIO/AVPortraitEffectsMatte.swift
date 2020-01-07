@@ -51,7 +51,7 @@ extension AVPortraitEffectsMatte {
 extension CGImageRep {
     
     @available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
-    open var portraitEffectsMatte: AVPortraitEffectsMatte? {
+    public var portraitEffectsMatte: AVPortraitEffectsMatte? {
         guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypePortraitEffectsMatte as String) else { return nil }
         return try? AVPortraitEffectsMatte(fromDictionaryRepresentation: info)
     }

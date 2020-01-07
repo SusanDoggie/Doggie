@@ -28,7 +28,7 @@
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension AVDepthData {
     
-    open convenience init<T>(texture: StencilTexture<T>, metadata: CGImageMetadata? = nil) throws {
+    public convenience init<T>(texture: StencilTexture<T>, metadata: CGImageMetadata? = nil) throws {
         
         var description: [AnyHashable: Any] = [:]
         
@@ -55,13 +55,13 @@ extension AVDepthData {
 extension CGImageRep {
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open var disparityData: AVDepthData? {
+    public var disparityData: AVDepthData? {
         guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypeDisparity as String) else { return nil }
         return try? AVDepthData(fromDictionaryRepresentation: info)
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open var depthData: AVDepthData? {
+    public var depthData: AVDepthData? {
         guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypeDepth as String) else { return nil }
         return try? AVDepthData(fromDictionaryRepresentation: info)
     }

@@ -66,31 +66,31 @@ extension CIImage {
 
 extension CIVector {
     
-    open convenience init<C: Collection>(_ values: C) where C.Element : BinaryFloatingPoint {
+    public convenience init<C: Collection>(_ values: C) where C.Element : BinaryFloatingPoint {
         self.init(values: values.map { CGFloat($0) }, count: values.count)
     }
     
-    open convenience init<T: BinaryFloatingPoint>(_ values: T ...) {
+    public convenience init<T: BinaryFloatingPoint>(_ values: T ...) {
         self.init(values)
     }
     
-    open convenience init(_ point: Point) {
+    public convenience init(_ point: Point) {
         self.init(cgPoint: CGPoint(point))
     }
     
-    open convenience init(_ point: Vector) {
+    public convenience init(_ point: Vector) {
         self.init(point.x, point.y, point.z)
     }
     
-    open convenience init(_ size: Size) {
+    public convenience init(_ size: Size) {
         self.init(size.width, size.height)
     }
     
-    open convenience init(_ rect: Rect) {
+    public convenience init(_ rect: Rect) {
         self.init(cgRect: CGRect(rect))
     }
     
-    open convenience init(_ transform: SDTransform) {
+    public convenience init(_ transform: SDTransform) {
         self.init(cgAffineTransform: CGAffineTransform(transform))
     }
 }
