@@ -114,12 +114,26 @@ extension CVPixelFormat {
     /// 128-bit RGBA IEEE float, 32-bit little-endian samples.
     public static let RGBAFloat128 = CVPixelFormat(rawValue: kCVPixelFormatType_128RGBAFloat)
     
+    /// little-endian RGB101010, 2 MSB are zero, wide-gamut (384-895).
     public static let RGBLEPackedWideGamut30 = CVPixelFormat(rawValue: kCVPixelFormatType_30RGBLEPackedWideGamut)
+    
+    /// little-endian ARGB2101010 full-range ARGB.
     public static let ARGB2101010LEPacked = CVPixelFormat(rawValue: kCVPixelFormatType_ARGB2101010LEPacked)
     
+    /// IEEE754-2008 binary16 (half float), describing the depth (distance to an object) in meters.
     public static let DepthFloat16 = CVPixelFormat(rawValue: kCVPixelFormatType_DepthFloat16)
+    
+    /// IEEE754-2008 binary32 float, describing the depth (distance to an object) in meters.
     public static let DepthFloat32 = CVPixelFormat(rawValue: kCVPixelFormatType_DepthFloat32)
+    
+    /// IEEE754-2008 binary16 (half float), describing the normalized shift when comparing two images.
+    ///
+    /// Units are 1/meters: ( pixelShift / (pixelFocalLength * baselineInMeters) ).
     public static let DisparityFloat16 = CVPixelFormat(rawValue: kCVPixelFormatType_DisparityFloat16)
+    
+    /// IEEE754-2008 binary32 float, describing the normalized shift when comparing two images.
+    ///
+    /// Units are 1/meters: ( pixelShift / (pixelFocalLength * baselineInMeters) ).
     public static let DisparityFloat32 = CVPixelFormat(rawValue: kCVPixelFormatType_DisparityFloat32)
 }
 
