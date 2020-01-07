@@ -54,16 +54,12 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func makeImage(colorSpace: ColorSpace<RGBColorModel>) -> Image<RGBA32ColorPixel>? {
-        return renderer.createImage(image, from: extent, colorSpace: colorSpace)
+    public func makeImage(colorSpace: ColorSpace<RGBColorModel>, fileBacked: Bool = false) -> Image<RGBA32ColorPixel>? {
+        return renderer.createImage(image, from: extent, colorSpace: colorSpace, fileBacked: fileBacked)
     }
-}
-
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-extension GPContext {
     
-    public func makeTexture(colorSpace: ColorSpace<RGBColorModel>? = nil) -> Texture<RGBA32ColorPixel>? {
-        return renderer.createTexture(image, from: extent, colorSpace: colorSpace)
+    public func makeTexture(colorSpace: ColorSpace<RGBColorModel>? = nil, fileBacked: Bool = false) -> Texture<RGBA32ColorPixel>? {
+        return renderer.createTexture(image, from: extent, colorSpace: colorSpace, fileBacked: fileBacked)
     }
 }
 

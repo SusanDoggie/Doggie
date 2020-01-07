@@ -27,7 +27,7 @@
 
 extension CIContext {
     
-    open func createImage(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>) -> Image<RGBA32ColorPixel>? {
+    open func createImage(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>, fileBacked: Bool = false) -> Image<RGBA32ColorPixel>? {
         
         let width = Int(ceil(fromRect.width))
         let height = Int(ceil(fromRect.height))
@@ -35,7 +35,7 @@ extension CIContext {
         guard width > 0 && height > 0 else { return nil }
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return nil }
-        var result = Image<RGBA32ColorPixel>(width: width, height: height, colorSpace: colorSpace)
+        var result = Image<RGBA32ColorPixel>(width: width, height: height, colorSpace: colorSpace, fileBacked: fileBacked)
         
         result.withUnsafeMutableBytes {
             guard let bitmap = $0.baseAddress else { return }
@@ -45,14 +45,14 @@ extension CIContext {
         return result
     }
     
-    open func createTexture(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>? = nil) -> Texture<RGBA32ColorPixel>? {
+    open func createTexture(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>? = nil, fileBacked: Bool = false) -> Texture<RGBA32ColorPixel>? {
         
         let width = Int(ceil(fromRect.width))
         let height = Int(ceil(fromRect.height))
         
         guard width > 0 && height > 0 else { return nil }
         
-        var result = Texture<RGBA32ColorPixel>(width: width, height: height)
+        var result = Texture<RGBA32ColorPixel>(width: width, height: height, fileBacked: fileBacked)
         
         result.withUnsafeMutableBytes {
             guard let bitmap = $0.baseAddress else { return }
