@@ -67,6 +67,7 @@ extension CIContext {
 
 extension CIContext {
     
+    @available(macOS 10.11, tvOS 9.0, *)
     open func createCVPixelBuffer(_ image: CIImage, from fromRect: CGRect, colorSpace: CGColorSpace? = nil) -> CVPixelBuffer? {
         
         let width = Int(ceil(fromRect.width))
