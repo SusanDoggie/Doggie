@@ -1,5 +1,5 @@
 //
-//  AppleExported.swift
+//  CIContext.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,70 +23,25 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreGraphics)
-
-@_exported import CoreGraphics
-
-#endif
-
-#if canImport(CoreText)
-
-@_exported import CoreText
-
-#endif
-
-#if canImport(MobileCoreServices)
-
-@_exported import MobileCoreServices
-
-#endif
-
 #if canImport(CoreImage)
 
-@_exported import CoreImage
-
-@_exported import CoreImage.CIFilterBuiltins
-
-#endif
-
-#if canImport(ImageIO)
-
-@_exported import ImageIO
-
-#endif
-
-#if canImport(IOSurface)
-
-@_exported import IOSurface
-
-#endif
-
-#if canImport(AVFoundation)
-
-@_exported import AVFoundation
-
-#endif
-
-#if canImport(Metal)
-
-@_exported import Metal
-
-#endif
-
-#if canImport(MetalPerformanceShaders)
-
-@_exported import MetalPerformanceShaders
-
-#endif
-
-#if canImport(AppKit) && !targetEnvironment(macCatalyst)
-
-@_exported import AppKit
-
-#endif
-
-#if canImport(UIKit)
-
-@_exported import UIKit
+extension CIContext {
+    
+    public func createImage(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>) -> Image<RGBA32ColorPixel>? {
+        
+        let width = Int(ceil(fromRect.width))
+        let height = Int(ceil(fromRect.height))
+        
+        guard let cgColorSpace = colorSpace.cgColorSpace else { return nil }
+        var result = Image<RGBA32ColorPixel>(width: width, height: height, colorSpace: colorSpace)
+        
+        result.withUnsafeMutableBytes {
+            guard let bitmap = $0.baseAddress else { return }
+            self.render(image, toBitmap: bitmap, rowBytes: width * 4, bounds: CGRect(fromRect), format: .RGBA8, colorSpace: cgColorSpace)
+        }
+        
+        return result
+    }
+}
 
 #endif
