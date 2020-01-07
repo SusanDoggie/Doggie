@@ -42,6 +42,21 @@ extension CIContext {
         
         return result
     }
+    
+    open func createTexture(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>? = nil) -> Texture<RGBA32ColorPixel>? {
+        
+        let width = Int(ceil(fromRect.width))
+        let height = Int(ceil(fromRect.height))
+        
+        var result = Texture<RGBA32ColorPixel>(width: width, height: height)
+        
+        result.withUnsafeMutableBytes {
+            guard let bitmap = $0.baseAddress else { return }
+            self.render(image, toBitmap: bitmap, rowBytes: width * 4, bounds: CGRect(fromRect), format: .RGBA8, colorSpace: colorSpace?.cgColorSpace)
+        }
+        
+        return result
+    }
 }
 
 #if canImport(CoreVideo)
