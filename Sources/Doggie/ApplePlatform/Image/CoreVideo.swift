@@ -54,8 +54,8 @@ extension CVPixelBuffer {
         return CVPixelBufferGetHeight(self)
     }
     
-    open var pixelFormat: OSType {
-        return CVPixelBufferGetPixelFormatType(self)
+    open var pixelFormat: CVPixelFormat {
+        return CVPixelFormat(rawValue: CVPixelBufferGetPixelFormatType(self))
     }
     
     open var baseAddress: UnsafeMutableRawPointer? {
