@@ -56,7 +56,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
-    public func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int) throws -> CIImage {
+    open func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int) throws -> CIImage {
         
         guard orderX > 0 && orderY > 0 && orderX * orderY == matrix.count else { return self }
         
@@ -84,7 +84,7 @@ extension CIImage {
 extension CIImage {
     
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
-    public func areaMin(_ radius: Size) throws -> CIImage {
+    open func areaMin(_ radius: Size) throws -> CIImage {
         
         class ProcessorKernel: CIImageProcessorKernel {
             
@@ -121,7 +121,7 @@ extension CIImage {
 extension CIImage {
     
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
-    public func areaMax(_ radius: Size) throws -> CIImage {
+    open func areaMax(_ radius: Size) throws -> CIImage {
         
         class ProcessorKernel: CIImageProcessorKernel {
             

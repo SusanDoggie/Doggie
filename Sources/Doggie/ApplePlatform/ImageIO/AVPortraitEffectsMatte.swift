@@ -28,7 +28,7 @@
 @available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
 extension AVPortraitEffectsMatte {
     
-    public convenience init<T>(texture: StencilTexture<T>) throws {
+    open convenience init<T>(texture: StencilTexture<T>) throws {
         
         var description: [AnyHashable: Any] = [:]
         
@@ -51,7 +51,7 @@ extension AVPortraitEffectsMatte {
 extension CGImageRep {
     
     @available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
-    public var portraitEffectsMatte: AVPortraitEffectsMatte? {
+    open var portraitEffectsMatte: AVPortraitEffectsMatte? {
         guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypePortraitEffectsMatte as String) else { return nil }
         return try? AVPortraitEffectsMatte(fromDictionaryRepresentation: info)
     }

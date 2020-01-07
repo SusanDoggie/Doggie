@@ -27,7 +27,7 @@
 
 extension UIImage {
     
-    public func fileBacked() -> UIImage? {
+    open func fileBacked() -> UIImage? {
         guard let cgImage = self.cgImage?.fileBacked() else { return nil }
         return UIImage(cgImage: cgImage, scale: scale, orientation: imageOrientation)
     }

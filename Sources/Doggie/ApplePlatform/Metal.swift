@@ -28,7 +28,7 @@
 @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
 extension MTLDevice {
     
-    public func makeBuffer<T>(_ buffer: MappedBuffer<T>, options: MTLResourceOptions = []) -> MTLBuffer? {
+    open func makeBuffer<T>(_ buffer: MappedBuffer<T>, options: MTLResourceOptions = []) -> MTLBuffer? {
         var box = MappedBuffer<T>._Box(ref: buffer.base)
         let length = (buffer.count * MemoryLayout<T>.stride).align(Int(getpagesize()))
         guard length != 0 else { return nil }
@@ -50,7 +50,7 @@ extension MTLDevice {
         return buffer.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: bytesPerRow)
     }
     
-    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA32ColorPixel {
+    open func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA32ColorPixel {
         
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba8Unorm, width: image.width, height: image.height, mipmapped: false)
         descriptor.usage = usage
@@ -58,7 +58,7 @@ extension MTLDevice {
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == BGRA32ColorPixel {
+    open func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == BGRA32ColorPixel {
         
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm, width: image.width, height: image.height, mipmapped: false)
         descriptor.usage = usage
@@ -66,7 +66,7 @@ extension MTLDevice {
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA64ColorPixel {
+    open func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == RGBA64ColorPixel {
         
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Unorm, width: image.width, height: image.height, mipmapped: false)
         descriptor.usage = usage
@@ -74,7 +74,7 @@ extension MTLDevice {
         return self.makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == Float32ColorPixel<RGBColorModel> {
+    open func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == Float32ColorPixel<RGBColorModel> {
         
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba32Float, width: image.width, height: image.height, mipmapped: false)
         descriptor.usage = usage
@@ -86,7 +86,7 @@ extension MTLDevice {
 @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
 extension MTLComputeCommandEncoder {
     
-    public func setBuffer<T>(_ buffer: MappedBuffer<T>, offset: Int, index: Int) {
+    open func setBuffer<T>(_ buffer: MappedBuffer<T>, offset: Int, index: Int) {
         self.setBuffer(self.device.makeBuffer(buffer), offset: offset, index: index)
     }
 }

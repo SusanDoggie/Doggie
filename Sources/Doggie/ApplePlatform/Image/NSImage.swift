@@ -27,19 +27,19 @@
 
 extension NSImage {
     
-    public convenience init(cgImage image: CGImage) {
+    open convenience init(cgImage image: CGImage) {
         self.init(cgImage: image, size: NSZeroSize)
     }
     
     @available(macOS 10.11, *)
-    public convenience init(ciImage image: CoreImage.CIImage) {
+    open convenience init(ciImage image: CoreImage.CIImage) {
         self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
     }
     
-    public var cgImage: CGImage? {
+    open var cgImage: CGImage? {
         return cgImage(forProposedRect: nil, context: nil, hints: nil)
     }
-    public var ciImage: CIImage? {
+    open var ciImage: CIImage? {
         if let cgImage = self.cgImage {
             return CoreImage.CIImage(cgImage: cgImage)
         }
@@ -49,7 +49,7 @@ extension NSImage {
 
 extension NSImage {
     
-    public func fileBacked() -> NSImage? {
+    open func fileBacked() -> NSImage? {
         guard let cgImage = self.cgImage?.fileBacked() else { return nil }
         return NSImage(cgImage: cgImage)
     }

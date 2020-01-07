@@ -27,7 +27,7 @@
 
 extension CIContext {
     
-    public func createImage(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>) -> Image<RGBA32ColorPixel>? {
+    open func createImage(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>) -> Image<RGBA32ColorPixel>? {
         
         let width = Int(ceil(fromRect.width))
         let height = Int(ceil(fromRect.height))
@@ -43,5 +43,27 @@ extension CIContext {
         return result
     }
 }
+
+#if canImport(CoreVideo)
+
+extension CIContext {
+    
+    open func createCVPixelBuffer(_ image: CIImage, from fromRect: CGRect, colorSpace: CGColorSpace? = nil) -> CVPixelBuffer? {
+        
+        let width = Int(ceil(fromRect.width))
+        let height = Int(ceil(fromRect.height))
+        
+        var _buffer: CVPixelBuffer?
+        let status = CVPixelBufferCreate(nil, width, height, kCVPixelFormatType_32RGBA, nil, &_buffer)
+        
+        guard status == kCVReturnSuccess, let buffer = _buffer else { return nil }
+        
+        self.render(image, to: buffer, bounds: fromRect, colorSpace: colorSpace)
+        
+        return buffer
+    }
+}
+
+#endif
 
 #endif

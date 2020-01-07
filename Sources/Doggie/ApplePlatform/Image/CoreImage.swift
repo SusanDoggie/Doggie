@@ -27,7 +27,7 @@
 
 extension CIFilter {
     
-    public subscript(key: String) -> Any? {
+    open subscript(key: String) -> Any? {
         get {
             return self.value(forKey: key)
         }
@@ -36,61 +36,61 @@ extension CIFilter {
         }
     }
     
-    public var keys: [String] {
+    open var keys: [String] {
         return self.inputKeys as [String]
     }
 }
 
 extension CGImage {
     
-    public func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
+    open func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
         return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
     }
 }
 
 extension CIImage {
     
-    public func transformed(by transform: SDTransform) -> CIImage {
+    open func transformed(by transform: SDTransform) -> CIImage {
         return self.transformed(by: CGAffineTransform(transform))
     }
     
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-    public func clamped(to rect: Rect) -> CIImage {
+    open func clamped(to rect: Rect) -> CIImage {
         return self.clamped(to: CGRect(rect))
     }
     
-    public func cropped(to rect: Rect) -> CIImage {
+    open func cropped(to rect: Rect) -> CIImage {
         return self.cropped(to: CGRect(rect))
     }
 }
 
 extension CIVector {
     
-    public convenience init<C: Collection>(_ values: C) where C.Element : BinaryFloatingPoint {
+    open convenience init<C: Collection>(_ values: C) where C.Element : BinaryFloatingPoint {
         self.init(values: values.map { CGFloat($0) }, count: values.count)
     }
     
-    public convenience init<T: BinaryFloatingPoint>(_ values: T ...) {
+    open convenience init<T: BinaryFloatingPoint>(_ values: T ...) {
         self.init(values)
     }
     
-    public convenience init(_ point: Point) {
+    open convenience init(_ point: Point) {
         self.init(cgPoint: CGPoint(point))
     }
     
-    public convenience init(_ point: Vector) {
+    open convenience init(_ point: Vector) {
         self.init(point.x, point.y, point.z)
     }
     
-    public convenience init(_ size: Size) {
+    open convenience init(_ size: Size) {
         self.init(size.width, size.height)
     }
     
-    public convenience init(_ rect: Rect) {
+    open convenience init(_ rect: Rect) {
         self.init(cgRect: CGRect(rect))
     }
     
-    public convenience init(_ transform: SDTransform) {
+    open convenience init(_ transform: SDTransform) {
         self.init(cgAffineTransform: CGAffineTransform(transform))
     }
 }

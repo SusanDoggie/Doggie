@@ -29,7 +29,7 @@ import ObjectiveC
 
 @inlinable
 @discardableResult
-public func synchronized<R>(object: AnyObject, block: () throws -> R) rethrows -> R {
+open func synchronized<R>(object: AnyObject, block: () throws -> R) rethrows -> R {
     objc_sync_enter(object)
     defer { objc_sync_exit(object) }
     return try block()
@@ -73,7 +73,7 @@ extension NSObjectProtocol where Self: NSObject {
         }
     }
     
-    public func bindValue<Value, Target: AnyObject>(_ sourceKeyPath: KeyPath<Self, Value>,
+    open func bindValue<Value, Target: AnyObject>(_ sourceKeyPath: KeyPath<Self, Value>,
                                                     to target: Target,
                                                     at targetKeyPath: ReferenceWritableKeyPath<Target, Value>)
     {
