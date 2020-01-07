@@ -54,7 +54,7 @@ extension CVPixelFormat {
 extension CVPixelFormat {
     
     public var description: String {
-        return withUnsafeBytes(of: (rawValue, 0 as UInt8)) { String(cString: $0.baseAddress!.assumingMemoryBound(to: UInt8.self)) }
+        return withUnsafeBytes(of: (rawValue.bigEndian, 0 as UInt8)) { String(cString: $0.baseAddress!.assumingMemoryBound(to: UInt8.self)) }
     }
 }
 
