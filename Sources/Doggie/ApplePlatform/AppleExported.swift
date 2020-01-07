@@ -61,6 +61,12 @@
 
 #endif
 
+#if canImport(CoreVideo)
+
+@_exported import CoreVideo
+
+#endif
+
 #if canImport(AVFoundation)
 
 @_exported import AVFoundation
