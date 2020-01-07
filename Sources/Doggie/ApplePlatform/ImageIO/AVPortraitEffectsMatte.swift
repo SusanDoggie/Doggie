@@ -28,7 +28,7 @@
 @available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
 extension AVPortraitEffectsMatte {
     
-    open convenience init<T>(texture: StencilTexture<T>) throws {
+    public convenience init<T>(texture: StencilTexture<T>) throws {
         
         var description: [AnyHashable: Any] = [:]
         
