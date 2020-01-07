@@ -132,16 +132,4 @@ extension CVPixelBuffer {
     
 }
 
-extension CVMetalTexture {
-    
-    open var texture: MTLTexture? {
-        return CVMetalTextureGetTexture(self)
-    }
-    
-    open func cleanTexCoords(_ lowerLeft: UnsafeMutablePointer<Float>, _ lowerRight: UnsafeMutablePointer<Float>, _ upperRight: UnsafeMutablePointer<Float>, _ upperLeft: UnsafeMutablePointer<Float>) {
-        return CVMetalTextureGetCleanTexCoords(self, lowerLeft, lowerRight, upperRight, upperLeft)
-    }
-
-}
-
 #endif
