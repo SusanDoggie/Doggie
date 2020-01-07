@@ -27,12 +27,12 @@
 
 extension NSImage {
     
-    open convenience init(cgImage image: CGImage) {
+    public convenience init(cgImage image: CGImage) {
         self.init(cgImage: image, size: NSZeroSize)
     }
     
     @available(macOS 10.11, *)
-    open convenience init(ciImage image: CoreImage.CIImage) {
+    public convenience init(ciImage image: CoreImage.CIImage) {
         self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
     }
     
