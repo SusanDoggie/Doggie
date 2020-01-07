@@ -75,7 +75,7 @@ extension CIContext {
         guard width > 0 && height > 0 else { return nil }
         
         var _buffer: CVPixelBuffer?
-        let status = CVPixelBufferCreate(nil, width, height, kCVPixelFormatType_32RGBA, nil, &_buffer)
+        let status = CVPixelBufferCreate(nil, width, height, kCVPixelFormatType_32BGRA, nil, &_buffer)
         
         guard status == kCVReturnSuccess, let buffer = _buffer else { return nil }
         
