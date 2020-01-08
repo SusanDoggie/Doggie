@@ -29,9 +29,8 @@ extension CIContext {
     
     open func createImage(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>, fileBacked: Bool = false) -> Image<RGBA32ColorPixel>? {
         
-        let width = Int(ceil(fromRect.width))
-        let height = Int(ceil(fromRect.height))
-        
+        guard let width = Int(exactly: ceil(fromRect.width)) else { return nil }
+        guard let height = Int(exactly: ceil(fromRect.height)) else { return nil }
         guard width > 0 && height > 0 else { return nil }
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return nil }
@@ -47,9 +46,8 @@ extension CIContext {
     
     open func createTexture(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>? = nil, fileBacked: Bool = false) -> Texture<RGBA32ColorPixel>? {
         
-        let width = Int(ceil(fromRect.width))
-        let height = Int(ceil(fromRect.height))
-        
+        guard let width = Int(exactly: ceil(fromRect.width)) else { return nil }
+        guard let height = Int(exactly: ceil(fromRect.height)) else { return nil }
         guard width > 0 && height > 0 else { return nil }
         
         var result = Texture<RGBA32ColorPixel>(width: width, height: height, fileBacked: fileBacked)
@@ -70,9 +68,8 @@ extension CIContext {
     @available(macOS 10.11, tvOS 9.0, *)
     open func createCVPixelBuffer(_ image: CIImage, from fromRect: CGRect, colorSpace: CGColorSpace? = nil) -> CVPixelBuffer? {
         
-        let width = Int(ceil(fromRect.width))
-        let height = Int(ceil(fromRect.height))
-        
+        guard let width = Int(exactly: ceil(fromRect.width)) else { return nil }
+        guard let height = Int(exactly: ceil(fromRect.height)) else { return nil }
         guard width > 0 && height > 0 else { return nil }
         
         var _buffer: CVPixelBuffer?
