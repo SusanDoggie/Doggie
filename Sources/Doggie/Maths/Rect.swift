@@ -173,6 +173,16 @@ extension Rect {
     public var standardized: Rect {
         return Rect(x: minX, y: minY, width: width, height: height)
     }
+    
+    @inlinable
+    @inline(__always)
+    public var integral: CGRect {
+        let minX = floor(self.minX)
+        let minY = floor(self.minY)
+        let maxX = ceil(self.maxX)
+        let maxY = ceil(self.maxY)
+        return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+    }
 }
 
 extension Rect {

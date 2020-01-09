@@ -350,7 +350,6 @@ extension GPContext {
             self.draw_layer(layer)
         }
     }
-    
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
