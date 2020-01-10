@@ -118,7 +118,7 @@ extension CIContextPool {
         return table[options]
     }
     
-    @available(macOS 10.4, iOS 10.0, tvOS 10.0, *)
+    @available(macOS 10.11, iOS 10.0, tvOS 10.0, *)
     open func clearCaches() {
         
         lck.lock()
