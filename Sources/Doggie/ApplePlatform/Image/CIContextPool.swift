@@ -53,13 +53,11 @@ open class CIContextPool {
     
     @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
     public init(device: MTLDevice) {
-        self.device = device
         self.commandQueue = device.makeCommandQueue()
     }
     
     @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
     public init(commandQueue: MTLCommandQueue) {
-        self.device = commandQueue.device
         self.commandQueue = commandQueue
     }
 }
