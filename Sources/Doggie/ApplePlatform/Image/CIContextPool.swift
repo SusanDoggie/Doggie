@@ -25,6 +25,7 @@
 
 #if canImport(CoreImage) && canImport(Metal)
 
+@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
 private struct CIContextOptions : Hashable {
     
     var colorSpace: ColorSpace<RGBColorModel>?
@@ -34,35 +35,30 @@ private struct CIContextOptions : Hashable {
     var workingFormat: CIFormat
 }
 
+@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
 open class CIContextPool {
     
     public static let `default`: CIContextPool = CIContextPool()
     
-    @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
     public let commandQueue: MTLCommandQueue?
     
     private let lck = SDLock()
     private var table: [CIContextOptions: CIContext] = [:]
     
     public init() {
-        if #available(macOS 10.11, iOS 8.0, tvOS 9.0, *) {
-            self.commandQueue = MTLCreateSystemDefaultDevice()?.makeCommandQueue()
-        } else {
-            self.commandQueue = nil
-        }
+        self.commandQueue = MTLCreateSystemDefaultDevice()?.makeCommandQueue()
     }
     
-    @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
     public init(device: MTLDevice) {
         self.commandQueue = device.makeCommandQueue()
     }
     
-    @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
     public init(commandQueue: MTLCommandQueue) {
         self.commandQueue = commandQueue
     }
 }
 
+@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
 extension CIContextPool {
     
     private func make_context(options: CIContextOptions) -> CIContext? {
@@ -94,7 +90,7 @@ extension CIContextPool {
             
             return CIContext(mtlCommandQueue: commandQueue, options: _options)
             
-        } else if #available(macOS 10.11, iOS 9.0, tvOS 9.0, *), let device = commandQueue?.device {
+        } else if let device = commandQueue?.device {
             
             return CIContext(mtlDevice: device, options: _options)
             
@@ -121,9 +117,6 @@ extension CIContextPool {
         
         return table[options]
     }
-}
-
-extension CIContextPool {
     
     @available(macOS 10.4, iOS 10.0, tvOS 10.0, *)
     open func clearCaches() {
