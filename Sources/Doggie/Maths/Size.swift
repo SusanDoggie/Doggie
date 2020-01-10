@@ -38,13 +38,25 @@ public struct Size: Hashable {
     
     @inlinable
     @inline(__always)
+    public init(width: Int, height: Int) {
+        self.width = Double(width)
+        self.height = Double(height)
+    }
+    @inlinable
+    @inline(__always)
     public init(width: Double, height: Double) {
         self.width = width
         self.height = height
     }
     @inlinable
     @inline(__always)
-    public init(width: Int, height: Int) {
+    public init<T : BinaryInteger>(width: T, height: T) {
+        self.width = Double(width)
+        self.height = Double(height)
+    }
+    @inlinable
+    @inline(__always)
+    public init<T : BinaryFloatingPoint>(width: T, height: T) {
         self.width = Double(width)
         self.height = Double(height)
     }

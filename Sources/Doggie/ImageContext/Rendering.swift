@@ -347,7 +347,12 @@ extension ImageContext {
         let width = Double(self.width)
         let height = Double(self.height)
         
-        render(triangles, projection: { Point(x: (0.5 + 0.5 * $0.x) * width, y: (0.5 + 0.5 * $0.y) * height) }, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: { shader($0) })
+        @inline(__always)
+        func _projection(_ v: Vector) -> Point {
+            return Point(x: (0.5 + 0.5 * v.x) * width, y: (0.5 + 0.5 * v.y) * height)
+        }
+        
+        render(triangles, projection: _projection, depthFun: { ($0.z - projection.nearZ) / (projection.farZ - projection.nearZ) }, shader: shader)
     }
 }
 

@@ -45,6 +45,12 @@ public struct Rect: Hashable {
     
     @inlinable
     @inline(__always)
+    public init(x: Int, y: Int, width: Int, height: Int) {
+        self.origin = Point(x: x, y: y)
+        self.size = Size(width: width, height: height)
+    }
+    @inlinable
+    @inline(__always)
     public init(x: Double, y: Double, width: Double, height: Double) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
@@ -52,7 +58,13 @@ public struct Rect: Hashable {
     
     @inlinable
     @inline(__always)
-    public init(x: Int, y: Int, width: Int, height: Int) {
+    public init<T : BinaryInteger>(x: T, y: T, width: T, height: T) {
+        self.origin = Point(x: x, y: y)
+        self.size = Size(width: width, height: height)
+    }
+    @inlinable
+    @inline(__always)
+    public init<T : BinaryFloatingPoint>(x: T, y: T, width: T, height: T) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }

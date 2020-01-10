@@ -40,6 +40,15 @@ public struct Polynomial : Hashable {
     public init(_ coeffs: Double ... ) {
         self.init(coeffs)
     }
+    @inlinable
+    public init<T : BinaryInteger>(_ coeffs: T ... ) {
+        self.init(coeffs)
+    }
+    @inlinable
+    public init<T : BinaryFloatingPoint>(_ coeffs: T ... ) {
+        self.init(coeffs)
+    }
+    
     /// Construct from an arbitrary sequence of coeffs.
     /// a + b x + c x^2 + d x^3 + ...
     @inlinable
@@ -48,6 +57,14 @@ public struct Polynomial : Hashable {
         while self.coeffs.last == 0 {
             self.coeffs.removeLast()
         }
+    }
+    @inlinable
+    public init<S : Sequence>(_ s: S) where S.Element : BinaryInteger {
+        self.init(s.map { Double($0) })
+    }
+    @inlinable
+    public init<S : Sequence>(_ s: S) where S.Element : BinaryFloatingPoint {
+        self.init(s.map { Double($0) })
     }
 }
 

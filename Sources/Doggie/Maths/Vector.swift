@@ -40,6 +40,13 @@ public struct Vector : Hashable {
     
     @inlinable
     @inline(__always)
+    public init(x: Int, y: Int, z: Int) {
+        self.x = Double(x)
+        self.y = Double(y)
+        self.z = Double(z)
+    }
+    @inlinable
+    @inline(__always)
     public init(x: Double, y: Double, z: Double) {
         self.x = x
         self.y = y
@@ -47,7 +54,14 @@ public struct Vector : Hashable {
     }
     @inlinable
     @inline(__always)
-    public init(x: Int, y: Int, z: Int) {
+    public init<T : BinaryInteger>(x: T, y: T, z: T) {
+        self.x = Double(x)
+        self.y = Double(y)
+        self.z = Double(z)
+    }
+    @inlinable
+    @inline(__always)
+    public init<T : BinaryFloatingPoint>(x: T, y: T, z: T) {
         self.x = Double(x)
         self.y = Double(y)
         self.z = Double(z)

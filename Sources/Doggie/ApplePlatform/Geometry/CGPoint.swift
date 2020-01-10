@@ -30,6 +30,16 @@ extension CGPoint {
     public init(_ p: Point) {
         self.init(x: CGFloat(p.x), y: CGFloat(p.y))
     }
+    @inlinable
+    @inline(__always)
+    public init<T : BinaryInteger>(x: T, y: T) {
+        self.init(x: CGFloat(x), y: CGFloat(y))
+    }
+    @inlinable
+    @inline(__always)
+    public init<T : BinaryFloatingPoint>(x: T, y: T) {
+        self.init(x: CGFloat(x), y: CGFloat(y))
+    }
 }
 
 extension Point {
@@ -37,15 +47,7 @@ extension Point {
     @inlinable
     @inline(__always)
     public init(_ p: CGPoint) {
-        self.x = Double(p.x)
-        self.y = Double(p.y)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public init(x: CGFloat, y: CGFloat) {
-        self.x = Double(x)
-        self.y = Double(y)
+        self.init(x: p.x, y: p.y)
     }
 }
 

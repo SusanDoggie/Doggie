@@ -38,13 +38,25 @@ public struct Point: Hashable {
     
     @inlinable
     @inline(__always)
+    public init(x: Int, y: Int) {
+        self.x = Double(x)
+        self.y = Double(y)
+    }
+    @inlinable
+    @inline(__always)
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
     @inlinable
     @inline(__always)
-    public init(x: Int, y: Int) {
+    public init<T : BinaryInteger>(x: T, y: T) {
+        self.x = Double(x)
+        self.y = Double(y)
+    }
+    @inlinable
+    @inline(__always)
+    public init<T : BinaryFloatingPoint>(x: T, y: T) {
         self.x = Double(x)
         self.y = Double(y)
     }

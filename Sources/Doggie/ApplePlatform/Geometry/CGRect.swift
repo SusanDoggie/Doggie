@@ -30,6 +30,23 @@ extension CGRect {
     public init(_ r: Rect) {
         self.init(origin: CGPoint(r.origin), size: CGSize(r.size))
     }
+    
+    @inlinable
+    @inline(__always)
+    public init(origin: Point, size: Size) {
+        self.init(origin: CGPoint(origin), size: CGSize(size))
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init<T : BinaryInteger>(x: T, y: T, width: T, height: T) {
+        self.init(x: CGFloat(x), y: CGFloat(y), width: CGFloat(width), height: CGFloat(height))
+    }
+    @inlinable
+    @inline(__always)
+    public init<T : BinaryFloatingPoint>(x: T, y: T, width: T, height: T) {
+        self.init(x: CGFloat(x), y: CGFloat(y), width: CGFloat(width), height: CGFloat(height))
+    }
 }
 
 extension Rect {
@@ -37,15 +54,13 @@ extension Rect {
     @inlinable
     @inline(__always)
     public init(_ r: CGRect) {
-        self.origin = Point(r.origin)
-        self.size = Size(r.size)
+        self.init(origin: Point(r.origin), size: Size(r.size))
     }
     
     @inlinable
     @inline(__always)
-    public init(x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) {
-        self.origin = Point(x: x, y: y)
-        self.size = Size(width: width, height: height)
+    public init(origin: CGPoint, size: CGSize) {
+        self.init(origin: Point(origin), size: Size(size))
     }
 }
 
