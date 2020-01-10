@@ -38,6 +38,7 @@ open class CIContextPool {
     
     public static let `default`: CIContextPool = CIContextPool()
     
+    @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
     public let commandQueue: MTLCommandQueue?
     
     private let lck = SDLock()
