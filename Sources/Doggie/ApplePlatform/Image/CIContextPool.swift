@@ -103,7 +103,7 @@ extension CIContextPool {
         }
     }
     
-    open func request_context(colorSpace: ColorSpace<RGBColorModel>? = nil, outputPremultiplied: Bool = true, workingFormat: CIFormat = .RGBAh) -> CIContext? {
+    open func makeContext(colorSpace: ColorSpace<RGBColorModel>? = nil, outputPremultiplied: Bool = true, workingFormat: CIFormat = .RGBAh) -> CIContext? {
         
         lck.lock()
         defer { lck.unlock() }
