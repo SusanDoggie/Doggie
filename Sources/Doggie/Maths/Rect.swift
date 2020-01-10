@@ -176,7 +176,7 @@ extension Rect {
     
     @inlinable
     @inline(__always)
-    public var integral: CGRect {
+    public var integral: Rect {
         let minX = floor(self.minX)
         let minY = floor(self.minY)
         let maxX = ceil(self.maxX)
