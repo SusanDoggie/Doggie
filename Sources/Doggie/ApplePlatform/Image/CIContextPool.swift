@@ -38,24 +38,26 @@ open class CIContextPool {
     
     public static let `default`: CIContextPool = CIContextPool()
     
-    public let device: MTLDevice?
     public let commandQueue: MTLCommandQueue?
     
     private let lck = SDLock()
     private var table: [CIContextOptions: CIContext] = [:]
     
     public init() {
-        self.device = MTLCreateSystemDefaultDevice()
-        self.commandQueue = device?.makeCommandQueue()
+        if #available(macOS 10.11, iOS 8.0, tvOS 9.0, *) {
+            self.commandQueue = MTLCreateSystemDefaultDevice()?.makeCommandQueue()
+        } else {
+            self.commandQueue = nil
+        }
     }
     
-    @available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
+    @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
     public init(device: MTLDevice) {
         self.device = device
         self.commandQueue = device.makeCommandQueue()
     }
     
-    @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
+    @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
     public init(commandQueue: MTLCommandQueue) {
         self.device = commandQueue.device
         self.commandQueue = commandQueue
@@ -93,7 +95,7 @@ extension CIContextPool {
             
             return CIContext(mtlCommandQueue: commandQueue, options: _options)
             
-        } else if #available(macOS 10.11, iOS 9.0, tvOS 9.0, *), let device = device {
+        } else if #available(macOS 10.11, iOS 9.0, tvOS 9.0, *), let device = commandQueue?.device {
             
             return CIContext(mtlDevice: device, options: _options)
             
@@ -124,6 +126,7 @@ extension CIContextPool {
 
 extension CIContextPool {
     
+    @available(macOS 10.4, iOS 10.0, tvOS 10.0, *)
     open func clearCaches() {
         
         lck.lock()
