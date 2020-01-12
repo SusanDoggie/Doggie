@@ -27,7 +27,7 @@
 
 extension CIImage {
     
-    @available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
+    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func insertingIntermediate(blockSize: Int, maxBlockSize: Int, colorSpace: ColorSpace<RGBColorModel>?, matchToWorkingSpace: Bool = true) throws -> CIImage {
         
         var image = self
@@ -49,7 +49,7 @@ extension CIImage {
     }
 }
 
-@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 private class DGCacheProcessorKernel: CIImageProcessorKernel {
     
     override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
@@ -66,7 +66,7 @@ private class DGCacheProcessorKernel: CIImageProcessorKernel {
     }
 }
 
-@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension DGCacheProcessorKernel {
     
     fileprivate struct Info {
@@ -81,7 +81,7 @@ extension DGCacheProcessorKernel {
     }
 }
 
-@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension DGCacheProcessorKernel.Info {
     
     struct Block: Hashable {

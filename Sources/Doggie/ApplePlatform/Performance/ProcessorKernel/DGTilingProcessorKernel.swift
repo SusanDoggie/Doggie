@@ -27,7 +27,7 @@
 
 extension CIImage {
     
-    @available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
+    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func tiling(blockSize: Int, colorSpace: ColorSpace<RGBColorModel>?, matchToWorkingSpace: Bool = true) throws -> CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
@@ -43,7 +43,7 @@ extension CIImage {
     }
 }
 
-@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 private class DGTilingProcessorKernel: CIImageProcessorKernel {
     
     override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
@@ -117,7 +117,7 @@ private class DGTilingProcessorKernel: CIImageProcessorKernel {
     }
 }
 
-@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension DGTilingProcessorKernel {
     
     struct Info {
@@ -138,7 +138,7 @@ extension DGTilingProcessorKernel {
     }
 }
 
-@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension DGTilingProcessorKernel.Info {
     
     func make_context(commandQueue: MTLCommandQueue, outputPremultiplied: Bool) -> CIContext? {
