@@ -1,5 +1,5 @@
 //
-//  DGTilingProcessorKernel.swift
+//  DGTiledProcessorKernel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -32,8 +32,8 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        let info = DGTilingProcessorKernel.Info(image: self, blockSize: blockSize, colorSpace: colorSpace)
-        var rendered = try DGTilingProcessorKernel.apply(withExtent: _extent, inputs: nil, arguments: ["info": info])
+        let info = DGTiledProcessorKernel.Info(image: self, blockSize: blockSize, colorSpace: colorSpace)
+        var rendered = try DGTiledProcessorKernel.apply(withExtent: _extent, inputs: nil, arguments: ["info": info])
         
         if !extent.isInfinite {
             rendered = rendered.clamped(to: extent).cropped(to: extent)
@@ -44,7 +44,7 @@ extension CIImage {
 }
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-private class DGTilingProcessorKernel: CIImageProcessorKernel {
+private class DGTiledProcessorKernel: CIImageProcessorKernel {
     
     override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
         
@@ -118,7 +118,7 @@ private class DGTilingProcessorKernel: CIImageProcessorKernel {
 }
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-extension DGTilingProcessorKernel {
+extension DGTiledProcessorKernel {
     
     struct Info {
         
@@ -139,7 +139,7 @@ extension DGTilingProcessorKernel {
 }
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-extension DGTilingProcessorKernel.Info {
+extension DGTiledProcessorKernel.Info {
     
     func make_context(commandQueue: MTLCommandQueue, outputPremultiplied: Bool) -> CIContext? {
         

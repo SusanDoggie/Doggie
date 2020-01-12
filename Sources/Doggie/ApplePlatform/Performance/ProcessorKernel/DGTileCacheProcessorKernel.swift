@@ -1,5 +1,5 @@
 //
-//  DGCacheProcessorKernel.swift
+//  DGTileCacheProcessorKernel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -38,8 +38,8 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        let info = DGCacheProcessorKernel.Info(image: image, blockSize: min(blockSize, maxBlockSize), maxBlockSize: maxBlockSize, colorSpace: colorSpace)
-        var rendered = try DGCacheProcessorKernel.apply(withExtent: _extent, inputs: nil, arguments: ["info": info])
+        let info = DGTileCacheProcessorKernel.Info(image: image, blockSize: min(blockSize, maxBlockSize), maxBlockSize: maxBlockSize, colorSpace: colorSpace)
+        var rendered = try DGTileCacheProcessorKernel.apply(withExtent: _extent, inputs: nil, arguments: ["info": info])
         
         if !extent.isInfinite {
             rendered = rendered.clamped(to: extent).cropped(to: extent)
@@ -50,7 +50,7 @@ extension CIImage {
 }
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-private class DGCacheProcessorKernel: CIImageProcessorKernel {
+private class DGTileCacheProcessorKernel: CIImageProcessorKernel {
     
     override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
         
@@ -67,7 +67,7 @@ private class DGCacheProcessorKernel: CIImageProcessorKernel {
 }
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-extension DGCacheProcessorKernel {
+extension DGTileCacheProcessorKernel {
     
     fileprivate struct Info {
         
@@ -82,7 +82,7 @@ extension DGCacheProcessorKernel {
 }
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-extension DGCacheProcessorKernel.Info {
+extension DGTileCacheProcessorKernel.Info {
     
     struct Block: Hashable {
         
