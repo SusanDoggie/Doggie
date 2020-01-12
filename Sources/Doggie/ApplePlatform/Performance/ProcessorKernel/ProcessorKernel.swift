@@ -23,9 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreImage)
-
-#if canImport(MetalPerformanceShaders)
+#if canImport(CoreImage) && canImport(MetalPerformanceShaders)
 
 extension CIImage {
     
@@ -154,7 +152,5 @@ extension CIImage {
         return try ProcessorKernel.apply(withExtent: extent, inputs: [self], arguments: ["radius": radius])
     }
 }
-
-#endif
 
 #endif
