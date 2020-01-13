@@ -132,7 +132,7 @@ extension TiledCacheKernel.Info {
         if blockSize <= 1 {
             let bounds = CGRect(x: 0, y: 0, width: maxX - minX, height: maxY - minY)
             let _image = image.transformed(by: SDTransform.translate(x: Double(-minX), y: Double(-minY)))
-            renderer.render(image, to: surface, bounds: bounds, colorSpace: workingColorSpace)
+            renderer.render(_image, to: surface, bounds: bounds, colorSpace: workingColorSpace)
             return
         }
         
