@@ -28,7 +28,7 @@
 extension CIKernel {
     
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-    func process(extent: CGRect, roiCallback callback: @escaping CIKernelROICallback = { _, rect in rect }, arguments: [Any]) -> CIImage? {
+    open func process(extent: CGRect, roiCallback callback: @escaping CIKernelROICallback = { _, rect in rect }, arguments: [Any]) -> CIImage? {
         
         return try? self._process(extent: extent, roiCallback: callback, arguments: arguments) {
             
@@ -40,7 +40,7 @@ extension CIKernel {
 extension CIWarpKernel {
     
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-    func process(extent: CGRect, roiCallback callback: @escaping CIKernelROICallback = { _, rect in rect }, image: CIImage, arguments: [Any]) -> CIImage? {
+    open func process(extent: CGRect, roiCallback callback: @escaping CIKernelROICallback = { _, rect in rect }, image: CIImage, arguments: [Any]) -> CIImage? {
         
         return try? self._process(extent: extent, roiCallback: callback, arguments: [image] + arguments) {
             
@@ -52,7 +52,7 @@ extension CIWarpKernel {
 extension CIColorKernel {
     
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-    func process(extent: CGRect, arguments: [Any]) -> CIImage? {
+    open func process(extent: CGRect, arguments: [Any]) -> CIImage? {
         
         return try? self._process(extent: extent, roiCallback: { _, rect in rect }, arguments: arguments) {
             
