@@ -35,8 +35,6 @@ extension CIImage {
             image = image.insertingIntermediate()
         }
         
-        guard blockSize > 1 && maxBlockSize > 1 else { return image }
-        
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
         let info = TiledCacheKernel.Info(image: image, blockSize: min(blockSize, maxBlockSize), maxBlockSize: maxBlockSize, colorSpace: colorSpace)
@@ -120,9 +118,15 @@ extension TiledCacheKernel.Info {
     
     func render(to surface: IOSurfaceRef, bounds: Rect) {
         
-        guard let renderer = pool.makeContext(colorSpace: colorSpace, outputPremultiplied: colorSpace == nil) else { return }
-        guard let texture_renderer = colorSpace == nil ? renderer : pool.makeContext(colorSpace: colorSpace, outputPremultiplied: true) else { return }
-        let workingColorSpace = texture_renderer.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
+        guard let renderer = pool.makeContext(colorSpace: colorSpace, outputPremultiplied: true) else { return }
+        let workingColorSpace = renderer.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
+        
+        if blockSize <= 1 {
+            renderer.render(image, to: surface, bounds: CGRect(bounds), colorSpace: workingColorSpace)
+            return
+        }
+        
+        guard let texture_renderer = colorSpace == nil ? renderer : pool.makeContext(colorSpace: colorSpace, outputPremultiplied: false) else { return }
         
         guard let minX = Int(exactly: floor(bounds.minX)) else { return }
         guard let minY = Int(exactly: floor(bounds.minY)) else { return }
@@ -188,12 +192,12 @@ extension TiledCacheKernel.Info {
                 
                 if let colorSpace = colorSpace {
                     
-                    let rendered = renderer.createImage(self.image, from: extent, colorSpace: colorSpace, fileBacked: true)
+                    let rendered = texture_renderer.createImage(self.image, from: extent, colorSpace: colorSpace, fileBacked: true)
                     return rendered?.cgImage
                     
                 } else {
                     
-                    let rendered = renderer.createCGImage(self.image, from: CGRect(extent))
+                    let rendered = texture_renderer.createCGImage(self.image, from: CGRect(extent))
                     return rendered?.fileBacked() ?? rendered
                 }
             }
@@ -235,7 +239,7 @@ extension TiledCacheKernel.Info {
             let bounds = CGRect(x: _minX, y: _minY, width: width, height: height)
             let _image = image.transformed(by: SDTransform.translate(x: Double(block.minX - minX), y: Double(block.minY - minY)))
             
-            texture_renderer.render(_image, to: surface, bounds: bounds, colorSpace: workingColorSpace)
+            renderer.render(_image, to: surface, bounds: bounds, colorSpace: workingColorSpace)
         }
     }
 }
