@@ -1,5 +1,5 @@
 //
-//  DGTileCacheProcessorKernel.swift
+//  TiledCacheKernel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -38,8 +38,8 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        let info = DGTileCacheProcessorKernel.Info(image: image, blockSize: min(blockSize, maxBlockSize), maxBlockSize: maxBlockSize, colorSpace: colorSpace)
-        var rendered = try DGTileCacheProcessorKernel.apply(withExtent: _extent, inputs: nil, arguments: ["info": info])
+        let info = TiledCacheKernel.Info(image: image, blockSize: min(blockSize, maxBlockSize), maxBlockSize: maxBlockSize, colorSpace: colorSpace)
+        var rendered = try TiledCacheKernel.apply(withExtent: _extent, inputs: nil, arguments: ["info": info])
         
         if !extent.isInfinite {
             rendered = rendered.clamped(to: extent).cropped(to: extent)
@@ -50,7 +50,18 @@ extension CIImage {
 }
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-private class DGTileCacheProcessorKernel: CIImageProcessorKernel {
+private class TiledCacheKernel: CIImageProcessorKernel {
+    
+    fileprivate struct Info {
+        
+        var image: CIImage
+        let blockSize: Int
+        let maxBlockSize: Int
+        
+        let colorSpace: ColorSpace<RGBColorModel>?
+        
+        let cache = Cache()
+    }
     
     override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
         
@@ -67,22 +78,7 @@ private class DGTileCacheProcessorKernel: CIImageProcessorKernel {
 }
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-extension DGTileCacheProcessorKernel {
-    
-    fileprivate struct Info {
-        
-        var image: CIImage
-        let blockSize: Int
-        let maxBlockSize: Int
-        
-        let colorSpace: ColorSpace<RGBColorModel>?
-        
-        let cache = Cache()
-    }
-}
-
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-extension DGTileCacheProcessorKernel.Info {
+extension TiledCacheKernel.Info {
     
     struct Block: Hashable {
         
