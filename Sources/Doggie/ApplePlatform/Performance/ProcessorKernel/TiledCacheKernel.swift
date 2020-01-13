@@ -266,6 +266,8 @@ extension TiledCacheKernel.Info {
         
         guard let buffer = commandBuffer.device.makeTexture(descriptor: descriptor) else { return }
         
+        buffer.label = "com.SusanDoggie.TiledCacheKernel"
+        
         for (block, image) in blocks {
             
             let _minX = max(0, block.minX - minX)
