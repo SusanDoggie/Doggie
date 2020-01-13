@@ -351,6 +351,34 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
+    public static func scale(_ scale: Int) -> Matrix {
+        return .scale(Double(scale))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ x 0 0 0 ⎞
+    ///     ⎜ 0 y 0 0 ⎟
+    ///     ⎜ 0 0 z 0 ⎟
+    ///     ⎝ 0 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func scale<T : BinaryInteger>(_ scale: T) -> Matrix {
+        return .scale(Double(scale))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ x 0 0 0 ⎞
+    ///     ⎜ 0 y 0 0 ⎟
+    ///     ⎜ 0 0 z 0 ⎟
+    ///     ⎝ 0 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
     public static func scale<T : BinaryFloatingPoint>(_ scale: T) -> Matrix {
         return .scale(Double(scale))
     }
@@ -373,6 +401,34 @@ extension Matrix {
         return Matrix(a: x, b: 0, c: 0, d: 0,
                       e: 0, f: y, g: 0, h: 0,
                       i: 0, j: 0, k: z, l: 0)
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ x 0 0 0 ⎞
+    ///     ⎜ 0 y 0 0 ⎟
+    ///     ⎜ 0 0 z 0 ⎟
+    ///     ⎝ 0 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func scale(x: Int = 1, y: Int = 1, z: Int = 1) -> Matrix {
+        return .scale(x: Double(x), y: Double(y), z: Double(z))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ x 0 0 0 ⎞
+    ///     ⎜ 0 y 0 0 ⎟
+    ///     ⎜ 0 0 z 0 ⎟
+    ///     ⎝ 0 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func scale<T : BinaryInteger>(x: T = 1, y: T = 1, z: T = 1) -> Matrix {
+        return .scale(x: Double(x), y: Double(y), z: Double(z))
     }
     
     ///
@@ -419,6 +475,34 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
+    public static func translate(x: Int = 0, y: Int = 0, z: Int = 0) -> Matrix {
+        return .translate(x: Double(x), y: Double(y), z: Double(z))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1 0 0 0 ⎞
+    ///     ⎜ 0 1 0 0 ⎟
+    ///     ⎜ 0 0 1 0 ⎟
+    ///     ⎝ x y z 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func translate<T : BinaryInteger>(x: T = 0, y: T = 0, z: T = 0) -> Matrix {
+        return .translate(x: Double(x), y: Double(y), z: Double(z))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1 0 0 0 ⎞
+    ///     ⎜ 0 1 0 0 ⎟
+    ///     ⎜ 0 0 1 0 ⎟
+    ///     ⎝ x y z 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
     public static func translate<T : BinaryFloatingPoint>(x: T = 0, y: T = 0, z: T = 0) -> Matrix {
         return .translate(x: Double(x), y: Double(y), z: Double(z))
     }
@@ -441,6 +525,34 @@ extension Matrix {
         return Matrix(a: -1, b: 0, c: 0, d: 2 * x,
                       e: 0, f: 1, g: 0, h: 0,
                       i: 0, j: 0, k: 1, l: 0)
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ -1 0 0 0 ⎞
+    ///     ⎜  0 1 0 0 ⎟
+    ///     ⎜  0 0 1 0 ⎟
+    ///     ⎝ 2x 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func reflectX(_ x: Int) -> Matrix {
+        return .reflectX(Double(x))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ -1 0 0 0 ⎞
+    ///     ⎜  0 1 0 0 ⎟
+    ///     ⎜  0 0 1 0 ⎟
+    ///     ⎝ 2x 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func reflectX<T : BinaryInteger>(_ x: T) -> Matrix {
+        return .reflectX(Double(x))
     }
     
     ///
@@ -487,6 +599,34 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
+    public static func reflectY(_ y: Int) -> Matrix {
+        return .reflectY(Double(y))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1  0 0 0 ⎞
+    ///     ⎜ 0 -1 0 0 ⎟
+    ///     ⎜ 0  0 1 0 ⎟
+    ///     ⎝ 0 2y 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func reflectY<T : BinaryInteger>(_ y: T) -> Matrix {
+        return .reflectY(Double(y))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1  0 0 0 ⎞
+    ///     ⎜ 0 -1 0 0 ⎟
+    ///     ⎜ 0  0 1 0 ⎟
+    ///     ⎝ 0 2y 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
     public static func reflectY<T : BinaryFloatingPoint>(_ y: T) -> Matrix {
         return .reflectY(Double(y))
     }
@@ -509,6 +649,34 @@ extension Matrix {
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: 1, g: 0, h: 0,
                       i: 0, j: 0, k: -1, l: 2 * z)
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1 0  0 0 ⎞
+    ///     ⎜ 0 1  0 0 ⎟
+    ///     ⎜ 0 0 -1 0 ⎟
+    ///     ⎝ 0 0 2z 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func reflectZ(_ z: Int) -> Matrix {
+        return .reflectZ(Double(z))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1 0  0 0 ⎞
+    ///     ⎜ 0 1  0 0 ⎟
+    ///     ⎜ 0 0 -1 0 ⎟
+    ///     ⎝ 0 0 2z 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func reflectZ<T : BinaryInteger>(_ z: T) -> Matrix {
+        return .reflectZ(Double(z))
     }
     
     ///

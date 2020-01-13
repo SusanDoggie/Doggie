@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreImage)
+#if canImport(CoreImage) && canImport(Metal)
 
 extension CIImage {
     
@@ -54,19 +54,26 @@ private class TiledCacheKernel: CIImageProcessorKernel {
     
     fileprivate struct Info {
         
-        let image: CIImage
-        let blockSize: Int
-        let maxBlockSize: Int
+        var image: CIImage
+        var blockSize: Int
+        var maxBlockSize: Int
         
-        let colorSpace: ColorSpace<RGBColorModel>?
+        var colorSpace: ColorSpace<RGBColorModel>?
         
         let cache = Cache()
-        let pool = CIContextPool()
     }
     
     override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
-        guard let info = arguments?["info"] as? Info else { return }
-        info.render(to: output.surface, bounds: Rect(output.region))
+        
+        guard let commandBuffer = output.metalCommandBuffer else { return }
+        guard let texture = output.metalTexture else { return }
+        guard var info = arguments?["info"] as? Info else { return }
+        
+        let region = output.region
+        let bounds = Rect(x: region.minX, y: -region.minY, width: region.width, height: -region.height)
+        
+        info.image = info.image.transformed(by: SDTransform.reflectY())
+        info.render(to: texture, commandBuffer: commandBuffer, bounds: bounds)
     }
 }
 
@@ -107,6 +114,8 @@ extension TiledCacheKernel.Info {
         
         let lck = SDLock()
         
+        var pool = WeakDictionary<MTLCommandQueue, CIContextPool>()
+        
         var table: [Block: CIImage] = [:]
         
         subscript(block: Block) -> CIImage? {
@@ -119,30 +128,45 @@ extension TiledCacheKernel.Info {
         }
     }
     
-    func render(to surface: IOSurfaceRef, bounds: Rect) {
+    func make_context(commandQueue: MTLCommandQueue, outputPremultiplied: Bool) -> CIContext? {
+        
+        cache.lck.lock()
+        defer { cache.lck.unlock() }
+        
+        if cache.pool[commandQueue] == nil {
+            cache.pool[commandQueue] = CIContextPool(commandQueue: commandQueue)
+        }
+        
+        return cache.pool[commandQueue]?.makeContext(colorSpace: colorSpace, outputPremultiplied: outputPremultiplied)
+    }
+    
+    func render(to texture: MTLTexture, commandBuffer: MTLCommandBuffer, bounds: Rect) {
         
         guard let minX = Int(exactly: floor(bounds.minX)) else { return }
         guard let minY = Int(exactly: floor(bounds.minY)) else { return }
         guard let maxX = Int(exactly: ceil(bounds.maxX)) else { return }
         guard let maxY = Int(exactly: ceil(bounds.maxY)) else { return }
         
-        guard let renderer = pool.makeContext(colorSpace: colorSpace, outputPremultiplied: true) else { return }
+        guard let renderer = self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: true) else { return }
         let workingColorSpace = renderer.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
         
         if blockSize <= 1 {
+            
             let bounds = CGRect(x: 0, y: 0, width: maxX - minX, height: maxY - minY)
-            let _image = image.transformed(by: SDTransform.translate(x: Double(-minX), y: Double(-minY)))
-            renderer.render(_image, to: surface, bounds: bounds, colorSpace: workingColorSpace)
+            let _image = image.transformed(by: SDTransform.translate(x: -minX, y: -minY))
+            
+            renderer.render(_image, to: texture, commandBuffer: commandBuffer, bounds: bounds, colorSpace: workingColorSpace)
+            
             return
         }
         
-        guard let texture_renderer = colorSpace == nil ? renderer : pool.makeContext(colorSpace: colorSpace, outputPremultiplied: false) else { return }
+        guard let texture_renderer = colorSpace == nil ? renderer : self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: false) else { return }
         
         var need_to_render: [Block] = []
         var blocks: [(Block, CIImage)] = []
         
         let _minX = minX / blockSize * blockSize
-        let _minY = minY / blockSize * blockSize
+        let _minY = minY / blockSize * blockSize - blockSize
         
         for y in stride(from: _minY, to: maxY, by: blockSize) {
             for x in stride(from: _minX, to: maxX, by: blockSize) {
@@ -229,6 +253,19 @@ extension TiledCacheKernel.Info {
             }
         }
         
+        guard let max_width = blocks.lazy.map({ $0.0.width }).max() else { return }
+        guard let max_height = blocks.lazy.map({ $0.0.height }).max() else { return }
+        
+        let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: texture.pixelFormat,
+            width: max_width,
+            height: max_height,
+            mipmapped: false)
+        descriptor.storageMode = .private
+        descriptor.usage = .shaderWrite
+        
+        guard let buffer = commandBuffer.device.makeTexture(descriptor: descriptor) else { return }
+        
         for (block, image) in blocks {
             
             let _minX = max(0, block.minX - minX)
@@ -241,10 +278,31 @@ extension TiledCacheKernel.Info {
             
             guard width > 0 && height > 0 else { return }
             
-            let bounds = CGRect(x: _minX, y: _minY, width: width, height: height)
-            let _image = image.transformed(by: SDTransform.translate(x: Double(block.minX - minX), y: Double(block.minY - minY)))
+            let bounds = CGRect(x: 0, y: 0, width: width, height: height)
+            let _image = image.transformed(by: SDTransform.translate(x: block.minX - minX - _minX, y: block.minY - minY - _minY))
             
-            renderer.render(_image, to: surface, bounds: bounds, colorSpace: workingColorSpace)
+            renderer.render(_image, to: buffer, commandBuffer: commandBuffer, bounds: bounds, colorSpace: workingColorSpace)
+            
+            let sourceOrigin = MTLOrigin(x: 0, y: 0, z: 0)
+            let sourceSize = MTLSize(width: width, height: height, depth: 1)
+            
+            let destinationOrigin = MTLOrigin(x: _minX, y: _minY, z: 0)
+            
+            guard let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder() else { return }
+            
+            blitCommandEncoder.copy(
+                from: buffer,
+                sourceSlice: 0,
+                sourceLevel: 0,
+                sourceOrigin: sourceOrigin,
+                sourceSize: sourceSize,
+                to: texture,
+                destinationSlice: 0,
+                destinationLevel: 0,
+                destinationOrigin: destinationOrigin
+            )
+            
+            blitCommandEncoder.endEncoding()
         }
     }
 }

@@ -278,6 +278,30 @@ extension SDTransform {
     ///
     @inlinable
     @inline(__always)
+    public static func scale(_ scale: Int) -> SDTransform {
+        return .scale(Double(scale))
+    }
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ x 0 0 ⎞
+    ///     ⎜ 0 y 0 ⎟
+    ///     ⎝ 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func scale<T : BinaryInteger>(_ scale: T) -> SDTransform {
+        return .scale(Double(scale))
+    }
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ x 0 0 ⎞
+    ///     ⎜ 0 y 0 ⎟
+    ///     ⎝ 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
     public static func scale<T : BinaryFloatingPoint>(_ scale: T) -> SDTransform {
         return .scale(Double(scale))
     }
@@ -298,6 +322,32 @@ extension SDTransform {
         
         return SDTransform(a: x, b: 0, c: 0,
                            d: 0, e: y, f: 0)
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ x 0 0 ⎞
+    ///     ⎜ 0 y 0 ⎟
+    ///     ⎝ 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func scale(x: Int = 1, y: Int = 1) -> SDTransform {
+        return .scale(x: Double(x), y: Double(y))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ x 0 0 ⎞
+    ///     ⎜ 0 y 0 ⎟
+    ///     ⎝ 0 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func scale<T : BinaryInteger>(x: T = 1, y: T = 1) -> SDTransform {
+        return .scale(x: Double(x), y: Double(y))
     }
     
     ///
@@ -340,6 +390,32 @@ extension SDTransform {
     ///
     @inlinable
     @inline(__always)
+    public static func translate(x: Int = 0, y: Int = 0) -> SDTransform {
+        return .translate(x: Double(x), y: Double(y))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1 0 0 ⎞
+    ///     ⎜ 0 1 0 ⎟
+    ///     ⎝ x y 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func translate<T : BinaryInteger>(x: T = 0, y: T = 0) -> SDTransform {
+        return .translate(x: Double(x), y: Double(y))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1 0 0 ⎞
+    ///     ⎜ 0 1 0 ⎟
+    ///     ⎝ x y 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
     public static func translate<T : BinaryFloatingPoint>(x: T = 0, y: T = 0) -> SDTransform {
         return .translate(x: Double(x), y: Double(y))
     }
@@ -371,6 +447,32 @@ extension SDTransform {
     ///
     @inlinable
     @inline(__always)
+    public static func reflectX(_ x: Int) -> SDTransform {
+        return .reflectX(Double(x))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ -1 0 0 ⎞
+    ///     ⎜  0 1 0 ⎟
+    ///     ⎝ 2x 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func reflectX<T : BinaryInteger>(_ x: T) -> SDTransform {
+        return .reflectX(Double(x))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ -1 0 0 ⎞
+    ///     ⎜  0 1 0 ⎟
+    ///     ⎝ 2x 0 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
     public static func reflectX<T : BinaryFloatingPoint>(_ x: T) -> SDTransform {
         return .reflectX(Double(x))
     }
@@ -391,6 +493,32 @@ extension SDTransform {
         
         return SDTransform(a: 1, b: 0, c: 0,
                            d: 0, e: -1, f: 2 * y)
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1  0 0 ⎞
+    ///     ⎜ 0 -1 0 ⎟
+    ///     ⎝ 0 2y 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func reflectY(_ y: Int) -> SDTransform {
+        return .reflectY(Double(y))
+    }
+    
+    ///
+    /// Transformation Matrix:
+    ///
+    ///     ⎛ 1  0 0 ⎞
+    ///     ⎜ 0 -1 0 ⎟
+    ///     ⎝ 0 2y 1 ⎠
+    ///
+    @inlinable
+    @inline(__always)
+    public static func reflectY<T : BinaryInteger>(_ y: T) -> SDTransform {
+        return .reflectY(Double(y))
     }
     
     ///

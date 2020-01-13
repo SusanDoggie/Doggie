@@ -72,7 +72,7 @@ extension PDFContext.Page {
             current_layer.image[name] = stream
         }
         
-        let transform = .reflectY(0.5) * .scale(x: Double(image.width), y: Double(image.height)) * transform * _mirrored_transform
+        let transform = .reflectY(0.5) * .scale(x: image.width, y: image.height) * transform * _mirrored_transform
         let _transform = [
             "\(Decimal(transform.a).rounded(scale: 9))",
             "\(Decimal(transform.d).rounded(scale: 9))",
