@@ -27,6 +27,7 @@
 
 extension CIImage {
     
+    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func insertingIntermediate(blockSize: Int, maxBlockSize: Int, colorSpace: ColorSpace<RGBColorModel>?, matchToWorkingSpace: Bool = true) throws -> CIImage {
         
         var image = self
@@ -48,6 +49,7 @@ extension CIImage {
     }
 }
 
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 private class TiledCacheKernel: CIImageProcessorKernel {
     
     fileprivate struct Info {
@@ -68,6 +70,7 @@ private class TiledCacheKernel: CIImageProcessorKernel {
     }
 }
 
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension TiledCacheKernel.Info {
     
     struct Block: Hashable {
@@ -118,20 +121,22 @@ extension TiledCacheKernel.Info {
     
     func render(to surface: IOSurfaceRef, bounds: Rect) {
         
-        guard let renderer = pool.makeContext(colorSpace: colorSpace, outputPremultiplied: true) else { return }
-        let workingColorSpace = renderer.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
-        
-        if blockSize <= 1 {
-            renderer.render(image, to: surface, bounds: CGRect(bounds), colorSpace: workingColorSpace)
-            return
-        }
-        
-        guard let texture_renderer = colorSpace == nil ? renderer : pool.makeContext(colorSpace: colorSpace, outputPremultiplied: false) else { return }
-        
         guard let minX = Int(exactly: floor(bounds.minX)) else { return }
         guard let minY = Int(exactly: floor(bounds.minY)) else { return }
         guard let maxX = Int(exactly: ceil(bounds.maxX)) else { return }
         guard let maxY = Int(exactly: ceil(bounds.maxY)) else { return }
+        
+        guard let renderer = pool.makeContext(colorSpace: colorSpace, outputPremultiplied: true) else { return }
+        let workingColorSpace = renderer.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
+        
+        if blockSize <= 1 {
+            let bounds = CGRect(x: 0, y: 0, width: maxX - minX, height: maxY - minY)
+            let _image = image.transformed(by: SDTransform.translate(x: Double(-minX), y: Double(-minY)))
+            renderer.render(image, to: surface, bounds: bounds, colorSpace: workingColorSpace)
+            return
+        }
+        
+        guard let texture_renderer = colorSpace == nil ? renderer : pool.makeContext(colorSpace: colorSpace, outputPremultiplied: false) else { return }
         
         var need_to_render: [Block] = []
         var blocks: [(Block, CIImage)] = []
