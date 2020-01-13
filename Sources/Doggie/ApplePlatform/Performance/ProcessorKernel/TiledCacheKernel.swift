@@ -150,18 +150,6 @@ extension TiledCacheKernel.Info {
         guard let renderer = self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: true) else { return }
         let workingColorSpace = renderer.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
         
-        if blockSize <= 1 {
-            
-            let bounds = CGRect(x: 0, y: 0, width: maxX - minX, height: maxY - minY)
-            let _image = image.transformed(by: SDTransform.translate(x: -minX, y: -minY))
-            
-            renderer.render(_image, to: texture, commandBuffer: commandBuffer, bounds: bounds, colorSpace: workingColorSpace)
-            
-            return
-        }
-        
-        guard let texture_renderer = colorSpace == nil ? renderer : self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: false) else { return }
-        
         var need_to_render: [Block] = []
         var blocks: [(Block, CIImage)] = []
         
@@ -213,42 +201,47 @@ extension TiledCacheKernel.Info {
             }
         }
         
-        for block in need_to_render {
+        if !need_to_render.isEmpty {
             
-            let _image: CGImage? = autoreleasepool {
+            guard let texture_renderer = colorSpace == nil ? renderer : self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: false) else { return }
+            
+            for block in need_to_render {
                 
-                let extent = Rect(x: block.minX, y: block.minY, width: block.width, height: block.height)
-                
-                if let colorSpace = colorSpace {
+                let _image: CGImage? = autoreleasepool {
                     
-                    let rendered = texture_renderer.createImage(self.image, from: extent, colorSpace: colorSpace, fileBacked: true)
-                    return rendered?.cgImage
+                    let extent = Rect(x: block.minX, y: block.minY, width: block.width, height: block.height)
                     
-                } else {
-                    
-                    let rendered = texture_renderer.createCGImage(self.image, from: CGRect(extent))
-                    return rendered?.fileBacked() ?? rendered
-                }
-            }
-            
-            guard let image = _image else { continue }
-            
-            blocks.append((block, CIImage(cgImage: image)))
-            
-            for y in stride(from: block.minY, to: block.maxY, by: blockSize) {
-                for x in stride(from: block.minX, to: block.maxX, by: blockSize) {
-                    
-                    let crop_zone = CGRect(x: x - block.minX, y: block.maxY - y - blockSize, width: blockSize, height: blockSize)
-                    guard let cropped = image.cropping(to: crop_zone) else { continue }
-                    
-                    var texture = CIImage(cgImage: cropped)
-                    
-                    if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
-                        texture = texture.insertingIntermediate()
+                    if let colorSpace = colorSpace {
+                        
+                        let rendered = texture_renderer.createImage(self.image, from: extent, colorSpace: colorSpace, fileBacked: true)
+                        return rendered?.cgImage
+                        
+                    } else {
+                        
+                        let rendered = texture_renderer.createCGImage(self.image, from: CGRect(extent))
+                        return rendered?.fileBacked() ?? rendered
                     }
-                    
-                    let block = Block(x: x, y: y, width: blockSize, height: blockSize)
-                    cache[block] = texture
+                }
+                
+                guard let image = _image else { continue }
+                
+                blocks.append((block, CIImage(cgImage: image)))
+                
+                for y in stride(from: block.minY, to: block.maxY, by: blockSize) {
+                    for x in stride(from: block.minX, to: block.maxX, by: blockSize) {
+                        
+                        let crop_zone = CGRect(x: x - block.minX, y: block.maxY - y - blockSize, width: blockSize, height: blockSize)
+                        guard let cropped = image.cropping(to: crop_zone) else { continue }
+                        
+                        var texture = CIImage(cgImage: cropped)
+                        
+                        if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
+                            texture = texture.insertingIntermediate()
+                        }
+                        
+                        let block = Block(x: x, y: y, width: blockSize, height: blockSize)
+                        cache[block] = texture
+                    }
                 }
             }
         }
