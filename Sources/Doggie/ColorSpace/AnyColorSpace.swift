@@ -65,7 +65,7 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     
     @inlinable
     var _linearTone: AnyColorSpaceBaseProtocol {
-        return self
+        return self.linearTone
     }
     
     @inlinable
