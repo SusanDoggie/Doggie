@@ -37,6 +37,7 @@ extension CIKernel {
     }
 }
 
+@available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
 extension CIWarpKernel {
     
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
@@ -49,6 +50,7 @@ extension CIWarpKernel {
     }
 }
 
+@available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
 extension CIColorKernel {
     
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
@@ -134,12 +136,11 @@ private class CIKernelProcessor: CIImageProcessorKernel {
         var arguments = info.arguments
         
         for i in 0..<arguments.count {
-            if let _input = arguments[i] as? Input {
-                guard let input = inputs?[_input.index] else { return }
-                guard let texture = input.metalTexture else { return }
-                guard let image = CIImage(mtlTexture: texture, options: nil) else { return }
-                arguments[i] = image.transformed(by: SDTransform.translate(x: input.region.minX, y: input.region.minY) * SDTransform.reflectY(input.region.midY))
-            }
+            guard let _input = arguments[i] as? Input else { continue }
+            guard let input = inputs?[_input.index] else { return }
+            guard let texture = input.metalTexture else { return }
+            guard let image = CIImage(mtlTexture: texture, options: nil) else { return }
+            arguments[i] = image.transformed(by: SDTransform.translate(x: input.region.minX, y: input.region.minY) * SDTransform.reflectY(input.region.midY))
         }
         
         guard let rendered = info.kernel(output.region, arguments) else { return }
