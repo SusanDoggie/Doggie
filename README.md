@@ -21,6 +21,10 @@ Doggie is a foundational library for Apple's swift. It includes mathematics, acc
 | **Ubuntu 16.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/5)](https://travis-ci.com/SusanDoggie/Doggie)|
 | **Ubuntu 18.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/6)](https://travis-ci.com/SusanDoggie/Doggie)|
 
+## Apps Using This Library
+
+[![Doggie Graffiti](./docs/apps/DoggieGraffiti.svg)](https://apps.apple.com/hk/app/doggie-graffiti/id1465865578)
+
 ## Features
 
 - accelerate, signal processing, fourier and convolution
