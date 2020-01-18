@@ -23,7 +23,7 @@ Doggie is a foundational library for Apple's swift. It includes mathematics, acc
 
 ## Apps Using This Library
 
-[![Doggie Graffiti](./docs/apps/DoggieGraffiti.svg)](https://apps.apple.com/hk/app/doggie-graffiti/id1465865578)
+[<img src="./docs/apps/DoggieGraffiti.svg" width="230" height="230">](https://apps.apple.com/hk/app/doggie-graffiti/id1465865578)
 
 ## Features
 
