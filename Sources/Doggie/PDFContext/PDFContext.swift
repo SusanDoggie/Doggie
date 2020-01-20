@@ -109,6 +109,10 @@ extension PDFContext {
 
 extension PDFContext {
     
+    public var isRasterContext: Bool {
+        return false
+    }
+    
     public var colorSpace: AnyColorSpace {
         return current_page.colorSpace
     }

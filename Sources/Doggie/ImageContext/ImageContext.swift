@@ -235,6 +235,10 @@ public enum ImageConvolutionAlgorithm : CaseIterable {
 
 extension ImageContext {
     
+    public var isRasterContext: Bool {
+        return true
+    }
+    
     public var opacity: Double {
         get {
             return current_layer.styles.opacity

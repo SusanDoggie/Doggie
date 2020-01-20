@@ -41,6 +41,8 @@ public protocol DrawableContext : AnyObject {
     
     var renderingIntent: RenderingIntent { get set }
     
+    var isRasterContext: Bool { get }
+    
     func saveGraphicState()
     
     func restoreGraphicState()

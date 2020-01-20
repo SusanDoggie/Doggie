@@ -186,6 +186,10 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
+    public var isRasterContext: Bool {
+        return true
+    }
+    
     public var opacity: Double {
         get {
             return current_layer.styles.opacity

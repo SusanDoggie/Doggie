@@ -263,6 +263,10 @@ extension SVGContext {
 
 extension SVGContext {
     
+    public var isRasterContext: Bool {
+        return false
+    }
+    
     public var opacity: Double {
         get {
             return current_layer.styles.opacity
