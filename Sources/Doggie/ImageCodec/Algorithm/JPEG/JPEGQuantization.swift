@@ -29,7 +29,7 @@ struct JPEGQuantizationTable : ByteCodable {
     
     init(from data: inout Data) throws {
         self.tables = []
-        while data.count != 0 {
+        while !data.isEmpty {
             let byte = try data.decode(UInt8.self)
             if byte & 0xF0 == 0 {
                 tables.append((byte, .table8(try data.decode(Table8.self))))

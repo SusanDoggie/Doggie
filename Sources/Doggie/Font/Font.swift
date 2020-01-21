@@ -268,7 +268,7 @@ extension Font {
         let glyph = 0..<base.numberOfGlyphs ~= glyph ? glyph : 0
         return cache.lck.synchronized {
             if cache.glyphs[glyph] == nil {
-                var component = base.shape(forGlyph: glyph).filter { $0.count != 0 }
+                var component = base.shape(forGlyph: glyph).filter { !$0.isEmpty }
                 component.makeContiguousBuffer()
                 cache.glyphs[glyph] = component
             }

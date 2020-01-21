@@ -168,7 +168,7 @@ extension AATLookupTable {
             
             var range = range
             
-            while range.count != 0 {
+            while !range.isEmpty {
                 
                 let mid = (range.lowerBound + range.upperBound) >> 1
                 
@@ -210,7 +210,7 @@ extension AATLookupTable {
             
             var range = range
             
-            while range.count != 0 {
+            while !range.isEmpty {
                 
                 let mid = (range.lowerBound + range.upperBound) >> 1
                 
@@ -254,7 +254,7 @@ extension AATLookupTable {
             
             var range = range
             
-            while range.count != 0 {
+            while !range.isEmpty {
                 
                 let mid = (range.lowerBound + range.upperBound) >> 1
                 

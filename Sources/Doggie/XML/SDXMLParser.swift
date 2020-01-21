@@ -109,7 +109,7 @@ final class SDXMLParser : XMLParser, XMLParserDelegate {
     
     func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
         if let last = stack.popLast() {
-            if stack.count == 0 {
+            if stack.isEmpty {
                 document.append(last.0)
             } else {
                 stack.mutableLast.0.append(last.0)
@@ -122,7 +122,7 @@ final class SDXMLParser : XMLParser, XMLParserDelegate {
         let string = string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         
         if string != "" {
-            if stack.count == 0 {
+            if stack.isEmpty {
                 document.append(SDXMLElement(characters: string))
             } else {
                 stack.mutableLast.0.append(SDXMLElement(characters: string))
@@ -131,7 +131,7 @@ final class SDXMLParser : XMLParser, XMLParserDelegate {
     }
     
     func parser(_ parser: XMLParser, foundComment comment: String) {
-        if stack.count == 0 {
+        if stack.isEmpty {
             document.append(SDXMLElement(comment: comment))
         } else {
             stack.mutableLast.0.append(SDXMLElement(comment: comment))
@@ -139,7 +139,7 @@ final class SDXMLParser : XMLParser, XMLParserDelegate {
     }
     
     func parser(_ parser: XMLParser, foundCDATA CDATABlock: Data) {
-        if stack.count == 0 {
+        if stack.isEmpty {
             document.append(SDXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))
         } else {
             stack.mutableLast.0.append(SDXMLElement(CDATA: String(data: CDATABlock, encoding: .utf8) ?? ""))

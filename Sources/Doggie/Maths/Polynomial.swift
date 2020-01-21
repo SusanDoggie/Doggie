@@ -494,7 +494,7 @@ public func * (lhs: Polynomial, rhs: Double) -> Polynomial {
 
 @inlinable
 public func * (lhs: Polynomial, rhs: Polynomial) -> Polynomial {
-    if lhs.count == 0 || rhs.count == 0 {
+    if lhs.isEmpty || rhs.isEmpty {
         return Polynomial()
     }
     if lhs.count == 1 {
@@ -621,7 +621,7 @@ public func exgcd(_ a: Polynomial, _ b: Polynomial) -> (gcd: Polynomial, x: Poly
 }
 @inlinable
 public func pow(_ p: Polynomial, _ n: Int) -> Polynomial {
-    if p.count == 0 {
+    if p.isEmpty {
         return Polynomial()
     }
     let count = n * p.count - n + 1

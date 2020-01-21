@@ -92,7 +92,7 @@ extension Shape.Component {
     
     public func tweened(to end: Shape.Component, _ t: Double) -> Shape.Component {
         
-        if self.count == 0 && end.count == 0 {
+        if self.isEmpty && end.isEmpty {
             return Shape.Component(start: (1 - t) * self.start + t * end.start, closed: self.isClosed, segments: [])
         }
         

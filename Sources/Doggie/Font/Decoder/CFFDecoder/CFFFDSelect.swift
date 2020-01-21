@@ -81,7 +81,7 @@ struct CFFFDSelect {
                 let rangeCount = Int(nRanges)
                 var _range = 0..<rangeCount
                 
-                while _range.count != 0 {
+                while !_range.isEmpty {
                     
                     let mid = (_range.lowerBound + _range.upperBound) >> 1
                     var records = self.range.dropFirst(mid * 3)

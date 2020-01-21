@@ -110,7 +110,7 @@ struct TIFFDecoder : ImageRepDecoder {
             default: fatalError()
             }
             
-            if pages.count == 0 {
+            if pages.isEmpty {
                 pages.append(try TIFFPage(header, tags, data))
             } else {
                 if let page = try? TIFFPage(header, tags, data) {

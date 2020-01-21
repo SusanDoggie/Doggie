@@ -66,7 +66,7 @@ extension png_interlace_state {
         
         var source = source
         
-        while source.count != 0 {
+        while !source.isEmpty {
             
             if current_row >= height {
                 

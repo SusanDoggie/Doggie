@@ -96,7 +96,7 @@ extension SDXMLElement {
                 "\"".write(to: &output)
             }
             
-            if self.count == 0 {
+            if self.isEmpty {
                 " />".write(to: &output)
             } else {
                 ">".write(to: &output)

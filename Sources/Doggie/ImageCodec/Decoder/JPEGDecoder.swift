@@ -66,7 +66,7 @@ struct JPEGDecoder : ImageRepDecoder {
                 
             case .SOS: // Start Of Scan
                 
-                guard self.frame.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid SOS.") }
+                guard !self.frame.isEmpty else { throw ImageRep.Error.InvalidFormat("Invalid SOS.") }
                 
                 self.frame.mutableLast.scan.append(JPEGScan(SOS: try JPEGSOS(segment), tables: tables, ECS: []))
                 tables = self.frame.last!.tables
@@ -75,7 +75,7 @@ struct JPEGDecoder : ImageRepDecoder {
                 
             case .RST0 ... .RST7: // Restart
                 
-                guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid RST.") }
+                guard !self.frame.isEmpty && !self.frame.mutableLast.scan.isEmpty else { throw ImageRep.Error.InvalidFormat("Invalid RST.") }
                 
                 let offset = zip(data, data.dropFirst()).enumerated().first { $0.1.0 == 0xFF && $0.1.1 != 0x00 }?.offset
                 
@@ -93,7 +93,7 @@ struct JPEGDecoder : ImageRepDecoder {
             case .DNL: // Define Number of Lines
                 
                 guard segment.data.count == 2 else { throw ImageRep.Error.InvalidFormat("Invalid DNL.") }
-                guard self.frame.count != 0 && self.frame.mutableLast.scan.count != 0 else { throw ImageRep.Error.InvalidFormat("Invalid DNL.") }
+                guard !self.frame.isEmpty && !self.frame.mutableLast.scan.isEmpty else { throw ImageRep.Error.InvalidFormat("Invalid DNL.") }
                 
                 self.frame.mutableLast.SOF.lines = segment.data.load(as: BEUInt16.self)
                 
@@ -106,7 +106,7 @@ struct JPEGDecoder : ImageRepDecoder {
         }
         
         guard frame.count == 1 else { return nil }
-        // guard frame.count != 0 else { return nil }
+        // guard !frame.isEmpty else { return nil }
         
     }
     

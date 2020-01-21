@@ -118,7 +118,7 @@ extension Shape.Component {
     
     func breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)], reference: Double) -> [ShapeRegion.Solid] {
         
-        if points.count == 0 {
+        if points.isEmpty {
             return ShapeRegion.Solid(segments: self.bezier, reference: reference).map { [$0] } ?? []
         }
         
@@ -240,7 +240,7 @@ extension Shape {
                 default: path.append(segment)
                 }
             }
-            if path.count != 0 {
+            if !path.isEmpty {
                 if let solid = ShapeRegion.Solid(segments: path, reference: reference) {
                     solids.append(solid)
                 }

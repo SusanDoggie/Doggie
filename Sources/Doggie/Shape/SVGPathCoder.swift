@@ -94,7 +94,7 @@ extension Shape {
             switch command {
             case "M":
                 repeat {
-                    if component.count != 0 {
+                    if !component.isEmpty {
                         self.append(component)
                         component.removeAll(keepingCapacity: true)
                         component.isClosed = false
@@ -107,7 +107,7 @@ extension Shape {
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "m":
                 repeat {
-                    if component.count != 0 {
+                    if !component.isEmpty {
                         self.append(component)
                         component.removeAll(keepingCapacity: true)
                         component.isClosed = false
@@ -321,7 +321,7 @@ extension Shape {
                     component.arc(to: Point(x: x, y: y), radius: Radius(x: rx, y: ry), rotate: .pi * rotate / 180, largeArc: largeArc, sweep: sweep)
                 } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
             case "Z", "z":
-                if component.count != 0 {
+                if !component.isEmpty {
                     component.isClosed = true
                     self.append(component)
                     component.removeAll(keepingCapacity: true)
@@ -335,7 +335,7 @@ extension Shape {
             }
         }
         
-        if component.count != 0 {
+        if !component.isEmpty {
             self.append(component)
         }
         

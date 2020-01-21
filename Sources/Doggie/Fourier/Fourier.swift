@@ -290,7 +290,7 @@ public func Convolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [
 @inlinable
 @inline(__always)
 public func CircularConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
-    if signal.count == 0 || kernel.count == 0 {
+    if signal.isEmpty || kernel.isEmpty {
         result.removeAll(keepingCapacity: true)
     }
     if signal.count >= kernel.count && signal.count.isPower2 {
@@ -323,7 +323,7 @@ public func CircularConvolve(_ signal: [Double], _ kernel: [Double], _ result: i
 @inlinable
 @inline(__always)
 public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
-    if signal.count == 0 || kernel.count == 0 {
+    if signal.isEmpty || kernel.isEmpty {
         result.removeAll(keepingCapacity: true)
     }
     if signal.count >= kernel.count && signal.count.isPower2 {

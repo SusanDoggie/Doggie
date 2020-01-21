@@ -99,7 +99,7 @@ extension _TextureProtocolImplement {
     @inline(__always)
     public func transposed() -> Self {
         
-        if pixels.count == 0 {
+        if pixels.isEmpty {
             
             var texture = Self(width: height, height: width, pixels: [], resamplingAlgorithm: resamplingAlgorithm)
             

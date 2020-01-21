@@ -514,7 +514,7 @@ extension CFFFontFace {
             
             try _parser(charStrings[glyph], tracing: ([], []))
             
-            if component.count != 0 {
+            if !component.isEmpty {
                 components.append(component)
             }
             

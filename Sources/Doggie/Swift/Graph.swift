@@ -181,7 +181,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     public mutating func removeLink(from fromNode: Node, to toNode: Node) -> Link? {
         if var list = table[fromNode], let result = list[toNode] {
             list.removeValue(forKey: toNode)
-            if list.count != 0 {
+            if !list.isEmpty {
                 table.updateValue(list, forKey: fromNode)
             } else {
                 table.removeValue(forKey: fromNode)
@@ -228,7 +228,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     public mutating func removeNode(_ node: Node) {
         table[node] = nil
         for (fromNode, var list) in table where list.removeValue(forKey: node) != nil {
-            if list.count != 0 {
+            if !list.isEmpty {
                 table.updateValue(list, forKey: fromNode)
             } else {
                 table.removeValue(forKey: fromNode)
@@ -289,7 +289,7 @@ public struct Graph<Node : Hashable, Link> : Collection {
     public func filter(_ isIncluded: (Iterator.Element) throws -> Bool) rethrows -> Graph {
         return try Graph(table: Dictionary(uniqueKeysWithValues: table.compactMap { from, list in
             let list = try list.filter { try isIncluded((from, $0, $1)) }
-            return list.count == 0 ? nil : (from, list)
+            return list.isEmpty ? nil : (from, list)
         }))
     }
     

@@ -98,7 +98,7 @@ struct OTFGDEF : ByteDecodable {
                 
                 let record = data.typed(as: ClassRangeRecord.self)
                 
-                while range.count != 0 {
+                while !range.isEmpty {
                     
                     let mid = (range.lowerBound + range.upperBound) >> 1
                     let startGlyphID = UInt16(record[mid].startGlyphID)

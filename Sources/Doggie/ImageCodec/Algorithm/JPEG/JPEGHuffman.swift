@@ -29,7 +29,7 @@ struct JPEGHuffmanTable : ByteCodable {
     
     init(from data: inout Data) throws {
         self.tables = []
-        while data.count != 0 {
+        while !data.isEmpty {
             tables.append(try data.decode(Table.self))
         }
     }

@@ -240,7 +240,7 @@ extension ShapeRegion.Solid {
         let other = self.solid.area.sign == other.solid.area.sign ? other : other.reversed()
         
         let intersection = self.solid._intersection(other.solid, reference: reference)
-        if intersection.count != 0 {
+        if !intersection.isEmpty {
             return intersection.subtracting(self.holes, reference: reference).subtracting(other.holes, reference: reference).solids
         } else {
             return []

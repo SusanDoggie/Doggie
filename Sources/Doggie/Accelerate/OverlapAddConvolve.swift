@@ -77,7 +77,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & FloatingMathProt
             let temp = baseAddress + fft_length
             let overlap = temp + fft_length
             
-            while source.count != 0 {
+            while !source.isEmpty {
                 
                 let count = min(source.count, half)
                 

@@ -361,8 +361,8 @@ extension _TextureProtocolImplement where RawPixel : ScalarMultiplicative, RawPi
     @inline(__always)
     func _convolution(horizontal horizontal_filter: [RawPixel.Scalar], vertical vertical_filter: [RawPixel.Scalar], algorithm: ImageConvolutionAlgorithm) -> Self {
         
-        precondition(horizontal_filter.count != 0, "horizontal_filter is empty.")
-        precondition(vertical_filter.count != 0, "vertical_filter is empty.")
+        precondition(!horizontal_filter.isEmpty, "horizontal_filter is empty.")
+        precondition(!vertical_filter.isEmpty, "vertical_filter is empty.")
         precondition(numberOfComponents * MemoryLayout<RawPixel.Scalar>.stride == MemoryLayout<RawPixel>.stride)
         
         var result: Self

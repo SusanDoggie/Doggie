@@ -442,7 +442,7 @@ extension SVGContext {
         
         body.append(SDXMLElement(comment: " Created by Doggie SVG Generator; \(dateFormatter.string(from: Date())) "))
         
-        if defs.count != 0 {
+        if !defs.isEmpty {
             body.append(SDXMLElement(name: "defs", elements: defs))
         }
         
@@ -562,7 +562,7 @@ extension SVGContext {
             }
         }
         
-        if style.count != 0 {
+        if !style.isEmpty {
             var style: [String] = style.map { "\($0): \($1)" }
             if let _style = element.attributes(for: "style", namespace: "") {
                 style = _style.split(separator: ";").map { $0.trimmingCharacters(in: .whitespaces) } + style
@@ -609,7 +609,7 @@ extension SVGContext {
                 
                 self.next = nil
                 
-                guard next.state.elements.count != 0 else { return }
+                guard !next.state.elements.isEmpty else { return }
                 guard let visibleBound = next.state.visibleBound else { return }
                 guard let objectBound = next.state.objectBound else { return }
                 

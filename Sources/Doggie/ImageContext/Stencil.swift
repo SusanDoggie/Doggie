@@ -124,7 +124,7 @@ extension Shape {
         
         precondition(stencil.count == width * height, "incorrect size of stencil.")
         
-        if stencil.count == 0 {
+        if stencil.isEmpty {
             return Rect()
         }
         

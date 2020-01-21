@@ -423,7 +423,7 @@ extension Image {
     @inlinable
     @inline(__always)
     public func transposed() -> Image {
-        if pixels.count == 0 {
+        if pixels.isEmpty {
             return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)
         }
         var copy = pixels

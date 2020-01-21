@@ -185,7 +185,7 @@ extension SFNTCMAP {
             
             var range = range
             
-            while range.count != 0 {
+            while !range.isEmpty {
                 
                 let mid = (range.lowerBound + range.upperBound) >> 1
                 let startCharCode = UInt32(startCode[mid])
@@ -261,7 +261,7 @@ extension SFNTCMAP {
             let groups = self.groups.typed(as: Group.self)
             var range = 0..<Int(self.nGroups)
             
-            while range.count != 0 {
+            while !range.isEmpty {
                 
                 let mid = (range.lowerBound + range.upperBound) >> 1
                 let startCharCode = UInt32(groups[mid].startCharCode)
@@ -342,7 +342,7 @@ extension SFNTCMAP {
             let buf = varSelectorRecords.typed(as: VariationSelector.self)
             var range = range
             
-            while range.count != 0 {
+            while !range.isEmpty {
                 
                 let mid = (range.lowerBound + range.upperBound) >> 1
                 let _mid = buf[mid]
@@ -378,7 +378,7 @@ extension SFNTCMAP {
                 let buf = data.typed(as: UnicodeValueRange.self)
                 var range = 0..<Int(count)
                 
-                while range.count != 0 {
+                while !range.isEmpty {
                     
                     let mid = (range.lowerBound + range.upperBound) >> 1
                     let _mid = buf[mid]
@@ -400,7 +400,7 @@ extension SFNTCMAP {
                 let buf = data.typed(as: UVSMapping.self)
                 var range = 0..<Int(count)
                 
-                while range.count != 0 {
+                while !range.isEmpty {
                     
                     let mid = (range.lowerBound + range.upperBound) >> 1
                     let _mid = buf[mid]

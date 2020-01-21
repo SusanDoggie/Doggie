@@ -852,7 +852,7 @@ extension Shape.Component {
         @inline(__always)
         func arcDetails() -> (Point, Radius) {
             let centers = EllipseCenter(radius, rotate, start, end)
-            if centers.count == 0 {
+            if centers.isEmpty {
                 return (0.5 * (start + end), EllipseRadius(start, end, radius, rotate))
             } else if centers.count == 1 || (cross(centers[0] - start, end - start).sign == (sweep ? .plus : .minus) ? largeArc : !largeArc) {
                 return (centers[0], radius)
@@ -899,7 +899,7 @@ extension Shape {
     
     @inlinable
     public mutating func line(to p1: Point) {
-        if self.count == 0 || self.last?.isClosed == true {
+        if self.isEmpty || self.last?.isClosed == true {
             self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
         }
         self.mutableLast.line(to: p1)
@@ -907,7 +907,7 @@ extension Shape {
     
     @inlinable
     public mutating func quad(to p2: Point, control p1: Point) {
-        if self.count == 0 || self.last?.isClosed == true {
+        if self.isEmpty || self.last?.isClosed == true {
             self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
         }
         self.mutableLast.quad(to: p2, control: p1)
@@ -915,7 +915,7 @@ extension Shape {
     
     @inlinable
     public mutating func curve(to p3: Point, control1 p1: Point, control2 p2: Point) {
-        if self.count == 0 || self.last?.isClosed == true {
+        if self.isEmpty || self.last?.isClosed == true {
             self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
         }
         self.mutableLast.curve(to: p3, control1: p1, control2: p2)
@@ -923,7 +923,7 @@ extension Shape {
     
     @inlinable
     public mutating func arc(to p1: Point, radius: Radius, rotate: Double, largeArc: Bool, sweep: Bool) {
-        if self.count == 0 || self.last?.isClosed == true {
+        if self.isEmpty || self.last?.isClosed == true {
             self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
         }
         self.mutableLast.arc(to: p1, radius: radius, rotate: rotate, largeArc: largeArc, sweep: sweep)
@@ -931,7 +931,7 @@ extension Shape {
     
     @inlinable
     public mutating func close() {
-        if self.count == 0 || self.last?.isClosed == true {
+        if self.isEmpty || self.last?.isClosed == true {
             self.append(Shape.Component(start: self.last?.start ?? Point(), closed: false, segments: []))
         }
         self.mutableLast.isClosed = true

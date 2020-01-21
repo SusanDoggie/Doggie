@@ -41,7 +41,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         if a0.sign == .plus {
             
             self.offset(a0, a1) { _, segment in
-                if segments.count == 0 {
+                if segments.isEmpty {
                     start = segment.p0
                 }
                 segments.append(.cubic(segment.p1, segment.p2, segment.p3))
@@ -146,7 +146,7 @@ extension Shape.Component {
                 segments1.append(contentsOf: s0)
                 segments2.append(contentsOf: s1)
                 
-            } else if segments1.count != 0 {
+            } else if !segments1.isEmpty {
                 
                 flush(current.center)
                 

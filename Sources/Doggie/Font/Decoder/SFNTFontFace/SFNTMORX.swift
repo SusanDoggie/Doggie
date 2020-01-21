@@ -457,7 +457,7 @@ extension SFNTMORX {
                     stack.append(index)
                 }
                 
-                if flags & 0x2000 != 0 && stack.count != 0 {
+                if flags & 0x2000 != 0 && !stack.isEmpty {
                     
                     var _action = ligActionTable.dropFirst(Int(entry.data.ligActionIndex) << 2)
                     var ligature_idx = 0

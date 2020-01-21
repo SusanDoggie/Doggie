@@ -196,7 +196,7 @@ extension Shape.Component {
                 
                 let split_t = [t1, t2].filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
                 
-                if split_t.count == 0 {
+                if split_t.isEmpty {
                     
                     try _cubic(p0, p1, p2, p3, operation: operation)
                     
@@ -213,7 +213,7 @@ extension Shape.Component {
                 
                 let inflection = bezier.inflection.filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
                 
-                if inflection.count == 0 {
+                if inflection.isEmpty {
                     
                     try _cubic(p0, p1, p2, p3, operation: operation)
                     
