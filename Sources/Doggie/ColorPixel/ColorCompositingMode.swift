@@ -103,6 +103,17 @@ extension ColorPixelProtocol {
         switch (compositingMode, blendMode) {
         case (.clear, _): return Self()
         case (.copy, .normal): return source
+        case (.copy, _):
+            
+            let d_alpha = self.opacity
+            let s_alpha = source.opacity
+            
+            let _source = source.color
+            let _destination = self.color
+            let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
+            
+            return Self(color: blended, opacity: s_alpha)
+            
         case (_, .normal):
             
             let d_alpha = self.opacity
@@ -146,6 +157,17 @@ extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorCompon
         switch (compositingMode, blendMode) {
         case (.clear, _): return Self()
         case (.copy, .normal): return source
+        case (.copy, _):
+            
+            let d_alpha = self._opacity
+            let s_alpha = source._opacity
+            
+            let _source = source._color
+            let _destination = self._color
+            let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
+            
+            return Self(color: blended, opacity: s_alpha)
+            
         case (_, .normal):
             
             let d_alpha = self._opacity
