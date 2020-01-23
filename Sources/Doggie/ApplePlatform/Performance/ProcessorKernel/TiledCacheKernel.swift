@@ -42,7 +42,7 @@ extension CIImage {
         var rendered = try TiledCacheKernel.apply(withExtent: _extent, inputs: nil, arguments: ["info": info])
         
         if !extent.isInfinite {
-            rendered = rendered.clamped(to: extent).cropped(to: extent)
+            rendered = rendered.cropped(to: extent)
         }
         
         return matchToWorkingSpace ? colorSpace?.cgColorSpace.flatMap { rendered.matchedToWorkingSpace(from: $0) } ?? rendered : rendered

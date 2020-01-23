@@ -61,9 +61,9 @@ extension CIColorKernel {
     }
 }
 
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension CIKernel {
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     fileprivate func _process(extent: CGRect, roiCallback: @escaping CIKernelROICallback, arguments: [Any], kernel: @escaping (CGRect, [Any]) -> CIImage?) throws -> CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
@@ -82,7 +82,7 @@ extension CIKernel {
         var rendered = try CIKernelProcessor.apply(withExtent: _extent, inputs: inputs, arguments: ["info": info])
         
         if !extent.isInfinite {
-            rendered = rendered.clamped(to: extent).cropped(to: extent)
+            rendered = rendered.cropped(to: extent)
         }
         
         return rendered
