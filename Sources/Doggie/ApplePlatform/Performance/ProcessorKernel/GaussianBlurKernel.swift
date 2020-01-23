@@ -52,6 +52,7 @@ extension CIImage {
     
     #endif
     
+    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func gaussianBlur(sigma: Double) -> CIImage {
         
         #if canImport(MetalPerformanceShaders)
