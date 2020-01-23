@@ -23,9 +23,11 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreImage) && canImport(MetalPerformanceShaders)
+#if canImport(CoreImage)
 
 extension CIImage {
+    
+    #if canImport(MetalPerformanceShaders)
     
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     private class GaussianBlurKernel: CIImageProcessorKernel {
@@ -48,12 +50,27 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
-    open func gaussianBlur(sigma: Float) throws -> CIImage {
-        let inset = -ceil(3 * abs(sigma))
-        let extent = self.extent.insetBy(dx: CGFloat(inset), dy: CGFloat(inset))
-        let image = self.transformed(by: SDTransform.translate(x: inset, y: -inset))
-        return try GaussianBlurKernel.apply(withExtent: extent, inputs: [image], arguments: ["sigma": abs(sigma)])
+    #endif
+    
+    open func gaussianBlur(sigma: Double) -> CIImage {
+        
+        #if canImport(MetalPerformanceShaders)
+        
+        if #available(macOS 10.13, iOS 10.0, tvOS 10.0, *) {
+            
+            let inset = -ceil(3 * abs(sigma))
+            let extent = self.extent.insetBy(dx: CGFloat(inset), dy: CGFloat(inset))
+            
+            let image = self.transformed(by: SDTransform.translate(x: inset, y: -inset))
+            
+            if let result = try? GaussianBlurKernel.apply(withExtent: extent, inputs: [image], arguments: ["sigma": Float(abs(sigma))]) {
+                return result
+            }
+        }
+        
+        #endif
+        
+        return self.applyingGaussianBlur(sigma: sigma)
     }
 }
 
