@@ -57,7 +57,7 @@ extension CIImage {
         
         #if canImport(MetalPerformanceShaders)
         
-        if #available(macOS 10.13, iOS 10.0, tvOS 10.0, *) {
+        if #available(macOS 10.13, *) {
             
             let inset = -ceil(3 * abs(sigma))
             let extent = self.extent.insetBy(dx: CGFloat(inset), dy: CGFloat(inset))
