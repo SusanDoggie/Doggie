@@ -58,6 +58,10 @@ extension CIImage {
         
         guard orderX > 0 && orderY > 0 && orderX * orderY == matrix.count else { return self }
         
+        if orderX > 1 && orderY > 1, let (horizontal, vertical) = separate_convolution_filter(matrix, orderX, orderY) {
+            return try self.convolve(horizontal, 0, orderX, 1).convolve(vertical, bias, 1, orderY)
+        }
+        
         let matrix = Array(matrix.chunked(by: orderX).lazy.map { $0.reversed() }.joined())
         
         let _orderX = orderX | 1
@@ -72,10 +76,9 @@ extension CIImage {
         _matrix.append(contentsOf: repeatElement(0, count: append_x + _orderX * append_y))
         
         let extent = self.extent.insetBy(dx: -0.5 * CGFloat(_orderX + 1), dy: -0.5 * CGFloat(_orderY + 1))
+        let image = self.transformed(by: SDTransform.translate(x: -0.5 * CGFloat(_orderX + 1), y: 0.5 * CGFloat(_orderY + 1)))
         
-        let convolved = try ConvolveKernel.apply(withExtent: extent, inputs: [self], arguments: ["matrix": _matrix, "bias": bias, "orderX": _orderX, "orderY": _orderY])
-        
-        return convolved.transformed(by: CGAffineTransform(translationX: -0.5 * CGFloat(_orderX + 1), y: 0.5 * CGFloat(_orderY + 1)))
+        return try ConvolveKernel.apply(withExtent: extent, inputs: [image], arguments: ["matrix": _matrix, "bias": bias, "orderX": _orderX, "orderY": _orderY])
     }
 }
 

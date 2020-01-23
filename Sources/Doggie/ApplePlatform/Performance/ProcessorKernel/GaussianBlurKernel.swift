@@ -52,8 +52,8 @@ extension CIImage {
     open func gaussianBlur(sigma: Float) throws -> CIImage {
         let inset = -ceil(3 * abs(sigma))
         let extent = self.extent.insetBy(dx: CGFloat(inset), dy: CGFloat(inset))
-        let convolved = try GaussianBlurKernel.apply(withExtent: extent, inputs: [self], arguments: ["sigma": abs(sigma)])
-        return convolved.transformed(by: CGAffineTransform(translationX: CGFloat(inset), y: CGFloat(-inset)))
+        let image = self.transformed(by: SDTransform.translate(x: inset, y: -inset))
+        return try GaussianBlurKernel.apply(withExtent: extent, inputs: [image], arguments: ["sigma": abs(sigma)])
     }
 }
 
