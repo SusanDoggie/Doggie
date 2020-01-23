@@ -25,6 +25,29 @@
 
 #if canImport(CoreImage)
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension CIContext {
+    
+    open func render(_ image: CIImage, to texture: MTLTexture, commandBuffer: MTLCommandBuffer?, bounds: CGRect, at atPoint: CGPoint, colorSpace: CGColorSpace?) {
+        
+        do {
+            
+            let destination = CIRenderDestination(mtlTexture: texture, commandBuffer: commandBuffer)
+            destination.colorSpace = colorSpace
+            
+            let result = try self.startTask(toRender: image, from: bounds, to: destination, at: atPoint)
+            
+            if commandBuffer == nil {
+                try result.waitUntilCompleted()
+            }
+            
+        } catch let error {
+            
+            NSLog("%@", "\(error)")
+        }
+    }
+}
+
 extension CIContext {
     
     open func createImage(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>, fileBacked: Bool = false) -> Image<RGBA32ColorPixel>? {

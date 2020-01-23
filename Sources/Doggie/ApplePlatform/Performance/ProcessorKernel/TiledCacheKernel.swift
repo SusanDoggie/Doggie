@@ -27,7 +27,7 @@
 
 extension CIImage {
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
+    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     open func insertingIntermediate(blockSize: Int, maxBlockSize: Int, colorSpace: ColorSpace<RGBColorModel>?, matchToWorkingSpace: Bool = true) throws -> CIImage {
         
         var image = self
@@ -49,7 +49,7 @@ extension CIImage {
     }
 }
 
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private class TiledCacheKernel: CIImageProcessorKernel {
     
     fileprivate struct Info {
@@ -77,7 +77,7 @@ private class TiledCacheKernel: CIImageProcessorKernel {
     }
 }
 
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension TiledCacheKernel.Info {
     
     struct Block: Hashable {
@@ -203,27 +203,46 @@ extension TiledCacheKernel.Info {
         
         if !need_to_render.isEmpty {
             
-            guard let texture_renderer = colorSpace == nil ? renderer : self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: false) else { return }
-            
-            for block in need_to_render {
+            let buffers: [(Block, MappedBuffer<UInt8>)] = autoreleasepool {
                 
-                let _image: CGImage? = autoreleasepool {
+                guard let commandBuffer = commandBuffer.commandQueue.makeCommandBuffer() else { return [] }
+                
+                let buffers: [(Block, MappedBuffer<UInt8>)] = need_to_render.compactMap { block in
                     
                     let extent = Rect(x: block.minX, y: block.minY, width: block.width, height: block.height)
                     
-                    if let colorSpace = colorSpace {
-                        
-                        let rendered = texture_renderer.createImage(self.image, from: extent, colorSpace: colorSpace, fileBacked: true)
-                        return rendered?.cgImage
-                        
-                    } else {
-                        
-                        let rendered = texture_renderer.createCGImage(self.image, from: CGRect(extent))
-                        return rendered?.fileBacked() ?? rendered
-                    }
+                    let buffer = MappedBuffer<UInt8>(repeating: 0, count: block.width * block.height * 4, fileBacked: true)
+                    
+                    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+                        pixelFormat: .bgra8Unorm,
+                        width: block.width,
+                        height: block.height,
+                        mipmapped: false)
+                    descriptor.usage = .shaderWrite
+                    
+                    guard let texture = commandBuffer.device.makeBuffer(buffer)?.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: block.width * 4) else { return nil }
+                    
+                    let image = self.image.transformed(by: SDTransform.reflectY(extent.midY))
+                    
+                    renderer.render(image, to: texture, commandBuffer: commandBuffer, bounds: CGRect(extent), colorSpace: workingColorSpace)
+                    
+                    return (block, buffer)
                 }
                 
-                guard let image = _image else { continue }
+                commandBuffer.commit()
+                commandBuffer.waitUntilCompleted()
+                
+                return buffers
+            }
+            
+            for (block, buffer) in buffers {
+                
+                let byteOrder = CGBitmapInfo.byteOrder32Little
+                let bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+                
+                guard let providerRef = CGDataProvider(data: buffer.data as CFData) else { continue }
+                
+                guard let image = CGImage(width: block.width, height: block.height, bitsPerComponent: 8, bitsPerPixel: 32, bytesPerRow: block.width * 4, space: workingColorSpace, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), provider: providerRef, decode: nil, shouldInterpolate: true, intent: .defaultIntent) else { continue }
                 
                 blocks.append((block, CIImage(cgImage: image)))
                 
@@ -246,27 +265,17 @@ extension TiledCacheKernel.Info {
             }
         }
         
-        guard let max_width = blocks.lazy.map({ $0.0.width }).max() else { return }
-        guard let max_height = blocks.lazy.map({ $0.0.height }).max() else { return }
-        
-        let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: texture.pixelFormat,
-            width: max_width,
-            height: max_height,
-            mipmapped: false)
-        descriptor.storageMode = .private
-        descriptor.usage = .shaderWrite
-        
-        guard let buffer = commandBuffer.device.makeTexture(descriptor: descriptor) else { return }
-        
-        buffer.label = "com.SusanDoggie.TiledCacheKernel"
-        
         for (block, image) in blocks {
             
-            let _minX = max(0, block.minX - minX)
-            let _minY = max(0, block.minY - minY)
-            let _maxX = min(maxX - minX, block.maxX - minX)
-            let _maxY = min(maxY - minY, block.maxY - minY)
+            let block_minX = block.minX - minX
+            let block_minY = block.minY - minY
+            let block_maxX = block.maxX - minX
+            let block_maxY = block.maxY - minY
+            
+            let _minX = max(0, block_minX)
+            let _minY = max(0, block_minY)
+            let _maxX = min(maxX - minX, block_maxX)
+            let _maxY = min(maxY - minY, block_maxY)
             
             let width = _maxX - _minX
             let height = _maxY - _minY
@@ -274,30 +283,9 @@ extension TiledCacheKernel.Info {
             guard width > 0 && height > 0 else { return }
             
             let bounds = CGRect(x: 0, y: 0, width: width, height: height)
-            let _image = image.transformed(by: SDTransform.translate(x: block.minX - minX - _minX, y: block.minY - minY - _minY))
+            let _image = image.transformed(by: SDTransform.translate(x: block_minX - _minX, y: block_minY - _minY))
             
-            renderer.render(_image, to: buffer, commandBuffer: commandBuffer, bounds: bounds, colorSpace: workingColorSpace)
-            
-            let sourceOrigin = MTLOrigin(x: 0, y: 0, z: 0)
-            let sourceSize = MTLSize(width: width, height: height, depth: 1)
-            
-            let destinationOrigin = MTLOrigin(x: _minX, y: _minY, z: 0)
-            
-            guard let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder() else { return }
-            
-            blitCommandEncoder.copy(
-                from: buffer,
-                sourceSlice: 0,
-                sourceLevel: 0,
-                sourceOrigin: sourceOrigin,
-                sourceSize: sourceSize,
-                to: texture,
-                destinationSlice: 0,
-                destinationLevel: 0,
-                destinationOrigin: destinationOrigin
-            )
-            
-            blitCommandEncoder.endEncoding()
+            renderer.render(_image, to: texture, commandBuffer: commandBuffer, bounds: bounds, at: CGPoint(x: _minX, y: _minY), colorSpace: workingColorSpace)
         }
     }
 }
