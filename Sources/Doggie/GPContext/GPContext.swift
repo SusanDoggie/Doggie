@@ -302,7 +302,7 @@ extension GPContext {
         
         guard shadowColor.alpha > 0 && shadowBlur > 0 && opacity > 0 else { return }
         
-        let shadow = image.gaussianBlur(sigma: 0.5 * shadowBlur).transformed(by: .translate(x: shadowOffset.width, y: shadowOffset.height))
+        let shadow = image.applyingGaussianBlur(sigma: 0.5 * shadowBlur).transformed(by: .translate(x: shadowOffset.width, y: shadowOffset.height))
         self.draw_color_mask(shadow, shadowColor, alpha_mask)
     }
 }
