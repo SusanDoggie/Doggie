@@ -73,7 +73,7 @@ private class TiledCacheKernel: CIImageProcessorKernel {
         let bounds = Rect(x: region.minX, y: -region.minY, width: region.width, height: -region.height)
         
         info.image = info.image.transformed(by: SDTransform.reflectY())
-        info.render(to: texture, commandBuffer: commandBuffer, bounds: bounds)
+        info.render(to: texture, commandBuffer: commandBuffer, bounds: bounds, workingFormat: output.format)
     }
 }
 
@@ -128,7 +128,7 @@ extension TiledCacheKernel.Info {
         }
     }
     
-    func make_context(commandQueue: MTLCommandQueue, outputPremultiplied: Bool) -> CIContext? {
+    func make_context(commandQueue: MTLCommandQueue, outputPremultiplied: Bool, workingFormat: CIFormat) -> CIContext? {
         
         cache.lck.lock()
         defer { cache.lck.unlock() }
@@ -137,17 +137,17 @@ extension TiledCacheKernel.Info {
             cache.pool[commandQueue] = CIContextPool(commandQueue: commandQueue)
         }
         
-        return cache.pool[commandQueue]?.makeContext(colorSpace: colorSpace, outputPremultiplied: outputPremultiplied)
+        return cache.pool[commandQueue]?.makeContext(colorSpace: colorSpace, outputPremultiplied: outputPremultiplied, workingFormat: workingFormat)
     }
     
-    func render(to texture: MTLTexture, commandBuffer: MTLCommandBuffer, bounds: Rect) {
+    func render(to texture: MTLTexture, commandBuffer: MTLCommandBuffer, bounds: Rect, workingFormat: CIFormat) {
         
         guard let minX = Int(exactly: floor(bounds.minX)) else { return }
         guard let minY = Int(exactly: floor(bounds.minY)) else { return }
         guard let maxX = Int(exactly: ceil(bounds.maxX)) else { return }
         guard let maxY = Int(exactly: ceil(bounds.maxY)) else { return }
         
-        guard let renderer = self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: true) else { return }
+        guard let renderer = self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: true, workingFormat: workingFormat) else { return }
         let workingColorSpace = renderer.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
         
         var need_to_render: [Block] = []

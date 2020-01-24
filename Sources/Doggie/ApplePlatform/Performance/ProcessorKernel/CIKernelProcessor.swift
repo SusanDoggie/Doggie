@@ -129,7 +129,7 @@ private class CIKernelProcessor: CIImageProcessorKernel {
         guard let maxX = Int(exactly: ceil(output.region.maxX)) else { return }
         guard let maxY = Int(exactly: ceil(output.region.maxY)) else { return }
         
-        guard let renderer = info.make_context(commandQueue: commandBuffer.commandQueue) else { return }
+        guard let renderer = info.make_context(commandQueue: commandBuffer.commandQueue, workingFormat: output.format) else { return }
         
         var arguments = info.arguments
         
@@ -153,7 +153,7 @@ private class CIKernelProcessor: CIImageProcessorKernel {
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension CIKernelProcessor.Info {
     
-    func make_context(commandQueue: MTLCommandQueue) -> CIContext? {
+    func make_context(commandQueue: MTLCommandQueue, workingFormat: CIFormat) -> CIContext? {
         
         cache.lck.lock()
         defer { cache.lck.unlock() }
@@ -162,7 +162,7 @@ extension CIKernelProcessor.Info {
             cache.pool[commandQueue] = CIContextPool(commandQueue: commandQueue)
         }
         
-        return cache.pool[commandQueue]?.makeContext(colorSpace: nil, outputPremultiplied: true)
+        return cache.pool[commandQueue]?.makeContext(colorSpace: nil, outputPremultiplied: true, workingFormat: workingFormat)
     }
 }
 
