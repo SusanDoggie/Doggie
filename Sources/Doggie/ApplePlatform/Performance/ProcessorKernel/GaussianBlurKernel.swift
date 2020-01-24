@@ -64,8 +64,15 @@ extension CIImage {
             
             let image = self.transformed(by: SDTransform.translate(x: inset, y: -inset))
             
-            if let result = try? GaussianBlurKernel.apply(withExtent: extent, inputs: [image], arguments: ["sigma": Float(abs(sigma))]) {
-                return result
+            let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+            
+            if var rendered = try? GaussianBlurKernel.apply(withExtent: _extent, inputs: [image], arguments: ["sigma": Float(abs(sigma))]) {
+                
+                if !extent.isInfinite {
+                    rendered = rendered.cropped(to: extent)
+                }
+                
+                return rendered
             }
         }
         

@@ -58,7 +58,16 @@ extension CIImage {
     
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     open func areaMin(_ radius: Size) throws -> CIImage {
-        return try AreaMinKernel.apply(withExtent: extent, inputs: [self], arguments: ["radius": radius])
+        
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        
+        var rendered = try AreaMinKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius])
+        
+        if !extent.isInfinite {
+            rendered = rendered.cropped(to: extent)
+        }
+        
+        return rendered
     }
 }
 
@@ -95,7 +104,16 @@ extension CIImage {
     
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     open func areaMax(_ radius: Size) throws -> CIImage {
-        return try AreaMaxKernel.apply(withExtent: extent, inputs: [self], arguments: ["radius": radius])
+        
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        
+        var rendered = try AreaMaxKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius])
+        
+        if !extent.isInfinite {
+            rendered = rendered.cropped(to: extent)
+        }
+        
+        return rendered
     }
 }
 

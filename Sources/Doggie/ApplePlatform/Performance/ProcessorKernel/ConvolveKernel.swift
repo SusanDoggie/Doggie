@@ -78,7 +78,15 @@ extension CIImage {
         let extent = self.extent.insetBy(dx: -0.5 * CGFloat(_orderX + 1), dy: -0.5 * CGFloat(_orderY + 1))
         let image = self.transformed(by: SDTransform.translate(x: -0.5 * CGFloat(_orderX + 1), y: 0.5 * CGFloat(_orderY + 1)))
         
-        return try ConvolveKernel.apply(withExtent: extent, inputs: [image], arguments: ["matrix": _matrix, "bias": bias, "orderX": _orderX, "orderY": _orderY])
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        
+        var rendered = try ConvolveKernel.apply(withExtent: _extent, inputs: [image], arguments: ["matrix": _matrix, "bias": bias, "orderX": _orderX, "orderY": _orderY])
+        
+        if !extent.isInfinite {
+            rendered = rendered.cropped(to: extent)
+        }
+        
+        return rendered
     }
 }
 
