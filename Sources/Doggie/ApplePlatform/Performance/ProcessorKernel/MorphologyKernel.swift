@@ -30,6 +30,14 @@ extension CIImage {
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     private class AreaMinKernel: CIImageProcessorKernel {
         
+        override class func formatForInput(at input: Int32) -> CIFormat {
+            return .BGRA8
+        }
+        
+        override class var outputFormat: CIFormat {
+            return .BGRA8
+        }
+        
         override class func roi(forInput input: Int32, arguments: [String : Any]?, outputRect: CGRect) -> CGRect {
             guard let radius = arguments?["radius"] as? Size else { return outputRect }
             let insetX = -ceil(abs(radius.width))
@@ -76,6 +84,10 @@ extension CIImage {
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     private class AreaMaxKernel: CIImageProcessorKernel {
         
+        override class func formatForInput(at input: Int32) -> CIFormat {
+            return .BGRA8
+        }
+        
         override class func roi(forInput input: Int32, arguments: [String : Any]?, outputRect: CGRect) -> CGRect {
             guard let radius = arguments?["radius"] as? Size else { return outputRect }
             let insetX = -ceil(abs(radius.width))
@@ -86,7 +98,8 @@ extension CIImage {
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
-            guard let source = inputs?.first?.metalTexture else { return }
+            guard let input = inputs?.first else { return }
+            guard let source = input.metalTexture else { return }
             guard let destination = output.metalTexture else { return }
             guard let radius = arguments?["radius"] as? Size else { return }
             
@@ -94,8 +107,8 @@ extension CIImage {
             let kernelHeight = Int(round(abs(radius.height))) << 1 + 1
             
             let kernel = MPSImageAreaMax(device: commandBuffer.device, kernelWidth: kernelWidth, kernelHeight: kernelHeight)
-            kernel.offset.x = Int(ceil(abs(radius.width)))
-            kernel.offset.y = Int(ceil(abs(radius.height)))
+            kernel.offset.x = Int(output.region.minX - input.region.minX)
+            kernel.offset.y = Int(output.region.minY - input.region.minY)
             kernel.edgeMode = .clamp
             
             kernel.encode(commandBuffer: commandBuffer, sourceTexture: source, destinationTexture: destination)

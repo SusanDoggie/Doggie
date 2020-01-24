@@ -30,16 +30,23 @@ extension CIImage {
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     private class ConvolveKernel: CIImageProcessorKernel {
         
+        override class func formatForInput(at input: Int32) -> CIFormat {
+            return .BGRA8
+        }
+        
         override class func roi(forInput input: Int32, arguments: [String : Any]?, outputRect: CGRect) -> CGRect {
             guard let orderX = arguments?["orderX"] as? Int else { return outputRect }
             guard let orderY = arguments?["orderY"] as? Int else { return outputRect }
-            return outputRect.insetBy(dx: -0.5 * CGFloat(orderX + 1), dy: -0.5 * CGFloat(orderY + 1))
+            let inset_x = -(orderX + 1) / 2
+            let inset_y = -(orderY + 1) / 2
+            return outputRect.insetBy(dx: CGFloat(inset_x), dy: CGFloat(inset_y))
         }
         
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
-            guard let source = inputs?.first?.metalTexture else { return }
+            guard let input = inputs?.first else { return }
+            guard let source = input.metalTexture else { return }
             guard let destination = output.metalTexture else { return }
             guard let orderX = arguments?["orderX"] as? Int, orderX > 0 else { return }
             guard let orderY = arguments?["orderY"] as? Int, orderY > 0 else { return }
@@ -47,6 +54,8 @@ extension CIImage {
             guard let bias = arguments?["bias"] as? Double else { return }
             
             let kernel = MPSImageConvolution(device: commandBuffer.device, kernelWidth: orderX, kernelHeight: orderY, weights: matrix.map { Float($0) })
+            kernel.offset.x = Int(output.region.minX - input.region.minX)
+            kernel.offset.y = Int(output.region.minY - input.region.minY)
             kernel.bias = Float(bias)
             
             kernel.encode(commandBuffer: commandBuffer, sourceTexture: source, destinationTexture: destination)
@@ -75,12 +84,12 @@ extension CIImage {
         var _matrix = Array(matrix.chunked(by: orderX).joined(separator: repeatElement(0, count: append_x)))
         _matrix.append(contentsOf: repeatElement(0, count: append_x + _orderX * append_y))
         
-        let extent = self.extent.insetBy(dx: -0.5 * CGFloat(_orderX + 1), dy: -0.5 * CGFloat(_orderY + 1))
-        let image = self.transformed(by: SDTransform.translate(x: -0.5 * CGFloat(_orderX + 1), y: 0.5 * CGFloat(_orderY + 1)))
-        
+        let inset_x = -(_orderX + 1) / 2
+        let inset_y = -(_orderY + 1) / 2
+        let extent = self.extent.insetBy(dx: CGFloat(inset_x), dy: CGFloat(inset_y))
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try ConvolveKernel.apply(withExtent: _extent, inputs: [image], arguments: ["matrix": _matrix, "bias": bias, "orderX": _orderX, "orderY": _orderY])
+        var rendered = try ConvolveKernel.apply(withExtent: _extent, inputs: [self], arguments: ["matrix": _matrix, "bias": bias, "orderX": _orderX, "orderY": _orderY])
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)

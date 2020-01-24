@@ -32,19 +32,26 @@ extension CIImage {
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     private class GaussianBlurKernel: CIImageProcessorKernel {
         
+        override class func formatForInput(at input: Int32) -> CIFormat {
+            return .BGRA8
+        }
+        
         override class func roi(forInput input: Int32, arguments: [String : Any]?, outputRect: CGRect) -> CGRect {
             guard let sigma = arguments?["sigma"] as? Float else { return outputRect }
-            return outputRect.insetBy(dx: CGFloat(-ceil(3 * abs(sigma))), dy: CGFloat(-ceil(3 * abs(sigma))))
+            return outputRect.insetBy(dx: CGFloat(-ceil(3 * sigma)), dy: CGFloat(-ceil(3 * sigma)))
         }
         
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
-            guard let source = inputs?.first?.metalTexture else { return }
+            guard let input = inputs?.first else { return }
+            guard let source = input.metalTexture else { return }
             guard let destination = output.metalTexture else { return }
             guard let sigma = arguments?["sigma"] as? Float else { return }
             
             let kernel = MPSImageGaussianBlur(device: commandBuffer.device, sigma: sigma)
+            kernel.offset.x = Int(output.region.minX - input.region.minX)
+            kernel.offset.y = Int(output.region.minY - input.region.minY)
             
             kernel.encode(commandBuffer: commandBuffer, sourceTexture: source, destinationTexture: destination)
         }
@@ -61,12 +68,9 @@ extension CIImage {
             
             let inset = -ceil(3 * abs(sigma))
             let extent = self.extent.insetBy(dx: CGFloat(inset), dy: CGFloat(inset))
-            
-            let image = self.transformed(by: SDTransform.translate(x: inset, y: -inset))
-            
             let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
             
-            if var rendered = try? GaussianBlurKernel.apply(withExtent: _extent, inputs: [image], arguments: ["sigma": Float(abs(sigma))]) {
+            if var rendered = try? GaussianBlurKernel.apply(withExtent: _extent, inputs: [self], arguments: ["sigma": Float(abs(sigma))]) {
                 
                 if !extent.isInfinite {
                     rendered = rendered.cropped(to: extent)
