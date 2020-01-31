@@ -390,7 +390,7 @@ extension GPContext {
         guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
         
         var image = transform == .identity ? image : image.transformed(by: transform)
-        image = image.cropped(to: extent)._insertingIntermediate()
+        image = image.clamped(to: extent).cropped(to: extent)._insertingIntermediate()
         
         self.draw_shadow(image, true)
         self.draw_layer(image)
