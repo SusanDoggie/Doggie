@@ -315,16 +315,41 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     public func offset(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
         let split = self._inflection + self._stationary
-        let t = split.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.05, $0 + 0.05] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        let t = split.flatMap { abs(self._curvature($0)) > 0.05 ? [$0 - 0.0625, $0 + 0.0625] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         
+        var last_segment: Self?
         for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
+            
+            if let last_segment = last_segment {
+                
+                let d0 = last_segment._direction(1).unit
+                let d3 = segment._direction(0).unit
+                
+                if !d0.almostZero() && !d3.almostZero() {
+                    
+                    let angle = _phase_diff(d3, d0, a.sign == .minus)
+                    
+                    if !angle.almostZero() {
+                        
+                        let center = last_segment.end
+                        let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(d0.phase - 0.5 * .pi) + center }
+                        
+                        for i in 0..<arc.count / 3 {
+                            try calback(s...s, CubicBezier(arc[i * 3], arc[i * 3 + 1], arc[i * 3 + 2], arc[i * 3 + 3]))
+                        }
+                    }
+                }
+            }
+            
             let c = t - s
-            if c > 0.1 {
+            if c > 0.125 {
                 try segment._offset(a) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             } else {
                 try segment._offset2(a, 0...0.5, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
                 try segment._offset2(a, 0.5...1, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             }
+            
+            last_segment = segment
         }
     }
     
@@ -443,7 +468,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         guard let tangent = LineSegment(Point(), Point(x: length, y: 0)).offset(a0, a1) else { return }
         
         let split = self._inflection + self._stationary
-        let t = self._inflection.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.05, $0 + 0.05] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        let t = self._inflection.flatMap { abs(self._curvature($0)) > 0.05 ? [$0 - 0.0625, $0 + 0.0625] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         
         func _offset_point(_ t: Double) -> (Point, Point)? {
             let q = self._direction(t)
@@ -454,7 +479,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         
         for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
             let c = t - s
-            if c > 0.1 {
+            if c > 0.125 {
                 try segment._offset(minus_signed, { _offset_point($0 * c + s) }) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
             } else {
                 try segment._offset2(minus_signed, { _offset_point($0 * c + s) }, 0...0.5, 1) { try calback($0.lowerBound * c + s ... $0.upperBound * c + s, $1) }
