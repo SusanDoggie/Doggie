@@ -145,6 +145,14 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         default: return []
         }
     }
+    
+    @inlinable
+    public var _inflection: [Double] {
+        switch self {
+        case let bezier as CubicBezier<Point>: return Array(bezier.inflection)
+        default: return []
+        }
+    }
 }
 
 extension LineSegment where Element == Point {
@@ -306,7 +314,8 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     @inlinable
     public func offset(_ a: Double, _ calback: (ClosedRange<Double>, CubicBezier<Point>) throws -> Void) rethrows {
         
-        let t = self._stationary.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.05, $0 + 0.05] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        let split = self._inflection + self._stationary
+        let t = split.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.05, $0 + 0.05] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         
         for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
             let c = t - s
@@ -433,7 +442,8 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         let length = self._length(1)
         guard let tangent = LineSegment(Point(), Point(x: length, y: 0)).offset(a0, a1) else { return }
         
-        let t = self._stationary.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.05, $0 + 0.05] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        let split = self._inflection + self._stationary
+        let t = self._inflection.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.05, $0 + 0.05] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         
         func _offset_point(_ t: Double) -> (Point, Point)? {
             let q = self._direction(t)
