@@ -43,7 +43,7 @@ extension RandomAccessCollection {
     ///   skip subsequent calls.
     @inlinable
     @inline(__always)
-    public func parallelEach(body: (Element) -> ()) {
+    public func parallelEach(body: (Element) -> Void) {
         DispatchQueue.concurrentPerform(iterations: self.count) { body(self[self.index(startIndex, offsetBy: $0)]) }
     }
     
@@ -58,7 +58,7 @@ extension RandomAccessCollection {
     /// - Parameter threads: Number of threads at the same time.
     @inlinable
     @inline(__always)
-    public func parallelEach(threads: Int, body: (Element) -> ()) {
+    public func parallelEach(threads: Int, body: (Element) -> Void) {
         DispatchQueue.concurrentPerform(iterations: self.count, threads: threads) { body(self[self.index(startIndex, offsetBy: $0)]) }
     }
     

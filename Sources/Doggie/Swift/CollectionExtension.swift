@@ -144,7 +144,7 @@ extension RandomAccessCollection where Element : Equatable {
 extension MutableCollection {
     
     @inlinable
-    public mutating func mutateEach(body: (inout Element) throws -> ()) rethrows {
+    public mutating func mutateEach(body: (inout Element) throws -> Void) rethrows {
         for idx in self.indices {
             try body(&self[idx])
         }

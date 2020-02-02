@@ -94,7 +94,7 @@ extension QuadBezier {
     
     @inlinable
     @inline(__always)
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, p0)
         updateAccumulatingResult(&accumulator, p1)

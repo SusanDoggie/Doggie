@@ -43,7 +43,7 @@ extension CGImage {
 
 extension CGImage {
     
-    public static func create(width: Int, height: Int, bitsPerComponent: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32, command: (CGContext) -> ()) -> CGImage? {
+    public static func create(width: Int, height: Int, bitsPerComponent: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32, command: (CGContext) -> Void) -> CGImage? {
         guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: space, bitmapInfo: bitmapInfo) else { return nil }
         command(context)
         return context.makeImage()
@@ -62,7 +62,7 @@ extension CGImage {
 
 extension CGImage {
     
-    public static func create(width: Int, height: Int, command: (CGContext) -> ()) -> CGImage? {
+    public static func create(width: Int, height: Int, command: (CGContext) -> Void) -> CGImage? {
         
         let byteOrder = 42.bigEndian == 42 ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
         let bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
@@ -70,7 +70,7 @@ extension CGImage {
         return create(width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: bitmapInfo, command: command)
     }
     
-    public static func create(width: Int, height: Int, space: ColorSpace<RGBColorModel>, command: (CGContext) -> ()) -> CGImage? {
+    public static func create(width: Int, height: Int, space: ColorSpace<RGBColorModel>, command: (CGContext) -> Void) -> CGImage? {
         
         let byteOrder = 42.bigEndian == 42 ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
         let bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue

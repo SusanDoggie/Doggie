@@ -62,7 +62,7 @@ public protocol MapReduceArithmetic : ScalarMultiplicative, Collection where Ele
     
     func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result
     
-    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result
+    func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> Void) -> Result
     
     func combined(_ other: Self, _ transform: (Element, Element) -> Element) -> Self
 }

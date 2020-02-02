@@ -113,7 +113,7 @@ extension Bezier {
     }
     
     @inlinable
-    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> ()) -> Result {
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Element) -> Void) -> Result {
         return points.reduce(into: initialResult, updateAccumulatingResult)
     }
     
