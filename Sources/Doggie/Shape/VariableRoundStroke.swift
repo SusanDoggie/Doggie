@@ -40,7 +40,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         
         if a0.sign == .plus {
             
-            self.offset(a0, a1) { _, segment in
+            self.offset(a0, a1) { segment in
                 if segments.isEmpty {
                     start = segment.p0
                 }
@@ -51,7 +51,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             
         } else {
             
-            self.offset(a0, a1) { _, segment in
+            self.offset(a0, a1) { segment in
                 start = segment.p3
                 segments.append(.cubic(segment.p2, segment.p1, segment.p0))
             }
