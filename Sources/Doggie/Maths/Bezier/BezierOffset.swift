@@ -313,10 +313,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             if c > 0.125 {
                 try segment._offset(a, calback)
             } else {
-                let (segment1, segment2) = segment.split(0.5)
-                try segment1._offset2(a, 1, calback)
-                try segment2.__offset_arc(a, segment1._direction(1).unit, calback)
-                try segment2._offset2(a, 1, calback)
+                try segment._offset2(a, 2, calback)
             }
             
             last_direction = segment._direction(1).unit
@@ -468,18 +465,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             if c > 0.125 {
                 try segment._offset(minus_signed, { width($0 * c + s) }, calback)
             } else {
-                
-                let (segment1, segment2) = segment.split(0.5)
-                
-                try segment1._offset2(minus_signed, { width(($0 * 0.5) * c + s) }, 1, calback)
-                
-                do {
-                    let r0 = width(0.5 * c + s) * SDTransform.rotate(segment1._direction(1).phase)
-                    let d0 = r0.unit * SDTransform.rotate(minus_signed ? -0.5 * .pi : 0.5 * .pi)
-                    try segment2.__offset_arc(minus_signed, { width(($0 * 0.5 + 0.5) * c + s) }, d0, calback)
-                }
-                
-                try segment2._offset2(minus_signed, { width(($0 * 0.5 + 0.5) * c + s) }, 1, calback)
+                try segment._offset2(minus_signed, { width($0 * c + s) }, 2, calback)
             }
             
             let r0 = width(t) * SDTransform.rotate(segment._direction(1).phase)
