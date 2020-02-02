@@ -277,8 +277,17 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     
     @inlinable
     func _offset(_ a: Double, _ calback: (CubicBezier<Point>) throws -> Void) rethrows {
+        
+        var last_direction: Point?
         for segment in self.split((1..<degree).map { Double($0) / Double(degree) }) {
+            
+            if let d0 = last_direction {
+                try segment.__offset_arc(a, d0, calback)
+            }
+            
             try segment.__offset(a, calback)
+            
+            last_direction = segment._direction(1).unit
         }
     }
     
@@ -404,10 +413,22 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     
     @inlinable
     func _offset(_ minus_signed: Bool, _ width: (Double) -> Point, _ calback: (CubicBezier<Point>) throws -> Void) rethrows {
+        
         let t = (1..<degree).map { Double($0) / Double(degree) }
+        
+        var last_direction: Point?
         for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) {
+            
             let c = t - s
+            
+            if let d0 = last_direction {
+                try segment.__offset_arc(minus_signed, { width($0 * c + s) }, d0, calback)
+            }
+            
             try segment.__offset(minus_signed, { width($0 * c + s) }, calback)
+            
+            let r0 = width(t) * SDTransform.rotate(segment._direction(1).phase)
+            last_direction = r0.unit * SDTransform.rotate(minus_signed ? -0.5 * .pi : 0.5 * .pi)
         }
     }
     
