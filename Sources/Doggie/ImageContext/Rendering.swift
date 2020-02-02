@@ -222,7 +222,7 @@ extension ImageContext {
         guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
         
         @inline(__always)
-        func _render(rasterizer: ImageContextRenderBuffer<Pixel>, projection: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) {
+        func _render(rasterizer: ImageContextRenderBuffer<Pixel>) {
             
             triangles.render(projection: projection) { v0, v1, v2 in
                 
@@ -299,7 +299,7 @@ extension ImageContext {
                     
                     let rasterizer = ImageContextRenderBuffer(blender: blender, depth: _depth, width: width, height: height)
                     
-                    _render(rasterizer: rasterizer, projection: projection, depthFun: depthFun, shader: shader)
+                    _render(rasterizer: rasterizer)
                 }
             }
             
@@ -309,7 +309,7 @@ extension ImageContext {
                 
                 let rasterizer = ImageContextRenderBuffer(blender: blender, depth: nil, width: width, height: height)
                 
-                _render(rasterizer: rasterizer, projection: projection, depthFun: nil, shader: shader)
+                _render(rasterizer: rasterizer)
             }
         }
     }
