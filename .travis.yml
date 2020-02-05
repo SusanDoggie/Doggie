@@ -1,5 +1,4 @@
 language: generic
-sudo: required
 notifications: never
 env:
   global:
