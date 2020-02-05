@@ -946,11 +946,20 @@ extension SVGContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
         
-        let shape = shape * self.transform
-        
         guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
         
-        var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
+        var gradient = gradient
+        gradient.transform *= SDTransform.scale(x: shape.originalBoundary.width, y: shape.originalBoundary.height)
+        gradient.transform *= SDTransform.translate(x: shape.originalBoundary.minX, y: shape.originalBoundary.minY)
+        gradient.transform *= shape.transform * self.transform
+        
+        var shape = shape * self.transform
+        shape = shape.identity
+        
+        gradient.transform *= SDTransform.translate(x: shape.originalBoundary.minX, y: shape.originalBoundary.minY).inverse
+        gradient.transform *= SDTransform.scale(x: shape.originalBoundary.width, y: shape.originalBoundary.height).inverse
+        
+        var element = SDXMLElement(name: "path", attributes: ["d": shape.encode()])
         
         switch winding {
         case .nonZero: element.setAttribute(for: "fill-rule", value: "nonzero")
