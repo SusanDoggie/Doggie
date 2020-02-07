@@ -45,7 +45,7 @@ public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ matrix: inout [T])
     let column = matrix.count / row
     precondition(matrix.count % row == 0, "count of matrix is not multiples of row.")
     precondition(column > row, "count of column of matrix is less than or equal to row.")
-    return MatrixElimination(row, column, &matrix, 1, 1)
+    return MatrixElimination(column, row, &matrix, 1, 1)
 }
 
 @inlinable

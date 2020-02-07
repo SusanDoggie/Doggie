@@ -110,7 +110,7 @@ extension _TextureProtocolImplement {
         }
         
         var copy = pixels
-        pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(height, width, source.baseAddress!, 1, destination.baseAddress!, 1) } }
+        pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(width, height, source.baseAddress!, 1, destination.baseAddress!, 1) } }
         
         var texture = Self(width: height, height: width, pixels: copy, resamplingAlgorithm: resamplingAlgorithm)
         
