@@ -186,7 +186,7 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
 
 @inlinable
 @inline(__always)
-public func MatrixElimination<T: FloatingPoint>(_ row: Int, _ column: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
+public func MatrixElimination<T: FloatingPoint>(_ column: Int, _ row: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column
     let endptr = matrix + row_offset * row

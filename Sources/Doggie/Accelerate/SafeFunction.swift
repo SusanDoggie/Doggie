@@ -32,10 +32,10 @@ public func dot<T: FloatingPoint>(_ a: [T], _ b: [T]) -> T {
 
 @inlinable
 @inline(__always)
-public func transpose<T>(_ row: Int, _ column: Int, _ data: [T]) -> [T] {
+public func transpose<T>(_ column: Int, _ row: Int, _ data: [T]) -> [T] {
     var result = data
     precondition(data.count == row * column, "mismatch count of input.")
-    Transpose(row, column, data, 1, &result, 1)
+    Transpose(column, row, data, 1, &result, 1)
     return result
 }
 

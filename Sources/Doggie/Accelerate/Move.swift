@@ -89,7 +89,7 @@ public func Swap<T: FloatingPoint>(_ count: Int, _ lreal: UnsafeMutablePointer<T
 
 @inlinable
 @inline(__always)
-public func Transpose<T>(_ row: Int, _ column: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func Transpose<T>(_ column: Int, _ row: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
     var output = output
@@ -105,7 +105,7 @@ public func Transpose<T>(_ row: Int, _ column: Int, _ input: UnsafePointer<T>, _
 
 @inlinable
 @inline(__always)
-public func Transpose<T: FloatingPoint>(_ row: Int, _ column: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
+public func Transpose<T: FloatingPoint>(_ column: Int, _ row: Int, _ real: UnsafePointer<T>, _ imag: UnsafePointer<T>, _ in_stride: Int, _ _real: UnsafeMutablePointer<T>, _ _imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var real = real
     var imag = imag
