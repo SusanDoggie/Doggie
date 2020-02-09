@@ -356,7 +356,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         
         let angle = _phase_diff(d3, d0, minus_signed)
         guard !angle.almostZero() else { return }
-            
+        
         var a = (u0 + v0).distance(to: start)
         if minus_signed { a = -a }
         
