@@ -556,6 +556,9 @@ extension SVGContext {
         }
         
         if let clip = self.current_layer.state.clip {
+            if !element.attributes(for: "transform").isEmpty {
+                element = SDXMLElement(name: "g", elements: [element])
+            }
             switch clip {
             case let .clip(id): element.setAttribute(for: "clip-path", value: "url(#\(id))")
             case let .mask(id): element.setAttribute(for: "mask", value: "url(#\(id))")
