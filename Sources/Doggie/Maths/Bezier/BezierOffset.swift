@@ -25,7 +25,7 @@
 
 @inlinable
 func _phase_diff(_ lhs: Double, _ rhs: Double, _ minus_signed: Bool) -> Double {
-    var diff = lhs - rhs
+    var diff = (lhs - rhs).truncatingRemainder(dividingBy: 2 * .pi)
     while diff < -.pi { diff += 2 * .pi }
     while .pi < diff { diff -= 2 * .pi }
     if diff.almostEqual(-.pi) || diff.almostEqual(.pi) {

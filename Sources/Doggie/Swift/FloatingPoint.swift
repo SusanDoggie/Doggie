@@ -599,7 +599,7 @@ extension CGFloat : FloatingMathProtocol {
 @inlinable
 @inline(__always)
 public func positive_mod<T: FloatingPoint>(_ x: T, _ m: T) -> T {
-    let r = x.remainder(dividingBy: m)
+    let r = x.truncatingRemainder(dividingBy: m)
     return r < 0 ? r + m : r
 }
 
