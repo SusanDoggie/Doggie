@@ -73,11 +73,7 @@ private struct GPContextState {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 public class GPContext {
     
-    public let width: Int
-    
-    public let height: Int
-    
-    private var _image: CIImage
+    private var _image: GPContextBase
     
     fileprivate var state: GPContextState = GPContextState()
     
@@ -87,14 +83,10 @@ public class GPContext {
     private var next: GPContext?
     
     public init(width: Int, height: Int) {
-        self.width = width
-        self.height = height
-        self._image = CIImage.empty()
+        self._image = GPContextBase(width: width, height: height, _image: nil)
     }
     
-    private init(width: Int, height: Int, image: CIImage) {
-        self.width = width
-        self.height = height
+    private init(image: GPContextBase) {
         self._image = image
     }
 }
@@ -126,11 +118,11 @@ extension GPContext {
     }
     
     public var extent: Rect {
-        return Rect(x: 0, y: 0, width: width, height: height)
+        return _image.extent
     }
     
     public func clone() -> GPContext {
-        let clone = GPContext(width: self.width, height: self.height, image: self._image)
+        let clone = GPContext(image: self._image)
         clone.state = self.state
         clone.styles = self.styles
         clone.graphicStateStack = self.graphicStateStack
@@ -139,7 +131,7 @@ extension GPContext {
     }
     
     public var image: CIImage {
-        return _image.clamped(to: extent).cropped(to: extent)
+        return _image.image.clamped(to: extent).cropped(to: extent)
     }
 }
 
@@ -180,6 +172,18 @@ extension GPContext {
     
     public func restoreGraphicState() {
         graphicStateStack.popLast()?.apply(to: current_layer)
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
+    public var width: Int {
+        return _image.width
+    }
+    
+    public var height: Int {
+        return _image.height
     }
 }
 
@@ -257,7 +261,7 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    private func blend_layer(_ image: CIImage) {
+    private func blend_layer(_ image: GPContextBase) {
         
         var image = image
         
@@ -265,13 +269,25 @@ extension GPContext {
             image = image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: clip])
         }
         
-        guard let blended = blendKernel.apply(foreground: image, background: current_layer._image) else { return }
-            
+        var blended: GPContextBase
+        
+        let background_colorSpace = current_layer._image.graphic_stack.first.map { $0.colorSpace.name }
+        let foreground_colorSpace = image.graphic_stack.first.map { $0.colorSpace.name }
+        let is_colorSpace = background_colorSpace == nil || background_colorSpace == foreground_colorSpace
+        
+        if blendKernel === CIBlendKernel.sourceOver && image._image == nil && is_colorSpace {
+            blended = current_layer._image
+            blended.graphic_stack.append(contentsOf: image.graphic_stack)
+        } else {
+            guard let _blended = blendKernel.apply(foreground: image.image, background: current_layer._image.image) else { return }
+            blended = GPContextBase(width: width, height: height, _image: _blended)
+        }
+        
         current_layer._image = blended
         current_layer.state.isDirty = true
     }
     
-    private func draw_layer(_ image: CIImage) {
+    private func draw_layer(_ image: GPContextBase) {
         
         guard opacity > 0 else { return }
         
@@ -285,6 +301,10 @@ extension GPContext {
         self.blend_layer(image)
     }
     
+    private func draw_layer(_ image: CIImage) {
+        self.draw_layer(GPContextBase(width: width, height: height, _image: image))
+    }
+    
     private func draw_color_mask(_ mask: CIImage, _ color: CGColor, _ alpha_mask: Bool) {
         
         guard opacity > 0 else { return }
@@ -295,7 +315,7 @@ extension GPContext {
         let _color = CIImage(color: CIColor(cgColor: color))
         let image = _color.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: mask])
         
-        self.blend_layer(image)
+        self.blend_layer(GPContextBase(width: width, height: height, _image: image))
     }
     
     private func draw_shadow(_ image: CIImage, _ alpha_mask: Bool) {
@@ -347,10 +367,10 @@ extension GPContext {
             var layer = next._image
             
             if shadowColor.alpha > 0 && shadowBlur > 0 {
-                layer = layer._insertingIntermediate()
+                layer = layer.insertingIntermediate()
             }
             
-            self.draw_shadow(layer, true)
+            self.draw_shadow(layer.image, true)
             self.draw_layer(layer)
         }
     }
@@ -368,15 +388,32 @@ extension GPContext {
         
         guard !intersection.isNull else { return }
         
-        let extent = intersection.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        guard var mask = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule, shouldAntialias: self.shouldAntialias) else { return }
+        let is_shadow = shadowColor.alpha > 0 && shadowBlur > 0
+        let is_clip = current_layer.state.clip != nil
         
-        if shadowColor.alpha > 0 && shadowBlur > 0 {
-            mask = mask._insertingIntermediate()
+        let is_colorSpace = _image.graphic_stack.first.map { $0.colorSpace.name == color.colorSpace?.name } ?? true
+        let is_sourceOver = blendKernel === CIBlendKernel.sourceOver
+        
+        if is_shadow || is_clip || !is_colorSpace || !is_sourceOver {
+            
+            let extent = intersection.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+            guard var mask = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule, shouldAntialias: self.shouldAntialias) else { return }
+            
+            if is_shadow {
+                mask = mask._insertingIntermediate()
+            }
+            
+            self.draw_shadow(mask, false)
+            self.draw_color_mask(mask, color, false)
+            
+        } else {
+            
+            guard opacity > 0 else { return }
+            guard let color = opacity < 1 ? color.copy(alpha: color.alpha * CGFloat(opacity)) : color else { return }
+            
+            current_layer._image.draw(path: path, rule: rule, color: color, shouldAntialias: shouldAntialias)
+            current_layer.state.isDirty = true
         }
-        
-        self.draw_shadow(mask, false)
-        self.draw_color_mask(mask, color, false)
     }
 }
 
@@ -436,7 +473,7 @@ extension GPContext {
             
             let clip = _clip._image.applyingFilter("CIColorMonochrome", parameters: [kCIInputColorKey: CIColor.white])
             
-            current_layer.state.clip = clip.composited(over: GPContext.black)._insertingIntermediate()
+            current_layer.state.clip = clip.composited(over: GPContext.black).image._insertingIntermediate()
             
         } else {
             current_layer.clearClipBuffer(with: 0)
