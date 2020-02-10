@@ -30,6 +30,9 @@ public struct PDFName: PDFObject, Hashable {
     public init(_ name: String) {
         self.name = name
     }
+    public init<S : StringProtocol>(_ name: S) {
+        self.name = String(name)
+    }
 }
 
 extension PDFName: ExpressibleByStringLiteral {

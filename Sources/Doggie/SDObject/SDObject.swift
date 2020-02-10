@@ -65,6 +65,11 @@ public struct SDObject {
     }
     
     @inlinable
+    public init<S : StringProtocol>(_ value: S) {
+        self.base = .string(String(value))
+    }
+    
+    @inlinable
     public init<T : FixedWidthInteger & SignedInteger>(_ value: T) {
         self.base = .signed(Int64(value))
     }

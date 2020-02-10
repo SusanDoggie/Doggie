@@ -61,6 +61,9 @@ extension Json {
     public init(_ value: String) {
         self.value = value
     }
+    public init<S : StringProtocol>(_ value: S) {
+        self.value = String(value)
+    }
     public init(_ elements: [Any]) {
         self.value = elements.map { Json.unwrap($0) ?? NSNull() }
     }
