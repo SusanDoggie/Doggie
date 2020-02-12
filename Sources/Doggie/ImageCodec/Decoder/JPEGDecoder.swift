@@ -54,7 +54,7 @@ struct JPEGDecoder : ImageRepDecoder {
                 
             case .APP2:
                 
-                guard segment.data.prefix(12).elementsEqual("ICC_PROFILE".utf8CString.lazy.map { UInt8(bitPattern: $0) }) else { continue }
+                guard segment.data.starts(with: "ICC_PROFILE".utf8CString.lazy.map { UInt8(bitPattern: $0) }) else { continue }
                 guard let colorSpace = try? AnyColorSpace(iccData: segment.data.dropFirst(12)) else { continue }
                 guard let rgb = colorSpace.base as? ColorSpace<RGBColorModel> else { continue }
                 

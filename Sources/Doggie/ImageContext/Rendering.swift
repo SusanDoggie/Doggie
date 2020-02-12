@@ -289,7 +289,16 @@ extension ImageContext {
             }
         }
         
-        if let depthFun = depthFun {
+        if depthFun == nil {
+            
+            self.withUnsafePixelBlender { blender in
+                
+                let rasterizer = ImageContextRenderBuffer(blender: blender, depth: nil, width: width, height: height)
+                
+                _render(rasterizer: rasterizer)
+            }
+            
+        } else {
             
             self.withUnsafeMutableDepthBufferPointer { _depth in
                 
@@ -301,15 +310,6 @@ extension ImageContext {
                     
                     _render(rasterizer: rasterizer)
                 }
-            }
-            
-        } else {
-            
-            self.withUnsafePixelBlender { blender in
-                
-                let rasterizer = ImageContextRenderBuffer(blender: blender, depth: nil, width: width, height: height)
-                
-                _render(rasterizer: rasterizer)
             }
         }
     }
