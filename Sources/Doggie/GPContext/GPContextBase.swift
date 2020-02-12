@@ -73,9 +73,21 @@ extension GPContextBase {
             let extent = CGRect(self.extent).intersection(_extent).insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
             guard let layer = try? CGContextProcessorKernel.apply(withExtent: extent, colorSpace: colorSpace, transform: .identity, shouldAntialias: true, callback: { context in
                 
+                var shouldAntialias = false
+                var color: CGColor?
+                
                 for item in graphic_stack {
-                    context.setShouldAntialias(item.shouldAntialias)
-                    context.setFillColor(item.color)
+                    
+                    if shouldAntialias != item.shouldAntialias {
+                        context.setShouldAntialias(item.shouldAntialias)
+                        shouldAntialias = item.shouldAntialias
+                    }
+                    
+                    if color?.components != item.color.components {
+                        context.setFillColor(item.color)
+                        color = item.color
+                    }
+                    
                     context.addPath(item.path)
                     context.fillPath(using: item.rule)
                 }
