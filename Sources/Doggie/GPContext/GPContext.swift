@@ -274,8 +274,9 @@ extension GPContext {
         let background_colorSpace = current_layer._image.graphic_stack.first.map { $0.colorSpace.name }
         let foreground_colorSpace = image.graphic_stack.first.map { $0.colorSpace.name }
         let is_colorSpace = background_colorSpace == nil || background_colorSpace == foreground_colorSpace
+        let is_normal = blendKernel === CIBlendKernel.sourceOver && image.graphic_stack.allSatisfy { $0.blendMode == .normal }
         
-        if blendKernel === CIBlendKernel.sourceOver && image._image == nil && is_colorSpace {
+        if is_normal && image._image == nil && is_colorSpace {
             blended = current_layer._image
             blended.graphic_stack.append(contentsOf: image.graphic_stack)
         } else {
@@ -392,9 +393,44 @@ extension GPContext {
         let is_clip = current_layer.state.clip != nil
         
         let is_colorSpace = _image.graphic_stack.first.map { $0.colorSpace.name == color.colorSpace?.name } ?? true
-        let is_sourceOver = blendKernel === CIBlendKernel.sourceOver
         
-        if is_shadow || is_clip || !is_colorSpace || !is_sourceOver {
+        var blendMode: CGBlendMode?
+        
+        switch blendKernel {
+        case .sourceOver: blendMode = .normal
+        case .exclusiveOr: blendMode = .xor
+        case .multiply: blendMode = .multiply
+        case .screen: blendMode = .screen
+        case .overlay: blendMode = .overlay
+        case .darken: blendMode = .darken
+        case .lighten: blendMode = .lighten
+        case .colorDodge: blendMode = .colorDodge
+        case .colorBurn: blendMode = .colorBurn
+        case .softLight: blendMode = .softLight
+        case .hardLight: blendMode = .hardLight
+        case .difference: blendMode = .difference
+        case .exclusion: blendMode = .exclusion
+        case .clear: blendMode = .clear
+        case .source: blendMode = .copy
+        case .sourceIn: blendMode = .sourceIn
+        case .sourceOut: blendMode = .sourceOut
+        case .sourceAtop: blendMode = .sourceAtop
+        case .destinationOver: blendMode = .destinationOver
+        case .destinationIn: blendMode = .destinationIn
+        case .destinationOut: blendMode = .destinationOut
+        case .destinationAtop: blendMode = .destinationAtop
+        default: break
+        }
+        
+        if !is_shadow && !is_clip && is_colorSpace, let blendMode = blendMode {
+            
+            guard opacity > 0 else { return }
+            guard let color = opacity < 1 ? color.copy(alpha: color.alpha * CGFloat(opacity)) : color else { return }
+            
+            current_layer._image.draw(path: path, rule: rule, blendMode: blendMode, color: color, shouldAntialias: shouldAntialias)
+            current_layer.state.isDirty = true
+            
+        } else {
             
             let extent = intersection.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
             guard var mask = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule, shouldAntialias: self.shouldAntialias) else { return }
@@ -405,14 +441,6 @@ extension GPContext {
             
             self.draw_shadow(mask, false)
             self.draw_color_mask(mask, color, false)
-            
-        } else {
-            
-            guard opacity > 0 else { return }
-            guard let color = opacity < 1 ? color.copy(alpha: color.alpha * CGFloat(opacity)) : color else { return }
-            
-            current_layer._image.draw(path: path, rule: rule, color: color, shouldAntialias: shouldAntialias)
-            current_layer.state.isDirty = true
         }
     }
 }

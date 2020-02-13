@@ -50,6 +50,8 @@ extension GPContextBase {
         
         let rule: CGPathFillRule
         
+        let blendMode: CGBlendMode
+        
         let shouldAntialias: Bool
     }
 }
@@ -75,6 +77,7 @@ extension GPContextBase {
                 
                 var shouldAntialias = false
                 var color: CGColor?
+                var blendMode: CGBlendMode = .normal
                 
                 for item in graphic_stack {
                     
@@ -86,6 +89,11 @@ extension GPContextBase {
                     if color?.components != item.color.components {
                         context.setFillColor(item.color)
                         color = item.color
+                    }
+                    
+                    if blendMode != item.blendMode {
+                        context.setBlendMode(item.blendMode)
+                        blendMode = item.blendMode
                     }
                     
                     context.addPath(item.path)
@@ -111,9 +119,9 @@ extension GPContextBase {
         return self
     }
     
-    mutating func draw(path: CGPath, rule: CGPathFillRule, color: CGColor, shouldAntialias: Bool) {
+    mutating func draw(path: CGPath, rule: CGPathFillRule, blendMode: CGBlendMode, color: CGColor, shouldAntialias: Bool) {
         let colorSpace = color.colorSpace ?? CGColorSpaceCreateDeviceRGB()
-        graphic_stack.append(GPContextBase.GraphicInfo(colorSpace: colorSpace, color: color, path: path, rule: rule, shouldAntialias: shouldAntialias))
+        graphic_stack.append(GPContextBase.GraphicInfo(colorSpace: colorSpace, color: color, path: path, rule: rule, blendMode: blendMode, shouldAntialias: shouldAntialias))
     }
     
     func composited(over dest: CIImage) -> GPContextBase {
