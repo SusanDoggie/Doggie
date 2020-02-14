@@ -456,8 +456,8 @@ struct TIFFPage : ImageRepBase {
         case 8:
             var decompressed = MappedBuffer<UInt8>(capacity: data.count, fileBacked: fileBacked)
             let inflate = try Inflate()
-            try inflate.process(data, &decompressed)
-            try inflate.final(&decompressed)
+            try inflate.update(data, &decompressed)
+            try inflate.finalize(&decompressed)
             return decompressed.data
         default: fatalError()
         }

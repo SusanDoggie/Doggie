@@ -286,9 +286,9 @@ struct PNGDecoder : ImageRepDecoder {
                 
                 do {
                     
-                    try decompressor.process(data) { decoder.decode($0) { result.append(contentsOf: $0) } }
-                    try decompressor.final { decoder.decode($0) { result.append(contentsOf: $0) } }
-                    decoder.final { result.append(contentsOf: $0) }
+                    try decompressor.update(data) { decoder.decode($0) { result.append(contentsOf: $0) } }
+                    try decompressor.finalize { decoder.decode($0) { result.append(contentsOf: $0) } }
+                    decoder.finalize { result.append(contentsOf: $0) }
                     
                 } catch {
                     return nil
@@ -430,10 +430,10 @@ struct PNGDecoder : ImageRepDecoder {
                             }
                         }
                         
-                        try decompressor.process(data, scanner)
-                        try decompressor.final(scanner)
+                        try decompressor.update(data, scanner)
+                        try decompressor.finalize(scanner)
                         
-                        decoder?.final { filling3(interlace_state, $0) }
+                        decoder?.finalize { filling3(interlace_state, $0) }
                     }
                     
                 } catch {

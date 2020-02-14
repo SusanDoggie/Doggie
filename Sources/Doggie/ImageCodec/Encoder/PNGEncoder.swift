@@ -147,10 +147,10 @@ struct PNGEncoder : ImageRepEncoder {
                                 body(&scanline, destination.pointee)
                             }
                             
-                            try scanline.withUnsafeBufferPointer { try encoder.encode($0) { try deflate.process($0) { compressed.append(contentsOf: $0) } } }
+                            try scanline.withUnsafeBufferPointer { try encoder.encode($0) { try deflate.update($0) { compressed.append(contentsOf: $0) } } }
                         }
                         
-                        try encoder.final { try deflate.process($0) { compressed.append(contentsOf: $0) } }
+                        try encoder.finalize { try deflate.update($0) { compressed.append(contentsOf: $0) } }
                     }
                 }
                 
@@ -175,15 +175,15 @@ struct PNGEncoder : ImageRepEncoder {
                             buffer += 1
                         }
                         
-                        try scanline.withUnsafeBufferPointer { try encoder.encode($0) { try deflate.process($0) { compressed.append(contentsOf: $0) } } }
+                        try scanline.withUnsafeBufferPointer { try encoder.encode($0) { try deflate.update($0) { compressed.append(contentsOf: $0) } } }
                         
                     }
                     
-                    try encoder.final { try deflate.process($0) { compressed.append(contentsOf: $0) } }
+                    try encoder.finalize { try deflate.update($0) { compressed.append(contentsOf: $0) } }
                 }
             }
             
-            try deflate.final(&compressed)
+            try deflate.finalize(&compressed)
             
         } catch {
             return nil

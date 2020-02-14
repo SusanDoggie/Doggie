@@ -246,7 +246,7 @@ extension png_filter0_encoder {
         self.index = index
     }
     
-    mutating func final(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
+    mutating func finalize(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
         
         precondition(flag)
         
@@ -374,7 +374,7 @@ extension png_filter0_decoder {
         self.index = index
     }
     
-    mutating func final(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
+    mutating func finalize(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
         
         precondition(flag)
         

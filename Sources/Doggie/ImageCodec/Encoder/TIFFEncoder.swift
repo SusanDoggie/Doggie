@@ -176,8 +176,8 @@ struct TIFFEncoder : ImageRepEncoder {
                 do {
                     var compressed = MappedBuffer<UInt8>(fileBacked: true)
                     let deflate = try Deflate(level: deflate_level, windowBits: 15)
-                    try deflate.process(pixelData, &compressed)
-                    try deflate.final(&compressed)
+                    try deflate.update(pixelData, &compressed)
+                    try deflate.finalize(&compressed)
                     pixelData = compressed
                 } catch {
                     return nil

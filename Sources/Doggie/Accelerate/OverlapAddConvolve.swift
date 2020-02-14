@@ -95,7 +95,7 @@ public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & FloatingMathProt
     
     @inlinable
     @inline(__always)
-    public func final(callback: (UnsafeBufferPointer<T>) -> Void) {
+    public func finalize(callback: (UnsafeBufferPointer<T>) -> Void) {
         
         let fft_length = self.fft_length
         let overlap_length = self.overlap_length
