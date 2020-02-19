@@ -264,7 +264,7 @@ extension Shape {
         
         var originalBoundary: Rect?
         var originalArea: Double?
-        var identity : Shape?
+        var identity: Shape?
         
         var table: [String: Any]
         

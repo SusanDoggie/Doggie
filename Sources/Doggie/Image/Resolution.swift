@@ -69,7 +69,7 @@ extension Resolution {
 extension Resolution.Unit {
     
     @usableFromInline
-    var inchScale : Double {
+    var inchScale: Double {
         switch self {
         case .point: return 72
         case .pica: return 6

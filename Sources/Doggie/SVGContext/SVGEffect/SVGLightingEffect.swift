@@ -70,7 +70,7 @@ public protocol SVGLightingEffect: SVGEffectElement {
     
     var light: [SVGLightSource] { get set }
     
-    var color : RGBColorModel { get set }
+    var color: RGBColorModel { get set }
     
     var surfaceScale: Double { get set }
 }

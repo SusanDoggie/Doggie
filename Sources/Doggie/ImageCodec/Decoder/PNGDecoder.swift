@@ -112,7 +112,7 @@ struct PNGDecoder: ImageRepDecoder {
         return Resolution(horizontal: 1, vertical: 1, unit: .point)
     }
     
-    var palette : [RGBA32ColorPixel]? {
+    var palette: [RGBA32ColorPixel]? {
         
         guard let plte = chunks.first(where: { $0.signature == "PLTE" }), plte.data.count % 3 == 0 else { return nil }
         

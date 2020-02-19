@@ -35,7 +35,7 @@ public protocol BinaryFixedPoint: Numeric, Hashable, Strideable, CustomStringCon
     
     init(bitPattern: BitPattern)
     
-    var representingValue : RepresentingValue { get set }
+    var representingValue: RepresentingValue { get set }
     
     init(representingValue: RepresentingValue)
 }
