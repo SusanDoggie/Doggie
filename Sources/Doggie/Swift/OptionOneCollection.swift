@@ -28,7 +28,7 @@ public struct OptionOneCollection<T> : RandomAccessCollection {
     
     public typealias Indices = Range<Int>
     
-    public let value: T?
+    public var value: T?
     
     @inlinable
     public init(_ value: T?) {
@@ -50,7 +50,14 @@ public struct OptionOneCollection<T> : RandomAccessCollection {
     
     @inlinable
     public subscript(position: Int) -> T {
-        return value!
+        set {
+            precondition(value != nil && position == 0, "Index out of range.")
+            return value!
+        }
+        get {
+            precondition(value != nil && position == 0, "Index out of range.")
+            value = newValue
+        }
     }
     
     @inlinable
