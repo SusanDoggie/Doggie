@@ -29,13 +29,49 @@ import PackageDescription
 let package = Package(
     name: "Doggie",
     products: [
+        .library(name: "SDFoundation", targets: ["SDFoundation"]),
+        .library(name: "SDCompression", targets: ["SDCompression"]),
+        .library(name: "SDNumerics", targets: ["SDNumerics"]),
+        .library(name: "SDGraphics", targets: ["SDGraphics"]),
         .library(name: "Doggie", targets: ["Doggie"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/SusanDoggie/SwiftCompression.git", .branch("master")),
-    ],
     targets: [
-        .target(name: "Doggie", dependencies: ["SwiftCompression"]),
-        .testTarget(name: "DoggieTests", dependencies: ["Doggie"]),
+        .target(
+            name: "zlib_c",
+            dependencies: [],
+            linkerSettings: [.linkedLibrary("z")]
+        ),
+        .target(
+            name: "brotli_c",
+            dependencies: [],
+            path: "./Dependencies/brotli/c",
+            sources: [
+                "common",
+                "dec",
+                "enc",
+                "include",
+            ]
+        ),
+        .target(name: "SDFoundation", dependencies: []),
+        .target(name: "SDCompression", dependencies: [
+            "zlib_c",
+            "brotli_c",
+        ]),
+        .target(name: "SDNumerics", dependencies: [
+            "SDFoundation",
+        ]),
+        .target(name: "SDGraphics", dependencies: [
+            "SDFoundation",
+            "SDNumerics",
+            "SDCompression",
+        ]),
+        .target(name: "Doggie", dependencies: [
+            "SDFoundation",
+            "SDNumerics",
+            "SDGraphics",
+        ]),
+        .testTarget(name: "DoggieTests", dependencies: [
+            "Doggie",
+        ]),
     ]
 )
