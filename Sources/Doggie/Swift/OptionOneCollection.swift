@@ -50,11 +50,11 @@ public struct OptionOneCollection<T>: RandomAccessCollection {
     
     @inlinable
     public subscript(position: Int) -> T {
-        set {
+        get {
             precondition(value != nil && position == 0, "Index out of range.")
             return value!
         }
-        get {
+        set {
             precondition(value != nil && position == 0, "Index out of range.")
             value = newValue
         }
