@@ -25,7 +25,7 @@
 
 extension PDFContext {
     
-    public enum EncodeError : Error, CaseIterable {
+    public enum EncodeError: Error, CaseIterable {
         
         case unsupportedColorSpace
     }
@@ -65,7 +65,7 @@ extension PDFContext {
         return xref.count
     }
     
-    static func _write(stream: Data, properties: [PropertyKey : Any], _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
+    static func _write(stream: Data, properties: [PropertyKey: Any], _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
         
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         
@@ -91,7 +91,7 @@ extension PDFContext {
         return xref.count
     }
     
-    static func _write(stream: String, properties: [PropertyKey : Any], _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
+    static func _write(stream: String, properties: [PropertyKey: Any], _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
         
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         
@@ -179,7 +179,7 @@ extension PDFContext {
             """)
     }
     
-    public func data(properties: [PropertyKey : Any] = [:]) throws -> Data {
+    public func data(properties: [PropertyKey: Any] = [:]) throws -> Data {
         
         var data = Data()
         data.append(utf8: "%PDF-1.3\n")
@@ -292,7 +292,7 @@ extension PDFContext.Page {
         var mask: Int
     }
     
-    func write_resources(xobjectGroup: XObjectGroup, properties: [PDFContext.PropertyKey : Any], to data: inout Data, xref: inout [Int]) throws -> Int {
+    func write_resources(xobjectGroup: XObjectGroup, properties: [PDFContext.PropertyKey: Any], to data: inout Data, xref: inout [Int]) throws -> Int {
         
         guard let iccData = colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
         
@@ -446,7 +446,7 @@ extension PDFContext.Page {
             ], to: &data, xref: &xref)
     }
     
-    func write_commands(properties: [PDFContext.PropertyKey : Any], to data: inout Data, xref: inout [Int]) throws -> Int {
+    func write_commands(properties: [PDFContext.PropertyKey: Any], to data: inout Data, xref: inout [Int]) throws -> Int {
         return PDFContext._write(stream: finalize(), properties: properties, to: &data, xref: &xref)
     }
 }

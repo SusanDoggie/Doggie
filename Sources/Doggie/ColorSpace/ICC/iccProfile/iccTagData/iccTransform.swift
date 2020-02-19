@@ -41,7 +41,7 @@ protocol iccTransform {
 
 @frozen
 @usableFromInline
-struct iccMonochromeTransform : iccTransform {
+struct iccMonochromeTransform: iccTransform {
     
     @usableFromInline
     var curve: iccCurve
@@ -117,7 +117,7 @@ struct iccMonochromeTransform : iccTransform {
 
 @frozen
 @usableFromInline
-struct iccMatrixTransform : iccTransform {
+struct iccMatrixTransform: iccTransform {
     
     @usableFromInline
     var matrix: Matrix
@@ -209,7 +209,7 @@ struct iccMatrixTransform : iccTransform {
 
 @frozen
 @usableFromInline
-struct iccLUT0Transform : iccTransform {
+struct iccLUT0Transform: iccTransform {
     
     @usableFromInline
     var matrix: Matrix
@@ -307,7 +307,7 @@ struct iccLUT0Transform : iccTransform {
 
 @frozen
 @usableFromInline
-struct iccLUT1Transform : iccTransform {
+struct iccLUT1Transform: iccTransform {
     
     @usableFromInline
     var curve: (iccCurve, iccCurve, iccCurve)
@@ -389,7 +389,7 @@ struct iccLUT1Transform : iccTransform {
 
 @frozen
 @usableFromInline
-struct iccLUT2Transform : iccTransform {
+struct iccLUT2Transform: iccTransform {
     
     @usableFromInline
     var B: (iccCurve, iccCurve, iccCurve)
@@ -490,7 +490,7 @@ struct iccLUT2Transform : iccTransform {
 
 @frozen
 @usableFromInline
-struct iccLUT3Transform : iccTransform {
+struct iccLUT3Transform: iccTransform {
     
     @usableFromInline
     var B: (iccCurve, iccCurve, iccCurve)
@@ -583,7 +583,7 @@ struct iccLUT3Transform : iccTransform {
 
 @frozen
 @usableFromInline
-struct iccLUT4Transform : iccTransform {
+struct iccLUT4Transform: iccTransform {
     
     @usableFromInline
     var B: (iccCurve, iccCurve, iccCurve)

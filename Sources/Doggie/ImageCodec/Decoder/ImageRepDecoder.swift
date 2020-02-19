@@ -23,14 +23,14 @@
 //  THE SOFTWARE.
 //
 
-protocol ImageRepDecoder : ImageRepBase {
+protocol ImageRepDecoder: ImageRepBase {
     
     init?(data: Data) throws
     
     var mediaType: MediaType { get }
 }
 
-struct ImageRepDecoderBitStream : Sequence, IteratorProtocol {
+struct ImageRepDecoderBitStream: Sequence, IteratorProtocol {
     
     let mask: UInt8
     let shift: Int

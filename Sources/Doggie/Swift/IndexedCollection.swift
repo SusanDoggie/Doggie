@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct IndexedIterator<C : Collection> : IteratorProtocol {
+public struct IndexedIterator<C: Collection>: IteratorProtocol {
     
     public let base: C
     
@@ -47,7 +47,7 @@ public struct IndexedIterator<C : Collection> : IteratorProtocol {
 }
 
 @frozen
-public struct IndexedCollection<C : Collection> : Collection {
+public struct IndexedCollection<C: Collection>: Collection {
     
     public let base: C
     
@@ -66,7 +66,7 @@ public struct IndexedCollection<C : Collection> : Collection {
     }
     
     @inlinable
-    public var count : Int {
+    public var count: Int {
         return base.count
     }
     
@@ -111,7 +111,7 @@ public struct IndexedCollection<C : Collection> : Collection {
     }
 }
 
-extension IndexedCollection : BidirectionalCollection where C : BidirectionalCollection {
+extension IndexedCollection: BidirectionalCollection where C: BidirectionalCollection {
     
     @inlinable
     public func index(before i: C.Index) -> C.Index {
@@ -120,7 +120,7 @@ extension IndexedCollection : BidirectionalCollection where C : BidirectionalCol
     
 }
 
-extension IndexedCollection : RandomAccessCollection where C : RandomAccessCollection {
+extension IndexedCollection: RandomAccessCollection where C: RandomAccessCollection {
     
 }
 

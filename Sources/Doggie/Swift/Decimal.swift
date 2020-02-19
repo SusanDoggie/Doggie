@@ -27,7 +27,7 @@ extension Decimal {
     
     @inlinable
     @inline(__always)
-    public init<Source : BinaryFloatingPoint>(_ value: Source) {
+    public init<Source: BinaryFloatingPoint>(_ value: Source) {
         self.init(Double(value))
     }
     

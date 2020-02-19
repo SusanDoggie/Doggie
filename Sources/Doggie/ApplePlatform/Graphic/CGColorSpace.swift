@@ -29,7 +29,7 @@ private let ColorSpaceCacheCGColorSpaceKey = "ColorSpaceCacheCGColorSpaceKey"
 
 extension ColorSpace {
     
-    private var _cgColorSpace : CGColorSpace? {
+    private var _cgColorSpace: CGColorSpace? {
         
         if #available(macOS 10.5, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
             switch AnyColorSpace(self) {
@@ -80,7 +80,7 @@ extension ColorSpace {
         return nil
     }
     
-    public var cgColorSpace : CGColorSpace? {
+    public var cgColorSpace: CGColorSpace? {
         
         if let colorSpace = self._cgColorSpace {
             return colorSpace
@@ -164,7 +164,7 @@ protocol CGColorSpaceConvertibleProtocol {
     var cgColorSpace: CGColorSpace? { get }
 }
 
-extension ColorSpace : CGColorSpaceConvertibleProtocol {
+extension ColorSpace: CGColorSpaceConvertibleProtocol {
     
 }
 

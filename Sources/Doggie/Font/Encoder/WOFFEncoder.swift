@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-struct WOFFEncoder : FontFaceEncoder {
+struct WOFFEncoder: FontFaceEncoder {
     
-    static func encode(table: [Signature<BEUInt32>: Data], properties: [Font.PropertyKey : Any]) -> Data? {
+    static func encode(table: [Signature<BEUInt32>: Data], properties: [Font.PropertyKey: Any]) -> Data? {
         
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         

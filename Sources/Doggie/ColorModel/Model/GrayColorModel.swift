@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct GrayColorModel : ColorModelProtocol {
+public struct GrayColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -112,7 +112,7 @@ extension GrayColorModel {
     
     public typealias Float32Components = FloatComponents<Float>
     
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         

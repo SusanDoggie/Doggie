@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorPixelProtocol : Hashable {
+public protocol ColorPixelProtocol: Hashable {
     
-    associatedtype Model : ColorModelProtocol
+    associatedtype Model: ColorModelProtocol
     
     init()
     
@@ -54,7 +54,7 @@ public protocol ColorPixelProtocol : Hashable {
     func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self
 }
 
-extension ColorPixelProtocol where Self : ScalarMultiplicative {
+extension ColorPixelProtocol where Self: ScalarMultiplicative {
     
     @inlinable
     @inline(__always)
@@ -82,7 +82,7 @@ extension ColorPixelProtocol {
     
     @inlinable
     @inline(__always)
-    public init<C : ColorPixelProtocol>(_ color: C) where C.Model == Model {
+    public init<C: ColorPixelProtocol>(_ color: C) where C.Model == Model {
         self.init(color: color.color, opacity: color.opacity)
     }
 }
@@ -199,13 +199,13 @@ extension ColorPixelProtocol {
     
     @inlinable
     @inline(__always)
-    public mutating func blend<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) where C.Model == Model {
+    public mutating func blend<C: ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
     
     @inlinable
     @inline(__always)
-    public func blended<C : ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
+    public func blended<C: ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
         return blended(source: Self(source), compositingMode: compositingMode, blendMode: blendMode)
     }
 }

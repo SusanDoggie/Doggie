@@ -50,13 +50,13 @@ public struct Point: Hashable {
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(x: T, y: T) {
+    public init<T: BinaryInteger>(x: T, y: T) {
         self.x = Double(x)
         self.y = Double(y)
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(x: T, y: T) {
+    public init<T: BinaryFloatingPoint>(x: T, y: T) {
         self.x = Double(x)
         self.y = Double(y)
     }
@@ -112,7 +112,7 @@ extension Point: CustomStringConvertible {
     }
 }
 
-extension Point : Codable {
+extension Point: Codable {
     
     @inlinable
     @inline(__always)
@@ -131,7 +131,7 @@ extension Point : Codable {
     }
 }
 
-extension Point : Tensor {
+extension Point: Tensor {
     
     public typealias Indices = Range<Int>
     

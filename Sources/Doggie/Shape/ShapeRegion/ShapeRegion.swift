@@ -26,7 +26,7 @@
 private let ShapeCacheNonZeroRegionKey = "ShapeCacheNonZeroRegionKey"
 private let ShapeCacheEvenOddRegionKey = "ShapeCacheEvenOddRegionKey"
 
-extension Collection where SubSequence : Collection {
+extension Collection where SubSequence: Collection {
     
     func rotateZip() -> Zip2Sequence<Self, LazyConcatCollection<Self.SubSequence, Self.SubSequence>> {
         return zip(self, self.rotated(1))
@@ -96,14 +96,14 @@ extension Sequence where Element == ShapeRegion.Solid {
     }
 }
 
-extension ShapeRegion : RandomAccessCollection {
+extension ShapeRegion: RandomAccessCollection {
     
     public typealias Indices = Range<Int>
     
-    public var startIndex : Int {
+    public var startIndex: Int {
         return solids.startIndex
     }
-    public var endIndex : Int {
+    public var endIndex: Int {
         return solids.endIndex
     }
     

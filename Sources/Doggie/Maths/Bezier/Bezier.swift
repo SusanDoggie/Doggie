@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Bezier<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
+public struct Bezier<Element: ScalarMultiplicative>: BezierProtocol where Element.Scalar == Double {
     
     @usableFromInline
     var points: [Element]
@@ -40,7 +40,7 @@ public struct Bezier<Element : ScalarMultiplicative> : BezierProtocol where Elem
     }
     
     @inlinable
-    public init<S : Sequence>(_ s: S) where S.Element == Element {
+    public init<S: Sequence>(_ s: S) where S.Element == Element {
         self.points = Array(s)
         while points.count < 2 {
             points.append(points.first ?? .zero)
@@ -48,7 +48,7 @@ public struct Bezier<Element : ScalarMultiplicative> : BezierProtocol where Elem
     }
 }
 
-extension Bezier : ExpressibleByArrayLiteral {
+extension Bezier: ExpressibleByArrayLiteral {
     
     @inlinable
     public init(arrayLiteral elements: Element ... ) {
@@ -56,7 +56,7 @@ extension Bezier : ExpressibleByArrayLiteral {
     }
 }
 
-extension Bezier : CustomStringConvertible {
+extension Bezier: CustomStringConvertible {
     
     @inlinable
     public var description: String {
@@ -64,11 +64,11 @@ extension Bezier : CustomStringConvertible {
     }
 }
 
-extension Bezier : Hashable where Element : Hashable {
+extension Bezier: Hashable where Element: Hashable {
     
 }
 
-extension Bezier: Decodable where Element : Decodable {
+extension Bezier: Decodable where Element: Decodable {
     
     @inlinable
     public init(from decoder: Decoder) throws {
@@ -91,7 +91,7 @@ extension Bezier: Decodable where Element : Decodable {
     }
 }
 
-extension Bezier: Encodable where Element : Encodable {
+extension Bezier: Encodable where Element: Encodable {
     
     @inlinable
     public func encode(to encoder: Encoder) throws {
@@ -347,7 +347,7 @@ extension Bezier where Element == Point {
     }
 }
 
-extension Bezier where Element : Tensor {
+extension Bezier where Element: Tensor {
     
     @inlinable
     public func closest(_ point: Element, in range: ClosedRange<Double> = -.infinity ... .infinity) -> [Double] {

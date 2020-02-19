@@ -25,7 +25,7 @@
 
 public protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByIntegerLiteral, ExpressibleByStringLiteral, CustomStringConvertible, ByteCodable {
     
-    associatedtype Bytes : FixedWidthInteger
+    associatedtype Bytes: FixedWidthInteger
     
     var rawValue: Bytes { get set }
     
@@ -72,7 +72,7 @@ extension String {
     }
 }
 
-extension SignatureProtocol where Bytes : ByteOutputStreamable {
+extension SignatureProtocol where Bytes: ByteOutputStreamable {
     
     @inlinable
     @inline(__always)
@@ -81,7 +81,7 @@ extension SignatureProtocol where Bytes : ByteOutputStreamable {
     }
 }
 
-extension SignatureProtocol where Bytes : ByteDecodable {
+extension SignatureProtocol where Bytes: ByteDecodable {
     
     @inlinable
     @inline(__always)
@@ -91,7 +91,7 @@ extension SignatureProtocol where Bytes : ByteDecodable {
 }
 
 @frozen
-public struct Signature<Bytes : FixedWidthInteger & ByteCodable> : SignatureProtocol {
+public struct Signature<Bytes: FixedWidthInteger & ByteCodable>: SignatureProtocol {
     
     public var rawValue: Bytes
     
@@ -102,7 +102,7 @@ public struct Signature<Bytes : FixedWidthInteger & ByteCodable> : SignatureProt
     }
 }
 
-extension Signature : ByteDecodable where Bytes : ByteDecodable {
+extension Signature: ByteDecodable where Bytes: ByteDecodable {
     
 }
 

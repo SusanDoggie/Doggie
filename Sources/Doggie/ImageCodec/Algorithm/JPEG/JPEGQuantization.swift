@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct JPEGQuantizationTable : ByteCodable {
+struct JPEGQuantizationTable: ByteCodable {
     
     var tables: [(UInt8, Table)]
     
@@ -57,7 +57,7 @@ struct JPEGQuantizationTable : ByteCodable {
 
 extension JPEGQuantizationTable {
     
-    struct Table8 : ByteCodable {
+    struct Table8: ByteCodable {
         
         var table: (
         UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
@@ -162,7 +162,7 @@ extension JPEGQuantizationTable {
 
 extension JPEGQuantizationTable {
     
-    struct Table16 : ByteCodable {
+    struct Table16: ByteCodable {
         
         var table: (
         UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16, UInt16,

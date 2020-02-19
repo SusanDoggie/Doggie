@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct QuadBezier<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
+public struct QuadBezier<Element: ScalarMultiplicative>: BezierProtocol where Element.Scalar == Double {
     
     public var p0: Element
     public var p1: Element
@@ -56,11 +56,11 @@ extension Bezier {
     }
 }
 
-extension QuadBezier : Hashable where Element : Hashable {
+extension QuadBezier: Hashable where Element: Hashable {
     
 }
 
-extension QuadBezier: Decodable where Element : Decodable {
+extension QuadBezier: Decodable where Element: Decodable {
     
     @inlinable
     @inline(__always)
@@ -72,7 +72,7 @@ extension QuadBezier: Decodable where Element : Decodable {
     }
 }
 
-extension QuadBezier: Encodable where Element : Encodable {
+extension QuadBezier: Encodable where Element: Encodable {
     
     @inlinable
     @inline(__always)
@@ -235,7 +235,7 @@ extension QuadBezier where Element == Double {
     }
 }
 
-extension QuadBezier where Element : Tensor {
+extension QuadBezier where Element: Tensor {
     
     @inlinable
     @inline(__always)

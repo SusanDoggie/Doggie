@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral {
+public struct Cache<Key: Hashable>: Collection, ExpressibleByDictionaryLiteral {
     
     public typealias Index = Dictionary<Key, Any>.Index
     public typealias Element = (Key, Any)
@@ -43,12 +43,12 @@ public struct Cache<Key: Hashable> : Collection, ExpressibleByDictionaryLiteral 
     }
     
     @inlinable
-    public init<S : Sequence>(uniqueKeysWithValues keysAndValues: S) where S.Element == Element {
+    public init<S: Sequence>(uniqueKeysWithValues keysAndValues: S) where S.Element == Element {
         self.base = Base(table: Dictionary(uniqueKeysWithValues: keysAndValues))
     }
     
     @inlinable
-    public init<S : Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Any, Any) throws -> Any) rethrows where S.Element == Element {
+    public init<S: Sequence>(_ keysAndValues: S, uniquingKeysWith combine: (Any, Any) throws -> Any) rethrows where S.Element == Element {
         self.base = Base(table: try Dictionary(keysAndValues, uniquingKeysWith: combine))
     }
     

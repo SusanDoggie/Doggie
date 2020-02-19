@@ -744,7 +744,7 @@ class ImageTest: XCTestCase {
     
 }
 
-private struct ColorVertex : ImageContextRenderVertex {
+private struct ColorVertex: ImageContextRenderVertex {
     
     var position: Vector
     

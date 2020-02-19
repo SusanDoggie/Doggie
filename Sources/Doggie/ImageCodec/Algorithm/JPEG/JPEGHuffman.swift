@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct JPEGHuffmanTable : ByteCodable {
+struct JPEGHuffmanTable: ByteCodable {
     
     var tables: [Table]
     
@@ -43,7 +43,7 @@ struct JPEGHuffmanTable : ByteCodable {
 
 extension JPEGHuffmanTable {
     
-    struct Table : ByteCodable {
+    struct Table: ByteCodable {
         
         var info: UInt8
         
@@ -139,14 +139,14 @@ extension JPEGHuffmanTable {
 
 extension JPEGHuffmanTable {
     
-    struct Key : Hashable {
+    struct Key: Hashable {
         
         var length: UInt8
         var code: UInt16
     }
 }
 
-extension JPEGHuffmanTable.Key : CustomStringConvertible {
+extension JPEGHuffmanTable.Key: CustomStringConvertible {
     
     var description: String {
         let str = String(code, radix: 2)
@@ -154,7 +154,7 @@ extension JPEGHuffmanTable.Key : CustomStringConvertible {
     }
 }
 
-extension JPEGHuffmanTable.Table : CustomStringConvertible {
+extension JPEGHuffmanTable.Table: CustomStringConvertible {
     
     var description: String {
         return "JPEGHuffmanTable(info: \(info), table: [\(table.map { "\($0): \(String($1, radix: 16))" }.joined(separator: ", "))])"

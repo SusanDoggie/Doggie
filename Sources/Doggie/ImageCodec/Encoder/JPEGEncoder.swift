@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-struct JPEGEncoder : ImageRepEncoder {
+struct JPEGEncoder: ImageRepEncoder {
     
-    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
         return nil
     }

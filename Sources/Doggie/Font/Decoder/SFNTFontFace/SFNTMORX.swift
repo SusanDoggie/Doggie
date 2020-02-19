@@ -226,9 +226,9 @@ extension SFNTMORX.Subtable {
 
 extension SFNTMORX {
     
-    struct RearrangementSubtable : AATStateMachine {
+    struct RearrangementSubtable: AATStateMachine {
         
-        struct EntryData : AATStateMachineEntryData {
+        struct EntryData: AATStateMachineEntryData {
             
             static var size: Int {
                 return 0
@@ -238,7 +238,7 @@ extension SFNTMORX {
             }
         }
         
-        struct Context : AATStateMachineContext {
+        struct Context: AATStateMachineContext {
             
             var start: Int?
             var end: Int?
@@ -338,9 +338,9 @@ extension SFNTMORX {
         }
     }
     
-    struct ContextualSubtable : AATStateMachine {
+    struct ContextualSubtable: AATStateMachine {
         
-        struct EntryData : AATStateMachineEntryData {
+        struct EntryData: AATStateMachineEntryData {
             
             static var size: Int {
                 return 4
@@ -355,7 +355,7 @@ extension SFNTMORX {
             }
         }
         
-        struct Context : AATStateMachineContext {
+        struct Context: AATStateMachineContext {
             
             var mark: Int?
             
@@ -415,9 +415,9 @@ extension SFNTMORX {
         }
     }
     
-    struct LigatureSubtable : AATStateMachine {
+    struct LigatureSubtable: AATStateMachine {
         
-        struct EntryData : AATStateMachineEntryData {
+        struct EntryData: AATStateMachineEntryData {
             
             static var size: Int {
                 return 2
@@ -430,7 +430,7 @@ extension SFNTMORX {
             }
         }
         
-        struct Context : AATStateMachineContext {
+        struct Context: AATStateMachineContext {
             
             var ligActionTable: Data
             var componentTable: Data
@@ -532,9 +532,9 @@ extension SFNTMORX {
         }
     }
     
-    struct InsertionSubtable : AATStateMachine {
+    struct InsertionSubtable: AATStateMachine {
         
-        struct EntryData : AATStateMachineEntryData {
+        struct EntryData: AATStateMachineEntryData {
             
             static var size: Int {
                 return 4
@@ -549,7 +549,7 @@ extension SFNTMORX {
             }
         }
         
-        struct Context : AATStateMachineContext {
+        struct Context: AATStateMachineContext {
             
             init(_ machine: InsertionSubtable) throws {
                 

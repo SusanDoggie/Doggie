@@ -38,7 +38,7 @@ extension ColorSpace where Model == LabColorModel {
 
 @frozen
 @usableFromInline
-struct CIELabColorSpace : ColorSpaceBaseProtocol {
+struct CIELabColorSpace: ColorSpaceBaseProtocol {
     
     @usableFromInline
     typealias Model = LabColorModel

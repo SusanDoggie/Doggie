@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct CFFDICT : ByteDecodable {
+struct CFFDICT: ByteDecodable {
     
     var dict: [Int: [Operand]] = [:]
     

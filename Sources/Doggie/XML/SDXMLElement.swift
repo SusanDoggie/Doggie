@@ -25,7 +25,7 @@
 
 public struct SDXMLElement {
     
-    enum Kind : CaseIterable {
+    enum Kind: CaseIterable {
         case node
         case characters
         case comment
@@ -238,7 +238,7 @@ extension SDXMLElement {
     }
 }
 
-extension SDXMLElement : RandomAccessCollection, MutableCollection {
+extension SDXMLElement: RandomAccessCollection, MutableCollection {
     
     public typealias Indices = Range<Int>
     
@@ -252,7 +252,7 @@ extension SDXMLElement : RandomAccessCollection, MutableCollection {
         return _elements.endIndex
     }
     
-    public subscript(position : Int) -> SDXMLElement {
+    public subscript(position: Int) -> SDXMLElement {
         get {
             precondition(kind == .node)
             var element = _elements[position]
@@ -281,7 +281,7 @@ extension SDXMLElement {
         }
     }
     
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
+    public mutating func append<S: Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
         precondition(kind == .node)
         if let xmlns = _attributes["xmlns"] {
             _elements.append(contentsOf: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() })
@@ -299,7 +299,7 @@ extension SDXMLElement {
         }
     }
     
-    public mutating func insert<C : Collection>(contentsOf newElements: C, at i: Int) where C.Element == SDXMLElement {
+    public mutating func insert<C: Collection>(contentsOf newElements: C, at i: Int) where C.Element == SDXMLElement {
         precondition(kind == .node)
         if let xmlns = _attributes["xmlns"] {
             _elements.insert(contentsOf: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() }, at: i)
@@ -348,7 +348,7 @@ extension SDXMLElement {
         _elements.removeAll(keepingCapacity: keepCapacity)
     }
     
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
+    public mutating func replaceSubrange<C: Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
         precondition(kind == .node)
         if let xmlns = _attributes["xmlns"] {
             _elements.replaceSubrange(subRange, with: newElements.lazy.map { $0._apply_global_namespace(xmlns)._detach() })

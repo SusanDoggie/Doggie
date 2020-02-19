@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SVGTurbulenceEffect : SVGEffectElement {
+public struct SVGTurbulenceEffect: SVGEffectElement {
     
     public var region: Rect?
     

@@ -107,7 +107,7 @@ extension StencilTexture {
     }
 }
 
-extension Image where Pixel : ScalarMultiplicative, Pixel.Scalar : BinaryFloatingPoint, Pixel.Scalar : FloatingMathProtocol {
+extension Image where Pixel: ScalarMultiplicative, Pixel.Scalar: BinaryFloatingPoint, Pixel.Scalar: FloatingMathProtocol {
     
     @inlinable
     @inline(__always)
@@ -146,7 +146,7 @@ extension StencilTexture {
     }
 }
 
-extension StencilTexture : CustomStringConvertible {
+extension StencilTexture: CustomStringConvertible {
     
     @inlinable
     @inline(__always)

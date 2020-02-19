@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct TypedData<T> : RandomAccessCollection {
+public struct TypedData<T>: RandomAccessCollection {
     
     public var data: Data
     

@@ -30,9 +30,9 @@ public protocol ScalarProtocol: SignedNumeric, Strideable, ExpressibleByFloatLit
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol ScalarMultiplicative : AdditiveArithmetic {
+public protocol ScalarMultiplicative: AdditiveArithmetic {
     
-    associatedtype Scalar : ScalarProtocol
+    associatedtype Scalar: ScalarProtocol
     
     static prefix func - (x: Self) -> Self
     
@@ -47,14 +47,14 @@ public protocol ScalarMultiplicative : AdditiveArithmetic {
     static func /= (lhs: inout Self, rhs: Scalar)
 }
 
-public protocol Multiplicative : Equatable {
+public protocol Multiplicative: Equatable {
     
     static func * (lhs: Self, rhs: Self) -> Self
     
     static func *= (lhs: inout Self, rhs: Self)
 }
 
-public protocol MapReduceArithmetic : ScalarMultiplicative, Collection where Element : ScalarMultiplicative {
+public protocol MapReduceArithmetic: ScalarMultiplicative, Collection where Element: ScalarMultiplicative {
     
     func map(_ transform: (Element) -> Element) -> Self
     
@@ -67,7 +67,7 @@ public protocol MapReduceArithmetic : ScalarMultiplicative, Collection where Ele
     func combined(_ other: Self, _ transform: (Element, Element) -> Element) -> Self
 }
 
-extension Collection where Self : MapReduceArithmetic {
+extension Collection where Self: MapReduceArithmetic {
     
     @inlinable
     @inline(__always)

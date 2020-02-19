@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct LineSegment<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
+public struct LineSegment<Element: ScalarMultiplicative>: BezierProtocol where Element.Scalar == Double {
     
     public var p0: Element
     public var p1: Element
@@ -53,11 +53,11 @@ extension Bezier {
     }
 }
 
-extension LineSegment : Hashable where Element : Hashable {
+extension LineSegment: Hashable where Element: Hashable {
     
 }
 
-extension LineSegment: Decodable where Element : Decodable {
+extension LineSegment: Decodable where Element: Decodable {
     
     @inlinable
     @inline(__always)
@@ -67,7 +67,7 @@ extension LineSegment: Decodable where Element : Decodable {
     }
 }
 
-extension LineSegment: Encodable where Element : Encodable {
+extension LineSegment: Encodable where Element: Encodable {
     
     @inlinable
     @inline(__always)

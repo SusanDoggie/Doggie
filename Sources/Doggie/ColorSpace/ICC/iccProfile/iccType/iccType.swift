@@ -27,7 +27,7 @@ extension iccProfile {
     
     @frozen
     @usableFromInline
-    struct Header : ByteCodable {
+    struct Header: ByteCodable {
         
         static let MagicNumber: Signature<BEUInt32> = "acsp"
         
@@ -252,7 +252,7 @@ extension iccProfile {
     
     @frozen
     @usableFromInline
-    struct TagSignature : SignatureProtocol {
+    struct TagSignature: SignatureProtocol {
         
         @usableFromInline
         var rawValue: BEUInt32
@@ -334,7 +334,7 @@ extension iccProfile {
     
     @frozen
     @usableFromInline
-    struct TagType : SignatureProtocol {
+    struct TagType: SignatureProtocol {
         
         @usableFromInline
         var rawValue: BEUInt32

@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
+public struct BEInteger<Base: FixedWidthInteger>: FixedWidthInteger {
     
     public var bitPattern: Base
     
@@ -76,7 +76,7 @@ public struct BEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     }
 }
 
-extension BEInteger : CustomStringConvertible {
+extension BEInteger: CustomStringConvertible {
     
     @inlinable
     @inline(__always)
@@ -85,7 +85,7 @@ extension BEInteger : CustomStringConvertible {
     }
 }
 
-extension BEInteger: Decodable where Base : Decodable {
+extension BEInteger: Decodable where Base: Decodable {
     
     @inlinable
     @inline(__always)
@@ -95,7 +95,7 @@ extension BEInteger: Decodable where Base : Decodable {
     }
 }
 
-extension BEInteger: Encodable where Base : Encodable {
+extension BEInteger: Encodable where Base: Encodable {
     
     @inlinable
     @inline(__always)
@@ -105,7 +105,7 @@ extension BEInteger: Encodable where Base : Encodable {
     }
 }
 
-extension BEInteger: SignedNumeric where Base : SignedNumeric {
+extension BEInteger: SignedNumeric where Base: SignedNumeric {
     
     @inlinable
     @inline(__always)
@@ -120,11 +120,11 @@ extension BEInteger: SignedNumeric where Base : SignedNumeric {
     }
 }
 
-extension BEInteger: SignedInteger where Base : SignedInteger {
+extension BEInteger: SignedInteger where Base: SignedInteger {
     
 }
 
-extension BEInteger: UnsignedInteger where Base : UnsignedInteger {
+extension BEInteger: UnsignedInteger where Base: UnsignedInteger {
     
 }
 
@@ -138,14 +138,14 @@ extension BEInteger {
     
     @inlinable
     @inline(__always)
-    public init?<T : BinaryInteger>(exactly source: T) {
+    public init?<T: BinaryInteger>(exactly source: T) {
         guard let value = Base(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
     
     @inlinable
     @inline(__always)
-    public init?<T : BinaryFloatingPoint>(exactly source: T) {
+    public init?<T: BinaryFloatingPoint>(exactly source: T) {
         guard let value = Base(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
@@ -158,25 +158,25 @@ extension BEInteger {
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(_ source: T) {
+    public init<T: BinaryInteger>(_ source: T) {
         self.init(representingValue: Base(source))
     }
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(_ source: T) {
+    public init<T: BinaryFloatingPoint>(_ source: T) {
         self.init(representingValue: Base(source))
     }
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(truncatingIfNeeded source: T) {
+    public init<T: BinaryInteger>(truncatingIfNeeded source: T) {
         self.init(representingValue: Base(truncatingIfNeeded: source))
     }
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(clamping source: T) {
+    public init<T: BinaryInteger>(clamping source: T) {
         self.init(representingValue: Base(clamping: source))
     }
     
@@ -448,7 +448,7 @@ extension BEInteger {
 }
 
 @frozen
-public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
+public struct LEInteger<Base: FixedWidthInteger>: FixedWidthInteger {
     
     public var bitPattern: Base
     
@@ -500,7 +500,7 @@ public struct LEInteger<Base : FixedWidthInteger> : FixedWidthInteger {
     }
 }
 
-extension LEInteger : CustomStringConvertible {
+extension LEInteger: CustomStringConvertible {
     
     @inlinable
     @inline(__always)
@@ -509,7 +509,7 @@ extension LEInteger : CustomStringConvertible {
     }
 }
 
-extension LEInteger: Decodable where Base : Decodable {
+extension LEInteger: Decodable where Base: Decodable {
     
     @inlinable
     @inline(__always)
@@ -519,7 +519,7 @@ extension LEInteger: Decodable where Base : Decodable {
     }
 }
 
-extension LEInteger: Encodable where Base : Encodable {
+extension LEInteger: Encodable where Base: Encodable {
     
     @inlinable
     @inline(__always)
@@ -529,7 +529,7 @@ extension LEInteger: Encodable where Base : Encodable {
     }
 }
 
-extension LEInteger: SignedNumeric where Base : SignedNumeric {
+extension LEInteger: SignedNumeric where Base: SignedNumeric {
     
     @inlinable
     @inline(__always)
@@ -544,11 +544,11 @@ extension LEInteger: SignedNumeric where Base : SignedNumeric {
     }
 }
 
-extension LEInteger: SignedInteger where Base : SignedInteger {
+extension LEInteger: SignedInteger where Base: SignedInteger {
     
 }
 
-extension LEInteger: UnsignedInteger where Base : UnsignedInteger {
+extension LEInteger: UnsignedInteger where Base: UnsignedInteger {
     
 }
 
@@ -562,14 +562,14 @@ extension LEInteger {
     
     @inlinable
     @inline(__always)
-    public init?<T : BinaryInteger>(exactly source: T) {
+    public init?<T: BinaryInteger>(exactly source: T) {
         guard let value = Base(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
     
     @inlinable
     @inline(__always)
-    public init?<T : BinaryFloatingPoint>(exactly source: T) {
+    public init?<T: BinaryFloatingPoint>(exactly source: T) {
         guard let value = Base(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
@@ -582,25 +582,25 @@ extension LEInteger {
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(_ source: T) {
+    public init<T: BinaryInteger>(_ source: T) {
         self.init(representingValue: Base(source))
     }
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(_ source: T) {
+    public init<T: BinaryFloatingPoint>(_ source: T) {
         self.init(representingValue: Base(source))
     }
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(truncatingIfNeeded source: T) {
+    public init<T: BinaryInteger>(truncatingIfNeeded source: T) {
         self.init(representingValue: Base(truncatingIfNeeded: source))
     }
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(clamping source: T) {
+    public init<T: BinaryInteger>(clamping source: T) {
         self.init(representingValue: Base(clamping: source))
     }
     

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct WOFFDecoder : FontDecoder {
+struct WOFFDecoder: FontDecoder {
     
     var header: WOFFHeader
     var faces: [FontFaceBase]
@@ -47,7 +47,7 @@ struct WOFFDecoder : FontDecoder {
     }
 }
 
-struct WOFFHeader : ByteCodable {
+struct WOFFHeader: ByteCodable {
     
     var signature: Signature<BEUInt32>
     var flavor: Signature<BEUInt32>
@@ -124,7 +124,7 @@ struct WOFFHeader : ByteCodable {
     }
 }
 
-struct WOFFTableRecord : ByteCodable {
+struct WOFFTableRecord: ByteCodable {
     
     var tag: Signature<BEUInt32>
     var offset: BEUInt32

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct JPEGDecoder : ImageRepDecoder {
+struct JPEGDecoder: ImageRepDecoder {
     
     static var defaultColorSpace: ColorSpace<RGBColorModel> {
         return ColorSpace.sRGB
@@ -145,7 +145,7 @@ struct JPEGDecoder : ImageRepDecoder {
         }
     }
     
-    enum Encoding : CaseIterable {
+    enum Encoding: CaseIterable {
         case baseline
         case extended
         case progressive
@@ -163,7 +163,7 @@ struct JPEGDecoder : ImageRepDecoder {
         }
     }
     
-    enum Compression : CaseIterable {
+    enum Compression: CaseIterable {
         case huffman
         case arithmetic
     }
@@ -334,7 +334,7 @@ struct JPEGSOS {
     }
 }
 
-struct JPEGSegment : ByteCodable {
+struct JPEGSegment: ByteCodable {
     
     var marker: Marker
     var data: Data
@@ -458,7 +458,7 @@ extension JPEGSegment.Marker: ByteCodable {
     }
 }
 
-extension JPEGSegment.Marker : CustomStringConvertible {
+extension JPEGSegment.Marker: CustomStringConvertible {
     
     var description: String {
         return "0x\(String(rawValue, radix: 16).uppercased())"

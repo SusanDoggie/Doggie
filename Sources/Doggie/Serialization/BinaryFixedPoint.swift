@@ -23,11 +23,11 @@
 //  THE SOFTWARE.
 //
 
-public protocol BinaryFixedPoint : Numeric, Hashable, Strideable, CustomStringConvertible, ExpressibleByFloatLiteral {
+public protocol BinaryFixedPoint: Numeric, Hashable, Strideable, CustomStringConvertible, ExpressibleByFloatLiteral {
     
-    associatedtype BitPattern : FixedWidthInteger
+    associatedtype BitPattern: FixedWidthInteger
     
-    associatedtype RepresentingValue : BinaryFloatingPoint
+    associatedtype RepresentingValue: BinaryFloatingPoint
     
     static var fractionBitCount: Int { get }
     
@@ -65,7 +65,7 @@ extension BinaryFixedPoint {
     
     @inlinable
     @inline(__always)
-    public init?<T>(exactly source: T) where T : BinaryInteger {
+    public init?<T>(exactly source: T) where T: BinaryInteger {
         guard let value = RepresentingValue(exactly: source) else { return nil }
         self.init(representingValue: value)
     }
@@ -77,7 +77,7 @@ extension BinaryFixedPoint {
     }
 }
 
-extension BinaryFixedPoint where BitPattern : ByteOutputStreamable {
+extension BinaryFixedPoint where BitPattern: ByteOutputStreamable {
     
     @inlinable
     @inline(__always)
@@ -86,7 +86,7 @@ extension BinaryFixedPoint where BitPattern : ByteOutputStreamable {
     }
 }
 
-extension BinaryFixedPoint where BitPattern : ByteDecodable {
+extension BinaryFixedPoint where BitPattern: ByteDecodable {
     
     @inlinable
     @inline(__always)
@@ -95,7 +95,7 @@ extension BinaryFixedPoint where BitPattern : ByteDecodable {
     }
 }
 
-extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthInteger {
+extension BinaryFixedPoint where RepresentingValue.RawSignificand: FixedWidthInteger {
     
     @inlinable
     @inline(__always)
@@ -139,7 +139,7 @@ extension BinaryFixedPoint where RepresentingValue.RawSignificand : FixedWidthIn
     
     @inlinable
     @inline(__always)
-    public var representingValue : RepresentingValue {
+    public var representingValue: RepresentingValue {
         get {
             if bitPattern == 0 {
                 return 0
@@ -400,7 +400,7 @@ extension BinaryFixedPoint {
     }
 }
 
-extension BinaryFixedPoint where Self : SignedNumeric, BitPattern : SignedNumeric {
+extension BinaryFixedPoint where Self: SignedNumeric, BitPattern: SignedNumeric {
     
     @inlinable
     @inline(__always)
@@ -423,7 +423,7 @@ extension BinaryFixedPoint {
     
     @inlinable
     @inline(__always)
-    public static func random<T>(in range: Range<Self>, using generator: inout T) -> Self where T : RandomNumberGenerator {
+    public static func random<T>(in range: Range<Self>, using generator: inout T) -> Self where T: RandomNumberGenerator {
         return Self(bitPattern: BitPattern.random(in: range.lowerBound.bitPattern..<range.upperBound.bitPattern, using: &generator))
     }
     
@@ -436,7 +436,7 @@ extension BinaryFixedPoint {
     
     @inlinable
     @inline(__always)
-    public static func random<T>(in range: ClosedRange<Self>, using generator: inout T) -> Self where T : RandomNumberGenerator {
+    public static func random<T>(in range: ClosedRange<Self>, using generator: inout T) -> Self where T: RandomNumberGenerator {
         return Self(bitPattern: BitPattern.random(in: range.lowerBound.bitPattern...range.upperBound.bitPattern, using: &generator))
     }
     

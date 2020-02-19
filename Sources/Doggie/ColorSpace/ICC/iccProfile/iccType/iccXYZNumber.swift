@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct iccXYZNumber : ByteCodable {
+struct iccXYZNumber: ByteCodable {
     
     var x: Fixed16Number<BEInt32>
     var y: Fixed16Number<BEInt32>

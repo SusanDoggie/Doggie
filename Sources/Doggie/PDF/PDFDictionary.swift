@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct PDFDictionary : PDFObject {
+public struct PDFDictionary: PDFObject {
     
     var dictionary: [PDFName: PDFObject]
     

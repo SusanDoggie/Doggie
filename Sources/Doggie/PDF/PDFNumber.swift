@@ -23,14 +23,14 @@
 //  THE SOFTWARE.
 //
 
-public struct PDFNumber : PDFObject {
+public struct PDFNumber: PDFObject {
     
     var value: Decimal
     
-    public init<T : BinaryInteger>(_ value: T) {
+    public init<T: BinaryInteger>(_ value: T) {
         self.value = Decimal(exactly: value)!
     }
-    public init<T : BinaryFloatingPoint>(_ value: T) {
+    public init<T: BinaryFloatingPoint>(_ value: T) {
         self.value = Decimal(Double(value))
     }
     
@@ -70,14 +70,14 @@ public struct PDFNumber : PDFObject {
     }
 }
 
-extension PDFNumber : ExpressibleByIntegerLiteral {
+extension PDFNumber: ExpressibleByIntegerLiteral {
     
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
     }
 }
 
-extension PDFNumber : ExpressibleByFloatLiteral {
+extension PDFNumber: ExpressibleByFloatLiteral {
     
     public init(floatLiteral value: FloatLiteralType) {
         self.init(value)

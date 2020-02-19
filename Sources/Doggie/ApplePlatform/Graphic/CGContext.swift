@@ -137,7 +137,7 @@ extension CGContext {
     }
 }
 
-public func CGContextClipToDrawing(_ context : CGContext, colorSpace space: CGColorSpace = CGColorSpaceCreateDeviceGray(), command: (CGContext) throws -> Void) rethrows {
+public func CGContextClipToDrawing(_ context: CGContext, colorSpace space: CGColorSpace = CGColorSpaceCreateDeviceGray(), command: (CGContext) throws -> Void) rethrows {
     
     let width = context.width
     let height = context.height

@@ -32,7 +32,7 @@
 ///     ⎝ d h l 1 ⎠
 ///
 @frozen
-public struct Matrix : Hashable {
+public struct Matrix: Hashable {
     
     public var a: Double
     public var b: Double
@@ -65,7 +65,7 @@ public struct Matrix : Hashable {
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(a: T, b: T, c: T, d: T, e: T, f: T, g: T, h: T, i: T, j: T, k: T, l: T) {
+    public init<T: BinaryFloatingPoint>(a: T, b: T, c: T, d: T, e: T, f: T, g: T, h: T, i: T, j: T, k: T, l: T) {
         self.a = Double(a)
         self.b = Double(b)
         self.c = Double(c)
@@ -81,7 +81,7 @@ public struct Matrix : Hashable {
     }
 }
 
-extension Matrix : CustomStringConvertible {
+extension Matrix: CustomStringConvertible {
     
     @inlinable
     @inline(__always)
@@ -90,7 +90,7 @@ extension Matrix : CustomStringConvertible {
     }
 }
 
-extension Matrix : Codable {
+extension Matrix: Codable {
     
     @inlinable
     @inline(__always)
@@ -133,7 +133,7 @@ extension Matrix {
     
     @inlinable
     @inline(__always)
-    public var inverse : Matrix {
+    public var inverse: Matrix {
         let _a = g * j - f * k
         let _b = c * j - b * k
         let _c = c * f - b * g
@@ -193,7 +193,7 @@ extension Matrix {
     
     @inlinable
     @inline(__always)
-    public var determinant : Double {
+    public var determinant: Double {
         let _c = c * f - b * g
         let _g = c * e - a * g
         let _k = b * e - a * f
@@ -213,7 +213,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static var identity : Matrix {
+    public static var identity: Matrix {
         
         return Matrix(a: 1, b: 0, c: 0, d: 0,
                       e: 0, f: 1, g: 0, h: 0,
@@ -249,7 +249,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func rotateX<T : BinaryFloatingPoint>(_ angle: T) -> Matrix {
+    public static func rotateX<T: BinaryFloatingPoint>(_ angle: T) -> Matrix {
         return .rotateX(Double(angle))
     }
 }
@@ -283,7 +283,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func rotateY<T : BinaryFloatingPoint>(_ angle: T) -> Matrix {
+    public static func rotateY<T: BinaryFloatingPoint>(_ angle: T) -> Matrix {
         return .rotateY(Double(angle))
     }
 }
@@ -317,7 +317,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func rotateZ<T : BinaryFloatingPoint>(_ angle: T) -> Matrix {
+    public static func rotateZ<T: BinaryFloatingPoint>(_ angle: T) -> Matrix {
         return .rotateZ(Double(angle))
     }
 }
@@ -365,7 +365,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func scale<T : BinaryInteger>(_ scale: T) -> Matrix {
+    public static func scale<T: BinaryInteger>(_ scale: T) -> Matrix {
         return .scale(Double(scale))
     }
     
@@ -379,7 +379,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func scale<T : BinaryFloatingPoint>(_ scale: T) -> Matrix {
+    public static func scale<T: BinaryFloatingPoint>(_ scale: T) -> Matrix {
         return .scale(Double(scale))
     }
 }
@@ -427,7 +427,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func scale<T : BinaryInteger>(x: T = 1, y: T = 1, z: T = 1) -> Matrix {
+    public static func scale<T: BinaryInteger>(x: T = 1, y: T = 1, z: T = 1) -> Matrix {
         return .scale(x: Double(x), y: Double(y), z: Double(z))
     }
     
@@ -441,7 +441,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func scale<T : BinaryFloatingPoint>(x: T = 1, y: T = 1, z: T = 1) -> Matrix {
+    public static func scale<T: BinaryFloatingPoint>(x: T = 1, y: T = 1, z: T = 1) -> Matrix {
         return .scale(x: Double(x), y: Double(y), z: Double(z))
     }
 }
@@ -489,7 +489,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func translate<T : BinaryInteger>(x: T = 0, y: T = 0, z: T = 0) -> Matrix {
+    public static func translate<T: BinaryInteger>(x: T = 0, y: T = 0, z: T = 0) -> Matrix {
         return .translate(x: Double(x), y: Double(y), z: Double(z))
     }
     
@@ -503,7 +503,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func translate<T : BinaryFloatingPoint>(x: T = 0, y: T = 0, z: T = 0) -> Matrix {
+    public static func translate<T: BinaryFloatingPoint>(x: T = 0, y: T = 0, z: T = 0) -> Matrix {
         return .translate(x: Double(x), y: Double(y), z: Double(z))
     }
 }
@@ -551,7 +551,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func reflectX<T : BinaryInteger>(_ x: T) -> Matrix {
+    public static func reflectX<T: BinaryInteger>(_ x: T) -> Matrix {
         return .reflectX(Double(x))
     }
     
@@ -565,7 +565,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func reflectX<T : BinaryFloatingPoint>(_ x: T) -> Matrix {
+    public static func reflectX<T: BinaryFloatingPoint>(_ x: T) -> Matrix {
         return .reflectX(Double(x))
     }
 }
@@ -613,7 +613,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func reflectY<T : BinaryInteger>(_ y: T) -> Matrix {
+    public static func reflectY<T: BinaryInteger>(_ y: T) -> Matrix {
         return .reflectY(Double(y))
     }
     
@@ -627,7 +627,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func reflectY<T : BinaryFloatingPoint>(_ y: T) -> Matrix {
+    public static func reflectY<T: BinaryFloatingPoint>(_ y: T) -> Matrix {
         return .reflectY(Double(y))
     }
 }
@@ -675,7 +675,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func reflectZ<T : BinaryInteger>(_ z: T) -> Matrix {
+    public static func reflectZ<T: BinaryInteger>(_ z: T) -> Matrix {
         return .reflectZ(Double(z))
     }
     
@@ -689,7 +689,7 @@ extension Matrix {
     ///
     @inlinable
     @inline(__always)
-    public static func reflectZ<T : BinaryFloatingPoint>(_ z: T) -> Matrix {
+    public static func reflectZ<T: BinaryFloatingPoint>(_ z: T) -> Matrix {
         return .reflectZ(Double(z))
     }
 }
@@ -703,7 +703,7 @@ extension Matrix {
     }
     @inlinable
     @inline(__always)
-    public static func rotate<T : BinaryFloatingPoint>(roll x: T, pitch y: T, yaw z: T) -> Matrix {
+    public static func rotate<T: BinaryFloatingPoint>(roll x: T, pitch y: T, yaw z: T) -> Matrix {
         return .rotate(roll: Double(x), pitch: Double(y), yaw: Double(z))
     }
 }
@@ -735,7 +735,7 @@ extension Matrix {
     }
     @inlinable
     @inline(__always)
-    public static func rotate<T : BinaryFloatingPoint>(radian: T, x: T, y: T, z: T) -> Matrix {
+    public static func rotate<T: BinaryFloatingPoint>(radian: T, x: T, y: T, z: T) -> Matrix {
         return .rotate(radian: Double(radian), x: Double(x), y: Double(y), z: Double(z))
     }
 }
@@ -749,12 +749,12 @@ extension Matrix {
     }
     @inlinable
     @inline(__always)
-    public static func camera<T : BinaryFloatingPoint>(position tx: T, _ ty: T, _ tz: T, rotate ax: T, _ ay: T, _ az: T) -> Matrix {
+    public static func camera<T: BinaryFloatingPoint>(position tx: T, _ ty: T, _ tz: T, rotate ax: T, _ ay: T, _ az: T) -> Matrix {
         return .camera(position: Double(tx), Double(ty), Double(tz), rotate: Double(ax), Double(ay), Double(az))
     }
 }
 
-extension Matrix : Multiplicative {
+extension Matrix: Multiplicative {
     
 }
 

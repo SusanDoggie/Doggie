@@ -28,7 +28,7 @@ public protocol SVGLightSource {
     var xml_element: SDXMLElement { get }
 }
 
-public struct SVGPointLight : SVGLightSource {
+public struct SVGPointLight: SVGLightSource {
     
     public var location: Vector
     
@@ -37,7 +37,7 @@ public struct SVGPointLight : SVGLightSource {
     }
 }
 
-public struct SVGSpotLight : SVGLightSource {
+public struct SVGSpotLight: SVGLightSource {
     
     public var location: Vector
     public var direction: Vector
@@ -53,7 +53,7 @@ public struct SVGSpotLight : SVGLightSource {
     }
 }
 
-public struct SVGDistantLight : SVGLightSource {
+public struct SVGDistantLight: SVGLightSource {
     
     public var azimuth: Double
     public var elevation: Double
@@ -64,7 +64,7 @@ public struct SVGDistantLight : SVGLightSource {
     }
 }
 
-public protocol SVGLightingEffect : SVGEffectElement {
+public protocol SVGLightingEffect: SVGEffectElement {
     
     var source: SVGEffect.Source { get set }
     
@@ -86,7 +86,7 @@ extension SVGLightingEffect {
     }
 }
 
-public struct SVGDiffuseLightingEffect : SVGLightingEffect {
+public struct SVGDiffuseLightingEffect: SVGLightingEffect {
     
     public var region: Rect?
     
@@ -96,7 +96,7 @@ public struct SVGDiffuseLightingEffect : SVGLightingEffect {
     
     public var light: [SVGLightSource]
     
-    public var color : RGBColorModel
+    public var color: RGBColorModel
     
     public var surfaceScale: Double
     public var diffuseConstant: Double
@@ -110,7 +110,7 @@ public struct SVGDiffuseLightingEffect : SVGLightingEffect {
     }
 }
 
-public struct SVGSpecularLightingEffect : SVGLightingEffect {
+public struct SVGSpecularLightingEffect: SVGLightingEffect {
     
     public var region: Rect?
     
@@ -120,7 +120,7 @@ public struct SVGSpecularLightingEffect : SVGLightingEffect {
     
     public var light: [SVGLightSource]
     
-    public var color : RGBColorModel
+    public var color: RGBColorModel
     
     public var surfaceScale: Double
     public var specularConstant: Double

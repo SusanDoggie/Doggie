@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum MemoryAdvise : CaseIterable {
+public enum MemoryAdvise: CaseIterable {
     
     case normal
     case random
@@ -33,7 +33,7 @@ public enum MemoryAdvise : CaseIterable {
 }
 
 @frozen
-public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
+public struct MappedBuffer<Element>: RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     public typealias Indices = Range<Int>
     
@@ -85,7 +85,7 @@ public struct MappedBuffer<Element> : RandomAccessCollection, MutableCollection,
     
     @inlinable
     @inline(__always)
-    public init<S : Sequence>(_ elements: S, fileBacked: Bool = false) where S.Element == Element {
+    public init<S: Sequence>(_ elements: S, fileBacked: Bool = false) where S.Element == Element {
         if let elements = elements as? MappedBuffer, elements.fileBacked == fileBacked {
             self = elements
         } else {
@@ -151,7 +151,7 @@ extension MappedBuffer {
     }
 }
 
-extension MappedBuffer : CustomStringConvertible {
+extension MappedBuffer: CustomStringConvertible {
     
     @inlinable
     @inline(__always)
@@ -160,7 +160,7 @@ extension MappedBuffer : CustomStringConvertible {
     }
 }
 
-extension MappedBuffer : Decodable where Element : Decodable {
+extension MappedBuffer: Decodable where Element: Decodable {
     
     @inlinable
     public init(from decoder: Decoder) throws {
@@ -181,7 +181,7 @@ extension MappedBuffer : Decodable where Element : Decodable {
     }
 }
 
-extension MappedBuffer : Encodable where Element : Encodable {
+extension MappedBuffer: Encodable where Element: Encodable {
     
     @inlinable
     public func encode(to encoder: Encoder) throws {
@@ -190,7 +190,7 @@ extension MappedBuffer : Encodable where Element : Encodable {
     }
 }
 
-extension MappedBuffer : CustomReflectable {
+extension MappedBuffer: CustomReflectable {
     
     @inlinable
     public var customMirror: Mirror {
@@ -239,7 +239,7 @@ extension MappedBuffer {
     }
 }
 
-extension MappedBuffer : RangeReplaceableCollection {
+extension MappedBuffer: RangeReplaceableCollection {
     
     @inlinable
     @inline(__always)
@@ -267,7 +267,7 @@ extension MappedBuffer : RangeReplaceableCollection {
     
     @inlinable
     @inline(__always)
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Element {
+    public mutating func append<S: Sequence>(contentsOf newElements: S) where S.Element == Element {
         
         let old_count = base.count
         let underestimatedCount = old_count + newElements.underestimatedCount
@@ -284,7 +284,7 @@ extension MappedBuffer : RangeReplaceableCollection {
         }
         
         @inline(__always)
-        func _append<S : Sequence>(_ newElements: S) where S.Element == Element {
+        func _append<S: Sequence>(_ newElements: S) where S.Element == Element {
             
             let buffer = UnsafeMutableBufferPointer(start: base.address + old_count, count: underestimatedCount - old_count)
             var (remainders, written) = buffer.initialize(from: newElements)
@@ -344,7 +344,7 @@ extension MappedBuffer : RangeReplaceableCollection {
     
     @inlinable
     @inline(__always)
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Element {
+    public mutating func replaceSubrange<C: Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Element {
         
         precondition(0 <= subRange.lowerBound, "Index out of range.")
         precondition(subRange.upperBound <= base.count, "Index out of range.")
@@ -372,7 +372,7 @@ extension MappedBuffer : RangeReplaceableCollection {
             }
             
             @inline(__always)
-            func _append<C : Collection>(_ newElements: C) where C.Element == Element {
+            func _append<C: Collection>(_ newElements: C) where C.Element == Element {
                 
                 let buffer = UnsafeMutableBufferPointer(start: base.address + subRange.lowerBound, count: newElements_count)
                 var (remainders, written) = buffer.initialize(from: newElements)
@@ -399,7 +399,7 @@ extension MappedBuffer : RangeReplaceableCollection {
             }
             
             @inline(__always)
-            func _append<C : Collection>(_ newElements: C) where C.Element == Element {
+            func _append<C: Collection>(_ newElements: C) where C.Element == Element {
                 
                 let buffer = UnsafeMutableBufferPointer(start: address, count: newElements_count)
                 var (remainders, written) = buffer.initialize(from: newElements)
@@ -501,11 +501,11 @@ extension MappedBuffer {
     }
 }
 
-extension MappedBuffer : ContiguousBytes where Element == UInt8 {
+extension MappedBuffer: ContiguousBytes where Element == UInt8 {
     
 }
 
-extension MappedBuffer : DataProtocol where Element == UInt8 {
+extension MappedBuffer: DataProtocol where Element == UInt8 {
     
     @inlinable
     public var regions: CollectionOfOne<MappedBuffer<UInt8>> {
@@ -513,7 +513,7 @@ extension MappedBuffer : DataProtocol where Element == UInt8 {
     }
 }
 
-extension MappedBuffer : Equatable where Element : Equatable {
+extension MappedBuffer: Equatable where Element: Equatable {
     
     @inlinable
     @inline(__always)
@@ -522,7 +522,7 @@ extension MappedBuffer : Equatable where Element : Equatable {
     }
 }
 
-extension MappedBuffer : Hashable where Element : Hashable {
+extension MappedBuffer: Hashable where Element: Hashable {
     
     @inlinable
     @inline(__always)
@@ -597,7 +597,7 @@ extension MappedBuffer {
     
     @inlinable
     @inline(__always)
-    public func flatMap<SegmentOfResult : Sequence>(_ transform: (Element) throws -> SegmentOfResult) rethrows -> MappedBuffer<SegmentOfResult.Element> {
+    public func flatMap<SegmentOfResult: Sequence>(_ transform: (Element) throws -> SegmentOfResult) rethrows -> MappedBuffer<SegmentOfResult.Element> {
         
         var result = MappedBuffer<SegmentOfResult.Element>(fileBacked: self.fileBacked)
         

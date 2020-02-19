@@ -129,7 +129,7 @@ extension Rational: SignedNumeric {
     
     @inlinable
     @inline(__always)
-    public init?<T>(exactly source: T) where T : BinaryInteger {
+    public init?<T>(exactly source: T) where T: BinaryInteger {
         guard let value = Int64(exactly: source) else { return nil }
         self.init(value)
     }
@@ -179,7 +179,7 @@ extension Rational {
     }
 }
 
-extension Rational : ScalarProtocol {
+extension Rational: ScalarProtocol {
     
     public typealias Scalar = Rational
     

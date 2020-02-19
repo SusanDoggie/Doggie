@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Polynomial : Hashable {
+public struct Polynomial: Hashable {
     
     @usableFromInline
     var coeffs: [Double]
@@ -41,34 +41,34 @@ public struct Polynomial : Hashable {
         self.init(coeffs)
     }
     @inlinable
-    public init<T : BinaryInteger>(_ coeffs: T ... ) {
+    public init<T: BinaryInteger>(_ coeffs: T ... ) {
         self.init(coeffs)
     }
     @inlinable
-    public init<T : BinaryFloatingPoint>(_ coeffs: T ... ) {
+    public init<T: BinaryFloatingPoint>(_ coeffs: T ... ) {
         self.init(coeffs)
     }
     
     /// Construct from an arbitrary sequence of coeffs.
     /// a + b x + c x^2 + d x^3 + ...
     @inlinable
-    public init<S : Sequence>(_ s: S) where S.Element == Double {
+    public init<S: Sequence>(_ s: S) where S.Element == Double {
         self.coeffs = Array(s)
         while self.coeffs.last == 0 {
             self.coeffs.removeLast()
         }
     }
     @inlinable
-    public init<S : Sequence>(_ s: S) where S.Element : BinaryInteger {
+    public init<S: Sequence>(_ s: S) where S.Element: BinaryInteger {
         self.init(s.map { Double($0) })
     }
     @inlinable
-    public init<S : Sequence>(_ s: S) where S.Element : BinaryFloatingPoint {
+    public init<S: Sequence>(_ s: S) where S.Element: BinaryFloatingPoint {
         self.init(s.map { Double($0) })
     }
 }
 
-extension Polynomial : ExpressibleByArrayLiteral {
+extension Polynomial: ExpressibleByArrayLiteral {
     
     @inlinable
     public init(arrayLiteral elements: Double ... ) {
@@ -76,7 +76,7 @@ extension Polynomial : ExpressibleByArrayLiteral {
     }
 }
 
-extension Polynomial : CustomStringConvertible {
+extension Polynomial: CustomStringConvertible {
     
     @inlinable
     public var description: String {
@@ -84,7 +84,7 @@ extension Polynomial : CustomStringConvertible {
     }
 }
 
-extension Polynomial : Codable {
+extension Polynomial: Codable {
     
     @inlinable
     public init(from decoder: Decoder) throws {
@@ -113,18 +113,18 @@ extension Polynomial : Codable {
     }
 }
 
-extension Polynomial : RandomAccessCollection, MutableCollection {
+extension Polynomial: RandomAccessCollection, MutableCollection {
     
     public typealias Indices = Range<Int>
     
     public typealias Index = Int
     
     @inlinable
-    public var startIndex : Int {
+    public var startIndex: Int {
         return coeffs.startIndex
     }
     @inlinable
-    public var endIndex : Int {
+    public var endIndex: Int {
         return coeffs.endIndex
     }
     
@@ -147,7 +147,7 @@ extension Polynomial : RandomAccessCollection, MutableCollection {
     }
 }
 
-extension Polynomial : RangeReplaceableCollection {
+extension Polynomial: RangeReplaceableCollection {
     
     @inlinable
     public mutating func append(_ newElement: Double) {
@@ -157,7 +157,7 @@ extension Polynomial : RangeReplaceableCollection {
     }
     
     @inlinable
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Double {
+    public mutating func append<S: Sequence>(contentsOf newElements: S) where S.Element == Double {
         coeffs.append(contentsOf: newElements)
         while coeffs.last == 0 {
             coeffs.removeLast()
@@ -170,7 +170,7 @@ extension Polynomial : RangeReplaceableCollection {
     }
     
     @inlinable
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Double {
+    public mutating func replaceSubrange<C: Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Double {
         coeffs.replaceSubrange(subRange, with: newElements)
         while coeffs.last == 0 {
             coeffs.removeLast()
@@ -189,7 +189,7 @@ extension Polynomial {
 extension Polynomial {
     
     @inlinable
-    public var degree : Int {
+    public var degree: Int {
         return Swift.max(coeffs.count - 1, 0)
     }
     
@@ -325,18 +325,18 @@ extension Polynomial {
 extension Polynomial {
     
     @inlinable
-    public var derivative : Polynomial {
+    public var derivative: Polynomial {
         return count > 1 ? Polynomial(coeffs.enumerated().dropFirst().map { Double($0) * $1 }) : Polynomial()
     }
     
     @inlinable
-    public var integral : Polynomial {
+    public var integral: Polynomial {
         let _coeffs = coeffs.enumerated().lazy.map { $1 / Double($0 + 1) }
         return Polynomial(CollectionOfOne(0).concat(_coeffs))
     }
 }
 
-extension Polynomial : Multiplicative, ScalarMultiplicative {
+extension Polynomial: Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Double
     

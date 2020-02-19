@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SVGBlendEffect : SVGEffectElement {
+public struct SVGBlendEffect: SVGEffectElement {
     
     public var region: Rect?
     
@@ -44,7 +44,7 @@ public struct SVGBlendEffect : SVGEffectElement {
         self.mode = mode
     }
     
-    public enum Mode : Hashable {
+    public enum Mode: Hashable {
         
         case normal
         

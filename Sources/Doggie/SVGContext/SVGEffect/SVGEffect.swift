@@ -63,7 +63,7 @@ public struct SVGEffect: ExpressibleByDictionaryLiteral {
 
 extension SVGEffect {
     
-    public enum Source : Hashable {
+    public enum Source: Hashable {
         
         case source
         case sourceAlpha
@@ -74,7 +74,7 @@ extension SVGEffect {
         }
     }
     
-    public enum RegionUnit : Hashable {
+    public enum RegionUnit: Hashable {
         
         case userSpaceOnUse
         

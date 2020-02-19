@@ -28,7 +28,7 @@ import XCTest
 
 class ArithmeticTest: XCTestCase {
 
-    func _testTensorOperation_1<T: Tensor>(_: T.Type, _ operation: (T, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
+    func _testTensorOperation_1<T: Tensor>(_: T.Type, _ operation: (T, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand: FixedWidthInteger {
         
         var a = T()
         var b = T()
@@ -45,7 +45,7 @@ class ArithmeticTest: XCTestCase {
         }
     }
     
-    func _testTensorOperation_2<T: Tensor>(_: T.Type, _ operation: (T.Scalar, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
+    func _testTensorOperation_2<T: Tensor>(_: T.Type, _ operation: (T.Scalar, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand: FixedWidthInteger {
         
         let a = T.Scalar.random(in: -200..<200)
         var b = T()
@@ -61,7 +61,7 @@ class ArithmeticTest: XCTestCase {
         }
     }
     
-    func _testTensorOperation_3<T: Tensor>(_: T.Type, _ operation: (T, T.Scalar) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
+    func _testTensorOperation_3<T: Tensor>(_: T.Type, _ operation: (T, T.Scalar) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand: FixedWidthInteger {
         
         var a = T()
         let b = T.Scalar.random(in: -200..<200)
@@ -77,7 +77,7 @@ class ArithmeticTest: XCTestCase {
         }
     }
     
-    func _testTensorOperation<T: Tensor>(_: T.Type) where T.Scalar.RawSignificand : FixedWidthInteger {
+    func _testTensorOperation<T: Tensor>(_: T.Type) where T.Scalar.RawSignificand: FixedWidthInteger {
         
         _testTensorOperation_1(T.self, +, +)
         _testTensorOperation_1(T.self, -, -)
@@ -178,7 +178,7 @@ class ArithmeticTest: XCTestCase {
         
     }
     
-    func _testColorPixelOperation_1<T: _FloatComponentPixel>(_: T.Type, _ operation: (T, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
+    func _testColorPixelOperation_1<T: _FloatComponentPixel>(_: T.Type, _ operation: (T, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand: FixedWidthInteger {
         
         var a = T()
         var b = T()
@@ -196,7 +196,7 @@ class ArithmeticTest: XCTestCase {
         XCTAssertEqual(check(a._opacity, b._opacity), result._opacity)
     }
     
-    func _testColorPixelOperation_2<T: _FloatComponentPixel>(_: T.Type, _ operation: (T.Scalar, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
+    func _testColorPixelOperation_2<T: _FloatComponentPixel>(_: T.Type, _ operation: (T.Scalar, T) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand: FixedWidthInteger {
         
         let a = T.Scalar.random(in: -200..<200)
         var b = T()
@@ -213,7 +213,7 @@ class ArithmeticTest: XCTestCase {
         XCTAssertEqual(check(a, b._opacity), result._opacity)
     }
     
-    func _testColorPixelOperation_3<T: _FloatComponentPixel>(_: T.Type, _ operation: (T, T.Scalar) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand : FixedWidthInteger {
+    func _testColorPixelOperation_3<T: _FloatComponentPixel>(_: T.Type, _ operation: (T, T.Scalar) -> T, _ check: (T.Scalar, T.Scalar) -> T.Scalar) where T.Scalar.RawSignificand: FixedWidthInteger {
         
         var a = T()
         let b = T.Scalar.random(in: -200..<200)
@@ -230,7 +230,7 @@ class ArithmeticTest: XCTestCase {
         XCTAssertEqual(check(a._opacity, b), result._opacity)
     }
     
-    func _testColorPixelOperation<T: _FloatComponentPixel>(_: T.Type) where T.Scalar.RawSignificand : FixedWidthInteger {
+    func _testColorPixelOperation<T: _FloatComponentPixel>(_: T.Type) where T.Scalar.RawSignificand: FixedWidthInteger {
         
         _testColorPixelOperation_1(T.self, +, +)
         _testColorPixelOperation_1(T.self, -, -)

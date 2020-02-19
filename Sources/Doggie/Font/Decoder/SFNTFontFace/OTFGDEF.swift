@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct OTFGDEF : ByteDecodable {
+struct OTFGDEF: ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var glyphClassDefOffset: BEUInt16
@@ -43,7 +43,7 @@ struct OTFGDEF : ByteDecodable {
         self.glyphClassDef = try GlyphClassDef(copy.dropFirst(Int(glyphClassDefOffset)))
     }
     
-    struct GlyphClassDef : ByteDecodable {
+    struct GlyphClassDef: ByteDecodable {
         
         var classFormat: BEUInt16
         

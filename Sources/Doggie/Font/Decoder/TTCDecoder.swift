@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct TTCDecoder : FontDecoder {
+struct TTCDecoder: FontDecoder {
     
     var header: TTCHeader
     var collection: [OpenTypeDecoder] = []
@@ -48,7 +48,7 @@ struct TTCDecoder : FontDecoder {
     }
 }
 
-struct TTCHeader : ByteDecodable {
+struct TTCHeader: ByteDecodable {
     
     var tag: Signature<BEUInt32>
     var majorVersion: BEUInt16

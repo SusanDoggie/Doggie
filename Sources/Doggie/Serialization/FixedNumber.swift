@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
+struct Fixed8Number<BitPattern: FixedWidthInteger & ByteCodable>: BinaryFixedPoint, ByteCodable {
     
     @usableFromInline
     typealias RepresentingValue = Double
@@ -46,13 +46,13 @@ struct Fixed8Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedP
     }
 }
 
-extension Fixed8Number : SignedNumeric where BitPattern : SignedNumeric {
+extension Fixed8Number: SignedNumeric where BitPattern: SignedNumeric {
     
 }
 
 @frozen
 @usableFromInline
-struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
+struct Fixed14Number<BitPattern: FixedWidthInteger & ByteCodable>: BinaryFixedPoint, ByteCodable {
     
     @usableFromInline
     typealias RepresentingValue = Double
@@ -73,13 +73,13 @@ struct Fixed14Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     }
 }
 
-extension Fixed14Number : SignedNumeric where BitPattern : SignedNumeric {
+extension Fixed14Number: SignedNumeric where BitPattern: SignedNumeric {
     
 }
 
 @frozen
 @usableFromInline
-struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
+struct Fixed16Number<BitPattern: FixedWidthInteger & ByteCodable>: BinaryFixedPoint, ByteCodable {
     
     @usableFromInline
     typealias RepresentingValue = Double
@@ -100,13 +100,13 @@ struct Fixed16Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     }
 }
 
-extension Fixed16Number : SignedNumeric where BitPattern : SignedNumeric {
+extension Fixed16Number: SignedNumeric where BitPattern: SignedNumeric {
     
 }
 
 @frozen
 @usableFromInline
-struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixedPoint, ByteCodable {
+struct Fixed30Number<BitPattern: FixedWidthInteger & ByteCodable>: BinaryFixedPoint, ByteCodable {
     
     @usableFromInline
     typealias RepresentingValue = Double
@@ -127,7 +127,7 @@ struct Fixed30Number<BitPattern : FixedWidthInteger & ByteCodable> : BinaryFixed
     }
 }
 
-extension Fixed30Number : SignedNumeric where BitPattern : SignedNumeric {
+extension Fixed30Number: SignedNumeric where BitPattern: SignedNumeric {
     
 }
 

@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct ShapeRasterizeBuffer : RasterizeBufferProtocol {
+struct ShapeRasterizeBuffer: RasterizeBufferProtocol {
     
     @usableFromInline
     var stencil: UnsafeMutablePointer<Int16>

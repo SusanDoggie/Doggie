@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Resolution : Hashable {
+public struct Resolution: Hashable {
     
     public var horizontal: Double
     public var vertical: Double
@@ -48,14 +48,14 @@ public struct Resolution : Hashable {
 extension Resolution {
     
     @inlinable
-    public static var `default` : Resolution {
+    public static var `default`: Resolution {
         return Resolution(resolution: 1, unit: .point)
     }
 }
 
 extension Resolution {
     
-    public enum Unit : CaseIterable {
+    public enum Unit: CaseIterable {
         
         case point
         case pica
@@ -137,7 +137,7 @@ extension Resolution.Unit {
     }
 }
 
-extension Resolution : CustomStringConvertible {
+extension Resolution: CustomStringConvertible {
     
     @inlinable
     public var description: String {

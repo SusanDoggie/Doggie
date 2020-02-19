@@ -39,12 +39,12 @@ extension CGRect {
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(x: T, y: T, width: T, height: T) {
+    public init<T: BinaryInteger>(x: T, y: T, width: T, height: T) {
         self.init(x: CGFloat(x), y: CGFloat(y), width: CGFloat(width), height: CGFloat(height))
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(x: T, y: T, width: T, height: T) {
+    public init<T: BinaryFloatingPoint>(x: T, y: T, width: T, height: T) {
         self.init(x: CGFloat(x), y: CGFloat(y), width: CGFloat(width), height: CGFloat(height))
     }
 }

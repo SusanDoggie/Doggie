@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Vector : Hashable {
+public struct Vector: Hashable {
     
     public var x: Double
     public var y: Double
@@ -54,14 +54,14 @@ public struct Vector : Hashable {
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(x: T, y: T, z: T) {
+    public init<T: BinaryInteger>(x: T, y: T, z: T) {
         self.x = Double(x)
         self.y = Double(y)
         self.z = Double(z)
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(x: T, y: T, z: T) {
+    public init<T: BinaryFloatingPoint>(x: T, y: T, z: T) {
         self.x = Double(x)
         self.y = Double(y)
         self.z = Double(z)
@@ -93,7 +93,7 @@ extension Vector: CustomStringConvertible {
     }
 }
 
-extension Vector : Codable {
+extension Vector: Codable {
     
     @inlinable
     @inline(__always)
@@ -123,7 +123,7 @@ extension Vector {
     }
 }
 
-extension Vector : Tensor {
+extension Vector: Tensor {
     
     public typealias Indices = Range<Int>
     

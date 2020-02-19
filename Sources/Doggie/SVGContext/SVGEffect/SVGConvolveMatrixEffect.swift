@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SVGConvolveMatrixEffect : SVGEffectElement {
+public struct SVGConvolveMatrixEffect: SVGEffectElement {
     
     public var region: Rect?
     

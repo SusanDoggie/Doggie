@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol DrawableContext : AnyObject {
+public protocol DrawableContext: AnyObject {
     
     var opacity: Double { get set }
     
@@ -210,7 +210,7 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func draw<Image : ImageProtocol>(image: Image, in rect: Rect) {
+    public func draw<Image: ImageProtocol>(image: Image, in rect: Rect) {
         let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
         self.draw(image: image, transform: transform)
     }
@@ -223,7 +223,7 @@ extension DrawableContext {
     }
 }
 
-public enum GradientSpreadMode : CaseIterable {
+public enum GradientSpreadMode: CaseIterable {
     
     case none
     case pad
@@ -245,7 +245,7 @@ public struct GradientStop<Color: ColorProtocol> {
     }
 }
 
-extension GradientStop : Equatable where Color : Equatable {
+extension GradientStop: Equatable where Color: Equatable {
     
     @inlinable
     @inline(__always)
@@ -254,7 +254,7 @@ extension GradientStop : Equatable where Color : Equatable {
     }
 }
 
-extension GradientStop : Hashable where Color : Hashable {
+extension GradientStop: Hashable where Color: Hashable {
     
     @inlinable
     @inline(__always)
@@ -294,7 +294,7 @@ extension GradientStop {
     }
 }
 
-public enum GradientType : CaseIterable {
+public enum GradientType: CaseIterable {
     
     case linear
     case radial
@@ -448,11 +448,11 @@ extension Gradient {
     }
 }
 
-extension Gradient : Equatable where Color : Equatable {
+extension Gradient: Equatable where Color: Equatable {
     
 }
 
-extension Gradient : Hashable where Color : Hashable {
+extension Gradient: Hashable where Color: Hashable {
     
 }
 

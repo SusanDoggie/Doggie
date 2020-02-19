@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct SFNTSBIX : RandomAccessCollection {
+struct SFNTSBIX: RandomAccessCollection {
     
     public typealias Indices = Range<Int>
     

@@ -25,5 +25,5 @@
 
 protocol FontFaceEncoder {
     
-    static func encode(table: [Signature<BEUInt32>: Data], properties: [Font.PropertyKey : Any]) -> Data?
+    static func encode(table: [Signature<BEUInt32>: Data], properties: [Font.PropertyKey: Any]) -> Data?
 }

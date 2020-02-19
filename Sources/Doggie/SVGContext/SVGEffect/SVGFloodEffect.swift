@@ -23,13 +23,13 @@
 //  THE SOFTWARE.
 //
 
-public struct SVGFloodEffect : SVGEffectElement {
+public struct SVGFloodEffect: SVGEffectElement {
     
     public var region: Rect?
     
     public var regionUnit: SVGEffect.RegionUnit = .objectBoundingBox
     
-    public var color : AnyColor
+    public var color: AnyColor
     
     public var sources: [SVGEffect.Source] {
         return []
@@ -46,7 +46,7 @@ public struct SVGFloodEffect : SVGEffectElement {
 
 extension SVGFloodEffect {
     
-    private func create_color<C : ColorProtocol>(_ color: C) -> String {
+    private func create_color<C: ColorProtocol>(_ color: C) -> String {
         
         let color = color.convert(to: ColorSpace.sRGB, intent: .default)
         

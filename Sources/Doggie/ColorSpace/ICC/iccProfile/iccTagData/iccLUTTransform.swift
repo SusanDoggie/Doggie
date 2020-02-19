@@ -37,7 +37,7 @@ func _interpolate_index(_ x: Double, _ count: Int) -> (Int, Double) {
 }
 
 @inlinable
-func interpolate<C : RandomAccessCollection>(_ x: Double, table: C) -> Double where C.Index == Int, C.Element == Double {
+func interpolate<C: RandomAccessCollection>(_ x: Double, table: C) -> Double where C.Index == Int, C.Element == Double {
     
     let (i, m) = _interpolate_index(x, table.count)
     
@@ -62,7 +62,7 @@ enum iccLUTTransform {
     case LUT4(iccLUT4Transform)
 }
 
-extension iccLUTTransform : ByteDecodable {
+extension iccLUTTransform: ByteDecodable {
     
     @usableFromInline
     init(from data: inout Data) throws {
@@ -288,7 +288,7 @@ extension iccLUTTransform : ByteDecodable {
         return MultiDimensionalLUT(inputChannels: inputChannels, outputChannels: outputChannels, grids: grids, table: table)
     }
     
-    struct iccCLUT : ByteCodable {
+    struct iccCLUT: ByteCodable {
         
         var grids: (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)
         var precision: UInt8
@@ -334,7 +334,7 @@ extension iccLUTTransform : ByteDecodable {
 
 extension iccLUTTransform {
     
-    struct Lut8 : ByteCodable {
+    struct Lut8: ByteCodable {
         
         var inputChannels: UInt8
         var outputChannels: UInt8
@@ -369,7 +369,7 @@ extension iccLUTTransform {
         }
     }
     
-    struct Lut16 : ByteCodable {
+    struct Lut16: ByteCodable {
         
         var inputChannels: UInt8
         var outputChannels: UInt8
@@ -411,7 +411,7 @@ extension iccLUTTransform {
         
     }
     
-    struct LutAtoB : ByteCodable {
+    struct LutAtoB: ByteCodable {
         
         var inputChannels: UInt8
         var outputChannels: UInt8
@@ -460,7 +460,7 @@ extension iccLUTTransform {
         }
     }
     
-    struct LutBtoA : ByteCodable {
+    struct LutBtoA: ByteCodable {
         
         var inputChannels: UInt8
         var outputChannels: UInt8

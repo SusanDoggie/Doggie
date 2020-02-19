@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum ImageOrientation : CaseIterable {
+public enum ImageOrientation: CaseIterable {
     
     /// original
     case up

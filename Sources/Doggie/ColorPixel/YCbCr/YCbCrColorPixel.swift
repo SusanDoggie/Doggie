@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct YCbCrColorPixel : ColorPixelProtocol {
+public struct YCbCrColorPixel: ColorPixelProtocol {
     
     public var a: UInt8
     public var y: UInt8

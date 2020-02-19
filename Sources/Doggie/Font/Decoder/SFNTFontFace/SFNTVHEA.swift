@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct SFNTVHEA : ByteDecodable {
+struct SFNTVHEA: ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var vertTypoAscender: BEInt16

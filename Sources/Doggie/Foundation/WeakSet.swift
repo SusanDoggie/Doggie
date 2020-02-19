@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct WeakSet<Element: AnyObject> : Collection, SetAlgebra {
+public struct WeakSet<Element: AnyObject>: Collection, SetAlgebra {
     
     @usableFromInline
     var base: [ObjectIdentifier: ElementContainer] {
@@ -55,7 +55,7 @@ extension WeakSet {
     }
     
     @frozen
-    public struct Index : Comparable {
+    public struct Index: Comparable {
         
         @usableFromInline
         let base: Dictionary<ObjectIdentifier, ElementContainer>.Index

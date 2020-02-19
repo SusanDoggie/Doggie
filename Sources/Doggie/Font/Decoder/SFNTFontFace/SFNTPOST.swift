@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct SFNTPOST : ByteDecodable {
+struct SFNTPOST: ByteDecodable {
     
     var format: Fixed16Number<BEInt32>
     var italicAngle: Fixed16Number<BEInt32>

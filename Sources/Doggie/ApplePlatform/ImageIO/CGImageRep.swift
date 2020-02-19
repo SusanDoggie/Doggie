@@ -37,13 +37,13 @@ protocol CGImageRepBase {
     
     var numberOfPages: Int { get }
     
-    var properties: [CFString : Any] { get }
+    var properties: [CFString: Any] { get }
     
     func page(_ index: Int) -> CGImageRepBase
     
     var cgImage: CGImage? { get }
     
-    func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]?
+    func auxiliaryDataInfo(_ type: String) -> [String: AnyObject]?
     
     func copy(to destination: CGImageDestination, properties: [CFString: Any])
 }
@@ -145,7 +145,7 @@ extension CGImageRep {
         }
     }
     
-    public func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]? {
+    public func auxiliaryDataInfo(_ type: String) -> [String: AnyObject]? {
         return base.auxiliaryDataInfo(type)
     }
 }
@@ -167,7 +167,7 @@ extension CGImageRep {
 
 extension CGImageRep {
     
-    public var properties: [CFString : Any] {
+    public var properties: [CFString: Any] {
         return base.properties
     }
 }

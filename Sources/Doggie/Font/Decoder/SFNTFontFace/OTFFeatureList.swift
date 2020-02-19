@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct OTFFeatureList : ByteDecodable {
+struct OTFFeatureList: ByteDecodable {
     
     var featureCount: BEUInt16
     var records: [Record]

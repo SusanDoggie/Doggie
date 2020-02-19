@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct PNGDecoder : ImageRepDecoder {
+struct PNGDecoder: ImageRepDecoder {
     
     let data: Data
     

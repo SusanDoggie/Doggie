@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct SFNTPlatform : ByteDecodable {
+struct SFNTPlatform: ByteDecodable {
     
     var platform: BEUInt16
     var specific: BEUInt16

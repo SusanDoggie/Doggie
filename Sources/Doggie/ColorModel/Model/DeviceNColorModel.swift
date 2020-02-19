@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Device2ColorModel : ColorModelProtocol {
+public struct Device2ColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -100,7 +100,7 @@ extension Device2ColorModel {
 }
 
 @frozen
-public struct Device3ColorModel : ColorModelProtocol {
+public struct Device3ColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -182,7 +182,7 @@ extension Device3ColorModel {
 }
 
 @frozen
-public struct Device4ColorModel : ColorModelProtocol {
+public struct Device4ColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -270,7 +270,7 @@ extension Device4ColorModel {
 }
 
 @frozen
-public struct Device5ColorModel : ColorModelProtocol {
+public struct Device5ColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -371,7 +371,7 @@ extension Device5ColorModel {
 }
 
 @frozen
-public struct Device6ColorModel : ColorModelProtocol {
+public struct Device6ColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -478,7 +478,7 @@ extension Device6ColorModel {
 }
 
 @frozen
-public struct Device7ColorModel : ColorModelProtocol {
+public struct Device7ColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -594,7 +594,7 @@ extension Device7ColorModel {
 }
 
 @frozen
-public struct Device8ColorModel : ColorModelProtocol {
+public struct Device8ColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -716,7 +716,7 @@ extension Device8ColorModel {
 }
 
 @frozen
-public struct Device9ColorModel : ColorModelProtocol {
+public struct Device9ColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -844,7 +844,7 @@ extension Device9ColorModel {
 }
 
 @frozen
-public struct DeviceAColorModel : ColorModelProtocol {
+public struct DeviceAColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -981,7 +981,7 @@ extension DeviceAColorModel {
 }
 
 @frozen
-public struct DeviceBColorModel : ColorModelProtocol {
+public struct DeviceBColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1124,7 +1124,7 @@ extension DeviceBColorModel {
 }
 
 @frozen
-public struct DeviceCColorModel : ColorModelProtocol {
+public struct DeviceCColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1273,7 +1273,7 @@ extension DeviceCColorModel {
 }
 
 @frozen
-public struct DeviceDColorModel : ColorModelProtocol {
+public struct DeviceDColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1431,7 +1431,7 @@ extension DeviceDColorModel {
 }
 
 @frozen
-public struct DeviceEColorModel : ColorModelProtocol {
+public struct DeviceEColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1595,7 +1595,7 @@ extension DeviceEColorModel {
 }
 
 @frozen
-public struct DeviceFColorModel : ColorModelProtocol {
+public struct DeviceFColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -1771,7 +1771,7 @@ extension Device2ColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -1866,7 +1866,7 @@ extension Device3ColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -1969,7 +1969,7 @@ extension Device4ColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2080,7 +2080,7 @@ extension Device5ColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2209,7 +2209,7 @@ extension Device6ColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2346,7 +2346,7 @@ extension Device7ColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2495,7 +2495,7 @@ extension Device8ColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2652,7 +2652,7 @@ extension Device9ColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2817,7 +2817,7 @@ extension DeviceAColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -2994,7 +2994,7 @@ extension DeviceBColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -3179,7 +3179,7 @@ extension DeviceCColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -3372,7 +3372,7 @@ extension DeviceDColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -3577,7 +3577,7 @@ extension DeviceEColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         
@@ -3790,7 +3790,7 @@ extension DeviceFColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         

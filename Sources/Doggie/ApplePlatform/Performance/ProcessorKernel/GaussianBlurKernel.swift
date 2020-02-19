@@ -36,12 +36,12 @@ extension CIImage {
             return .BGRA8
         }
         
-        override class func roi(forInput input: Int32, arguments: [String : Any]?, outputRect: CGRect) -> CGRect {
+        override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
             guard let sigma = arguments?["sigma"] as? Float else { return outputRect }
             return outputRect.insetBy(dx: CGFloat(-ceil(3 * sigma)), dy: CGFloat(-ceil(3 * sigma)))
         }
         
-        override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
+        override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let input = inputs?.first else { return }

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct SFNTNAME : ByteDecodable, RandomAccessCollection {
+struct SFNTNAME: ByteDecodable, RandomAccessCollection {
     
     public typealias Indices = Range<Int>
     

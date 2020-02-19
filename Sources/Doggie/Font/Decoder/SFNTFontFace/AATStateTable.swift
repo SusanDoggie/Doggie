@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-protocol AATStateMachineEntryData : ByteDecodable {
+protocol AATStateMachineEntryData: ByteDecodable {
     
     static var size: Int { get }
     
@@ -31,7 +31,7 @@ protocol AATStateMachineEntryData : ByteDecodable {
 
 protocol AATStateMachineContext {
     
-    associatedtype Machine : AATStateMachine where Machine.Context == Self
+    associatedtype Machine: AATStateMachine where Machine.Context == Self
     
     init(_ machine: Machine) throws
     
@@ -41,7 +41,7 @@ protocol AATStateMachineContext {
 
 protocol AATStateMachine {
     
-    associatedtype EntryData : AATStateMachineEntryData
+    associatedtype EntryData: AATStateMachineEntryData
     
     associatedtype Context: AATStateMachineContext where Context.Machine == Self
     
@@ -52,7 +52,7 @@ protocol AATStateMachine {
     func perform(glyphs: [Int]) -> [Int]
 }
 
-struct AATStateMachineEntry<EntryData : AATStateMachineEntryData> : ByteDecodable {
+struct AATStateMachineEntry<EntryData: AATStateMachineEntryData>: ByteDecodable {
     
     static var size: Int {
         return 4 + EntryData.size
@@ -70,7 +70,7 @@ struct AATStateMachineEntry<EntryData : AATStateMachineEntryData> : ByteDecodabl
     }
 }
 
-struct AATStateTable<EntryData : AATStateMachineEntryData> : ByteDecodable {
+struct AATStateTable<EntryData: AATStateMachineEntryData>: ByteDecodable {
     
     var nClasses: BEUInt32
     var classTable: AATLookupTable
@@ -89,7 +89,7 @@ struct AATStateTable<EntryData : AATStateMachineEntryData> : ByteDecodable {
     }
 }
 
-protocol AATLookupTableFormat : ByteDecodable {
+protocol AATLookupTableFormat: ByteDecodable {
     
     func search(glyph: UInt16) -> UInt16?
 }
@@ -119,7 +119,7 @@ struct AATLookupTable {
 
 extension AATLookupTable {
     
-    struct BinSrchHeader : ByteDecodable {
+    struct BinSrchHeader: ByteDecodable {
         
         var unitSize: BEUInt16
         var nUnits: BEUInt16
@@ -136,7 +136,7 @@ extension AATLookupTable {
         }
     }
     
-    struct Format0 : AATLookupTableFormat {
+    struct Format0: AATLookupTableFormat {
         
         var data: Data
         
@@ -150,7 +150,7 @@ extension AATLookupTable {
         }
     }
     
-    struct Format2 : AATLookupTableFormat {
+    struct Format2: AATLookupTableFormat {
         
         var binSrchHeader: BinSrchHeader
         
@@ -192,7 +192,7 @@ extension AATLookupTable {
         }
     }
     
-    struct Format4 : AATLookupTableFormat {
+    struct Format4: AATLookupTableFormat {
         
         var binSrchHeader: BinSrchHeader
         
@@ -236,7 +236,7 @@ extension AATLookupTable {
         }
     }
     
-    struct Format6 : AATLookupTableFormat {
+    struct Format6: AATLookupTableFormat {
         
         var binSrchHeader: BinSrchHeader
         
@@ -277,7 +277,7 @@ extension AATLookupTable {
         }
     }
     
-    struct Format8 : AATLookupTableFormat {
+    struct Format8: AATLookupTableFormat {
         
         var firstGlyph: BEUInt16
         var glyphCount: BEUInt16
@@ -377,7 +377,7 @@ extension AATStateMachine {
                 guard counter < 0xFF else { return glyphs }  // break infinite loop
                 
                 let index = buffer.index(buffer.endIndex, offsetBy: -offset)
-                let klass = offset != 0 ? self.classOf(glyph: buffer[index]) : .endOfText
+                let klass = offset != 0 ? self.classOf(glyph: buffer[index]): .endOfText
                 
                 guard let entry = self.entry(state, klass) else { return glyphs }
                 guard context.transform(index, entry, &buffer) else { return glyphs }

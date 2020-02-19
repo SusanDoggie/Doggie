@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct iccMatrix3x3 : ByteCodable {
+struct iccMatrix3x3: ByteCodable {
     
     var e00: Fixed16Number<BEInt32>
     var e01: Fixed16Number<BEInt32>
@@ -78,7 +78,7 @@ struct iccMatrix3x3 : ByteCodable {
     }
 }
 
-struct iccMatrix3x4 : ByteCodable {
+struct iccMatrix3x4: ByteCodable {
     
     var m: iccMatrix3x3
     

@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct OptionOneCollection<T> : RandomAccessCollection {
+public struct OptionOneCollection<T>: RandomAccessCollection {
     
     public typealias Indices = Range<Int>
     
@@ -36,15 +36,15 @@ public struct OptionOneCollection<T> : RandomAccessCollection {
     }
     
     @inlinable
-    public var startIndex : Int {
+    public var startIndex: Int {
         return 0
     }
     @inlinable
-    public var endIndex : Int {
+    public var endIndex: Int {
         return value == nil ? 0 : 1
     }
     @inlinable
-    public var count : Int {
+    public var count: Int {
         return value == nil ? 0 : 1
     }
     
@@ -66,15 +66,15 @@ public struct OptionOneCollection<T> : RandomAccessCollection {
     }
 }
 
-extension OptionOneCollection: Equatable where T : Equatable {
+extension OptionOneCollection: Equatable where T: Equatable {
     
 }
 
-extension OptionOneCollection: Hashable where T : Hashable {
+extension OptionOneCollection: Hashable where T: Hashable {
     
 }
 
-extension OptionOneCollection : ContiguousBytes where Element == UInt8 {
+extension OptionOneCollection: ContiguousBytes where Element == UInt8 {
     
     @inlinable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
@@ -82,7 +82,7 @@ extension OptionOneCollection : ContiguousBytes where Element == UInt8 {
     }
 }
 
-extension OptionOneCollection : DataProtocol where Element == UInt8 {
+extension OptionOneCollection: DataProtocol where Element == UInt8 {
     
     @inlinable
     public var regions: CollectionOfOne<OptionOneCollection<UInt8>> {

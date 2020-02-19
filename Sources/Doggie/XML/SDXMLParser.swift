@@ -25,7 +25,7 @@
 
 extension SDXMLDocument {
     
-    public enum Error : Swift.Error {
+    public enum Error: Swift.Error {
         
         case unknown
         case parser(String)
@@ -42,7 +42,7 @@ extension SDXMLDocument {
     }
 }
 
-final class SDXMLParser : XMLParser, XMLParserDelegate {
+final class SDXMLParser: XMLParser, XMLParserDelegate {
     
     var document = SDXMLDocument()
     var stack: [(SDXMLElement, [String: String])] = []
@@ -59,7 +59,7 @@ final class SDXMLParser : XMLParser, XMLParserDelegate {
         namespaces[prefix] = namespaceURI
     }
     
-    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
+    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String: String]) {
         
         var attributeDict = attributeDict
         

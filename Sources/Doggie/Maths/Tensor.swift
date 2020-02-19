@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol Tensor : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar : BinaryFloatingPoint, Element == Scalar, Index == Int {
+public protocol Tensor: MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar: BinaryFloatingPoint, Element == Scalar, Index == Int {
     
     init()
     
@@ -103,12 +103,12 @@ extension Tensor {
 
 @inlinable
 @inline(__always)
-public func abs<T : Tensor>(_ x: T) -> T.Scalar {
+public func abs<T: Tensor>(_ x: T) -> T.Scalar {
     return x.magnitude
 }
 
 @inlinable
 @inline(__always)
-public func dot<T : Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
+public func dot<T: Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
     return lhs.combined(rhs) { $0 * $1 }.reduce { $0 + $1 } ?? 0
 }

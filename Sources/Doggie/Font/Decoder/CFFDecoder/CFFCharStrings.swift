@@ -65,7 +65,7 @@ extension CFFFontFace {
         var point = Point()
         var flag = false
         
-        struct ParserError : Error {
+        struct ParserError: Error {
             
         }
         

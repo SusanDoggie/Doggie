@@ -71,7 +71,7 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     func _isStorageEqual(_ other: AnyImageBaseProtocol) -> Bool
 }
 
-extension Image : AnyImageBaseProtocol {
+extension Image: AnyImageBaseProtocol {
     
     @inlinable
     var _colorSpace: AnyColorSpaceBaseProtocol {
@@ -116,7 +116,7 @@ extension Image : AnyImageBaseProtocol {
 }
 
 @frozen
-public struct AnyImage : ImageProtocol {
+public struct AnyImage: ImageProtocol {
     
     @usableFromInline
     var _base: AnyImageBaseProtocol

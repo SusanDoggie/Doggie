@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct MediaType : RawRepresentable, Hashable, ExpressibleByStringLiteral {
+public struct MediaType: RawRepresentable, Hashable, ExpressibleByStringLiteral {
     
     public var rawValue: String
     

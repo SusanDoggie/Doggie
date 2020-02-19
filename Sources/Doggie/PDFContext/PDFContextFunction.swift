@@ -25,7 +25,7 @@
 
 extension PDFContext {
     
-    public struct Function : Hashable {
+    public struct Function: Hashable {
         
         public let type: Int
         public let domain: [ClosedRange<Double>]

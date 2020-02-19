@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct ImageContextGradientMeshRasterizeBuffer<P : ColorPixelProtocol> : RasterizeBufferProtocol {
+struct ImageContextGradientMeshRasterizeBuffer<P: ColorPixelProtocol>: RasterizeBufferProtocol {
     
     @usableFromInline
     var blender: ImageContextPixelBlender<P>

@@ -57,7 +57,7 @@ protocol AnyColorBaseProtocol: PolymorphicHashable {
     func _blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> AnyColorBaseProtocol
 }
 
-extension Color : AnyColorBaseProtocol {
+extension Color: AnyColorBaseProtocol {
     
     @inlinable
     var _colorSpace: AnyColorSpaceBaseProtocol {
@@ -81,7 +81,7 @@ extension Color : AnyColorBaseProtocol {
 }
 
 @frozen
-public struct AnyColor : ColorProtocol, Hashable {
+public struct AnyColor: ColorProtocol, Hashable {
     
     @usableFromInline
     var _base: AnyColorBaseProtocol
@@ -113,12 +113,12 @@ extension AnyColor {
 extension AnyColor {
     
     @inlinable
-    public init<S : Sequence>(colorSpace: AnyColorSpace, components: S, opacity: Double = 1) where S.Element == Double {
+    public init<S: Sequence>(colorSpace: AnyColorSpace, components: S, opacity: Double = 1) where S.Element == Double {
         self.init(base: colorSpace._base._create_color(components: components, opacity: opacity))
     }
     
     @inlinable
-    public init<P : ColorPixelProtocol>(colorSpace: Doggie.ColorSpace<P.Model>, color: P) {
+    public init<P: ColorPixelProtocol>(colorSpace: Doggie.ColorSpace<P.Model>, color: P) {
         self.init(Color(colorSpace: colorSpace, color: color))
     }
     

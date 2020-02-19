@@ -107,14 +107,14 @@ extension RawBitmap {
 
 extension RawBitmap {
     
-    public enum Format : CaseIterable {
+    public enum Format: CaseIterable {
         
         case unsigned
         case signed
         case float
     }
     
-    public enum Endianness : CaseIterable {
+    public enum Endianness: CaseIterable {
         
         case big
         case little
@@ -133,7 +133,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _read_unsigned_aligned_pixel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ is_opaque: Bool, _ : T.Type) {
+    mutating func _read_unsigned_aligned_pixel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ is_opaque: Bool, _: T.Type) {
         
         let width = self.width
         let height = self.height
@@ -210,7 +210,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _read_unsigned_aligned_channel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type) {
+    mutating func _read_unsigned_aligned_channel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type) {
         
         let width = self.width
         let height = self.height
@@ -287,7 +287,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _read_aligned_channel<T: FixedWidthInteger, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type, _ : R.Type) {
+    mutating func _read_aligned_channel<T: FixedWidthInteger, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type, _ : R.Type) {
         
         let width = self.width
         let height = self.height
@@ -369,7 +369,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _read_aligned_channel<T: BinaryFloatingPoint & RawBitPattern, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type, _ : R.Type) {
+    mutating func _read_aligned_channel<T: BinaryFloatingPoint & RawBitPattern, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type, _ : R.Type) {
         
         let width = self.width
         let height = self.height
@@ -431,7 +431,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _read_unsigned_channel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type) {
+    mutating func _read_unsigned_channel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type) {
         
         let width = self.width
         let height = self.height
@@ -532,7 +532,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _read_channel<T: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _ : T.Type) {
+    mutating func _read_channel<T: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type) {
         
         let width = self.width
         let height = self.height
@@ -804,7 +804,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _decode_unsigned_pixel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ is_opaque: Bool, _ : T.Type) {
+    mutating func _decode_unsigned_pixel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ is_opaque: Bool, _: T.Type) {
         
         if bitmap.bitsPerPixel % 8 == 0 && bitmap.endianness == .big && bitmap.channels.allSatisfy({ $0.bitRange.lowerBound % 8 == 0 && $0.bitRange.count == T.bitWidth }) {
             self._read_unsigned_aligned_pixel(bitmap, is_opaque, T.self)

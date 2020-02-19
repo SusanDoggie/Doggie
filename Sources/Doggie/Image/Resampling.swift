@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum ResamplingAlgorithm : Hashable {
+public enum ResamplingAlgorithm: Hashable {
     
     case none
     case linear
@@ -38,7 +38,7 @@ extension ResamplingAlgorithm {
     
     @inlinable
     @inline(__always)
-    public static var `default` : ResamplingAlgorithm {
+    public static var `default`: ResamplingAlgorithm {
         return .linear
     }
 }
@@ -46,7 +46,7 @@ extension ResamplingAlgorithm {
 @usableFromInline
 protocol _ResamplingImplement {
     
-    associatedtype Pixel : ScalarMultiplicative where Pixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol
+    associatedtype Pixel: ScalarMultiplicative where Pixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol
     
     var resamplingAlgorithm: ResamplingAlgorithm { get }
     

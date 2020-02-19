@@ -43,7 +43,7 @@ extension CIFilter {
 
 extension CGImage {
     
-    open func applyingFilter(_ filterName: String, withInputParameters params: [String : Any]) -> CIImage {
+    open func applyingFilter(_ filterName: String, withInputParameters params: [String: Any]) -> CIImage {
         return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
     }
 }
@@ -66,7 +66,7 @@ extension CIImage {
 
 extension CIVector {
     
-    public convenience init<C: Collection>(_ values: C) where C.Element : BinaryFloatingPoint {
+    public convenience init<C: Collection>(_ values: C) where C.Element: BinaryFloatingPoint {
         self.init(values: values.map { CGFloat($0) }, count: values.count)
     }
     
@@ -107,7 +107,7 @@ public func AztecCodeGenerator(_ string: String, correction level: Float = 23, c
     return code.outputImage
 }
 
-public enum QRCorrectionLevel : CaseIterable {
+public enum QRCorrectionLevel: CaseIterable {
     case low
     case medium
     case quartile

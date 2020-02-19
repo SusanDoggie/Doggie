@@ -23,14 +23,14 @@
 //  THE SOFTWARE.
 //
 
-protocol SFNTCMAPTableFormat : ByteDecodable {
+protocol SFNTCMAPTableFormat: ByteDecodable {
     
     subscript(code: UInt32) -> Int { get }
     
     var coveredCharacterSet: CharacterSet { get }
 }
 
-struct SFNTCMAP : ByteDecodable {
+struct SFNTCMAP: ByteDecodable {
     
     var version: BEUInt16
     var numTables: BEUInt16
@@ -102,7 +102,7 @@ extension SFNTCMAP.Table {
     }
 }
 
-extension SFNTCMAP : CustomStringConvertible {
+extension SFNTCMAP: CustomStringConvertible {
     
     var description: String {
         return "SFNTCMAP(version: \(version), numTables: \(numTables))"
@@ -111,7 +111,7 @@ extension SFNTCMAP : CustomStringConvertible {
 
 extension SFNTCMAP {
     
-    struct Format0 : SFNTCMAPTableFormat {
+    struct Format0: SFNTCMAPTableFormat {
         
         var format: BEUInt16
         var length: BEUInt16
@@ -136,7 +136,7 @@ extension SFNTCMAP {
         }
     }
     
-    struct Format4 : SFNTCMAPTableFormat {
+    struct Format4: SFNTCMAPTableFormat {
         
         var format: BEUInt16
         var length: BEUInt16
@@ -239,7 +239,7 @@ extension SFNTCMAP {
         }
     }
     
-    struct Format12 : SFNTCMAPTableFormat {
+    struct Format12: SFNTCMAPTableFormat {
         
         var format: Fixed16Number<BEInt32>
         var length: BEUInt32

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct iccTextDescription : ByteDecodable {
+struct iccTextDescription: ByteDecodable {
     
     var ascii: String?
     var unicode: String?

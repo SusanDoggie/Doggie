@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Complex : Hashable {
+public struct Complex: Hashable {
     
     public var real: Double
     public var imag: Double
@@ -135,7 +135,7 @@ extension Complex: CustomStringConvertible {
     }
 }
 
-extension Complex : Codable {
+extension Complex: Codable {
     
     @inlinable
     @inline(__always)
@@ -154,7 +154,7 @@ extension Complex : Codable {
     }
 }
 
-extension Complex : Multiplicative, ScalarMultiplicative {
+extension Complex: Multiplicative, ScalarMultiplicative {
     
     public typealias Scalar = Double
     

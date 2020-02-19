@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct CubicBezierTriangularPatch<Element : ScalarMultiplicative> : Equatable where Element.Scalar == Double {
+public struct CubicBezierTriangularPatch<Element: ScalarMultiplicative>: Equatable where Element.Scalar == Double {
     
     public var m300: Element
     public var m210: Element
@@ -56,7 +56,7 @@ public struct CubicBezierTriangularPatch<Element : ScalarMultiplicative> : Equat
     }
 }
 
-extension CubicBezierTriangularPatch : Hashable where Element : Hashable {
+extension CubicBezierTriangularPatch: Hashable where Element: Hashable {
     
 }
 

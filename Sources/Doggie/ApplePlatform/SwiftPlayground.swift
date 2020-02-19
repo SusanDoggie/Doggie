@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-extension Point : CustomPlaygroundDisplayConvertible {
+extension Point: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -31,7 +31,7 @@ extension Point : CustomPlaygroundDisplayConvertible {
     }
 }
 
-extension Size : CustomPlaygroundDisplayConvertible {
+extension Size: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -39,7 +39,7 @@ extension Size : CustomPlaygroundDisplayConvertible {
     }
 }
 
-extension Rect : CustomPlaygroundDisplayConvertible {
+extension Rect: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -47,7 +47,7 @@ extension Rect : CustomPlaygroundDisplayConvertible {
     }
 }
 
-extension Image : CustomPlaygroundDisplayConvertible {
+extension Image: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -64,7 +64,7 @@ extension Image : CustomPlaygroundDisplayConvertible {
     }
 }
 
-extension AnyImage : CustomPlaygroundDisplayConvertible {
+extension AnyImage: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -81,7 +81,7 @@ extension AnyImage : CustomPlaygroundDisplayConvertible {
     }
 }
 
-extension Color : CustomPlaygroundDisplayConvertible {
+extension Color: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -98,7 +98,7 @@ extension Color : CustomPlaygroundDisplayConvertible {
     }
 }
 
-extension AnyColor : CustomPlaygroundDisplayConvertible {
+extension AnyColor: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -117,7 +117,7 @@ extension AnyColor : CustomPlaygroundDisplayConvertible {
 
 #if canImport(AppKit) && !targetEnvironment(macCatalyst)
 
-extension Shape : CustomPlaygroundDisplayConvertible {
+extension Shape: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -129,7 +129,7 @@ extension Shape : CustomPlaygroundDisplayConvertible {
 
 #if canImport(UIKit)
 
-extension Shape : CustomPlaygroundDisplayConvertible {
+extension Shape: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -139,7 +139,7 @@ extension Shape : CustomPlaygroundDisplayConvertible {
 
 #endif
 
-extension Shape.Component : CustomPlaygroundDisplayConvertible {
+extension Shape.Component: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -147,7 +147,7 @@ extension Shape.Component : CustomPlaygroundDisplayConvertible {
     }
 }
 
-extension ShapeRegion : CustomPlaygroundDisplayConvertible {
+extension ShapeRegion: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
@@ -155,7 +155,7 @@ extension ShapeRegion : CustomPlaygroundDisplayConvertible {
     }
 }
 
-extension ShapeRegion.Solid : CustomPlaygroundDisplayConvertible {
+extension ShapeRegion.Solid: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {

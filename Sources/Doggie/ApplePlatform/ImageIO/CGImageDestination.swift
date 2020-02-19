@@ -43,7 +43,7 @@ extension CGImageRep {
 
 extension CGImageRep {
     
-    public enum PropertyKey : Int, CaseIterable {
+    public enum PropertyKey: Int, CaseIterable {
         
         case compression
         
@@ -74,7 +74,7 @@ extension CGImageRep {
         public static let all: PNGCompressionFilter = [.none, .sub, .up, .average, .paeth]
     }
     
-    public enum TIFFCompressionScheme : CaseIterable {
+    public enum TIFFCompressionScheme: CaseIterable {
         
         case none
         
@@ -83,7 +83,7 @@ extension CGImageRep {
         case packBits
     }
     
-    public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, properties: [PropertyKey: Any]) -> Data? {
         
         var _properties: [CFString: Any] = [:]
         
@@ -176,7 +176,7 @@ extension CGImageRep {
 
 extension CGImage {
     
-    open func representation(using storageType: MediaType, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey : Any]) -> Data? {
+    open func representation(using storageType: MediaType, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey: Any]) -> Data? {
         let imageRep = CGImageRep(cgImage: self, resolution: resolution)
         return imageRep.representation(using: storageType, properties: properties)
     }

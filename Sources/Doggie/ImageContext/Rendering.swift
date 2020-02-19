@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct ImageContextRenderBuffer<P : ColorPixelProtocol> : RasterizeBufferProtocol {
+struct ImageContextRenderBuffer<P: ColorPixelProtocol>: RasterizeBufferProtocol {
     
     @usableFromInline
     var blender: ImageContextPixelBlender<P>
@@ -74,7 +74,7 @@ public protocol ImageContextRenderVertex {
 }
 
 @frozen
-public struct ImageContextRenderStageIn<Vertex : ImageContextRenderVertex> {
+public struct ImageContextRenderStageIn<Vertex: ImageContextRenderVertex> {
     
     public var vertex: Vertex
     
@@ -117,22 +117,22 @@ extension ImageContextRenderStageIn where Vertex.Position == Vector {
 
 public protocol ImageContextRenderTriangleGenerator {
     
-    associatedtype Vertex : ImageContextRenderVertex
+    associatedtype Vertex: ImageContextRenderVertex
     
     func render(projection: (Vertex.Position) -> Point, _ body: (Vertex, Vertex, Vertex) -> Void)
 }
 
 public protocol ImageContextRenderPipelineShader {
     
-    associatedtype StageIn : ImageContextRenderVertex where StageIn.Position == StageOut.Position
+    associatedtype StageIn: ImageContextRenderVertex where StageIn.Position == StageOut.Position
     
-    associatedtype StageOut : ImageContextRenderVertex
+    associatedtype StageOut: ImageContextRenderVertex
     
     func render(projection: (StageIn.Position) -> Point, stageIn: (StageIn, StageIn, StageIn), stageOut: (StageOut, StageOut, StageOut) -> Void)
 }
 
 @frozen
-public struct ImageContextRenderPipeline<Generator: ImageContextRenderTriangleGenerator, Shader: ImageContextRenderPipelineShader> : ImageContextRenderTriangleGenerator where Generator.Vertex == Shader.StageIn {
+public struct ImageContextRenderPipeline<Generator: ImageContextRenderTriangleGenerator, Shader: ImageContextRenderPipelineShader>: ImageContextRenderTriangleGenerator where Generator.Vertex == Shader.StageIn {
     
     public typealias Vertex = Shader.StageOut
     
@@ -162,7 +162,7 @@ extension ImageContextRenderTriangleGenerator {
     }
 }
 
-extension Sequence where Self : ImageContextRenderTriangleGenerator, Element : ImageContextRenderTriangleGenerator, Element.Vertex == Self.Vertex {
+extension Sequence where Self: ImageContextRenderTriangleGenerator, Element: ImageContextRenderTriangleGenerator, Element.Vertex == Self.Vertex {
     
     @inlinable
     @inline(__always)
@@ -171,37 +171,37 @@ extension Sequence where Self : ImageContextRenderTriangleGenerator, Element : I
     }
 }
 
-extension Array : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+extension Array: ImageContextRenderTriangleGenerator where Element: ImageContextRenderTriangleGenerator {
     
     public typealias Vertex = Element.Vertex
     
 }
 
-extension ArraySlice : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+extension ArraySlice: ImageContextRenderTriangleGenerator where Element: ImageContextRenderTriangleGenerator {
     
     public typealias Vertex = Element.Vertex
     
 }
 
-extension ContiguousArray : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+extension ContiguousArray: ImageContextRenderTriangleGenerator where Element: ImageContextRenderTriangleGenerator {
     
     public typealias Vertex = Element.Vertex
     
 }
 
-extension MappedBuffer : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+extension MappedBuffer: ImageContextRenderTriangleGenerator where Element: ImageContextRenderTriangleGenerator {
     
     public typealias Vertex = Element.Vertex
     
 }
 
-extension UnsafeBufferPointer : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+extension UnsafeBufferPointer: ImageContextRenderTriangleGenerator where Element: ImageContextRenderTriangleGenerator {
     
     public typealias Vertex = Element.Vertex
     
 }
 
-extension UnsafeMutableBufferPointer : ImageContextRenderTriangleGenerator where Element : ImageContextRenderTriangleGenerator {
+extension UnsafeMutableBufferPointer: ImageContextRenderTriangleGenerator where Element: ImageContextRenderTriangleGenerator {
     
     public typealias Vertex = Element.Vertex
     
@@ -211,7 +211,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func render<G : ImageContextRenderTriangleGenerator, P : ColorPixelProtocol>(_ triangles: G, projection: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where Pixel.Model == P.Model {
+    public func render<G: ImageContextRenderTriangleGenerator, P: ColorPixelProtocol>(_ triangles: G, projection: (G.Vertex.Position) -> Point, depthFun: ((G.Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where Pixel.Model == P.Model {
         
         let width = self.width
         let height = self.height
@@ -319,7 +319,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func render<G : ImageContextRenderTriangleGenerator, P : ColorPixelProtocol>(_ triangles: G, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where G.Vertex.Position == Point, Pixel.Model == P.Model {
+    public func render<G: ImageContextRenderTriangleGenerator, P: ColorPixelProtocol>(_ triangles: G, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where G.Vertex.Position == Point, Pixel.Model == P.Model {
         render(triangles, projection: { $0 }, depthFun: nil, shader: shader)
     }
 }
@@ -342,7 +342,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func render<G : ImageContextRenderTriangleGenerator, P : ColorPixelProtocol>(_ triangles: G, projection: OrthographicProjectMatrix, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where G.Vertex.Position == Vector, Pixel.Model == P.Model {
+    public func render<G: ImageContextRenderTriangleGenerator, P: ColorPixelProtocol>(_ triangles: G, projection: OrthographicProjectMatrix, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where G.Vertex.Position == Vector, Pixel.Model == P.Model {
         
         let width = Double(self.width)
         let height = Double(self.height)
@@ -384,7 +384,7 @@ public func *(lhs: Vector, rhs: PerspectiveProjectMatrix) -> Point {
 
 @frozen
 @usableFromInline
-struct _PerspectiveProjectTriangleGenerator<Base : ImageContextRenderTriangleGenerator> : ImageContextRenderTriangleGenerator where Base.Vertex.Position == Vector {
+struct _PerspectiveProjectTriangleGenerator<Base: ImageContextRenderTriangleGenerator>: ImageContextRenderTriangleGenerator where Base.Vertex.Position == Vector {
     
     @usableFromInline
     let base: Base
@@ -406,7 +406,7 @@ extension _PerspectiveProjectTriangleGenerator {
     
     @frozen
     @usableFromInline
-    struct _Vertex : ImageContextRenderVertex {
+    struct _Vertex: ImageContextRenderVertex {
         
         @usableFromInline
         var v: Base.Vertex
@@ -471,7 +471,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func render<G : ImageContextRenderTriangleGenerator, P : ColorPixelProtocol>(_ triangles: G, projection: PerspectiveProjectMatrix, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where G.Vertex.Position == Vector, Pixel.Model == P.Model {
+    public func render<G: ImageContextRenderTriangleGenerator, P: ColorPixelProtocol>(_ triangles: G, projection: PerspectiveProjectMatrix, shader: (ImageContextRenderStageIn<G.Vertex>) -> P?) where G.Vertex.Position == Vector, Pixel.Model == P.Model {
         
         let width = Double(self.width)
         let height = Double(self.height)
@@ -488,7 +488,7 @@ extension ImageContext {
 
 @frozen
 @usableFromInline
-struct _RenderTriangleSequence<Base: Sequence, Vertex: ImageContextRenderVertex> : ImageContextRenderTriangleGenerator where Base.Element == (Vertex, Vertex, Vertex) {
+struct _RenderTriangleSequence<Base: Sequence, Vertex: ImageContextRenderVertex>: ImageContextRenderTriangleGenerator where Base.Element == (Vertex, Vertex, Vertex) {
     
     @usableFromInline
     let base: Base
@@ -510,25 +510,25 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == P.Model {
+    public func render<S: Sequence, Vertex: ImageContextRenderVertex, P: ColorPixelProtocol>(_ triangles: S, projection: (Vertex.Position) -> Point, depthFun: ((Vertex.Position) -> Double)?, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Pixel.Model == P.Model {
         self.render(_RenderTriangleSequence(base: triangles), projection: projection, depthFun: depthFun, shader: shader)
     }
     
     @inlinable
     @inline(__always)
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == P.Model {
+    public func render<S: Sequence, Vertex: ImageContextRenderVertex, P: ColorPixelProtocol>(_ triangles: S, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Point, Pixel.Model == P.Model {
         self.render(_RenderTriangleSequence(base: triangles), shader: shader)
     }
     
     @inlinable
     @inline(__always)
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: OrthographicProjectMatrix, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
+    public func render<S: Sequence, Vertex: ImageContextRenderVertex, P: ColorPixelProtocol>(_ triangles: S, projection: OrthographicProjectMatrix, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
         self.render(_RenderTriangleSequence(base: triangles), projection: projection, shader: shader)
     }
     
     @inlinable
     @inline(__always)
-    public func render<S : Sequence, Vertex : ImageContextRenderVertex, P : ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
+    public func render<S: Sequence, Vertex: ImageContextRenderVertex, P: ColorPixelProtocol>(_ triangles: S, projection: PerspectiveProjectMatrix, shader: (ImageContextRenderStageIn<Vertex>) -> P?) where S.Element == (Vertex, Vertex, Vertex), Vertex.Position == Vector, Pixel.Model == P.Model {
         self.render(_RenderTriangleSequence(base: triangles), projection: projection, shader: shader)
     }
 }

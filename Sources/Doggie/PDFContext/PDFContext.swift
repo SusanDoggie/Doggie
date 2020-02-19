@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public class PDFContext : DrawableContext {
+public class PDFContext: DrawableContext {
     
     var pages: [Page] = []
     
@@ -223,32 +223,32 @@ extension PDFContext {
 
 extension PDFContext {
     
-    public func draw<C : ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
+    public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         current_page.draw(shape: shape, winding: winding, color: color)
     }
 }
 
 extension PDFContext {
     
-    public enum PropertyKey : CaseIterable {
+    public enum PropertyKey: CaseIterable {
         
         case compression
         
         case deflateLevel
     }
     
-    public enum CompressionScheme : CaseIterable {
+    public enum CompressionScheme: CaseIterable {
         
         case noPrediction
         
         case tiffPrediction
     }
     
-    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, properties: [PropertyKey : Any]) {
+    public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform, properties: [PropertyKey: Any]) {
         current_page.draw(image: image, transform: transform, properties: properties)
     }
     
-    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform) {
+    public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
         self.draw(image: image, transform: transform, properties: [:])
     }
 }

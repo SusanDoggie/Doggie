@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct iccDateTimeNumber : ByteCodable {
+struct iccDateTimeNumber: ByteCodable {
     
     var year: BEUInt16
     var month: BEUInt16

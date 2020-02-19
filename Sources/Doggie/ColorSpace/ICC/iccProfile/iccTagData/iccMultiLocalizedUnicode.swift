@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct iccMultiLocalizedUnicode : RandomAccessCollection, ByteCodable {
+struct iccMultiLocalizedUnicode: RandomAccessCollection, ByteCodable {
     
     public typealias Indices = Range<Int>
     
@@ -119,7 +119,7 @@ extension iccMultiLocalizedUnicode {
         }
     }
     
-    struct Header : ByteCodable {
+    struct Header: ByteCodable {
         
         var count: BEUInt32
         var size: BEUInt32
@@ -140,7 +140,7 @@ extension iccMultiLocalizedUnicode {
         }
     }
     
-    struct Entry : ByteCodable {
+    struct Entry: ByteCodable {
         
         var language: LanguageCode
         var country: CountryCode

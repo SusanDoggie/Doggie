@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-struct BMPEncoder : ImageRepEncoder {
+struct BMPEncoder: ImageRepEncoder {
     
-    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
         let image = Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB)
         

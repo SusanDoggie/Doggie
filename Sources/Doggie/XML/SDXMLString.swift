@@ -42,7 +42,7 @@ extension SDXMLDocument {
     }
 }
 
-extension SDXMLDocument : CustomStringConvertible {
+extension SDXMLDocument: CustomStringConvertible {
     
     public var description: String {
         return _description(prettyPrinted: false)
@@ -53,7 +53,7 @@ extension SDXMLDocument : CustomStringConvertible {
     }
 }
 
-extension SDXMLElement : CustomStringConvertible {
+extension SDXMLElement: CustomStringConvertible {
     
     public var description: String {
         return _description(prettyPrinted: false)

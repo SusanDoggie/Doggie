@@ -32,7 +32,7 @@ extension RandomAccessCollection {
 }
 
 @frozen
-public struct LazyChunkSequence<Base : RandomAccessCollection> : IteratorProtocol, LazySequenceProtocol {
+public struct LazyChunkSequence<Base: RandomAccessCollection>: IteratorProtocol, LazySequenceProtocol {
     
     @usableFromInline
     let base: Base
@@ -67,7 +67,7 @@ public struct LazyChunkSequence<Base : RandomAccessCollection> : IteratorProtoco
     }
 }
 
-extension LazyCollectionProtocol where Elements : RandomAccessCollection {
+extension LazyCollectionProtocol where Elements: RandomAccessCollection {
     
     @inlinable
     public func chunked(by maxLength: Int) -> LazyChunkSequence<Elements> {

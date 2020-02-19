@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Gray16ColorPixel : ColorPixelProtocol {
+public struct Gray16ColorPixel: ColorPixelProtocol {
     
     public var w: UInt8
     public var a: UInt8

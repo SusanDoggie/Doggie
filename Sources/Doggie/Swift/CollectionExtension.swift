@@ -52,7 +52,7 @@ extension MutableCollection {
     }
 }
 
-extension MutableCollection where Self : BidirectionalCollection {
+extension MutableCollection where Self: BidirectionalCollection {
     
     @inlinable
     public var mutableLast: Element {
@@ -101,7 +101,7 @@ extension RandomAccessCollection {
     ///
     /// - complexity: Amortized O(`self.count`)
     @inlinable
-    public func range<C : RandomAccessCollection>(of pattern: C, where isEquivalent: (Element, Element) throws -> Bool) rethrows -> Range<Index>? where C.Element == Element {
+    public func range<C: RandomAccessCollection>(of pattern: C, where isEquivalent: (Element, Element) throws -> Bool) rethrows -> Range<Index>? where C.Element == Element {
         
         let pattern_count = pattern.count
         if count < pattern_count {
@@ -130,13 +130,13 @@ extension RandomAccessCollection {
     }
 }
 
-extension RandomAccessCollection where Element : Equatable {
+extension RandomAccessCollection where Element: Equatable {
     
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.
     ///
     /// - complexity: Amortized O(`self.count`)
     @inlinable
-    public func range<C : RandomAccessCollection>(of pattern: C) -> Range<Index>? where C.Element == Element {
+    public func range<C: RandomAccessCollection>(of pattern: C) -> Range<Index>? where C.Element == Element {
         return self.range(of: pattern, where: ==)
     }
 }
@@ -167,7 +167,7 @@ extension Collection {
     }
 }
 
-extension Collection where SubSequence : Collection {
+extension Collection where SubSequence: Collection {
     
     @inlinable
     public func rotated(at index: Index) -> LazyConcatCollection<SubSequence, SubSequence> {
@@ -175,7 +175,7 @@ extension Collection where SubSequence : Collection {
     }
 }
 
-extension Collection where SubSequence : Collection {
+extension Collection where SubSequence: Collection {
     
     @inlinable
     public func rotated(_ n: Int) -> LazyConcatCollection<SubSequence, SubSequence> {
@@ -192,7 +192,7 @@ extension Collection where SubSequence : Collection {
     }
 }
 
-extension Collection where Element : Comparable {
+extension Collection where Element: Comparable {
     
     /// Returns the maximal `SubSequence`s of `self`, in order, around elements
     /// match in `separator`.
@@ -238,7 +238,7 @@ extension Sequence {
     
     /// Return an `Array` containing tuples satisfies `predicate` with each elements of two `sources`.
     @inlinable
-    public func merge<S : Sequence>(with: S, where predicate: (Element, S.Element) throws -> Bool) rethrows -> [(Element, S.Element)] {
+    public func merge<S: Sequence>(with: S, where predicate: (Element, S.Element) throws -> Bool) rethrows -> [(Element, S.Element)] {
         var result = ContiguousArray<(Element, S.Element)>()
         for lhs in self {
             for rhs in with where try predicate(lhs, rhs) {
@@ -254,29 +254,29 @@ extension Sequence {
     ///
     /// - complexity: O(`elements.count`).
     @inlinable
-    public func min<R : Comparable>(by: (Element) throws -> R) rethrows -> Element? {
+    public func min<R: Comparable>(by: (Element) throws -> R) rethrows -> Element? {
         return try self.min { try by($0) < by($1) }
     }
     /// Returns the maximum element in `self` or `nil` if the sequence is empty.
     ///
     /// - complexity: O(`elements.count`).
     @inlinable
-    public func max<R : Comparable>(by: (Element) throws -> R) rethrows -> Element? {
+    public func max<R: Comparable>(by: (Element) throws -> R) rethrows -> Element? {
         return try self.max { try by($0) < by($1) }
     }
 }
 
-extension MutableCollection where Self : RandomAccessCollection {
+extension MutableCollection where Self: RandomAccessCollection {
     
     @inlinable
-    public mutating func sort<R : Comparable>(by: (Element) -> R) {
+    public mutating func sort<R: Comparable>(by: (Element) -> R) {
         self.sort { by($0) < by($1) }
     }
 }
 extension Sequence {
     
     @inlinable
-    public func sorted<R : Comparable>(by: (Element) -> R) -> [Element] {
+    public func sorted<R: Comparable>(by: (Element) -> R) -> [Element] {
         return self.sorted { by($0) < by($1) }
     }
 }
@@ -289,7 +289,7 @@ extension Comparable {
     }
 }
 
-extension Strideable where Stride : SignedInteger {
+extension Strideable where Stride: SignedInteger {
     
     @inlinable
     public func clamped(to range: Range<Self>) -> Self {
@@ -300,12 +300,12 @@ extension Strideable where Stride : SignedInteger {
 extension RangeReplaceableCollection {
     
     @inlinable
-    public mutating func replace<C : Collection>(with newElements: C) where Element == C.Element {
+    public mutating func replace<C: Collection>(with newElements: C) where Element == C.Element {
         self.replaceSubrange(startIndex..<endIndex, with: newElements)
     }
 }
 
-extension BidirectionalCollection where Self : MutableCollection {
+extension BidirectionalCollection where Self: MutableCollection {
     
     @inlinable
     public mutating func reverseSubrange(_ range: Indices.SubSequence) {
@@ -319,7 +319,7 @@ extension BidirectionalCollection where Self : MutableCollection {
     }
 }
 
-extension BidirectionalCollection where Self : MutableCollection {
+extension BidirectionalCollection where Self: MutableCollection {
     
     @inlinable
     public mutating func nextPermute(by areInIncreasingOrder: (Element, Element) -> Bool) {
@@ -335,12 +335,12 @@ extension BidirectionalCollection where Self : MutableCollection {
     }
     
     @inlinable
-    public mutating func nextPermute<R : Comparable>(by: (Element) -> R) {
+    public mutating func nextPermute<R: Comparable>(by: (Element) -> R) {
         self.nextPermute { by($0) < by($1) }
     }
 }
 
-extension BidirectionalCollection where Self : MutableCollection, Element : Comparable {
+extension BidirectionalCollection where Self: MutableCollection, Element: Comparable {
     
     @inlinable
     public mutating func nextPermute() {

@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct ColorBlendMode : RawRepresentable, Hashable {
+public struct ColorBlendMode: RawRepresentable, Hashable {
     
     public var rawValue: ColorBlendKernel.Type
     
@@ -56,7 +56,7 @@ extension ColorBlendMode {
     
     @inlinable
     @inline(__always)
-    public static var `default` : ColorBlendMode {
+    public static var `default`: ColorBlendMode {
         return .normal
     }
 }

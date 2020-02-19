@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct PDFArray : PDFObject, RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
+public struct PDFArray: PDFObject, RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     var elements: [PDFObject]
     

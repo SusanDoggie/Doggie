@@ -38,14 +38,14 @@ extension CIImage {
             return .BGRA8
         }
         
-        override class func roi(forInput input: Int32, arguments: [String : Any]?, outputRect: CGRect) -> CGRect {
+        override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
             guard let radius = arguments?["radius"] as? Size else { return outputRect }
             let insetX = -ceil(abs(radius.width))
             let insetY = -ceil(abs(radius.height))
             return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
         }
         
-        override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
+        override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let source = inputs?.first?.metalTexture else { return }
@@ -88,14 +88,14 @@ extension CIImage {
             return .BGRA8
         }
         
-        override class func roi(forInput input: Int32, arguments: [String : Any]?, outputRect: CGRect) -> CGRect {
+        override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
             guard let radius = arguments?["radius"] as? Size else { return outputRect }
             let insetX = -ceil(abs(radius.width))
             let insetY = -ceil(abs(radius.height))
             return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
         }
         
-        override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
+        override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let input = inputs?.first else { return }

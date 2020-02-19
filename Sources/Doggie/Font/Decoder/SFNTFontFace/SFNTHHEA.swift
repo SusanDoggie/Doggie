@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct SFNTHHEA : ByteDecodable {
+struct SFNTHHEA: ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var ascent: BEInt16

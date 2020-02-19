@@ -32,12 +32,12 @@ extension CGSize {
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(width: T, height: T) {
+    public init<T: BinaryInteger>(width: T, height: T) {
         self.init(width: CGFloat(width), height: CGFloat(height))
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(width: T, height: T) {
+    public init<T: BinaryFloatingPoint>(width: T, height: T) {
         self.init(width: CGFloat(width), height: CGFloat(height))
     }
 }

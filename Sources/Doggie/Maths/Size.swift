@@ -50,13 +50,13 @@ public struct Size: Hashable {
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(width: T, height: T) {
+    public init<T: BinaryInteger>(width: T, height: T) {
         self.width = Double(width)
         self.height = Double(height)
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(width: T, height: T) {
+    public init<T: BinaryFloatingPoint>(width: T, height: T) {
         self.width = Double(width)
         self.height = Double(height)
     }
@@ -71,7 +71,7 @@ extension Size: CustomStringConvertible {
     }
 }
 
-extension Size : Codable {
+extension Size: Codable {
     
     @inlinable
     @inline(__always)
@@ -117,7 +117,7 @@ extension Size {
     }
 }
 
-extension Size : ScalarMultiplicative {
+extension Size: ScalarMultiplicative {
     
     public typealias Scalar = Double
     

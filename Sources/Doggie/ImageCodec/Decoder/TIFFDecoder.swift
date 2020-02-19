@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct TIFFDecoder : ImageRepDecoder {
+struct TIFFDecoder: ImageRepDecoder {
     
     let header: TIFFHeader
     
@@ -135,7 +135,7 @@ struct TIFFDecoder : ImageRepDecoder {
     }
 }
 
-struct TIFFPage : ImageRepBase {
+struct TIFFPage: ImageRepBase {
     
     var endianness: TIFFHeader.Endianness
     
@@ -669,7 +669,7 @@ struct TIFFPage : ImageRepBase {
     }
 }
 
-struct TIFFHeader : ByteCodable {
+struct TIFFHeader: ByteCodable {
     
     var endianness: Endianness
     var version: UInt16

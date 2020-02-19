@@ -56,7 +56,7 @@ extension NSItemProviderEncoder {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
-final class _WritingWrapper<Encoder: NSItemProviderEncoder> : NSObject, NSItemProviderWriting {
+final class _WritingWrapper<Encoder: NSItemProviderEncoder>: NSObject, NSItemProviderWriting {
     
     let encoder: Encoder
     
@@ -113,7 +113,7 @@ class _ItemProviderReadingImp: NSObject, NSItemProviderReading {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
-final class _ReadingWrapper<Decoder: NSItemProviderDecoder> : _ItemProviderReadingImp {
+final class _ReadingWrapper<Decoder: NSItemProviderDecoder>: _ItemProviderReadingImp {
     
     let decoder: Decoder
     

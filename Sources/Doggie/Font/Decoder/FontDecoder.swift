@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-protocol FontDecoder : FontCollectionBase {
+protocol FontDecoder: FontCollectionBase {
     
     init?(data: Data) throws
 }

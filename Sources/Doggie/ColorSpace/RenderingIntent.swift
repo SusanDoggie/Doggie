@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum RenderingIntent : CaseIterable {
+public enum RenderingIntent: CaseIterable {
     
     case perceptual
     case absoluteColorimetric
@@ -34,7 +34,7 @@ extension RenderingIntent {
     
     @inlinable
     @inline(__always)
-    public static var `default` : RenderingIntent {
+    public static var `default`: RenderingIntent {
         return .perceptual
     }
 }

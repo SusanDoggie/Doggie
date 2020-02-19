@@ -99,7 +99,7 @@ extension iccProfile {
     }
 }
 
-extension iccProfile : Collection {
+extension iccProfile: Collection {
     
     @usableFromInline
     var startIndex: Dictionary<TagSignature, TagData>.Index {

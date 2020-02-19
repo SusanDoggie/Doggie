@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol FloatingMathProtocol : FloatingPoint, ExpressibleByFloatLiteral {
+public protocol FloatingMathProtocol: FloatingPoint, ExpressibleByFloatLiteral {
     
     static func exp(_ x: Self) -> Self
     static func exp2(_ x: Self) -> Self
@@ -54,7 +54,7 @@ public protocol FloatingMathProtocol : FloatingPoint, ExpressibleByFloatLiteral 
     
 }
 
-extension Float : FloatingMathProtocol {
+extension Float: FloatingMathProtocol {
     
     @inlinable
     @inline(__always)
@@ -189,7 +189,7 @@ extension Float : FloatingMathProtocol {
     
 }
 
-extension Double : FloatingMathProtocol {
+extension Double: FloatingMathProtocol {
     
     @inlinable
     @inline(__always)
@@ -324,7 +324,7 @@ extension Double : FloatingMathProtocol {
     
 }
 
-extension CGFloat : FloatingMathProtocol {
+extension CGFloat: FloatingMathProtocol {
     
     #if canImport(CoreGraphics)
     

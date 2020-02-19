@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct SDXMLAttribute : Hashable {
+public struct SDXMLAttribute: Hashable {
     
     public var attribute: String {
         didSet {

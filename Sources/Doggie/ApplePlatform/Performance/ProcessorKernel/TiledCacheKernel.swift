@@ -63,7 +63,7 @@ private class TiledCacheKernel: CIImageProcessorKernel {
         let cache = Cache()
     }
     
-    override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
+    override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
         
         guard let commandBuffer = output.metalCommandBuffer else { return }
         guard let texture = output.metalTexture else { return }

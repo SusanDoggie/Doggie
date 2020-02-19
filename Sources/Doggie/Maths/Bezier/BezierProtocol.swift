@@ -23,11 +23,11 @@
 //  THE SOFTWARE.
 //
 
-public protocol BezierProtocol : MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar == Double, Element.Scalar == Double, Index == Int {
+public protocol BezierProtocol: MapReduceArithmetic, RandomAccessCollection, MutableCollection where Scalar == Double, Element.Scalar == Double, Index == Int {
     
-    associatedtype Elevated : BezierProtocol where Elevated.Scalar == Self.Scalar, Elevated.Element == Self.Element
+    associatedtype Elevated: BezierProtocol where Elevated.Scalar == Self.Scalar, Elevated.Element == Self.Element
     
-    associatedtype Derivative : BezierProtocol where Derivative.Scalar == Self.Scalar, Derivative.Element == Self.Element
+    associatedtype Derivative: BezierProtocol where Derivative.Scalar == Self.Scalar, Derivative.Element == Self.Element
     
     init()
     

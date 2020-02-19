@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SVGDisplacementMapEffect : SVGEffectElement {
+public struct SVGDisplacementMapEffect: SVGEffectElement {
     
     public var region: Rect?
     

@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int), _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int), _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T: FloatingMathProtocol {
     
     let width = 1 << log2n.0
     let height = 1 << log2n.1
@@ -79,7 +79,7 @@ public func HalfRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int),
 
 @inlinable
 @inline(__always)
-public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int), _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func HalfInverseRadix2CooleyTukey2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int), _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T: FloatingMathProtocol {
     
     let width = 1 << log2n.0
     let height = 1 << log2n.1

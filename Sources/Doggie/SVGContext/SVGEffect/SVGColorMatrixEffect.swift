@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SVGColorMatrixEffect : SVGEffectElement {
+public struct SVGColorMatrixEffect: SVGEffectElement {
     
     public var region: Rect?
     

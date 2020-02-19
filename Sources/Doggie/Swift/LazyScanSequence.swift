@@ -49,7 +49,7 @@ extension Sequence {
 }
 
 @frozen
-public struct LazyScanIterator<Base: IteratorProtocol, Element> : IteratorProtocol, Sequence {
+public struct LazyScanIterator<Base: IteratorProtocol, Element>: IteratorProtocol, Sequence {
     
     @usableFromInline
     var nextElement: Element?
@@ -77,7 +77,7 @@ public struct LazyScanIterator<Base: IteratorProtocol, Element> : IteratorProtoc
 }
 
 @frozen
-public struct LazyScanSequence<Base: Sequence, Element> : LazySequenceProtocol {
+public struct LazyScanSequence<Base: Sequence, Element>: LazySequenceProtocol {
     
     public let initial: Element
     

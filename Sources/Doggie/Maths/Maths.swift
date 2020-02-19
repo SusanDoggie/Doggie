@@ -106,7 +106,7 @@ public func isPrime(_ n: UInt) -> Bool {
 // MARK: Polynomial
 
 @frozen
-public struct Degree2Roots : Sequence, IteratorProtocol {
+public struct Degree2Roots: Sequence, IteratorProtocol {
     
     public var values: (Double?, Double?)
     
@@ -308,7 +308,7 @@ public func LinearInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ 
 
 @inlinable
 @inline(__always)
-public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T where T.Scalar : FloatingMathProtocol {
+public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T where T.Scalar: FloatingMathProtocol {
     let u = 1 - T.Scalar.cos(t * T.Scalar.pi)
     let v = 0.5 * u
     return LinearInterpolate(v, a, b)

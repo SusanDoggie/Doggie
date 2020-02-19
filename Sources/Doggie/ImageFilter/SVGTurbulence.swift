@@ -56,7 +56,7 @@ func svg_noise_generator(_ seed: Int) -> SVGNoiseGenerator {
     }
 }
 
-public enum SVGTurbulenceType : CaseIterable {
+public enum SVGTurbulenceType: CaseIterable {
     
     case fractalNoise
     case turbulence

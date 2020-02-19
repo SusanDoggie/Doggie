@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
+public struct Shape: RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
     
     public typealias Indices = Range<Int>
     
@@ -57,7 +57,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
         }
         
         @inlinable
-        public init<S : Sequence>(start: Point, closed: Bool = false, segments: S) where S.Element == Segment {
+        public init<S: Sequence>(start: Point, closed: Bool = false, segments: S) where S.Element == Segment {
             self.start = start
             self.isClosed = closed
             self.segments = segments as? ArraySlice ?? ArraySlice(segments)
@@ -90,13 +90,13 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
     
     @inlinable
-    public init<S : Sequence>(_ components: S) where S.Element == Component {
+    public init<S: Sequence>(_ components: S) where S.Element == Component {
         self.components = Array(components)
         self.makeContiguousBuffer()
     }
     
     @inlinable
-    public var center : Point {
+    public var center: Point {
         get {
             return originalBoundary.center * transform
         }
@@ -107,7 +107,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
     
     @inlinable
-    public subscript(position : Int) -> Component {
+    public subscript(position: Int) -> Component {
         get {
             return components[position]
         }
@@ -128,11 +128,11 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
     
     @inlinable
-    public var boundary : Rect {
+    public var boundary: Rect {
         return self.originalBoundary.applying(transform) ?? identity.originalBoundary
     }
     
-    public var originalBoundary : Rect {
+    public var originalBoundary: Rect {
         return cache.lck.synchronized {
             if cache.originalBoundary == nil {
                 cache.originalBoundary = self.components.lazy.map { $0.boundary }.reduce { $0.union($1) } ?? Rect()
@@ -142,7 +142,7 @@ public struct Shape : RandomAccessCollection, MutableCollection, ExpressibleByAr
     }
     
     @inlinable
-    public var frame : [Point] {
+    public var frame: [Point] {
         let _transform = self.transform
         return originalBoundary.points.map { $0 * _transform }
     }
@@ -266,7 +266,7 @@ extension Shape {
         var originalArea: Double?
         var identity : Shape?
         
-        var table: [String : Any]
+        var table: [String: Any]
         
         @usableFromInline
         init() {
@@ -275,7 +275,7 @@ extension Shape {
             self.identity = nil
             self.table = [:]
         }
-        init(originalBoundary: Rect?, originalArea: Double?, table: [String : Any]) {
+        init(originalBoundary: Rect?, originalArea: Double?, table: [String: Any]) {
             self.originalBoundary = originalBoundary
             self.originalArea = originalArea
             self.identity = nil
@@ -364,7 +364,7 @@ extension Shape.Component.CacheArray {
         var boundary: Rect?
         var area: Double?
         
-        var table: [String : Any]?
+        var table: [String: Any]?
         
         init() {
             self.boundary = nil
@@ -408,7 +408,7 @@ extension Shape.Component.Cache {
         }
     }
     
-    var table: [String : Any] {
+    var table: [String: Any] {
         get {
             return _values.table ?? [:]
         }
@@ -444,7 +444,7 @@ extension Shape.Component.Cache {
 
 extension Shape.Component {
     
-    public var boundary : Rect {
+    public var boundary: Rect {
         return cache.lck.synchronized {
             if cache.boundary == nil {
                 var lastPoint = start
@@ -496,7 +496,7 @@ extension Shape.Component {
     }
 }
 
-extension Shape.Component : RandomAccessCollection, MutableCollection {
+extension Shape.Component: RandomAccessCollection, MutableCollection {
     
     public typealias Indices = Range<Int>
     
@@ -513,7 +513,7 @@ extension Shape.Component : RandomAccessCollection, MutableCollection {
     }
     
     @inlinable
-    public subscript(position : Int) -> Shape.Segment {
+    public subscript(position: Int) -> Shape.Segment {
         get {
             return segments[position + segments.startIndex]
         }
@@ -577,7 +577,7 @@ extension Shape.Component {
     }
 }
 
-extension Shape.Component : RangeReplaceableCollection {
+extension Shape.Component: RangeReplaceableCollection {
     
     @inlinable
     public mutating func append(_ newElement: Shape.Segment) {
@@ -586,7 +586,7 @@ extension Shape.Component : RangeReplaceableCollection {
     }
     
     @inlinable
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Shape.Segment {
+    public mutating func append<S: Sequence>(contentsOf newElements: S) where S.Element == Shape.Segment {
         self.resetCache()
         segments.append(contentsOf: newElements)
     }
@@ -597,7 +597,7 @@ extension Shape.Component : RangeReplaceableCollection {
     }
     
     @inlinable
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Shape.Segment {
+    public mutating func replaceSubrange<C: Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Shape.Segment {
         self.resetCache()
         segments.replaceSubrange(subRange.lowerBound + segments.startIndex..<subRange.upperBound + segments.startIndex, with: newElements)
     }
@@ -698,13 +698,13 @@ extension Shape.Component {
     }
     
     @inlinable
-    public init?<C : Collection>(polygon points: C) where C.Element == Point {
+    public init?<C: Collection>(polygon points: C) where C.Element == Point {
         guard let start = points.first else { return nil }
         self.init(start: start, closed: true, segments: points.dropFirst().map { .line($0) })
     }
     
     @inlinable
-    public init?<C : Collection>(polyline points: C) where C.Element == Point {
+    public init?<C: Collection>(polyline points: C) where C.Element == Point {
         guard let start = points.first else { return nil }
         self.init(start: start, closed: false, segments: points.dropFirst().map { .line($0) })
     }
@@ -733,19 +733,19 @@ extension Shape {
     }
     
     @inlinable
-    public init<C : Collection>(polygon points: C) where C.Element == Point {
+    public init<C: Collection>(polygon points: C) where C.Element == Point {
         self = Component(polygon: points).map { [$0] } ?? []
     }
     
     @inlinable
-    public init<C : Collection>(polyline points: C) where C.Element == Point {
+    public init<C: Collection>(polyline points: C) where C.Element == Point {
         self = Component(polyline: points).map { [$0] } ?? []
     }
 }
 
 extension Shape {
     
-    public var originalArea : Double {
+    public var originalArea: Double {
         return cache.lck.synchronized {
             if cache.originalArea == nil {
                 cache.originalArea = self.components.reduce(0) { $0 + $1.area }
@@ -785,7 +785,7 @@ extension Shape {
     }
 }
 
-extension Shape : RangeReplaceableCollection {
+extension Shape: RangeReplaceableCollection {
     
     @inlinable
     public mutating func append(_ newElement: Component) {
@@ -794,7 +794,7 @@ extension Shape : RangeReplaceableCollection {
     }
     
     @inlinable
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == Component {
+    public mutating func append<S: Sequence>(contentsOf newElements: S) where S.Element == Component {
         self.resetCache()
         components.append(contentsOf: newElements)
     }
@@ -805,7 +805,7 @@ extension Shape : RangeReplaceableCollection {
     }
     
     @inlinable
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Component {
+    public mutating func replaceSubrange<C: Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == Component {
         self.resetCache()
         components.replaceSubrange(subRange, with: newElements)
     }
@@ -813,7 +813,7 @@ extension Shape : RangeReplaceableCollection {
 
 extension Shape {
     
-    public var identity : Shape {
+    public var identity: Shape {
         if transform == .identity {
             return self
         }

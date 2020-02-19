@@ -25,7 +25,7 @@
 
 #if canImport(CoreGraphics) && canImport(ImageIO)
 
-struct _CGImageSourceImageRepBase : CGImageRepBase {
+struct _CGImageSourceImageRepBase: CGImageRepBase {
     
     let source: CGImageSource
     let index: Int
@@ -44,8 +44,8 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         guard numberOfPages > 0 else { return nil }
     }
     
-    var properties: [CFString : Any] {
-        return CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [CFString : Any] ?? [:]
+    var properties: [CFString: Any] {
+        return CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [CFString: Any] ?? [:]
     }
     
     var orientation: Int {
@@ -77,7 +77,7 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
             
             return Resolution(horizontal: resolutionX.doubleValue, vertical: resolutionY.doubleValue, unit: .inch)
             
-        } else if let properties = self.properties[kCGImagePropertyTIFFDictionary] as? [CFString : Any] {
+        } else if let properties = self.properties[kCGImagePropertyTIFFDictionary] as? [CFString: Any] {
             
             if let resolutionUnit = (properties[kCGImagePropertyTIFFResolutionUnit] as? NSNumber)?.intValue {
                 
@@ -91,7 +91,7 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
                 default: return .default
                 }
             }
-        } else if let properties = self.properties[kCGImagePropertyJFIFDictionary] as? [CFString : Any] {
+        } else if let properties = self.properties[kCGImagePropertyJFIFDictionary] as? [CFString: Any] {
             
             if let resolutionUnit = (properties[kCGImagePropertyJFIFDensityUnit] as? NSNumber)?.intValue {
                 
@@ -105,7 +105,7 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
                 default: return .default
                 }
             }
-        } else if let properties = self.properties[kCGImagePropertyPNGDictionary] as? [CFString : Any] {
+        } else if let properties = self.properties[kCGImagePropertyPNGDictionary] as? [CFString: Any] {
             
             let resolutionX = properties[kCGImagePropertyPNGXPixelsPerMeter] as? NSNumber
             let resolutionY = properties[kCGImagePropertyPNGYPixelsPerMeter] as? NSNumber
@@ -133,9 +133,9 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
         return CGImageSourceCreateImageAtIndex(source, index, nil)
     }
     
-    func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]? {
+    func auxiliaryDataInfo(_ type: String) -> [String: AnyObject]? {
         guard #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) else { return nil }
-        return CGImageSourceCopyAuxiliaryDataInfoAtIndex(source, index, type as CFString) as? [String : AnyObject]
+        return CGImageSourceCopyAuxiliaryDataInfoAtIndex(source, index, type as CFString) as? [String: AnyObject]
     }
     
     func copy(to destination: CGImageDestination, properties: [CFString: Any]) {
@@ -143,7 +143,7 @@ struct _CGImageSourceImageRepBase : CGImageRepBase {
     }
 }
 
-struct _CGImageRepBase : CGImageRepBase {
+struct _CGImageRepBase: CGImageRepBase {
     
     let image: CGImage
     let resolution: Resolution
@@ -164,7 +164,7 @@ struct _CGImageRepBase : CGImageRepBase {
         return 1
     }
     
-    var properties: [CFString : Any] {
+    var properties: [CFString: Any] {
         return [:]
     }
     
@@ -177,7 +177,7 @@ struct _CGImageRepBase : CGImageRepBase {
         return image
     }
     
-    func auxiliaryDataInfo(_ type: String) -> [String : AnyObject]? {
+    func auxiliaryDataInfo(_ type: String) -> [String: AnyObject]? {
         return nil
     }
     

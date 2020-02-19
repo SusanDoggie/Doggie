@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum SDObjectType : Hashable {
+public enum SDObjectType: Hashable {
     
     case null
     case boolean
@@ -65,22 +65,22 @@ public struct SDObject {
     }
     
     @inlinable
-    public init<S : StringProtocol>(_ value: S) {
+    public init<S: StringProtocol>(_ value: S) {
         self.base = .string(String(value))
     }
     
     @inlinable
-    public init<T : FixedWidthInteger & SignedInteger>(_ value: T) {
+    public init<T: FixedWidthInteger & SignedInteger>(_ value: T) {
         self.base = .signed(Int64(value))
     }
     
     @inlinable
-    public init<T : FixedWidthInteger & UnsignedInteger>(_ value: T) {
+    public init<T: FixedWidthInteger & UnsignedInteger>(_ value: T) {
         self.base = .unsigned(UInt64(value))
     }
     
     @inlinable
-    public init<T : BinaryFloatingPoint>(_ value: T) {
+    public init<T: BinaryFloatingPoint>(_ value: T) {
         self.base = .number(Double(value))
     }
     
@@ -95,7 +95,7 @@ public struct SDObject {
     }
     
     @inlinable
-    public init<S : Sequence>(_ elements: S) where S.Element == SDObject {
+    public init<S: Sequence>(_ elements: S) where S.Element == SDObject {
         self.base = .array(Array(elements))
     }
     
@@ -181,7 +181,7 @@ extension SDObject: CustomStringConvertible {
     }
 }
 
-extension SDObject : Hashable {
+extension SDObject: Hashable {
     
     @inlinable
     public static func == (lhs: SDObject, rhs: SDObject) -> Bool {
@@ -244,47 +244,47 @@ extension SDObject {
     }
     
     @inlinable
-    public var isNil : Bool {
+    public var isNil: Bool {
         return type == .null
     }
     
     @inlinable
-    public var isBool : Bool {
+    public var isBool: Bool {
         return type == .boolean
     }
     
     @inlinable
-    public var isString : Bool {
+    public var isString: Bool {
         return type == .string
     }
     
     @inlinable
-    public var isArray : Bool {
+    public var isArray: Bool {
         return type == .array
     }
     
     @inlinable
-    public var isObject : Bool {
+    public var isObject: Bool {
         return type == .dictionary
     }
     
     @inlinable
-    public var isSigned : Bool {
+    public var isSigned: Bool {
         return type == .signed
     }
     
     @inlinable
-    public var isUnsigned : Bool {
+    public var isUnsigned: Bool {
         return type == .unsigned
     }
     
     @inlinable
-    public var isNumber : Bool {
+    public var isNumber: Bool {
         return type == .number
     }
     
     @inlinable
-    public var isNumeric : Bool {
+    public var isNumeric: Bool {
         switch type {
         case .signed: return true
         case .unsigned: return true
@@ -294,12 +294,12 @@ extension SDObject {
     }
     
     @inlinable
-    public var isBinary : Bool {
+    public var isBinary: Bool {
         return type == .binary
     }
     
     @inlinable
-    public var isUUID : Bool {
+    public var isUUID: Bool {
         return type == .uuid
     }
 }

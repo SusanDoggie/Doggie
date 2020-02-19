@@ -132,7 +132,7 @@ extension Texture {
     }
 }
 
-extension Texture : CustomStringConvertible {
+extension Texture: CustomStringConvertible {
     
     @inlinable
     @inline(__always)

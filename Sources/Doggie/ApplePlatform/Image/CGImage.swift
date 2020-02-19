@@ -240,7 +240,7 @@ protocol CGImageConvertibleProtocol {
     var cgImage: CGImage? { get }
 }
 
-extension Image : CGImageConvertibleProtocol {
+extension Image: CGImageConvertibleProtocol {
     
 }
 

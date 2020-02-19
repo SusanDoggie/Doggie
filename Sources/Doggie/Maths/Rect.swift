@@ -26,8 +26,8 @@
 @frozen
 public struct Rect: Hashable {
     
-    public var origin : Point
-    public var size : Size
+    public var origin: Point
+    public var size: Size
     
     @inlinable
     @inline(__always)
@@ -58,13 +58,13 @@ public struct Rect: Hashable {
     
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(x: T, y: T, width: T, height: T) {
+    public init<T: BinaryInteger>(x: T, y: T, width: T, height: T) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(x: T, y: T, width: T, height: T) {
+    public init<T: BinaryFloatingPoint>(x: T, y: T, width: T, height: T) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
@@ -79,7 +79,7 @@ extension Rect: CustomStringConvertible {
     }
 }
 
-extension Rect : Codable {
+extension Rect: Codable {
     
     @inlinable
     @inline(__always)
@@ -102,7 +102,7 @@ extension Rect {
     
     @inlinable
     @inline(__always)
-    public var width : Double {
+    public var width: Double {
         get {
             return abs(size.width)
         }
@@ -113,7 +113,7 @@ extension Rect {
     
     @inlinable
     @inline(__always)
-    public var height : Double {
+    public var height: Double {
         get {
             return abs(size.height)
         }
@@ -127,27 +127,27 @@ extension Rect {
     
     @inlinable
     @inline(__always)
-    public var minX : Double {
+    public var minX: Double {
         return size.width < 0 ? origin.x + size.width : origin.x
     }
     @inlinable
     @inline(__always)
-    public var minY : Double {
+    public var minY: Double {
         return size.height < 0 ? origin.y + size.height : origin.y
     }
     @inlinable
     @inline(__always)
-    public var maxX : Double {
+    public var maxX: Double {
         return size.width < 0 ? origin.x : origin.x + size.width
     }
     @inlinable
     @inline(__always)
-    public var maxY : Double {
+    public var maxY: Double {
         return size.height < 0 ? origin.y : origin.y + size.height
     }
     @inlinable
     @inline(__always)
-    public var midX : Double {
+    public var midX: Double {
         get {
             return 0.5 * size.width + origin.x
         }
@@ -157,7 +157,7 @@ extension Rect {
     }
     @inlinable
     @inline(__always)
-    public var midY : Double {
+    public var midY: Double {
         get {
             return 0.5 * size.height + origin.y
         }
@@ -167,7 +167,7 @@ extension Rect {
     }
     @inlinable
     @inline(__always)
-    public var center : Point {
+    public var center: Point {
         get {
             return Point(x: midX, y: midY)
         }
@@ -220,7 +220,7 @@ extension Rect {
     
     @inlinable
     @inline(__always)
-    public var points : [Point] {
+    public var points: [Point] {
         let minX = self.minX
         let maxX = self.maxX
         let minY = self.minY
@@ -234,7 +234,7 @@ extension Rect {
     
     @inlinable
     @inline(__always)
-    public static func bound<S : Sequence>(_ points: S) -> Rect where S.Element == Point {
+    public static func bound<S: Sequence>(_ points: S) -> Rect where S.Element == Point {
         
         var minX = 0.0
         var maxX = 0.0
@@ -262,7 +262,7 @@ extension Rect {
     
     @inlinable
     @inline(__always)
-    public func union(_ other : Rect) -> Rect {
+    public func union(_ other: Rect) -> Rect {
         let minX = min(self.minX, other.minX)
         let minY = min(self.minY, other.minY)
         let maxX = max(self.maxX, other.maxX)
@@ -271,7 +271,7 @@ extension Rect {
     }
     @inlinable
     @inline(__always)
-    public func intersect(_ other : Rect) -> Rect {
+    public func intersect(_ other: Rect) -> Rect {
         let minX = max(self.minX, other.minX)
         let minY = max(self.minY, other.minY)
         let _width = max(0, min(self.maxX, other.maxX) - minX)

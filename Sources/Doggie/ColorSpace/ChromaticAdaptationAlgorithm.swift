@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum ChromaticAdaptationAlgorithm : Hashable {
+public enum ChromaticAdaptationAlgorithm: Hashable {
     case xyzScaling
     case vonKries
     case bradford
@@ -34,7 +34,7 @@ extension ChromaticAdaptationAlgorithm {
     
     @inlinable
     @inline(__always)
-    public static var `default` : ChromaticAdaptationAlgorithm {
+    public static var `default`: ChromaticAdaptationAlgorithm {
         return .bradford
     }
 }

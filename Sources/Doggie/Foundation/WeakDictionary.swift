@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct WeakDictionary<Key: AnyObject, Value> : Collection {
+public struct WeakDictionary<Key: AnyObject, Value>: Collection {
     
     public typealias Element = (key: Key, value: Value)
     
@@ -61,7 +61,7 @@ extension WeakDictionary {
     }
     
     @frozen
-    public struct Index : Comparable {
+    public struct Index: Comparable {
         
         @usableFromInline
         let base: Dictionary<ObjectIdentifier, ValueContainer>.Index

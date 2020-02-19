@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct CMYKColorModel : ColorModelProtocol {
+public struct CMYKColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -193,7 +193,7 @@ extension CMYKColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         

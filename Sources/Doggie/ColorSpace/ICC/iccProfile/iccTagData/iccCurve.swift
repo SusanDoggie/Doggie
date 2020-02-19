@@ -35,7 +35,7 @@ enum iccCurve {
     case table([Double])
 }
 
-extension iccCurve : ByteCodable {
+extension iccCurve: ByteCodable {
     
     @usableFromInline
     init(from data: inout Data) throws {
@@ -134,7 +134,7 @@ extension iccCurve : ByteCodable {
 
 extension iccCurve {
     
-    struct ParametricCurve : ByteCodable {
+    struct ParametricCurve: ByteCodable {
         
         var funcType: BEUInt16
         var padding: BEUInt16
@@ -288,7 +288,7 @@ extension iccCurve {
             
             var hint = 0
             
-            func __interpolate<C : RandomAccessCollection>(_ y: Double, _ points: C) -> Double? where C.Element == Double, C.Index == Int {
+            func __interpolate<C: RandomAccessCollection>(_ y: Double, _ points: C) -> Double? where C.Element == Double, C.Index == Int {
                 
                 for (lhs, rhs) in zip(points.indexed(), points.dropFirst().indexed()) {
                     let _min: Double

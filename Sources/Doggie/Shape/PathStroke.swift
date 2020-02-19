@@ -25,13 +25,13 @@
 
 extension Shape {
     
-    public enum LineCap : CaseIterable {
+    public enum LineCap: CaseIterable {
         case butt
         case round
         case square
     }
     
-    public enum LineJoin : Hashable {
+    public enum LineJoin: Hashable {
         case miter(limit: Double)
         case round
         case bevel

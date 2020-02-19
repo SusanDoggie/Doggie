@@ -37,11 +37,11 @@ enum InterscetionResult {
 
 struct InterscetionTable {
     
-    var _left_segments: [Split : Split] = [:]
-    var _right_segments: [Split : Split] = [:]
+    var _left_segments: [Split: Split] = [:]
+    var _right_segments: [Split: Split] = [:]
     
-    var left_segments: [Split : Split] = [:]
-    var right_segments: [Split : Split] = [:]
+    var left_segments: [Split: Split] = [:]
+    var right_segments: [Split: Split] = [:]
     
     var looping_left: [(Split, Split)] = []
     var looping_right: [(Split, Split)] = []
@@ -52,7 +52,7 @@ struct InterscetionTable {
 
 extension InterscetionTable {
     
-    struct Split : Comparable, Hashable {
+    struct Split: Comparable, Hashable {
         
         let point_id: Int
         let point: Point
@@ -79,13 +79,13 @@ extension InterscetionTable {
         }
     }
     
-    struct Segment : Hashable {
+    struct Segment: Hashable {
         
         let from: Int
         let to: Int
     }
     
-    struct Overlap : Hashable {
+    struct Overlap: Hashable {
         
         let left: Int
         let right: Int

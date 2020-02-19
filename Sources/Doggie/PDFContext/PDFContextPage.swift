@@ -558,7 +558,7 @@ extension PDFContext.Page {
         }
     }
     
-    func draw<C : ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
+    func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
         let shape = shape * _mirrored_transform
         
@@ -585,7 +585,7 @@ extension PDFContext.Page {
 
 extension PDFContext.Page {
     
-    func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, properties: [PDFContext.PropertyKey : Any]) {
+    func draw<Image: ImageProtocol>(image: Image, transform: SDTransform, properties: [PDFContext.PropertyKey : Any]) {
         self._draw(image: image.convert(to: colorSpace, intent: renderingIntent), transform: transform, properties: properties)
     }
 }

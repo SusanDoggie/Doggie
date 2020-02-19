@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SDXMLDocument : ExpressibleByArrayLiteral {
+public struct SDXMLDocument: ExpressibleByArrayLiteral {
     
     private var elements: [SDXMLElement]
     
@@ -46,7 +46,7 @@ extension SDXMLDocument {
     }
 }
 
-extension SDXMLDocument : RandomAccessCollection, MutableCollection {
+extension SDXMLDocument: RandomAccessCollection, MutableCollection {
     
     public typealias Indices = Range<Int>
     
@@ -60,7 +60,7 @@ extension SDXMLDocument : RandomAccessCollection, MutableCollection {
         return elements.endIndex
     }
     
-    public subscript(position : Int) -> SDXMLElement {
+    public subscript(position: Int) -> SDXMLElement {
         get {
             var element = elements[position]
             element._tree = SDXMLElement._Tree(root: self, parent: nil, level: 1, index: position)
@@ -72,13 +72,13 @@ extension SDXMLDocument : RandomAccessCollection, MutableCollection {
     }
 }
 
-extension SDXMLDocument : RangeReplaceableCollection {
+extension SDXMLDocument: RangeReplaceableCollection {
     
     public mutating func append(_ newElement: SDXMLElement) {
         elements.append(newElement._detach())
     }
     
-    public mutating func append<S : Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
+    public mutating func append<S: Sequence>(contentsOf newElements: S) where S.Element == SDXMLElement {
         elements.append(contentsOf: newElements.lazy.map { $0._detach() })
     }
     
@@ -86,7 +86,7 @@ extension SDXMLDocument : RangeReplaceableCollection {
         elements.reserveCapacity(minimumCapacity)
     }
     
-    public mutating func replaceSubrange<C : Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
+    public mutating func replaceSubrange<C: Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == SDXMLElement {
         elements.replaceSubrange(subRange, with: newElements.lazy.map { $0._detach() })
     }
 }

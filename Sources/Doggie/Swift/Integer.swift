@@ -109,7 +109,7 @@ extension BinaryInteger {
     
     @inlinable
     @inline(__always)
-    public var isPower2 : Bool {
+    public var isPower2: Bool {
         return 0 < self && self & (self - 1) == 0
     }
 }
@@ -296,7 +296,7 @@ public func lcm<T: SignedInteger>(_ a: T, _ b: T) -> T {
 
 @inlinable
 @inline(__always)
-public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride : SignedInteger {
+public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride: SignedInteger {
     if x == 0 || x == 1 {
         return 1
     }
@@ -309,7 +309,7 @@ public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride : SignedIn
 
 @inlinable
 @inline(__always)
-public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
+public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride: SignedInteger {
     if k == 0 {
         return 1
     }
@@ -325,7 +325,7 @@ public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride 
 
 @inlinable
 @inline(__always)
-public func combination<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride : SignedInteger {
+public func combination<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride: SignedInteger {
     return permutation(n, k) / factorial(k)
 }
 

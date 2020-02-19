@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T: FloatingMathProtocol {
     
     let length = 1 << log2n
     
@@ -141,14 +141,14 @@ public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ input: Uns
 
 @inlinable
 @inline(__always)
-public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T: FloatingMathProtocol {
     
     cooleytukey_forward(log2n, in_real, in_imag, in_stride, (in_count, in_count), out_real, out_imag, out_stride)
 }
 
 @inlinable
 @inline(__always)
-func cooleytukey_forward_reorderd<T: BinaryFloatingPoint>(_ log2n: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+func cooleytukey_forward_reorderd<T: BinaryFloatingPoint>(_ log2n: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T: FloatingMathProtocol {
     
     let count = 1 << log2n
     
@@ -224,7 +224,7 @@ func cooleytukey_forward_reorderd<T: BinaryFloatingPoint>(_ log2n: Int, _ real: 
 
 @inlinable
 @inline(__always)
-func cooleytukey_forward<T: BinaryFloatingPoint>(_ log2n: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T : FloatingMathProtocol {
+func cooleytukey_forward<T: BinaryFloatingPoint>(_ log2n: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T: FloatingMathProtocol {
     
     let count = 1 << log2n
     
@@ -276,7 +276,7 @@ func cooleytukey_forward<T: BinaryFloatingPoint>(_ log2n: Int, _ in_real: Unsafe
 
 @inlinable
 @inline(__always)
-public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T : FloatingMathProtocol {
+public func Radix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T: FloatingMathProtocol {
     
     let count = 1 << log2n
     

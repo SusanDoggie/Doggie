@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct RGBColorModel : ColorModelProtocol {
+public struct RGBColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -129,7 +129,7 @@ extension RGBColorModel {
     
     @inlinable
     @inline(__always)
-    public init?<S : StringProtocol>(_ hex: S) {
+    public init?<S: StringProtocol>(_ hex: S) {
         
         if hex.hasPrefix("#") {
             self.init(hex.dropFirst())
@@ -303,7 +303,7 @@ extension RGBColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         

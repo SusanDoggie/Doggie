@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct SFNTMAXP : ByteDecodable {
+struct SFNTMAXP: ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var numGlyphs: BEUInt16

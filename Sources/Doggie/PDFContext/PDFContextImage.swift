@@ -25,7 +25,7 @@
 
 extension PDFContext.Page {
     
-    func _draw(image: AnyImage, transform: SDTransform, properties: [PDFContext.PropertyKey : Any]) {
+    func _draw(image: AnyImage, transform: SDTransform, properties: [PDFContext.PropertyKey: Any]) {
         
         let key = image.imageTableKey
         
@@ -100,7 +100,7 @@ private protocol PDFImageProtocol {
     
     var imageTableKey: PDFContext.ImageTableKey { get }
     
-    func pdf_data(properties: [PDFContext.PropertyKey : Any]) -> (PDFContext.ImageStream, PDFContext.ImageStream?)?
+    func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFContext.ImageStream, PDFContext.ImageStream?)?
 }
 
 extension AnyImage: PDFImageProtocol {
@@ -109,7 +109,7 @@ extension AnyImage: PDFImageProtocol {
         return PDFContext.ImageTableKey(self)
     }
     
-    fileprivate func pdf_data(properties: [PDFContext.PropertyKey : Any]) -> (PDFContext.ImageStream, PDFContext.ImageStream?)? {
+    fileprivate func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFContext.ImageStream, PDFContext.ImageStream?)? {
         
         let compression = properties[.compression] as? PDFContext.CompressionScheme ?? .noPrediction
         

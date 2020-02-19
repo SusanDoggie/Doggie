@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : IteratorProtocol, Sequence where G1.Element == G2.Element {
+public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol>: IteratorProtocol, Sequence where G1.Element == G2.Element {
     
     @usableFromInline
     var base1: G1
@@ -63,7 +63,7 @@ public struct ConcatIterator<G1: IteratorProtocol, G2: IteratorProtocol> : Itera
 }
 
 @frozen
-public struct LazyConcatSequence<S1 : Sequence, S2 : Sequence> : LazySequenceProtocol where S1.Element == S2.Element {
+public struct LazyConcatSequence<S1: Sequence, S2: Sequence>: LazySequenceProtocol where S1.Element == S2.Element {
     
     @usableFromInline
     let base1: S1
@@ -101,7 +101,7 @@ public struct LazyConcatSequence<S1 : Sequence, S2 : Sequence> : LazySequencePro
 }
 
 @frozen
-public struct ConcatCollectionIndex<I1 : Comparable, I2 : Comparable> : Comparable {
+public struct ConcatCollectionIndex<I1: Comparable, I2: Comparable>: Comparable {
     
     @usableFromInline
     let currect1: I1
@@ -117,7 +117,7 @@ public struct ConcatCollectionIndex<I1 : Comparable, I2 : Comparable> : Comparab
     
 }
 
-extension ConcatCollectionIndex : Hashable where I1 : Hashable, I2 : Hashable {
+extension ConcatCollectionIndex: Hashable where I1: Hashable, I2: Hashable {
     
     @inlinable
     public func hash(into hasher: inout Hasher) {
@@ -132,7 +132,7 @@ public func < <I1, I2>(lhs: ConcatCollectionIndex<I1, I2>, rhs: ConcatCollection
 }
 
 @frozen
-public struct LazyConcatCollection<S1 : Collection, S2 : Collection> : LazyCollectionProtocol where S1.Element == S2.Element {
+public struct LazyConcatCollection<S1: Collection, S2: Collection>: LazyCollectionProtocol where S1.Element == S2.Element {
     
     public typealias Iterator = ConcatIterator<S1.Iterator, S2.Iterator>
     
@@ -151,17 +151,17 @@ public struct LazyConcatCollection<S1 : Collection, S2 : Collection> : LazyColle
     }
     
     @inlinable
-    public var startIndex : Index {
+    public var startIndex: Index {
         return ConcatCollectionIndex(currect1: base1.startIndex, currect2: base2.startIndex)
     }
     
     @inlinable
-    public var endIndex : Index {
+    public var endIndex: Index {
         return ConcatCollectionIndex(currect1: base1.endIndex, currect2: base2.endIndex)
     }
     
     @inlinable
-    public var count : Int {
+    public var count: Int {
         return base1.count + base2.count
     }
     
@@ -200,7 +200,7 @@ public struct LazyConcatCollection<S1 : Collection, S2 : Collection> : LazyColle
     }
 }
 
-extension LazyConcatCollection : BidirectionalCollection where S1 : BidirectionalCollection, S2 : BidirectionalCollection {
+extension LazyConcatCollection: BidirectionalCollection where S1: BidirectionalCollection, S2: BidirectionalCollection {
     
     @inlinable
     public func index(before i: Index) -> Index {

@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct iccNamedColor : ByteDecodable {
+struct iccNamedColor: ByteDecodable {
     
     @usableFromInline
     var flag: BEUInt32

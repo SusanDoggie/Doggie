@@ -25,7 +25,7 @@
 
 extension PDFContext {
     
-    struct Shading : Hashable {
+    struct Shading: Hashable {
         
         var type: Int
         

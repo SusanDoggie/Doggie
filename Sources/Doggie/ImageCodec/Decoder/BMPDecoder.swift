@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct BMPDecoder : ImageRepDecoder {
+struct BMPDecoder: ImageRepDecoder {
     
     let data: Data
     
@@ -92,7 +92,7 @@ struct BMPDecoder : ImageRepDecoder {
         
         guard width > 0 && height > 0 else { return AnyImage(Image<ARGB32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)) }
         
-        func UncompressedPixelReader<Pixel : FixedWidthInteger>(_ rMask: Pixel, _ gMask: Pixel, _ bMask: Pixel, _ aMask: Pixel) -> Image<Float64ColorPixel<RGBColorModel>> {
+        func UncompressedPixelReader<Pixel: FixedWidthInteger>(_ rMask: Pixel, _ gMask: Pixel, _ bMask: Pixel, _ aMask: Pixel) -> Image<Float64ColorPixel<RGBColorModel>> {
             
             var rMask = UInt32(rMask)
             var gMask = UInt32(gMask)
@@ -619,7 +619,7 @@ protocol DIBHeader {
     var alphaBitmask: LEUInt32 { get }
 }
 
-struct BITMAPCOREHEADER : DIBHeader {
+struct BITMAPCOREHEADER: DIBHeader {
     
     var size: LEUInt32 = 0
     var width: LEUInt16 = 0
@@ -694,7 +694,7 @@ struct BITMAPCOREHEADER : DIBHeader {
     }
 }
 
-struct BITMAPINFOHEADER : DIBHeader {
+struct BITMAPINFOHEADER: DIBHeader {
     
     var size: LEUInt32 = 0
     var width: LEInt32 = 0

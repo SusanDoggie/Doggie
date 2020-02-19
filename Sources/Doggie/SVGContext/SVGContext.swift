@@ -74,7 +74,7 @@ private struct SVGContextState {
     
 }
 
-public class SVGContext : DrawableContext {
+public class SVGContext: DrawableContext {
     
     public let viewBox: Rect
     public let resolution: Resolution
@@ -624,7 +624,7 @@ extension SVGContext {
 
 extension SVGContext {
     
-    private func create_color<C : ColorProtocol>(_ color: C) -> String {
+    private func create_color<C: ColorProtocol>(_ color: C) -> String {
         
         let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
         
@@ -635,7 +635,7 @@ extension SVGContext {
         return "rgb(\(red),\(green),\(blue))"
     }
     
-    public func draw<C : ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
+    public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
         guard !self.transform.determinant.almostZero() else { return }
         
@@ -770,19 +770,19 @@ extension SVGContext {
         self.append(element, _bound, transform)
     }
     
-    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
+    public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey: Any]) {
         let _image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as Doggie.Image<ARGB32ColorPixel>
         self._draw(image: _image, transform: transform, using: storageType, resolution: image.resolution, properties: properties)
     }
     
-    public func draw(image: ImageRep, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) {
+    public func draw(image: ImageRep, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey: Any]) {
         self._draw(image: image, transform: transform, using: storageType, resolution: image.resolution, properties: properties)
     }
 }
 
 extension SVGContext {
     
-    public func draw<Image : ImageProtocol>(image: Image, transform: SDTransform) {
+    public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
         self.draw(image: image, transform: transform, using: .png, properties: [:])
     }
     
@@ -820,11 +820,11 @@ extension CGImageRep: SVGImageProtocol {
 
 extension SVGContext {
     
-    public func draw(image: CGImageRep, transform: SDTransform, using storageType: MediaType = .png, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey : Any] = [:]) {
+    public func draw(image: CGImageRep, transform: SDTransform, using storageType: MediaType = .png, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey: Any] = [:]) {
         self._draw(image: image, transform: transform, using: storageType, resolution: resolution, properties: properties)
     }
     
-    public func draw(image: CGImage, transform: SDTransform, using storageType: MediaType = .png, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey : Any] = [:]) {
+    public func draw(image: CGImage, transform: SDTransform, using storageType: MediaType = .png, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey: Any] = [:]) {
         self._draw(image: image, transform: transform, using: storageType, resolution: resolution, properties: properties)
     }
 }

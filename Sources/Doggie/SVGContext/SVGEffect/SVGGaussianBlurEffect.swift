@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SVGGaussianBlurEffect : SVGEffectElement {
+public struct SVGGaussianBlurEffect: SVGEffectElement {
     
     public var region: Rect?
     

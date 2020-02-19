@@ -49,7 +49,7 @@ extension Json {
     public init(_ value: Bool) {
         self.value = value
     }
-    public init<T : FixedWidthInteger>(_ value: T) {
+    public init<T: FixedWidthInteger>(_ value: T) {
         self.value = value
     }
     public init(_ value: Float) {
@@ -61,7 +61,7 @@ extension Json {
     public init(_ value: String) {
         self.value = value
     }
-    public init<S : StringProtocol>(_ value: S) {
+    public init<S: StringProtocol>(_ value: S) {
         self.value = String(value)
     }
     public init(_ elements: [Any]) {
@@ -187,15 +187,15 @@ extension Json {
 
 extension Json {
     
-    public var isNil : Bool {
+    public var isNil: Bool {
         return self.value is NSNull
     }
     
-    public var isBool : Bool {
+    public var isBool: Bool {
         return self.value is Bool
     }
     
-    public var isNumber : Bool {
+    public var isNumber: Bool {
         switch self.value {
         case is NSNumber: return true
         case is Int: return true
@@ -214,15 +214,15 @@ extension Json {
         }
     }
     
-    public var isString : Bool {
+    public var isString: Bool {
         return self.value is String
     }
     
-    public var isArray : Bool {
+    public var isArray: Bool {
         return self.value is [Any]
     }
     
-    public var isObject : Bool {
+    public var isObject: Bool {
         return self.value is [String:Any]
     }
 }

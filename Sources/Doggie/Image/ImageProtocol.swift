@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ImageProtocol : Hashable {
+public protocol ImageProtocol: Hashable {
     
     associatedtype Color: ColorProtocol
     

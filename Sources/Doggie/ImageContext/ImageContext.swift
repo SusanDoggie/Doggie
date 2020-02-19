@@ -89,7 +89,7 @@ struct ImageContextState {
     
 }
 
-public class ImageContext<Pixel: ColorPixelProtocol> : DrawableContext {
+public class ImageContext<Pixel: ColorPixelProtocol>: DrawableContext {
     
     @usableFromInline
     var _image: Image<Pixel>
@@ -227,7 +227,7 @@ extension ImageContext {
     }
 }
 
-public enum ImageConvolutionAlgorithm : CaseIterable {
+public enum ImageConvolutionAlgorithm: CaseIterable {
     
     case direct
     case cooleyTukey
@@ -356,14 +356,14 @@ extension ImageContext {
     }
 }
 
-public enum ImageContextRenderCullMode : CaseIterable {
+public enum ImageContextRenderCullMode: CaseIterable {
     
     case none
     case front
     case back
 }
 
-public enum ImageContextRenderDepthCompareMode : CaseIterable {
+public enum ImageContextRenderDepthCompareMode: CaseIterable {
     
     case always
     case never

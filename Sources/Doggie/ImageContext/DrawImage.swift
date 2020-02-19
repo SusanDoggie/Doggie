@@ -175,7 +175,7 @@ extension Texture {
 }
 
 @usableFromInline
-struct _UnsafeStencilTexture<T: BinaryFloatingPoint> : _ResamplingImplement where T: ScalarProtocol, T.Scalar: FloatingMathProtocol {
+struct _UnsafeStencilTexture<T: BinaryFloatingPoint>: _ResamplingImplement where T: ScalarProtocol, T.Scalar: FloatingMathProtocol {
     
     @usableFromInline
     typealias RawPixel = T
@@ -227,7 +227,7 @@ struct _UnsafeStencilTexture<T: BinaryFloatingPoint> : _ResamplingImplement wher
 }
 
 @usableFromInline
-struct _UnsafeTexture<Base: _TextureProtocolImplement> : _ResamplingImplement where Base.RawPixel: ColorPixelProtocol, Base.Pixel == Float64ColorPixel<Base.RawPixel.Model> {
+struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement where Base.RawPixel: ColorPixelProtocol, Base.Pixel == Float64ColorPixel<Base.RawPixel.Model> {
     
     @usableFromInline
     typealias RawPixel = Base.RawPixel

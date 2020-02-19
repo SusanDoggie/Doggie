@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct TIFFEncoder : ImageRepEncoder {
+struct TIFFEncoder: ImageRepEncoder {
     
     private static func encode(tag: TIFFTag.Tag, type: UInt16, value: [Int], _ data: inout MappedBuffer<UInt8>) {
         
@@ -55,7 +55,7 @@ struct TIFFEncoder : ImageRepEncoder {
         }
     }
     
-    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         

@@ -46,7 +46,7 @@ protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
     
     var luminance: Double { get }
     
-    func _create_color<S : Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
+    func _create_color<S: Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
     func _create_image(width: Int, height: Int, resolution: Resolution, fileBacked: Bool) -> AnyImageBaseProtocol
     
@@ -61,7 +61,7 @@ protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
     func _isStorageEqual(_ other: AnyColorSpaceBaseProtocol) -> Bool
 }
 
-extension ColorSpace : AnyColorSpaceBaseProtocol {
+extension ColorSpace: AnyColorSpaceBaseProtocol {
     
     @inlinable
     var _linearTone: AnyColorSpaceBaseProtocol {
@@ -69,7 +69,7 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func _create_color<S>(components: S, opacity: Double) -> AnyColorBaseProtocol where S : Sequence, S.Element == Double {
+    func _create_color<S>(components: S, opacity: Double) -> AnyColorBaseProtocol where S: Sequence, S.Element == Double {
         var color = Model()
         var counter = 0
         for (i, v) in components.enumerated() {
@@ -109,7 +109,7 @@ extension ColorSpace : AnyColorSpaceBaseProtocol {
 }
 
 @frozen
-public struct AnyColorSpace : ColorSpaceProtocol, Hashable {
+public struct AnyColorSpace: ColorSpaceProtocol, Hashable {
 
     @usableFromInline
     var _base: AnyColorSpaceBaseProtocol
@@ -214,7 +214,7 @@ extension AnyColorSpace {
     }
 }
 
-extension AnyColorSpace : CustomStringConvertible {
+extension AnyColorSpace: CustomStringConvertible {
     
     @inlinable
     public var description: String {

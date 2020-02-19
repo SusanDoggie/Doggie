@@ -38,7 +38,7 @@ extension ColorSpace where Model == XYZColorModel {
 
 @frozen
 @usableFromInline
-struct CIEXYZColorSpace : ColorSpaceBaseProtocol {
+struct CIEXYZColorSpace: ColorSpaceBaseProtocol {
     
     @usableFromInline
     typealias Model = XYZColorModel

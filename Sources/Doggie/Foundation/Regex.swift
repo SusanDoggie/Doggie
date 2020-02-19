@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct Regex : Equatable {
+public struct Regex: Equatable {
     
     fileprivate let matcher: NSRegularExpression
     

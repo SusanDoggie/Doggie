@@ -32,12 +32,12 @@ extension CGPoint {
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryInteger>(x: T, y: T) {
+    public init<T: BinaryInteger>(x: T, y: T) {
         self.init(x: CGFloat(x), y: CGFloat(y))
     }
     @inlinable
     @inline(__always)
-    public init<T : BinaryFloatingPoint>(x: T, y: T) {
+    public init<T: BinaryFloatingPoint>(x: T, y: T) {
         self.init(x: CGFloat(x), y: CGFloat(y))
     }
 }

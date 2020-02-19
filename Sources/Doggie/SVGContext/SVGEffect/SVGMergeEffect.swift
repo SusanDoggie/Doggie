@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct SVGMergeEffect : SVGEffectElement {
+public struct SVGMergeEffect: SVGEffectElement {
     
     public var region: Rect?
     

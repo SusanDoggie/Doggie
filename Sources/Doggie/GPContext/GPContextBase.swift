@@ -128,7 +128,7 @@ extension GPContextBase {
         return GPContextBase(width: width, height: height, _image: image.composited(over: dest))
     }
     
-    func applyingFilter(_ filterName: String, parameters params: [String : Any]) -> GPContextBase {
+    func applyingFilter(_ filterName: String, parameters params: [String: Any]) -> GPContextBase {
         return GPContextBase(width: width, height: height, _image: image.applyingFilter(filterName, parameters: params))
     }
 }

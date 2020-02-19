@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct SFNTOS2 : ByteDecodable {
+struct SFNTOS2: ByteDecodable {
     
     var version: BEUInt16
     var xAvgCharWidth: BEInt16
@@ -99,7 +99,7 @@ struct SFNTOS2 : ByteDecodable {
         self.usMaxContext = try? data.decode(BEUInt16.self)
     }
     
-    struct PANOSE : ByteDecodable {
+    struct PANOSE: ByteDecodable {
         
         var bFamilyType: UInt8
         var bSerifStyle: UInt8

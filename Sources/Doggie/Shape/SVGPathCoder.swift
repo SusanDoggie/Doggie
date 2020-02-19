@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-private struct PathDataScanner<I : IteratorProtocol> : IteratorProtocol, Sequence where I.Element == String {
+private struct PathDataScanner<I: IteratorProtocol>: IteratorProtocol, Sequence where I.Element == String {
     
     var iterator: I
     var current: String!
@@ -54,7 +54,7 @@ private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?\\d*\\.?\\d+([
 extension Shape {
     
     @frozen
-    public struct ParserError : Error {
+    public struct ParserError: Error {
         
         var command: String?
     }

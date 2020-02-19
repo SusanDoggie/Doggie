@@ -23,39 +23,39 @@
 //  THE SOFTWARE.
 //
 
-extension Int8 : Multiplicative {
+extension Int8: Multiplicative {
     
 }
 
-extension Int16 : Multiplicative {
+extension Int16: Multiplicative {
     
 }
 
-extension Int32 : Multiplicative {
+extension Int32: Multiplicative {
     
 }
 
-extension Int64 : Multiplicative {
+extension Int64: Multiplicative {
     
 }
 
-extension Int : Multiplicative {
+extension Int: Multiplicative {
     
 }
 
-extension Float : ScalarProtocol {
+extension Float: ScalarProtocol {
     
     public typealias Scalar = Float
     
 }
 
-extension Double : ScalarProtocol {
+extension Double: ScalarProtocol {
     
     public typealias Scalar = Double
     
 }
 
-extension CGFloat : ScalarProtocol {
+extension CGFloat: ScalarProtocol {
     
     public typealias Scalar = CGFloat
     

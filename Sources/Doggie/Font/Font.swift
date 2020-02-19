@@ -121,7 +121,7 @@ public struct Font {
     }
 }
 
-extension Font : Hashable {
+extension Font: Hashable {
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(pointSize)
@@ -177,7 +177,7 @@ extension Font {
 
 extension Font {
     
-    public enum FamilyClass : CaseIterable {
+    public enum FamilyClass: CaseIterable {
         
         case oldStyleSerifs
         case transitionalSerifs
@@ -192,7 +192,7 @@ extension Font {
     }
 }
 
-extension Font : CustomStringConvertible {
+extension Font: CustomStringConvertible {
     
     public var description: String {
         return "Font(name: \(self.fontName), pointSize: \(self.pointSize))"
@@ -201,12 +201,12 @@ extension Font : CustomStringConvertible {
 
 extension Font {
     
-    public enum PropertyKey : CaseIterable {
+    public enum PropertyKey: CaseIterable {
         
         case deflateLevel
     }
     
-    public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, properties: [PropertyKey: Any]) -> Data? {
         
         let Encoder: FontFaceEncoder.Type
         
@@ -286,7 +286,7 @@ extension Font {
     }
 }
 
-protocol FontFeatureBase : PolymorphicHashable, CustomStringConvertible {
+protocol FontFeatureBase: PolymorphicHashable, CustomStringConvertible {
     
     var defaultSetting: Int { get }
     
@@ -295,7 +295,7 @@ protocol FontFeatureBase : PolymorphicHashable, CustomStringConvertible {
     func name(for setting: Int) -> String?
 }
 
-public struct FontFeature : Hashable, CustomStringConvertible {
+public struct FontFeature: Hashable, CustomStringConvertible {
     
     var base: FontFeatureBase
     
@@ -340,7 +340,7 @@ extension Font {
 
 extension Font {
     
-    public enum LayoutDirection : CaseIterable {
+    public enum LayoutDirection: CaseIterable {
         
         case leftToRight
         case rightToLeft

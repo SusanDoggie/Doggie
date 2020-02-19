@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum WrappingMode : CaseIterable {
+public enum WrappingMode: CaseIterable {
     
     case none
     case clamp
@@ -33,7 +33,7 @@ public enum WrappingMode : CaseIterable {
 
 public protocol TextureProtocol: RawPixelProtocol {
     
-    associatedtype Pixel : ScalarMultiplicative where Pixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol
+    associatedtype Pixel: ScalarMultiplicative where Pixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol
     
     var resamplingAlgorithm: ResamplingAlgorithm { get set }
     

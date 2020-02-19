@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct CMYColorModel : ColorModelProtocol {
+public struct CMYColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -183,7 +183,7 @@ extension CMYColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct PNGEncoder : ImageRepEncoder {
+struct PNGEncoder: ImageRepEncoder {
     
     private static func encode(_ chunks: PNGChunk ... ) -> MappedBuffer<UInt8> {
         
@@ -192,7 +192,7 @@ struct PNGEncoder : ImageRepEncoder {
         return PNGChunk(signature: "IDAT", data: compressed.data)
     }
     
-    private static func encodeRGB<Pixel>(image: Image<Pixel>, deflate_level: Deflate.Level, interlace: Bool) -> MappedBuffer<UInt8>? where Pixel : PNGEncodablePixel, Pixel.Model == RGBColorModel {
+    private static func encodeRGB<Pixel>(image: Image<Pixel>, deflate_level: Deflate.Level, interlace: Bool) -> MappedBuffer<UInt8>? where Pixel: PNGEncodablePixel, Pixel.Model == RGBColorModel {
         
         guard let iccp = iCCP(image.colorSpace, deflate_level: deflate_level) else { return encodeRGB(image: Image<Pixel>(image: image, colorSpace: .sRGB), deflate_level: deflate_level, interlace: interlace) }
         
@@ -224,7 +224,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    private static func encodeGray<Pixel>(image: Image<Pixel>, deflate_level: Deflate.Level, interlace: Bool) -> MappedBuffer<UInt8>? where Pixel : PNGEncodablePixel, Pixel.Model == GrayColorModel {
+    private static func encodeGray<Pixel>(image: Image<Pixel>, deflate_level: Deflate.Level, interlace: Bool) -> MappedBuffer<UInt8>? where Pixel: PNGEncodablePixel, Pixel.Model == GrayColorModel {
         
         guard let iccp = iCCP(image.colorSpace, deflate_level: deflate_level) else { return encodeGray(image: Image<Pixel>(image: image, colorSpace: .genericGamma22Gray), deflate_level: deflate_level, interlace: interlace) }
         
@@ -256,7 +256,7 @@ struct PNGEncoder : ImageRepEncoder {
         return encode(ihdr, phys, iccp, idat)
     }
     
-    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         let interlaced = properties[.interlaced] as? Bool == true

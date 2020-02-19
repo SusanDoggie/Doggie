@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol Lockable : AnyObject {
+public protocol Lockable: AnyObject {
     
     func lock()
     func unlock()
@@ -46,7 +46,7 @@ extension Lockable {
 
 @inlinable
 @discardableResult
-public func synchronized<S : Sequence, R>(_ lcks: S, block: () throws -> R) rethrows -> R where S.Element == Lockable {
+public func synchronized<S: Sequence, R>(_ lcks: S, block: () throws -> R) rethrows -> R where S.Element == Lockable {
     let lcks = Array(lcks)
     if lcks.count > 1 {
         var waiting = 0
@@ -98,7 +98,7 @@ public class SDLock {
     }
 }
 
-extension SDLock : Lockable {
+extension SDLock: Lockable {
     
     public func lock() {
         pthread_mutex_lock(&_mtx)
@@ -218,7 +218,7 @@ extension SDLock {
 
 // MARK: Condition Lock
 
-public class SDConditionLock : SDLock {
+public class SDConditionLock: SDLock {
     
     fileprivate var cond = SDCondition()
 }

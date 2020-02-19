@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct OTFGPOS : ByteDecodable {
+struct OTFGPOS: ByteDecodable {
     
     var version: Fixed16Number<BEInt32>
     var scriptListOffset: BEUInt16

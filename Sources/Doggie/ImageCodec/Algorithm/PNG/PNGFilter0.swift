@@ -30,7 +30,7 @@ protocol PNGEncodablePixel: ColorPixelProtocol {
     func png_encode_opacity(_ data: inout Data)
 }
 
-extension ARGB32ColorPixel : PNGEncodablePixel {
+extension ARGB32ColorPixel: PNGEncodablePixel {
     
     func png_encode_color(_ data: inout Data) {
         data.encode(r.bigEndian)
@@ -43,7 +43,7 @@ extension ARGB32ColorPixel : PNGEncodablePixel {
     }
 }
 
-extension ARGB64ColorPixel : PNGEncodablePixel {
+extension ARGB64ColorPixel: PNGEncodablePixel {
     
     func png_encode_color(_ data: inout Data) {
         data.encode(r.bigEndian)
@@ -56,7 +56,7 @@ extension ARGB64ColorPixel : PNGEncodablePixel {
     }
 }
 
-extension RGBA32ColorPixel : PNGEncodablePixel {
+extension RGBA32ColorPixel: PNGEncodablePixel {
     
     func png_encode_color(_ data: inout Data) {
         data.encode(r.bigEndian)
@@ -69,7 +69,7 @@ extension RGBA32ColorPixel : PNGEncodablePixel {
     }
 }
 
-extension RGBA64ColorPixel : PNGEncodablePixel {
+extension RGBA64ColorPixel: PNGEncodablePixel {
     
     func png_encode_color(_ data: inout Data) {
         data.encode(r.bigEndian)
@@ -82,7 +82,7 @@ extension RGBA64ColorPixel : PNGEncodablePixel {
     }
 }
 
-extension BGRA32ColorPixel : PNGEncodablePixel {
+extension BGRA32ColorPixel: PNGEncodablePixel {
     
     func png_encode_color(_ data: inout Data) {
         data.encode(r.bigEndian)
@@ -95,7 +95,7 @@ extension BGRA32ColorPixel : PNGEncodablePixel {
     }
 }
 
-extension Gray16ColorPixel : PNGEncodablePixel {
+extension Gray16ColorPixel: PNGEncodablePixel {
     
     func png_encode_color(_ data: inout Data) {
         data.encode(w.bigEndian)
@@ -106,7 +106,7 @@ extension Gray16ColorPixel : PNGEncodablePixel {
     }
 }
 
-extension Gray32ColorPixel : PNGEncodablePixel {
+extension Gray32ColorPixel: PNGEncodablePixel {
     
     func png_encode_color(_ data: inout Data) {
         data.encode(w.bigEndian)

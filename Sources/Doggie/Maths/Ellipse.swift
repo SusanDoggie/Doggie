@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Radius : Hashable {
+public struct Radius: Hashable {
     
     public var x: Double
     public var y: Double
@@ -59,7 +59,7 @@ extension Radius: CustomStringConvertible {
     }
 }
 
-extension Radius : Codable {
+extension Radius: Codable {
     
     @inlinable
     @inline(__always)

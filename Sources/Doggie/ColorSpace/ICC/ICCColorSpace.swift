@@ -27,7 +27,7 @@
 let PCSXYZ = CIEXYZColorSpace(white: CIE1931.D50.rawValue)
 
 @usableFromInline
-protocol PCSColorModel : ColorModelProtocol {
+protocol PCSColorModel: ColorModelProtocol {
     
     var luminance: Double { get set }
     
@@ -36,11 +36,11 @@ protocol PCSColorModel : ColorModelProtocol {
     static func *= (lhs: inout Self, rhs: Matrix)
 }
 
-extension XYZColorModel : PCSColorModel {
+extension XYZColorModel: PCSColorModel {
     
 }
 
-extension LabColorModel : PCSColorModel {
+extension LabColorModel: PCSColorModel {
     
     @inlinable
     var luminance: Double {
@@ -65,7 +65,7 @@ extension LabColorModel : PCSColorModel {
 
 @frozen
 @usableFromInline
-struct ICCColorSpace<Model : ColorModelProtocol, Connection : ColorSpaceBaseProtocol, A2BTransform: iccTransform, B2ATransform: iccTransform> : ColorSpaceBaseProtocol where Connection.Model : PCSColorModel {
+struct ICCColorSpace<Model: ColorModelProtocol, Connection: ColorSpaceBaseProtocol, A2BTransform: iccTransform, B2ATransform: iccTransform>: ColorSpaceBaseProtocol where Connection.Model: PCSColorModel {
     
     @usableFromInline
     let _iccData: Data
@@ -160,7 +160,7 @@ extension ICCColorSpace {
 
 extension AnyColorSpace {
     
-    public enum ICCError : Error {
+    public enum ICCError: Error {
         
         case endOfData
         case invalidFormat(message: String)

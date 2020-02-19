@@ -185,7 +185,7 @@ extension CGPath {
 
 extension Shape {
     
-    public var cgPath : CGPath {
+    public var cgPath: CGPath {
         
         return self.identity.cache.load(for: ShapeCacheCGPathKey) {
             

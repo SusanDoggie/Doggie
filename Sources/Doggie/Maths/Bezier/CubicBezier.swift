@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct CubicBezier<Element : ScalarMultiplicative> : BezierProtocol where Element.Scalar == Double {
+public struct CubicBezier<Element: ScalarMultiplicative>: BezierProtocol where Element.Scalar == Double {
     
     public var p0: Element
     public var p1: Element
@@ -59,11 +59,11 @@ extension Bezier {
     }
 }
 
-extension CubicBezier : Hashable where Element : Hashable {
+extension CubicBezier: Hashable where Element: Hashable {
     
 }
 
-extension CubicBezier: Decodable where Element : Decodable {
+extension CubicBezier: Decodable where Element: Decodable {
     
     @inlinable
     @inline(__always)
@@ -76,7 +76,7 @@ extension CubicBezier: Decodable where Element : Decodable {
     }
 }
 
-extension CubicBezier: Encodable where Element : Encodable {
+extension CubicBezier: Encodable where Element: Encodable {
     
     @inlinable
     @inline(__always)
@@ -258,7 +258,7 @@ extension CubicBezier where Element == Double {
     }
 }
 
-extension CubicBezier where Element : Tensor {
+extension CubicBezier where Element: Tensor {
     
     @inlinable
     @inline(__always)

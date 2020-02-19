@@ -280,7 +280,7 @@ extension Shape {
 
 extension Shape {
     
-    public enum WindingRule : CaseIterable {
+    public enum WindingRule: CaseIterable {
         case nonZero
         case evenOdd
     }

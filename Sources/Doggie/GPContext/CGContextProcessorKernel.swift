@@ -28,7 +28,7 @@
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 final class CGContextProcessorKernel: CIImageProcessorKernel {
     
-    enum Error : Swift.Error {
+    enum Error: Swift.Error {
         
         case unknown
         
@@ -55,7 +55,7 @@ final class CGContextProcessorKernel: CIImageProcessorKernel {
         return .BGRA8
     }
     
-    override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String : Any]?, output: CIImageProcessorOutput) throws {
+    override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
         
         guard let info = arguments?["info"] as? Info else { throw Error.unknown }
         

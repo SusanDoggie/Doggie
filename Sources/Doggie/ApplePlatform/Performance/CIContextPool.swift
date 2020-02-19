@@ -26,7 +26,7 @@
 #if canImport(CoreImage) && canImport(Metal)
 
 @available(macOS 10.11, iOS 9.0, tvOS 9.0, *)
-private struct CIContextOptions : Hashable {
+private struct CIContextOptions: Hashable {
     
     var colorSpace: ColorSpace<RGBColorModel>?
     
@@ -63,7 +63,7 @@ extension CIContextPool {
     
     private func make_context(options: CIContextOptions) -> CIContext? {
         
-        let _options: [CIContextOption : Any]
+        let _options: [CIContextOption: Any]
         
         if let colorSpace = options.colorSpace {
             

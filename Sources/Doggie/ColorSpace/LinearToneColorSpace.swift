@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct LinearToneColorSpace<ColorSpace: ColorSpaceBaseProtocol> : ColorSpaceBaseProtocol {
+struct LinearToneColorSpace<ColorSpace: ColorSpaceBaseProtocol>: ColorSpaceBaseProtocol {
     
     @usableFromInline
     let base: ColorSpace

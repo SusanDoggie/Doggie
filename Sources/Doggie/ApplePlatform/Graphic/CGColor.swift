@@ -37,7 +37,7 @@ protocol CGColorConvertibleProtocol {
     var cgColor: CGColor? { get }
 }
 
-extension Color : CGColorConvertibleProtocol {
+extension Color: CGColorConvertibleProtocol {
     
 }
 

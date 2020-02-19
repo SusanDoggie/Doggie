@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct CFF2INDEX : ByteDecodable, RandomAccessCollection {
+struct CFF2INDEX: ByteDecodable, RandomAccessCollection {
     
     public typealias Indices = Range<Int>
     

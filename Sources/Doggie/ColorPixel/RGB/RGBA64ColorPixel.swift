@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct RGBA64ColorPixel : ColorPixelProtocol {
+public struct RGBA64ColorPixel: ColorPixelProtocol {
     
     public var r: UInt16
     public var g: UInt16

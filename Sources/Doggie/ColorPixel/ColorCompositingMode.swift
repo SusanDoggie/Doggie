@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum ColorCompositingMode : CaseIterable {
+public enum ColorCompositingMode: CaseIterable {
     
     /// R = 0
     case clear
@@ -64,7 +64,7 @@ extension ColorCompositingMode {
     
     @inlinable
     @inline(__always)
-    public static var `default` : ColorCompositingMode {
+    public static var `default`: ColorCompositingMode {
         return .sourceOver
     }
 }
@@ -73,7 +73,7 @@ extension ColorCompositingMode {
     
     @inlinable
     @inline(__always)
-    func mix<T : ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
+    func mix<T: ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
         
         switch self {
         case .clear: return .zero
@@ -148,7 +148,7 @@ extension ColorPixelProtocol {
     }
 }
 
-extension ColorPixelProtocol where Self : _FloatComponentPixel, Self.ColorComponents : Doggie.ColorComponents {
+extension ColorPixelProtocol where Self: _FloatComponentPixel, Self.ColorComponents: Doggie.ColorComponents {
     
     @inlinable
     @inline(__always)

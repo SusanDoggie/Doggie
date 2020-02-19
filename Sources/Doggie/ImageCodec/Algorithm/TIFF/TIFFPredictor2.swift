@@ -39,7 +39,7 @@ protocol TIFFEncodablePixel: ColorPixelProtocol {
     func tiff_encode_opacity(_ data: inout MappedBuffer<UInt8>)
 }
 
-extension ARGB32ColorPixel : TIFFEncodablePixel {
+extension ARGB32ColorPixel: TIFFEncodablePixel {
     
     func tiff_prediction_2(_ lhs: ARGB32ColorPixel) -> ARGB32ColorPixel {
         return ARGB32ColorPixel(red: r &- lhs.r, green: g &- lhs.g, blue: b &- lhs.b, opacity: a &- lhs.a)
@@ -56,7 +56,7 @@ extension ARGB32ColorPixel : TIFFEncodablePixel {
     }
 }
 
-extension ARGB64ColorPixel : TIFFEncodablePixel {
+extension ARGB64ColorPixel: TIFFEncodablePixel {
     
     func tiff_prediction_2(_ lhs: ARGB64ColorPixel) -> ARGB64ColorPixel {
         return ARGB64ColorPixel(red: r &- lhs.r, green: g &- lhs.g, blue: b &- lhs.b, opacity: a &- lhs.a)
@@ -73,7 +73,7 @@ extension ARGB64ColorPixel : TIFFEncodablePixel {
     }
 }
 
-extension RGBA32ColorPixel : TIFFEncodablePixel {
+extension RGBA32ColorPixel: TIFFEncodablePixel {
     
     func tiff_prediction_2(_ lhs: RGBA32ColorPixel) -> RGBA32ColorPixel {
         return RGBA32ColorPixel(red: r &- lhs.r, green: g &- lhs.g, blue: b &- lhs.b, opacity: a &- lhs.a)
@@ -90,7 +90,7 @@ extension RGBA32ColorPixel : TIFFEncodablePixel {
     }
 }
 
-extension RGBA64ColorPixel : TIFFEncodablePixel {
+extension RGBA64ColorPixel: TIFFEncodablePixel {
     
     func tiff_prediction_2(_ lhs: RGBA64ColorPixel) -> RGBA64ColorPixel {
         return RGBA64ColorPixel(red: r &- lhs.r, green: g &- lhs.g, blue: b &- lhs.b, opacity: a &- lhs.a)
@@ -107,7 +107,7 @@ extension RGBA64ColorPixel : TIFFEncodablePixel {
     }
 }
 
-extension BGRA32ColorPixel : TIFFEncodablePixel {
+extension BGRA32ColorPixel: TIFFEncodablePixel {
     
     func tiff_prediction_2(_ lhs: BGRA32ColorPixel) -> BGRA32ColorPixel {
         return BGRA32ColorPixel(red: r &- lhs.r, green: g &- lhs.g, blue: b &- lhs.b, opacity: a &- lhs.a)
@@ -124,7 +124,7 @@ extension BGRA32ColorPixel : TIFFEncodablePixel {
     }
 }
 
-extension Gray16ColorPixel : TIFFEncodablePixel {
+extension Gray16ColorPixel: TIFFEncodablePixel {
     
     func tiff_prediction_2(_ lhs: Gray16ColorPixel) -> Gray16ColorPixel {
         return Gray16ColorPixel(white: w &- lhs.w, opacity: a &- lhs.a)
@@ -139,7 +139,7 @@ extension Gray16ColorPixel : TIFFEncodablePixel {
     }
 }
 
-extension Gray32ColorPixel : TIFFEncodablePixel {
+extension Gray32ColorPixel: TIFFEncodablePixel {
     
     func tiff_prediction_2(_ lhs: Gray32ColorPixel) -> Gray32ColorPixel {
         return Gray32ColorPixel(white: w &- lhs.w, opacity: a &- lhs.a)
@@ -154,7 +154,7 @@ extension Gray32ColorPixel : TIFFEncodablePixel {
     }
 }
 
-extension Image : TIFFRawRepresentable {
+extension Image: TIFFRawRepresentable {
     
     func tiff_color_data(_ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         

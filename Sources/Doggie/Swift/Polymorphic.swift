@@ -29,7 +29,7 @@ public protocol PolymorphicEquatable {
     
 }
 
-extension PolymorphicEquatable where Self : Equatable {
+extension PolymorphicEquatable where Self: Equatable {
     
     @inlinable
     public func isEqual(_ other: PolymorphicEquatable) -> Bool {

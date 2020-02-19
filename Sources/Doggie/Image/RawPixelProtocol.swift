@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol RawPixelProtocol : Hashable {
+public protocol RawPixelProtocol: Hashable {
     
     associatedtype RawPixel
     

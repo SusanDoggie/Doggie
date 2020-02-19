@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct OpenTypeDecoder : FontDecoder {
+struct OpenTypeDecoder: FontDecoder {
     
     var header: OTFHeader
     var faces: [FontFaceBase]
@@ -47,7 +47,7 @@ struct OpenTypeDecoder : FontDecoder {
     }
 }
 
-struct OTFHeader : ByteCodable {
+struct OTFHeader: ByteCodable {
     
     var version: Signature<BEUInt32>
     var numTables: BEUInt16
@@ -80,7 +80,7 @@ struct OTFHeader : ByteCodable {
     }
 }
 
-struct OTFTableRecord : ByteCodable {
+struct OTFTableRecord: ByteCodable {
     
     var tag: Signature<BEUInt32>
     var checkSum: BEUInt32

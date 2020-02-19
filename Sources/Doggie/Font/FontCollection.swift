@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByArrayLiteral {
+public struct FontCollection: SetAlgebra, Hashable, Collection, ExpressibleByArrayLiteral {
     
     @usableFromInline
     var fonts: Set<Font>
@@ -45,7 +45,7 @@ public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByAr
     }
     
     @inlinable
-    public init<S : Sequence>(_ components: S) where S.Element == Font {
+    public init<S: Sequence>(_ components: S) where S.Element == Font {
         self.fonts = Set(components.map { $0.with(size: 0, features: [:]) })
     }
 }
@@ -53,7 +53,7 @@ public struct FontCollection : SetAlgebra, Hashable, Collection, ExpressibleByAr
 extension FontCollection {
     
     @frozen
-    public struct Index : Comparable, Hashable {
+    public struct Index: Comparable, Hashable {
         
         @usableFromInline
         let base: Set<Font>.Index
@@ -70,7 +70,7 @@ extension FontCollection {
     }
     
     @frozen
-    public struct Iterator : IteratorProtocol {
+    public struct Iterator: IteratorProtocol {
         
         @usableFromInline
         var base: SetIterator<Font>
@@ -191,7 +191,7 @@ extension FontCollection {
     }
 }
 
-extension FontCollection : CustomStringConvertible {
+extension FontCollection: CustomStringConvertible {
     
     @inlinable
     public var description: String {
@@ -206,7 +206,7 @@ protocol FontCollectionBase {
 
 extension FontCollection {
     
-    public enum Error : Swift.Error {
+    public enum Error: Swift.Error {
         
         case UnknownFormat
         case InvalidFormat(String)
@@ -235,7 +235,7 @@ extension FontCollection {
 
 extension FontCollection {
     
-    public init<S : Sequence>(urls: S) where S.Element == URL {
+    public init<S: Sequence>(urls: S) where S.Element == URL {
         
         self.init()
         

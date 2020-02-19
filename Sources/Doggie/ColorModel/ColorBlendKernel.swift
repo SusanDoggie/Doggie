@@ -40,13 +40,13 @@ extension ColorBlendKernel {
     }
 }
 
-public protocol ElementwiseColorBlendKernel : ColorBlendKernel {
+public protocol ElementwiseColorBlendKernel: ColorBlendKernel {
     
     static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T
     
 }
 
-extension ColorBlendKernel where Self : ElementwiseColorBlendKernel {
+extension ColorBlendKernel where Self: ElementwiseColorBlendKernel {
     
     @inlinable
     @inline(__always)
@@ -66,7 +66,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct NormalBlendKernel : ElementwiseColorBlendKernel {
+    struct NormalBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -77,7 +77,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct MultiplyBlendKernel : ElementwiseColorBlendKernel {
+    struct MultiplyBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -88,7 +88,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct ScreenBlendKernel : ElementwiseColorBlendKernel {
+    struct ScreenBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -99,7 +99,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct OverlayBlendKernel : ElementwiseColorBlendKernel {
+    struct OverlayBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -116,7 +116,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct DarkenBlendKernel : ElementwiseColorBlendKernel {
+    struct DarkenBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -127,7 +127,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct LightenBlendKernel : ElementwiseColorBlendKernel {
+    struct LightenBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -138,7 +138,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct ColorDodgeBlendKernel : ElementwiseColorBlendKernel {
+    struct ColorDodgeBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -149,7 +149,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct ColorBurnBlendKernel : ElementwiseColorBlendKernel {
+    struct ColorBurnBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -160,7 +160,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct SoftLightBlendKernel : ElementwiseColorBlendKernel {
+    struct SoftLightBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -187,7 +187,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct HardLightBlendKernel : ElementwiseColorBlendKernel {
+    struct HardLightBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -198,7 +198,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct DifferenceBlendKernel : ElementwiseColorBlendKernel {
+    struct DifferenceBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -209,7 +209,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct ExclusionBlendKernel : ElementwiseColorBlendKernel {
+    struct ExclusionBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -220,7 +220,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct PlusDarkerBlendKernel : ElementwiseColorBlendKernel {
+    struct PlusDarkerBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)
@@ -233,7 +233,7 @@ extension ColorBlendMode {
     
     @frozen
     @usableFromInline
-    struct PlusLighterBlendKernel : ElementwiseColorBlendKernel {
+    struct PlusLighterBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
         @inline(__always)

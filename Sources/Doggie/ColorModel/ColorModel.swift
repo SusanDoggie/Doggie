@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
+public protocol ColorModelProtocol: Hashable, Tensor where Scalar == Double {
     
-    associatedtype Float32Components : ColorComponents where Float32Components.Model == Self, Float32Components.Scalar == Float
+    associatedtype Float32Components: ColorComponents where Float32Components.Model == Self, Float32Components.Scalar == Float
     
     static func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
     
@@ -34,9 +34,9 @@ public protocol ColorModelProtocol : Hashable, Tensor where Scalar == Double {
     var float32Components: Float32Components { get set }
 }
 
-public protocol ColorComponents : Hashable, Tensor {
+public protocol ColorComponents: Hashable, Tensor {
     
-    associatedtype Model : ColorModelProtocol
+    associatedtype Model: ColorModelProtocol
     
     init(_ model: Model)
     

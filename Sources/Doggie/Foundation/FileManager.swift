@@ -25,7 +25,7 @@
 
 extension FileManager {
     
-    public func fileUrls<S : Sequence>(_ urls: S) -> [URL] where S.Element == URL {
+    public func fileUrls<S: Sequence>(_ urls: S) -> [URL] where S.Element == URL {
         
         var result: [URL] = []
         

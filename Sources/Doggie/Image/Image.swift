@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Image<Pixel: ColorPixelProtocol> : ImageProtocol, RawPixelProtocol {
+public struct Image<Pixel: ColorPixelProtocol>: ImageProtocol, RawPixelProtocol {
     
     public let width: Int
     public let height: Int
@@ -134,9 +134,9 @@ final class ImageCache {
     var visibleRect: Rect?
     
     @usableFromInline
-    var color_conversion: [AnyHashable : Any]
+    var color_conversion: [AnyHashable: Any]
     
-    var table: [String : Any]
+    var table: [String: Any]
     
     @usableFromInline
     init() {
@@ -148,7 +148,7 @@ final class ImageCache {
 }
 
 @usableFromInline
-struct ImageCacheColorConversionKey<Pixel: ColorPixelProtocol> : Hashable {
+struct ImageCacheColorConversionKey<Pixel: ColorPixelProtocol>: Hashable {
     
     @usableFromInline
     let colorSpace: ColorSpace<Pixel.Model>
@@ -223,7 +223,7 @@ extension Image {
     }
 }
 
-extension Image : CustomStringConvertible {
+extension Image: CustomStringConvertible {
     
     @inlinable
     @inline(__always)

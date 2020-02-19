@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct OTFScriptList : ByteDecodable {
+struct OTFScriptList: ByteDecodable {
     
     var scriptCount: BEUInt16
     var records: [Record]
@@ -35,7 +35,7 @@ struct OTFScriptList : ByteDecodable {
         self.records = try (0..<Int(scriptCount)).map { _ in try data.decode(Record.self) }
     }
     
-    struct Record : ByteDecodable {
+    struct Record: ByteDecodable {
         
         var scriptTag: Signature<BEUInt32>
         var scriptOffset: BEUInt16

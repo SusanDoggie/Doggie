@@ -104,7 +104,7 @@ extension ImageRep {
 
 extension ImageRep {
     
-    public enum Error : Swift.Error {
+    public enum Error: Swift.Error {
         
         case UnknownFormat
         case InvalidFormat(String)
@@ -145,7 +145,7 @@ extension ImageRep {
     }
 }
 
-extension AnyImage : ImageRepBase {
+extension AnyImage: ImageRepBase {
     
     @usableFromInline
     func image(fileBacked: Bool) -> AnyImage {
@@ -209,7 +209,7 @@ extension ImageRep {
 
 extension ImageRep {
     
-    public enum PropertyKey : CaseIterable {
+    public enum PropertyKey: CaseIterable {
         
         case compression
         
@@ -220,14 +220,14 @@ extension ImageRep {
         case interlaced
     }
     
-    public enum TIFFCompressionScheme : CaseIterable {
+    public enum TIFFCompressionScheme: CaseIterable {
         
         case none
         
         case deflate
     }
     
-    public func representation(using storageType: MediaType, properties: [PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, properties: [PropertyKey: Any]) -> Data? {
         
         let image = base as? AnyImage ?? self.image(fileBacked: true)
         guard image.width > 0 && image.height > 0 else { return nil }
@@ -248,7 +248,7 @@ extension ImageRep {
     }
 }
 
-extension ImageRep : CustomStringConvertible {
+extension ImageRep: CustomStringConvertible {
     
     public var description: String {
         return "ImageRep(width: \(width), height: \(height), colorSpace: \(colorSpace), resolution: \(resolution), base: \(base))"
@@ -268,14 +268,14 @@ extension AnyImage {
 
 extension Image {
     
-    public func representation(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         return ImageRep(image: self).representation(using: storageType, properties: properties)
     }
 }
 
 extension AnyImage {
     
-    public func representation(using storageType: MediaType, properties: [ImageRep.PropertyKey : Any]) -> Data? {
+    public func representation(using storageType: MediaType, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         return ImageRep(image: self).representation(using: storageType, properties: properties)
     }
 }

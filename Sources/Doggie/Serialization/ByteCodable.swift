@@ -77,7 +77,7 @@ extension ByteOutputStreamable {
     }
     
     @inlinable
-    public func write<C : RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
+    public func write<C: RangeReplaceableCollection>(to data: inout C) where C.Element == UInt8 {
         self.enumerateBytes { data.append(contentsOf: $0) }
     }
 }
@@ -107,7 +107,7 @@ extension ByteDecodable {
     }
 }
 
-public enum ByteDecodeError : Error, CaseIterable {
+public enum ByteDecodeError: Error, CaseIterable {
     
     case endOfData
 }
@@ -115,12 +115,12 @@ public enum ByteDecodeError : Error, CaseIterable {
 extension Data {
     
     @inlinable
-    public mutating func decode<T : ByteDecodable>(_ type: T.Type) throws -> T {
+    public mutating func decode<T: ByteDecodable>(_ type: T.Type) throws -> T {
         return try T(from: &self)
     }
 }
 
-extension FixedWidthInteger where Self : ByteDecodable {
+extension FixedWidthInteger where Self: ByteDecodable {
     
     @inlinable
     public init(from data: inout Data) throws {
@@ -130,7 +130,7 @@ extension FixedWidthInteger where Self : ByteDecodable {
     }
 }
 
-extension FixedWidthInteger where Self : ByteOutputStreamable {
+extension FixedWidthInteger where Self: ByteOutputStreamable {
     
     @inlinable
     public func write<Target: ByteOutputStream>(to stream: inout Target) {
@@ -138,50 +138,50 @@ extension FixedWidthInteger where Self : ByteOutputStreamable {
     }
 }
 
-extension UInt : ByteCodable {
+extension UInt: ByteCodable {
     
 }
 
-extension UInt8 : ByteCodable {
+extension UInt8: ByteCodable {
     
 }
 
-extension UInt16 : ByteCodable {
+extension UInt16: ByteCodable {
     
 }
 
-extension UInt32 : ByteCodable {
+extension UInt32: ByteCodable {
     
 }
 
-extension UInt64 : ByteCodable {
+extension UInt64: ByteCodable {
     
 }
 
-extension Int : ByteCodable {
+extension Int: ByteCodable {
     
 }
 
-extension Int8 : ByteCodable {
+extension Int8: ByteCodable {
     
 }
 
-extension Int16 : ByteCodable {
+extension Int16: ByteCodable {
     
 }
 
-extension Int32 : ByteCodable {
+extension Int32: ByteCodable {
     
 }
 
-extension Int64 : ByteCodable {
+extension Int64: ByteCodable {
     
 }
 
-extension BEInteger : ByteCodable {
+extension BEInteger: ByteCodable {
     
 }
 
-extension LEInteger : ByteCodable {
+extension LEInteger: ByteCodable {
     
 }

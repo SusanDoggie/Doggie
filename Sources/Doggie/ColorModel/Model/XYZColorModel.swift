@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct XYZColorModel : ColorModelProtocol {
+public struct XYZColorModel: ColorModelProtocol {
     
     public typealias Indices = Range<Int>
     
@@ -171,7 +171,7 @@ extension XYZColorModel {
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
-    public struct FloatComponents<Scalar : BinaryFloatingPoint & ScalarProtocol> : ColorComponents {
+    public struct FloatComponents<Scalar: BinaryFloatingPoint & ScalarProtocol>: ColorComponents {
         
         public typealias Indices = Range<Int>
         

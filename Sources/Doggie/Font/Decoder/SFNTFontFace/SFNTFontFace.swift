@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-struct SFNTFontFace : FontFaceBase {
+struct SFNTFontFace: FontFaceBase {
     
     var table: [Signature<BEUInt32>: Data]
     
