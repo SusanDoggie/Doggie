@@ -439,3 +439,12 @@ extension Shape.BezierSegment {
         return result == nil && _overlap(other) ? nil : result?.sorted { $0.0 } ?? []
     }
 }
+
+@inlinable
+public func * (lhs: Shape.BezierSegment, rhs: SDTransform) -> Shape.BezierSegment {
+    return Shape.BezierSegment(start: lhs.start * rhs, segment: lhs.segment * rhs)
+}
+@inlinable
+public func *= (lhs: inout Shape.BezierSegment, rhs: SDTransform) {
+    lhs = lhs * rhs
+}
