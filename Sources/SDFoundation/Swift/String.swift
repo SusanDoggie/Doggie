@@ -25,16 +25,19 @@
 
 extension Character {
     
+    @available(OSX 10.12.2, iOS 10.2, tvOS 10.1, watchOS 3.1.1, *)
     public var isSimpleEmoji: Bool {
         guard unicodeScalars.count == 1 else { return false }
         guard let firstProperties = unicodeScalars.first?.properties else { return false }
         return firstProperties.isEmojiPresentation || firstProperties.generalCategory == .otherSymbol
     }
     
+    @available(OSX 10.12.2, iOS 10.2, tvOS 10.1, watchOS 3.1.1, *)
     public var isCombinedEmoji: Bool {
         return (unicodeScalars.count > 1 && unicodeScalars.contains { $0.properties.isJoinControl || $0.properties.isVariationSelector }) || unicodeScalars.allSatisfy { $0.properties.isEmojiPresentation }
     }
     
+    @available(OSX 10.12.2, iOS 10.2, tvOS 10.1, watchOS 3.1.1, *)
     public var isEmoji: Bool {
         return isSimpleEmoji || isCombinedEmoji
     }
