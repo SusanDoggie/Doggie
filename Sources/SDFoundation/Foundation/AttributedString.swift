@@ -149,28 +149,19 @@ extension AttributedString {
 
 extension AttributedString {
     
-    public mutating func replaceCharacters(in range: Range<Int>, with replacement: String) {
-        
+    public func replacingCharacters(in range: Range<Int>, with replacement: String) -> AttributedString {
         guard range.clamped(to: 0..<string.count) == range else { fatalError("Index out of range.") }
-        
-        let startIndex = string.index(string.startIndex, offsetBy: range.lowerBound)
-        let endIndex = string.index(string.startIndex, offsetBy: range.upperBound)
-        
-        string = string.replacingCharacters(in: startIndex..<endIndex, with: replacement)
-        
-        let attributes = self._attributes
-        
-        self._attributes = attributes.filter { $0.index <= range.lowerBound }
-        
-        let shift = replacement.count - range.count
-        
-        let replaced_attribute = attributes.lazy.filter { $0.index != range.lowerBound && range ~= $0.index }.max { $0.index }?.attribute
-        if let attr = replaced_attribute {
-            self._attributes.append(_Attribute(index: range.upperBound + shift, attribute: attr))
-        }
-        
-        self._attributes.append(contentsOf: attributes.compactMap { $0.index > range.upperBound ? _Attribute(index:$0.index + shift, attribute: $0.attribute) : nil })
-        
-        self._fix_attributes()
+        var result = self.attributedSubstring(from: 0..<range.lowerBound)
+        result.append(replacement)
+        result.append(self.attributedSubstring(from: range.upperBound..<string.count))
+        return result
+    }
+    
+    public func replacingCharacters(in range: Range<Int>, with replacement: AttributedString) -> AttributedString {
+        guard range.clamped(to: 0..<string.count) == range else { fatalError("Index out of range.") }
+        var result = self.attributedSubstring(from: 0..<range.lowerBound)
+        result.append(replacement)
+        result.append(self.attributedSubstring(from: range.upperBound..<string.count))
+        return result
     }
 }
