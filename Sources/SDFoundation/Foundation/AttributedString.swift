@@ -72,7 +72,7 @@ extension AttributedString {
     
     public func attributedSubstring(from range: Range<Int>) -> AttributedString {
         
-        guard range.clamped(to: 0..<string.count) == range else { fatalError("Index out of range.") }
+        precondition(range.clamped(to: 0..<string.count) == range, "Index out of range.")
         
         let startIndex = string.index(string.startIndex, offsetBy: range.lowerBound)
         let endIndex = string.index(string.startIndex, offsetBy: range.upperBound)
@@ -129,7 +129,7 @@ extension AttributedString {
     
     public mutating func setAttribute(_ attribute: Attribute, in range: Range<Int>) {
         
-        guard range.clamped(to: 0..<string.count) == range else { fatalError("Index out of range.") }
+        precondition(range.clamped(to: 0..<string.count) == range, "Index out of range.")
         
         let attributes = self._attributes
         
@@ -150,7 +150,9 @@ extension AttributedString {
 extension AttributedString {
     
     public func replacingCharacters(in range: Range<Int>, with replacement: String) -> AttributedString {
-        guard range.clamped(to: 0..<string.count) == range else { fatalError("Index out of range.") }
+        
+        precondition(range.clamped(to: 0..<string.count) == range, "Index out of range.")
+        
         var result = self.attributedSubstring(from: 0..<range.lowerBound)
         result.append(replacement)
         result.append(self.attributedSubstring(from: range.upperBound..<string.count))
@@ -158,7 +160,9 @@ extension AttributedString {
     }
     
     public func replacingCharacters(in range: Range<Int>, with replacement: AttributedString) -> AttributedString {
-        guard range.clamped(to: 0..<string.count) == range else { fatalError("Index out of range.") }
+        
+        precondition(range.clamped(to: 0..<string.count) == range, "Index out of range.")
+        
         var result = self.attributedSubstring(from: 0..<range.lowerBound)
         result.append(replacement)
         result.append(self.attributedSubstring(from: range.upperBound..<string.count))
