@@ -23,29 +23,44 @@
 //  THE SOFTWARE.
 //
 
+@frozen
 public struct AttributedString<Attribute: Hashable> {
     
-    public private(set) var string: String
+    @usableFromInline
+    var _string: String
     
-    private var _attributes: [_Attribute]
+    @usableFromInline
+    var _attributes: [_Attribute]
     
+    @inlinable
     public init<S: StringProtocol>(_ string: S, attribute: Attribute) {
-        self.string = String(string)
+        self._string = String(string)
         self._attributes = [_Attribute(index: 0, attribute: attribute)]
     }
     
-    private init<S: StringProtocol>(string: S, attributes: [_Attribute]) {
-        self.string = String(string)
+    @inlinable
+    init<S: StringProtocol>(string: S, attributes: [_Attribute]) {
+        self._string = String(string)
         self._attributes = attributes
     }
 }
 
 extension AttributedString {
     
-    fileprivate struct _Attribute: Equatable {
+    @usableFromInline
+    struct _Attribute: Equatable {
         
+        @usableFromInline
         var index: Int
+        
+        @usableFromInline
         var attribute: Attribute
+        
+        @inlinable
+        init(index: Int, attribute: Attribute) {
+            self.index = index
+            self.attribute = attribute
+        }
     }
 }
 
@@ -59,34 +74,54 @@ extension AttributedString: Hashable where Attribute: Hashable {
 
 extension AttributedString {
     
+    @inlinable
+    public var string: String {
+        return _string
+    }
+    
+    @inlinable
+    public var count: Int {
+        return _string.count
+    }
+    
+    @inlinable
+    public var isEmpty: Bool {
+        return _string.isEmpty
+    }
+}
+
+extension AttributedString {
+    
+    @inlinable
     public var attributes: [(Attribute, Range<Int>)] {
         
         var attributes = zip(_attributes, _attributes.dropFirst()).map { ($0.attribute, $0.index..<$1.index) }
         
         if let last = _attributes.last {
-            attributes.append((last.attribute, last.index..<string.count))
+            attributes.append((last.attribute, last.index..<_string.count))
         }
         
         return attributes
     }
     
+    @inlinable
     public func attributedSubstring(from range: Range<Int>) -> AttributedString {
         
-        precondition(range.clamped(to: 0..<string.count) == range, "Index out of range.")
+        precondition(range.clamped(to: 0..<_string.count) == range, "Index out of range.")
         
-        let startIndex = string.index(string.startIndex, offsetBy: range.lowerBound)
-        let endIndex = string.index(string.startIndex, offsetBy: range.upperBound)
+        let startIndex = _string.index(_string.startIndex, offsetBy: range.lowerBound)
+        let endIndex = _string.index(_string.startIndex, offsetBy: range.upperBound)
         
-        let substring = string[startIndex..<endIndex]
+        let substring = _string[startIndex..<endIndex]
         
         var attributes: [_Attribute] = []
         
-        let start_attribute = _attributes.lazy.filter { $0.index < range.lowerBound }.max { $0.index }?.attribute
+        let start_attribute = _attributes.lazy.filter { $0.index <= range.lowerBound }.max { $0.index }?.attribute
         if let start_attribute = start_attribute {
             attributes.append(_Attribute(index: 0, attribute: start_attribute))
         }
         
-        attributes.append(contentsOf: _attributes.lazy.compactMap { range ~= $0.index ? _Attribute(index: $0.index - range.lowerBound, attribute: $0.attribute) : nil })
+        attributes.append(contentsOf: _attributes.lazy.compactMap { $0.index != range.lowerBound && range ~= $0.index ? _Attribute(index: $0.index - range.lowerBound, attribute: $0.attribute) : nil })
         
         return AttributedString(string: substring, attributes: attributes)
     }
@@ -94,9 +129,10 @@ extension AttributedString {
 
 extension AttributedString {
     
-    private mutating func _fix_attributes() {
+    @inlinable
+    mutating func _fix_attributes() {
         
-        let attributes = self._attributes.filter { $0.index < string.count }
+        let attributes = self._attributes.filter { $0.index < _string.count }
         self._attributes = []
         
         for attribute in attributes where attribute != self._attributes.last {
@@ -110,15 +146,17 @@ extension AttributedString {
 
 extension AttributedString {
     
+    @inlinable
     public mutating func append(_ other: String) {
-        string.append(contentsOf: other)
+        _string.append(contentsOf: other)
     }
     
+    @inlinable
     public mutating func append(_ other: AttributedString) {
         
-        let old_length = string.count
+        let old_length = _string.count
         
-        string.append(contentsOf: other.string)
+        _string.append(contentsOf: other._string)
         _attributes.append(contentsOf: other._attributes.map { _Attribute(index: $0.index + old_length, attribute: $0.attribute) })
         
         self._fix_attributes()
@@ -127,9 +165,10 @@ extension AttributedString {
 
 extension AttributedString {
     
+    @inlinable
     public mutating func setAttribute(_ attribute: Attribute, in range: Range<Int>) {
         
-        precondition(range.clamped(to: 0..<string.count) == range, "Index out of range.")
+        precondition(range.clamped(to: 0..<_string.count) == range, "Index out of range.")
         
         let attributes = self._attributes
         
@@ -149,23 +188,25 @@ extension AttributedString {
 
 extension AttributedString {
     
+    @inlinable
     public func replacingCharacters(in range: Range<Int>, with replacement: String) -> AttributedString {
         
-        precondition(range.clamped(to: 0..<string.count) == range, "Index out of range.")
+        precondition(range.clamped(to: 0..<_string.count) == range, "Index out of range.")
         
         var result = self.attributedSubstring(from: 0..<range.lowerBound)
         result.append(replacement)
-        result.append(self.attributedSubstring(from: range.upperBound..<string.count))
+        result.append(self.attributedSubstring(from: range.upperBound..<_string.count))
         return result
     }
     
+    @inlinable
     public func replacingCharacters(in range: Range<Int>, with replacement: AttributedString) -> AttributedString {
         
-        precondition(range.clamped(to: 0..<string.count) == range, "Index out of range.")
+        precondition(range.clamped(to: 0..<_string.count) == range, "Index out of range.")
         
         var result = self.attributedSubstring(from: 0..<range.lowerBound)
         result.append(replacement)
-        result.append(self.attributedSubstring(from: range.upperBound..<string.count))
+        result.append(self.attributedSubstring(from: range.upperBound..<_string.count))
         return result
     }
 }
