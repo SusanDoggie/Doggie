@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreGraphics)
+#if canImport(CoreGraphics) && canImport(CoreText)
 
 extension CTFramesetter {
     
