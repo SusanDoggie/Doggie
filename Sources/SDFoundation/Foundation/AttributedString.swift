@@ -178,6 +178,16 @@ extension AttributedString {
     }
     
     @inlinable
+    public mutating func setAttribute<T>(_ value: T, for keyPath: WritableKeyPath<Attribute, T>) {
+        
+        for i in 0..<self._attributes.count {
+            self._attributes[i].attribute[keyPath: keyPath] = value
+        }
+        
+        self._fix_attributes()
+    }
+    
+    @inlinable
     public mutating func setAttribute(_ attribute: Attribute, in range: Range<Int>) {
         
         precondition(range.clamped(to: 0..<_string.count) == range, "Index out of range.")
@@ -193,9 +203,55 @@ extension AttributedString {
             self._attributes = attributes.filter { $0.index < range.lowerBound }
             self._attributes.append(_Attribute(index: range.lowerBound, attribute: attribute))
             
-            let replaced_attribute = attributes.lazy.filter { range ~= $0.index }.max { $0.index }?.attribute
-            if let attr = replaced_attribute {
-                self._attributes.append(_Attribute(index: range.upperBound, attribute: attr))
+            let attributes_in_range = attributes.lazy.filter { $0.index != range.lowerBound && range ~= $0.index }
+            if let attribute = attributes_in_range.max(by: { $0.index })?.attribute {
+                self._attributes.append(_Attribute(index: range.upperBound, attribute: attribute))
+            }
+            
+            self._attributes.append(contentsOf: attributes.lazy.filter { $0.index > range.upperBound })
+            
+            self._fix_attributes()
+        }
+    }
+    
+    @inlinable
+    public mutating func setAttribute<T>(_ value: T, for keyPath: WritableKeyPath<Attribute, T>, in range: Range<Int>) {
+        
+        precondition(range.clamped(to: 0..<_string.count) == range, "Index out of range.")
+        
+        if _string.isEmpty {
+            
+            var attribute = self._attributes[0]
+            attribute.attribute[keyPath: keyPath] = value
+            self._attributes = [attribute]
+            
+        } else {
+            
+            let attributes = self._attributes
+            
+            self._attributes = attributes.filter { $0.index <= range.lowerBound }
+            
+            if self._attributes[self._attributes.count - 1].index == range.lowerBound {
+                
+                self._attributes[self._attributes.count - 1].attribute[keyPath: keyPath] = value
+                
+            } else {
+                
+                var attribute = self._attributes[self._attributes.count - 1].attribute
+                attribute[keyPath: keyPath] = value
+                self._attributes.append(_Attribute(index: range.lowerBound, attribute: attribute))
+            }
+            
+            let attributes_in_range = attributes.lazy.filter { $0.index != range.lowerBound && range ~= $0.index }
+            
+            for var attribute in attributes_in_range {
+                attribute.attribute[keyPath: keyPath] = value
+                self._attributes.append(attribute)
+            }
+            
+            if var attribute = attributes_in_range.max(by: { $0.index }) {
+                attribute.attribute[keyPath: keyPath] = value
+                self._attributes.append(_Attribute(index: range.upperBound, attribute: attribute.attribute))
             }
             
             self._attributes.append(contentsOf: attributes.lazy.filter { $0.index > range.upperBound })
