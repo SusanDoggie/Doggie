@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct AttributedString<Attribute: Hashable> {
+public struct AttributedString<Attribute: Equatable>: Equatable {
     
     @usableFromInline
     var _string: String
@@ -47,6 +47,7 @@ public struct AttributedString<Attribute: Hashable> {
 
 extension AttributedString {
     
+    @frozen
     @usableFromInline
     struct _Attribute: Equatable {
         
@@ -64,11 +65,59 @@ extension AttributedString {
     }
 }
 
+extension AttributedString {
+    
+    @frozen
+    public struct AttributeCollection: Equatable {
+        
+        @usableFromInline
+        var _string: String
+        
+        @usableFromInline
+        var _attributes: [_Attribute]
+        
+        @inlinable
+        init(string: String, attributes: [_Attribute]) {
+            self._string = String(string)
+            self._attributes = attributes
+        }
+    }
+    
+    @inlinable
+    public var attributes: AttributeCollection {
+        return AttributeCollection(string: _string, attributes: _attributes)
+    }
+}
+
+extension AttributedString.AttributeCollection: RandomAccessCollection {
+    
+    public typealias Indices = Range<Int>
+    
+    public typealias Index = Int
+    
+    public var startIndex: Int {
+        return _attributes.startIndex
+    }
+    public var endIndex: Int {
+        return _attributes.endIndex
+    }
+    
+    public subscript(position: Int) -> (attribute: Attribute, range: Range<Int>) {
+        let attribute = _attributes[position]
+        let upperBound = position + 1 == _attributes.endIndex ? _string.count : _attributes[position + 1].index
+        return (attribute.attribute, attribute.index..<upperBound)
+    }
+}
+
 extension AttributedString._Attribute: Hashable where Attribute: Hashable {
     
 }
 
 extension AttributedString: Hashable where Attribute: Hashable {
+    
+}
+
+extension AttributedString.AttributeCollection: Hashable where Attribute: Hashable {
     
 }
 
@@ -91,18 +140,6 @@ extension AttributedString {
 }
 
 extension AttributedString {
-    
-    @inlinable
-    public var attributes: [(Attribute, Range<Int>)] {
-        
-        var attributes = zip(_attributes, _attributes.dropFirst()).map { ($0.attribute, $0.index..<$1.index) }
-        
-        if let last = _attributes.last {
-            attributes.append((last.attribute, last.index..<_string.count))
-        }
-        
-        return attributes
-    }
     
     @inlinable
     public func attributedSubstring(from range: Range<Int>) -> AttributedString {
