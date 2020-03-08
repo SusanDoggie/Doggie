@@ -75,7 +75,7 @@ extension SFNTGLYF {
             
             guard let instructionLength = try? data.decode(BEUInt16.self) else { return nil }
             
-            guard try? (0..<Int(instructionLength)).map({ _ in try data.decode(UInt8.self) }) != nil else { return nil }
+            guard (try? (0..<Int(instructionLength)).map({ _ in try data.decode(UInt8.self) })) != nil else { return nil }
             
             let numberOfCoordinates = Int(endPtsOfContours.last!) + 1
             
