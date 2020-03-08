@@ -468,7 +468,6 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         let length = self._length(1)
         guard let tangent = LineSegment(Point(), Point(x: length, y: 0)).offset(a0, a1) else { return }
         
-        let split = self._inflection + self._stationary
         let t = self._inflection.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.0625, $0 + 0.0625] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         
         func width(_ t: Double) -> Point {

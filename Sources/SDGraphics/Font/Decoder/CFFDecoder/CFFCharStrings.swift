@@ -52,8 +52,6 @@ extension CFFFontFace {
         let subroutine = self.subroutine
         let subroutineBias = self.subroutineBias(subroutine)
         
-        guard let pDICT = fontDICT.pDICT else { return [] }
-        
         let pSubroutine = fontDICT.pSubroutine
         let pSubroutineBias = pSubroutine.map { self.subroutineBias($0) }
         

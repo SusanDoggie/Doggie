@@ -41,10 +41,10 @@ public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int)
         return
     }
     
-    var _sreal = temp
-    var _simag = temp + temp_stride
-    var _kreal = output
-    var _kimag = output + out_stride
+    let _sreal = temp
+    let _simag = temp + temp_stride
+    let _kreal = output
+    let _kimag = output + out_stride
     
     let s_stride = temp_stride << 1
     let k_stride = out_stride << 1

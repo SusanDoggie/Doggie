@@ -314,9 +314,9 @@ public func CircularConvolve(_ signal: [Double], _ kernel: [Double], _ result: i
         let block = signal.count
         let count = result.count / block
         for idx in 1..<count {
-            vec_op(block, result, 1, UnsafePointer(result) + idx * block, 1, &result, 1) { $0 + $1 }
+            result.withUnsafeMutableBufferPointer { vec_op(block, $0.baseAddress!, 1, $0.baseAddress! + idx * block, 1, $0.baseAddress!, 1) { $0 + $1 } }
         }
-        vec_op(result.count % block, result, 1, UnsafePointer(result) + count * block, 1, &result, 1) { $0 + $1 }
+        result.withUnsafeMutableBufferPointer { vec_op($0.count % block, $0.baseAddress!, 1, $0.baseAddress! + count * block, 1, $0.baseAddress!, 1) { $0 + $1 } }
         result.removeSubrange(block..<result.count)
     }
 }
@@ -347,9 +347,9 @@ public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex], _ result:
         let block = signal.count
         let count = result.count / block
         for idx in 1..<count {
-            vec_op(block, result, 1, UnsafePointer(result) + idx * block, 1, &result, 1) { $0 + $1 }
+            result.withUnsafeMutableBufferPointer { vec_op(block, $0.baseAddress!, 1, $0.baseAddress! + idx * block, 1, $0.baseAddress!, 1) { $0 + $1 } }
         }
-        vec_op(result.count % block, result, 1, UnsafePointer(result) + count * block, 1, &result, 1) { $0 + $1 }
+        result.withUnsafeMutableBufferPointer { vec_op($0.count % block, $0.baseAddress!, 1, $0.baseAddress! + count * block, 1, $0.baseAddress!, 1) { $0 + $1 } }
         result.removeSubrange(block..<result.count)
     }
 }

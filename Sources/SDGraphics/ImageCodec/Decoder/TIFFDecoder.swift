@@ -612,8 +612,6 @@ struct TIFFPage: ImageRepBase {
                 
                 let rowCount = min(rowsPerStrip, remain)
                 
-                let bitmapBitsLength = strip.count << 3
-                
                 let dataBitSize = strip.count << 3
                 
                 strip.withUnsafeBufferPointer { _source in
