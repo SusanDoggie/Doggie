@@ -60,9 +60,13 @@ extension ColorProtocol {
     
     @inlinable
     public func almostEqual<C: ColorProtocol>(_ other: C, intent: RenderingIntent = .default, epsilon: Double = 0.0001) -> Bool {
+        
+        guard self.opacity.almostEqual(other.opacity, epsilon: epsilon) else { return false }
+        
         let _cieXYZ = self.colorSpace.cieXYZ
         let _self = self.convert(to: _cieXYZ, intent: intent)
         let _other = other.convert(to: _cieXYZ, intent: intent)
+        
         return _self.color.x.almostEqual(_other.color.x, epsilon: epsilon)
             && _self.color.y.almostEqual(_other.color.y, epsilon: epsilon)
             && _self.color.z.almostEqual(_other.color.z, epsilon: epsilon)
