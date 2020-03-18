@@ -242,11 +242,11 @@ extension Shape.BezierSegment {
     
     @inlinable
     func split_check(_ t: Double) -> Double? {
+        guard 0...1 ~= t else { return nil }
         let p = self.point(t)
         if t.almostZero() || start.almostEqual(p) { return 0 }
-        if (t - 1).almostZero() || end.almostEqual(p) { return 1 }
-        if 0...1 ~= t { return t }
-        return nil
+        if t.almostEqual(1) || end.almostEqual(p) { return 1 }
+        return t
     }
     
     @inlinable

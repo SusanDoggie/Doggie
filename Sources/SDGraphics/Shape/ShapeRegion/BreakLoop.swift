@@ -202,7 +202,7 @@ extension Shape {
                             
                             let check_1 = a.almostZero()
                             let check_2 = !check_1 && a > 0
-                            let check_3 = (b - 1).almostZero()
+                            let check_3 = b.almostEqual(1)
                             let check_4 = !check_3 && b < 1
                             
                             if check_1 && check_4 {
