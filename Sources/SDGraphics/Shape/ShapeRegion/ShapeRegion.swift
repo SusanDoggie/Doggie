@@ -118,6 +118,10 @@ extension ShapeRegion {
         return solids.reduce(0) { $0 + $1.area }
     }
     
+    public func contains(_ p: Point) -> Bool {
+        return solids.contains { $0.contains(p) }
+    }
+    
     fileprivate func components(_ sign: FloatingPointSign) -> [Shape.Component] {
         return solids.flatMap { $0.components(sign) }
     }
@@ -154,6 +158,10 @@ extension ShapeRegion.Solid {
 }
 
 extension ShapeRegion.Solid {
+    
+    public func contains(_ p: Point) -> Bool {
+        return solid.winding(p) != 0 && !holes.contains(p)
+    }
     
     fileprivate var _solid: ShapeRegion.Solid {
         return ShapeRegion.Solid(solid: self.solid)
