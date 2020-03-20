@@ -385,16 +385,6 @@ extension Shape.BezierSegment {
             return nil
         }
         
-        let check1 = start.almostEqual(other.start)
-        let check2 = start.almostEqual(other.end)
-        let check3 = end.almostEqual(other.start)
-        let check4 = end.almostEqual(other.end)
-        
-        let check5 = check1 || check2 || other._closest(start) != nil
-        let check6 = check3 || check4 || other._closest(end) != nil
-        let check7 = check1 || check3 || self._closest(other.start) != nil
-        let check8 = check2 || check4 || self._closest(other.end) != nil
-        
         var result: [(Double, Double)]?
         
         switch self.segment {
@@ -446,10 +436,22 @@ extension Shape.BezierSegment {
         }
         
         if var _result = result {
+            
+            let check1 = start.almostEqual(other.start)
+            let check2 = start.almostEqual(other.end)
+            let check3 = end.almostEqual(other.start)
+            let check4 = end.almostEqual(other.end)
+            
+            let check5 = check1 || check2 || other._closest(start) != nil
+            let check6 = check3 || check4 || other._closest(end) != nil
+            let check7 = check1 || check3 || self._closest(other.start) != nil
+            let check8 = check2 || check4 || self._closest(other.end) != nil
+            
             if check5, let idx = _result.enumerated().min(by: { abs($0.1.0) })?.0 { _result[idx].0 = 0 }
             if check6, let idx = _result.enumerated().min(by: { abs($0.1.0 - 1) })?.0 { _result[idx].0 = 1 }
             if check7, let idx = _result.enumerated().min(by: { abs($0.1.1) })?.0 { _result[idx].1 = 0 }
             if check8, let idx = _result.enumerated().min(by: { abs($0.1.1 - 1) })?.0 { _result[idx].1 = 1 }
+            
             result = _result
         }
         
