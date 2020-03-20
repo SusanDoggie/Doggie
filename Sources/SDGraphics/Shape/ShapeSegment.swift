@@ -253,9 +253,9 @@ extension Shape.BezierSegment {
     func __closest(_ p: Point) -> Double? {
         let list: [Double]
         switch self.segment {
-        case let .line(p1): list = LineSegment(start, p1).closest(p, in: -0.5...1.5)
-        case let .quad(p1, p2): list = QuadBezier(start, p1, p2).closest(p, in: -0.5...1.5)
-        case let .cubic(p1, p2, p3): list = CubicBezier(start, p1, p2, p3).closest(p, in: -0.5...1.5)
+        case let .line(p1): list = LineSegment(start, p1).closest(p)
+        case let .quad(p1, p2): list = QuadBezier(start, p1, p2).closest(p)
+        case let .cubic(p1, p2, p3): list = CubicBezier(start, p1, p2, p3).closest(p)
         }
         return list.first { split_check($0) != nil && p.almostEqual(self.point($0)) } ?? list.first { p.almostEqual(self.point($0)) } ?? list.first
     }
