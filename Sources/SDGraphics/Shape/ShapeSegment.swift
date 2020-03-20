@@ -452,10 +452,8 @@ extension Shape.BezierSegment {
             if check7, let idx = _result.enumerated().min(by: { abs($0.1.1) })?.0 { _result[idx].1 = 0 }
             if check8, let idx = _result.enumerated().min(by: { abs($0.1.1 - 1) })?.0 { _result[idx].1 = 1 }
             
-            result = _result
+            result = _result.compactMap { _filter(split_check($0), split_check($1)) }
         }
-        
-        result = result?.compactMap { _filter(split_check($0), split_check($1)) }
         
         return result == nil && _overlap(other) ? nil : result?.sorted { $0.0 } ?? []
     }
