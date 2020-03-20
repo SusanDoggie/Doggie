@@ -435,7 +435,7 @@ extension Shape.BezierSegment {
             }
         }
         
-        if var _result = result {
+        if var result = result {
             
             let check1 = start.almostEqual(other.start)
             let check2 = start.almostEqual(other.end)
@@ -447,15 +447,15 @@ extension Shape.BezierSegment {
             let check7 = check1 || check3 || self._closest(other.start) != nil
             let check8 = check2 || check4 || self._closest(other.end) != nil
             
-            if check5, let idx = _result.enumerated().min(by: { abs($0.1.0) })?.0 { _result[idx].0 = 0 }
-            if check6, let idx = _result.enumerated().min(by: { abs($0.1.0 - 1) })?.0 { _result[idx].0 = 1 }
-            if check7, let idx = _result.enumerated().min(by: { abs($0.1.1) })?.0 { _result[idx].1 = 0 }
-            if check8, let idx = _result.enumerated().min(by: { abs($0.1.1 - 1) })?.0 { _result[idx].1 = 1 }
+            if check5, let idx = result.enumerated().min(by: { abs($0.1.0) })?.0 { result[idx].0 = 0 }
+            if check6, let idx = result.enumerated().min(by: { abs($0.1.0 - 1) })?.0 { result[idx].0 = 1 }
+            if check7, let idx = result.enumerated().min(by: { abs($0.1.1) })?.0 { result[idx].1 = 0 }
+            if check8, let idx = result.enumerated().min(by: { abs($0.1.1 - 1) })?.0 { result[idx].1 = 1 }
             
-            result = _result.compactMap { _filter(split_check($0), split_check($1)) }
+            return result.compactMap { _filter(split_check($0), split_check($1)) }.sorted { $0.0 }
         }
         
-        return result == nil && _overlap(other) ? nil : result?.sorted { $0.0 } ?? []
+        return _overlap(other) ? nil : []
     }
 }
 
