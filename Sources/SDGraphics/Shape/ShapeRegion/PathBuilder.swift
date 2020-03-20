@@ -25,6 +25,13 @@
 
 private let ShapeCacheInterscetionResultKey = "ShapeCacheInterscetionResultKey"
 
+extension Collection where SubSequence: Collection {
+    
+    func rotateZip() -> Zip2Sequence<Self, LazyConcatCollection<Self.SubSequence, Self.SubSequence>> {
+        return zip(self, self.rotated(1))
+    }
+}
+
 enum InterscetionResult {
     
     case none

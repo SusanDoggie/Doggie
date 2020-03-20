@@ -257,7 +257,7 @@ extension Shape.BezierSegment {
         case let .quad(p1, p2): list = QuadBezier(start, p1, p2).closest(p, in: -0.5...1.5)
         case let .cubic(p1, p2, p3): list = CubicBezier(start, p1, p2, p3).closest(p, in: -0.5...1.5)
         }
-        return list.first { p.almostEqual(self.point($0)) } ?? list.first
+        return list.first { split_check($0) != nil && p.almostEqual(self.point($0)) } ?? list.first { p.almostEqual(self.point($0)) } ?? list.first
     }
     
     @inlinable

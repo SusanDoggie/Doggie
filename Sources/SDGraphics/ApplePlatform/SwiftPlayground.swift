@@ -127,7 +127,7 @@ extension ShapeRegion: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
-        return shape
+        return Shape(self)
     }
 }
 
@@ -135,6 +135,6 @@ extension ShapeRegion.Solid: CustomPlaygroundDisplayConvertible {
     
     @inlinable
     public var playgroundDescription: Any {
-        return shape
+        return Shape(self)
     }
 }

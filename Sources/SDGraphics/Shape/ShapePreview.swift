@@ -52,13 +52,13 @@ extension Shape.Component {
 extension ShapeRegion {
     
     public func preview(inset: Double = -16) -> Image<RGBA32ColorPixel> {
-        return shape.preview(inset: inset)
+        return Shape(self).preview(inset: inset)
     }
 }
 
 extension ShapeRegion.Solid {
     
     public func preview(inset: Double = -16) -> Image<RGBA32ColorPixel> {
-        return shape.preview(inset: inset)
+        return Shape(self).preview(inset: inset)
     }
 }
