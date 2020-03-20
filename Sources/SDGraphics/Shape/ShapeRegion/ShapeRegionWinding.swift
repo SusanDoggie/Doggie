@@ -25,7 +25,12 @@
 
 extension ShapeRegion {
     
-    public init(_ path: Shape, winding: Shape.WindingRule) {
+    public init(_ shape: Shape, winding: Shape.WindingRule) {
+        
+        if shape.transform.determinant.almostZero() {
+            self.init()
+            return
+        }
         
         let cacheKey: String
         
@@ -34,22 +39,22 @@ extension ShapeRegion {
         case .evenOdd: cacheKey = ShapeCacheEvenOddRegionKey
         }
         
-        if let region: ShapeRegion = path.identity.cache.load(for: cacheKey) {
+        if let region: ShapeRegion = shape.identity.cache.load(for: cacheKey) {
             
             self = region
             
-        } else if var region: ShapeRegion = path.cache.load(for: cacheKey) {
+        } else if var region: ShapeRegion = shape.cache.load(for: cacheKey) {
             
-            region *= path.transform
+            region *= shape.transform
             self = region
             
-            path.identity.cache.store(value: region, for: cacheKey)
+            shape.identity.cache.store(value: region, for: cacheKey)
             
         } else {
             
             var region = ShapeRegion()
             
-            var _path = path
+            var _path = shape
             _path.transform = .identity
             
             let bound = _path.boundary
@@ -63,12 +68,12 @@ extension ShapeRegion {
             
             region *= _path.transform.inverse
             
-            path.cache.store(value: region, for: cacheKey)
+            shape.cache.store(value: region, for: cacheKey)
             
-            region *= path.transform
+            region *= shape.transform
             self = region
             
-            path.identity.cache.store(value: region, for: cacheKey)
+            shape.identity.cache.store(value: region, for: cacheKey)
         }
     }
     
