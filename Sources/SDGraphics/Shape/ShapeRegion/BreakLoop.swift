@@ -23,37 +23,7 @@
 //  THE SOFTWARE.
 //
 
-extension Point {
-    
-    fileprivate func _round_to_float() -> Point {
-        return Point(x: Double(Float(x)), y: Double(Float(y)))
-    }
-}
-
-extension Shape.Segment {
-    
-    fileprivate func _round_to_float() -> Shape.Segment {
-        switch self {
-        case let .line(p1): return .line(p1._round_to_float())
-        case let .quad(p1, p2): return .quad(p1._round_to_float(), p2._round_to_float())
-        case let .cubic(p1, p2, p3): return .cubic(p1._round_to_float(), p2._round_to_float(), p3._round_to_float())
-        }
-    }
-    
-}
-
-extension Shape.BezierSegment {
-    
-    fileprivate func _round_to_float() -> Shape.BezierSegment {
-        return Shape.BezierSegment(start: start._round_to_float(), segment: segment._round_to_float())
-    }
-}
-
 extension Shape.Component {
-    
-    fileprivate func _round_to_float() -> Shape.Component {
-        return Shape.Component(start: start._round_to_float(), closed: isClosed, segments: segments.map { $0._round_to_float() })
-    }
     
     func breakLoop(reference: Double) -> [ShapeRegion.Solid] {
         
@@ -130,7 +100,7 @@ extension Shape.Component {
         
         for (left, right) in _points.rotateZip() {
             if left.0 == right.0 {
-                if let solid = ShapeRegion.Solid(segments: self.split_path(left.1, right.1).map { $0._round_to_float() }, reference: reference) {
+                if let solid = ShapeRegion.Solid(segments: self.split_path(left.1, right.1).map { $0 }, reference: reference) {
                     result.append(solid)
                 }
             } else {
@@ -155,7 +125,7 @@ extension Shape.Component {
                             }
                         }
                     }
-                    if let solid = ShapeRegion.Solid(segments: segments.map { $0._round_to_float() }, reference: reference) {
+                    if let solid = ShapeRegion.Solid(segments: segments.map { $0 }, reference: reference) {
                         result.append(solid)
                     }
                     if i == 0 {
@@ -168,7 +138,7 @@ extension Shape.Component {
             }
         }
         
-        return result.filter { $0.area > abs(reference) * 0.000001 }
+        return result
     }
 }
 
@@ -181,8 +151,14 @@ extension Shape {
         
         var solids: [ShapeRegion.Solid] = []
         
-        for item in self {
+        for var item in self {
+            
+            if !item.start.almostEqual(item.end) {
+                item.append(.line(item.start))
+            }
+            
             var path: [ShapeRegion.Solid.Segment] = []
+            
             for segment in item.bezier {
                 
                 switch segment.segment {
@@ -247,6 +223,6 @@ extension Shape {
             }
         }
         
-        return solids.flatMap { $0.solid._round_to_float().breakLoop(reference: reference) }.makeContiguousBuffer()
+        return solids.flatMap { $0.solid.breakLoop(reference: reference) }.makeContiguousBuffer()
     }
 }
