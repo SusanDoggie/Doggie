@@ -25,8 +25,6 @@
 
 #if canImport(Metal)
 
-import Metal
-
 @available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
 extension MTLDevice {
     

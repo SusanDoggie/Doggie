@@ -27,4 +27,4 @@
 
 @_exported import SDFoundation
 
-@_exported import SDNumerics
+@_exported import SDGeometry

@@ -23,8 +23,8 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreGraphics)
+#if canImport(Metal)
 
-@_exported import CoreGraphics
+@_exported import Metal
 
 #endif

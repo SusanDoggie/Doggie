@@ -23,12 +23,6 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(CoreGraphics)
-
-@_exported import CoreGraphics
-
-#endif
-
 #if canImport(CoreText)
 
 @_exported import CoreText
@@ -73,26 +67,8 @@
 
 #endif
 
-#if canImport(Metal)
-
-@_exported import Metal
-
-#endif
-
 #if canImport(MetalPerformanceShaders)
 
 @_exported import MetalPerformanceShaders
-
-#endif
-
-#if canImport(AppKit) && !targetEnvironment(macCatalyst)
-
-@_exported import AppKit
-
-#endif
-
-#if canImport(UIKit)
-
-@_exported import UIKit
 
 #endif

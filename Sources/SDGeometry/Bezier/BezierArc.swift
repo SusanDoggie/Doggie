@@ -23,7 +23,8 @@
 //  THE SOFTWARE.
 //
 
-public let bezier_circle: [Point] = {
+@usableFromInline
+let bezier_circle: [Point] = {
     
     //
     // root of 18225 x^12 + 466560 x^11 - 28977264 x^10 + 63288000 x^9 + 96817248 x^8

@@ -1,5 +1,5 @@
 //
-//  Exported.swift
+//  AppleExported.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,8 +23,20 @@
 //  THE SOFTWARE.
 //
 
-@_exported import SDFoundation
+#if canImport(CoreGraphics)
 
-@_exported import SDGeometry
+@_exported import CoreGraphics
 
-@_exported import SDGraphics
+#endif
+
+#if canImport(AppKit) && !targetEnvironment(macCatalyst)
+
+@_exported import AppKit
+
+#endif
+
+#if canImport(UIKit)
+
+@_exported import UIKit
+
+#endif

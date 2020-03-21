@@ -31,7 +31,7 @@ let package = Package(
     products: [
         .library(name: "SDFoundation", targets: ["SDFoundation"]),
         .library(name: "SDCompression", targets: ["SDCompression"]),
-        .library(name: "SDNumerics", targets: ["SDNumerics"]),
+        .library(name: "SDGeometry", targets: ["SDGeometry"]),
         .library(name: "SDGraphics", targets: ["SDGraphics"]),
         .library(name: "Doggie", targets: ["Doggie"]),
     ],
@@ -57,17 +57,17 @@ let package = Package(
             "zlib_c",
             "brotli_c",
         ]),
-        .target(name: "SDNumerics", dependencies: [
+        .target(name: "SDGeometry", dependencies: [
             "SDFoundation",
         ]),
         .target(name: "SDGraphics", dependencies: [
             "SDFoundation",
-            "SDNumerics",
+            "SDGeometry",
             "SDCompression",
         ]),
         .target(name: "Doggie", dependencies: [
             "SDFoundation",
-            "SDNumerics",
+            "SDGeometry",
             "SDGraphics",
         ]),
         .testTarget(name: "DoggieTests", dependencies: [
