@@ -41,7 +41,7 @@ public func _phase_diff(_ lhs: Point, _ rhs: Point, _ minus_signed: Bool) -> Dou
     return _phase_diff(lhs.phase, rhs.phase, minus_signed)
 }
 
-public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> CubicBezier<Point>? {
+public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Point, _ points: [(Double, Point)]) -> CubicBezier<Point> {
     
     var _a1 = 0.0
     var _b1 = 0.0
@@ -78,15 +78,15 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
     }
     
     let t = _a1 * _b2 - _b1 * _a2
-    
-    if t.almostZero() {
-        return nil
-    }
-    
     let u = (_c2 * _b1 - _c1 * _b2) / t
     let v = (_c1 * _a2 - _c2 * _a1) / t
     
-    return u < 0 || v < 0 ? nil : CubicBezier(p0, p0 + u * m0, p3 + v * m1, p3)
+    if t.almostZero() || u.almostZero() || u < 0 || v.almostZero() || v < 0 {
+        let u = p0.distance(to: p3) / 3
+        return CubicBezier(p0, p0 + u * m0.unit, p3 + u * m1.unit, p3)
+    }
+    
+    return CubicBezier(p0, p0 + u * m0, p3 + v * m1, p3)
 }
 
 extension BezierProtocol where Scalar == Double, Element == Point {
@@ -269,11 +269,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let m1 = self._offset_point(a, 0.5) else { return }
             guard let m2 = self._offset_point(a, 0.75) else { return }
             
-            if let curve = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
-                try calback(curve)
-            } else {
-                try calback(LineSegment(q0, q3).elevated().elevated())
-            }
+            try calback(CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]))
         }
     }
     
@@ -405,11 +401,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
             guard let m1 = _offset_point(0.5).map({ $0 + $1 }) else { return }
             guard let m2 = _offset_point(0.75).map({ $0 + $1 }) else { return }
             
-            if let curve = CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]) {
-                try calback(curve)
-            } else {
-                try calback(LineSegment(q0, q3).elevated().elevated())
-            }
+            try calback(CubicBezierFitting(q0, q3, d0, -d3, [(0.25, m0), (0.5, m1), (0.75, m2)]))
         }
     }
     
