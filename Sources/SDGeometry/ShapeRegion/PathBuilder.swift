@@ -310,13 +310,9 @@ extension Shape.Component {
             return false
         }
         
-        for index in 0..<other.count {
-            if self.bezier.allSatisfy({ !$0.overlap(other.bezier[index]) }) {
-                return self.winding(other.bezier[index].point(0.5)) != 0
-            }
-        }
+        let _other = other.bezier.filter { other in self.bezier.allSatisfy { !$0.overlap(other) } }.max { abs($0.area) }
         
-        return false
+        return _other.map { self.winding($0.point(0.5)) != 0 } ?? false
     }
     
     private func _breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)], reference: Double) -> ShapeRegion {
