@@ -254,7 +254,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         
         let angle = _phase_diff(d3, d0, a.sign == .minus)
         
-        if abs(angle) > 0.25 * .pi {
+        if abs(angle) > 0.45 * .pi {
             
             let center = self.eval(0.5)
             let arc = BezierArc(angle).map { a * $0 * SDTransform.rotate(d0.phase - 0.5 * .pi) + center }
@@ -383,7 +383,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         
         let angle = _phase_diff(d3, d0, minus_signed)
         
-        if abs(angle) > 0.25 * .pi {
+        if abs(angle) > 0.45 * .pi {
             
             let center = self.eval(0.5)
             guard var a = _offset_point(0.5).map({ $0 + $1 })?.distance(to: center) else { return }
@@ -460,7 +460,8 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         let length = self._length(1)
         guard let tangent = LineSegment(Point(), Point(x: length, y: 0)).offset(a0, a1) else { return }
         
-        let t = self._inflection.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.0625, $0 + 0.0625] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
+        let split = self._inflection + self._stationary
+        let t = split.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.0625, $0 + 0.0625] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         
         func width(_ t: Double) -> Point {
             let s = self._length(t)
