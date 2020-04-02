@@ -2,7 +2,7 @@ language: generic
 notifications: never
 env:
   global:
-    - SWIFT_SNAPSHOT="5.1"
+    - SWIFT_SNAPSHOT="5.2"
 
 matrix:
   include:
