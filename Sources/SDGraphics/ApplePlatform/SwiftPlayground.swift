@@ -91,18 +91,6 @@ extension AnyColor: CustomPlaygroundDisplayConvertible {
     }
 }
 
-#if canImport(AppKit) && !targetEnvironment(macCatalyst)
-
-extension Shape: CustomPlaygroundDisplayConvertible {
-    
-    @inlinable
-    public var playgroundDescription: Any {
-        return NSBezierPath(self)
-    }
-}
-
-#endif
-
 #if canImport(UIKit)
 
 extension Shape: CustomPlaygroundDisplayConvertible {
@@ -110,6 +98,16 @@ extension Shape: CustomPlaygroundDisplayConvertible {
     @inlinable
     public var playgroundDescription: Any {
         return UIBezierPath(self)
+    }
+}
+
+#elseif canImport(AppKit)
+
+extension Shape: CustomPlaygroundDisplayConvertible {
+    
+    @inlinable
+    public var playgroundDescription: Any {
+        return NSBezierPath(self)
     }
 }
 

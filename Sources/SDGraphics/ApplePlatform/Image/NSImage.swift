@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(AppKit) && !targetEnvironment(macCatalyst)
+#if canImport(AppKit) && !canImport(UIKit)
 
 extension NSImage {
     
