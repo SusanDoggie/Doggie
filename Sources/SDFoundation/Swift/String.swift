@@ -25,6 +25,7 @@
 
 extension StringProtocol {
     
+    @inlinable
     public func escaped(asASCII forceASCII: Bool) -> String {
         return self.unicodeScalars.reduce(into: "") { $0 += $1.escaped(asASCII: forceASCII) }
     }
