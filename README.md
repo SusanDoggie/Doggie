@@ -14,12 +14,12 @@ Doggie is a foundational library for Apple's swift. It includes mathematics, acc
 
 | | **Build Tool** | **Master** |
 |---|:---:|:---:|
-| **macOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/1)](https://travis-ci.com/SusanDoggie/Doggie)|
-| **iOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/2)](https://travis-ci.com/SusanDoggie/Doggie)|
-| **tvOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/3)](https://travis-ci.com/SusanDoggie/Doggie)|
-| **macOS**        | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/4)](https://travis-ci.com/SusanDoggie/Doggie)|
-| **Ubuntu 16.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/5)](https://travis-ci.com/SusanDoggie/Doggie)|
-| **Ubuntu 18.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/6)](https://travis-ci.com/SusanDoggie/Doggie)|
+| **macOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/1?use_travis_com=true)](https://travis-ci.com/SusanDoggie/Doggie)|
+| **iOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/2?use_travis_com=true)](https://travis-ci.com/SusanDoggie/Doggie)|
+| **tvOS**        | **Xcode** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/3?use_travis_com=true)](https://travis-ci.com/SusanDoggie/Doggie)|
+| **macOS**        | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/4?use_travis_com=true)](https://travis-ci.com/SusanDoggie/Doggie)|
+| **Ubuntu 16.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/5?use_travis_com=true)](https://travis-ci.com/SusanDoggie/Doggie)|
+| **Ubuntu 18.04** | **SwiftPM** | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/SusanDoggie/Doggie/branches/master/6?use_travis_com=true)](https://travis-ci.com/SusanDoggie/Doggie)|
 
 ## Apps Using This Library
 
