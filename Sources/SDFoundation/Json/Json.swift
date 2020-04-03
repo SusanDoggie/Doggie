@@ -140,7 +140,7 @@ extension Json: CustomStringConvertible {
         case let number as Double: return number.description
         case let number as Float: return number.description
         case let bool as Bool: return bool.description
-        case let string as String: return string
+        case let string as String: return "\"\(string.escaped(asASCII: false))\""
         case let array as [Any]:
             var result = "["
             var first = true
@@ -150,7 +150,7 @@ extension Json: CustomStringConvertible {
                 } else {
                     result += ", "
                 }
-                result += (item as? String).map { "\"\($0)\"" } ?? Json(value: item).description
+                result += (item as? String).map { "\"\($0.escaped(asASCII: false))\"" } ?? Json(value: item).description
             }
             result += "]"
             return result
@@ -165,7 +165,7 @@ extension Json: CustomStringConvertible {
                 }
                 result += k
                 result += ": "
-                result += (v as? String).map { "\"\($0)\"" } ?? Json(value: v).description
+                result += (v as? String).map { "\"\($0.escaped(asASCII: false))\"" } ?? Json(value: v).description
             }
             result += "]"
             return result

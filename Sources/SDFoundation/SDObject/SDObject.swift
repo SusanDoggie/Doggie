@@ -168,7 +168,7 @@ extension SDObject: CustomStringConvertible {
         switch type {
         case .null: return "nil"
         case .boolean: return "\(boolValue!)"
-        case .string: return "\"\(string!)\""
+        case .string: return "\"\(string!.escaped(asASCII: false))\""
         case .signed: return "\(int64Value!)"
         case .unsigned: return "\(uint64Value!)"
         case .number: return "\(doubleValue!)"

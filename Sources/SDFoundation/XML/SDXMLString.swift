@@ -92,7 +92,7 @@ extension SDXMLElement {
                 " ".write(to: &output)
                 (prefixMap[attribute.namespace].map { "\($0):\(attribute.attribute)" } ?? attribute.attribute).write(to: &output)
                 "=\"".write(to: &output)
-                value.write(to: &output)
+                value.escaped(asASCII: false).write(to: &output)
                 "\"".write(to: &output)
             }
             
