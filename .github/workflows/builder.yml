@@ -1,24 +1,24 @@
 name: Builder
 on: [push, pull_request]
 jobs:
-  platform:
+  darwin:
     name: ${{ matrix.name }}
     runs-on: macOS-latest
     strategy:
       matrix:
         sdk: [macosx, iphonesimulator, appletvsimulator]
         include:
-          - sdk: macosx
-            name: macOS
-            destination: 'platform=macOS'
-            codeov_eligible: true
-          - sdk: iphonesimulator
-            name: iOS
+          - name: macOS
+            enable_codecov: true
+          - name: iOS
+            sdk: iphonesimulator
             destination: 'platform=iOS Simulator,name=iPhone 11'
-          - sdk: appletvsimulator
-            name: tvOS
+          - name: tvOS
+            sdk: appletvsimulator
             destination: 'platform=tvOS Simulator,name=Apple TV 4K'
     env:
+      USE_XCOEBUILD: true
+      ENABLE_CODECOV: ${{ matrix.enable_codecov }}
       DESTINATION: ${{ matrix.destination }}
       XCODEBUILD_CONFIG: "-configuration Release -sdk ${{ matrix.sdk }}"
     steps:
@@ -26,20 +26,13 @@ jobs:
       with:
         submodules: recursive
     - name: Build
-      run: |
-        SCHEMES=$(xcodebuild -list | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
-        for SCHEME in ${SCHEMES}; do
-          echo "Building scheme ${SCHEME}"
-          xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} | xcpretty -f `xcpretty-travis-formatter`
-        done
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: build
     - name: Run tests
-      run: |
-        SCHEMES=$(xcodebuild -list | grep --after-context=-1 '^\s*Schemes:' | tail -n +2 | xargs)
-        for SCHEME in ${SCHEMES}; do
-          echo "Testing scheme ${SCHEME}"
-          xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} build-for-testing -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
-          xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" test-without-building -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
-        done
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: test
     - uses: codecov/codecov-action@v1
       if: ${{ matrix.codeov_eligible }}
   macos:
@@ -50,9 +43,13 @@ jobs:
       with:
         submodules: recursive
     - name: Build
-      run: swift build -c release
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: build
     - name: Run tests
-      run: swift test -c release
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: test
   ubuntu:
     name: ${{ matrix.image }}
     container: 
@@ -62,15 +59,21 @@ jobs:
       matrix:
         image: [xenial, bionic]
     steps:
-    - run: apt-get -q update && apt-get -y -q install libz-dev
-    - run: |
-        export DEBIAN_FRONTEND=noninteractive
-        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
-        apt-get install -y fontconfig ttf-mscorefonts-installer
     - uses: actions/checkout@v1
       with:
         submodules: recursive
+    - name: Install dependencies
+      run: apt-get -q update && apt-get -y -q install libz-dev
+    - name: Install fonts
+      run: |		
+        export DEBIAN_FRONTEND=noninteractive		
+        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections		
+        apt-get install -y fontconfig ttf-mscorefonts-installer
     - name: Build
-      run: swift build -c release --enable-test-discovery
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: build
     - name: Run tests
-      run: swift test -c release --enable-test-discovery
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: test
