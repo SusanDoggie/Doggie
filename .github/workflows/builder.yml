@@ -10,6 +10,8 @@ jobs:
         include:
           - name: macOS
             enable_codecov: true
+            sdk: macosx
+            destination: 'platform=macOS'
           - name: iOS
             sdk: iphonesimulator
             destination: 'platform=iOS Simulator,name=iPhone 11'
@@ -18,9 +20,9 @@ jobs:
             destination: 'platform=tvOS Simulator,name=Apple TV 4K'
     env:
       USE_XCOEBUILD: true
-      ENABLE_CODECOV: ${{ matrix.enable_codecov }}
+      SDK: ${{ matrix.sdk }}
       DESTINATION: ${{ matrix.destination }}
-      XCODEBUILD_CONFIG: "-configuration Release -sdk ${{ matrix.sdk }}"
+      ENABLE_CODECOV: ${{ matrix.enable_codecov }}
     steps:
     - uses: actions/checkout@v1
       with:
