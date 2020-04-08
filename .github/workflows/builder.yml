@@ -11,6 +11,7 @@ jobs:
           - sdk: macosx
             name: macOS
             destination: 'platform=macOS'
+            codeov_eligible: true
           - sdk: iphonesimulator
             name: iOS
             destination: 'platform=iOS Simulator,name=iPhone 11'
@@ -39,6 +40,8 @@ jobs:
           xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} build-for-testing -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
           xcodebuild ${XCODEBUILD_CONFIG} -scheme ${SCHEME} -destination "${DESTINATION}" test-without-building -skipUnavailableActions | xcpretty -f `xcpretty-travis-formatter`
         done
+    - uses: codecov/codecov-action@v1
+      if: ${{ matrix.codeov_eligible }}
   macos:
     name: macOS(SwiftPM)
     runs-on: macOS-latest
