@@ -36,7 +36,7 @@ jobs:
       with:
         action: test
     - uses: codecov/codecov-action@v1
-      if: ${{ matrix.codeov_eligible }}
+      if: ${{ matrix.enable_codecov }}
   macos:
     name: macOS(SwiftPM)
     runs-on: macOS-latest
