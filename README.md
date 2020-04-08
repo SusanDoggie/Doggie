@@ -1,7 +1,6 @@
 # Doggie - A Cross-platform Library for Swift
 
 [![Github Actions](https://github.com/SusanDoggie/Doggie/workflows/Builder/badge.svg)](https://github.com/SusanDoggie/Doggie/actions)
-[![Build Status](https://travis-ci.com/SusanDoggie/Doggie.svg?branch=master)](https://travis-ci.com/SusanDoggie/Doggie)
 [![codecov](https://codecov.io/gh/SusanDoggie/Doggie/branch/master/graph/badge.svg)](https://codecov.io/gh/SusanDoggie/Doggie)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20iOS%20%7C%20Linux-lightgrey.svg?style=flat)
 [![GitHub release](https://img.shields.io/github/release/SusanDoggie/Doggie.svg)](https://github.com/SusanDoggie/Doggie/releases)
