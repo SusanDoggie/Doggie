@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol _ColorModel {
+public protocol _ColorModel: PolymorphicHashable {
     
 }
 
