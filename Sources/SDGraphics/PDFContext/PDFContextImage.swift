@@ -183,6 +183,12 @@ extension AnyImage {
             
             return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
             
+        case let image as Image<ABGR32ColorPixel>:
+            
+            bitsPerChannel = 8
+            
+            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
+            
         case let image as Image<BGRA32ColorPixel>:
             
             bitsPerChannel = 8

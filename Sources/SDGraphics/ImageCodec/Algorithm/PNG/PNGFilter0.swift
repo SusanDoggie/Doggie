@@ -82,6 +82,19 @@ extension RGBA64ColorPixel: PNGEncodablePixel {
     }
 }
 
+extension ABGR32ColorPixel: PNGEncodablePixel {
+    
+    func png_encode_color(_ data: inout Data) {
+        data.encode(r.bigEndian)
+        data.encode(g.bigEndian)
+        data.encode(b.bigEndian)
+    }
+    
+    func png_encode_opacity(_ data: inout Data) {
+        data.encode(a.bigEndian)
+    }
+}
+
 extension BGRA32ColorPixel: PNGEncodablePixel {
     
     func png_encode_color(_ data: inout Data) {

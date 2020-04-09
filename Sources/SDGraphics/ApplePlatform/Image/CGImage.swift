@@ -139,6 +139,16 @@ private struct CGImageData {
             
             self.pixels = pixels.data
             
+        case is MappedBuffer<ABGR32ColorPixel>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 8
+            
+            let byteOrder = CGBitmapInfo.byteOrder32Little
+            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            self.pixels = pixels.data
+            
         case is MappedBuffer<BGRA32ColorPixel>:
             
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride

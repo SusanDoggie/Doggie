@@ -281,6 +281,10 @@ struct PNGEncoder: ImageRepEncoder {
             return encodeRGB(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
         }
         
+        if let image = image.base as? Image<ABGR32ColorPixel> {
+            return encodeRGB(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
+        }
+        
         if let image = image.base as? Image<BGRA32ColorPixel> {
             return encodeRGB(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
         }
