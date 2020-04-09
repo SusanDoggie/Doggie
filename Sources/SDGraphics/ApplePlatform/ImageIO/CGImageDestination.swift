@@ -161,15 +161,15 @@ extension CGImageRep {
         }
     }
     
-    public func tiffRepresentation(compression: TIFFCompressionScheme = .none, resolution: Resolution = .default) -> Data? {
+    public func tiffRepresentation(compression: TIFFCompressionScheme = .none) -> Data? {
         return self.representation(using: .tiff, properties: [.compression: compression])
     }
     
-    public func pngRepresentation(interlaced: Bool = false, compression: PNGCompressionFilter = .all, resolution: Resolution = .default) -> Data? {
+    public func pngRepresentation(interlaced: Bool = false, compression: PNGCompressionFilter = .all) -> Data? {
         return self.representation(using: .png, properties: [.interlaced: interlaced, .compression: compression])
     }
     
-    public func jpegRepresentation(compressionQuality: Double, resolution: Resolution = .default) -> Data? {
+    public func jpegRepresentation(compressionQuality: Double) -> Data? {
         return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality])
     }
 }
@@ -177,8 +177,7 @@ extension CGImageRep {
 extension CGImage {
     
     open func representation(using storageType: MediaType, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey: Any]) -> Data? {
-        let imageRep = CGImageRep(cgImage: self, resolution: resolution)
-        return imageRep.representation(using: storageType, properties: properties)
+        return CGImageRep(cgImage: self, resolution: resolution).representation(using: storageType, properties: properties)
     }
     
     open func tiffRepresentation(resolution: Resolution = .default, compression: CGImageRep.TIFFCompressionScheme = .none) -> Data? {
