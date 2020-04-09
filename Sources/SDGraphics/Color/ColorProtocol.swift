@@ -59,6 +59,11 @@ public protocol ColorProtocol {
 extension ColorProtocol {
     
     @inlinable
+    public var model: _ColorModel.Type {
+        return colorSpace.model
+    }
+    
+    @inlinable
     public func almostEqual<C: ColorProtocol>(_ other: C, intent: RenderingIntent = .default, epsilon: Double = 0.0001) -> Bool {
         
         guard self.opacity.almostEqual(other.opacity, epsilon: epsilon) else { return false }

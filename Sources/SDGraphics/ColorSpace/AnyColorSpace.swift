@@ -26,7 +26,7 @@
 @usableFromInline
 protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
     
-    var model: ColorModel.Type { get }
+    var model: _ColorModel.Type { get }
     
     var iccData: Data? { get }
     
@@ -161,7 +161,7 @@ extension AnyColorSpace {
 extension AnyColorSpace {
     
     @inlinable
-    public var model: ColorModel.Type {
+    public var model: _ColorModel.Type {
         return _base.model
     }
     

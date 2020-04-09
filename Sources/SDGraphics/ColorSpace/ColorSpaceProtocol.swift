@@ -25,7 +25,7 @@
 
 public protocol ColorSpaceProtocol {
     
-    var model: ColorModel.Type { get }
+    var model: _ColorModel.Type { get }
     
     var iccData: Data? { get }
     

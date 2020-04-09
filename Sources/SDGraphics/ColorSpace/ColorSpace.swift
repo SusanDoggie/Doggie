@@ -198,7 +198,7 @@ extension ColorSpace: CustomStringConvertible {
 extension ColorSpace {
     
     @inlinable
-    public var model: ColorModel.Type {
+    public var model: _ColorModel.Type {
         return Model.self
     }
 }
