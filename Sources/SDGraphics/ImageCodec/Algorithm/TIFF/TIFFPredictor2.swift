@@ -30,7 +30,7 @@ protocol TIFFRawRepresentable {
     func tiff_opacity_data(_ predictor: Int) -> MappedBuffer<UInt8>
 }
 
-protocol TIFFEncodablePixel: ColorPixelProtocol {
+protocol TIFFEncodablePixel: ColorPixel {
     
     func tiff_prediction_2(_ lhs: Self) -> Self
     

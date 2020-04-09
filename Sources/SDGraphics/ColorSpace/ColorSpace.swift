@@ -32,17 +32,17 @@ protocol _ColorSpaceBaseProtocol: PolymorphicHashable {
     
     var cieXYZ: CIEXYZColorSpace { get }
     
-    func _convertToLinear<Model: ColorModelProtocol>(_ color: Model) -> Model
+    func _convertToLinear<Model: ColorModel>(_ color: Model) -> Model
     
-    func _convertFromLinear<Model: ColorModelProtocol>(_ color: Model) -> Model
+    func _convertFromLinear<Model: ColorModel>(_ color: Model) -> Model
     
-    func _convertLinearToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel
+    func _convertLinearToXYZ<Model: ColorModel>(_ color: Model) -> XYZColorModel
     
-    func _convertLinearFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
+    func _convertLinearFromXYZ<Model: ColorModel>(_ color: XYZColorModel) -> Model
     
-    func _convertToXYZ<Model: ColorModelProtocol>(_ color: Model) -> XYZColorModel
+    func _convertToXYZ<Model: ColorModel>(_ color: Model) -> XYZColorModel
     
-    func _convertFromXYZ<Model: ColorModelProtocol>(_ color: XYZColorModel) -> Model
+    func _convertFromXYZ<Model: ColorModel>(_ color: XYZColorModel) -> Model
     
     var _linearTone: _ColorSpaceBaseProtocol { get }
     
@@ -60,7 +60,7 @@ extension _ColorSpaceBaseProtocol {
 @usableFromInline
 protocol ColorSpaceBaseProtocol: _ColorSpaceBaseProtocol, Hashable {
     
-    associatedtype Model: ColorModelProtocol
+    associatedtype Model: ColorModel
     
     associatedtype LinearTone: _ColorSpaceBaseProtocol = LinearToneColorSpace<Self>
     
@@ -95,32 +95,32 @@ extension ColorSpaceBaseProtocol {
 extension ColorSpaceBaseProtocol {
     
     @inlinable
-    func _convertToLinear<RModel: ColorModelProtocol>(_ color: RModel) -> RModel {
+    func _convertToLinear<RModel: ColorModel>(_ color: RModel) -> RModel {
         return self.convertToLinear(color as! Model) as! RModel
     }
     
     @inlinable
-    func _convertFromLinear<RModel: ColorModelProtocol>(_ color: RModel) -> RModel {
+    func _convertFromLinear<RModel: ColorModel>(_ color: RModel) -> RModel {
         return self.convertFromLinear(color as! Model) as! RModel
     }
     
     @inlinable
-    func _convertLinearToXYZ<RModel: ColorModelProtocol>(_ color: RModel) -> XYZColorModel {
+    func _convertLinearToXYZ<RModel: ColorModel>(_ color: RModel) -> XYZColorModel {
         return self.convertLinearToXYZ(color as! Model)
     }
     
     @inlinable
-    func _convertLinearFromXYZ<RModel: ColorModelProtocol>(_ color: XYZColorModel) -> RModel {
+    func _convertLinearFromXYZ<RModel: ColorModel>(_ color: XYZColorModel) -> RModel {
         return self.convertLinearFromXYZ(color) as! RModel
     }
     
     @inlinable
-    func _convertToXYZ<RModel: ColorModelProtocol>(_ color: RModel) -> XYZColorModel {
+    func _convertToXYZ<RModel: ColorModel>(_ color: RModel) -> XYZColorModel {
         return self.convertToXYZ(color as! Model)
     }
     
     @inlinable
-    func _convertFromXYZ<RModel: ColorModelProtocol>(_ color: XYZColorModel) -> RModel {
+    func _convertFromXYZ<RModel: ColorModel>(_ color: XYZColorModel) -> RModel {
         return self.convertFromXYZ(color) as! RModel
     }
     
@@ -144,7 +144,7 @@ extension ColorSpaceBaseProtocol {
 }
 
 @frozen
-public struct ColorSpace<Model: ColorModelProtocol>: ColorSpaceProtocol, Hashable {
+public struct ColorSpace<Model: ColorModel>: ColorSpaceProtocol, Hashable {
     
     @usableFromInline
     let base : _ColorSpaceBaseProtocol
@@ -198,6 +198,14 @@ extension ColorSpace: CustomStringConvertible {
 extension ColorSpace {
     
     @inlinable
+    public var model: ColorModel.Type {
+        return Model.self
+    }
+}
+
+extension ColorSpace {
+    
+    @inlinable
     public var iccData: Data? {
         return base.iccData
     }
@@ -244,32 +252,32 @@ extension ColorSpace {
 extension ColorSpace {
     
     @inlinable
-    public func convertToLinear<S: ColorPixelProtocol>(_ color: S) -> S where S.Model == Model {
+    public func convertToLinear<S: ColorPixel>(_ color: S) -> S where S.Model == Model {
         return S(color: self.convertToLinear(color.color), opacity: color.opacity)
     }
     
     @inlinable
-    public func convertFromLinear<S: ColorPixelProtocol>(_ color: S) -> S where S.Model == Model {
+    public func convertFromLinear<S: ColorPixel>(_ color: S) -> S where S.Model == Model {
         return S(color: self.convertFromLinear(color.color), opacity: color.opacity)
     }
     
     @inlinable
-    public func convertLinearToXYZ<S: ColorPixelProtocol, T: ColorPixelProtocol>(_ color: S) -> T where S.Model == Model, T.Model == XYZColorModel {
+    public func convertLinearToXYZ<S: ColorPixel, T: ColorPixel>(_ color: S) -> T where S.Model == Model, T.Model == XYZColorModel {
         return T(color: self.convertLinearToXYZ(color.color), opacity: color.opacity)
     }
     
     @inlinable
-    public func convertLinearFromXYZ<S: ColorPixelProtocol, T: ColorPixelProtocol>(_ color: T) -> S where S.Model == Model, T.Model == XYZColorModel {
+    public func convertLinearFromXYZ<S: ColorPixel, T: ColorPixel>(_ color: T) -> S where S.Model == Model, T.Model == XYZColorModel {
         return S(color: self.convertLinearFromXYZ(color.color), opacity: color.opacity)
     }
     
     @inlinable
-    public func convertToXYZ<S: ColorPixelProtocol, T: ColorPixelProtocol>(_ color: S) -> T where S.Model == Model, T.Model == XYZColorModel {
+    public func convertToXYZ<S: ColorPixel, T: ColorPixel>(_ color: S) -> T where S.Model == Model, T.Model == XYZColorModel {
         return T(color: self.convertToXYZ(color.color), opacity: color.opacity)
     }
     
     @inlinable
-    public func convertFromXYZ<S: ColorPixelProtocol, T: ColorPixelProtocol>(_ color: T) -> S where S.Model == Model, T.Model == XYZColorModel {
+    public func convertFromXYZ<S: ColorPixel, T: ColorPixel>(_ color: T) -> S where S.Model == Model, T.Model == XYZColorModel {
         return S(color: self.convertFromXYZ(color.color), opacity: color.opacity)
     }
 }
@@ -296,7 +304,7 @@ extension ColorSpace {
     }
     
     @inlinable
-    public func convert<S: ColorPixelProtocol, R: ColorPixelProtocol>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> R where S.Model == Model {
+    public func convert<S: ColorPixel, R: ColorPixel>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> R where S.Model == Model {
         return R(color: self.convert(color.color, to: other, intent: intent), opacity: color.opacity)
     }
 }
@@ -305,7 +313,7 @@ extension ColorSpace {
     
     @inlinable
     @inline(__always)
-    func convert<S, R>(_ color: MappedBuffer<S>, to other: ColorSpace<R.Model>, intent: RenderingIntent) -> MappedBuffer<R> where S: ColorPixelProtocol, S.Model == Model, R: ColorPixelProtocol {
+    func convert<S, R>(_ color: MappedBuffer<S>, to other: ColorSpace<R.Model>, intent: RenderingIntent) -> MappedBuffer<R> where S: ColorPixel, S.Model == Model, R: ColorPixel {
         let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
         return color.map { R(color: other.convertFromXYZ(self.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
     }

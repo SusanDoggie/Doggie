@@ -89,7 +89,7 @@ struct ImageContextState {
     
 }
 
-public class ImageContext<Pixel: ColorPixelProtocol>: DrawableContext {
+public class ImageContext<Pixel: ColorPixel>: DrawableContext {
     
     @usableFromInline
     var _image: Image<Pixel>

@@ -25,7 +25,7 @@
 
 public protocol ColorBlendKernel {
     
-    static func blend<C: ColorModelProtocol>(_ destination: C, _ source: C) -> C
+    static func blend<C: ColorModel>(_ destination: C, _ source: C) -> C
     
     static func blend<C: ColorComponents>(_ destination: C, _ source: C) -> C
     
@@ -50,7 +50,7 @@ extension ColorBlendKernel where Self: ElementwiseColorBlendKernel {
     
     @inlinable
     @inline(__always)
-    public static func blend<C: ColorModelProtocol>(_ destination: C, _ source: C) -> C {
+    public static func blend<C: ColorModel>(_ destination: C, _ source: C) -> C {
         return destination.combined(source, self.blend)
     }
     

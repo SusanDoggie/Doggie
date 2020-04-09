@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorPixelProtocol: Hashable {
+public protocol ColorPixel: Hashable {
     
-    associatedtype Model: ColorModelProtocol
+    associatedtype Model: ColorModel
     
     init()
     
@@ -54,7 +54,7 @@ public protocol ColorPixelProtocol: Hashable {
     func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self
 }
 
-extension ColorPixelProtocol where Self: ScalarMultiplicative {
+extension ColorPixel where Self: ScalarMultiplicative {
     
     @inlinable
     @inline(__always)
@@ -63,7 +63,7 @@ extension ColorPixelProtocol where Self: ScalarMultiplicative {
     }
 }
 
-extension ColorPixelProtocol {
+extension ColorPixel {
     
     @inlinable
     @inline(__always)
@@ -72,7 +72,7 @@ extension ColorPixelProtocol {
     }
 }
 
-extension ColorPixelProtocol {
+extension ColorPixel {
     
     @inlinable
     @inline(__always)
@@ -82,12 +82,12 @@ extension ColorPixelProtocol {
     
     @inlinable
     @inline(__always)
-    public init<C: ColorPixelProtocol>(_ color: C) where C.Model == Model {
+    public init<C: ColorPixel>(_ color: C) where C.Model == Model {
         self.init(color: color.color, opacity: color.opacity)
     }
 }
 
-extension ColorPixelProtocol {
+extension ColorPixel {
     
     @inlinable
     @inline(__always)
@@ -96,7 +96,7 @@ extension ColorPixelProtocol {
     }
 }
 
-extension ColorPixelProtocol {
+extension ColorPixel {
     
     @inlinable
     @inline(__always)
@@ -153,7 +153,7 @@ extension ColorPixelProtocol {
     }
 }
 
-extension ColorPixelProtocol {
+extension ColorPixel {
     
     @inlinable
     @inline(__always)
@@ -180,7 +180,7 @@ extension ColorPixelProtocol {
     }
 }
 
-extension ColorPixelProtocol {
+extension ColorPixel {
     
     @inlinable
     @inline(__always)
@@ -189,7 +189,7 @@ extension ColorPixelProtocol {
     }
 }
 
-extension ColorPixelProtocol {
+extension ColorPixel {
     
     @inlinable
     @inline(__always)
@@ -199,18 +199,18 @@ extension ColorPixelProtocol {
     
     @inlinable
     @inline(__always)
-    public mutating func blend<C: ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) where C.Model == Model {
+    public mutating func blend<C: ColorPixel>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
     
     @inlinable
     @inline(__always)
-    public func blended<C: ColorPixelProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
+    public func blended<C: ColorPixel>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
         return blended(source: Self(source), compositingMode: compositingMode, blendMode: blendMode)
     }
 }
 
-extension ColorPixelProtocol where Model == XYZColorModel {
+extension ColorPixel where Model == XYZColorModel {
     
     @inlinable
     @inline(__always)
@@ -231,7 +231,7 @@ extension ColorPixelProtocol where Model == XYZColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == YxyColorModel {
+extension ColorPixel where Model == YxyColorModel {
     
     @inlinable
     @inline(__always)
@@ -246,7 +246,7 @@ extension ColorPixelProtocol where Model == YxyColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == LabColorModel {
+extension ColorPixel where Model == LabColorModel {
     
     @inlinable
     @inline(__always)
@@ -261,7 +261,7 @@ extension ColorPixelProtocol where Model == LabColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == LuvColorModel {
+extension ColorPixel where Model == LuvColorModel {
     
     @inlinable
     @inline(__always)
@@ -276,7 +276,7 @@ extension ColorPixelProtocol where Model == LuvColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == GrayColorModel {
+extension ColorPixel where Model == GrayColorModel {
     
     @inlinable
     @inline(__always)
@@ -285,7 +285,7 @@ extension ColorPixelProtocol where Model == GrayColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == RGBColorModel {
+extension ColorPixel where Model == RGBColorModel {
     
     @inlinable
     @inline(__always)
@@ -300,7 +300,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == CMYColorModel {
+extension ColorPixel where Model == CMYColorModel {
     
     @inlinable
     @inline(__always)
@@ -309,7 +309,7 @@ extension ColorPixelProtocol where Model == CMYColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == CMYKColorModel {
+extension ColorPixel where Model == CMYKColorModel {
     
     @inlinable
     @inline(__always)
@@ -318,7 +318,7 @@ extension ColorPixelProtocol where Model == CMYKColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == GrayColorModel {
+extension ColorPixel where Model == GrayColorModel {
     
     @inlinable
     @inline(__always)
@@ -332,7 +332,7 @@ extension ColorPixelProtocol where Model == GrayColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == RGBColorModel {
+extension ColorPixel where Model == RGBColorModel {
     
     @inlinable
     @inline(__always)
@@ -368,7 +368,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == RGBColorModel {
+extension ColorPixel where Model == RGBColorModel {
     
     @inlinable
     @inline(__always)
@@ -404,7 +404,7 @@ extension ColorPixelProtocol where Model == RGBColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == CMYColorModel {
+extension ColorPixel where Model == CMYColorModel {
     
     @inlinable
     @inline(__always)
@@ -440,7 +440,7 @@ extension ColorPixelProtocol where Model == CMYColorModel {
     }
 }
 
-extension ColorPixelProtocol where Model == CMYKColorModel {
+extension ColorPixel where Model == CMYKColorModel {
     
     @inlinable
     @inline(__always)

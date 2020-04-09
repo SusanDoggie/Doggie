@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct LuvColorModel: ColorModelProtocol {
+public struct LuvColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     

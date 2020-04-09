@@ -27,7 +27,7 @@
 let PCSXYZ = CIEXYZColorSpace(white: CIE1931.D50.rawValue)
 
 @usableFromInline
-protocol PCSColorModel: ColorModelProtocol {
+protocol PCSColorModel: ColorModel {
     
     var luminance: Double { get set }
     
@@ -65,7 +65,7 @@ extension LabColorModel: PCSColorModel {
 
 @frozen
 @usableFromInline
-struct ICCColorSpace<Model: ColorModelProtocol, Connection: ColorSpaceBaseProtocol, A2BTransform: iccTransform, B2ATransform: iccTransform>: ColorSpaceBaseProtocol where Connection.Model: PCSColorModel {
+struct ICCColorSpace<Model: ColorModel, Connection: ColorSpaceBaseProtocol, A2BTransform: iccTransform, B2ATransform: iccTransform>: ColorSpaceBaseProtocol where Connection.Model: PCSColorModel {
     
     @usableFromInline
     let _iccData: Data

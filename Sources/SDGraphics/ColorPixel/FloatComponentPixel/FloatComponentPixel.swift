@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol _FloatComponentPixel: ColorPixelProtocol, ScalarMultiplicative {
+public protocol _FloatComponentPixel: ColorPixel, ScalarMultiplicative {
     
     associatedtype ColorComponents: Tensor where ColorComponents.Scalar == Scalar
     
@@ -40,7 +40,7 @@ public protocol _FloatComponentPixel: ColorPixelProtocol, ScalarMultiplicative {
     func distance(to: Self) -> Scalar
 }
 
-extension ColorPixelProtocol where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)
@@ -49,7 +49,7 @@ extension ColorPixelProtocol where Self: _FloatComponentPixel, Self.ColorCompone
     }
 }
 
-extension ColorPixelProtocol where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)
@@ -69,7 +69,7 @@ extension ColorPixelProtocol where Self: _FloatComponentPixel, Self.ColorCompone
     }
 }
 
-extension ColorPixelProtocol where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)
@@ -122,7 +122,7 @@ extension ColorPixelProtocol where Self: _FloatComponentPixel, Self.ColorCompone
     }
 }
 
-extension ColorPixelProtocol where Self: _FloatComponentPixel, Self.Scalar: FloatingMathProtocol {
+extension ColorPixel where Self: _FloatComponentPixel, Self.Scalar: FloatingMathProtocol {
     
     @inlinable
     @inline(__always)

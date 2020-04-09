@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct BGRA32ColorPixel: ColorPixelProtocol {
+public struct BGRA32ColorPixel: ColorPixel {
     
     public var b: UInt8
     public var g: UInt8

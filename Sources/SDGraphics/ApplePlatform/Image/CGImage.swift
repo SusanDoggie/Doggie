@@ -92,7 +92,7 @@ private struct CGImageData {
     
     let pixels: Data
     
-    init<RawPixel : ColorPixelProtocol>(width: Int, height: Int, pixels: MappedBuffer<RawPixel>) {
+    init<RawPixel : ColorPixel>(width: Int, height: Int, pixels: MappedBuffer<RawPixel>) {
         
         self.width = width
         self.height = height

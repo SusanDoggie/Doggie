@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Device2ColorModel: ColorModelProtocol {
+public struct Device2ColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -100,7 +100,7 @@ extension Device2ColorModel {
 }
 
 @frozen
-public struct Device3ColorModel: ColorModelProtocol {
+public struct Device3ColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -182,7 +182,7 @@ extension Device3ColorModel {
 }
 
 @frozen
-public struct Device4ColorModel: ColorModelProtocol {
+public struct Device4ColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -270,7 +270,7 @@ extension Device4ColorModel {
 }
 
 @frozen
-public struct Device5ColorModel: ColorModelProtocol {
+public struct Device5ColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -371,7 +371,7 @@ extension Device5ColorModel {
 }
 
 @frozen
-public struct Device6ColorModel: ColorModelProtocol {
+public struct Device6ColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -478,7 +478,7 @@ extension Device6ColorModel {
 }
 
 @frozen
-public struct Device7ColorModel: ColorModelProtocol {
+public struct Device7ColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -594,7 +594,7 @@ extension Device7ColorModel {
 }
 
 @frozen
-public struct Device8ColorModel: ColorModelProtocol {
+public struct Device8ColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -716,7 +716,7 @@ extension Device8ColorModel {
 }
 
 @frozen
-public struct Device9ColorModel: ColorModelProtocol {
+public struct Device9ColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -844,7 +844,7 @@ extension Device9ColorModel {
 }
 
 @frozen
-public struct DeviceAColorModel: ColorModelProtocol {
+public struct DeviceAColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -981,7 +981,7 @@ extension DeviceAColorModel {
 }
 
 @frozen
-public struct DeviceBColorModel: ColorModelProtocol {
+public struct DeviceBColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -1124,7 +1124,7 @@ extension DeviceBColorModel {
 }
 
 @frozen
-public struct DeviceCColorModel: ColorModelProtocol {
+public struct DeviceCColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -1273,7 +1273,7 @@ extension DeviceCColorModel {
 }
 
 @frozen
-public struct DeviceDColorModel: ColorModelProtocol {
+public struct DeviceDColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -1431,7 +1431,7 @@ extension DeviceDColorModel {
 }
 
 @frozen
-public struct DeviceEColorModel: ColorModelProtocol {
+public struct DeviceEColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     
@@ -1595,7 +1595,7 @@ extension DeviceEColorModel {
 }
 
 @frozen
-public struct DeviceFColorModel: ColorModelProtocol {
+public struct DeviceFColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     

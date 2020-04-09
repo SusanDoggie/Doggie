@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Float64ColorPixel<Model: ColorModelProtocol>: _FloatComponentPixel {
+public struct Float64ColorPixel<Model: ColorModel>: _FloatComponentPixel {
     
     public typealias ColorComponents = Model
     

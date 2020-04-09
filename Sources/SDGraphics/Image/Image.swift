@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Image<Pixel: ColorPixelProtocol>: ImageProtocol, RawPixelProtocol {
+public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
     
     public let width: Int
     public let height: Int
@@ -148,7 +148,7 @@ final class ImageCache {
 }
 
 @usableFromInline
-struct ImageCacheColorConversionKey<Pixel: ColorPixelProtocol>: Hashable {
+struct ImageCacheColorConversionKey<Pixel: ColorPixel>: Hashable {
     
     @usableFromInline
     let colorSpace: ColorSpace<Pixel.Model>

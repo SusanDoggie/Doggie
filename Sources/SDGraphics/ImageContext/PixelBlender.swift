@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct ImageContextPixelBlender<P: ColorPixelProtocol> {
+struct ImageContextPixelBlender<P: ColorPixel> {
     
     @usableFromInline
     var destination: UnsafeMutablePointer<P>
@@ -67,19 +67,19 @@ struct ImageContextPixelBlender<P: ColorPixelProtocol> {
     
     @inlinable
     @inline(__always)
-    func draw<C: ColorPixelProtocol>(color: () -> C) where C.Model == P.Model {
+    func draw<C: ColorPixel>(color: () -> C) where C.Model == P.Model {
         self._draw { color() }
     }
     
     @inlinable
     @inline(__always)
-    func draw<C: ColorPixelProtocol>(color: () -> C?) where C.Model == P.Model {
+    func draw<C: ColorPixel>(color: () -> C?) where C.Model == P.Model {
         self._draw { color() }
     }
     
     @inlinable
     @inline(__always)
-    func _draw<C: ColorPixelProtocol>(color: () -> C?) where C.Model == P.Model {
+    func _draw<C: ColorPixel>(color: () -> C?) where C.Model == P.Model {
         
         if let _clip = clip?.pointee {
             if _clip > 0, var source = color() {

@@ -94,7 +94,7 @@ extension ColorCompositingMode {
     }
 }
 
-extension ColorPixelProtocol {
+extension ColorPixel {
     
     @inlinable
     @inline(__always)
@@ -148,7 +148,7 @@ extension ColorPixelProtocol {
     }
 }
 
-extension ColorPixelProtocol where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)

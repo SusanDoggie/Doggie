@@ -26,6 +26,8 @@
 @usableFromInline
 protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
     
+    var model: ColorModel.Type { get }
+    
     var iccData: Data? { get }
     
     var localizedName: String? { get }
@@ -157,6 +159,11 @@ extension AnyColorSpace {
 }
 
 extension AnyColorSpace {
+    
+    @inlinable
+    public var model: ColorModel.Type {
+        return _base.model
+    }
     
     @inlinable
     public var iccData: Data? {

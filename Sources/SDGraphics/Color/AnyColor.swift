@@ -118,7 +118,7 @@ extension AnyColor {
     }
     
     @inlinable
-    public init<P: ColorPixelProtocol>(colorSpace: SDGraphics.ColorSpace<P.Model>, color: P) {
+    public init<P: ColorPixel>(colorSpace: SDGraphics.ColorSpace<P.Model>, color: P) {
         self.init(Color(colorSpace: colorSpace, color: color))
     }
     

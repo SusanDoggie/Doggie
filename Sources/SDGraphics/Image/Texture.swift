@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Texture<RawPixel: ColorPixelProtocol>: TextureProtocol {
+public struct Texture<RawPixel: ColorPixel>: TextureProtocol {
     
     public typealias Pixel = Float64ColorPixel<RawPixel.Model>
     

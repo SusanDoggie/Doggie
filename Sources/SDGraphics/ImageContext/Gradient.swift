@@ -27,7 +27,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _shading<P: ColorPixelProtocol>(_ shader: (Point) -> P?) where Pixel.Model == P.Model {
+    func _shading<P: ColorPixel>(_ shader: (Point) -> P?) where Pixel.Model == P.Model {
         
         let width = self.width
         let height = self.height
@@ -51,7 +51,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _shading<P: ColorPixelProtocol>(startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, mapping: (Point) -> Double?, shading: (Double) -> P) where Pixel.Model == P.Model {
+    func _shading<P: ColorPixel>(startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, mapping: (Point) -> Double?, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         let startColor = shading(0)
         let endColor = shading(1)
@@ -96,7 +96,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func axialShading<P: ColorPixelProtocol>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
+    public func axialShading<P: ColorPixel>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         guard !start.almostEqual(end) else { return }
         
@@ -117,7 +117,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func radialShading<P: ColorPixelProtocol>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
+    public func radialShading<P: ColorPixel>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         guard !start.almostEqual(end) || !startRadius.almostEqual(endRadius) else { return }
         

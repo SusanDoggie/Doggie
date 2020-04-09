@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorModelProtocol: Hashable, Tensor where Scalar == Double {
+public protocol ColorModel: Hashable, Tensor where Scalar == Double {
     
     associatedtype Float32Components: ColorComponents where Float32Components.Model == Self, Float32Components.Scalar == Float
     
@@ -36,14 +36,14 @@ public protocol ColorModelProtocol: Hashable, Tensor where Scalar == Double {
 
 public protocol ColorComponents: Hashable, Tensor {
     
-    associatedtype Model: ColorModelProtocol
+    associatedtype Model: ColorModel
     
     init(_ model: Model)
     
     var model: Model { get set }
 }
 
-extension ColorModelProtocol {
+extension ColorModel {
     
     @inlinable
     @inline(__always)
@@ -52,7 +52,7 @@ extension ColorModelProtocol {
     }
 }
 
-extension ColorModelProtocol {
+extension ColorModel {
     
     @inlinable
     @inline(__always)
@@ -69,7 +69,7 @@ extension ColorModelProtocol {
     }
 }
 
-extension ColorModelProtocol {
+extension ColorModel {
     
     @inlinable
     @inline(__always)

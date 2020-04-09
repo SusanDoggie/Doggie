@@ -107,7 +107,7 @@ extension ColorBlendMode {
     public static let plusLighter = ColorBlendMode(rawValue: PlusLighterBlendKernel.self)
 }
 
-extension ColorModelProtocol {
+extension ColorModel {
     
     @inlinable
     @inline(__always)

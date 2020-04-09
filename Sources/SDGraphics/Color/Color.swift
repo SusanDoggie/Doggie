@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Color<Model: ColorModelProtocol>: ColorProtocol, Hashable {
+public struct Color<Model: ColorModel>: ColorProtocol, Hashable {
     
     public var colorSpace: SDGraphics.ColorSpace<Model>
     
@@ -37,7 +37,7 @@ public struct Color<Model: ColorModelProtocol>: ColorProtocol, Hashable {
     }
     
     @inlinable
-    public init<P: ColorPixelProtocol>(colorSpace: SDGraphics.ColorSpace<Model>, color: P) where P.Model == Model {
+    public init<P: ColorPixel>(colorSpace: SDGraphics.ColorSpace<Model>, color: P) where P.Model == Model {
         self.colorSpace = colorSpace
         self.color = color.color
         self.opacity = color.opacity

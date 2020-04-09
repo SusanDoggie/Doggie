@@ -530,7 +530,7 @@ struct OneDimensionalLUT {
     }
     
     @inlinable
-    func eval<Model: ColorModelProtocol>(_ color: Model) -> Model {
+    func eval<Model: ColorModel>(_ color: Model) -> Model {
         
         precondition(Model.numberOfComponents == channels)
         
@@ -572,7 +572,7 @@ struct MultiDimensionalLUT {
     }
     
     @inlinable
-    func eval<Source: ColorModelProtocol, Destination: ColorModelProtocol>(_ source: Source) -> Destination {
+    func eval<Source: ColorModel, Destination: ColorModel>(_ source: Source) -> Destination {
         
         return table.withUnsafeBufferPointer { table in
             

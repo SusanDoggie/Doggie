@@ -25,6 +25,8 @@
 
 public protocol ColorSpaceProtocol {
     
+    var model: ColorModel.Type { get }
+    
     var iccData: Data? { get }
     
     var localizedName: String? { get }

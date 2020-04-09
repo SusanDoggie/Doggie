@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct GrayColorModel: ColorModelProtocol {
+public struct GrayColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     

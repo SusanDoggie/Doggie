@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct LabColorModel: ColorModelProtocol {
+public struct LabColorModel: ColorModel {
     
     public typealias Indices = Range<Int>
     

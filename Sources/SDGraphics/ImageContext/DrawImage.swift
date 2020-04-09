@@ -227,7 +227,7 @@ struct _UnsafeStencilTexture<T: BinaryFloatingPoint>: _ResamplingImplement where
 }
 
 @usableFromInline
-struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement where Base.RawPixel: ColorPixelProtocol, Base.Pixel == Float64ColorPixel<Base.RawPixel.Model> {
+struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement where Base.RawPixel: ColorPixel, Base.Pixel == Float64ColorPixel<Base.RawPixel.Model> {
     
     @usableFromInline
     typealias RawPixel = Base.RawPixel

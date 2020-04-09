@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-protocol PNGEncodablePixel: ColorPixelProtocol {
+protocol PNGEncodablePixel: ColorPixel {
     
     func png_encode_color(_ data: inout Data)
     

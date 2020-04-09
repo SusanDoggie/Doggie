@@ -158,7 +158,7 @@ extension AnyImage {
     }
     
     @inlinable
-    public init<Pixel: ColorPixelProtocol>(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), fileBacked: Bool = false) {
+    public init<Pixel: ColorPixel>(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), fileBacked: Bool = false) {
         self._base = Image<Pixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixel: pixel, fileBacked: fileBacked)
     }
     
