@@ -23,6 +23,12 @@
 //  THE SOFTWARE.
 //
 
+#if canImport(Accelerate)
+
+@_exported import Accelerate
+
+#endif
+
 #if canImport(CoreText)
 
 @_exported import CoreText

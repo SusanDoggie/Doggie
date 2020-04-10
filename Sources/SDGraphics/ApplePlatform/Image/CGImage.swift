@@ -353,5 +353,44 @@ extension AnyImage {
     }
 }
 
+#if canImport(Accelerate)
+
+extension CGImage {
+    
+    public func createCGImage(bitsPerComponent: Int,
+                              bitsPerPixel: Int,
+                              bytesPerRow: Int,
+                              space: CGColorSpace,
+                              bitmapInfo: CGBitmapInfo,
+                              decode: UnsafePointer<CGFloat>?,
+                              shouldInterpolate: Bool,
+                              intent: CGColorRenderingIntent) -> CGImage? {
+        
+        var format = vImage_CGImageFormat(
+            bitsPerComponent: UInt32(bitsPerComponent),
+            bitsPerPixel: UInt32(bitsPerPixel),
+            colorSpace: .passUnretained(space),
+            bitmapInfo: bitmapInfo,
+            version: 0,
+            decode: decode,
+            renderingIntent: intent
+        )
+        
+        let flags = vImage_Flags(kvImagePrintDiagnosticsToConsole)
+        
+        var buffer = vImage_Buffer()
+        
+        guard vImageBuffer_InitWithCGImage(&buffer, &format, nil, self, flags) == kvImageNoError else { return nil }
+        guard let result = vImageCreateCGImageFromBuffer(&buffer, &format, nil, nil, flags, nil) else { return nil }
+        
+        format.colorSpace.release()
+        format.colorSpace.release()
+        
+        return result.takeRetainedValue()
+    }
+}
+
+#endif
+
 #endif
 
