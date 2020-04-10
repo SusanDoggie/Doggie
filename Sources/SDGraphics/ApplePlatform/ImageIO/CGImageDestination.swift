@@ -120,6 +120,15 @@ extension CGImageRep {
             
             _properties[kCGImagePropertyTIFFDictionary] = _tiff_properties
             
+        case .webp:
+            
+            guard let image = self.base.cgImage else { return nil }
+            
+            var _properties: [ImageRep.PropertyKey: Any] = [:]
+            _properties[.compressionQuality] = _properties[.compressionQuality]
+            
+            return WEBPEncoder.encode(image: image, properties: _properties)
+            
         default: break
         }
         

@@ -28,3 +28,5 @@
 @_exported import SDFoundation
 
 @_exported import SDGeometry
+
+@_exported import libwebp

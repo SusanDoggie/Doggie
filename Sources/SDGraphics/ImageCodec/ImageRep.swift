@@ -121,6 +121,7 @@ extension ImageRep {
             TIFFDecoder.self,
             PNGDecoder.self,
             //JPEGDecoder.self,
+            WEBPDecoder.self,
         ]
         
         for Decoder in decoders {
@@ -241,6 +242,7 @@ extension ImageRep {
         case .jpeg2000: Encoder = JPEG2000Encoder.self
         case .png: Encoder = PNGEncoder.self
         case .tiff: Encoder = TIFFEncoder.self
+        case .webp: Encoder = WEBPEncoder.self
         default: return nil
         }
         

@@ -47,6 +47,7 @@ extension MediaType {
     public static let jpeg2000: MediaType           = "public.jpeg-2000"
     public static let png: MediaType                = "public.png"
     public static let tiff: MediaType               = "public.tiff"
+    public static let webp: MediaType               = "com.google.webp"
     
 }
 

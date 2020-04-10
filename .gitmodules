@@ -1,3 +1,6 @@
 [submodule "Dependencies/brotli"]
 	path = Dependencies/brotli
 	url = https://github.com/google/brotli.git
+[submodule "Dependencies/libwebp"]
+	path = Dependencies/libwebp
+	url = https://chromium.googlesource.com/webm/libwebp

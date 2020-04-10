@@ -42,7 +42,7 @@ let package = Package(
             linkerSettings: [.linkedLibrary("z")]
         ),
         .target(
-            name: "brotli_c",
+            name: "brotli",
             dependencies: [],
             path: "./Dependencies/brotli/c",
             sources: [
@@ -52,10 +52,22 @@ let package = Package(
                 "include",
             ]
         ),
+        .target(
+            name: "libwebp",
+            dependencies: [],
+            path: "./Dependencies/libwebp",
+            sources: [
+                "src",
+            ],
+            publicHeadersPath: "src/webp",
+            cSettings: [
+                .headerSearchPath("./"),
+            ]
+        ),
         .target(name: "SDFoundation", dependencies: []),
         .target(name: "SDCompression", dependencies: [
             "zlib_c",
-            "brotli_c",
+            "brotli",
         ]),
         .target(name: "SDGeometry", dependencies: [
             "SDFoundation",
@@ -64,6 +76,7 @@ let package = Package(
             "SDFoundation",
             "SDGeometry",
             "SDCompression",
+            "libwebp",
         ]),
         .target(name: "Doggie", dependencies: [
             "SDFoundation",
