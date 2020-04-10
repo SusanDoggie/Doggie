@@ -214,15 +214,14 @@ extension WEBPEncoder {
             case .BGR: importer = WebPPictureImportBGR
             }
             
-            var output: UnsafeMutablePointer<UInt8>?
-            let size = webp_encode(pixels, width, height, bytesPerRow, importer, quality ?? 100, quality == nil, &output)
+            var buffer: UnsafeMutablePointer<UInt8>?
+            let size = webp_encode(pixels, width, height, bytesPerRow, importer, quality ?? 100, quality == nil, &buffer)
             
-            guard let _output = output, size != 0 else { return false }
-            defer { WebPFree(_output) }
+            guard let _buffer = buffer, size != 0 else { return nil }
+            defer { WebPFree(_buffer) }
             
-            var image = WebPData(bytes: output, size: size)
+            var image = WebPData(bytes: buffer, size: size)
             guard WebPMuxSetImage(mux, &image, 1) == WEBP_MUX_OK else { return nil }
-            
             
             if let iccData = iccData {
                 
