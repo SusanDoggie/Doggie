@@ -25,6 +25,22 @@
 
 struct WEBPEncoder: ImageRepEncoder {
     
+    let width: Int
+    let height: Int
+    
+    let bytesPerRow: Int
+    
+    var format: PixelFormat
+    
+    let pixels: Data
+    
+    var quality: Double?
+    
+    var iccData: Data?
+}
+
+extension WEBPEncoder {
+    
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
         let pixels: Data
@@ -72,14 +88,14 @@ struct WEBPEncoder: ImageRepEncoder {
             }
         }
         
+        var encoder = WEBPEncoder(width: image.width, height: image.height, bytesPerRow: bytesPerRow, format: format, pixels: pixels)
+        encoder.iccData = iccData
+        
         if let quality = properties[.compressionQuality] as? Double {
-            
-            return encode(width: image.width, height: image.height, pixels: pixels, iccData: iccData, format: format, bytesPerRow: bytesPerRow, quality: 100 * quality)
-            
-        } else {
-            
-            return encode_lossless(width: image.width, height: image.height, pixels: pixels, iccData: iccData, format: format, bytesPerRow: bytesPerRow)
+            encoder.quality = 100 * quality
         }
+        
+        return encoder.encode()
     }
 }
 
@@ -153,14 +169,14 @@ extension WEBPEncoder {
         
         guard let pixels = image.dataProvider?.data as Data? else { return nil }
         
+        var encoder = WEBPEncoder(width: image.width, height: image.height, bytesPerRow: bytesPerRow, format: format, pixels: pixels)
+        encoder.iccData = iccData
+        
         if let quality = properties[.compressionQuality] as? Double {
-            
-            return encode(width: image.width, height: image.height, pixels: pixels, iccData: iccData, format: format, bytesPerRow: bytesPerRow, quality: 100 * quality)
-            
-        } else {
-            
-            return encode_lossless(width: image.width, height: image.height, pixels: pixels, iccData: iccData, format: format, bytesPerRow: bytesPerRow)
+            encoder.quality = 100 * quality
         }
+        
+        return encoder.encode()
     }
 }
 
@@ -178,33 +194,14 @@ extension WEBPEncoder {
         case BGR
     }
     
-    private static func encode_container(iccData: Data?, encode_images: (OpaquePointer) -> Bool) -> Data? {
+    func encode() -> Data? {
         
-        guard let mux = WebPMuxNew() else { return nil }
-        defer { WebPMuxDelete(mux) }
-        
-        guard encode_images(mux) else { return nil }
-        
-        if let iccData = iccData {
+        return pixels.withUnsafeBytes {
             
-            let status: WebPMuxError = iccData.withUnsafeBytes { data in
-                var _data = WebPData(bytes: data.baseAddress?.assumingMemoryBound(to: UInt8.self), size: data.count)
-                return WebPMuxSetChunk(mux, "ICCP", &_data, 1)
-            }
+            guard let pixels = $0.baseAddress else { return nil }
             
-            guard status == WEBP_MUX_OK else { return nil }
-        }
-        
-        var output = WebPData()
-        guard WebPMuxAssemble(mux, &output) == WEBP_MUX_OK else { return nil }
-        defer { WebPDataClear(&output) }
-        
-        return Data(bytes: output.bytes, count: output.size)
-    }
-    
-    static func encode(width: Int, height: Int, pixels: UnsafeRawPointer, iccData: Data?, format: PixelFormat, bytesPerRow: Int, quality: Double) -> Data? {
-        
-        encode_container(iccData: iccData) { mux in
+            guard let mux = WebPMuxNew() else { return nil }
+            defer { WebPMuxDelete(mux) }
             
             let importer: Importer
             
@@ -218,62 +215,30 @@ extension WEBPEncoder {
             }
             
             var output: UnsafeMutablePointer<UInt8>?
-            let size = webp_encode(pixels, width, height, bytesPerRow, importer, quality, false, &output)
+            let size = webp_encode(pixels, width, height, bytesPerRow, importer, quality ?? 100, quality == nil, &output)
             
             guard let _output = output, size != 0 else { return false }
             defer { WebPFree(_output) }
             
             var image = WebPData(bytes: output, size: size)
-            return WebPMuxSetImage(mux, &image, 1) == WEBP_MUX_OK
-        }
-    }
-    
-    static func encode_lossless(width: Int, height: Int, pixels: UnsafeRawPointer, iccData: Data?, format: PixelFormat, bytesPerRow: Int) -> Data? {
-        
-        encode_container(iccData: iccData) { mux in
+            guard WebPMuxSetImage(mux, &image, 1) == WEBP_MUX_OK else { return nil }
             
-            let importer: Importer
             
-            switch format {
-            case .RGBA: importer = WebPPictureImportRGBA
-            case .BGRA: importer = WebPPictureImportBGRA
-            case .RGBX: importer = WebPPictureImportRGBX
-            case .BGRX: importer = WebPPictureImportBGRX
-            case .RGB: importer = WebPPictureImportRGB
-            case .BGR: importer = WebPPictureImportBGR
+            if let iccData = iccData {
+                
+                let status: WebPMuxError = iccData.withUnsafeBytes { data in
+                    var _data = WebPData(bytes: data.baseAddress?.assumingMemoryBound(to: UInt8.self), size: data.count)
+                    return WebPMuxSetChunk(mux, "ICCP", &_data, 1)
+                }
+                
+                guard status == WEBP_MUX_OK else { return nil }
             }
             
-            var output: UnsafeMutablePointer<UInt8>?
-            let size = webp_encode(pixels, width, height, bytesPerRow, importer, 100, true, &output)
+            var output = WebPData()
+            guard WebPMuxAssemble(mux, &output) == WEBP_MUX_OK else { return nil }
+            defer { WebPDataClear(&output) }
             
-            guard let _output = output, size != 0 else { return false }
-            defer { WebPFree(_output) }
-            
-            var image = WebPData(bytes: output, size: size)
-            return WebPMuxSetImage(mux, &image, 1) == WEBP_MUX_OK
-        }
-    }
-}
-
-extension WEBPEncoder {
-    
-    static func encode(width: Int, height: Int, pixels: Data, iccData: Data?, format: PixelFormat, bytesPerRow: Int, quality: Double) -> Data? {
-        
-        return pixels.withUnsafeBytes {
-            
-            guard let pixels = $0.baseAddress else { return nil }
-            
-            return encode(width: width, height: height, pixels: pixels, iccData: iccData, format: format, bytesPerRow: bytesPerRow, quality: quality)
-        }
-    }
-    
-    static func encode_lossless(width: Int, height: Int, pixels: Data, iccData: Data?, format: PixelFormat, bytesPerRow: Int) -> Data? {
-        
-        return pixels.withUnsafeBytes {
-            
-            guard let pixels = $0.baseAddress else { return nil }
-            
-            return encode_lossless(width: width, height: height, pixels: pixels, iccData: iccData, format: format, bytesPerRow: bytesPerRow)
+            return Data(bytes: output.bytes, count: output.size)
         }
     }
 }
