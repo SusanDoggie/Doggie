@@ -25,6 +25,10 @@
 
 struct BMPDecoder: ImageRepDecoder {
     
+    static var mediaType: MediaType {
+        return .bmp
+    }
+    
     let data: Data
     
     let header: BMPHeader
@@ -74,10 +78,6 @@ struct BMPDecoder: ImageRepDecoder {
     
     var colorSpace: AnyColorSpace {
         return AnyColorSpace(_colorSpace)
-    }
-    
-    var mediaType: MediaType {
-        return .bmp
     }
     
     func image(fileBacked: Bool) -> AnyImage {

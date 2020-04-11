@@ -97,8 +97,23 @@ extension ImageRep {
 
 extension ImageRep {
     
+    private static let decoders: [ImageRepDecoder.Type] = [
+        BMPDecoder.self,
+        TIFFDecoder.self,
+        PNGDecoder.self,
+        //JPEGDecoder.self,
+        WEBPDecoder.self,
+    ]
+    
     public static var supportedMediaTypes: [MediaType] {
-        return [.bmp, .tiff, .png]
+        
+        var types: [MediaType] = []
+        
+        for decoder in decoders where !types.contains(decoder.mediaType) {
+            types.append(decoder.mediaType)
+        }
+        
+        return types
     }
 }
 
@@ -116,15 +131,7 @@ extension ImageRep {
         
         self.originalData = data
         
-        let decoders: [ImageRepDecoder.Type] = [
-            BMPDecoder.self,
-            TIFFDecoder.self,
-            PNGDecoder.self,
-            //JPEGDecoder.self,
-            WEBPDecoder.self,
-        ]
-        
-        for Decoder in decoders {
+        for Decoder in ImageRep.decoders {
             if let decoder = try Decoder.init(data: data) {
                 self.base = decoder
                 return

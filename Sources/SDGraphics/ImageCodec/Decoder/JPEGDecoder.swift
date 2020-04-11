@@ -25,6 +25,10 @@
 
 struct JPEGDecoder: ImageRepDecoder {
     
+    static var mediaType: MediaType {
+        return .jpeg
+    }
+    
     static var defaultColorSpace: ColorSpace<RGBColorModel> {
         return ColorSpace.sRGB
     }
@@ -131,10 +135,6 @@ struct JPEGDecoder: ImageRepDecoder {
     
     var colorSpace: AnyColorSpace {
         return AnyColorSpace(_colorSpace)
-    }
-    
-    var mediaType: MediaType {
-        return .jpeg
     }
     
     var differential: Bool {

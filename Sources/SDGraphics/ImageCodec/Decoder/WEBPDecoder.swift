@@ -25,6 +25,10 @@
 
 struct WEBPDecoder: ImageRepDecoder {
     
+    static var mediaType: MediaType {
+        return .webp
+    }
+    
     private var frames: [WEBPFrame] = []
     
     let iccData: Data?
@@ -160,10 +164,6 @@ extension WEBPDecoder {
     
     var colorSpace: AnyColorSpace {
         return AnyColorSpace(_colorSpace)
-    }
-    
-    var mediaType: MediaType {
-        return .webp
     }
     
     var isOpaque: Bool {

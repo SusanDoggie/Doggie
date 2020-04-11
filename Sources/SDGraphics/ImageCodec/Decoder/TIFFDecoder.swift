@@ -25,6 +25,10 @@
 
 struct TIFFDecoder: ImageRepDecoder {
     
+    static var mediaType: MediaType {
+        return .tiff
+    }
+    
     let header: TIFFHeader
     
     var pages: [TIFFPage] = []
@@ -50,10 +54,6 @@ struct TIFFDecoder: ImageRepDecoder {
     
     var colorSpace: AnyColorSpace {
         return defaultPage.colorSpace
-    }
-    
-    var mediaType: MediaType {
-        return .tiff
     }
     
     init?(data: Data) throws {

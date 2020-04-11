@@ -25,6 +25,10 @@
 
 struct PNGDecoder: ImageRepDecoder {
     
+    static var mediaType: MediaType {
+        return .png
+    }
+    
     let data: Data
     
     let chunks: [PNGChunk]
@@ -236,10 +240,6 @@ struct PNGDecoder: ImageRepDecoder {
         case 2, 3, 6: return AnyColorSpace(_RGBColorSpace)
         default: fatalError()
         }
-    }
-    
-    var mediaType: MediaType {
-        return .png
     }
     
     func decompress(data: Data, compression: UInt8) -> Data? {
