@@ -92,7 +92,7 @@ extension WEBPEncoder {
         encoder.iccData = iccData
         
         if let quality = properties[.compressionQuality] as? Double {
-            encoder.quality = 100 * quality
+            encoder.quality = (quality * 100).clamped(to: 0...100)
         }
         
         return encoder.encode()
@@ -173,7 +173,7 @@ extension WEBPEncoder {
         encoder.iccData = iccData
         
         if let quality = properties[.compressionQuality] as? Double {
-            encoder.quality = 100 * quality
+            encoder.quality = (quality * 100).clamped(to: 0...100)
         }
         
         return encoder.encode()
@@ -217,8 +217,8 @@ extension WEBPEncoder {
             var buffer: UnsafeMutablePointer<UInt8>?
             let size = webp_encode(pixels, width, height, bytesPerRow, importer, quality ?? 100, quality == nil, &buffer)
             
-            guard let _buffer = buffer, size != 0 else { return nil }
-            defer { WebPFree(_buffer) }
+            guard buffer != nil && size != 0 else { return nil }
+            defer { WebPFree(buffer) }
             
             var image = WebPData(bytes: buffer, size: size)
             guard WebPMuxSetImage(mux, &image, 1) == WEBP_MUX_OK else { return nil }
