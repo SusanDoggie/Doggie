@@ -44,24 +44,27 @@ let package = Package(
         .target(
             name: "brotli",
             dependencies: [],
-            path: "./Dependencies/brotli/c",
-            sources: [
-                "common",
-                "dec",
-                "enc",
-                "include",
+            cSettings: [
+                .headerSearchPath("include/brotli"),
+                .unsafeFlags(["-I./dependencies/brotli/c/common"]),
+                .unsafeFlags(["-I./dependencies/brotli/c/dec"]),
+                .unsafeFlags(["-I./dependencies/brotli/c/enc"]),
             ]
         ),
         .target(
             name: "libwebp",
             dependencies: [],
-            path: "./Dependencies/libwebp",
-            sources: [
-                "src",
-            ],
-            publicHeadersPath: "src/webp",
             cSettings: [
-                .headerSearchPath("./"),
+                .headerSearchPath("include/webp"),
+                .unsafeFlags(["-I./dependencies/libwebp"]),
+            ]
+        ),
+        .target(
+            name: "libjpeg",
+            dependencies: [],
+            cSettings: [
+                .headerSearchPath("include/libjpeg"),
+                .unsafeFlags(["-I./dependencies/libjpeg-turbo"]),
             ]
         ),
         .target(name: "SDFoundation", dependencies: []),
@@ -77,6 +80,7 @@ let package = Package(
             "SDGeometry",
             "SDCompression",
             "libwebp",
+            "libjpeg",
         ]),
         .target(name: "Doggie", dependencies: [
             "SDFoundation",

@@ -1,5 +1,5 @@
 //
-//  Exported.swift
+//  shim.h
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,12 +23,20 @@
 //  THE SOFTWARE.
 //
 
-@_exported import SDCompression
+#ifndef shim_h
+#define shim_h
 
-@_exported import SDFoundation
+#include <stdio.h>
+#include <stddef.h>
+#include <stdbool.h>
 
-@_exported import SDGeometry
+#include "libjpeg/jpeglib.h"
 
-@_exported import libwebp
+extern bool _jpeg_read_header(j_decompress_ptr cinfo, boolean require_image);
+extern bool _jpeg_start_decompress(j_decompress_ptr cinfo);
+extern bool _jpeg_read_scanlines(j_decompress_ptr cinfo, JSAMPARRAY scanlines, JDIMENSION max_lines);
 
-@_exported import libjpeg
+extern void jpeg_write_icc_profile(j_compress_ptr cinfo, const JOCTET *icc_data_ptr, unsigned int icc_data_len) __attribute__((weak));
+extern boolean jpeg_read_icc_profile(j_decompress_ptr cinfo, JOCTET **icc_data_ptr, unsigned int *icc_data_len) __attribute__((weak));
+
+#endif /* shim_h */

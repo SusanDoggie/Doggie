@@ -1,5 +1,5 @@
 //
-//  Exported.swift
+//  module.modulemap
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,12 +23,9 @@
 //  THE SOFTWARE.
 //
 
-@_exported import SDCompression
-
-@_exported import SDFoundation
-
-@_exported import SDGeometry
-
-@_exported import libwebp
-
-@_exported import libjpeg
+module brotli [system] {
+    
+    header "shim.h"
+    export *
+    
+}

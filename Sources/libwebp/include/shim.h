@@ -1,5 +1,5 @@
 //
-//  Exported.swift
+//  shim.h
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,12 +23,10 @@
 //  THE SOFTWARE.
 //
 
-@_exported import SDCompression
+#ifndef shim_h
+#define shim_h
 
-@_exported import SDFoundation
+#include "webp/decode.h"
+#include "webp/encode.h"
 
-@_exported import SDGeometry
-
-@_exported import libwebp
-
-@_exported import libjpeg
+#endif /* shim_h */
