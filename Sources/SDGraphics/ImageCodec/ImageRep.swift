@@ -211,7 +211,7 @@ extension ImageRep {
     
     public var mediaType: MediaType? {
         guard let decoder = base as? ImageRepDecoder else { return nil }
-        return decoder.mediaType
+        return type(of: decoder).mediaType
     }
 }
 
