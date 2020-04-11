@@ -26,7 +26,10 @@
 #ifndef shim_h
 #define shim_h
 
-#include "webp/decode.h"
+#include "webp/mux.h"
 #include "webp/encode.h"
+
+#include "webp/demux.h"
+#include "webp/decode.h"
 
 #endif /* shim_h */

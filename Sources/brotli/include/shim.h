@@ -26,7 +26,7 @@
 #ifndef shim_h
 #define shim_h
 
-#include "brotli/decode.h"
 #include "brotli/encode.h"
+#include "brotli/decode.h"
 
 #endif /* shim_h */
