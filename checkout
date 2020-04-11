@@ -46,11 +46,6 @@ mkdir -p ${PROJECT_DIR}/.build/dependencies/brotli
 cd ${PROJECT_DIR}/.build/dependencies/brotli
 cmake -G Ninja ${PROJECT_DIR}/dependencies/brotli
 
-rm -r ${PROJECT_DIR}/Sources/brotli/include/brotli || true
-mkdir -p ${PROJECT_DIR}/Sources/brotli/include/brotli
-
-cp ${PROJECT_DIR}/dependencies/brotli/c/include/brotli/* ${PROJECT_DIR}/Sources/brotli/include/brotli
-
 rm -r ${PROJECT_DIR}/Sources/brotli/src || true
 mkdir -p ${PROJECT_DIR}/Sources/brotli/src
 
@@ -59,6 +54,12 @@ SOURCES="$( ninja -t graph brotli | grep -oE '"[^"]*\.c"' | tr -d '"' )"
 for SOURCE in ${SOURCES}; do
   cp ${SOURCE} ${PROJECT_DIR}/Sources/brotli/src
 done
+
+
+rm -r ${PROJECT_DIR}/Sources/brotli/include/brotli || true
+mkdir -p ${PROJECT_DIR}/Sources/brotli/include/brotli
+
+cp ${PROJECT_DIR}/dependencies/brotli/c/include/brotli/* ${PROJECT_DIR}/Sources/brotli/include/brotli
 
 
 # =================    libwebp    =================
@@ -71,11 +72,6 @@ mkdir -p ${PROJECT_DIR}/.build/dependencies/libwebp
 cd ${PROJECT_DIR}/.build/dependencies/libwebp
 cmake -G Ninja ${PROJECT_DIR}/dependencies/libwebp
 
-rm -r ${PROJECT_DIR}/Sources/libwebp/include/webp || true
-mkdir -p ${PROJECT_DIR}/Sources/libwebp/include/webp
-
-cp ${PROJECT_DIR}/dependencies/libwebp/src/webp/* ${PROJECT_DIR}/Sources/libwebp/include/webp
-
 rm -r ${PROJECT_DIR}/Sources/libwebp/src || true
 mkdir -p ${PROJECT_DIR}/Sources/libwebp/src
 
@@ -84,6 +80,12 @@ SOURCES="$( ninja -t graph webp | grep -oE '"[^"]*\.c"' | tr -d '"' )"
 for SOURCE in ${SOURCES}; do
   cp ${SOURCE} ${PROJECT_DIR}/Sources/libwebp/src
 done
+
+
+rm -r ${PROJECT_DIR}/Sources/libwebp/include/webp || true
+mkdir -p ${PROJECT_DIR}/Sources/libwebp/include/webp
+
+cp ${PROJECT_DIR}/dependencies/libwebp/src/webp/* ${PROJECT_DIR}/Sources/libwebp/include/webp
 
 
 # =================    libjpeg    =================
@@ -96,14 +98,6 @@ mkdir -p ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo
 cd ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo
 cmake -G Ninja ${PROJECT_DIR}/dependencies/libjpeg-turbo
 
-rm -r ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg || true
-mkdir -p ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
-
-cp ${PROJECT_DIR}/dependencies/libjpeg-turbo/jpeglib.h ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
-cp ${PROJECT_DIR}/dependencies/libjpeg-turbo/jmorecfg.h ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
-cp ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo/jconfig.h ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
-cp ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo/jconfigint.h ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
-
 rm -r ${PROJECT_DIR}/Sources/libjpeg/src || true
 mkdir -p ${PROJECT_DIR}/Sources/libjpeg/src
 
@@ -113,3 +107,11 @@ for SOURCE in ${SOURCES}; do
   cp ${SOURCE} ${PROJECT_DIR}/Sources/libjpeg/src
 done
 
+
+rm -r ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg || true
+mkdir -p ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
+
+cp ${PROJECT_DIR}/dependencies/libjpeg-turbo/jpeglib.h ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
+cp ${PROJECT_DIR}/dependencies/libjpeg-turbo/jmorecfg.h ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
+cp ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo/jconfig.h ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
+cp ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo/jconfigint.h ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
