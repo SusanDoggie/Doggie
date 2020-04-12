@@ -149,9 +149,9 @@ struct JPEGDecoder: ImageRepDecoder {
     
     var resolution: Resolution {
         switch density_unit {
-        case 0: return Resolution(horizontal: Double(x_density), vertical: y_density, unit: .point)
-        case 1: return Resolution(horizontal: Double(x_density), vertical: y_density, unit: .inch)
-        case 2: return Resolution(horizontal: Double(x_density), vertical: y_density, unit: .centimeter)
+        case 0: return Resolution(horizontal: Double(x_density), vertical: Double(y_density), unit: .point)
+        case 1: return Resolution(horizontal: Double(x_density), vertical: Double(y_density), unit: .inch)
+        case 2: return Resolution(horizontal: Double(x_density), vertical: Double(y_density), unit: .centimeter)
         default: return .default
         }
     }
