@@ -46,19 +46,24 @@ let package = Package(
         .target(
             name: "brotli",
             dependencies: [],
-            cSettings: [
-                .headerSearchPath("include/brotli"),
-                .unsafeFlags(["-I\(project_dir)/dependencies/brotli/c/common"]),
-                .unsafeFlags(["-I\(project_dir)/dependencies/brotli/c/dec"]),
-                .unsafeFlags(["-I\(project_dir)/dependencies/brotli/c/enc"]),
+            path: "./dependencies/brotli/c",
+            sources: [
+                "common",
+                "dec",
+                "enc",
+                "include",
             ]
         ),
         .target(
             name: "libwebp",
             dependencies: [],
+            path: "./dependencies/libwebp",
+            sources: [
+                "src",
+            ],
+            publicHeadersPath: "src/webp",
             cSettings: [
-                .headerSearchPath("include/webp"),
-                .unsafeFlags(["-I\(project_dir)/dependencies/libwebp"]),
+                .headerSearchPath("./"),
             ]
         ),
         .target(
