@@ -26,6 +26,8 @@
 
 import PackageDescription
 
+let project_dir = "\(#file)".dropLast("/Package.swift".count)
+
 let package = Package(
     name: "Doggie",
     products: [
@@ -46,9 +48,9 @@ let package = Package(
             dependencies: [],
             cSettings: [
                 .headerSearchPath("include/brotli"),
-                .unsafeFlags(["-I./dependencies/brotli/c/common"]),
-                .unsafeFlags(["-I./dependencies/brotli/c/dec"]),
-                .unsafeFlags(["-I./dependencies/brotli/c/enc"]),
+                .unsafeFlags(["-I\(project_dir)/dependencies/brotli/c/common"]),
+                .unsafeFlags(["-I\(project_dir)/dependencies/brotli/c/dec"]),
+                .unsafeFlags(["-I\(project_dir)/dependencies/brotli/c/enc"]),
             ]
         ),
         .target(
@@ -56,7 +58,7 @@ let package = Package(
             dependencies: [],
             cSettings: [
                 .headerSearchPath("include/webp"),
-                .unsafeFlags(["-I./dependencies/libwebp"]),
+                .unsafeFlags(["-I\(project_dir)/dependencies/libwebp"]),
             ]
         ),
         .target(
@@ -64,7 +66,7 @@ let package = Package(
             dependencies: [],
             cSettings: [
                 .headerSearchPath("include/libjpeg"),
-                .unsafeFlags(["-I./dependencies/libjpeg-turbo"]),
+                .unsafeFlags(["-I\(project_dir)/dependencies/libjpeg-turbo"]),
             ]
         ),
         .target(name: "SDFoundation", dependencies: []),
