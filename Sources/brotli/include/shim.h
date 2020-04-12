@@ -1,5 +1,5 @@
 //
-//  module.modulemap
+//  shim.h
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,9 +23,10 @@
 //  THE SOFTWARE.
 //
 
-module libjpeg [system] {
-    
-    header "shim.h"
-    export *
-    
-}
+#ifndef shim_h
+#define shim_h
+
+#include "brotli/encode.h"
+#include "brotli/decode.h"
+
+#endif /* shim_h */

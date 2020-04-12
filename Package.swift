@@ -45,22 +45,11 @@ let package = Package(
         ),
         .target(
             name: "brotli",
-            dependencies: [],
-            path: "./dependencies/brotli/c",
-            sources: [
-                "common",
-                "dec",
-                "enc",
-                "include",
-            ]
+            dependencies: []
         ),
         .target(
             name: "libwebp",
             dependencies: [],
-            path: "./dependencies/libwebp",
-            sources: [
-                "src",
-            ],
             publicHeadersPath: "src/webp",
             cSettings: [
                 .headerSearchPath("./"),
