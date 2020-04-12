@@ -99,7 +99,7 @@ struct JPEGDecoder: ImageRepDecoder {
         case JCS_RGB, JCS_EXT_BGR:
             
             cinfo.out_color_space = JCS_EXT_RGBA
-            cinfo.output_components = 3
+            cinfo.output_components = 4
             
         default: return nil
         }
@@ -115,7 +115,7 @@ struct JPEGDecoder: ImageRepDecoder {
         self.x_density = cinfo.X_density
         self.y_density = cinfo.Y_density
         
-        let bytesPerRow = width * Int(out_format.bytesPerPixel)
+        let bytesPerRow = width * Int(cinfo.output_components)
         self.bytesPerRow = bytesPerRow
         
         var icc_bytes: UnsafeMutablePointer<UInt8>?
@@ -149,9 +149,9 @@ struct JPEGDecoder: ImageRepDecoder {
     
     var resolution: Resolution {
         switch density_unit {
-        case 0: return Resolution(horizontal: x_density, vertical: y_density, unit: .point)
-        case 1: return Resolution(horizontal: x_density, vertical: y_density, unit: .inch)
-        case 2: return Resolution(horizontal: x_density, vertical: y_density, unit: .centimeter)
+        case 0: return Resolution(horizontal: Double(x_density), vertical: y_density, unit: .point)
+        case 1: return Resolution(horizontal: Double(x_density), vertical: y_density, unit: .inch)
+        case 2: return Resolution(horizontal: Double(x_density), vertical: y_density, unit: .centimeter)
         default: return .default
         }
     }
@@ -180,7 +180,7 @@ struct JPEGDecoder: ImageRepDecoder {
             
             return AnyColorSpace(colorSpace)
             
-        default: return nil
+        default: fatalError()
         }
     }
     
@@ -301,7 +301,7 @@ struct JPEGDecoder: ImageRepDecoder {
             
             return AnyImage(image)
             
-        default: return nil
+        default: fatalError()
         }
     }
 }

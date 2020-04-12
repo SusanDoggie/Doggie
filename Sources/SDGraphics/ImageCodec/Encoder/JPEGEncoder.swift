@@ -52,11 +52,7 @@ extension JPEGEncoder {
         var encoder: JPEGEncoder
         
         switch image.base {
-        case var image as Image<Gray16ColorPixel>:
-            
-            if !JPEGEncoder.is_icc_api() {
-                image = Image<Gray16ColorPixel>(image: image, colorSpace: .genericGamma22Gray)
-            }
+        case let image as Image<Gray16ColorPixel>:
             
             let count = image.pixels.count
             var data = Data(count: count)
@@ -81,35 +77,19 @@ extension JPEGEncoder {
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: image.width, format: JCS_GRAYSCALE, components: 1, pixels: data)
             
-        case var image as Image<ARGB32ColorPixel>:
-            
-            if !JPEGEncoder.is_icc_api() {
-                image = Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB)
-            }
+        case let image as Image<ARGB32ColorPixel>:
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_XRGB, components: 4, pixels: image.pixels.data)
             
-        case var image as Image<RGBA32ColorPixel>:
-            
-            if !JPEGEncoder.is_icc_api() {
-                image = Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
-            }
+        case let image as Image<RGBA32ColorPixel>:
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_RGBX, components: 4, pixels: image.pixels.data)
             
-        case var image as Image<ABGR32ColorPixel>:
-            
-            if !JPEGEncoder.is_icc_api() {
-                image = Image<ABGR32ColorPixel>(image: image, colorSpace: .sRGB)
-            }
+        case let image as Image<ABGR32ColorPixel>:
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_XBGR, components: 4, pixels: image.pixels.data)
             
-        case var image as Image<BGRA32ColorPixel>:
-            
-            if !JPEGEncoder.is_icc_api() {
-                image = Image<BGRA32ColorPixel>(image: image, colorSpace: .sRGB)
-            }
+        case let image as Image<BGRA32ColorPixel>:
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_BGRX, components: 4, pixels: image.pixels.data)
             
@@ -117,13 +97,7 @@ extension JPEGEncoder {
             
             if image.colorSpace.base is ColorSpace<GrayColorModel> {
                 
-                let _image: Image<Gray16ColorPixel>
-                
-                if JPEGEncoder.is_icc_api() {
-                    _image = Image<Gray16ColorPixel>(image) ?? Image<Gray16ColorPixel>(image: image, colorSpace: .genericGamma22Gray)
-                } else {
-                    _image = Image<Gray16ColorPixel>(image: image, colorSpace: .genericGamma22Gray)
-                }
+                let _image = Image<Gray16ColorPixel>(image) ?? Image<Gray16ColorPixel>(image: image, colorSpace: .genericGamma22Gray)
                 
                 let count = _image.pixels.count
                 var data = Data(count: count)
@@ -150,13 +124,7 @@ extension JPEGEncoder {
                 
             } else {
                 
-                let _image: Image<RGBA32ColorPixel>
-                
-                if JPEGEncoder.is_icc_api() {
-                    _image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
-                } else {
-                    _image = Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
-                }
+                let _image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
                 
                 encoder = JPEGEncoder(width: _image.width, height: _image.height, bytesPerRow: 4 * _image.width, format: JCS_EXT_RGBX, components: 4, pixels: _image.pixels.data)
             }
