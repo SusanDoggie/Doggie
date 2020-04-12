@@ -101,7 +101,7 @@ extension ImageRep {
         BMPDecoder.self,
         TIFFDecoder.self,
         PNGDecoder.self,
-        //JPEGDecoder.self,
+        JPEGDecoder.self,
         WEBPDecoder.self,
     ]
     
@@ -246,7 +246,6 @@ extension ImageRep {
         case .bmp: Encoder = BMPEncoder.self
         case .gif: Encoder = GIFEncoder.self
         case .jpeg: Encoder = JPEGEncoder.self
-        case .jpeg2000: Encoder = JPEG2000Encoder.self
         case .png: Encoder = PNGEncoder.self
         case .tiff: Encoder = TIFFEncoder.self
         case .webp: Encoder = WEBPEncoder.self
@@ -289,6 +288,21 @@ extension AnyImage {
     }
 }
 
+extension ImageRep {
+    
+    public func tiffRepresentation(compression: TIFFCompressionScheme = .none) -> Data? {
+        return self.representation(using: .tiff, properties: [.compression: compression])
+    }
+    
+    public func pngRepresentation(interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, properties: [.interlaced: interlaced])
+    }
+    
+    public func jpegRepresentation(compressionQuality: Double) -> Data? {
+        return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality])
+    }
+}
+
 extension Image {
     
     public func tiffRepresentation(compression: ImageRep.TIFFCompressionScheme = .none) -> Data? {
@@ -297,6 +311,10 @@ extension Image {
     
     public func pngRepresentation(interlaced: Bool = false) -> Data? {
         return self.representation(using: .png, properties: [.interlaced: interlaced])
+    }
+    
+    public func jpegRepresentation(compressionQuality: Double) -> Data? {
+        return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality])
     }
 }
 
@@ -308,6 +326,10 @@ extension AnyImage {
     
     public func pngRepresentation(interlaced: Bool = false) -> Data? {
         return self.representation(using: .png, properties: [.interlaced: interlaced])
+    }
+    
+    public func jpegRepresentation(compressionQuality: Double) -> Data? {
+        return self.representation(using: .jpeg, properties: [.compressionQuality: compressionQuality])
     }
 }
 

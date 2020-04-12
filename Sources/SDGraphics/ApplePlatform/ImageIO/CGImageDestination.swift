@@ -57,23 +57,6 @@ extension CGImageRep {
         
     }
     
-    public struct PNGCompressionFilter: OptionSet {
-        
-        public var rawValue: Int32
-        
-        public init(rawValue: Int32) {
-            self.rawValue = rawValue
-        }
-        
-        public static let none      = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_NONE)
-        public static let sub       = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_SUB)
-        public static let up        = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_UP)
-        public static let average   = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_AVG)
-        public static let paeth     = PNGCompressionFilter(rawValue: IMAGEIO_PNG_FILTER_PAETH)
-        
-        public static let all: PNGCompressionFilter = [.none, .sub, .up, .average, .paeth]
-    }
-    
     public enum TIFFCompressionScheme: CaseIterable {
         
         case none
@@ -96,12 +79,13 @@ extension CGImageRep {
                 _png_properties[kCGImagePropertyPNGInterlaceType] = 1
             }
             
-            if #available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *), let compression = properties[.compression] as? PNGCompressionFilter {
-                if compression.isEmpty {
-                    _png_properties[kCGImagePropertyPNGCompressionFilter] = IMAGEIO_PNG_NO_FILTERS
-                } else {
-                    _png_properties[kCGImagePropertyPNGCompressionFilter] = compression.rawValue
-                }
+            if #available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
+                var filter = IMAGEIO_PNG_FILTER_NONE
+                filter |= IMAGEIO_PNG_FILTER_SUB
+                filter |= IMAGEIO_PNG_FILTER_UP
+                filter |= IMAGEIO_PNG_FILTER_AVG
+                filter |= IMAGEIO_PNG_FILTER_PAETH
+                _png_properties[kCGImagePropertyPNGCompressionFilter] = filter
             }
             
             _properties[kCGImagePropertyPNGDictionary] = _png_properties
@@ -174,8 +158,8 @@ extension CGImageRep {
         return self.representation(using: .tiff, properties: [.compression: compression])
     }
     
-    public func pngRepresentation(interlaced: Bool = false, compression: PNGCompressionFilter = .all) -> Data? {
-        return self.representation(using: .png, properties: [.interlaced: interlaced, .compression: compression])
+    public func pngRepresentation(interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, properties: [.interlaced: interlaced])
     }
     
     public func jpegRepresentation(compressionQuality: Double) -> Data? {
@@ -193,8 +177,8 @@ extension CGImage {
         return self.representation(using: .tiff, resolution: resolution, properties: [.compression: compression])
     }
     
-    open func pngRepresentation(resolution: Resolution = .default, interlaced: Bool = false, compression: CGImageRep.PNGCompressionFilter = .all) -> Data? {
-        return self.representation(using: .png, resolution: resolution, properties: [.interlaced: interlaced, .compression: compression])
+    open func pngRepresentation(resolution: Resolution = .default, interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, resolution: resolution, properties: [.interlaced: interlaced])
     }
     
     open func jpegRepresentation(resolution: Resolution = .default, compressionQuality: Double) -> Data? {
