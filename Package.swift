@@ -45,7 +45,7 @@ let package = Package(
             linkerSettings: [.linkedLibrary("z")]
         ),
         .target(
-            name: "brotli",
+            name: "brotli_c",
             dependencies: [],
             path: "./dependencies/brotli/c",
             exclude: [
@@ -64,7 +64,7 @@ let package = Package(
             dependencies: [],
             path: "./dependencies/libwebp",
             exclude: {
-                guard var files = try? FileManager.default.subpathsOfDirectory(atPath: "\(project_dir)/dependencies/libwebp/src") else { return [] } 
+                guard var files = try? FileManager.default.subpathsOfDirectory(atPath: "\(project_dir)/dependencies/libwebp/src") else { return [] }
                 files = files.filter { !$0.hasSuffix(".h") && !$0.hasSuffix(".c") }
                 files = files.map { "src/\($0)" }
                 return files
@@ -88,7 +88,7 @@ let package = Package(
         .target(name: "SDFoundation", dependencies: []),
         .target(name: "SDCompression", dependencies: [
             "zlib_c",
-            "brotli",
+            "brotli_c",
         ]),
         .target(name: "SDGeometry", dependencies: [
             "SDFoundation",

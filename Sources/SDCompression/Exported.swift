@@ -27,7 +27,7 @@
 
 @_exported import zlib_c
 
-@_exported import brotli
+@_exported import brotli_c
 
 #if canImport(Compression)
 
