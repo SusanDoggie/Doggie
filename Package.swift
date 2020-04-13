@@ -29,7 +29,7 @@ import PackageDescription
 
 let project_dir = "\(#file)".dropLast("/Package.swift".count)
 
-let package = Package(
+let package = try Package(
     name: "Doggie",
     products: [
         .library(name: "SDFoundation", targets: ["SDFoundation"]),
@@ -64,7 +64,7 @@ let package = Package(
             dependencies: [],
             path: "./dependencies/libwebp",
             exclude: {
-                var files = FileManager.default.subpaths(atPath: "\(project_dir)/dependencies/libwebp/src") ?? []
+                var files = try FileManager.default.subpathsOfDirectory(atPath: "\(project_dir)/dependencies/libwebp/src")
                 files = files.filter { !$0.hasSuffix(".h") && !$0.hasSuffix(".c") }
                 files = files.map { "src/\($0)" }
                 return files
