@@ -54,8 +54,7 @@ extension JPEGEncoder {
         switch image.base {
         case let image as Image<Gray16ColorPixel>:
             
-            let count = image.pixels.count
-            var data = Data(count: count)
+            var data = Data(count: image.pixels.count)
             
             data.withUnsafeMutableBufferPointer {
                 
@@ -65,9 +64,12 @@ extension JPEGEncoder {
                     
                     guard var source = $0.baseAddress else { return }
                     
-                    for _ in 0..<count {
+                    for _ in 0..<$0.count {
                         
-                        destination.pointee = source.pointee.w
+                        let w = UInt16(source.pointee.w)
+                        let a = UInt16(source.pointee.a)
+                        
+                        destination.pointee = UInt8((a * w + 255 * (255 - a)) / 255)
                         
                         destination += 1
                         source += 1
@@ -77,19 +79,95 @@ extension JPEGEncoder {
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: image.width, format: JCS_GRAYSCALE, components: 1, pixels: data)
             
-        case let image as Image<ARGB32ColorPixel>:
+        case var image as Image<ARGB32ColorPixel>:
+            
+            image.withUnsafeMutableBufferPointer {
+                
+                guard var pixels = $0.baseAddress else { return }
+                
+                for _ in 0..<$0.count {
+                    
+                    let r = UInt16(pixels.pointee.r)
+                    let g = UInt16(pixels.pointee.g)
+                    let b = UInt16(pixels.pointee.b)
+                    let a = UInt16(pixels.pointee.a)
+                    
+                    pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
+                    pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
+                    pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                    
+                    pixels += 1
+                }
+            }
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_XRGB, components: 4, pixels: image.pixels.data)
             
-        case let image as Image<RGBA32ColorPixel>:
+        case var image as Image<RGBA32ColorPixel>:
+            
+            image.withUnsafeMutableBufferPointer {
+                
+                guard var pixels = $0.baseAddress else { return }
+                
+                for _ in 0..<$0.count {
+                    
+                    let r = UInt16(pixels.pointee.r)
+                    let g = UInt16(pixels.pointee.g)
+                    let b = UInt16(pixels.pointee.b)
+                    let a = UInt16(pixels.pointee.a)
+                    
+                    pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
+                    pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
+                    pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                    
+                    pixels += 1
+                }
+            }
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_RGBX, components: 4, pixels: image.pixels.data)
             
-        case let image as Image<ABGR32ColorPixel>:
+        case var image as Image<ABGR32ColorPixel>:
+            
+            image.withUnsafeMutableBufferPointer {
+                
+                guard var pixels = $0.baseAddress else { return }
+                
+                for _ in 0..<$0.count {
+                    
+                    let r = UInt16(pixels.pointee.r)
+                    let g = UInt16(pixels.pointee.g)
+                    let b = UInt16(pixels.pointee.b)
+                    let a = UInt16(pixels.pointee.a)
+                    
+                    pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
+                    pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
+                    pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                    
+                    pixels += 1
+                }
+            }
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_XBGR, components: 4, pixels: image.pixels.data)
             
-        case let image as Image<BGRA32ColorPixel>:
+        case var image as Image<BGRA32ColorPixel>:
+            
+            image.withUnsafeMutableBufferPointer {
+                
+                guard var pixels = $0.baseAddress else { return }
+                
+                for _ in 0..<$0.count {
+                    
+                    let r = UInt16(pixels.pointee.r)
+                    let g = UInt16(pixels.pointee.g)
+                    let b = UInt16(pixels.pointee.b)
+                    let a = UInt16(pixels.pointee.a)
+                    
+                    pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
+                    pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
+                    pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                    
+                    pixels += 1
+                }
+            }
             
             encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_BGRX, components: 4, pixels: image.pixels.data)
             
@@ -99,8 +177,7 @@ extension JPEGEncoder {
                 
                 let _image = Image<Gray16ColorPixel>(image) ?? Image<Gray16ColorPixel>(image: image, colorSpace: .genericGamma22Gray)
                 
-                let count = _image.pixels.count
-                var data = Data(count: count)
+                var data = Data(count: _image.pixels.count)
                 
                 data.withUnsafeMutableBufferPointer {
                     
@@ -110,9 +187,12 @@ extension JPEGEncoder {
                         
                         guard var source = $0.baseAddress else { return }
                         
-                        for _ in 0..<count {
+                        for _ in 0..<$0.count {
                             
-                            destination.pointee = source.pointee.w
+                            let w = UInt16(source.pointee.w)
+                            let a = UInt16(source.pointee.a)
+                            
+                            destination.pointee = UInt8((a * w + 255 * (255 - a)) / 255)
                             
                             destination += 1
                             source += 1
@@ -124,7 +204,26 @@ extension JPEGEncoder {
                 
             } else {
                 
-                let _image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
+                var _image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
+                
+                _image.withUnsafeMutableBufferPointer {
+                    
+                    guard var pixels = $0.baseAddress else { return }
+                    
+                    for _ in 0..<$0.count {
+                        
+                        let r = UInt16(pixels.pointee.r)
+                        let g = UInt16(pixels.pointee.g)
+                        let b = UInt16(pixels.pointee.b)
+                        let a = UInt16(pixels.pointee.a)
+                        
+                        pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
+                        pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
+                        pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                        
+                        pixels += 1
+                    }
+                }
                 
                 encoder = JPEGEncoder(width: _image.width, height: _image.height, bytesPerRow: 4 * _image.width, format: JCS_EXT_RGBX, components: 4, pixels: _image.pixels.data)
             }

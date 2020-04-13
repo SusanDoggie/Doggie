@@ -198,8 +198,6 @@ struct JPEGDecoder: ImageRepDecoder {
             
             var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
             
-            let count = width * height
-            
             image.withUnsafeMutableBufferPointer {
                 
                 guard var destination = $0.baseAddress else { return }
@@ -208,7 +206,7 @@ struct JPEGDecoder: ImageRepDecoder {
                     
                     guard var source = $0.baseAddress else { return }
                     
-                    for _ in 0..<count {
+                    for _ in 0..<$0.count {
                         
                         destination.pointee.w = source.pointee
                         destination.pointee.a = .max
