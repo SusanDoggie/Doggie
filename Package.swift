@@ -65,7 +65,7 @@ let package = Package(
             path: "./dependencies/libwebp",
             exclude: {
                 guard var files = try? FileManager.default.subpathsOfDirectory(atPath: "\(project_dir)/dependencies/libwebp/src") else { return [] }
-                files = files.filter { !$0.hasSuffix(".h") && !$0.hasSuffix(".c") }
+                files = files.filter { $0.contains(".") && !$0.hasSuffix(".h") && !$0.hasSuffix(".c") }
                 files = files.map { "src/\($0)" }
                 return files
             }(),
