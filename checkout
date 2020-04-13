@@ -36,57 +36,6 @@ cd ${PROJECT_DIR}
 git submodule update --recursive
 
 
-# =================    brotli    =================
-#
-#           generate c files for brotli
-#
-
-rm -rf ${PROJECT_DIR}/Sources/brotli/include/brotli || true
-mkdir -p ${PROJECT_DIR}/Sources/brotli/include/brotli
-
-rm -rf ${PROJECT_DIR}/Sources/brotli/src || true
-mkdir -p ${PROJECT_DIR}/Sources/brotli/src/common
-mkdir -p ${PROJECT_DIR}/Sources/brotli/src/dec
-mkdir -p ${PROJECT_DIR}/Sources/brotli/src/enc
-
-find ${PROJECT_DIR}/dependencies/brotli/c/include/brotli -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/brotli/include/brotli \;
-find ${PROJECT_DIR}/dependencies/brotli/c/common -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/brotli/src/common \;
-find ${PROJECT_DIR}/dependencies/brotli/c/common -name '*.c' -exec cp {} ${PROJECT_DIR}/Sources/brotli/src/common \;
-find ${PROJECT_DIR}/dependencies/brotli/c/dec -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/brotli/src/dec \;
-find ${PROJECT_DIR}/dependencies/brotli/c/dec -name '*.c' -exec cp {} ${PROJECT_DIR}/Sources/brotli/src/dec \;
-find ${PROJECT_DIR}/dependencies/brotli/c/enc -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/brotli/src/enc \;
-find ${PROJECT_DIR}/dependencies/brotli/c/enc -name '*.c' -exec cp {} ${PROJECT_DIR}/Sources/brotli/src/enc \;
-
-
-# =================    libwebp    =================
-#
-#          generate c files for libwebp
-#
-
-rm -rff ${PROJECT_DIR}/Sources/libwebp/src || true
-mkdir -p ${PROJECT_DIR}/Sources/libwebp/src/webp
-mkdir -p ${PROJECT_DIR}/Sources/libwebp/src/dec
-mkdir -p ${PROJECT_DIR}/Sources/libwebp/src/enc
-mkdir -p ${PROJECT_DIR}/Sources/libwebp/src/mux
-mkdir -p ${PROJECT_DIR}/Sources/libwebp/src/dsp
-mkdir -p ${PROJECT_DIR}/Sources/libwebp/src/demux
-mkdir -p ${PROJECT_DIR}/Sources/libwebp/src/utils
-
-find ${PROJECT_DIR}/dependencies/libwebp/src/webp -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/webp \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/dec -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/dec \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/dec -name '*.c' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/dec \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/enc -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/enc \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/enc -name '*.c' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/enc \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/mux -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/mux \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/mux -name '*.c' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/mux \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/dsp -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/dsp \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/dsp -name '*.c' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/dsp \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/demux -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/demux \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/demux -name '*.c' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/demux \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/utils -name '*.h' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/utils \;
-find ${PROJECT_DIR}/dependencies/libwebp/src/utils -name '*.c' -exec cp {} ${PROJECT_DIR}/Sources/libwebp/src/utils \;
-
-
 # =================    libjpeg    =================
 #
 #       generate c files for libjpeg-turbo

@@ -45,11 +45,43 @@ let package = Package(
         ),
         .target(
             name: "brotli",
-            dependencies: []
+            dependencies: [],
+            path: "./dependencies/brotli/c",
+            exclude: [
+                "common/dictionary.bin",
+                "common/dictionary.bin.br",
+            ],
+            sources: [
+                "common",
+                "dec",
+                "enc",
+                "include",
+            ]
         ),
         .target(
             name: "libwebp",
             dependencies: [],
+            path: "./dependencies/libwebp",
+            exclude: [
+                "src/Makefile.am",
+                "src/dec/Makefile.am",
+                "src/demux/Makefile.am",
+                "src/demux/libwebpdemux.pc.in",
+                "src/demux/libwebpdemux.rc",
+                "src/dsp/Makefile.am",
+                "src/enc/Makefile.am",
+                "src/libwebp.pc.in",
+                "src/libwebp.rc",
+                "src/libwebpdecoder.pc.in",
+                "src/libwebpdecoder.rc",
+                "src/mux/Makefile.am",
+                "src/mux/libwebpmux.pc.in",
+                "src/mux/libwebpmux.rc",
+                "src/utils/Makefile.am",
+            ],
+            sources: [
+                "src",
+            ],
             publicHeadersPath: "src/webp",
             cSettings: [
                 .headerSearchPath("./"),
