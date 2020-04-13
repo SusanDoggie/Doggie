@@ -24,6 +24,7 @@
 //  THE SOFTWARE.
 //
 
+import Foundation
 import PackageDescription
 
 let project_dir = "\(#file)".dropLast("/Package.swift".count)
@@ -62,23 +63,12 @@ let package = Package(
             name: "libwebp",
             dependencies: [],
             path: "./dependencies/libwebp",
-            exclude: [
-                "src/Makefile.am",
-                "src/dec/Makefile.am",
-                "src/demux/Makefile.am",
-                "src/demux/libwebpdemux.pc.in",
-                "src/demux/libwebpdemux.rc",
-                "src/dsp/Makefile.am",
-                "src/enc/Makefile.am",
-                "src/libwebp.pc.in",
-                "src/libwebp.rc",
-                "src/libwebpdecoder.pc.in",
-                "src/libwebpdecoder.rc",
-                "src/mux/Makefile.am",
-                "src/mux/libwebpmux.pc.in",
-                "src/mux/libwebpmux.rc",
-                "src/utils/Makefile.am",
-            ],
+            exclude: {
+                var files = FileManager.default.subpaths(atPath: "\(project_dir)/dependencies/libwebp/src") ?? []
+                files = files.filter { !$0.hasSuffix(".h") && !$0.hasSuffix(".c") }
+                files = files.map { "src/\($0)" }
+                return files
+            }(),
             sources: [
                 "src",
             ],
