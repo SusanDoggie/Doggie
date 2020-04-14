@@ -64,13 +64,11 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
-    - name: Install dependencies
-      run: apt-get -q update && apt-get -y -q install libz-dev
     - name: Install fonts
-      run: |		
+      run: |
         export DEBIAN_FRONTEND=noninteractive		
         echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections		
-        apt-get install -y fontconfig ttf-mscorefonts-installer
+        apt-get update && apt-get install -y fontconfig ttf-mscorefonts-installer
     - name: Build
       uses: SusanDoggie/swift-action@master
       with:
