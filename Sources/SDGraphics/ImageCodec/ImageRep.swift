@@ -44,7 +44,7 @@ protocol ImageRepBase {
     
     var repeats: Int { get }
     
-    var duration: Int { get }
+    var duration: Double { get }
 }
 
 extension ImageRepBase {
@@ -74,7 +74,7 @@ extension ImageRepBase {
     }
     
     @usableFromInline
-    var duration: Int {
+    var duration: Double {
         return isAnimated && numberOfPages > 1 ? (0..<numberOfPages).reduce(0) { $0 + self.page($1).duration } : 0
     }
 }
@@ -241,7 +241,7 @@ extension ImageRep {
         return base.repeats
     }
     
-    public var duration: Int {
+    public var duration: Double {
         return base.duration
     }
 }

@@ -115,8 +115,6 @@ extension WEBPEncoder {
         case (.byteOrder32Little, .noneSkipFirst): format = .BGRX
         default:
             
-            guard let colorSpace = image.colorSpace else { return nil }
-            
             if image.alphaInfo == .none || image.alphaInfo == .noneSkipLast || image.alphaInfo == .noneSkipFirst {
                 
                 let bitmapInfo = CGBitmapInfo(rawValue: CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.noneSkipLast.rawValue)
@@ -125,7 +123,7 @@ extension WEBPEncoder {
                     bitsPerComponent: 8,
                     bitsPerPixel: 32,
                     bytesPerRow: 4 * image.width,
-                    space: colorSpace,
+                    space: image.colorSpace ?? CGColorSpaceCreateDeviceRGB(),
                     bitmapInfo: bitmapInfo,
                     decode: image.decode,
                     shouldInterpolate: image.shouldInterpolate,
@@ -144,7 +142,7 @@ extension WEBPEncoder {
                     bitsPerComponent: 8,
                     bitsPerPixel: 32,
                     bytesPerRow: 4 * image.width,
-                    space: colorSpace,
+                    space: image.colorSpace ?? CGColorSpaceCreateDeviceRGB(),
                     bitmapInfo: bitmapInfo,
                     decode: image.decode,
                     shouldInterpolate: image.shouldInterpolate,

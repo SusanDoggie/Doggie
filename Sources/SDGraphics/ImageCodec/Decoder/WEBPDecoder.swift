@@ -58,9 +58,9 @@ extension WEBPDecoder {
         
         let image: Image<RGBA32ColorPixel>
         
-        let timestamp: Int
+        let timestamp: Int32
         
-        let duration: Int
+        let delay: Int32
     }
     
     class Decoder {
@@ -119,7 +119,7 @@ extension WEBPDecoder {
                 
                 let last_timestamp = frames.last?.timestamp ?? 0
                 
-                frames.append(Frame(image: image, timestamp: Int(timestamp), duration: Int(timestamp) - last_timestamp))
+                frames.append(Frame(image: image, timestamp: timestamp, delay: timestamp - last_timestamp))
             }
             
             return frames[index]
@@ -171,17 +171,6 @@ extension WEBPDecoder {
     }
 }
 
-extension WEBPDecoder {
-    
-    var isAnimated: Bool {
-        return decoder.anim_info.frame_count > 1
-    }
-    
-    var repeats: Int {
-        return Int(decoder.anim_info.loop_count)
-    }
-}
-
 extension WEBPDecoder.Frame: ImageRepBase {
     
     var width: Int {
@@ -204,5 +193,23 @@ extension WEBPDecoder.Frame: ImageRepBase {
         var image = self.image
         image.fileBacked = fileBacked
         return AnyImage(image)
+    }
+}
+
+extension WEBPDecoder {
+    
+    var isAnimated: Bool {
+        return decoder.anim_info.frame_count > 1
+    }
+    
+    var repeats: Int {
+        return Int(decoder.anim_info.loop_count)
+    }
+}
+
+extension WEBPDecoder.Frame {
+    
+    var duration: Double {
+        return Double(delay) / 1000
     }
 }

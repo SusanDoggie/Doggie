@@ -44,6 +44,10 @@ struct _CGImageSourceImageRepBase: CGImageRepBase {
         guard numberOfPages > 0 else { return nil }
     }
     
+    var general_properties: [CFString: Any] {
+        return CGImageSourceCopyProperties(source, nil) as? [CFString: Any] ?? [:]
+    }
+    
     var properties: [CFString: Any] {
         return CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [CFString: Any] ?? [:]
     }
@@ -73,39 +77,44 @@ struct _CGImageSourceImageRepBase: CGImageRepBase {
     
     var _resolution: Resolution {
         
+        let properties = self.properties
+        
         if let resolutionX = properties[kCGImagePropertyDPIWidth] as? NSNumber, let resolutionY = properties[kCGImagePropertyDPIHeight] as? NSNumber {
             
             return Resolution(horizontal: resolutionX.doubleValue, vertical: resolutionY.doubleValue, unit: .inch)
+        }
+        
+        if let properties = properties[kCGImagePropertyTIFFDictionary] as? [CFString: Any] {
             
-        } else if let properties = self.properties[kCGImagePropertyTIFFDictionary] as? [CFString: Any] {
+            guard let resolutionUnit = (properties[kCGImagePropertyTIFFResolutionUnit] as? NSNumber)?.intValue else { return .default }
             
-            if let resolutionUnit = (properties[kCGImagePropertyTIFFResolutionUnit] as? NSNumber)?.intValue {
-                
-                let resolutionX = properties[kCGImagePropertyTIFFXResolution] as? NSNumber
-                let resolutionY = properties[kCGImagePropertyTIFFYResolution] as? NSNumber
-                
-                switch resolutionUnit {
-                case 1: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .point)
-                case 2: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .inch)
-                case 3: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .centimeter)
-                default: return .default
-                }
+            let resolutionX = properties[kCGImagePropertyTIFFXResolution] as? NSNumber
+            let resolutionY = properties[kCGImagePropertyTIFFYResolution] as? NSNumber
+            
+            switch resolutionUnit {
+            case 1: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .point)
+            case 2: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .inch)
+            case 3: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .centimeter)
+            default: return .default
             }
-        } else if let properties = self.properties[kCGImagePropertyJFIFDictionary] as? [CFString: Any] {
+        }
+        
+        if let properties = properties[kCGImagePropertyJFIFDictionary] as? [CFString: Any] {
             
-            if let resolutionUnit = (properties[kCGImagePropertyJFIFDensityUnit] as? NSNumber)?.intValue {
-                
-                let resolutionX = properties[kCGImagePropertyJFIFXDensity] as? NSNumber
-                let resolutionY = properties[kCGImagePropertyJFIFYDensity] as? NSNumber
-                
-                switch resolutionUnit {
-                case 1: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .point)
-                case 2: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .inch)
-                case 3: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .centimeter)
-                default: return .default
-                }
+            guard let resolutionUnit = (properties[kCGImagePropertyJFIFDensityUnit] as? NSNumber)?.intValue else { return .default }
+            
+            let resolutionX = properties[kCGImagePropertyJFIFXDensity] as? NSNumber
+            let resolutionY = properties[kCGImagePropertyJFIFYDensity] as? NSNumber
+            
+            switch resolutionUnit {
+            case 1: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .point)
+            case 2: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .inch)
+            case 3: return Resolution(horizontal: resolutionX?.doubleValue ?? 0, vertical: resolutionY?.doubleValue ?? 0, unit: .centimeter)
+            default: return .default
             }
-        } else if let properties = self.properties[kCGImagePropertyPNGDictionary] as? [CFString: Any] {
+        }
+        
+        if let properties = properties[kCGImagePropertyPNGDictionary] as? [CFString: Any] {
             
             let resolutionX = properties[kCGImagePropertyPNGXPixelsPerMeter] as? NSNumber
             let resolutionY = properties[kCGImagePropertyPNGYPixelsPerMeter] as? NSNumber
@@ -141,6 +150,70 @@ struct _CGImageSourceImageRepBase: CGImageRepBase {
     func copy(to destination: CGImageDestination, properties: [CFString: Any]) {
         CGImageDestinationAddImageFromSource(destination, source, index, properties as CFDictionary)
     }
+    
+    var isAnimated: Bool {
+        return _repeats != nil
+    }
+    
+    var _repeats: Int? {
+        
+        let properties = self.properties
+        
+        if let properties = general_properties[kCGImagePropertyGIFDictionary] as? [CFString: Any] {
+            return (properties[kCGImagePropertyGIFLoopCount] as? NSNumber)?.intValue
+        }
+        if let properties = general_properties[kCGImagePropertyPNGDictionary] as? [CFString: Any] {
+            return (properties[kCGImagePropertyAPNGLoopCount] as? NSNumber)?.intValue
+        }
+        if let properties = general_properties[kCGImagePropertyHEICSDictionary] as? [CFString: Any] {
+            return (properties[kCGImagePropertyHEICSLoopCount] as? NSNumber)?.intValue
+        }
+        
+        return nil
+    }
+    
+    var repeats: Int {
+        return _repeats ?? 0
+    }
+    
+    var duration: Double {
+        
+        let properties = self.properties
+        let properties = self.general_properties
+        
+        if let properties = properties[kCGImagePropertyGIFDictionary] as? [CFString: Any],
+            let duration = (properties[kCGImagePropertyGIFDelayTime] as? NSNumber)?.doubleValue {
+            
+            return duration
+        }
+        if let properties = general_properties[kCGImagePropertyGIFDictionary] as? [CFString: Any],
+            let duration = (properties[kCGImagePropertyGIFDelayTime] as? NSNumber)?.doubleValue {
+            
+            return duration
+        }
+        if let properties = properties[kCGImagePropertyPNGDictionary] as? [CFString: Any],
+            let duration = (properties[kCGImagePropertyAPNGDelayTime] as? NSNumber)?.doubleValue {
+            
+            return duration
+        }
+        if let properties = general_properties[kCGImagePropertyPNGDictionary] as? [CFString: Any],
+            let duration = (properties[kCGImagePropertyAPNGDelayTime] as? NSNumber)?.doubleValue {
+            
+            return duration
+        }
+        if let properties = properties[kCGImagePropertyHEICSDictionary] as? [CFString: Any],
+            let duration = (properties[kCGImagePropertyHEICSDelayTime] as? NSNumber)?.doubleValue {
+            
+            return duration
+        }
+        if let properties = general_properties[kCGImagePropertyHEICSDictionary] as? [CFString: Any],
+            let duration = (properties[kCGImagePropertyHEICSDelayTime] as? NSNumber)?.doubleValue {
+            
+            return duration
+        }
+        
+        return 0
+    }
 }
 
 struct _CGImageRepBase: CGImageRepBase {
@@ -162,6 +235,10 @@ struct _CGImageRepBase: CGImageRepBase {
     
     var numberOfPages: Int {
         return 1
+    }
+    
+    var general_properties: [CFString: Any] {
+        return [:]
     }
     
     var properties: [CFString: Any] {
@@ -189,6 +266,18 @@ struct _CGImageRepBase: CGImageRepBase {
         properties[kCGImagePropertyDPIHeight] = resolution.vertical
         
         CGImageDestinationAddImage(destination, image, properties as CFDictionary)
+    }
+    
+    var isAnimated: Bool {
+        return false
+    }
+    
+    var repeats: Int {
+        return 0
+    }
+    
+    var duration: Double {
+        return 0
     }
 }
 

@@ -37,6 +37,8 @@ protocol CGImageRepBase {
     
     var numberOfPages: Int { get }
     
+    var general_properties: [CFString: Any] { get }
+    
     var properties: [CFString: Any] { get }
     
     func page(_ index: Int) -> CGImageRepBase
@@ -46,6 +48,12 @@ protocol CGImageRepBase {
     func auxiliaryDataInfo(_ type: String) -> [String: AnyObject]?
     
     func copy(to destination: CGImageDestination, properties: [CFString: Any])
+    
+    var isAnimated: Bool { get }
+    
+    var repeats: Int { get }
+    
+    var duration: Double { get }
 }
 
 public struct CGImageRep {
@@ -166,6 +174,25 @@ extension CGImageRep {
 }
 
 extension CGImageRep {
+    
+    public var isAnimated: Bool {
+        return base.isAnimated
+    }
+    
+    public var repeats: Int {
+        return base.repeats
+    }
+    
+    public var duration: Double {
+        return base.duration
+    }
+}
+
+extension CGImageRep {
+    
+    public var general_properties: [CFString: Any] {
+        return base.general_properties
+    }
     
     public var properties: [CFString: Any] {
         return base.properties
