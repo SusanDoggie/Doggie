@@ -165,8 +165,12 @@ struct _CGImageSourceImageRepBase: CGImageRepBase {
         if let properties = general_properties[kCGImagePropertyPNGDictionary] as? [CFString: Any] {
             return (properties[kCGImagePropertyAPNGLoopCount] as? NSNumber)?.intValue
         }
-        if let properties = general_properties[kCGImagePropertyHEICSDictionary] as? [CFString: Any] {
-            return (properties[kCGImagePropertyHEICSLoopCount] as? NSNumber)?.intValue
+        
+        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *) {
+            
+            if let properties = general_properties[kCGImagePropertyHEICSDictionary] as? [CFString: Any] {
+                return (properties[kCGImagePropertyHEICSLoopCount] as? NSNumber)?.intValue
+            }
         }
         
         return nil
@@ -201,15 +205,19 @@ struct _CGImageSourceImageRepBase: CGImageRepBase {
             
             return duration
         }
-        if let properties = properties[kCGImagePropertyHEICSDictionary] as? [CFString: Any],
-            let duration = (properties[kCGImagePropertyHEICSDelayTime] as? NSNumber)?.doubleValue {
+        
+        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *) {
             
-            return duration
-        }
-        if let properties = general_properties[kCGImagePropertyHEICSDictionary] as? [CFString: Any],
-            let duration = (properties[kCGImagePropertyHEICSDelayTime] as? NSNumber)?.doubleValue {
-            
-            return duration
+            if let properties = properties[kCGImagePropertyHEICSDictionary] as? [CFString: Any],
+                let duration = (properties[kCGImagePropertyHEICSDelayTime] as? NSNumber)?.doubleValue {
+                
+                return duration
+            }
+            if let properties = general_properties[kCGImagePropertyHEICSDictionary] as? [CFString: Any],
+                let duration = (properties[kCGImagePropertyHEICSDelayTime] as? NSNumber)?.doubleValue {
+                
+                return duration
+            }
         }
         
         return 0
