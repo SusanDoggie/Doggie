@@ -45,6 +45,10 @@ struct JPEGDecoder: ImageRepDecoder {
     let buffer: Data
     
     init?(data: Data) {
+        
+        var _data = data
+        guard let marker = try? _data.decode(JPEGMarker.self), marker == .SOI else { return nil }
+        
         guard let decoder = data.withUnsafeBytes(JPEGDecoder.init) else { return nil }
         self = decoder
     }
@@ -301,5 +305,114 @@ struct JPEGDecoder: ImageRepDecoder {
             
         default: fatalError()
         }
+    }
+}
+
+struct JPEGMarker: RawRepresentable, Hashable, Comparable, ExpressibleByIntegerLiteral {
+    
+    var rawValue: UInt8
+    
+    init(rawValue: UInt8) {
+        self.rawValue = rawValue
+    }
+    
+    init(integerLiteral value: UInt8) {
+        self.init(rawValue: value)
+    }
+}
+
+extension JPEGMarker {
+    
+    static func < (lhs: JPEGMarker, rhs: JPEGMarker) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+}
+
+extension JPEGMarker {
+    
+    static let SOF0: JPEGMarker     = 0xC0
+    static let SOF1: JPEGMarker     = 0xC1
+    static let SOF2: JPEGMarker     = 0xC2
+    static let SOF3: JPEGMarker     = 0xC3
+    static let SOF5: JPEGMarker     = 0xC5
+    static let SOF6: JPEGMarker     = 0xC6
+    static let SOF7: JPEGMarker     = 0xC7
+    static let SOF9: JPEGMarker     = 0xC9
+    static let SOF10: JPEGMarker    = 0xCA
+    static let SOF11: JPEGMarker    = 0xCB
+    static let SOF13: JPEGMarker    = 0xCD
+    static let SOF14: JPEGMarker    = 0xCE
+    static let SOF15: JPEGMarker    = 0xCF
+    static let DHT: JPEGMarker      = 0xC4
+    static let DAC: JPEGMarker      = 0xCC
+    static let RST0: JPEGMarker     = 0xD0
+    static let RST1: JPEGMarker     = 0xD1
+    static let RST2: JPEGMarker     = 0xD2
+    static let RST3: JPEGMarker     = 0xD3
+    static let RST4: JPEGMarker     = 0xD4
+    static let RST5: JPEGMarker     = 0xD5
+    static let RST6: JPEGMarker     = 0xD6
+    static let RST7: JPEGMarker     = 0xD7
+    static let SOI: JPEGMarker      = 0xD8
+    static let EOI: JPEGMarker      = 0xD9
+    static let SOS: JPEGMarker      = 0xDA
+    static let DQT: JPEGMarker      = 0xDB
+    static let DNL: JPEGMarker      = 0xDC
+    static let DRI: JPEGMarker      = 0xDD
+    static let DHP: JPEGMarker      = 0xDE
+    static let EXP: JPEGMarker      = 0xDF
+    static let APP0: JPEGMarker     = 0xE0
+    static let APP1: JPEGMarker     = 0xE1
+    static let APP2: JPEGMarker     = 0xE2
+    static let APP3: JPEGMarker     = 0xE3
+    static let APP4: JPEGMarker     = 0xE4
+    static let APP5: JPEGMarker     = 0xE5
+    static let APP6: JPEGMarker     = 0xE6
+    static let APP7: JPEGMarker     = 0xE7
+    static let APP8: JPEGMarker     = 0xE8
+    static let APP9: JPEGMarker     = 0xE9
+    static let APP10: JPEGMarker    = 0xEA
+    static let APP11: JPEGMarker    = 0xEB
+    static let APP12: JPEGMarker    = 0xEC
+    static let APP13: JPEGMarker    = 0xED
+    static let APP14: JPEGMarker    = 0xEE
+    static let APP15: JPEGMarker    = 0xEF
+    static let JPG0: JPEGMarker     = 0xF0
+    static let JPG1: JPEGMarker     = 0xF1
+    static let JPG2: JPEGMarker     = 0xF2
+    static let JPG3: JPEGMarker     = 0xF3
+    static let JPG4: JPEGMarker     = 0xF4
+    static let JPG5: JPEGMarker     = 0xF5
+    static let JPG6: JPEGMarker     = 0xF6
+    static let JPG7: JPEGMarker     = 0xF7
+    static let JPG8: JPEGMarker     = 0xF8
+    static let JPG9: JPEGMarker     = 0xF9
+    static let JPG10: JPEGMarker    = 0xFA
+    static let JPG11: JPEGMarker    = 0xFB
+    static let JPG12: JPEGMarker    = 0xFC
+    static let JPG13: JPEGMarker    = 0xFD
+    static let COM: JPEGMarker      = 0xFE
+    
+}
+
+extension JPEGMarker: ByteCodable {
+    
+    init(from data: inout Data) throws {
+        var byte = try data.decode(UInt8.self)
+        guard byte == 0xFF else { throw ImageRep.Error.InvalidFormat("Invalid marker.") }
+        while byte == 0xFF { byte = try data.decode(UInt8.self) }
+        self.init(rawValue: byte)
+    }
+    
+    func write<Target: ByteOutputStream>(to stream: inout Target) {
+        stream.encode(0xFF as UInt8)
+        stream.encode(rawValue)
+    }
+}
+
+extension JPEGMarker: CustomStringConvertible {
+    
+    var description: String {
+        return "0x\(String(rawValue, radix: 16).uppercased())"
     }
 }
