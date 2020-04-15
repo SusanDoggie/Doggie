@@ -29,133 +29,117 @@ struct WEBPDecoder: ImageRepDecoder {
         return .webp
     }
     
-    private var frames: [WEBPFrame] = []
-    
+    let decoder: Decoder
     let iccData: Data?
     
-    private init(frame: WEBPFrame, iccData: Data?) {
-        self.frames = [frame]
-        self.iccData = iccData
-    }
-    
     init?(data: Data) {
-        guard let decoder = data.withUnsafeBytes(WEBPDecoder.init) else { return nil }
-        self = decoder
-    }
-    
-    private init?(bytes: UnsafeRawBufferPointer) {
         
-        guard let baseAddress = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return nil }
+        guard let decoder = data.withUnsafeBytes(Decoder.init), decoder.anim_info.frame_count > 0 else { return nil }
+        self.decoder = decoder
         
-        var data = WebPData(bytes: baseAddress, size: bytes.count)
-        guard let demux = WebPDemux(&data) else { return nil }
-        defer { WebPDemuxDelete(demux) }
+        let demuxer = decoder.demuxer
         
-        let format = WebPDemuxGetI(demux, WEBP_FF_FORMAT_FLAGS)
+        let format = WebPDemuxGetI(demuxer, WEBP_FF_FORMAT_FLAGS)
         var iccData: Data?
         
         var chunk_iter = WebPChunkIterator()
-        if format & ICCP_FLAG.rawValue != 0 && WebPDemuxGetChunk(demux, "ICCP", 1, &chunk_iter) != 0 {
+        if format & ICCP_FLAG.rawValue != 0 && WebPDemuxGetChunk(demuxer, "ICCP", 1, &chunk_iter) != 0 {
             defer { WebPDemuxReleaseChunkIterator(&chunk_iter) }
             iccData = Data(bytes: chunk_iter.chunk.bytes, count: chunk_iter.chunk.size)
         }
         
         self.iccData = iccData
-        
-        var frame_iter = WebPIterator()
-        guard WebPDemuxGetFrame(demux, 1, &frame_iter) != 0 else { return nil }
-        defer { WebPDemuxReleaseIterator(&frame_iter) }
-        
-        repeat {
-            
-            guard let page = WEBPFrame(data: frame_iter.fragment) else { continue }
-            
-            self.frames.append(page)
-            
-        } while WebPDemuxNextFrame(&frame_iter) != 0
     }
 }
 
 extension WEBPDecoder {
     
-    enum PixelFormat: Int32 {
+    struct Frame {
         
-        case RGBA
-        case ARGB
-        case BGRA
-        case RGB
-        case BGR
-    }
-}
-
-private class WEBPFrame {
-    
-    var data = WebPData()
-    
-    var features = WebPBitstreamFeatures()
-    
-    init?(data: WebPData) {
+        let image: Image<RGBA32ColorPixel>
         
-        var data = data
-        guard WebPDataCopy(&data, &self.data) != 0 else { return nil }
+        let timestamp: Int
         
-        let status = WebPGetFeatures(data.bytes, data.size, &features)
-        guard status == VP8_STATUS_OK else { return nil }
+        let duration: Int
     }
     
-    deinit {
-        WebPDataClear(&data)
-    }
-}
-
-extension WEBPFrame {
-    
-    func decode(pixels: UnsafeMutableRawBufferPointer, format: WEBPDecoder.PixelFormat, bytesPerRow: Int) {
-        guard let _pixels = pixels.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
-        switch format {
-        case .RGBA: WebPDecodeRGBAInto(data.bytes, data.size, _pixels, pixels.count, Int32(bytesPerRow))
-        case .ARGB: WebPDecodeARGBInto(data.bytes, data.size, _pixels, pixels.count, Int32(bytesPerRow))
-        case .BGRA: WebPDecodeBGRAInto(data.bytes, data.size, _pixels, pixels.count, Int32(bytesPerRow))
-        case .RGB: WebPDecodeRGBInto(data.bytes, data.size, _pixels, pixels.count, Int32(bytesPerRow))
-        case .BGR: WebPDecodeBGRInto(data.bytes, data.size, _pixels, pixels.count, Int32(bytesPerRow))
+    class Decoder {
+        
+        let decoder: OpaquePointer
+        let anim_info: WebPAnimInfo
+        
+        var data = WebPData()
+        
+        var frames: [Frame] = []
+        
+        init?(bytes: UnsafeRawBufferPointer) {
+            
+            guard let baseAddress = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return nil }
+            
+            var options = WebPAnimDecoderOptions()
+            WebPAnimDecoderOptionsInit(&options)
+            
+            options.color_mode = MODE_RGBA
+            
+            var data = WebPData(bytes: baseAddress, size: bytes.count)
+            guard WebPDataCopy(&data, &self.data) != 0 else { return nil }
+            
+            guard let decoder = WebPAnimDecoderNew(&self.data, &options) else { return nil }
+            self.decoder = decoder
+            
+            var anim_info = WebPAnimInfo()
+            WebPAnimDecoderGetInfo(decoder, &anim_info)
+            self.anim_info = anim_info
+        }
+        
+        deinit {
+            WebPAnimDecoderDelete(decoder)
+            WebPDataClear(&data)
+        }
+        
+        func read_frame(index: Int, colorSpace: ColorSpace<RGBColorModel>, fileBacked: Bool) -> Frame {
+            
+            guard index < anim_info.frame_count else { fatalError("Index out of range.") }
+            
+            while index >= frames.count {
+                
+                var buf: UnsafeMutablePointer<UInt8>?
+                var timestamp: Int32 = 0
+                
+                WebPAnimDecoderGetNext(decoder, &buf, &timestamp)
+                
+                var image = Image<RGBA32ColorPixel>(width: Int(anim_info.canvas_width), height: Int(anim_info.canvas_height), colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                image.withUnsafeMutableBytes { buffer in
+                    
+                    guard let buf = buf else { return }
+                    
+                    buffer.copyMemory(from: UnsafeRawBufferPointer(start: buf, count: buffer.count))
+                }
+                
+                let last_timestamp = frames.last?.timestamp ?? 0
+                
+                frames.append(Frame(image: image, timestamp: Int(timestamp), duration: Int(timestamp) - last_timestamp))
+            }
+            
+            return frames[index]
+        }
+        
+        var demuxer: OpaquePointer? {
+            return WebPAnimDecoderGetDemuxer(decoder)
         }
     }
+    
 }
 
 extension WEBPDecoder {
-    
-    var numberOfPages: Int {
-        return frames.count
-    }
-    
-    func page(_ index: Int) -> WEBPDecoder {
-        return WEBPDecoder(frame: frames[index], iccData: iccData)
-    }
-}
-
-extension WEBPDecoder {
-    
-    private var features: WebPBitstreamFeatures {
-        return frames[0].features
-    }
-    
-    enum Format: Int32 {
-        
-        case undefined = 0
-        case lossy
-        case lossless
-    }
-    
-    var format: WEBPDecoder.Format {
-        return WEBPDecoder.Format(rawValue: features.format) ?? .undefined
-    }
     
     var width: Int {
-        return Int(features.width)
+        return Int(decoder.anim_info.canvas_width)
     }
     
     var height: Int {
-        return Int(features.height)
+        return Int(decoder.anim_info.canvas_height)
     }
     
     var resolution: Resolution {
@@ -166,12 +150,8 @@ extension WEBPDecoder {
         return AnyColorSpace(_colorSpace)
     }
     
-    var isOpaque: Bool {
-        return features.has_alpha == 0
-    }
-    
-    var isAnimated: Bool {
-        return features.has_animation != 0
+    func image(fileBacked: Bool) -> AnyImage {
+        return decoder.read_frame(index: 0, colorSpace: _colorSpace, fileBacked: fileBacked).image(fileBacked: fileBacked)
     }
 }
 
@@ -182,13 +162,47 @@ extension WEBPDecoder {
         return colorSpace.base as? ColorSpace<RGBColorModel> ?? .sRGB
     }
     
-    func image(fileBacked: Bool) -> AnyImage {
-        
-        var image = Image<RGBA32ColorPixel>(width: width, height: height, colorSpace: _colorSpace, fileBacked: fileBacked)
-        
-        image.withUnsafeMutableBytes { frames[0].decode(pixels: $0, format: .RGBA, bytesPerRow: width << 2) }
-        
-        return AnyImage(image)
+    var numberOfPages: Int {
+        return Int(decoder.anim_info.frame_count)
     }
     
+    func page(_ index: Int) -> ImageRepBase {
+        return decoder.read_frame(index: index, colorSpace: _colorSpace, fileBacked: true)
+    }
+}
+
+extension WEBPDecoder {
+    
+    var isAnimated: Bool {
+        return decoder.anim_info.frame_count > 1
+    }
+    
+    var repeats: Int {
+        return Int(decoder.anim_info.loop_count)
+    }
+}
+
+extension WEBPDecoder.Frame: ImageRepBase {
+    
+    var width: Int {
+        return image.width
+    }
+    
+    var height: Int {
+        return image.height
+    }
+    
+    var resolution: Resolution {
+        return .default
+    }
+    
+    var colorSpace: AnyColorSpace {
+        return AnyColorSpace(image.colorSpace)
+    }
+    
+    func image(fileBacked: Bool) -> AnyImage {
+        var image = self.image
+        image.fileBacked = fileBacked
+        return AnyImage(image)
+    }
 }

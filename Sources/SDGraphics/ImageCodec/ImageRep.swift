@@ -39,6 +39,12 @@ protocol ImageRepBase {
     func page(_ index: Int) -> ImageRepBase
     
     func image(fileBacked: Bool) -> AnyImage
+    
+    var isAnimated: Bool { get }
+    
+    var repeats: Int { get }
+    
+    var duration: Int { get }
 }
 
 extension ImageRepBase {
@@ -52,6 +58,24 @@ extension ImageRepBase {
     func page(_ index: Int) -> ImageRepBase {
         precondition(index == 0, "Index out of range.")
         return self
+    }
+}
+
+extension ImageRepBase {
+    
+    @usableFromInline
+    var isAnimated: Bool {
+        return false
+    }
+    
+    @usableFromInline
+    var repeats: Int {
+        return 0
+    }
+    
+    @usableFromInline
+    var duration: Int {
+        return isAnimated && numberOfPages > 1 ? (0..<numberOfPages).reduce(0) { $0 + self.page($1).duration } : 0
     }
 }
 
@@ -204,6 +228,21 @@ extension ImageRep {
     
     public var colorSpace: AnyColorSpace {
         return base.colorSpace
+    }
+}
+
+extension ImageRep {
+    
+    public var isAnimated: Bool {
+        return base.isAnimated
+    }
+    
+    public var repeats: Int {
+        return base.repeats
+    }
+    
+    public var duration: Int {
+        return base.duration
     }
 }
 
