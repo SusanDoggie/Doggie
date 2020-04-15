@@ -178,8 +178,8 @@ struct _CGImageSourceImageRepBase: CGImageRepBase {
     
     var duration: Double {
         
+        let general_properties = self.general_properties
         let properties = self.properties
-        let properties = self.general_properties
         
         if let properties = properties[kCGImagePropertyGIFDictionary] as? [CFString: Any],
             let duration = (properties[kCGImagePropertyGIFDelayTime] as? NSNumber)?.doubleValue {
