@@ -125,10 +125,11 @@ Documents can find in [here](docs/index.md).
 ### ImageRep
 - [x] bmp
 - [ ] gif
-- [ ] jpeg
+- [x] jpeg
 - [ ] jpeg2000
 - [x] png
 - [x] tiff
+- [x] webp
 
 ### Font
 
