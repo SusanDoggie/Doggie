@@ -136,7 +136,12 @@ extension PNGDecoder {
                 
             case "IDAT":
                 
-                guard actl != nil, fctl != nil, frames.last == nil else { return }
+                guard actl != nil else { return }
+                
+                guard let fctl = fctl else { break }
+                guard fctl.x_offset == 0 && fctl.y_offset == 0 && fctl.width == ihdr.width && fctl.height == ihdr.height else { return }
+                
+                guard frames.last == nil else { return }
                 
                 data = self.idat
                 
@@ -155,9 +160,8 @@ extension PNGDecoder {
             }
         }
         
-        if let _fctl = fctl {
-            frames.append(Frame(prev_frame: frames.last, chunks: chunks, ihdr: ihdr, fctl: _fctl, data: data))
-        }
+        guard let _fctl = fctl else { return }
+        frames.append(Frame(prev_frame: frames.last, chunks: chunks, ihdr: ihdr, fctl: _fctl, data: data))
         
         guard let num_frames = actl?.num_frames, num_frames == frames.count else { return }
         
@@ -205,31 +209,31 @@ extension PNGDecoder.Frame: ImageRepBase {
         return _png_colorspace(ihdr: ihdr, chunks: chunks)
     }
     
-    var is_key_frame: Bool {
-        
-        guard let prev_frame = prev_frame else { return true }
-        
-        if fctl.blend_op == 0
-            && fctl.width == ihdr.width
-            && fctl.height == ihdr.height
-            && fctl.x_offset == 0
-            && fctl.y_offset == 0 {
-            
-            return true
-        }
-        
-        if prev_frame.fctl.dispose_op == 1 {
-            return prev_frame.fctl.width == ihdr.width
-                && prev_frame.fctl.height == ihdr.height
-                && prev_frame.fctl.x_offset == 0
-                && prev_frame.fctl.y_offset == 0
-        }
-        
-        return false
+    var duration: Double {
+        return Double(fctl.delay_num) / Double(fctl.delay_den == 0 ? 100 : fctl.delay_den)
     }
     
     var _empty_image: AnyImage {
         return _png_blank_image(ihdr: ihdr, chunks: chunks, width: width, height: height, fileBacked: false)
+    }
+    
+    var is_full_frame: Bool {
+        return fctl.x_offset == 0 && fctl.y_offset == 0 && fctl.width == ihdr.width && fctl.height == ihdr.height
+    }
+    
+    var is_key_frame: Bool {
+        
+        guard let prev_frame = prev_frame else { return true }
+        
+        if fctl.blend_op == 0 && is_full_frame {
+            return true
+        }
+        
+        if prev_frame.fctl.dispose_op == 1 {
+            return prev_frame.is_full_frame
+        }
+        
+        return false
     }
     
     var _disposed: AnyImage {
@@ -252,13 +256,20 @@ extension PNGDecoder.Frame: ImageRepBase {
         
         let current_frame = _png_image(ihdr: ihdr, chunks: chunks, width: width, height: height, data: data, fileBacked: false) ?? _empty_image
         
+        let prev_image: AnyImage
+        
         if is_key_frame {
-            return current_frame
+            
+            if is_full_frame {
+                return current_frame
+            }
+            
+            prev_image = _empty_image
+            
+        } else {
+            
+            prev_image = prev_frame?._disposed ?? _empty_image
         }
-        
-        guard let prev_frame = self.prev_frame else { return current_frame }
-        
-        let prev_image = prev_frame._disposed
         
         let region = png_region(x: Int(fctl.x_offset), y: Int(fctl.y_offset), width: Int(fctl.width), height: Int(fctl.height))
         
@@ -360,13 +371,12 @@ func _png_copy<P>(_ region: png_region, _ prev_image: Image<P>, _ image: Image<P
     
     var prev_image = prev_image
     
-    _ = prev_image.width
-    let image_width = image.width
+    let prev_image_width = prev_image.width
     
     let x = max(0, region.x)
     let y = max(0, region.y)
-    let width = max(0, min(region.width + region.x, image.width) - x)
-    let height = max(0, min(region.height + region.y, image.height) - y)
+    let width = max(0, min(region.width + region.x, prev_image.width) - x)
+    let height = max(0, min(region.height + region.y, prev_image.height) - y)
     
     guard width != 0 && height != 0 else { return prev_image }
     
@@ -378,7 +388,7 @@ func _png_copy<P>(_ region: png_region, _ prev_image: Image<P>, _ image: Image<P
             
             guard var destination = $0.baseAddress else { return }
             
-            destination += x + y * image_width
+            destination += x + y * prev_image_width
             
             for _ in 0..<height {
                 
@@ -390,7 +400,7 @@ func _png_copy<P>(_ region: png_region, _ prev_image: Image<P>, _ image: Image<P
                     p += 1
                 }
                 
-                destination += image_width
+                destination += prev_image_width
             }
         }
     }
@@ -402,13 +412,12 @@ func _png_blend<P: PNGPixelProtocol>(_ region: png_region, _ prev_image: Image<P
     
     var prev_image = prev_image
     
-    _ = prev_image.width
-    let image_width = image.width
+    let prev_image_width = prev_image.width
     
     let x = max(0, region.x)
     let y = max(0, region.y)
-    let width = max(0, min(region.width + region.x, image.width) - x)
-    let height = max(0, min(region.height + region.y, image.height) - y)
+    let width = max(0, min(region.width + region.x, prev_image.width) - x)
+    let height = max(0, min(region.height + region.y, prev_image.height) - y)
     
     guard width != 0 && height != 0 else { return prev_image }
     
@@ -420,19 +429,19 @@ func _png_blend<P: PNGPixelProtocol>(_ region: png_region, _ prev_image: Image<P
             
             guard var destination = $0.baseAddress else { return }
             
-            destination += x + y * image_width
+            destination += x + y * prev_image_width
             
             for _ in 0..<height {
                 
                 var p = destination
                 
                 for _ in 0..<width {
-                    p.pointee = source.pointee
+                    p.pointee = p.pointee.png_blended(source: source.pointee)
                     source += 1
                     p += 1
                 }
                 
-                destination += image_width
+                destination += prev_image_width
             }
         }
     }

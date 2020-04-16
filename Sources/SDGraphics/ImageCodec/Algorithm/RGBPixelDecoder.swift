@@ -125,6 +125,97 @@ extension RGBPixelDecoder {
 extension RGBPixelDecoder {
     
     @inlinable
+    public func decode_rgb24(data: Data, transparent: (UInt8, UInt8, UInt8), fileBacked: Bool) -> Image<RGBA32ColorPixel> {
+        
+        var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+        
+        let pixels_count = min(image.pixels.count, data.count / 3)
+        
+        data.withUnsafeBufferPointer(as: (UInt8, UInt8, UInt8).self) {
+            
+            guard var source = $0.baseAddress else { return }
+            
+            image.withUnsafeMutableBufferPointer {
+                
+                guard var destination = $0.baseAddress else { return }
+                
+                for _ in 0..<pixels_count {
+                    let (r, g, b) = source.pointee
+                    destination.pointee = RGBA32ColorPixel(red: r, green: g, blue: b)
+                    source += 1
+                    destination += 1
+                }
+            }
+        }
+        
+        return image
+    }
+    
+    @inlinable
+    public func decode_rgb48(data: Data, transparent: (UInt16, UInt16, UInt16), endianness: RawBitmap.Endianness, fileBacked: Bool) -> Image<RGBA64ColorPixel> {
+        
+        var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+        
+        let pixels_count = min(image.pixels.count, data.count / 6)
+        
+        switch endianness {
+        case .big:
+            
+            data.withUnsafeBufferPointer(as: (BEUInt16, BEUInt16, BEUInt16).self) {
+                
+                guard var source = $0.baseAddress else { return }
+                
+                image.withUnsafeMutableBufferPointer {
+                    
+                    guard var destination = $0.baseAddress else { return }
+                    
+                    for _ in 0..<pixels_count {
+                        
+                        let (r, g, b) = source.pointee
+                        
+                        if r != transparent.0 && g != transparent.1, b != transparent.2 {
+                            destination.pointee = RGBA64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
+                        }
+                        
+                        source += 1
+                        destination += 1
+                    }
+                }
+            }
+            
+        case .little:
+            
+            data.withUnsafeBufferPointer(as: (LEUInt16, LEUInt16, LEUInt16).self) {
+                
+                guard var source = $0.baseAddress else { return }
+                
+                image.withUnsafeMutableBufferPointer {
+                    
+                    guard var destination = $0.baseAddress else { return }
+                    
+                    for _ in 0..<pixels_count {
+                        
+                        let (r, g, b) = source.pointee
+                        
+                        if r != transparent.0 && g != transparent.1, b != transparent.2 {
+                            destination.pointee = RGBA64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
+                        }
+                        
+                        source += 1
+                        destination += 1
+                    }
+                }
+            }
+        }
+        
+        return image
+    }
+    
+}
+
+extension RGBPixelDecoder {
+    
+    @inlinable
     public func decode_rgba32(data: Data, fileBacked: Bool) -> Image<RGBA32ColorPixel> {
         
         var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)

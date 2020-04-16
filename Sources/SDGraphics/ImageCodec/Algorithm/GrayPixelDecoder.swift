@@ -97,7 +97,7 @@ extension GrayPixelDecoder {
             
         case .little:
             
-            data.withUnsafeBufferPointer(as: (LEUInt16, LEUInt16).self) {
+            data.withUnsafeBufferPointer(as: LEUInt16.self) {
                 
                 guard var source = $0.baseAddress else { return }
                 
@@ -106,8 +106,103 @@ extension GrayPixelDecoder {
                     guard var destination = $0.baseAddress else { return }
                     
                     for _ in 0..<pixels_count {
-                        let (w, a) = source.pointee
-                        destination.pointee = Gray32ColorPixel(white: w.representingValue, opacity: a.representingValue)
+                        destination.pointee = Gray32ColorPixel(white: source.pointee.representingValue)
+                        source += 1
+                        destination += 1
+                    }
+                }
+            }
+        }
+        
+        return image
+    }
+    
+}
+
+extension GrayPixelDecoder {
+    
+    @inlinable
+    public func decode_gray8(data: Data, transparent: UInt8, fileBacked: Bool) -> Image<Gray16ColorPixel> {
+        
+        var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+        
+        let pixels_count = min(image.pixels.count, data.count)
+        
+        data.withUnsafeBufferPointer(as: UInt8.self) {
+            
+            guard var source = $0.baseAddress else { return }
+            
+            image.withUnsafeMutableBufferPointer {
+                
+                guard var destination = $0.baseAddress else { return }
+                
+                for _ in 0..<pixels_count {
+                    
+                    let value = source.pointee
+                    
+                    if value != transparent {
+                        destination.pointee = Gray16ColorPixel(white: value)
+                    }
+                    
+                    source += 1
+                    destination += 1
+                }
+            }
+        }
+        
+        return image
+    }
+    
+    @inlinable
+    public func decode_gray16(data: Data, transparent: UInt16, endianness: RawBitmap.Endianness, fileBacked: Bool) -> Image<Gray32ColorPixel> {
+        
+        var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+        
+        let pixels_count = min(image.pixels.count, data.count / 2)
+        
+        switch endianness {
+        case .big:
+            
+            data.withUnsafeBufferPointer(as: BEUInt16.self) {
+                
+                guard var source = $0.baseAddress else { return }
+                
+                image.withUnsafeMutableBufferPointer {
+                    
+                    guard var destination = $0.baseAddress else { return }
+                    
+                    for _ in 0..<pixels_count {
+                        
+                        let value = source.pointee.representingValue
+                        
+                        if value != transparent {
+                            destination.pointee = Gray16ColorPixel(white: value)
+                        }
+                        
+                        source += 1
+                        destination += 1
+                    }
+                }
+            }
+            
+        case .little:
+            
+            data.withUnsafeBufferPointer(as: LEUInt16.self) {
+                
+                guard var source = $0.baseAddress else { return }
+                
+                image.withUnsafeMutableBufferPointer {
+                    
+                    guard var destination = $0.baseAddress else { return }
+                    
+                    for _ in 0..<pixels_count {
+                        
+                        let value = source.pointee.representingValue
+                        
+                        if value != transparent {
+                            destination.pointee = Gray16ColorPixel(white: value)
+                        }
+                        
                         source += 1
                         destination += 1
                     }
