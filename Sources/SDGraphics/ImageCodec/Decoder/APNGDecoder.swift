@@ -106,7 +106,7 @@ extension PNGDecoder {
         var fctl: FrameControlChunk?
         var data = Data()
         
-        var last_sequence_number: BEUInt32 = 0
+        var last_sequence_number: Int = -1
         
         for chunk in chunks {
             
@@ -132,7 +132,7 @@ extension PNGDecoder {
                 fctl = _fctl
                 
                 guard last_sequence_number < _fctl.sequence_number else { return }
-                last_sequence_number = _fctl.sequence_number
+                last_sequence_number = Int(_fctl.sequence_number)
                 
             case "IDAT":
                 
@@ -149,7 +149,7 @@ extension PNGDecoder {
                 data.append(data_chunk.data)
                 
                 guard last_sequence_number < data_chunk.sequence_number else { return }
-                last_sequence_number = data_chunk.sequence_number
+                last_sequence_number = Int(data_chunk.sequence_number)
                 
             default: break
             }
