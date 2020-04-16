@@ -94,3 +94,42 @@ public struct RGBA64ColorPixel: ColorPixel {
     }
 }
 
+extension RGBA64ColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public func blended(source: RGBA64ColorPixel) -> RGBA64ColorPixel {
+        
+        let d_r = UInt64(self.r)
+        let d_g = UInt64(self.g)
+        let d_b = UInt64(self.b)
+        let d_a = UInt64(self.a)
+        let s_r = UInt64(source.r)
+        let s_g = UInt64(source.g)
+        let s_b = UInt64(source.b)
+        let s_a = UInt64(source.a)
+        
+        let a = s_a + (((0xFFFF - s_a) * d_a) - 0x7FFF) / 0xFFFF
+        
+        if a == 0 {
+            
+            return RGBA64ColorPixel()
+            
+        } else if d_a == 0xFFFF {
+            
+            let r = (s_a * s_r + (0xFFFF - s_a) * d_r - 0x7FFF) / 0xFFFF
+            let g = (s_a * s_g + (0xFFFF - s_a) * d_g - 0x7FFF) / 0xFFFF
+            let b = (s_a * s_b + (0xFFFF - s_a) * d_b - 0x7FFF) / 0xFFFF
+            
+            return RGBA64ColorPixel(red: UInt16(r), green: UInt16(g), blue: UInt16(b), opacity: UInt16(a))
+            
+        } else {
+            
+            let r = ((0xFFFF * s_a * s_r + (0xFFFF - s_a) * d_a * d_r) / a + 0x7FFF) / 0xFFFF
+            let g = ((0xFFFF * s_a * s_g + (0xFFFF - s_a) * d_a * d_g) / a + 0x7FFF) / 0xFFFF
+            let b = ((0xFFFF * s_a * s_b + (0xFFFF - s_a) * d_a * d_b) / a + 0x7FFF) / 0xFFFF
+            
+            return RGBA64ColorPixel(red: UInt16(r), green: UInt16(g), blue: UInt16(b), opacity: UInt16(a))
+        }
+    }
+}

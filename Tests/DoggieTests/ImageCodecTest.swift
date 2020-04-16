@@ -725,6 +725,40 @@ class ImageCodecTest: XCTestCase {
         
     }
     
+    func testApngSuite() {
+        
+        guard let images = try? FileManager.default.contentsOfDirectory(at: images_dir.appendingPathComponent("apng_test_suite"), includingPropertiesForKeys: nil, options: []) else { XCTFail(); return }
+        
+        for image in images where image.pathExtension == "png" {
+            
+            guard let png_data = try? Data(contentsOf: image) else { XCTFail(); return }
+            guard let tiff_data = try? Data(contentsOf: image.deletingPathExtension().appendingPathComponent("default.tif")) else { XCTFail(); return }
+            
+            guard let imageRep = try? ImageRep(data: png_data) else { XCTFail(); return }
+            let png_image = try? Image<ARGB32ColorPixel>(image: AnyImage(imageRep: imageRep), colorSpace: .sRGB)
+            
+            guard let tiff_image = try? Image<ARGB32ColorPixel>(image: AnyImage(data: tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
+            
+            XCTAssertEqual(png_image.width, tiff_image.width)
+            XCTAssertEqual(png_image.height, tiff_image.height)
+            XCTAssertEqual(png_image.pixels, tiff_image.pixels, "Failed default: \(image)")
+            
+            for i in 0..<imageRep.numberOfPages {
+                
+                let png_image = Image<ARGB32ColorPixel>(image: AnyImage(imageRep: imageRep.page(i)), colorSpace: .sRGB)
+                
+                guard let tiff_data = try? Data(contentsOf: image.deletingPathExtension().appendingPathComponent("\(i).tif")) else { XCTFail(); return }
+                guard let tiff_image = try? Image<ARGB32ColorPixel>(image: AnyImage(data: tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
+                
+                XCTAssertEqual(png_image.width, tiff_image.width)
+                XCTAssertEqual(png_image.height, tiff_image.height)
+                XCTAssertEqual(png_image.pixels, tiff_image.pixels, "Failed page \(i): \(image)")
+                
+            }
+        }
+        
+    }
+    
     func testTiffOrientation1() {
         
         guard let images = try? FileManager.default.contentsOfDirectory(at: images_dir.appendingPathComponent("tiff_orientation_test_1"), includingPropertiesForKeys: nil, options: []) else { XCTFail(); return }

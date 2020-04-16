@@ -85,3 +85,34 @@ public struct Gray32ColorPixel: ColorPixel {
     }
 }
 
+extension Gray32ColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public func blended(source: Gray32ColorPixel) -> Gray32ColorPixel {
+        
+        let d_w = UInt64(self.w)
+        let d_a = UInt64(self.a)
+        let s_w = UInt64(source.w)
+        let s_a = UInt64(source.a)
+        
+        let a = s_a + (((0xFFFF - s_a) * d_a) - 0x7FFF) / 0xFFFF
+        
+        if a == 0 {
+            
+            return Gray32ColorPixel()
+            
+        } else if d_a == 0xFFFF {
+            
+            let w = (s_a * s_w + (0xFFFF - s_a) * d_w - 0x7FFF) / 0xFFFF
+            
+            return Gray32ColorPixel(white: UInt16(w), opacity: UInt16(a))
+            
+        } else {
+            
+            let w = ((0xFFFF * s_a * s_w + (0xFFFF - s_a) * d_a * d_w) / a - 0x7FFF) / 0xFFFF
+            
+            return Gray32ColorPixel(white: UInt16(w), opacity: UInt16(a))
+        }
+    }
+}
