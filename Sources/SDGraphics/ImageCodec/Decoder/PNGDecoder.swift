@@ -456,7 +456,6 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
                         case 1: channel_max = 1
                         case 2: channel_max = 3
                         case 4: channel_max = 15
-                        case 8: channel_max = 255
                         default: fatalError()
                         }
                         
@@ -470,7 +469,6 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
                             case 1: count = min(width, min((width + 7) >> 3, pixels.count - (source - start)) << 3)
                             case 2: count = min(width, min((width + 3) >> 2, pixels.count - (source - start)) << 2)
                             case 4: count = min(width, min((width + 1) >> 1, pixels.count - (source - start)) << 1)
-                            case 8: count = min(width, pixels.count - (source - start))
                             default: fatalError()
                             }
                             
