@@ -182,7 +182,8 @@ extension PNGDecoder {
     }
     
     func page(_ index: Int) -> ImageRepBase {
-        return frames[index]
+        precondition(actl != nil || index == 0, "Index out of range.")
+        return actl == nil ? self : frames[index]
     }
 }
 

@@ -129,6 +129,8 @@ extension BinaryInteger {
 @inline(__always)
 public func _scale_integer<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger & UnsignedInteger>(_ x: T, _ from_max: T, _ to_max: R) -> R {
     
+    guard from_max != to_max else { return R(x) }
+    
     @inline(__always)
     func __scale_integer<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ from_max: T, _ to_max: T) -> T {
         let (quotient, remainder) = from_max.dividingFullWidth(x.multipliedFullWidth(by: to_max))

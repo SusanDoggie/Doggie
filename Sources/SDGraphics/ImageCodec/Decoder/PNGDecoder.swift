@@ -435,16 +435,6 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
             
             var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
             
-            let channel_max: UInt8
-            
-            switch bitsPerPixel {
-            case 1: channel_max = 1
-            case 2: channel_max = 3
-            case 4: channel_max = 15
-            case 8: channel_max = 255
-            default: fatalError()
-            }
-            
             pixels.withUnsafeBufferPointer {
                 
                 guard var source = $0.baseAddress else { return }
@@ -459,6 +449,16 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
                         
                         let rowBits = Int(bitsPerPixel) * width
                         let row = (rowBits + 7) >> 3
+                        
+                        let channel_max: UInt8
+                        
+                        switch bitsPerPixel {
+                        case 1: channel_max = 1
+                        case 2: channel_max = 3
+                        case 4: channel_max = 15
+                        case 8: channel_max = 255
+                        default: fatalError()
+                        }
                         
                         for _ in 0..<height {
                             
@@ -487,6 +487,17 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
                         }
                         
                     } else {
+                        
+                        let channel_max: UInt8
+                        
+                        switch ihdr.bitDepth {
+                        case 1: channel_max = 1
+                        case 2: channel_max = 3
+                        case 4: channel_max = 15
+                        case 8: channel_max = 255
+                        default: fatalError()
+                        }
+                        
                         for _ in 0..<pixels_count {
                             destination.pointee = Gray16ColorPixel(white: _scale_integer(source.pointee, channel_max, UInt8.max))
                             source += 1
@@ -593,6 +604,7 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
                         }
                         
                     } else {
+                        
                         for _ in 0..<pixels_count {
                             let index = source.pointee
                             destination.pointee = index < palette.count ? palette[Int(index)] : RGBA32ColorPixel()
