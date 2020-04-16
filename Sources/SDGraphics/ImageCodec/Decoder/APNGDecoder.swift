@@ -125,7 +125,6 @@ extension PNGDecoder {
                 
                 if let _fctl = fctl {
                     frames.append(Frame(prev_frame: frames.last, chunks: chunks, ihdr: ihdr, fctl: _fctl, data: data))
-                    fctl = nil
                     data = Data()
                 }
                 
@@ -137,14 +136,13 @@ extension PNGDecoder {
                 
             case "IDAT":
                 
-                guard actl != nil else { return }
-                guard frames.last != nil else { return }
+                guard actl != nil, fctl != nil, frames.last == nil else { return }
                 
                 data = self.idat
                 
             case "fdAT":
                 
-                guard actl != nil else { return }
+                guard actl != nil, fctl != nil else { return }
                 guard chunk.data.count >= 4 else { return }
                 
                 let data_chunk = FrameDataChunk(data: chunk.data)
@@ -180,7 +178,7 @@ extension PNGDecoder {
     }
     
     var numberOfPages: Int {
-        return frames.count
+        return actl == nil ? 1 : frames.count
     }
     
     func page(_ index: Int) -> ImageRepBase {
