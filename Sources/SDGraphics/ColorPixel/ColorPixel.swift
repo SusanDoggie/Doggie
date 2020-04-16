@@ -51,6 +51,8 @@ public protocol ColorPixel: Hashable {
     
     func with(opacity: Double) -> Self
     
+    func blended(source: Self) -> Self
+    
     func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self
 }
 
@@ -193,19 +195,43 @@ extension ColorPixel {
     
     @inlinable
     @inline(__always)
-    public mutating func blend(source: Self, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) {
+    public mutating func blend(source: Self) {
+        self = self.blended(source: source)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public mutating func blend<C: ColorPixel>(source: C) where C.Model == Model {
+        self = self.blended(source: source)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public mutating func blend(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
         self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
     
     @inlinable
     @inline(__always)
-    public mutating func blend<C: ColorPixel>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) where C.Model == Model {
+    public mutating func blend<C: ColorPixel>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
     
     @inlinable
     @inline(__always)
-    public func blended<C: ColorPixel>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self where C.Model == Model {
+    public func blended(source: Self) -> Self {
+        return blended(source: source, compositingMode: .default, blendMode: .default)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func blended<C: ColorPixel>(source: C) -> Self where C.Model == Model {
+        return blended(source: Self(source))
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func blended<C: ColorPixel>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self where C.Model == Model {
         return blended(source: Self(source), compositingMode: compositingMode, blendMode: blendMode)
     }
 }

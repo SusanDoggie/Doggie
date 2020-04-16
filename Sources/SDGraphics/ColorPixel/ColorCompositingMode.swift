@@ -98,7 +98,7 @@ extension ColorPixel {
     
     @inlinable
     @inline(__always)
-    public func blended(source: Self, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self {
+    public func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self {
         
         switch (compositingMode, blendMode) {
         case (.clear, _): return Self()
@@ -152,7 +152,7 @@ extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDG
     
     @inlinable
     @inline(__always)
-    public func blended(source: Self, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Self {
+    public func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self {
         
         switch (compositingMode, blendMode) {
         case (.clear, _): return Self()

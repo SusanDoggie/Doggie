@@ -436,7 +436,7 @@ func _png_blend<P: PNGPixelProtocol>(_ region: png_region, _ prev_image: Image<P
                 var p = destination
                 
                 for _ in 0..<width {
-                    p.pointee = p.pointee.png_blended(source: source.pointee)
+                    p.pointee = p.pointee.blended(source: source.pointee)
                     source += 1
                     p += 1
                 }
