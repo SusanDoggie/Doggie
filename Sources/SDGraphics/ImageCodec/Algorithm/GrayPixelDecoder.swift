@@ -176,7 +176,7 @@ extension GrayPixelDecoder {
                         let value = source.pointee.representingValue
                         
                         if value != transparent {
-                            destination.pointee = Gray16ColorPixel(white: value)
+                            destination.pointee = Gray32ColorPixel(white: value)
                         }
                         
                         source += 1
@@ -200,7 +200,7 @@ extension GrayPixelDecoder {
                         let value = source.pointee.representingValue
                         
                         if value != transparent {
-                            destination.pointee = Gray16ColorPixel(white: value)
+                            destination.pointee = Gray32ColorPixel(white: value)
                         }
                         
                         source += 1

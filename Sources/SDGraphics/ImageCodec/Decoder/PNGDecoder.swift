@@ -441,6 +441,8 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
             
             var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
             
+            let transparent = transparent.map { UInt8(truncatingIfNeeded: $0) }
+            
             pixels.withUnsafeBufferPointer {
                 
                 guard var source = $0.baseAddress else { return }
@@ -528,7 +530,7 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
             
             if let transparent = transparent {
                 
-                let image = decoder.decode_opaque_gray8(data: pixels, transparent: UInt8(truncatingIfNeeded: transparent), fileBacked: fileBacked)
+                let image = decoder.decode_gray8(data: pixels, transparent: UInt8(truncatingIfNeeded: transparent), fileBacked: fileBacked)
                 
                 return AnyImage(image)
                 
@@ -545,7 +547,7 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
             
             if let transparent = transparent {
                 
-                let image = decoder.decode_opaque_gray16(data: pixels, transparent: transparent, endianness: .big, fileBacked: fileBacked)
+                let image = decoder.decode_gray16(data: pixels, transparent: transparent, endianness: .big, fileBacked: fileBacked)
                 
                 return AnyImage(image)
                 

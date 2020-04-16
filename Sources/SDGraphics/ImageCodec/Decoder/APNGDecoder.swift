@@ -479,6 +479,12 @@ extension Gray16ColorPixel: PNGPixelProtocol {
             
             let w = ((0xFF * s_a * s_w + (0xFF - s_a) * d_a * d_w) / a + 0x7F) / 0xFF
             
+            if w > 0xFF || a > 0xFF {
+                print(d_w, d_a)
+                print(s_w, s_a)
+                print(w, a)
+            }
+            
             return Gray16ColorPixel(white: UInt8(w), opacity: UInt8(a))
         }
     }
