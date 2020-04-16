@@ -157,7 +157,7 @@ struct _CGImageSourceImageRepBase: CGImageRepBase {
     
     var _repeats: Int? {
         
-        let properties = self.properties
+        let general_properties = self.general_properties
         
         if let properties = general_properties[kCGImagePropertyGIFDictionary] as? [CFString: Any] {
             return (properties[kCGImagePropertyGIFLoopCount] as? NSNumber)?.intValue

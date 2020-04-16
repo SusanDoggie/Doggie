@@ -69,7 +69,7 @@ extension JPEGEncoder {
                         let w = UInt16(source.pointee.w)
                         let a = UInt16(source.pointee.a)
                         
-                        destination.pointee = UInt8((a * w + 255 * (255 - a)) / 255)
+                        destination.pointee = UInt8((a * w + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
                         
                         destination += 1
                         source += 1
@@ -92,9 +92,9 @@ extension JPEGEncoder {
                     let b = UInt16(pixels.pointee.b)
                     let a = UInt16(pixels.pointee.a)
                     
-                    pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
-                    pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
-                    pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                    pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                    pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                    pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
                     
                     pixels += 1
                 }
@@ -115,9 +115,9 @@ extension JPEGEncoder {
                     let b = UInt16(pixels.pointee.b)
                     let a = UInt16(pixels.pointee.a)
                     
-                    pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
-                    pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
-                    pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                    pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                    pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                    pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
                     
                     pixels += 1
                 }
@@ -138,9 +138,9 @@ extension JPEGEncoder {
                     let b = UInt16(pixels.pointee.b)
                     let a = UInt16(pixels.pointee.a)
                     
-                    pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
-                    pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
-                    pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                    pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                    pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                    pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
                     
                     pixels += 1
                 }
@@ -161,9 +161,9 @@ extension JPEGEncoder {
                     let b = UInt16(pixels.pointee.b)
                     let a = UInt16(pixels.pointee.a)
                     
-                    pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
-                    pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
-                    pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                    pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                    pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                    pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
                     
                     pixels += 1
                 }
@@ -192,7 +192,7 @@ extension JPEGEncoder {
                             let w = UInt16(source.pointee.w)
                             let a = UInt16(source.pointee.a)
                             
-                            destination.pointee = UInt8((a * w + 255 * (255 - a)) / 255)
+                            destination.pointee = UInt8((a * w + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
                             
                             destination += 1
                             source += 1
@@ -217,9 +217,9 @@ extension JPEGEncoder {
                         let b = UInt16(pixels.pointee.b)
                         let a = UInt16(pixels.pointee.a)
                         
-                        pixels.pointee.r = UInt8((a * r + 255 * (255 - a)) / 255)
-                        pixels.pointee.g = UInt8((a * g + 255 * (255 - a)) / 255)
-                        pixels.pointee.b = UInt8((a * b + 255 * (255 - a)) / 255)
+                        pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                        pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+                        pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
                         
                         pixels += 1
                     }
