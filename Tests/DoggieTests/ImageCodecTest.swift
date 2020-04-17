@@ -715,14 +715,38 @@ class ImageCodecTest: XCTestCase {
             guard let png_data = try? Data(contentsOf: image) else { XCTFail(); return }
             guard let tiff_data = try? Data(contentsOf: image.deletingPathExtension().appendingPathExtension("tif")) else { XCTFail(); return }
             
-            guard let png_image = try? Image<ARGB32ColorPixel>(image: AnyImage(data: png_data), colorSpace: .sRGB) else { XCTFail(); return }
-            guard let tiff_image = try? Image<ARGB32ColorPixel>(image: AnyImage(data: tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
+            guard let png_image = try? AnyImage(data: png_data) else { XCTFail(); return }
+            guard let tiff_image = try? AnyImage(data: tiff_data) else { XCTFail(); return }
             
             XCTAssertEqual(png_image.width, tiff_image.width)
             XCTAssertEqual(png_image.height, tiff_image.height)
             
-            for (result, answer) in zip(png_image.pixels, tiff_image.pixels) {
-                XCTAssertEqual(result, answer, "Failed: \(image)")
+            switch (png_image.base, tiff_image.base) {
+            case let (result, answer) as (Image<Gray16ColorPixel>, Image<Gray16ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<Gray32ColorPixel>, Image<Gray32ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<RGBA32ColorPixel>, Image<RGBA32ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<RGBA64ColorPixel>, Image<RGBA64ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            default: XCTFail()
             }
             
         }
@@ -739,31 +763,79 @@ class ImageCodecTest: XCTestCase {
             guard let tiff_data = try? Data(contentsOf: image.deletingPathExtension().appendingPathComponent("default.tif")) else { XCTFail(); return }
             
             guard let imageRep = try? ImageRep(data: png_data) else { XCTFail(); return }
-            let png_image = Image<ARGB32ColorPixel>(image: AnyImage(imageRep: imageRep), colorSpace: .sRGB)
+            let png_image = AnyImage(imageRep: imageRep)
             
-            guard let tiff_image = try? Image<ARGB32ColorPixel>(image: AnyImage(data: tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
+            guard let tiff_image = try? AnyImage(data: tiff_data) else { XCTFail(); return }
             
             XCTAssertEqual(png_image.width, tiff_image.width)
             XCTAssertEqual(png_image.height, tiff_image.height)
             
-            for (result, answer) in zip(png_image.pixels, tiff_image.pixels) {
-                XCTAssertEqual(result, answer,  "Failed default: \(image)")
+            switch (png_image.base, tiff_image.base) {
+            case let (result, answer) as (Image<Gray16ColorPixel>, Image<Gray16ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<Gray32ColorPixel>, Image<Gray32ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<RGBA32ColorPixel>, Image<RGBA32ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<RGBA64ColorPixel>, Image<RGBA64ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            default: XCTFail()
             }
             
             XCTAssertTrue(imageRep.isAnimated, "Failed: \(image)")
             
             for i in 0..<imageRep.numberOfPages {
                 
-                let png_image = Image<ARGB32ColorPixel>(image: AnyImage(imageRep: imageRep.page(i)), colorSpace: .sRGB)
+                let png_image = AnyImage(imageRep: imageRep.page(i))
                 
                 guard let tiff_data = try? Data(contentsOf: image.deletingPathExtension().appendingPathComponent("\(i).tif")) else { XCTFail(); return }
-                guard let tiff_image = try? Image<ARGB32ColorPixel>(image: AnyImage(data: tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
+                guard let tiff_image = try? AnyImage(data: tiff_data) else { XCTFail(); return }
                 
                 XCTAssertEqual(png_image.width, tiff_image.width)
                 XCTAssertEqual(png_image.height, tiff_image.height)
                 
-                for (result, answer) in zip(png_image.pixels, tiff_image.pixels) {
-                    XCTAssertEqual(result, answer,  "Failed page \(i): \(image)")
+                switch (png_image.base, tiff_image.base) {
+                case let (result, answer) as (Image<Gray16ColorPixel>, Image<Gray16ColorPixel>):
+                    
+                    for (result, answer) in zip(result.pixels, answer.pixels) {
+                        XCTAssertEqual(result, answer, "Failed: \(image)")
+                    }
+                    
+                case let (result, answer) as (Image<Gray32ColorPixel>, Image<Gray32ColorPixel>):
+                    
+                    for (result, answer) in zip(result.pixels, answer.pixels) {
+                        XCTAssertEqual(result, answer, "Failed: \(image)")
+                    }
+                    
+                case let (result, answer) as (Image<RGBA32ColorPixel>, Image<RGBA32ColorPixel>):
+                    
+                    for (result, answer) in zip(result.pixels, answer.pixels) {
+                        XCTAssertEqual(result, answer, "Failed: \(image)")
+                    }
+                    
+                case let (result, answer) as (Image<RGBA64ColorPixel>, Image<RGBA64ColorPixel>):
+                    
+                    for (result, answer) in zip(result.pixels, answer.pixels) {
+                        XCTAssertEqual(result, answer, "Failed: \(image)")
+                    }
+                    
+                default: XCTFail()
                 }
                 
             }
@@ -777,18 +849,42 @@ class ImageCodecTest: XCTestCase {
         
         guard let first_tiff_data = try? Data(contentsOf: images[0]) else { XCTFail(); return }
         
-        guard let answer = try? Image<ARGB32ColorPixel>(image: AnyImage(data: first_tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
+        guard let answer = try? AnyImage(data: first_tiff_data) else { XCTFail(); return }
         
         for image in images.dropFirst() {
             
             guard let tiff_data = try? Data(contentsOf: image) else { XCTFail(); return }
-            guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
+            guard let result = try? AnyImage(data: tiff_data) else { XCTFail(); return }
             
             XCTAssertEqual(answer.width, result.width)
             XCTAssertEqual(answer.height, result.height)
             
-            for (answer, result) in zip(answer.pixels, result.pixels) {
-                XCTAssertEqual(answer, result, "Failed: \(image)")
+            switch (result.base, answer.base) {
+            case let (result, answer) as (Image<Gray16ColorPixel>, Image<Gray16ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<Gray32ColorPixel>, Image<Gray32ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<RGBA32ColorPixel>, Image<RGBA32ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<RGBA64ColorPixel>, Image<RGBA64ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            default: XCTFail()
             }
             
         }
@@ -800,18 +896,42 @@ class ImageCodecTest: XCTestCase {
         
         guard let first_tiff_data = try? Data(contentsOf: images[0]) else { XCTFail(); return }
         
-        guard let answer = try? Image<ARGB32ColorPixel>(image: AnyImage(data: first_tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
+        guard let answer = try? AnyImage(data: first_tiff_data) else { XCTFail(); return }
         
         for image in images.dropFirst() {
             
             guard let tiff_data = try? Data(contentsOf: image) else { XCTFail(); return }
-            guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
+            guard let result = try? AnyImage(data: tiff_data) else { XCTFail(); return }
             
             XCTAssertEqual(answer.width, result.width)
             XCTAssertEqual(answer.height, result.height)
             
-            for (answer, result) in zip(answer.pixels, result.pixels) {
-                XCTAssertEqual(answer, result, "Failed: \(image)")
+            switch (result.base, answer.base) {
+            case let (result, answer) as (Image<Gray16ColorPixel>, Image<Gray16ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<Gray32ColorPixel>, Image<Gray32ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<RGBA32ColorPixel>, Image<RGBA32ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            case let (result, answer) as (Image<RGBA64ColorPixel>, Image<RGBA64ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
+            default: XCTFail()
             }
             
         }
