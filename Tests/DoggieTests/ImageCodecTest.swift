@@ -743,8 +743,8 @@ class ImageCodecTest: XCTestCase {
             XCTAssertEqual(png_image.height, tiff_image.height)
             XCTAssertEqual(png_image.pixels, tiff_image.pixels, "Failed default: \(image)")
             
-            XCTAssertTrue(imageRep.isAnimated)
-            XCTAssertEqual(imageRep.repeats, 2)
+            XCTAssertTrue(imageRep.isAnimated, "Failed: \(image)")
+            XCTAssertEqual(imageRep.repeats, 2, "Failed: \(image)")
             
             for i in 0..<imageRep.numberOfPages {
                 
