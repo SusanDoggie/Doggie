@@ -140,8 +140,13 @@ extension RGBPixelDecoder {
                 guard var destination = $0.baseAddress else { return }
                 
                 for _ in 0..<pixels_count {
+                    
                     let (r, g, b) = source.pointee
-                    destination.pointee = RGBA32ColorPixel(red: r, green: g, blue: b)
+                    
+                    if (r, g, b) != transparent {
+                        destination.pointee = RGBA32ColorPixel(red: r, green: g, blue: b)
+                    }
+                    
                     source += 1
                     destination += 1
                 }
@@ -173,8 +178,12 @@ extension RGBPixelDecoder {
                         
                         let (r, g, b) = source.pointee
                         
-                        if r != transparent.0 && g != transparent.1, b != transparent.2 {
-                            destination.pointee = RGBA64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
+                        let _r = r.representingValue
+                        let _g = g.representingValue
+                        let _b = b.representingValue
+                        
+                        if (_r, _g, _b) != transparent {
+                            destination.pointee = RGBA64ColorPixel(red: _r, green: _g, blue: _b)
                         }
                         
                         source += 1
@@ -197,8 +206,12 @@ extension RGBPixelDecoder {
                         
                         let (r, g, b) = source.pointee
                         
-                        if r != transparent.0 && g != transparent.1, b != transparent.2 {
-                            destination.pointee = RGBA64ColorPixel(red: r.representingValue, green: g.representingValue, blue: b.representingValue)
+                        let _r = r.representingValue
+                        let _g = g.representingValue
+                        let _b = b.representingValue
+                        
+                        if (_r, _g, _b) != transparent {
+                            destination.pointee = RGBA64ColorPixel(red: _r, green: _g, blue: _b)
                         }
                         
                         source += 1

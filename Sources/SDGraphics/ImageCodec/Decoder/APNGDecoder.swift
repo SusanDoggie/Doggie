@@ -214,7 +214,7 @@ extension PNGDecoder.Frame: ImageRepBase {
     }
     
     var _empty_image: AnyImage {
-        return _png_blank_image(ihdr: ihdr, chunks: chunks, width: width, height: height, fileBacked: false)
+        return _png_image(ihdr: ihdr, chunks: chunks, width: width, height: height, data: nil, fileBacked: false)
     }
     
     var is_full_frame: Bool {
@@ -254,7 +254,7 @@ extension PNGDecoder.Frame: ImageRepBase {
         let width = Int(fctl.width)
         let height = Int(fctl.height)
         
-        let current_frame = _png_image(ihdr: ihdr, chunks: chunks, width: width, height: height, data: data, fileBacked: false) ?? _empty_image
+        let current_frame = _png_image(ihdr: ihdr, chunks: chunks, width: width, height: height, data: data, fileBacked: false)
         
         let prev_image: AnyImage
         

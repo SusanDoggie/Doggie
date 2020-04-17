@@ -122,8 +122,7 @@ struct PNGDecoder: ImageRepDecoder {
         let width = Int(ihdr.width)
         let height = Int(ihdr.height)
         
-        return _png_image(ihdr: ihdr, chunks: chunks, width: width, height: height, data: idat, fileBacked: fileBacked) ??
-            _png_blank_image(ihdr: ihdr, chunks: chunks, width: width, height: height, fileBacked: fileBacked)
+        return _png_image(ihdr: ihdr, chunks: chunks, width: width, height: height, data: idat, fileBacked: fileBacked)
     }
 }
 
@@ -267,34 +266,44 @@ func _png_palette(chunks: [PNGChunk]) -> [RGBA32ColorPixel]? {
     var palette = [RGBA32ColorPixel]()
     palette.reserveCapacity(count)
     
-    plte.data.withUnsafeBufferPointer(as: (UInt8, UInt8, UInt8).self) { _ptr in
+    if let trns = chunks.first(where: { $0.signature == "tRNS" }) {
         
-        guard let ptr = _ptr.baseAddress else { return }
-        
-        if let tRNS = chunks.first(where: { $0.signature == "tRNS" }) {
+        plte.data.withUnsafeBufferPointer(as: (UInt8, UInt8, UInt8).self) {
             
-            var counter = tRNS.data.count
+            guard var plte = $0.baseAddress else { return }
             
-            tRNS.data.withUnsafeBufferPointer { _ptr2 in
+            trns.data.withUnsafeBufferPointer { trns in
                 
-                guard var ptr2 = _ptr2.baseAddress else { return }
+                let trns_count = min(count, trns.count)
                 
-                var ptr = ptr
-                for _ in 0..<count {
-                    let (r, g, b) = ptr.pointee
-                    palette.append(RGBA32ColorPixel(red: r, green: g, blue: b, opacity: counter > 0 ? ptr2.pointee : 255))
-                    ptr += 1
-                    ptr2 += 1
-                    counter -= 1
+                if var _trns = trns.baseAddress {
+                    
+                    for _ in 0..<trns_count {
+                        let (r, g, b) = plte.pointee
+                        palette.append(RGBA32ColorPixel(red: r, green: g, blue: b, opacity: _trns.pointee))
+                        plte += 1
+                        _trns += 1
+                    }
+                }
+                
+                for _ in trns_count..<count {
+                    let (r, g, b) = plte.pointee
+                    palette.append(RGBA32ColorPixel(red: r, green: g, blue: b))
+                    plte += 1
                 }
             }
+        }
+        
+    } else {
+        
+        plte.data.withUnsafeBufferPointer(as: (UInt8, UInt8, UInt8).self) {
             
-        } else {
-            var ptr = ptr
+            guard var plte = $0.baseAddress else { return }
+            
             for _ in 0..<count {
-                let (r, g, b) = ptr.pointee
+                let (r, g, b) = plte.pointee
                 palette.append(RGBA32ColorPixel(red: r, green: g, blue: b))
-                ptr += 1
+                plte += 1
             }
         }
     }
@@ -302,112 +311,7 @@ func _png_palette(chunks: [PNGChunk]) -> [RGBA32ColorPixel]? {
     return palette
 }
 
-func _png_blank_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: Int, fileBacked: Bool) -> AnyImage {
-    
-    let resolution = _png_resolution(chunks: chunks)
-    let colorSpace = _png_colorspace(ihdr: ihdr, chunks: chunks)
-    
-    switch ihdr.colour {
-    case 0:
-        
-        guard let colorSpace = colorSpace.base as? ColorSpace<GrayColorModel> else { fatalError() }
-        
-        switch ihdr.bitDepth {
-        case 1, 2, 4:
-            
-            let image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-            
-            return AnyImage(image)
-            
-        case 8:
-            
-            let image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-            
-            return AnyImage(image)
-            
-        case 16:
-            
-            let image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-            
-            return AnyImage(image)
-            
-        default: fatalError()
-        }
-        
-    case 2:
-        
-        guard let colorSpace = colorSpace.base as? ColorSpace<RGBColorModel> else { fatalError() }
-        
-        switch ihdr.bitDepth {
-        case 8:
-            
-            let image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-            
-            return AnyImage(image)
-            
-        case 16:
-            
-            let image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-            
-            return AnyImage(image)
-            
-        default: fatalError()
-        }
-        
-    case 3:
-        
-        guard let colorSpace = colorSpace.base as? ColorSpace<RGBColorModel> else { fatalError() }
-        
-        let image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-        
-        return AnyImage(image)
-        
-    case 4:
-        
-        guard let colorSpace = colorSpace.base as? ColorSpace<GrayColorModel> else { fatalError() }
-        
-        switch ihdr.bitDepth {
-        case 8:
-            
-            let image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-            
-            return AnyImage(image)
-            
-        case 16:
-            
-            let image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-            
-            return AnyImage(image)
-            
-        default: fatalError()
-        }
-    case 6:
-        
-        guard let colorSpace = colorSpace.base as? ColorSpace<RGBColorModel> else { fatalError() }
-        
-        switch ihdr.bitDepth {
-        case 8:
-            
-            let image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-            
-            return AnyImage(image)
-            
-        case 16:
-            
-            let image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
-            
-            return AnyImage(image)
-            
-        default: fatalError()
-        }
-        
-    default: fatalError()
-    }
-}
-
-func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: Int, data: Data, fileBacked: Bool) -> AnyImage? {
-    
-    guard let pixels = _png_filter(ihdr: ihdr, width: width, height: height, data: data) else { return nil }
+func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: Int, data: Data?, fileBacked: Bool) -> AnyImage {
     
     let bitsPerPixel: UInt8
     
@@ -420,7 +324,8 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
     default: fatalError()
     }
     
-    let pixels_count = (pixels.count << 3) / Int(bitsPerPixel)
+    let pixels = data.flatMap { _png_filter(ihdr: ihdr, width: width, height: height, data: $0) }
+    let pixels_count = pixels.map { ($0.count << 3) / Int(bitsPerPixel) } ?? 0
     
     let resolution = _png_resolution(chunks: chunks)
     let colorSpace = _png_colorspace(ihdr: ihdr, chunks: chunks)
@@ -443,9 +348,9 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
             
             let transparent = transparent.map { UInt8(truncatingIfNeeded: $0) }
             
-            pixels.withUnsafeBufferPointer {
+            pixels?.withUnsafeBufferPointer { pixels in
                 
-                guard var source = $0.baseAddress else { return }
+                guard var source = pixels.baseAddress else { return }
                 
                 let start = source
                 
@@ -526,34 +431,52 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
             
         case 8:
             
-            let decoder = GrayPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
-            
-            if let transparent = transparent {
+            if let pixels = pixels {
                 
-                let image = decoder.decode_gray8(data: pixels, transparent: UInt8(truncatingIfNeeded: transparent), fileBacked: fileBacked)
+                let decoder = GrayPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
                 
-                return AnyImage(image)
+                if let transparent = transparent {
+                    
+                    let image = decoder.decode_gray8(data: pixels, transparent: UInt8(truncatingIfNeeded: transparent), fileBacked: fileBacked)
+                    
+                    return AnyImage(image)
+                    
+                } else {
+                    
+                    let image = decoder.decode_opaque_gray8(data: pixels, fileBacked: fileBacked)
+                    
+                    return AnyImage(image)
+                }
                 
             } else {
                 
-                let image = decoder.decode_opaque_gray8(data: pixels, fileBacked: fileBacked)
+                let image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                 
                 return AnyImage(image)
             }
             
         case 16:
             
-            let decoder = GrayPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
-            
-            if let transparent = transparent {
+            if let pixels = pixels {
                 
-                let image = decoder.decode_gray16(data: pixels, transparent: transparent, endianness: .big, fileBacked: fileBacked)
+                let decoder = GrayPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
                 
-                return AnyImage(image)
+                if let transparent = transparent {
+                    
+                    let image = decoder.decode_gray16(data: pixels, transparent: transparent, endianness: .big, fileBacked: fileBacked)
+                    
+                    return AnyImage(image)
+                    
+                } else {
+                    
+                    let image = decoder.decode_opaque_gray16(data: pixels, endianness: .big, fileBacked: fileBacked)
+                    
+                    return AnyImage(image)
+                }
                 
             } else {
                 
-                let image = decoder.decode_opaque_gray16(data: pixels, endianness: .big, fileBacked: fileBacked)
+                let image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                 
                 return AnyImage(image)
             }
@@ -577,38 +500,56 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
         switch ihdr.bitDepth {
         case 8:
             
-            let decoder = RGBPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
-            
-            if let (r, g, b) = transparent {
+            if let pixels = pixels {
                 
-                let _r = UInt8(truncatingIfNeeded: r)
-                let _g = UInt8(truncatingIfNeeded: g)
-                let _b = UInt8(truncatingIfNeeded: b)
+                let decoder = RGBPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
                 
-                let image = decoder.decode_rgb24(data: pixels, transparent: (_r, _g, _b), fileBacked: fileBacked)
-                
-                return AnyImage(image)
+                if let (r, g, b) = transparent {
+                    
+                    let _r = UInt8(truncatingIfNeeded: r)
+                    let _g = UInt8(truncatingIfNeeded: g)
+                    let _b = UInt8(truncatingIfNeeded: b)
+                    
+                    let image = decoder.decode_rgb24(data: pixels, transparent: (_r, _g, _b), fileBacked: fileBacked)
+                    
+                    return AnyImage(image)
+                    
+                } else {
+                    
+                    let image = decoder.decode_rgb24(data: pixels, fileBacked: fileBacked)
+                    
+                    return AnyImage(image)
+                }
                 
             } else {
                 
-                let image = decoder.decode_rgb24(data: pixels, fileBacked: fileBacked)
+                let image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                 
                 return AnyImage(image)
             }
             
         case 16:
             
-            let decoder = RGBPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
-            
-            if let transparent = transparent {
+            if let pixels = pixels {
                 
-                let image = decoder.decode_rgb48(data: pixels, transparent: transparent, endianness: .big, fileBacked: fileBacked)
+                let decoder = RGBPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
                 
-                return AnyImage(image)
+                if let transparent = transparent {
+                    
+                    let image = decoder.decode_rgb48(data: pixels, transparent: transparent, endianness: .big, fileBacked: fileBacked)
+                    
+                    return AnyImage(image)
+                    
+                } else {
+                    
+                    let image = decoder.decode_rgb48(data: pixels, endianness: .big, fileBacked: fileBacked)
+                    
+                    return AnyImage(image)
+                }
                 
             } else {
                 
-                let image = decoder.decode_rgb48(data: pixels, endianness: .big, fileBacked: fileBacked)
+                let image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                 
                 return AnyImage(image)
             }
@@ -624,11 +565,11 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
         
         guard let palette = _png_palette(chunks: chunks) else { return AnyImage(image) }
         
-        palette.withUnsafeBufferPointer { palette in
+        pixels?.withUnsafeBufferPointer { pixels in
             
-            pixels.withUnsafeBufferPointer {
-                
-                guard var source = $0.baseAddress else { return }
+            guard var source = pixels.baseAddress else { return }
+            
+            palette.withUnsafeBufferPointer { palette in
                 
                 let start = source
                 
@@ -689,19 +630,37 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
         switch ihdr.bitDepth {
         case 8:
             
-            let decoder = GrayPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
-            
-            let image = decoder.decode_gray16(data: pixels, fileBacked: fileBacked)
-            
-            return AnyImage(image)
+            if let pixels = pixels {
+                
+                let decoder = GrayPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
+                
+                let image = decoder.decode_gray16(data: pixels, fileBacked: fileBacked)
+                
+                return AnyImage(image)
+                
+            } else {
+                
+                let image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                return AnyImage(image)
+            }
             
         case 16:
             
-            let decoder = GrayPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
-            
-            let image = decoder.decode_gray32(data: pixels, endianness: .big, fileBacked: fileBacked)
-            
-            return AnyImage(image)
+            if let pixels = pixels {
+                
+                let decoder = GrayPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
+                
+                let image = decoder.decode_gray32(data: pixels, endianness: .big, fileBacked: fileBacked)
+                
+                return AnyImage(image)
+                
+            } else {
+                
+                let image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                return AnyImage(image)
+            }
             
         default: fatalError()
         }
@@ -712,19 +671,37 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
         switch ihdr.bitDepth {
         case 8:
             
-            let decoder = RGBPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
-            
-            let image = decoder.decode_rgba32(data: pixels, fileBacked: fileBacked)
-            
-            return AnyImage(image)
+            if let pixels = pixels {
+                
+                let decoder = RGBPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
+                
+                let image = decoder.decode_rgba32(data: pixels, fileBacked: fileBacked)
+                
+                return AnyImage(image)
+                
+            } else {
+                
+                let image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                return AnyImage(image)
+            }
             
         case 16:
             
-            let decoder = RGBPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
-            
-            let image = decoder.decode_rgba64(data: pixels, endianness: .big, fileBacked: fileBacked)
-            
-            return AnyImage(image)
+            if let pixels = pixels {
+                
+                let decoder = RGBPixelDecoder(width: width, height: height, resolution: resolution, colorSpace: colorSpace)
+                
+                let image = decoder.decode_rgba64(data: pixels, endianness: .big, fileBacked: fileBacked)
+                
+                return AnyImage(image)
+                
+            } else {
+                
+                let image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                
+                return AnyImage(image)
+            }
             
         default: fatalError()
         }
@@ -928,4 +905,3 @@ func _png_filter(ihdr: PNGDecoder.IHDR, width: Int, height: Int, data: Data) -> 
     
     return nil
 }
-

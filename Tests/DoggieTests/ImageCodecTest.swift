@@ -743,6 +743,9 @@ class ImageCodecTest: XCTestCase {
             XCTAssertEqual(png_image.height, tiff_image.height)
             XCTAssertEqual(png_image.pixels, tiff_image.pixels, "Failed default: \(image)")
             
+            XCTAssertTrue(imageRep.isAnimated)
+            XCTAssertEqual(imageRep.repeats, 2)
+            
             for i in 0..<imageRep.numberOfPages {
                 
                 let png_image = Image<ARGB32ColorPixel>(image: AnyImage(imageRep: imageRep.page(i)), colorSpace: .sRGB)
