@@ -25,7 +25,7 @@
 
 struct PNGEncoder: ImageRepEncoder {
     
-    private static func encode(_ chunks: PNGChunk ... ) -> MappedBuffer<UInt8> {
+    static func encode(_ chunks: [PNGChunk]) -> MappedBuffer<UInt8> {
         
         var result = MappedBuffer<UInt8>(fileBacked: true)
         
@@ -48,7 +48,7 @@ struct PNGEncoder: ImageRepEncoder {
         return result
     }
     
-    private static func IHDR(width: Int, height: Int, bitDepth: UInt8, colour: UInt8, interlace: Bool) -> PNGChunk {
+    static func IHDR(width: Int, height: Int, bitDepth: UInt8, colour: UInt8, interlaced: Bool) -> PNGChunk {
         
         let width: BEUInt32 = BEUInt32(width)
         let height: BEUInt32 = BEUInt32(height)
@@ -56,7 +56,7 @@ struct PNGEncoder: ImageRepEncoder {
         let colour: UInt8 = colour
         let compression: UInt8 = 0
         let filter: UInt8 = 0
-        let interlace: UInt8 = interlace ? 1 : 0
+        let interlaced: UInt8 = interlaced ? 1 : 0
         
         var ihdr = Data(capacity: 13)
         
@@ -66,12 +66,12 @@ struct PNGEncoder: ImageRepEncoder {
         ihdr.encode(colour)
         ihdr.encode(compression)
         ihdr.encode(filter)
-        ihdr.encode(interlace)
+        ihdr.encode(interlaced)
         
         return PNGChunk(signature: "IHDR", data: ihdr)
     }
     
-    private static func iCCP<C>(_ colorSpace: ColorSpace<C>, deflate_level: Deflate.Level) -> PNGChunk? {
+    static func iCCP<C>(_ colorSpace: ColorSpace<C>, deflate_level: Deflate.Level) -> PNGChunk? {
         
         if let iccData = colorSpace.iccData, let data = try? Deflate(level: deflate_level, windowBits: 15).process(iccData) {
             
@@ -88,7 +88,7 @@ struct PNGEncoder: ImageRepEncoder {
         return nil
     }
     
-    private static func pHYs(_ resolution: Resolution) -> PNGChunk {
+    static func pHYs(_ resolution: Resolution) -> PNGChunk {
         
         var phys = Data()
         
@@ -101,10 +101,12 @@ struct PNGEncoder: ImageRepEncoder {
         return PNGChunk(signature: "pHYs", data: phys)
     }
     
-    private static func encodeIDAT<Pixel>(image: Image<Pixel>, bitsPerPixel: UInt8, deflate_level: Deflate.Level, interlace: Bool, _ body: (inout Data, Pixel) -> Void) -> PNGChunk? {
+    static func encodeIDAT<Pixel>(image: Image<Pixel>, region: PNGRegion, bitsPerPixel: UInt8, deflate_level: Deflate.Level, interlaced: Bool, _ body: (inout Data, Pixel) -> Void) -> PNGChunk? {
         
-        let width = image.width
-        let height = image.height
+        let width = region.width
+        let height = region.height
+        
+        let image_width = image.width
         
         guard let deflate = try? Deflate(level: deflate_level, windowBits: 15) else { return nil }
         
@@ -112,11 +114,12 @@ struct PNGEncoder: ImageRepEncoder {
         
         do {
             
-            if interlace {
+            if interlaced {
                 
                 try image.withUnsafeBufferPointer {
                     
-                    guard let buffer = $0.baseAddress else { return }
+                    guard var buffer = $0.baseAddress else { return }
+                    buffer += region.x + region.y * image_width
                     
                     for pass in 0..<7 {
                         
@@ -141,8 +144,7 @@ struct PNGEncoder: ImageRepEncoder {
                             
                             for col in stride(from: starting_col, to: width, by: col_increment) {
                                 
-                                let position = row * width + col
-                                let destination = buffer + position
+                                let destination = buffer + row * image_width + col
                                 
                                 body(&scanline, destination.pointee)
                             }
@@ -161,6 +163,7 @@ struct PNGEncoder: ImageRepEncoder {
                 try image.withUnsafeBufferPointer {
                     
                     guard var buffer = $0.baseAddress else { return }
+                    buffer += region.x + region.y * image_width
                     
                     var encoder = png_filter0_encoder(row_length: scanline_size, bitsPerPixel: bitsPerPixel)
                     
@@ -170,10 +173,14 @@ struct PNGEncoder: ImageRepEncoder {
                         
                         scanline.count = 0
                         
+                        var _buffer = buffer
+                        
                         for _ in 0..<width {
-                            body(&scanline, buffer.pointee)
-                            buffer += 1
+                            body(&scanline, _buffer.pointee)
+                            _buffer += 1
                         }
+                        
+                        buffer += image_width
                         
                         try scanline.withUnsafeBufferPointer { try encoder.encode($0) { try deflate.update($0) { compressed.append(contentsOf: $0) } } }
                         
@@ -192,68 +199,62 @@ struct PNGEncoder: ImageRepEncoder {
         return PNGChunk(signature: "IDAT", data: compressed.data)
     }
     
-    private static func encodeRGB<Pixel>(image: Image<Pixel>, deflate_level: Deflate.Level, interlace: Bool) -> MappedBuffer<UInt8>? where Pixel: PNGEncodablePixel, Pixel.Model == RGBColorModel {
-        
-        guard let iccp = iCCP(image.colorSpace, deflate_level: deflate_level) else { return encodeRGB(image: Image<Pixel>(image: image, colorSpace: .sRGB), deflate_level: deflate_level, interlace: interlace) }
+    static func encodeIDAT<Pixel>(image: Image<Pixel>, region: PNGRegion, deflate_level: Deflate.Level, interlaced: Bool, opaque: Bool) -> PNGChunk? where Pixel: PNGEncodablePixel {
         
         let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
         let bitDepth = UInt8(bytesPerSample << 3)
         
-        let opaque = image.isOpaque
-        
-        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: bitDepth, colour: opaque ? 2 : 6, interlace: interlace)
-        let phys = pHYs(image.resolution)
-        
-        let _idat: PNGChunk?
-        
         if opaque {
             
-            _idat = encodeIDAT(image: image, bitsPerPixel: bitDepth * 3, deflate_level: deflate_level, interlace: interlace) {
+            let bitsPerPixel = bitDepth * UInt8(Pixel.numberOfComponents - 1)
+            
+            return encodeIDAT(image: image, region: region, bitsPerPixel: bitsPerPixel, deflate_level: deflate_level, interlaced: interlaced) {
                 $1.png_encode_color(&$0)
             }
+            
         } else {
             
-            _idat = encodeIDAT(image: image, bitsPerPixel: bitDepth * 4, deflate_level: deflate_level, interlace: interlace) {
+            let bitsPerPixel = bitDepth * UInt8(Pixel.numberOfComponents)
+            
+            return encodeIDAT(image: image, region: region, bitsPerPixel: bitsPerPixel, deflate_level: deflate_level, interlaced: interlaced) {
                 $1.png_encode_color(&$0)
                 $1.png_encode_opacity(&$0)
             }
         }
-        
-        guard let idat = _idat else { return nil }
-        
-        return encode(ihdr, phys, iccp, idat)
     }
     
-    private static func encodeGray<Pixel>(image: Image<Pixel>, deflate_level: Deflate.Level, interlace: Bool) -> MappedBuffer<UInt8>? where Pixel: PNGEncodablePixel, Pixel.Model == GrayColorModel {
+    static func encodeRGB<Pixel>(image: Image<Pixel>, region: PNGRegion, deflate_level: Deflate.Level, interlaced: Bool) -> MappedBuffer<UInt8>? where Pixel: PNGEncodablePixel, Pixel.Model == RGBColorModel {
         
-        guard let iccp = iCCP(image.colorSpace, deflate_level: deflate_level) else { return encodeGray(image: Image<Pixel>(image: image, colorSpace: .genericGamma22Gray), deflate_level: deflate_level, interlace: interlace) }
+        guard let iccp = iCCP(image.colorSpace, deflate_level: deflate_level) else { return encodeRGB(image: Image<Pixel>(image: image, colorSpace: .sRGB), region: region, deflate_level: deflate_level, interlaced: interlaced) }
         
         let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
         let bitDepth = UInt8(bytesPerSample << 3)
         
         let opaque = image.isOpaque
         
-        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: bitDepth, colour: opaque ? 0 : 4, interlace: interlace)
+        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: bitDepth, colour: opaque ? 2 : 6, interlaced: interlaced)
         let phys = pHYs(image.resolution)
         
-        let _idat: PNGChunk?
+        guard let idat = encodeIDAT(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced, opaque: opaque) else { return nil }
         
-        if opaque {
-            
-            _idat = encodeIDAT(image: image, bitsPerPixel: bitDepth, deflate_level: deflate_level, interlace: interlace) {
-                $1.png_encode_color(&$0)
-            }
-        } else {
-            
-            _idat = encodeIDAT(image: image, bitsPerPixel: bitDepth * 2, deflate_level: deflate_level, interlace: interlace) {
-                $1.png_encode_color(&$0)
-                $1.png_encode_opacity(&$0)
-            }
-        }
+        return encode([ihdr, phys, iccp, idat])
+    }
+    
+    static func encodeGray<Pixel>(image: Image<Pixel>, region: PNGRegion, deflate_level: Deflate.Level, interlaced: Bool) -> MappedBuffer<UInt8>? where Pixel: PNGEncodablePixel, Pixel.Model == GrayColorModel {
         
-        guard let idat = _idat else { return nil }
+        guard let iccp = iCCP(image.colorSpace, deflate_level: deflate_level) else { return encodeGray(image: Image<Pixel>(image: image, colorSpace: .genericGamma22Gray), region: region, deflate_level: deflate_level, interlaced: interlaced) }
         
-        return encode(ihdr, phys, iccp, idat)
+        let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
+        let bitDepth = UInt8(bytesPerSample << 3)
+        
+        let opaque = image.isOpaque
+        
+        let ihdr = IHDR(width: image.width, height: image.height, bitDepth: bitDepth, colour: opaque ? 0 : 4, interlaced: interlaced)
+        let phys = pHYs(image.resolution)
+        
+        guard let idat = encodeIDAT(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced, opaque: opaque) else { return nil }
+        
+        return encode([ihdr, phys, iccp, idat])
     }
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
@@ -261,39 +262,41 @@ struct PNGEncoder: ImageRepEncoder {
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         let interlaced = properties[.interlaced] as? Bool == true
         
+        let region = PNGRegion(x: 0, y: 0, width: image.width, height: image.height)
+        
         if let image = image.base as? Image<Gray32ColorPixel> {
-            return encodeGray(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
+            return encodeGray(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced)?.data
         }
         
         if let image = Image<Gray16ColorPixel>(image) {
-            return encodeGray(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
+            return encodeGray(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced)?.data
         }
         
         if let image = image.base as? Image<ARGB64ColorPixel> {
-            return encodeRGB(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
+            return encodeRGB(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced)?.data
         }
         
         if let image = image.base as? Image<RGBA64ColorPixel> {
-            return encodeRGB(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
+            return encodeRGB(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced)?.data
         }
         
         if let image = image.base as? Image<RGBA32ColorPixel> {
-            return encodeRGB(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
+            return encodeRGB(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced)?.data
         }
         
         if let image = image.base as? Image<ABGR32ColorPixel> {
-            return encodeRGB(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
+            return encodeRGB(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced)?.data
         }
         
         if let image = image.base as? Image<BGRA32ColorPixel> {
-            return encodeRGB(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
+            return encodeRGB(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced)?.data
         }
         
         if let image = Image<ARGB32ColorPixel>(image) {
-            return encodeRGB(image: image, deflate_level: deflate_level, interlace: interlaced)?.data
+            return encodeRGB(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced)?.data
         }
         
-        return encodeRGB(image: Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB), deflate_level: deflate_level, interlace: interlaced)?.data
+        return encodeRGB(image: Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB), region: region, deflate_level: deflate_level, interlaced: interlaced)?.data
     }
 }
 

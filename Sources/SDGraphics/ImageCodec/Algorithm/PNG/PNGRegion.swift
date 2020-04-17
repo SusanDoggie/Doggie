@@ -1,5 +1,5 @@
 //
-//  AnimatedImage.swift
+//  PNGRegion.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,47 +23,10 @@
 //  THE SOFTWARE.
 //
 
-protocol AnimatedImageEncoder {
+struct PNGRegion {
     
-    static func encode(image: AnimatedImage, properties: [ImageRep.PropertyKey: Any]) -> Data?
-}
-
-public struct AnimatedImage {
-    
-    public var frames: [AnimatedImageFrame]
-    
-    public var repeats: Int
-    
-    public init(frames: [AnimatedImageFrame], repeats: Int) {
-        self.frames = frames
-        self.repeats = repeats
-    }
-}
-
-public struct AnimatedImageFrame {
-    
-    public var image: AnyImage
-    
-    public var duration: Double
-    
-    public init(image: AnyImage, duration: Double) {
-        self.image = image
-        self.duration = duration
-    }
-}
-
-extension AnimatedImage {
-    
-    public func representation(using storageType: MediaType, properties: [ImageRep.PropertyKey: Any]) -> Data? {
-        
-        let Encoder: AnimatedImageEncoder.Type
-        
-        switch storageType {
-        case .png: Encoder = PNGEncoder.self
-        case .webp: Encoder = WEBPAnimatedEncoder.self
-        default: return nil
-        }
-        
-        return Encoder.encode(image: self, properties: properties)
-    }
+    var x: Int
+    var y: Int
+    var width: Int
+    var height: Int
 }

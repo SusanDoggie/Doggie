@@ -85,6 +85,10 @@ extension PNGDecoder {
             self.dispose_op = data.load(fromByteOffset: 24, as: UInt8.self)
             self.blend_op = data.load(fromByteOffset: 25, as: UInt8.self)
         }
+        
+        var region: PNGRegion {
+            return PNGRegion(x: Int(x_offset), y: Int(y_offset), width: Int(width), height: Int(height))
+        }
     }
     
     struct FrameDataChunk {
@@ -239,9 +243,7 @@ extension PNGDecoder.Frame: ImageRepBase {
     var _disposed: AnyImage {
         switch fctl.dispose_op {
         case 0: return _image
-        case 1:
-            let region = png_region(x: Int(fctl.x_offset), y: Int(fctl.y_offset), width: Int(fctl.width), height: Int(fctl.height))
-            return _png_clear(region, _image)
+        case 1: return _png_clear(fctl.region, _image)
         case 2: return prev_frame?._disposed ?? _empty_image
         default: return _empty_image
         }
@@ -271,13 +273,11 @@ extension PNGDecoder.Frame: ImageRepBase {
             prev_image = prev_frame?._disposed ?? _empty_image
         }
         
-        let region = png_region(x: Int(fctl.x_offset), y: Int(fctl.y_offset), width: Int(fctl.width), height: Int(fctl.height))
-        
         var decoded: AnyImage
         
         switch fctl.blend_op {
-        case 0: decoded = _png_copy(region, prev_image, current_frame)
-        case 1: decoded = _png_blend(region, prev_image, current_frame)
+        case 0: decoded = _png_copy(fctl.region, prev_image, current_frame)
+        case 1: decoded = _png_blend(fctl.region, prev_image, current_frame)
         default: decoded = _empty_image
         }
         
@@ -294,15 +294,7 @@ extension PNGDecoder.Frame: ImageRepBase {
     }
 }
 
-struct png_region {
-    
-    var x: Int
-    var y: Int
-    var width: Int
-    var height: Int
-}
-
-func _png_clear(_ region: png_region, _ image: AnyImage) -> AnyImage {
+func _png_clear(_ region: PNGRegion, _ image: AnyImage) -> AnyImage {
     switch image.base {
     case let image as Image<Gray16ColorPixel>: return AnyImage(_png_clear(region, image))
     case let image as Image<Gray32ColorPixel>: return AnyImage(_png_clear(region, image))
@@ -312,7 +304,7 @@ func _png_clear(_ region: png_region, _ image: AnyImage) -> AnyImage {
     }
 }
 
-func _png_copy(_ region: png_region, _ prev_image: AnyImage, _ image: AnyImage) -> AnyImage {
+func _png_copy(_ region: PNGRegion, _ prev_image: AnyImage, _ image: AnyImage) -> AnyImage {
     switch (prev_image.base, image.base) {
     case let (prev_image, image) as (Image<Gray16ColorPixel>, Image<Gray16ColorPixel>): return AnyImage(_png_copy(region, prev_image, image))
     case let (prev_image, image) as (Image<Gray32ColorPixel>, Image<Gray32ColorPixel>): return AnyImage(_png_copy(region, prev_image, image))
@@ -322,7 +314,7 @@ func _png_copy(_ region: png_region, _ prev_image: AnyImage, _ image: AnyImage) 
     }
 }
 
-func _png_blend(_ region: png_region, _ prev_image: AnyImage, _ image: AnyImage) -> AnyImage {
+func _png_blend(_ region: PNGRegion, _ prev_image: AnyImage, _ image: AnyImage) -> AnyImage {
     switch (prev_image.base, image.base) {
     case let (prev_image, image) as (Image<Gray16ColorPixel>, Image<Gray16ColorPixel>): return AnyImage(_png_blend(region, prev_image, image))
     case let (prev_image, image) as (Image<Gray32ColorPixel>, Image<Gray32ColorPixel>): return AnyImage(_png_blend(region, prev_image, image))
@@ -332,7 +324,7 @@ func _png_blend(_ region: png_region, _ prev_image: AnyImage, _ image: AnyImage)
     }
 }
 
-func _png_clear<P>(_ region: png_region, _ image: Image<P>) -> Image<P> {
+func _png_clear<P>(_ region: PNGRegion, _ image: Image<P>) -> Image<P> {
     
     var image = image
     
@@ -367,7 +359,7 @@ func _png_clear<P>(_ region: png_region, _ image: Image<P>) -> Image<P> {
     return image
 }
 
-func _png_copy<P>(_ region: png_region, _ prev_image: Image<P>, _ image: Image<P>) -> Image<P> {
+func _png_copy<P>(_ region: PNGRegion, _ prev_image: Image<P>, _ image: Image<P>) -> Image<P> {
     
     var prev_image = prev_image
     
@@ -408,7 +400,7 @@ func _png_copy<P>(_ region: png_region, _ prev_image: Image<P>, _ image: Image<P
     return prev_image
 }
 
-func _png_blend<P>(_ region: png_region, _ prev_image: Image<P>, _ image: Image<P>) -> Image<P> {
+func _png_blend<P>(_ region: PNGRegion, _ prev_image: Image<P>, _ image: Image<P>) -> Image<P> {
     
     var prev_image = prev_image
     
