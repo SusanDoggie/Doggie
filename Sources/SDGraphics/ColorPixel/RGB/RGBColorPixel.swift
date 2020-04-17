@@ -62,10 +62,13 @@ extension ColorPixel where Self: _RGBColorPixel {
     @inlinable
     @inline(__always)
     public init(color: RGBColorModel, opacity: Double = 1) {
-        self.a = Component((opacity * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
-        self.r = Component((color.red * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
-        self.g = Component((color.green * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
-        self.b = Component((color.blue * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+        
+        let r = Component((color.red * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+        let g = Component((color.green * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+        let b = Component((color.blue * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+        let a = Component((opacity * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+        
+        self.init(red: r, green: g, blue: b, opacity: a)
     }
 }
 

@@ -56,8 +56,11 @@ extension ColorPixel where Self: _GrayColorPixel {
     @inlinable
     @inline(__always)
     public init(color: GrayColorModel, opacity: Double = 1) {
-        self.w = Component((color.white * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
-        self.a = Component((opacity * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+        
+        let w = Component((color.white * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+        let a = Component((opacity * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+        
+        self.init(white: w, opacity: a)
     }
 }
 
