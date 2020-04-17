@@ -84,6 +84,48 @@ public struct Texture<RawPixel: ColorPixel>: TextureProtocol {
     }
 }
 
+extension Texture where RawPixel: _GrayColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public init<P: _GrayColorPixel>(_ texture: Texture<P>) {
+        let pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
+        self.init(width: texture.width, height: texture.height, pixels: pixels, resamplingAlgorithm: texture.resamplingAlgorithm)
+        self.horizontalWrappingMode = texture.horizontalWrappingMode
+        self.verticalWrappingMode = texture.verticalWrappingMode
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init<P: _GrayColorPixel>(_ texture: Texture<P>) where P.Component == RawPixel.Component {
+        let pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
+        self.init(width: texture.width, height: texture.height, pixels: pixels, resamplingAlgorithm: texture.resamplingAlgorithm)
+        self.horizontalWrappingMode = texture.horizontalWrappingMode
+        self.verticalWrappingMode = texture.verticalWrappingMode
+    }
+}
+
+extension Texture where RawPixel: _RGBColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public init<P: _RGBColorPixel>(_ texture: Texture<P>) {
+        let pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
+        self.init(width: texture.width, height: texture.height, pixels: pixels, resamplingAlgorithm: texture.resamplingAlgorithm)
+        self.horizontalWrappingMode = texture.horizontalWrappingMode
+        self.verticalWrappingMode = texture.verticalWrappingMode
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init<P: _RGBColorPixel>(_ texture: Texture<P>) where P.Component == RawPixel.Component {
+        let pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
+        self.init(width: texture.width, height: texture.height, pixels: pixels, resamplingAlgorithm: texture.resamplingAlgorithm)
+        self.horizontalWrappingMode = texture.horizontalWrappingMode
+        self.verticalWrappingMode = texture.verticalWrappingMode
+    }
+}
+
 extension Texture {
     
     @inlinable

@@ -40,7 +40,7 @@ public protocol _FloatComponentPixel: ColorPixel, ScalarMultiplicative {
     func distance(to: Self) -> Scalar
 }
 
-extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: SDGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)
@@ -49,7 +49,7 @@ extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDG
     }
 }
 
-extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: SDGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)
@@ -69,7 +69,7 @@ extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDG
     }
 }
 
-extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: SDGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)
@@ -122,7 +122,7 @@ extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDG
     }
 }
 
-extension ColorPixel where Self: _FloatComponentPixel, Self.Scalar: FloatingMathProtocol {
+extension ColorPixel where Self: _FloatComponentPixel, Scalar: FloatingMathProtocol {
     
     @inlinable
     @inline(__always)

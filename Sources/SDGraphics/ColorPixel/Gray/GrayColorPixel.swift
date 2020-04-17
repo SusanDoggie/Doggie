@@ -39,13 +39,13 @@ extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
     @inline(__always)
-    public init<C: _GrayColorPixel>(_ color: C) where C.Model == Model, C.Component == Component {
+    public init<C: _GrayColorPixel>(_ color: C) where C.Component == Component {
         self.init(white: color.w, opacity: color.a)
     }
     
     @inlinable
     @inline(__always)
-    public init<C: _GrayColorPixel>(_ color: C) where C.Model == Model {
+    public init<C: _GrayColorPixel>(_ color: C) {
         
         let w = _scale_integer(color.w, C.Component.max, Component.max)
         let a = _scale_integer(color.a, C.Component.max, Component.max)
@@ -145,7 +145,7 @@ extension ColorPixel where Self: _GrayColorPixel, Component == UInt16 {
         let s_w = UInt64(source.w)
         let s_a = UInt64(source.a)
         
-        let a = s_a + (((0xFFFF - s_a) * d_a) - 0x7FFF) / 0xFFFF
+        let a = s_a + (((0xFFFF - s_a) * d_a) + 0x7FFF) / 0xFFFF
         
         if a == 0 {
             
@@ -153,13 +153,13 @@ extension ColorPixel where Self: _GrayColorPixel, Component == UInt16 {
             
         } else if d_a == 0xFFFF {
             
-            let w = (s_a * s_w + (0xFFFF - s_a) * d_w - 0x7FFF) / 0xFFFF
+            let w = (s_a * s_w + (0xFFFF - s_a) * d_w + 0x7FFF) / 0xFFFF
             
             return Self(white: UInt16(w), opacity: UInt16(a))
             
         } else {
             
-            let w = ((0xFFFF * s_a * s_w + (0xFFFF - s_a) * d_a * d_w) / a - 0x7FFF) / 0xFFFF
+            let w = ((0xFFFF * s_a * s_w + (0xFFFF - s_a) * d_a * d_w) / a + 0x7FFF) / 0xFFFF
             
             return Self(white: UInt16(w), opacity: UInt16(a))
         }

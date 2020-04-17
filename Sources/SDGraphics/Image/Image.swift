@@ -124,6 +124,40 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
     }
 }
 
+extension Image where Pixel: _GrayColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public init<P: _GrayColorPixel>(_ image: Image<P>) {
+        let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
+        self.init(width: image.width, height: image.height, resolution: image.resolution, pixels: pixels, colorSpace: image.colorSpace)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init<P: _GrayColorPixel>(_ image: Image<P>) where P.Component == Pixel.Component {
+        let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
+        self.init(width: image.width, height: image.height, resolution: image.resolution, pixels: pixels, colorSpace: image.colorSpace)
+    }
+}
+
+extension Image where Pixel: _RGBColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public init<P: _RGBColorPixel>(_ image: Image<P>) {
+        let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
+        self.init(width: image.width, height: image.height, resolution: image.resolution, pixels: pixels, colorSpace: image.colorSpace)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init<P: _RGBColorPixel>(_ image: Image<P>) where P.Component == Pixel.Component {
+        let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
+        self.init(width: image.width, height: image.height, resolution: image.resolution, pixels: pixels, colorSpace: image.colorSpace)
+    }
+}
+
 @usableFromInline
 final class ImageCache {
     

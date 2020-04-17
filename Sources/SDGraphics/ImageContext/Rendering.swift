@@ -162,7 +162,7 @@ extension ImageContextRenderTriangleGenerator {
     }
 }
 
-extension Sequence where Self: ImageContextRenderTriangleGenerator, Element: ImageContextRenderTriangleGenerator, Element.Vertex == Self.Vertex {
+extension Sequence where Self: ImageContextRenderTriangleGenerator, Element: ImageContextRenderTriangleGenerator, Element.Vertex == Vertex {
     
     @inlinable
     @inline(__always)

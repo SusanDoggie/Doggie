@@ -60,7 +60,7 @@ extension PNGEncoder: AnimatedImageEncoder {
         return PNGChunk(signature: "fcTL", data: data)
     }
     
-    static func encodeFrameDataChunk<Pixel>(image: Image<Pixel>, region: PNGRegion, sequence_number: Int, deflate_level: Deflate.Level, interlaced: Bool, opaque: Bool) -> PNGChunk? where Pixel: PNGEncodablePixel {
+    static func encodeFrameDataChunk<Pixel>(image: Image<Pixel>, region: PNGRegion, sequence_number: Int, deflate_level: Deflate.Level, interlaced: Bool, opaque: Bool) -> PNGChunk? where Pixel: TIFFEncodablePixel {
         
         guard let encoded_data = encodeIDAT(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced, opaque: opaque)?.data else { return nil }
         
@@ -135,7 +135,7 @@ extension PNGEncoder: AnimatedImageEncoder {
         return region
     }
     
-    static func encodeFrames<Pixel>(frames: [Frame<Pixel>], deflate_level: Deflate.Level, interlaced: Bool, opaque: Bool) -> [PNGChunk]? where Pixel: PNGEncodablePixel {
+    static func encodeFrames<Pixel>(frames: [Frame<Pixel>], deflate_level: Deflate.Level, interlaced: Bool, opaque: Bool) -> [PNGChunk]? where Pixel: TIFFEncodablePixel {
         
         var chunks: [PNGChunk] = []
         chunks.reserveCapacity(frames.count << 1)

@@ -43,13 +43,13 @@ extension ColorPixel where Self: _RGBColorPixel {
     
     @inlinable
     @inline(__always)
-    public init<C: _RGBColorPixel>(_ color: C) where C.Model == Model, C.Component == Component {
+    public init<C: _RGBColorPixel>(_ color: C) where C.Component == Component {
         self.init(red: color.r, green: color.g, blue: color.b, opacity: color.a)
     }
     
     @inlinable
     @inline(__always)
-    public init<C: _RGBColorPixel>(_ color: C) where C.Model == Model {
+    public init<C: _RGBColorPixel>(_ color: C) {
         
         let r = _scale_integer(color.r, C.Component.max, Component.max)
         let g = _scale_integer(color.g, C.Component.max, Component.max)
@@ -167,7 +167,7 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt16 {
         let s_b = UInt64(source.b)
         let s_a = UInt64(source.a)
         
-        let a = s_a + (((0xFFFF - s_a) * d_a) - 0x7FFF) / 0xFFFF
+        let a = s_a + (((0xFFFF - s_a) * d_a) + 0x7FFF) / 0xFFFF
         
         if a == 0 {
             
@@ -175,9 +175,9 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt16 {
             
         } else if d_a == 0xFFFF {
             
-            let r = (s_a * s_r + (0xFFFF - s_a) * d_r - 0x7FFF) / 0xFFFF
-            let g = (s_a * s_g + (0xFFFF - s_a) * d_g - 0x7FFF) / 0xFFFF
-            let b = (s_a * s_b + (0xFFFF - s_a) * d_b - 0x7FFF) / 0xFFFF
+            let r = (s_a * s_r + (0xFFFF - s_a) * d_r + 0x7FFF) / 0xFFFF
+            let g = (s_a * s_g + (0xFFFF - s_a) * d_g + 0x7FFF) / 0xFFFF
+            let b = (s_a * s_b + (0xFFFF - s_a) * d_b + 0x7FFF) / 0xFFFF
             
             return Self(red: UInt16(r), green: UInt16(g), blue: UInt16(b), opacity: UInt16(a))
             

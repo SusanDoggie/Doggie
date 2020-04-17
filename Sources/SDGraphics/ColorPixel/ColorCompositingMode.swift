@@ -148,7 +148,7 @@ extension ColorPixel {
     }
 }
 
-extension ColorPixel where Self: _FloatComponentPixel, Self.ColorComponents: SDGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: SDGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)
