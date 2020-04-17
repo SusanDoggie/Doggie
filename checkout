@@ -33,7 +33,7 @@ PROJECT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 #
 
 cd ${PROJECT_DIR}
-git submodule update --recursive
+git submodule foreach --recursive git pull origin master
 
 
 # =================    libjpeg    =================
