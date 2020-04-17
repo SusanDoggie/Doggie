@@ -931,6 +931,12 @@ class ImageCodecTest: XCTestCase {
                     XCTAssertEqual(result, answer, "Failed: \(image)")
                 }
                 
+            case let (result, answer) as (Image<ARGB64ColorPixel>, Image<ARGB64ColorPixel>):
+                
+                for (result, answer) in zip(result.pixels, answer.pixels) {
+                    XCTAssertEqual(result, answer, "Failed: \(image)")
+                }
+                
             default: XCTFail()
             }
             
