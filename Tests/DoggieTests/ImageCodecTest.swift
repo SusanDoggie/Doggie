@@ -735,7 +735,7 @@ class ImageCodecTest: XCTestCase {
             guard let tiff_data = try? Data(contentsOf: image.deletingPathExtension().appendingPathComponent("default.tif")) else { XCTFail(); return }
             
             guard let imageRep = try? ImageRep(data: png_data) else { XCTFail(); return }
-            let png_image = try? Image<ARGB32ColorPixel>(image: AnyImage(imageRep: imageRep), colorSpace: .sRGB)
+            let png_image = Image<ARGB32ColorPixel>(image: AnyImage(imageRep: imageRep), colorSpace: .sRGB)
             
             guard let tiff_image = try? Image<ARGB32ColorPixel>(image: AnyImage(data: tiff_data), colorSpace: .sRGB) else { XCTFail(); return }
             
