@@ -102,7 +102,7 @@ extension ColorPixel where Self: RGBColorPixel {
     
     @inlinable
     @inline(__always)
-    public func with(opacity: Double) -> ABGR32ColorPixel {
+    public func with(opacity: Double) -> Self {
         var c = self
         c.opacity = opacity
         return c

@@ -92,7 +92,7 @@ extension ColorPixel where Self: GrayColorPixel {
     
     @inlinable
     @inline(__always)
-    public func with(opacity: Double) -> Gray16ColorPixel {
+    public func with(opacity: Double) -> Self {
         var c = self
         c.opacity = opacity
         return c
