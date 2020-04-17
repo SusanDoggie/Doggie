@@ -81,14 +81,29 @@ struct ImageContextPixelBlender<P: ColorPixel> {
     @inline(__always)
     func _draw<C: ColorPixel>(color: () -> C?) where C.Model == P.Model {
         
-        if let _clip = clip?.pointee {
-            if _clip > 0, var source = color() {
-                source.opacity *= opacity * _clip
+        if compositingMode == .default && blendMode == .default {
+            
+            if let _clip = clip?.pointee {
+                if _clip > 0, var source = color() {
+                    source.opacity *= opacity * _clip
+                    destination.pointee.blend(source: source)
+                }
+            } else if var source = color() {
+                source.opacity *= opacity
+                destination.pointee.blend(source: source)
+            }
+            
+        } else {
+            
+            if let _clip = clip?.pointee {
+                if _clip > 0, var source = color() {
+                    source.opacity *= opacity * _clip
+                    destination.pointee.blend(source: source, compositingMode: compositingMode, blendMode: blendMode)
+                }
+            } else if var source = color() {
+                source.opacity *= opacity
                 destination.pointee.blend(source: source, compositingMode: compositingMode, blendMode: blendMode)
             }
-        } else if var source = color() {
-            source.opacity *= opacity
-            destination.pointee.blend(source: source, compositingMode: compositingMode, blendMode: blendMode)
         }
     }
 }
