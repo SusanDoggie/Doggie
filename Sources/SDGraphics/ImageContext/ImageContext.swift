@@ -174,11 +174,15 @@ extension ImageContext {
         
         let current_layer = self.current_layer
         
-        if current_layer.state.clip == nil {
-            current_layer.state.clip = MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
-        }
+        var clip = current_layer.state.clip ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         
-        return try current_layer.state.clip!.withUnsafeMutableBufferPointer(body)
+        current_layer.state.clip = nil
+        
+        let result = try clip.withUnsafeMutableBufferPointer(body)
+        
+        current_layer.state.clip = clip
+        
+        return result
     }
     
     public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>?) throws -> R) rethrows -> R {
@@ -388,6 +392,8 @@ extension ImageContext {
         let current_layer = self.current_layer
         
         var depth = current_layer.state.depth ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
+        
+        current_layer.state.depth = nil
         
         let result = try depth.withUnsafeMutableBufferPointer(body)
         
