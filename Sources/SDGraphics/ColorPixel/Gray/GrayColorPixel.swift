@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol GrayColorPixel: ColorPixel {
+public protocol _GrayColorPixel: ColorPixel where Model == GrayColorModel {
     
     associatedtype Component: FixedWidthInteger & UnsignedInteger
     
@@ -35,17 +35,17 @@ public protocol GrayColorPixel: ColorPixel {
     
 }
 
-extension ColorPixel where Self: GrayColorPixel {
+extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
     @inline(__always)
-    public init<C: GrayColorPixel>(_ color: C) where C.Model == Model, C.Component == Component {
+    public init<C: _GrayColorPixel>(_ color: C) where C.Model == Model, C.Component == Component {
         self.init(white: color.w, opacity: color.a)
     }
     
     @inlinable
     @inline(__always)
-    public init<C: GrayColorPixel>(_ color: C) where C.Model == Model {
+    public init<C: _GrayColorPixel>(_ color: C) where C.Model == Model {
         
         let w = _scale_integer(color.w, C.Component.max, Component.max)
         let a = _scale_integer(color.a, C.Component.max, Component.max)
@@ -61,7 +61,7 @@ extension ColorPixel where Self: GrayColorPixel {
     }
 }
 
-extension ColorPixel where Self: GrayColorPixel {
+extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
     @inline(__always)
@@ -99,7 +99,7 @@ extension ColorPixel where Self: GrayColorPixel {
     }
 }
 
-extension ColorPixel where Self: GrayColorPixel, Component == UInt8 {
+extension ColorPixel where Self: _GrayColorPixel, Component == UInt8 {
     
     @inlinable
     @inline(__always)
@@ -131,7 +131,7 @@ extension ColorPixel where Self: GrayColorPixel, Component == UInt8 {
     }
 }
 
-extension ColorPixel where Self: GrayColorPixel, Component == UInt16 {
+extension ColorPixel where Self: _GrayColorPixel, Component == UInt16 {
     
     @inlinable
     @inline(__always)

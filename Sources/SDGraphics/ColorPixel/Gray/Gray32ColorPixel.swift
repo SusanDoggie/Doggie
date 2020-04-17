@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Gray32ColorPixel: GrayColorPixel {
+public struct Gray32ColorPixel: _GrayColorPixel {
     
     public var w: UInt16
     public var a: UInt16

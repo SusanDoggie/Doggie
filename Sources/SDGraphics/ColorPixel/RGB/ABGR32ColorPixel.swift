@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct ABGR32ColorPixel: RGBColorPixel {
+public struct ABGR32ColorPixel: _RGBColorPixel {
     
     public var a: UInt8
     public var b: UInt8
