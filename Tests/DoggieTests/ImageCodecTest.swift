@@ -720,7 +720,11 @@ class ImageCodecTest: XCTestCase {
             
             XCTAssertEqual(png_image.width, tiff_image.width)
             XCTAssertEqual(png_image.height, tiff_image.height)
-            XCTAssertEqual(png_image.pixels, tiff_image.pixels, "Failed: \(image)")
+            
+            for (result, answer) in zip(png_image.pixels, tiff_image.pixels) {
+                XCTAssertEqual(result, answer, "Failed: \(image)")
+            }
+            
         }
         
     }
@@ -741,7 +745,10 @@ class ImageCodecTest: XCTestCase {
             
             XCTAssertEqual(png_image.width, tiff_image.width)
             XCTAssertEqual(png_image.height, tiff_image.height)
-            XCTAssertEqual(png_image.pixels, tiff_image.pixels, "Failed default: \(image)")
+            
+            for (result, answer) in zip(png_image.pixels, tiff_image.pixels) {
+                XCTAssertEqual(result, answer,  "Failed default: \(image)")
+            }
             
             XCTAssertTrue(imageRep.isAnimated, "Failed: \(image)")
             
@@ -754,7 +761,10 @@ class ImageCodecTest: XCTestCase {
                 
                 XCTAssertEqual(png_image.width, tiff_image.width)
                 XCTAssertEqual(png_image.height, tiff_image.height)
-                XCTAssertEqual(png_image.pixels, tiff_image.pixels, "Failed page \(i): \(image)")
+                
+                for (result, answer) in zip(png_image.pixels, tiff_image.pixels) {
+                    XCTAssertEqual(result, answer,  "Failed page \(i): \(image)")
+                }
                 
             }
         }
@@ -776,7 +786,11 @@ class ImageCodecTest: XCTestCase {
             
             XCTAssertEqual(answer.width, result.width)
             XCTAssertEqual(answer.height, result.height)
-            XCTAssertEqual(answer.pixels, result.pixels, "Failed: \(image)")
+            
+            for (answer, result) in zip(answer.pixels, result.pixels) {
+                XCTAssertEqual(answer, result, "Failed: \(image)")
+            }
+            
         }
     }
     
@@ -795,7 +809,11 @@ class ImageCodecTest: XCTestCase {
             
             XCTAssertEqual(answer.width, result.width)
             XCTAssertEqual(answer.height, result.height)
-            XCTAssertEqual(answer.pixels, result.pixels, "Failed: \(image)")
+            
+            for (answer, result) in zip(answer.pixels, result.pixels) {
+                XCTAssertEqual(answer, result, "Failed: \(image)")
+            }
+            
         }
     }
     

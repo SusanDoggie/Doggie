@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Gray32ColorPixel: ColorPixel {
+public struct Gray32ColorPixel: GrayColorPixel {
     
     public var w: UInt16
     public var a: UInt16
@@ -40,79 +40,5 @@ public struct Gray32ColorPixel: ColorPixel {
     public init(white: UInt16, opacity: UInt16 = 0xFFFF) {
         self.w = white
         self.a = opacity
-    }
-    
-    @inlinable
-    @inline(__always)
-    public init(color: GrayColorModel, opacity: Double = 1) {
-        self.w = UInt16((color.white * 65535).clamped(to: 0...65535).rounded())
-        self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var color: GrayColorModel {
-        get {
-            return GrayColorModel(white: Double(w) / 65535)
-        }
-        set {
-            self.w = UInt16((newValue.white * 65535).clamped(to: 0...65535).rounded())
-        }
-    }
-    @inlinable
-    @inline(__always)
-    public var opacity: Double {
-        get {
-            return Double(a) / 65535
-        }
-        set {
-            self.a = UInt16((newValue * 65535).rounded().clamped(to: 0...65535))
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var isOpaque: Bool {
-        return a == 65535
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func with(opacity: Double) -> Gray32ColorPixel {
-        var c = self
-        c.opacity = opacity
-        return c
-    }
-}
-
-extension Gray32ColorPixel {
-    
-    @inlinable
-    @inline(__always)
-    public func blended(source: Gray32ColorPixel) -> Gray32ColorPixel {
-        
-        let d_w = UInt64(self.w)
-        let d_a = UInt64(self.a)
-        let s_w = UInt64(source.w)
-        let s_a = UInt64(source.a)
-        
-        let a = s_a + (((0xFFFF - s_a) * d_a) - 0x7FFF) / 0xFFFF
-        
-        if a == 0 {
-            
-            return Gray32ColorPixel()
-            
-        } else if d_a == 0xFFFF {
-            
-            let w = (s_a * s_w + (0xFFFF - s_a) * d_w - 0x7FFF) / 0xFFFF
-            
-            return Gray32ColorPixel(white: UInt16(w), opacity: UInt16(a))
-            
-        } else {
-            
-            let w = ((0xFFFF * s_a * s_w + (0xFFFF - s_a) * d_a * d_w) / a - 0x7FFF) / 0xFFFF
-            
-            return Gray32ColorPixel(white: UInt16(w), opacity: UInt16(a))
-        }
     }
 }

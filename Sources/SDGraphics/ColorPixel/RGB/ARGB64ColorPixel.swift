@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct ARGB64ColorPixel: ColorPixel {
+public struct ARGB64ColorPixel: RGBColorPixel {
     
     public var a: UInt16
     public var r: UInt16
@@ -54,100 +54,5 @@ public struct ARGB64ColorPixel: ColorPixel {
         self.r = UInt16((hex >> 32) & 0xFFFF)
         self.g = UInt16((hex >> 16) & 0xFFFF)
         self.b = UInt16(hex & 0xFFFF)
-    }
-    @inlinable
-    @inline(__always)
-    public init(color: RGBColorModel, opacity: Double = 1) {
-        self.a = UInt16((opacity * 65535).clamped(to: 0...65535).rounded())
-        self.r = UInt16((color.red * 65535).clamped(to: 0...65535).rounded())
-        self.g = UInt16((color.green * 65535).clamped(to: 0...65535).rounded())
-        self.b = UInt16((color.blue * 65535).clamped(to: 0...65535).rounded())
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var color: RGBColorModel {
-        get {
-            return RGBColorModel(red: Double(r) / 65535, green: Double(g) / 65535, blue: Double(b) / 65535)
-        }
-        set {
-            self.r = UInt16((newValue.red * 65535).clamped(to: 0...65535).rounded())
-            self.g = UInt16((newValue.green * 65535).clamped(to: 0...65535).rounded())
-            self.b = UInt16((newValue.blue * 65535).clamped(to: 0...65535).rounded())
-        }
-    }
-    @inlinable
-    @inline(__always)
-    public var opacity: Double {
-        get {
-            return Double(a) / 65535
-        }
-        set {
-            self.a = UInt16((newValue * 65535).clamped(to: 0...65535).rounded())
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var hex: UInt64 {
-        let _a = UInt64(a) << 48
-        let _r = UInt64(r) << 32
-        let _g = UInt64(g) << 16
-        let _b = UInt64(b)
-        return _a | _r | _g | _b
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var isOpaque: Bool {
-        return a == 65535
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func with(opacity: Double) -> ARGB64ColorPixel {
-        var c = self
-        c.opacity = opacity
-        return c
-    }
-}
-
-extension ARGB64ColorPixel {
-    
-    @inlinable
-    @inline(__always)
-    public func blended(source: ARGB64ColorPixel) -> ARGB64ColorPixel {
-        
-        let d_r = UInt64(self.r)
-        let d_g = UInt64(self.g)
-        let d_b = UInt64(self.b)
-        let d_a = UInt64(self.a)
-        let s_r = UInt64(source.r)
-        let s_g = UInt64(source.g)
-        let s_b = UInt64(source.b)
-        let s_a = UInt64(source.a)
-        
-        let a = s_a + (((0xFFFF - s_a) * d_a) - 0x7FFF) / 0xFFFF
-        
-        if a == 0 {
-            
-            return ARGB64ColorPixel()
-            
-        } else if d_a == 0xFFFF {
-            
-            let r = (s_a * s_r + (0xFFFF - s_a) * d_r - 0x7FFF) / 0xFFFF
-            let g = (s_a * s_g + (0xFFFF - s_a) * d_g - 0x7FFF) / 0xFFFF
-            let b = (s_a * s_b + (0xFFFF - s_a) * d_b - 0x7FFF) / 0xFFFF
-            
-            return ARGB64ColorPixel(red: UInt16(r), green: UInt16(g), blue: UInt16(b), opacity: UInt16(a))
-            
-        } else {
-            
-            let r = ((0xFFFF * s_a * s_r + (0xFFFF - s_a) * d_a * d_r) / a + 0x7FFF) / 0xFFFF
-            let g = ((0xFFFF * s_a * s_g + (0xFFFF - s_a) * d_a * d_g) / a + 0x7FFF) / 0xFFFF
-            let b = ((0xFFFF * s_a * s_b + (0xFFFF - s_a) * d_a * d_b) / a + 0x7FFF) / 0xFFFF
-            
-            return ARGB64ColorPixel(red: UInt16(r), green: UInt16(g), blue: UInt16(b), opacity: UInt16(a))
-        }
     }
 }
