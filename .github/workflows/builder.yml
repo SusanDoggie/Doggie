@@ -68,7 +68,7 @@ jobs:
       run: |
         export DEBIAN_FRONTEND=noninteractive		
         echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections		
-        apt-get update && apt-get install -y fontconfig ttf-mscorefonts-installer
+        apt-get update && apt-get install -y fontconfig fonts-noto ttf-mscorefonts-installer
     - name: Build
       uses: SusanDoggie/swift-action@master
       with:
