@@ -68,22 +68,63 @@ extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
     @inline(__always)
+    public static var bitsPerComponent: Int {
+        return MemoryLayout<Component>.stride << 3
+    }
+    
+    @inlinable
+    @inline(__always)
+    public var bitsPerComponent: Int {
+        return Self.bitsPerComponent
+    }
+}
+
+extension ColorPixel where Self: _GrayColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    var _max: Double {
+        return Double(Component.max)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func component(_ index: Int) -> Double {
+        switch index {
+        case 0: return Double(w) / _max
+        case 1: return Double(a) / _max
+        default: fatalError("Index out of range.")
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        switch index {
+        case 0: self.w = Component((value * _max).clamped(to: 0..._max).rounded())
+        case 1: self.a = Component((value * _max).clamped(to: 0..._max).rounded())
+        default: fatalError("Index out of range.")
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
     public var color: GrayColorModel {
         get {
-            return GrayColorModel(white: Double(w) / Double(Component.max))
+            return GrayColorModel(white: Double(w) / _max)
         }
         set {
-            self.w = Component((newValue.white * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+            self.w = Component((newValue.white * _max).clamped(to: 0..._max).rounded())
         }
     }
     @inlinable
     @inline(__always)
     public var opacity: Double {
         get {
-            return Double(a) / Double(Component.max)
+            return Double(a) / _max
         }
         set {
-            self.a = Component((newValue * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+            self.a = Component((newValue * _max).clamped(to: 0..._max).rounded())
         }
     }
     
@@ -91,14 +132,6 @@ extension ColorPixel where Self: _GrayColorPixel {
     @inline(__always)
     public var isOpaque: Bool {
         return a == Component.max
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func with(opacity: Double) -> Self {
-        var c = self
-        c.opacity = opacity
-        return c
     }
 }
 

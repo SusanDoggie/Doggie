@@ -76,24 +76,69 @@ extension ColorPixel where Self: _RGBColorPixel {
     
     @inlinable
     @inline(__always)
+    public static var bitsPerComponent: Int {
+        return MemoryLayout<Component>.stride << 3
+    }
+    
+    @inlinable
+    @inline(__always)
+    public var bitsPerComponent: Int {
+        return Self.bitsPerComponent
+    }
+}
+
+extension ColorPixel where Self: _RGBColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    var _max: Double {
+        return Double(Component.max)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func component(_ index: Int) -> Double {
+        switch index {
+        case 0: return Double(r) / _max
+        case 1: return Double(g) / _max
+        case 2: return Double(b) / _max
+        case 3: return Double(a) / _max
+        default: fatalError("Index out of range.")
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        switch index {
+        case 0: self.r = Component((value * _max).clamped(to: 0..._max).rounded())
+        case 1: self.g = Component((value * _max).clamped(to: 0..._max).rounded())
+        case 2: self.b = Component((value * _max).clamped(to: 0..._max).rounded())
+        case 3: self.a = Component((value * _max).clamped(to: 0..._max).rounded())
+        default: fatalError("Index out of range.")
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
     public var color: RGBColorModel {
         get {
-            return RGBColorModel(red: Double(r) / Double(Component.max), green: Double(g) / Double(Component.max), blue: Double(b) / Double(Component.max))
+            return RGBColorModel(red: Double(r) / _max, green: Double(g) / _max, blue: Double(b) / _max)
         }
         set {
-            self.r = Component((newValue.red * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
-            self.g = Component((newValue.green * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
-            self.b = Component((newValue.blue * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+            self.r = Component((newValue.red * _max).clamped(to: 0..._max).rounded())
+            self.g = Component((newValue.green * _max).clamped(to: 0..._max).rounded())
+            self.b = Component((newValue.blue * _max).clamped(to: 0..._max).rounded())
         }
     }
     @inlinable
     @inline(__always)
     public var opacity: Double {
         get {
-            return Double(a) / Double(Component.max)
+            return Double(a) / _max
         }
         set {
-            self.a = Component((newValue * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
+            self.a = Component((newValue * _max).clamped(to: 0..._max).rounded())
         }
     }
     
@@ -101,14 +146,6 @@ extension ColorPixel where Self: _RGBColorPixel {
     @inline(__always)
     public var isOpaque: Bool {
         return a == Component.max
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func with(opacity: Double) -> Self {
-        var c = self
-        c.opacity = opacity
-        return c
     }
 }
 

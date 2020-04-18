@@ -56,4 +56,16 @@ public struct Float32ColorPixel<Model: ColorModel>: _FloatComponentPixel {
             self._color.model = newValue
         }
     }
+    
+    @inlinable
+    @inline(__always)
+    public var opacity: Double {
+        get {
+            return Double(_opacity)
+        }
+        set {
+            self._opacity = Scalar(newValue)
+        }
+    }
+    
 }

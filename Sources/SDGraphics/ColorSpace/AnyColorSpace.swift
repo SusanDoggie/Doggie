@@ -50,8 +50,6 @@ protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
     
     func _create_color<S: Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
     
-    func _create_image(width: Int, height: Int, resolution: Resolution, fileBacked: Bool) -> AnyImageBaseProtocol
-    
     func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> AnyImageBaseProtocol
     
     func _create_image(image: AnyImage, intent: RenderingIntent) -> AnyImageBaseProtocol
@@ -84,13 +82,12 @@ extension ColorSpace: AnyColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func _create_image(width: Int, height: Int, resolution: Resolution, fileBacked: Bool) -> AnyImageBaseProtocol {
-        return Image<Float64ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
-    }
-    
-    @inlinable
     func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> AnyImageBaseProtocol {
-        return Image<Float64ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
+        if let colorSpace = self as? ColorSpace<P.Model> {
+            return Image<P>(image: image, colorSpace: colorSpace, intent: intent)
+        } else {
+            return Image<Float64ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
+        }
     }
     
     @inlinable

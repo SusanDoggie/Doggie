@@ -53,4 +53,21 @@ class ImageContextTest: XCTestCase {
         XCTAssertEqual(image1.pixels, image2.pixels)
     }
     
+    func testDrawingPerformance() {
+        
+        let context = ImageContext<ARGB32ColorPixel>(width: 500, height: 500, colorSpace: ColorSpace.sRGB)
+        
+        let ellipse1 = Shape(ellipseIn: Rect(x: 10, y: 35, width: 55, height: 55))
+        let ellipse2 = Shape(ellipseIn: Rect(x: 35, y: 10, width: 55, height: 55))
+        
+        context.scale(5)
+        
+        self.measure() {
+            
+            context.draw(shape: ellipse1, winding: .nonZero, color: RGBColorModel(red: 247/255, green: 217/255, blue: 12/255))
+            
+            context.draw(shape: ellipse2, winding: .nonZero, color: RGBColorModel(red: 234/255, green: 24/255, blue: 71/255))
+            
+        }
+    }
 }

@@ -31,6 +31,7 @@ public struct Float64ColorPixel<Model: ColorModel>: _FloatComponentPixel {
     public typealias Scalar = Double
     
     public var color: Model
+    
     public var opacity: Double
     
     @inlinable

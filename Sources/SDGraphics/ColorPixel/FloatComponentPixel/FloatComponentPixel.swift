@@ -49,76 +49,39 @@ extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: SDGraphi
     }
 }
 
-extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: SDGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel {
     
     @inlinable
     @inline(__always)
-    public var opacity: Double {
-        get {
-            return Double(_opacity)
-        }
-        set {
-            self._opacity = Scalar(newValue)
-        }
+    public static var bitsPerComponent: Int {
+        return MemoryLayout<Scalar>.stride << 3
+    }
+    
+    @inlinable
+    @inline(__always)
+    public var bitsPerComponent: Int {
+        return Self.bitsPerComponent
+    }
+}
+
+extension ColorPixel where Self: _FloatComponentPixel {
+    
+    @inlinable
+    @inline(__always)
+    public func component(_ index: Int) -> Double {
+        return Swift.withUnsafeBytes(of: self) { Double($0.bindMemory(to: Scalar.self)[index]) }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public mutating func setComponent(_ index: Int, _ value: Double) {
+        Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[index] = Scalar(value) }
     }
     
     @inlinable
     @inline(__always)
     public var isOpaque: Bool {
         return _opacity >= 1
-    }
-}
-
-extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: SDGraphics.ColorComponents {
-    
-    @inlinable
-    @inline(__always)
-    public func component(_ index: Int) -> Double {
-        if index < Model.numberOfComponents {
-            return Double(_color[index])
-        } else if index == Model.numberOfComponents {
-            return Double(_opacity)
-        } else {
-            fatalError()
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public mutating func setComponent(_ index: Int, _ value: Double) {
-        if index < Model.numberOfComponents {
-            _color[index] = Scalar(value)
-        } else if index == Model.numberOfComponents {
-            _opacity = Scalar(value)
-        } else {
-            fatalError()
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func normalizedComponent(_ index: Int) -> Double {
-        if index < Model.numberOfComponents {
-            let range = Model.rangeOfComponent(index)
-            return (Double(_color[index]) - range.lowerBound) / (range.upperBound - range.lowerBound)
-        } else if index == Model.numberOfComponents {
-            return Double(_opacity)
-        } else {
-            fatalError()
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
-        if index < Model.numberOfComponents {
-            let range = Model.rangeOfComponent(index)
-            _color[index] = Scalar(value * (range.upperBound - range.lowerBound) + range.lowerBound)
-        } else if index == Model.numberOfComponents {
-            _opacity = Scalar(value)
-        } else {
-            fatalError()
-        }
     }
 }
 

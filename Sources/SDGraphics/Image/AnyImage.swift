@@ -66,7 +66,7 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     func _convert<Pixel>(colorSpace: Image<Pixel>.ColorSpace, intent: RenderingIntent) -> Image<Pixel>
     
-    func _copy<Model>() -> Image<Float64ColorPixel<Model>>?
+    func _copy<Pixel>() -> Image<Pixel>?
     
     func _isStorageEqual(_ other: AnyImageBaseProtocol) -> Bool
 }
@@ -104,8 +104,10 @@ extension Image: AnyImageBaseProtocol {
     }
     
     @inlinable
-    func _copy<Model>() -> Image<Float64ColorPixel<Model>>? {
-        return Image<Float64ColorPixel<Pixel.Model>>(self) as? Image<Float64ColorPixel<Model>>
+    func _copy<Pixel>() -> Image<Pixel>? {
+        guard let colorSpace = self.colorSpace as? ColorSpace<Pixel.Model> else { return nil }
+        let pixels = self.pixels as? MappedBuffer<Pixel> ?? self.pixels.map { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }
+        return Image<Pixel>(width: self.width, height: self.height, resolution: self.resolution, pixels: pixels, colorSpace: colorSpace)
     }
     
     @inlinable
@@ -156,19 +158,6 @@ extension AnyImage {
     public init<Model>(_ image: Image<Model>) {
         self._base = image
     }
-    
-    @inlinable
-    public init<Pixel: ColorPixel>(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), fileBacked: Bool = false) {
-        self._base = Image<Pixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixel: pixel, fileBacked: fileBacked)
-    }
-    
-    @inlinable
-    public init(width: Int, height: Int, resolution: Resolution = .default, colorSpace: AnyColorSpace, fileBacked: Bool = false) {
-        self.init(base: colorSpace._base._create_image(width: width, height: height, resolution: resolution, fileBacked: fileBacked))
-    }
-}
-
-extension AnyImage {
     
     @inlinable
     public init<P>(image: Image<P>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
@@ -295,11 +284,7 @@ extension Image {
     
     @inlinable
     public init?(_ image: AnyImage) {
-        if let image = image._base as? Image {
-            self.init(image)
-        } else {
-            guard let image: Image<Float64ColorPixel<Pixel.Model>> = image._base._copy() else { return nil }
-            self.init(image)
-        }
+        guard let image = image._base as? Image ?? image._base._copy() else { return nil }
+        self = image
     }
 }

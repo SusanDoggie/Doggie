@@ -31,10 +31,6 @@ public protocol ColorPixel: Hashable {
     
     init(color: Model, opacity: Double)
     
-    var numberOfComponents: Int { get }
-    
-    func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
-    
     func component(_ index: Int) -> Double
     
     mutating func setComponent(_ index: Int, _ value: Double)
@@ -94,7 +90,24 @@ extension ColorPixel {
     @inlinable
     @inline(__always)
     public func with(opacity: Double) -> Self {
-        return Self(color: color, opacity: opacity)
+        var c = self
+        c.opacity = opacity
+        return c
+    }
+}
+
+extension ColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public static var bitsPerPixel: Int {
+        return MemoryLayout<Self>.stride << 3
+    }
+    
+    @inlinable
+    @inline(__always)
+    public var bitsPerPixel: Int {
+        return Self.bitsPerPixel
     }
 }
 
@@ -130,6 +143,10 @@ extension ColorPixel {
         return Self.rangeOfComponent(i)
     }
     
+}
+
+extension ColorPixel {
+    
     @inlinable
     @inline(__always)
     public func component(_ index: Int) -> Double {
@@ -138,7 +155,7 @@ extension ColorPixel {
         } else if index == Model.numberOfComponents {
             return opacity
         } else {
-            fatalError()
+            fatalError("Index out of range.")
         }
     }
     
@@ -150,22 +167,20 @@ extension ColorPixel {
         } else if index == Model.numberOfComponents {
             opacity = value
         } else {
-            fatalError()
+            fatalError("Index out of range.")
         }
     }
-}
-
-extension ColorPixel {
     
     @inlinable
     @inline(__always)
     public func normalizedComponent(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
-            return color.normalizedComponent(index)
+            let range = Model.rangeOfComponent(index)
+            return (self.component(index) - range.lowerBound) / (range.upperBound - range.lowerBound)
         } else if index == Model.numberOfComponents {
             return opacity
         } else {
-            fatalError()
+            fatalError("Index out of range.")
         }
     }
     
@@ -173,11 +188,12 @@ extension ColorPixel {
     @inline(__always)
     public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
-            color.setNormalizedComponent(index, value)
+            let range = Model.rangeOfComponent(index)
+            self.setComponent(index, value * (range.upperBound - range.lowerBound) + range.lowerBound)
         } else if index == Model.numberOfComponents {
             opacity = value
         } else {
-            fatalError()
+            fatalError("Index out of range.")
         }
     }
 }

@@ -67,19 +67,7 @@ struct ImageContextPixelBlender<P: ColorPixel> {
     
     @inlinable
     @inline(__always)
-    func draw<C: ColorPixel>(color: () -> C) where C.Model == P.Model {
-        self._draw { color() }
-    }
-    
-    @inlinable
-    @inline(__always)
     func draw<C: ColorPixel>(color: () -> C?) where C.Model == P.Model {
-        self._draw { color() }
-    }
-    
-    @inlinable
-    @inline(__always)
-    func _draw<C: ColorPixel>(color: () -> C?) where C.Model == P.Model {
         
         if compositingMode == .default && blendMode == .default {
             
