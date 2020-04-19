@@ -23,64 +23,135 @@
 //  THE SOFTWARE.
 //
 
+public enum JsonType: Hashable {
+    
+    case null
+    case boolean
+    case string
+    case number
+    case array
+    case dictionary
+}
+
+@frozen
 public struct Json {
     
-    private let value: Any
+    @usableFromInline
+    let base: Base
     
-    private init(value: Any?) {
-        self.value = value ?? NSNull()
+    @inlinable
+    public init(_ value: Bool) {
+        self.base = .boolean(value)
     }
     
-    private static func unwrap(_ value: Any) -> Any? {
-        switch value {
-        case is NSNull: return nil
-        case let json as Json: return json.value
-        case let array as [Json]: return array.map { Json.unwrap($0.value) ?? NSNull() }
-        case let array as [Any]: return array.map { Json.unwrap($0) ?? NSNull() }
-        case let dictionary as [String: Json]: return Dictionary(uniqueKeysWithValues: dictionary.lazy.compactMap { key, value in Json.unwrap(value.value).map { (key, $0) } })
-        case let dictionary as [String: Any]: return Dictionary(uniqueKeysWithValues: dictionary.lazy.compactMap { key, value in Json.unwrap(value).map { (key, $0) } })
-        default: return value
-        }
+    @inlinable
+    public init(_ value: String) {
+        self.base = .string(value)
+    }
+    
+    @inlinable
+    public init<S: StringProtocol>(_ value: S) {
+        self.base = .string(String(value))
+    }
+    
+    @inlinable
+    public init<T: FixedWidthInteger & SignedInteger>(_ value: T) {
+        self.base = .number(Number(value))
+    }
+    
+    @inlinable
+    public init<T: FixedWidthInteger & UnsignedInteger>(_ value: T) {
+        self.base = .number(Number(value))
+    }
+    
+    @inlinable
+    public init<T: BinaryFloatingPoint>(_ value: T) {
+        self.base = .number(Number(value))
+    }
+    
+    @inlinable
+    public init(_ value: Decimal) {
+        self.base = .number(Number(value))
+    }
+    
+    @inlinable
+    init(_ value: Number) {
+        self.base = .number(value)
+    }
+    
+    @inlinable
+    public init<S: Sequence>(_ elements: S) where S.Element == Json {
+        self.base = .array(Array(elements))
+    }
+    
+    @inlinable
+    public init(_ elements: [String: Json]) {
+        self.base = .dictionary(elements)
     }
 }
 
 extension Json {
     
-    public init(_ value: Bool) {
-        self.value = value
+    @usableFromInline
+    struct Number: Hashable {
+        
+        @usableFromInline
+        var int64: Int64?
+        
+        @usableFromInline
+        var uint64: UInt64?
+        
+        @usableFromInline
+        var decimal: Decimal?
+        
+        @usableFromInline
+        var double: Double
+        
+        @inlinable
+        init(int64: Int64?, uint64: UInt64?, decimal: Decimal?, double: Double) {
+            self.int64 = int64
+            self.uint64 = uint64
+            self.decimal = decimal
+            self.double = double
+        }
+        
+        @inlinable
+        init<T: FixedWidthInteger & SignedInteger>(_ value: T) {
+            self.int64 = Int64(value)
+            self.double = Double(value)
+        }
+        
+        @inlinable
+        init<T: FixedWidthInteger & UnsignedInteger>(_ value: T) {
+            self.uint64 = UInt64(value)
+            self.double = Double(value)
+        }
+        
+        @inlinable
+        init(_ value: Decimal) {
+            self.decimal = value
+            self.double = value.doubleValue
+        }
+        
+        @inlinable
+        init<T: BinaryFloatingPoint>(_ value: T) {
+            self.double = Double(value)
+        }
     }
-    public init<T: FixedWidthInteger>(_ value: T) {
-        self.value = value
-    }
-    public init(_ value: Float) {
-        self.value = value
-    }
-    public init(_ value: Double) {
-        self.value = value
-    }
-    public init(_ value: String) {
-        self.value = value
-    }
-    public init<S: StringProtocol>(_ value: S) {
-        self.value = String(value)
-    }
-    public init(_ elements: [Any]) {
-        self.value = elements.map { Json.unwrap($0) ?? NSNull() }
-    }
-    public init(_ elements: [String: Any]) {
-        self.value = Json.unwrap(elements)!
-    }
+    
 }
 
 extension Json: ExpressibleByNilLiteral {
     
+    @inlinable
     public init(nilLiteral value: Void) {
-        self.value = NSNull()
+        self.base = .null
     }
 }
 
 extension Json: ExpressibleByBooleanLiteral {
     
+    @inlinable
     public init(booleanLiteral value: BooleanLiteralType) {
         self.init(value)
     }
@@ -88,6 +159,7 @@ extension Json: ExpressibleByBooleanLiteral {
 
 extension Json: ExpressibleByIntegerLiteral {
     
+    @inlinable
     public init(integerLiteral value: IntegerLiteralType) {
         self.init(value)
     }
@@ -95,6 +167,7 @@ extension Json: ExpressibleByIntegerLiteral {
 
 extension Json: ExpressibleByFloatLiteral {
     
+    @inlinable
     public init(floatLiteral value: FloatLiteralType) {
         self.init(value)
     }
@@ -102,6 +175,7 @@ extension Json: ExpressibleByFloatLiteral {
 
 extension Json: ExpressibleByStringLiteral {
     
+    @inlinable
     public init(stringLiteral value: StringLiteralType) {
         self.init(value)
     }
@@ -109,286 +183,435 @@ extension Json: ExpressibleByStringLiteral {
 
 extension Json: ExpressibleByArrayLiteral {
     
+    @inlinable
     public init(arrayLiteral elements: Json ...) {
-        self.init(value: elements.map { Json.unwrap($0) })
+        self.init(elements)
     }
 }
 
 extension Json: ExpressibleByDictionaryLiteral {
     
+    @inlinable
     public init(dictionaryLiteral elements: (String, Json) ...) {
-        self.init(value: Json.unwrap(Dictionary(uniqueKeysWithValues: elements)))
+        self.init(Dictionary(uniqueKeysWithValues: elements))
     }
 }
 
 extension Json: CustomStringConvertible {
     
     public var description: String {
-        switch self.value {
-        case is NSNull: return "nil"
-        case let number as NSNumber: return number.description
-        case let number as Int: return number.description
-        case let number as Int64: return number.description
-        case let number as Int32: return number.description
-        case let number as Int16: return number.description
-        case let number as Int8: return number.description
-        case let number as UInt: return number.description
-        case let number as UInt64: return number.description
-        case let number as UInt32: return number.description
-        case let number as UInt16: return number.description
-        case let number as UInt8: return number.description
-        case let number as Double: return number.description
-        case let number as Float: return number.description
-        case let bool as Bool: return bool.description
-        case let string as String: return "\"\(string.escaped(asASCII: false))\""
-        case let array as [Any]:
-            var result = "["
-            var first = true
-            for item in array {
-                if first {
-                    first = false
-                } else {
-                    result += ", "
-                }
-                result += (item as? String).map { "\"\($0.escaped(asASCII: false))\"" } ?? Json(value: item).description
-            }
-            result += "]"
-            return result
-        case let dictionary as [String: Any]:
-            var result = "["
-            var first = true
-            for (k, v) in dictionary {
-                if first {
-                    first = false
-                } else {
-                    result += ", "
-                }
-                result += k
-                result += ": "
-                result += (v as? String).map { "\"\($0.escaped(asASCII: false))\"" } ?? Json(value: v).description
-            }
-            result += "]"
-            return result
-        default: return "invalid object"
+        switch self.base {
+        case .null: return "nil"
+        case let .boolean(bool): return "\(bool)"
+        case let .string(string): return "\"\(string.escaped(asASCII: false))\""
+        case let .number(number): return "\(number.double)"
+        case let .array(array): return "\(array)"
+        case let .dictionary(dictionary): return "\(dictionary)"
         }
     }
 }
 
-extension Json {
+extension Json: Hashable {
     
-    public static func Parse(data: Data) throws -> Json {
-        return Json(value: try JSONSerialization.jsonObject(with: data, options: []))
-    }
-    
-    public static func Parse(stream: InputStream) throws -> Json {
-        return Json(value: try JSONSerialization.jsonObject(with: stream, options: []))
-    }
-}
-
-extension Json {
-    
-    public var isNil: Bool {
-        return self.value is NSNull
-    }
-    
-    public var isBool: Bool {
-        return self.value is Bool
-    }
-    
-    public var isNumber: Bool {
-        switch self.value {
-        case is NSNumber: return true
-        case is Int: return true
-        case is Int64: return true
-        case is Int32: return true
-        case is Int16: return true
-        case is Int8: return true
-        case is UInt: return true
-        case is UInt64: return true
-        case is UInt32: return true
-        case is UInt16: return true
-        case is UInt8: return true
-        case is Double: return true
-        case is Float: return true
+    @inlinable
+    public static func == (lhs: Json, rhs: Json) -> Bool {
+        switch (lhs.base, rhs.base) {
+        case (.null, .null): return true
+        case let (.boolean(lhs), .boolean(rhs)): return lhs == rhs
+        case let (.string(lhs), .string(rhs)): return lhs == rhs
+        case let (.number(lhs), .number(rhs)): return lhs == rhs
+        case let (.array(lhs), .array(rhs)): return lhs == rhs
+        case let (.dictionary(lhs), .dictionary(rhs)): return lhs == rhs
         default: return false
         }
     }
     
-    public var isString: Bool {
-        return self.value is String
-    }
-    
-    public var isArray: Bool {
-        return self.value is [Any]
-    }
-    
-    public var isObject: Bool {
-        return self.value is [String:Any]
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(type)
+        switch self.base {
+        case let .boolean(bool): hasher.combine(bool)
+        case let .string(string): hasher.combine(string)
+        case let .number(number): hasher.combine(number)
+        case let .array(array): hasher.combine(array)
+        case let .dictionary(dictionary): hasher.combine(dictionary)
+        default: break
+        }
     }
 }
 
 extension Json {
     
-    private var numberValue: NSNumber? {
-        switch value {
-        case let number as NSNumber: return number
-        case let number as Int: return NSNumber(value: number)
-        case let number as Int64: return NSNumber(value: number)
-        case let number as Int32: return NSNumber(value: number)
-        case let number as Int16: return NSNumber(value: number)
-        case let number as Int8: return NSNumber(value: number)
-        case let number as UInt: return NSNumber(value: number)
-        case let number as UInt64: return NSNumber(value: number)
-        case let number as UInt32: return NSNumber(value: number)
-        case let number as UInt16: return NSNumber(value: number)
-        case let number as UInt8: return NSNumber(value: number)
-        case let number as Double: return NSNumber(value: number)
-        case let number as Float: return NSNumber(value: number)
+    @inlinable
+    public var type: JsonType {
+        return base.type
+    }
+    
+    @inlinable
+    public var isNil: Bool {
+        return type == .null
+    }
+    
+    @inlinable
+    public var isBool: Bool {
+        return type == .boolean
+    }
+    
+    @inlinable
+    public var isString: Bool {
+        return type == .string
+    }
+    
+    @inlinable
+    public var isArray: Bool {
+        return type == .array
+    }
+    
+    @inlinable
+    public var isObject: Bool {
+        return type == .dictionary
+    }
+    
+    @inlinable
+    public var isNumber: Bool {
+        return type == .number
+    }
+}
+
+extension Json {
+    
+    @usableFromInline
+    enum Base {
+        case null
+        case boolean(Bool)
+        case string(String)
+        case number(Number)
+        case array([Json])
+        case dictionary([String:Json])
+    }
+}
+
+extension Json.Base {
+    
+    @inlinable
+    var type: JsonType {
+        switch self {
+        case .null: return .null
+        case .boolean(_): return .boolean
+        case .string(_): return .string
+        case .number(_): return .number
+        case .array(_): return .array
+        case .dictionary(_): return .dictionary
+        }
+    }
+    
+    @inlinable
+    var boolValue: Bool? {
+        switch self {
+        case let .boolean(value): return value
         default: return nil
         }
     }
-    public var boolValue: Bool? {
-        return value as? Bool
-    }
     
-    public var int8Value: Int8? {
-        return self.numberValue?.int8Value
-    }
-    
-    public var uint8Value: UInt8? {
-        return self.numberValue?.uint8Value
-    }
-    
-    public var int16Value: Int16? {
-        return self.numberValue?.int16Value
-    }
-    
-    public var uint16Value: UInt16? {
-        return self.numberValue?.uint16Value
-    }
-    
-    public var int32Value: Int32? {
-        return self.numberValue?.int32Value
-    }
-    
-    public var uint32Value: UInt32? {
-        return self.numberValue?.uint32Value
-    }
-    
-    public var int64Value: Int64? {
-        return self.numberValue?.int64Value
-    }
-    
-    public var uint64Value: UInt64? {
-        return self.numberValue?.uint64Value
-    }
-    
-    public var floatValue: Float? {
-        return self.numberValue?.floatValue
-    }
-    
-    public var doubleValue: Double? {
-        return self.numberValue?.doubleValue
-    }
-    
-    public var intValue: Int? {
-        return self.numberValue?.intValue
-    }
-    
-    public var uintValue: UInt? {
-        return self.numberValue?.uintValue
-    }
-    public var decimalValue: Decimal? {
-        return self.numberValue?.decimalValue
-    }
-    public var stringValue: String? {
-        return value as? String
-    }
-    public var array: [Json]? {
-        if let array = self.value as? [Any] {
-            return array.map { Json(value: $0) }
+    @inlinable
+    var int64Value: Int64? {
+        switch self {
+        case let .number(value): return value.int64 ?? Int64(value.double)
+        default: return nil
         }
-        return nil
     }
-    public var dictionary: [String: Json]? {
-        if let elements = self.value as? [String: Any] {
-            return elements.mapValues { Json(value: $0) }
+    
+    @inlinable
+    var uint64Value: UInt64? {
+        switch self {
+        case let .number(value): return value.uint64 ?? UInt64(value.double)
+        default: return nil
         }
-        return nil
+    }
+    
+    @inlinable
+    var decimalValue: Decimal? {
+        switch self {
+        case let .number(value): return value.decimal ?? Decimal(value.double)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    var doubleValue: Double? {
+        switch self {
+        case let .number(value): return value.double
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    var stringValue: String? {
+        switch self {
+        case let .string(value): return value
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    var array: [Json]? {
+        switch self {
+        case let .array(value): return value
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    var dictionary: [String: Json]? {
+        switch self {
+        case let .dictionary(value): return value
+        default: return nil
+        }
     }
 }
 
 extension Json {
     
+    public var boolValue: Bool? {
+        return base.boolValue
+    }
+    
+    public var int64Value: Int64? {
+        return base.int64Value
+    }
+    
+    public var uint64Value: UInt64? {
+        return base.uint64Value
+    }
+    
+    public var doubleValue: Double? {
+        return base.doubleValue
+    }
+    
+    public var decimalValue: Decimal? {
+        return base.decimalValue
+    }
+    public var stringValue: String? {
+        return base.stringValue
+    }
+    public var array: [Json]? {
+        return base.array
+    }
+    public var dictionary: [String: Json]? {
+        return base.dictionary
+    }
+}
+
+extension Json {
+    
+    @inlinable
     public var count: Int {
-        switch self.value {
-        case let array as [Any]: return array.count
-        case let dictionary as [String: Any]: return dictionary.count
+        switch base {
+        case let .array(value): return value.count
+        case let .dictionary(value): return value.count
         default: fatalError("Not an array or object.")
         }
     }
     
+    @inlinable
     public subscript(index: Int) -> Json {
         get {
-            if case let array as [Any] = self.value {
-                let val = array[index]
-                return Json(value: val)
+            guard 0..<count ~= index else { return nil }
+            switch base {
+            case let .array(value): return value[index]
+            default: return nil
             }
-            return nil
         }
         set {
-            switch self.value {
-            case var array as [Any]:
-                if index >= array.count {
-                    array.append(contentsOf: repeatElement(NSNull() as Any, count: index - array.count + 1))
+            switch base {
+            case var .array(value):
+                
+                if index >= value.count {
+                    value.append(contentsOf: repeatElement(nil, count: index - value.count + 1))
                 }
-                array[index] = Json.unwrap(newValue.value) ?? NSNull()
-                self = Json(value: array)
+                value[index] = newValue
+                self = Json(value)
+                
             default: fatalError("Not an array.")
             }
         }
     }
     
-    public var keys: Dictionary<String, Any>.Keys {
-        switch self.value {
-        case let dictionary as [String: Any]: return dictionary.keys
-        default: fatalError("Not an object.")
+    @inlinable
+    public var keys: Dictionary<String, Json>.Keys {
+        guard case let .dictionary(value) = base else { return [:].keys }
+        return value.keys
+    }
+    
+    @inlinable
+    public subscript(key: String) -> Json {
+        get {
+            guard case let .dictionary(value) = base else { return nil }
+            return value[key] ?? nil
+        }
+        set {
+            guard case var .dictionary(value) = base else { fatalError("Not an object.") }
+            value[key] = newValue.isNil ? nil : newValue
+            self = Json(value)
+        }
+    }
+}
+
+extension Json: Encodable {
+    
+    @usableFromInline
+    struct CodingKey: Swift.CodingKey {
+        
+        @usableFromInline
+        var stringValue: String
+        
+        @usableFromInline
+        var intValue: Int? { nil }
+        
+        @inlinable
+        init(stringValue: String) {
+            self.stringValue = stringValue
+        }
+        
+        @inlinable
+        init?(intValue: Int) {
+            return nil
         }
     }
     
-    public subscript(key: String) -> Json {
-        get {
-            if case let dictionary as [String: Any] = self.value {
-                if let val = dictionary[key] {
-                    return Json(value: val)
-                }
-                return nil
+    @inlinable
+    public func encode(to encoder: Encoder) throws {
+        
+        switch self.base {
+        case .null:
+            
+            var container = encoder.singleValueContainer()
+            try container.encodeNil()
+            
+        case let .boolean(bool):
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(bool)
+            
+        case let .string(string):
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(string)
+            
+        case let .number(number):
+            
+            var container = encoder.singleValueContainer()
+            
+            if let value = number.decimal {
+                try container.encode(value)
+            } else {
+                try container.encode(number.double)
             }
-            return nil
-        }
-        set {
-            switch self.value {
-            case var dictionary as [String: Any]:
-                dictionary[key] = Json.unwrap(newValue.value)
-                self = Json(value: dictionary)
-            default: fatalError("Not an object.")
+            
+        case let .array(array):
+            
+            var container = encoder.unkeyedContainer()
+            try container.encode(contentsOf: array)
+            
+        case let .dictionary(dictionary):
+            
+            var container = encoder.container(keyedBy: CodingKey.self)
+            
+            for (key, value) in dictionary {
+                try container.encode(value, forKey: CodingKey(stringValue: key))
             }
         }
     }
 }
 
+extension Json: Decodable {
+    
+    @inlinable
+    public init(from decoder: Decoder) {
+        
+        if let container = try? decoder.container(keyedBy: CodingKey.self) {
+            
+            let keys = container.allKeys
+            
+            var dictionary: [String: Json] = [:]
+            dictionary.reserveCapacity(keys.count)
+            
+            for key in keys {
+                dictionary[key.stringValue] = (try? container.decode(Json.self, forKey: key)) ?? nil
+            }
+            
+            self.init(dictionary)
+            return
+        }
+        
+        if var container = try? decoder.unkeyedContainer() {
+            
+            var array: [Json] = []
+            
+            if let count = container.count {
+                array.reserveCapacity(count)
+            }
+            
+            while !container.isAtEnd {
+                array.append((try? container.decode(Json.self)) ?? nil)
+            }
+            
+            self.init(array)
+            return
+        }
+        
+        if let container = try? decoder.singleValueContainer() {
+            
+            if container.decodeNil() {
+                self.init(nilLiteral: ())
+                return
+            }
+            if let bool = try? container.decode(Bool.self) {
+                self.init(bool)
+                return
+            }
+            if let double = try? container.decode(Double.self) {
+                
+                let int64 = try? container.decode(Int64.self)
+                let uint64 = try? container.decode(UInt64.self)
+                let decimal = try? container.decode(Decimal.self)
+                
+                self.init(Number(int64: int64, uint64: uint64, decimal: decimal, double: double))
+                return
+                
+            }
+            if let string = try? container.decode(String.self) {
+                self.init(string)
+                return
+            }
+        }
+        
+        self.init(nilLiteral: ())
+    }
+}
+
 extension Json {
     
-    public func data(prettyPrinted: Bool = false) -> Data? {
-        if JSONSerialization.isValidJSONObject(self.value) {
-            return try? JSONSerialization.data(withJSONObject: self.value, options: prettyPrinted ? [.prettyPrinted] : [])
-        }
-        return nil
+    @inlinable
+    public init(decode data: Data) throws {
+        self = try JSONDecoder().decode(Json.self, from: data)
     }
-    public func json(prettyPrinted: Bool = false) -> String? {
-        if let _data = self.data(prettyPrinted: prettyPrinted) {
-            return String(data: _data, encoding: String.Encoding.utf8)
+}
+
+extension Json {
+    
+    @inlinable
+    public func data(prettyPrinted: Bool = false) -> Data? {
+        let encoder = JSONEncoder()
+        if prettyPrinted {
+            encoder.outputFormatting.insert(.prettyPrinted)
         }
-        return nil
+        return try? encoder.encode(self)
+    }
+    
+    @inlinable
+    public func json(prettyPrinted: Bool = false) -> String? {
+        guard let data = self.data(prettyPrinted: prettyPrinted) else { return nil }
+        return String(data: data, encoding: String.Encoding.utf8)
     }
 }
