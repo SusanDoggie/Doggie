@@ -527,7 +527,7 @@ extension Json: Encodable {
 extension Json: Decodable {
     
     @inlinable
-    public init(from decoder: Decoder) {
+    public init(from decoder: Decoder) throws {
         
         if let container = try? decoder.container(keyedBy: CodingKey.self) {
             
@@ -537,7 +537,7 @@ extension Json: Decodable {
             dictionary.reserveCapacity(keys.count)
             
             for key in keys {
-                dictionary[key.stringValue] = (try? container.decode(Json.self, forKey: key)) ?? nil
+                dictionary[key.stringValue] = try container.decode(Json.self, forKey: key)
             }
             
             self.init(dictionary)
@@ -553,7 +553,7 @@ extension Json: Decodable {
             }
             
             while !container.isAtEnd {
-                array.append((try? container.decode(Json.self)) ?? nil)
+                try array.append(container.decode(Json.self))
             }
             
             self.init(array)
@@ -586,7 +586,10 @@ extension Json: Decodable {
             }
         }
         
-        self.init(nilLiteral: ())
+        throw DecodingError.dataCorrupted(DecodingError.Context(
+            codingPath: decoder.codingPath,
+            debugDescription: "Attempted to decode Json from unknown structure.")
+        )
     }
 }
 
