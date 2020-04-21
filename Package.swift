@@ -32,10 +32,6 @@ let project_dir = "\(#file)".dropLast("/Package.swift".count)
 let package = Package(
     name: "Doggie",
     products: [
-        .library(name: "zlib", targets: ["zlib_c"]),
-        .library(name: "brotli", targets: ["brotli_c"]),
-        .library(name: "libwebp", targets: ["libwebp"]),
-        .library(name: "libjpeg", targets: ["libjpeg"]),
         .library(name: "DoggieCore", targets: ["DoggieCore"]),
         .library(name: "DoggieGeometry", targets: ["DoggieGeometry"]),
         .library(name: "DoggieGraphics", targets: ["DoggieGraphics"]),
