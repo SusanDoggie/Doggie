@@ -32,10 +32,13 @@ let project_dir = "\(#file)".dropLast("/Package.swift".count)
 let package = Package(
     name: "Doggie",
     products: [
-        .library(name: "SDFoundation", targets: ["SDFoundation"]),
-        .library(name: "SDCompression", targets: ["SDCompression"]),
-        .library(name: "SDGeometry", targets: ["SDGeometry"]),
-        .library(name: "SDGraphics", targets: ["SDGraphics"]),
+        .library(name: "zlib", targets: ["zlib_c"]),
+        .library(name: "brotli", targets: ["brotli_c"]),
+        .library(name: "libwebp", targets: ["libwebp"]),
+        .library(name: "libjpeg", targets: ["libjpeg"]),
+        .library(name: "DoggieCore", targets: ["DoggieCore"]),
+        .library(name: "DoggieGeometry", targets: ["DoggieGeometry"]),
+        .library(name: "DoggieGraphics", targets: ["DoggieGraphics"]),
         .library(name: "Doggie", targets: ["Doggie"]),
     ],
     targets: [
@@ -85,25 +88,23 @@ let package = Package(
                 .unsafeFlags(["-I\(project_dir)/dependencies/libjpeg-turbo"]),
             ]
         ),
-        .target(name: "SDFoundation", dependencies: []),
-        .target(name: "SDCompression", dependencies: [
+        .target(name: "DoggieCore", dependencies: [
             "zlib_c",
             "brotli_c",
         ]),
-        .target(name: "SDGeometry", dependencies: [
-            "SDFoundation",
+        .target(name: "DoggieGeometry", dependencies: [
+            "DoggieCore",
         ]),
-        .target(name: "SDGraphics", dependencies: [
-            "SDFoundation",
-            "SDGeometry",
-            "SDCompression",
+        .target(name: "DoggieGraphics", dependencies: [
+            "DoggieCore",
+            "DoggieGeometry",
             "libwebp",
             "libjpeg",
         ]),
         .target(name: "Doggie", dependencies: [
-            "SDFoundation",
-            "SDGeometry",
-            "SDGraphics",
+            "DoggieCore",
+            "DoggieGeometry",
+            "DoggieGraphics",
         ]),
         .testTarget(name: "DoggieTests", dependencies: [
             "Doggie",

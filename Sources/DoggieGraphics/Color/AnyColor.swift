@@ -118,12 +118,12 @@ extension AnyColor {
     }
     
     @inlinable
-    public init<P: ColorPixel>(colorSpace: SDGraphics.ColorSpace<P.Model>, color: P) {
+    public init<P: ColorPixel>(colorSpace: DoggieGraphics.ColorSpace<P.Model>, color: P) {
         self.init(Color(colorSpace: colorSpace, color: color))
     }
     
     @inlinable
-    public init<Model>(colorSpace: SDGraphics.ColorSpace<Model>, color: Model, opacity: Double = 1) {
+    public init<Model>(colorSpace: DoggieGraphics.ColorSpace<Model>, color: Model, opacity: Double = 1) {
         self.init(Color(colorSpace: colorSpace, color: color, opacity: opacity))
     }
     
@@ -141,27 +141,27 @@ extension AnyColor {
 extension AnyColor {
     
     @inlinable
-    public init(colorSpace: SDGraphics.ColorSpace<GrayColorModel> = .default, white: Double, opacity: Double = 1) {
+    public init(colorSpace: DoggieGraphics.ColorSpace<GrayColorModel> = .default, white: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
     }
     
     @inlinable
-    public init(colorSpace: SDGraphics.ColorSpace<RGBColorModel> = .default, red: Double, green: Double, blue: Double, opacity: Double = 1) {
+    public init(colorSpace: DoggieGraphics.ColorSpace<RGBColorModel> = .default, red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
     
     @inlinable
-    public init(colorSpace: SDGraphics.ColorSpace<RGBColorModel> = .default, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
+    public init(colorSpace: DoggieGraphics.ColorSpace<RGBColorModel> = .default, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
     }
     
     @inlinable
-    public init(colorSpace: SDGraphics.ColorSpace<CMYColorModel>, cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
+    public init(colorSpace: DoggieGraphics.ColorSpace<CMYColorModel>, cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
     }
     
     @inlinable
-    public init(colorSpace: SDGraphics.ColorSpace<CMYKColorModel>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
+    public init(colorSpace: DoggieGraphics.ColorSpace<CMYKColorModel>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
     }
 }

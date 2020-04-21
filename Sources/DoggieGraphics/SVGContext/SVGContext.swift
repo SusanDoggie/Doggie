@@ -771,7 +771,7 @@ extension SVGContext {
     }
     
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey: Any]) {
-        let _image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as SDGraphics.Image<ARGB32ColorPixel>
+        let _image = image as? SVGImageProtocol ?? image.convert(to: .sRGB, intent: renderingIntent) as DoggieGraphics.Image<ARGB32ColorPixel>
         self._draw(image: _image, transform: transform, using: storageType, resolution: image.resolution, properties: properties)
     }
     

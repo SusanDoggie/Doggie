@@ -1,5 +1,5 @@
 //
-//  Exported.swift
+//  AppleExported.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,12 +23,14 @@
 //  THE SOFTWARE.
 //
 
-@_exported import SDCompression
+#if canImport(Compression)
 
-@_exported import SDFoundation
+@_exported import Compression
 
-@_exported import SDGeometry
+#endif
 
-@_exported import libwebp
+#if canImport(Metal)
 
-@_exported import libjpeg
+@_exported import Metal
+
+#endif

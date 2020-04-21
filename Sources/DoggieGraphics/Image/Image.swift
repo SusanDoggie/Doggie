@@ -308,7 +308,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    public func color(x: Int, y: Int) -> SDGraphics.Color<Pixel.Model> {
+    public func color(x: Int, y: Int) -> DoggieGraphics.Color<Pixel.Model> {
         precondition(0..<width ~= x && 0..<height ~= y)
         return Color(colorSpace: colorSpace, color: pixels[width * y + x])
     }
@@ -332,7 +332,7 @@ extension Image {
 extension Image {
     
     @inlinable
-    public subscript(x: Int, y: Int) -> SDGraphics.Color<Pixel.Model> {
+    public subscript(x: Int, y: Int) -> DoggieGraphics.Color<Pixel.Model> {
         get {
             return self.color(x: x, y: y)
         }

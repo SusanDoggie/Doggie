@@ -1,5 +1,5 @@
 //
-//  AppleExported.swift
+//  Exported.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,8 +23,28 @@
 //  THE SOFTWARE.
 //
 
-#if canImport(Metal)
+@_exported import Foundation
 
-@_exported import Metal
+@_exported import zlib_c
+
+@_exported import brotli_c
+
+#if canImport(FoundationXML)
+
+@_exported import FoundationXML
+
+#endif
+
+@_exported import Dispatch
+
+#if canImport(Darwin)
+
+@_exported import Darwin
+
+#endif
+
+#if canImport(Glibc)
+
+@_exported import Glibc
 
 #endif

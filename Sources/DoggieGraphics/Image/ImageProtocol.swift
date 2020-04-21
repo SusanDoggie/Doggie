@@ -69,7 +69,7 @@ public protocol ImageProtocol: Hashable {
     
     mutating func setWhiteBalance(_ white: Point)
     
-    func convert<P>(to colorSpace: SDGraphics.ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
+    func convert<P>(to colorSpace: DoggieGraphics.ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
     
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyImage
     
@@ -79,7 +79,7 @@ public protocol ImageProtocol: Hashable {
 extension Image {
     
     @inlinable
-    public func convert<P>(to colorSpace: SDGraphics.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
+    public func convert<P>(to colorSpace: DoggieGraphics.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
         return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
     }
     
@@ -92,7 +92,7 @@ extension Image {
 extension AnyImage {
     
     @inlinable
-    public func convert<P>(to colorSpace: SDGraphics.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
+    public func convert<P>(to colorSpace: DoggieGraphics.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
         return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
     }
     

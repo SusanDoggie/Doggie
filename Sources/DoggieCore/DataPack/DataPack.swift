@@ -1,5 +1,5 @@
 //
-//  SDObject.swift
+//  DataPack.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public enum SDObjectType: Hashable {
+public enum DataPackType: Hashable {
     
     case null
     case boolean
@@ -39,7 +39,7 @@ public enum SDObjectType: Hashable {
 }
 
 @frozen
-public struct SDObject {
+public struct DataPack {
     
     @usableFromInline
     let base: Base
@@ -95,17 +95,17 @@ public struct SDObject {
     }
     
     @inlinable
-    public init<S: Sequence>(_ elements: S) where S.Element == SDObject {
+    public init<S: Sequence>(_ elements: S) where S.Element == DataPack {
         self.base = .array(Array(elements))
     }
     
     @inlinable
-    public init(_ elements: [String: SDObject]) {
+    public init(_ elements: [String: DataPack]) {
         self.base = .dictionary(elements)
     }
 }
 
-extension SDObject: ExpressibleByNilLiteral {
+extension DataPack: ExpressibleByNilLiteral {
     
     @inlinable
     public init(nilLiteral value: Void) {
@@ -113,7 +113,7 @@ extension SDObject: ExpressibleByNilLiteral {
     }
 }
 
-extension SDObject: ExpressibleByBooleanLiteral {
+extension DataPack: ExpressibleByBooleanLiteral {
     
     @inlinable
     public init(booleanLiteral value: BooleanLiteralType) {
@@ -121,7 +121,7 @@ extension SDObject: ExpressibleByBooleanLiteral {
     }
 }
 
-extension SDObject: ExpressibleByIntegerLiteral {
+extension DataPack: ExpressibleByIntegerLiteral {
     
     @inlinable
     public init(integerLiteral value: IntegerLiteralType) {
@@ -129,7 +129,7 @@ extension SDObject: ExpressibleByIntegerLiteral {
     }
 }
 
-extension SDObject: ExpressibleByFloatLiteral {
+extension DataPack: ExpressibleByFloatLiteral {
     
     @inlinable
     public init(floatLiteral value: FloatLiteralType) {
@@ -137,7 +137,7 @@ extension SDObject: ExpressibleByFloatLiteral {
     }
 }
 
-extension SDObject: ExpressibleByStringLiteral {
+extension DataPack: ExpressibleByStringLiteral {
     
     @inlinable
     public init(stringLiteral value: StringLiteralType) {
@@ -145,23 +145,23 @@ extension SDObject: ExpressibleByStringLiteral {
     }
 }
 
-extension SDObject: ExpressibleByArrayLiteral {
+extension DataPack: ExpressibleByArrayLiteral {
     
     @inlinable
-    public init(arrayLiteral elements: SDObject ...) {
+    public init(arrayLiteral elements: DataPack ...) {
         self.init(elements)
     }
 }
 
-extension SDObject: ExpressibleByDictionaryLiteral {
+extension DataPack: ExpressibleByDictionaryLiteral {
     
     @inlinable
-    public init(dictionaryLiteral elements: (String, SDObject) ...) {
+    public init(dictionaryLiteral elements: (String, DataPack) ...) {
         self.init(Dictionary(uniqueKeysWithValues: elements))
     }
 }
 
-extension SDObject: CustomStringConvertible {
+extension DataPack: CustomStringConvertible {
     
     @inlinable
     public var description: String {
@@ -181,10 +181,10 @@ extension SDObject: CustomStringConvertible {
     }
 }
 
-extension SDObject: Hashable {
+extension DataPack: Hashable {
     
     @inlinable
-    public static func == (lhs: SDObject, rhs: SDObject) -> Bool {
+    public static func == (lhs: DataPack, rhs: DataPack) -> Bool {
         switch (lhs.type, rhs.type) {
         case (.null, .null): return true
         case (.boolean, .boolean): return lhs.boolValue == rhs.boolValue
@@ -218,7 +218,7 @@ extension SDObject: Hashable {
     }
 }
 
-extension SDObject {
+extension DataPack {
     
     @inlinable
     public func encode() -> Data {
@@ -228,10 +228,10 @@ extension SDObject {
     }
 }
 
-extension SDObject {
+extension DataPack {
     
     @inlinable
-    public var type: SDObjectType {
+    public var type: DataPackType {
         return base.type
     }
     
@@ -304,7 +304,7 @@ extension SDObject {
     }
 }
 
-extension SDObject {
+extension DataPack {
     
     @usableFromInline
     enum Base {
@@ -316,16 +316,16 @@ extension SDObject {
         case number(Double)
         case binary(Data)
         case uuid(UUID)
-        case array([SDObject])
-        case dictionary([String:SDObject])
+        case array([DataPack])
+        case dictionary([String:DataPack])
         case undecoded(SDUndecodedObject)
     }
 }
 
-extension SDObject.Base {
+extension DataPack.Base {
     
     @inlinable
-    var type: SDObjectType {
+    var type: DataPackType {
         switch self {
         case .null: return .null
         case .boolean(_): return .boolean
@@ -405,7 +405,7 @@ extension SDObject.Base {
     }
     
     @inlinable
-    var array: [SDObject]? {
+    var array: [DataPack]? {
         switch self {
         case let .array(value): return value
         case let .undecoded(value): return value.array
@@ -414,7 +414,7 @@ extension SDObject.Base {
     }
     
     @inlinable
-    var dictionary: [String: SDObject]? {
+    var dictionary: [String: DataPack]? {
         switch self {
         case let .dictionary(value): return value
         case let .undecoded(value): return value.dictionary
@@ -512,7 +512,7 @@ extension SDObject.Base {
     }
 }
 
-extension SDObject {
+extension DataPack {
     
     @inlinable
     public var boolValue: Bool? {
@@ -665,12 +665,12 @@ extension SDObject {
     }
     
     @inlinable
-    public var array: [SDObject]? {
+    public var array: [DataPack]? {
         return base.array
     }
     
     @inlinable
-    public var dictionary: [String: SDObject]? {
+    public var dictionary: [String: DataPack]? {
         return base.dictionary
     }
 }
@@ -680,7 +680,7 @@ extension SDObject {
 struct SDUndecodedObject {
     
     @usableFromInline
-    let type: SDObjectType
+    let type: DataPackType
     
     @usableFromInline
     let data: Data
@@ -769,13 +769,13 @@ struct SDUndecodedObject {
     }
     
     @inlinable
-    var array: [SDObject]? {
+    var array: [DataPack]? {
         guard type == .array else { return nil }
         return (0..<count).map { self[$0] }
     }
     
     @inlinable
-    var dictionary: [String: SDObject]? {
+    var dictionary: [String: DataPack]? {
         guard type == .dictionary else { return nil }
         return Dictionary((0..<count).lazy.compactMap { self[keyValuePairs: $0] }) { lhs, _ in lhs }
     }
@@ -787,7 +787,7 @@ struct SDUndecodedObject {
     }
     
     @inlinable
-    subscript(index: Int) -> SDObject {
+    subscript(index: Int) -> DataPack {
         
         guard type == .array else { return nil }
         
@@ -804,11 +804,11 @@ struct SDUndecodedObject {
         
         guard to > from && data.count >= table_size + to else { return nil }
         
-        return SDObject(decode: data.dropFirst(table_size).dropFirst(from).prefix(to - from))
+        return DataPack(decode: data.dropFirst(table_size).dropFirst(from).prefix(to - from))
     }
     
     @inlinable
-    subscript(keyValuePairs index: Int) -> (String, SDObject)? {
+    subscript(keyValuePairs index: Int) -> (String, DataPack)? {
         
         guard type == .dictionary else { return nil }
         
@@ -831,7 +831,7 @@ struct SDUndecodedObject {
         
         guard let key = String(bytes: _key, encoding: .utf8) else { return nil }
         
-        let value = SDObject(decode: _value)
+        let value = DataPack(decode: _value)
         return value.isNil ? nil : (key, value)
     }
     
@@ -853,7 +853,7 @@ struct SDUndecodedObject {
     }
 }
 
-extension SDObject {
+extension DataPack {
     
     @inlinable
     public var count: Int {
@@ -866,7 +866,7 @@ extension SDObject {
     }
     
     @inlinable
-    public subscript(index: Int) -> SDObject {
+    public subscript(index: Int) -> DataPack {
         get {
             guard 0..<count ~= index else { return nil }
             switch base {
@@ -884,7 +884,7 @@ extension SDObject {
                     array.append(contentsOf: repeatElement(nil, count: index - array.count + 1))
                 }
                 array[index] = newValue
-                self = SDObject(array)
+                self = DataPack(array)
                 
             case var .array(value):
                 
@@ -892,7 +892,7 @@ extension SDObject {
                     value.append(contentsOf: repeatElement(nil, count: index - value.count + 1))
                 }
                 value[index] = newValue
-                self = SDObject(value)
+                self = DataPack(value)
                 
             default: fatalError("Not an array.")
             }
@@ -900,13 +900,13 @@ extension SDObject {
     }
     
     @inlinable
-    public var keys: Dictionary<String, SDObject>.Keys {
+    public var keys: Dictionary<String, DataPack>.Keys {
         guard case let .dictionary(value) = base else { return [:].keys }
         return value.keys
     }
     
     @inlinable
-    public subscript(key: String) -> SDObject {
+    public subscript(key: String) -> DataPack {
         get {
             guard case let .dictionary(value) = base else { return nil }
             return value[key] ?? nil
@@ -914,7 +914,7 @@ extension SDObject {
         set {
             guard case var .dictionary(value) = base else { fatalError("Not an object.") }
             value[key] = newValue.isNil ? nil : newValue
-            self = SDObject(value)
+            self = DataPack(value)
         }
     }
 }

@@ -268,13 +268,13 @@ extension GradientStop where Color == AnyColor {
     
     @inlinable
     @inline(__always)
-    public init<M>(_ stop: GradientStop<SDGraphics.Color<M>>) {
+    public init<M>(_ stop: GradientStop<DoggieGraphics.Color<M>>) {
         self.init(offset: stop.offset, color: AnyColor(stop.color))
     }
     
     @inlinable
     @inline(__always)
-    public init<M>(offset: Double, color: SDGraphics.Color<M>) {
+    public init<M>(offset: Double, color: DoggieGraphics.Color<M>) {
         self.init(offset: offset, color: AnyColor(color))
     }
 }
@@ -283,8 +283,8 @@ extension GradientStop {
     
     @inlinable
     @inline(__always)
-    public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> GradientStop<SDGraphics.Color<Model>> {
-        return GradientStop<SDGraphics.Color<Model>>(offset: offset, color: color.convert(to: colorSpace, intent: intent))
+    public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> GradientStop<DoggieGraphics.Color<Model>> {
+        return GradientStop<DoggieGraphics.Color<Model>>(offset: offset, color: color.convert(to: colorSpace, intent: intent))
     }
     
     @inlinable
@@ -352,7 +352,7 @@ extension Gradient where Color == AnyColor {
     
     @inlinable
     @inline(__always)
-    public init<M>(_ gradient: Gradient<SDGraphics.Color<M>>) {
+    public init<M>(_ gradient: Gradient<DoggieGraphics.Color<M>>) {
         self.init(type: gradient.type, start: gradient.start, end: gradient.end, stops: gradient.stops.map(GradientStop<AnyColor>.init))
         self.transform = gradient.transform
         self.opacity = gradient.opacity
@@ -363,8 +363,8 @@ extension Gradient {
     
     @inlinable
     @inline(__always)
-    public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> Gradient<SDGraphics.Color<Model>> {
-        var result = Gradient<SDGraphics.Color<Model>>(type: self.type, start: self.start, end: self.end, stops: self.stops.map { $0.convert(to: colorSpace, intent: intent) })
+    public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> Gradient<DoggieGraphics.Color<Model>> {
+        var result = Gradient<DoggieGraphics.Color<Model>>(type: self.type, start: self.start, end: self.end, stops: self.stops.map { $0.convert(to: colorSpace, intent: intent) })
         result.transform = self.transform
         result.opacity = self.opacity
         return result

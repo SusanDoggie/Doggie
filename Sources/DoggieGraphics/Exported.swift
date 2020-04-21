@@ -23,14 +23,10 @@
 //  THE SOFTWARE.
 //
 
-@_exported import Foundation
+@_exported import DoggieCore
 
-@_exported import zlib_c
+@_exported import DoggieGeometry
 
-@_exported import brotli_c
+@_exported import libwebp
 
-#if canImport(Compression)
-
-@_exported import Compression
-
-#endif
+@_exported import libjpeg

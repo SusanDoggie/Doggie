@@ -23,8 +23,8 @@
 //  THE SOFTWARE.
 //
 
-@_exported import SDFoundation
+@_exported import DoggieCore
 
-@_exported import SDGeometry
+@_exported import DoggieGeometry
 
-@_exported import SDGraphics
+@_exported import DoggieGraphics

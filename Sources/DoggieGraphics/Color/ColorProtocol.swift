@@ -51,7 +51,7 @@ public protocol ColorProtocol {
     
     var isOpaque: Bool { get }
     
-    func convert<Model>(to colorSpace: SDGraphics.ColorSpace<Model>, intent: RenderingIntent) -> Color<Model>
+    func convert<Model>(to colorSpace: DoggieGraphics.ColorSpace<Model>, intent: RenderingIntent) -> Color<Model>
     
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyColor
 }
