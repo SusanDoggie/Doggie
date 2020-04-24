@@ -55,15 +55,10 @@ public struct Json {
     }
     
     @inlinable
-    public init<T: FixedWidthInteger & SignedInteger>(_ value: T) {
+    public init<T: BinaryInteger>(_ value: T) {
         self.base = .number(Number(value))
     }
-    
-    @inlinable
-    public init<T: FixedWidthInteger & UnsignedInteger>(_ value: T) {
-        self.base = .number(Number(value))
-    }
-    
+    =
     @inlinable
     public init<T: BinaryFloatingPoint>(_ value: T) {
         self.base = .number(Number(value))
@@ -116,18 +111,10 @@ extension Json {
         }
         
         @inlinable
-        init<T: FixedWidthInteger & SignedInteger>(_ value: T) {
+        init<T: BinaryInteger>(_ value: T) {
             self.int64 = Int64(exactly: value)
             self.uint64 = UInt64(exactly: value)
-            self.decimal = UInt64(exactly: value).map(Decimal.init) ?? Int64(exactly: value).map(Decimal.init) ?? Decimal(exactly: value)
-            self.double = Double(value)
-        }
-        
-        @inlinable
-        init<T: FixedWidthInteger & UnsignedInteger>(_ value: T) {
-            self.int64 = Int64(exactly: value)
-            self.uint64 = UInt64(exactly: value)
-            self.decimal = UInt64(exactly: value).map(Decimal.init) ?? Int64(exactly: value).map(Decimal.init) ?? Decimal(exactly: value)
+            self.decimal = Decimal(exactly: value)
             self.double = Double(value)
         }
         
