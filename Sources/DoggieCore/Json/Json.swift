@@ -58,7 +58,7 @@ public struct Json {
     public init<T: BinaryInteger>(_ value: T) {
         self.base = .number(Number(value))
     }
-    =
+    
     @inlinable
     public init<T: BinaryFloatingPoint>(_ value: T) {
         self.base = .number(Number(value))
