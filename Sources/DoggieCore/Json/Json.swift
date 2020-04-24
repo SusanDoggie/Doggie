@@ -117,13 +117,15 @@ extension Json {
         
         @inlinable
         init<T: FixedWidthInteger & SignedInteger>(_ value: T) {
-            self.int64 = Int64(value)
+            self.int64 = Int64(exactly: value)
+            self.decimal = Decimal(exactly: value)
             self.double = Double(value)
         }
         
         @inlinable
         init<T: FixedWidthInteger & UnsignedInteger>(_ value: T) {
-            self.uint64 = UInt64(value)
+            self.uint64 = UInt64(exactly: value)
+            self.decimal = Decimal(exactly: value)
             self.double = Double(value)
         }
         
@@ -135,6 +137,8 @@ extension Json {
         
         @inlinable
         init<T: BinaryFloatingPoint>(_ value: T) {
+            self.int64 = Int64(exactly: value)
+            self.uint64 = UInt64(exactly: value)
             self.double = Double(value)
         }
     }
@@ -316,7 +320,7 @@ extension Json.Base {
     @inlinable
     var int64Value: Int64? {
         switch self {
-        case let .number(value): return value.int64 ?? Int64(value.double)
+        case let .number(value): return value.int64 ?? Int64(exactly: value.double)
         default: return nil
         }
     }
@@ -324,7 +328,7 @@ extension Json.Base {
     @inlinable
     var uint64Value: UInt64? {
         switch self {
-        case let .number(value): return value.uint64 ?? UInt64(value.double)
+        case let .number(value): return value.uint64 ?? UInt64(exactly: value.double)
         default: return nil
         }
     }
@@ -372,31 +376,79 @@ extension Json.Base {
 
 extension Json {
     
+    @inlinable
     public var boolValue: Bool? {
         return base.boolValue
     }
     
+    @inlinable
+    public var int8Value: Int8? {
+        return int64Value.flatMap { Int8(exactly: $0) }
+    }
+    
+    @inlinable
+    public var uint8Value: UInt8? {
+        return uint64Value.flatMap { UInt8(exactly: $0) }
+    }
+    
+    @inlinable
+    public var int16Value: Int16? {
+        return int64Value.flatMap { Int16(exactly: $0) }
+    }
+    
+    @inlinable
+    public var uint16Value: UInt16? {
+        return uint64Value.flatMap { UInt16(exactly: $0) }
+    }
+    
+    @inlinable
+    public var int32Value: Int32? {
+        return int64Value.flatMap { Int32(exactly: $0) }
+    }
+    
+    @inlinable
+    public var uint32Value: UInt32? {
+        return uint64Value.flatMap { UInt32(exactly: $0) }
+    }
+    
+    @inlinable
+    public var intValue: Int? {
+        return int64Value.flatMap { Int(exactly: $0) }
+    }
+    
+    @inlinable
+    public var uintValue: UInt? {
+        return uint64Value.flatMap { UInt(exactly: $0) }
+    }
+    
+    @inlinable
     public var int64Value: Int64? {
         return base.int64Value
     }
     
+    @inlinable
     public var uint64Value: UInt64? {
         return base.uint64Value
     }
     
+    @inlinable
     public var doubleValue: Double? {
         return base.doubleValue
     }
     
+    @inlinable
     public var decimalValue: Decimal? {
         return base.decimalValue
     }
+    @inlinable
     public var stringValue: String? {
         return base.stringValue
     }
+    @inlinable
     public var array: [Json]? {
         return base.array
     }
+    @inlinable
     public var dictionary: [String: Json]? {
         return base.dictionary
     }
