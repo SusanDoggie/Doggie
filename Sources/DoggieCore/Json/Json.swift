@@ -636,6 +636,11 @@ extension Json: Decodable {
 extension Json {
     
     @inlinable
+    public init(decode string: String) throws {
+        self = try JSONDecoder().decode(Json.self, from: string._utf8_data)
+    }
+    
+    @inlinable
     public init(decode data: Data) throws {
         self = try JSONDecoder().decode(Json.self, from: data)
     }
