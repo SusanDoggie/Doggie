@@ -918,3 +918,90 @@ extension DataPack {
         }
     }
 }
+
+extension DataPack: Encodable {
+    
+    @usableFromInline
+    struct CodingKey: Swift.CodingKey {
+        
+        @usableFromInline
+        var stringValue: String
+        
+        @usableFromInline
+        var intValue: Int? { nil }
+        
+        @inlinable
+        init(stringValue: String) {
+            self.stringValue = stringValue
+        }
+        
+        @inlinable
+        init?(intValue: Int) {
+            return nil
+        }
+    }
+    
+    @inlinable
+    public func encode(to encoder: Encoder) throws {
+        
+        switch self.type {
+        case .null:
+            
+            var container = encoder.singleValueContainer()
+            try container.encodeNil()
+            
+        case .boolean:
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(self.boolValue!)
+            
+        case .string:
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(self.string!)
+            
+        case .signed:
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(self.int64Value!)
+            
+        case .unsigned:
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(self.uint64Value!)
+            
+        case .number:
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(self.doubleValue!)
+            
+        case .binary:
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(self.binary!)
+            
+        case .uuid:
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(self.uuid!)
+            
+        case .array:
+            
+            var container = encoder.unkeyedContainer()
+            try container.encode(contentsOf: self.array!)
+            
+        case .dictionary:
+            
+            var container = encoder.container(keyedBy: CodingKey.self)
+            
+            for (key, value) in self.dictionary! {
+                try container.encode(value, forKey: CodingKey(stringValue: key))
+            }
+            
+        default:
+            
+            var container = encoder.singleValueContainer()
+            try container.encodeNil()
+        }
+    }
+}
