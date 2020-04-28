@@ -644,11 +644,21 @@ extension Json: Decodable {
                 return
             }
             
+            if dictionary.isEmpty, let value = Json(decodeValue: decoder) {
+                self = value
+                return
+            }
+            
             self.init(dictionary)
             return
         }
         
         if let value = try Json(decodeArrayOrValue: decoder) {
+            self = value
+            return
+        }
+        
+        if let value = Json(decodeValue: decoder) {
             self = value
             return
         }
