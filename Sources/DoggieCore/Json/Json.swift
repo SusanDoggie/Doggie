@@ -568,65 +568,48 @@ extension Json: Encodable {
 extension Json: Decodable {
     
     @inlinable
-    init?(decodeValue decoder: Decoder) {
-        
-        guard let container = try? decoder.singleValueContainer() else { return nil }
-        
-        if container.decodeNil() {
-            self.init(nilLiteral: ())
-            return
-        }
-        if let bool = try? container.decode(Bool.self) {
-            self.init(bool)
-            return
-        }
-        if let double = try? container.decode(Double.self) {
-            
-            let int64 = try? container.decode(Int64.self)
-            let uint64 = try? container.decode(UInt64.self)
-            let decimal = try? container.decode(Decimal.self)
-            
-            self.init(Number(int64: int64, uint64: uint64, decimal: decimal, double: double))
-            return
-        }
-        if let string = try? container.decode(String.self) {
-            self.init(string)
-            return
-        }
-        
-        return nil
-    }
-    
-    @inlinable
-    init?(decodeArrayOrValue decoder: Decoder) throws {
-        
-        guard var container = try? decoder.unkeyedContainer() else { return nil }
-        
-        var array: [Json] = []
-        
-        if let count = container.count {
-            
-            array.reserveCapacity(count)
-            
-        } else if let value = Json(decodeValue: decoder) {
-            self = value
-            return
-        }
-        
-        while !container.isAtEnd {
-            try array.append(container.decode(Json.self))
-        }
-        
-        if array.isEmpty, let value = Json(decodeValue: decoder) {
-            self = value
-            return
-        }
-        
-        self.init(array)
-    }
-    
-    @inlinable
     public init(from decoder: Decoder) throws {
+        
+        if let container = try? decoder.singleValueContainer() {
+            
+            if container.decodeNil() {
+                self.init(nilLiteral: ())
+                return
+            }
+            if let bool = try? container.decode(Bool.self) {
+                self.init(bool)
+                return
+            }
+            if let double = try? container.decode(Double.self) {
+                
+                let int64 = try? container.decode(Int64.self)
+                let uint64 = try? container.decode(UInt64.self)
+                let decimal = try? container.decode(Decimal.self)
+                
+                self.init(Number(int64: int64, uint64: uint64, decimal: decimal, double: double))
+                return
+            }
+            if let string = try? container.decode(String.self) {
+                self.init(string)
+                return
+            }
+        }
+        
+        if var container = try? decoder.unkeyedContainer() {
+            
+            var array: [Json] = []
+            
+            if let count = container.count {
+                array.reserveCapacity(count)
+            }
+            
+            while !container.isAtEnd {
+                try array.append(container.decode(Json.self))
+            }
+            
+            self.init(array)
+            return
+        }
         
         if let container = try? decoder.container(keyedBy: CodingKey.self) {
             
@@ -639,27 +622,7 @@ extension Json: Decodable {
                 dictionary[key.stringValue] = try container.decode(Json.self, forKey: key)
             }
             
-            if dictionary.isEmpty, let value = try Json(decodeArrayOrValue: decoder) {
-                self = value
-                return
-            }
-            
-            if dictionary.isEmpty, let value = Json(decodeValue: decoder) {
-                self = value
-                return
-            }
-            
             self.init(dictionary)
-            return
-        }
-        
-        if let value = try Json(decodeArrayOrValue: decoder) {
-            self = value
-            return
-        }
-        
-        if let value = Json(decodeValue: decoder) {
-            self = value
             return
         }
         
