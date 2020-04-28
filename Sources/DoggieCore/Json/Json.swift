@@ -593,6 +593,8 @@ extension Json: Decodable {
             self.init(string)
             return
         }
+        
+        return nil
     }
     
     @inlinable
