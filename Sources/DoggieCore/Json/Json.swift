@@ -598,62 +598,62 @@ extension Json: Decodable {
     }
     
     @inlinable
-    init?(decodeObject decoder: Decoder) throws {
+    init?(decodeArray decoder: Decoder) {
         
-        guard let container = try? decoder.container(keyedBy: CodingKey.self) else { return nil }
+        guard var container = try? decoder.unkeyedContainer() else { return nil }
         
-        let keys = container.allKeys
+        var array: [Json] = []
         
-        var dictionary: [String: Json] = [:]
-        dictionary.reserveCapacity(keys.count)
-        
-        for key in keys {
-            dictionary[key.stringValue] = try container.decode(Json.self, forKey: key)
+        if let count = container.count {
+            array.reserveCapacity(count)
         }
         
-        if dictionary.isEmpty, let value = Json(decodeValue: decoder) {
+        while !container.isAtEnd {
+            try array.append(container.decode(Json.self))
+        }
+        
+        if array.isEmpty, let value = Json(decodeValue: decoder) {
             self = value
             return
         }
         
-        self.init(dictionary)
+        self.init(array)
     }
     
     @inlinable
     public init(from decoder: Decoder) throws {
         
-        if var container = try? decoder.unkeyedContainer() {
+        if let container = try? decoder.container(keyedBy: CodingKey.self) {
             
-            var array: [Json] = []
+            let keys = container.allKeys
             
-            if let count = container.count {
-                array.reserveCapacity(count)
+            var dictionary: [String: Json] = [:]
+            dictionary.reserveCapacity(keys.count)
+            
+            for key in keys {
+                dictionary[key.stringValue] = try container.decode(Json.self, forKey: key)
             }
             
-            while !container.isAtEnd {
-                try array.append(container.decode(Json.self))
-            }
-            
-            if array.isEmpty, let object = try Json(decodeObject: decoder) {
-                self = object
-                return
-            }
-            
-            if array.isEmpty, let value = Json(decodeValue: decoder) {
+            if dictionary.isEmpty, let value = Json(decodeValue: decoder) {
                 self = value
                 return
             }
             
-            self.init(array)
-            return
-        }
-        
-        if let value = try Json(decodeObject: decoder) {
-            self = value
+            if dictionary.isEmpty, let object = Json(decodeArray: decoder) {
+                self = object
+                return
+            }
+            
+            self.init(dictionary)
             return
         }
         
         if let value = Json(decodeValue: decoder) {
+            self = value
+            return
+        }
+        
+        if let value = Json(decodeArray: decoder) {
             self = value
             return
         }
