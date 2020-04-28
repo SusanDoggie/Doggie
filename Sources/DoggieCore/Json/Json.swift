@@ -570,37 +570,6 @@ extension Json: Decodable {
     @inlinable
     public init(from decoder: Decoder) throws {
         
-        if let container = try? decoder.container(keyedBy: CodingKey.self) {
-            
-            let keys = container.allKeys
-            
-            var dictionary: [String: Json] = [:]
-            dictionary.reserveCapacity(keys.count)
-            
-            for key in keys {
-                dictionary[key.stringValue] = try container.decode(Json.self, forKey: key)
-            }
-            
-            self.init(dictionary)
-            return
-        }
-        
-        if var container = try? decoder.unkeyedContainer() {
-            
-            var array: [Json] = []
-            
-            if let count = container.count {
-                array.reserveCapacity(count)
-            }
-            
-            while !container.isAtEnd {
-                try array.append(container.decode(Json.self))
-            }
-            
-            self.init(array)
-            return
-        }
-        
         if let container = try? decoder.singleValueContainer() {
             
             if container.decodeNil() {
@@ -619,12 +588,42 @@ extension Json: Decodable {
                 
                 self.init(Number(int64: int64, uint64: uint64, decimal: decimal, double: double))
                 return
-                
             }
             if let string = try? container.decode(String.self) {
                 self.init(string)
                 return
             }
+        }
+        
+        if var container = try? decoder.unkeyedContainer() {
+            
+            var array: [Json] = []
+            
+            if let count = container.count {
+                array.reserveCapacity(count)
+            }
+            
+            while !container.isAtEnd {
+                try array.append(container.decode(Json.self))
+            }
+            
+            self.init(array)
+            return
+        }
+        
+        if let container = try? decoder.container(keyedBy: CodingKey.self) {
+            
+            let keys = container.allKeys
+            
+            var dictionary: [String: Json] = [:]
+            dictionary.reserveCapacity(keys.count)
+            
+            for key in keys {
+                dictionary[key.stringValue] = try container.decode(Json.self, forKey: key)
+            }
+            
+            self.init(dictionary)
+            return
         }
         
         throw DecodingError.dataCorrupted(DecodingError.Context(
