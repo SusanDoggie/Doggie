@@ -568,32 +568,57 @@ extension Json: Encodable {
 extension Json: Decodable {
     
     @inlinable
-    public init(from decoder: Decoder) throws {
+    private func init?(decodeValue: Decoder) {
         
-        if let container = try? decoder.singleValueContainer() {
-            
-            if container.decodeNil() {
-                self.init(nilLiteral: ())
-                return
-            }
-            if let bool = try? container.decode(Bool.self) {
-                self.init(bool)
-                return
-            }
-            if let double = try? container.decode(Double.self) {
-                
-                let int64 = try? container.decode(Int64.self)
-                let uint64 = try? container.decode(UInt64.self)
-                let decimal = try? container.decode(Decimal.self)
-                
-                self.init(Number(int64: int64, uint64: uint64, decimal: decimal, double: double))
-                return
-            }
-            if let string = try? container.decode(String.self) {
-                self.init(string)
-                return
-            }
+        guard let container = try? decoder.singleValueContainer() else { return nil }
+        
+        if container.decodeNil() {
+            self.init(nilLiteral: ())
+            return
         }
+        if let bool = try? container.decode(Bool.self) {
+            self.init(bool)
+            return
+        }
+        if let double = try? container.decode(Double.self) {
+            
+            let int64 = try? container.decode(Int64.self)
+            let uint64 = try? container.decode(UInt64.self)
+            let decimal = try? container.decode(Decimal.self)
+            
+            self.init(Number(int64: int64, uint64: uint64, decimal: decimal, double: double))
+            return
+        }
+        if let string = try? container.decode(String.self) {
+            self.init(string)
+            return
+        }
+    }
+    
+    @inlinable
+    private func init?(decodeObject: Decoder) {
+        
+        guard let container = try? decoder.container(keyedBy: CodingKey.self) else { return nil }
+        
+        let keys = container.allKeys
+        
+        var dictionary: [String: Json] = [:]
+        dictionary.reserveCapacity(keys.count)
+        
+        for key in keys {
+            dictionary[key.stringValue] = try container.decode(Json.self, forKey: key)
+        }
+        
+        if dictionary.isEmpty, let value = Json(decodeValue: decoder) {
+            self = value
+            return
+        }
+        
+        self.init(dictionary)
+    }
+    
+    @inlinable
+    public init(from decoder: Decoder) throws {
         
         if var container = try? decoder.unkeyedContainer() {
             
@@ -607,22 +632,27 @@ extension Json: Decodable {
                 try array.append(container.decode(Json.self))
             }
             
+            if array.isEmpty, let object = Json(decodeObject: decoder) {
+                self = object
+                return
+            }
+            
+            if array.isEmpty, let value = Json(decodeValue: decoder) {
+                self = value
+                return
+            }
+            
             self.init(array)
             return
         }
         
-        if let container = try? decoder.container(keyedBy: CodingKey.self) {
-            
-            let keys = container.allKeys
-            
-            var dictionary: [String: Json] = [:]
-            dictionary.reserveCapacity(keys.count)
-            
-            for key in keys {
-                dictionary[key.stringValue] = try container.decode(Json.self, forKey: key)
-            }
-            
-            self.init(dictionary)
+        if let value = Json(decodeObject: decoder) {
+            self = value
+            return
+        }
+        
+        if let value = Json(decodeValue: decoder) {
+            self = value
             return
         }
         
