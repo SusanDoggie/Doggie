@@ -570,7 +570,7 @@ extension Json: Decodable {
     @inlinable
     public init(from decoder: Decoder) throws {
         
-        guard let container = try? decoder.singleValueContainer() else { return nil }
+        let container = try decoder.singleValueContainer()
         
         if container.decodeNil() {
             self.init(nilLiteral: ())
