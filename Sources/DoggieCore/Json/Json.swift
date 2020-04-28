@@ -598,7 +598,7 @@ extension Json: Decodable {
     }
     
     @inlinable
-    init?(decodeArray decoder: Decoder) {
+    init?(decodeArray decoder: Decoder) throws {
         
         guard var container = try? decoder.unkeyedContainer() else { return nil }
         
@@ -639,8 +639,8 @@ extension Json: Decodable {
                 return
             }
             
-            if dictionary.isEmpty, let object = Json(decodeArray: decoder) {
-                self = object
+            if dictionary.isEmpty, let array = try Json(decodeArray: decoder) {
+                self = array
                 return
             }
             
@@ -653,8 +653,8 @@ extension Json: Decodable {
             return
         }
         
-        if let value = Json(decodeArray: decoder) {
-            self = value
+        if let array = try Json(decodeArray: decoder) {
+            self = array
             return
         }
         
