@@ -598,14 +598,19 @@ extension Json: Decodable {
     }
     
     @inlinable
-    init?(decodeArray decoder: Decoder) throws {
+    init?(decodeArrayOrValue decoder: Decoder) throws {
         
         guard var container = try? decoder.unkeyedContainer() else { return nil }
         
         var array: [Json] = []
         
         if let count = container.count {
+            
             array.reserveCapacity(count)
+            
+        } else if let value = Json(decodeValue: decoder) {
+            self = value
+            return
         }
         
         while !container.isAtEnd {
@@ -634,13 +639,8 @@ extension Json: Decodable {
                 dictionary[key.stringValue] = try container.decode(Json.self, forKey: key)
             }
             
-            if dictionary.isEmpty, let value = Json(decodeValue: decoder) {
+            if dictionary.isEmpty, let value = try Json(decodeArrayOrValue: decoder) {
                 self = value
-                return
-            }
-            
-            if dictionary.isEmpty, let array = try Json(decodeArray: decoder) {
-                self = array
                 return
             }
             
@@ -648,13 +648,8 @@ extension Json: Decodable {
             return
         }
         
-        if let value = Json(decodeValue: decoder) {
+        if let value = try Json(decodeArrayOrValue: decoder) {
             self = value
-            return
-        }
-        
-        if let array = try Json(decodeArray: decoder) {
-            self = array
             return
         }
         
