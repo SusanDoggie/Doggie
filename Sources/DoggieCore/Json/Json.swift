@@ -653,7 +653,7 @@ extension Json: Decodable {
             return
         }
         
-        if let value = try Json(decodeArrayOrValue: decoder), value {
+        if let value = try Json(decodeArrayOrValue: decoder) {
             self = value
             return
         }
