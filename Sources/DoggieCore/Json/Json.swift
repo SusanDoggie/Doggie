@@ -568,7 +568,7 @@ extension Json: Encodable {
 extension Json: Decodable {
     
     @inlinable
-    private func init?(decodeValue: Decoder) {
+    func init?(decodeValue: Decoder) {
         
         guard let container = try? decoder.singleValueContainer() else { return nil }
         
@@ -598,7 +598,7 @@ extension Json: Decodable {
     }
     
     @inlinable
-    private func init?(decodeObject: Decoder) {
+    func init?(decodeObject: Decoder) {
         
         guard let container = try? decoder.container(keyedBy: CodingKey.self) else { return nil }
         
