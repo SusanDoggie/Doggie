@@ -670,16 +670,17 @@ private protocol SVGImageProtocol {
 
 extension MediaType {
     
-    fileprivate var media_type_string: String? {
+    fileprivate var _mimeType: MIMEType? {
         switch self {
-        case .bmp: return "image/bmp"
-        case .gif: return "image/gif"
-        case .heic: return "image/heic"
-        case .heif: return "image/heif"
-        case .jpeg: return "image/jpeg"
-        case .jpeg2000: return "image/jp2"
-        case .png: return "image/png"
-        case .tiff: return "image/tiff"
+        case .bmp: return .bmp
+        case .gif: return .gif
+        case .heic: return .heic
+        case .heif: return .heif
+        case .jpeg: return .jpeg
+        case .jpeg2000: return .jpeg2000
+        case .png: return .png
+        case .tiff: return .tiff
+        case .webp: return .webp
         default: return nil
         }
     }
@@ -692,7 +693,7 @@ extension Image: SVGImageProtocol {
     }
     
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
-        guard let mediaType = storageType.media_type_string else { return nil }
+        guard let mediaType = storageType._mimeType?.serialize() else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
         return "data:\(mediaType);base64," + data.base64EncodedString()
@@ -706,7 +707,7 @@ extension AnyImage: SVGImageProtocol {
     }
     
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
-        guard let mediaType = storageType.media_type_string else { return nil }
+        guard let mediaType = storageType._mimeType?.serialize() else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
         return "data:\(mediaType);base64," + data.base64EncodedString()
@@ -720,7 +721,7 @@ extension ImageRep: SVGImageProtocol {
     }
     
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
-        guard let mediaType = self.mediaType?.media_type_string else { return nil }
+        guard let mediaType = self.mediaType?._mimeType?.serialize() else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).encode(using: storageType, resolution: resolution, properties: properties) }
         return "data:\(mediaType);base64," + data.base64EncodedString()
@@ -800,7 +801,7 @@ extension CGImage: SVGImageProtocol {
     }
     
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
-        guard let mediaType = storageType.media_type_string else { return nil }
+        guard let mediaType = storageType._mimeType?.serialize() else { return nil }
         guard let properties = properties as? [CGImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.representation(using: storageType, resolution: resolution, properties: properties) else { return nil }
         return "data:\(mediaType);base64," + data.base64EncodedString()
