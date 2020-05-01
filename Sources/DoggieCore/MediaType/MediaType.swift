@@ -28,10 +28,12 @@ public struct MediaType: RawRepresentable, Hashable, ExpressibleByStringLiteral 
     
     public var rawValue: String
     
+    @inlinable
     public init(rawValue: String) {
         self.rawValue = rawValue
     }
     
+    @inlinable
     public init(stringLiteral value: String) {
         self.rawValue = value
     }
