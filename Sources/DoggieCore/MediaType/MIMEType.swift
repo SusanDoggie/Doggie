@@ -23,6 +23,12 @@
 //  THE SOFTWARE.
 //
 
+#if canImport(CoreServices)
+
+import CoreServices
+
+#endif
+
 @frozen
 public struct MIMEType: Hashable {
     
@@ -37,149 +43,173 @@ public struct MIMEType: Hashable {
     }
 }
 
-extension MIMEType {
+extension MIMEType: RawRepresentable {
     
     @inlinable
-    public var description: String {
-        return serialize()
-    }
-}
-
-extension MIMEType {
-    
-    @inlinable
-    public func serialize() -> String {
+    public var rawValue: String {
         return "\(type)/\(subType)"
     }
-}
-
-extension MIMEType {
-    
-    public static let bmp: MIMEType                = MIMEType(type: "image", subType: "bmp")
-    public static let gif: MIMEType                = MIMEType(type: "image", subType: "gif")
-    public static let heic: MIMEType               = MIMEType(type: "image", subType: "heic")
-    public static let heif: MIMEType               = MIMEType(type: "image", subType: "heif")
-    public static let jpeg: MIMEType               = MIMEType(type: "image", subType: "jpeg")
-    public static let jpeg2000: MIMEType           = MIMEType(type: "image", subType: "jp2")
-    public static let png: MIMEType                = MIMEType(type: "image", subType: "png")
-    public static let tiff: MIMEType               = MIMEType(type: "image", subType: "tiff")
-    public static let webp: MIMEType               = MIMEType(type: "image", subType: "webp")
-    
-}
-
-extension MIMEType {
-    
-    public static let svg: MIMEType                = MIMEType(type: "image", subType: "svg+xml")
-    public static let pdf: MIMEType                = MIMEType(type: "application", subType: "pdf")
-    public static let postscript: MIMEType         = MIMEType(type: "application", subType: "postscript")
-    
-}
-
-extension MIMEType {
-    
-    public static let html: MIMEType               = MIMEType(type: "text", subType: "html")
-    public static let css: MIMEType                = MIMEType(type: "text", subType: "css")
-    public static let xml: MIMEType                = MIMEType(type: "application", subType: "xml")
-    public static let xhtml: MIMEType              = MIMEType(type: "application", subType: "xhtml+xml")
-    public static let javascript: MIMEType         = MIMEType(type: "application", subType: "javascript")
-    public static let json: MIMEType               = MIMEType(type: "application", subType: "json")
-    
-}
-
-extension MIMEType {
-    
-    public static let ttf: MIMEType                = MIMEType(type: "font", subType: "ttf")
-    public static let otf: MIMEType                = MIMEType(type: "font", subType: "otf")
-    public static let woff: MIMEType               = MIMEType(type: "font", subType: "woff")
-    
-}
-
-extension MIMEType {
     
     @inlinable
-    public static func fileExtension(_ ext: String) -> MIMEType? {
-        switch ext {
-        case "aac": return MIMEType(type: "audio", subType: "aac")
-        case "abw": return MIMEType(type: "application", subType: "x-abiword")
-        case "arc": return MIMEType(type: "application", subType: "x-freearc")
-        case "avi": return MIMEType(type: "video", subType: "x-msvideo")
-        case "azw": return MIMEType(type: "application", subType: "vnd.amazon.ebook")
-        case "bin": return MIMEType(type: "application", subType: "octet-stream")
-        case "bmp": return MIMEType(type: "image", subType: "bmp")
-        case "bz": return MIMEType(type: "application", subType: "x-bzip")
-        case "bz2": return MIMEType(type: "application", subType: "x-bzip2")
-        case "csh": return MIMEType(type: "application", subType: "x-csh")
-        case "css": return MIMEType(type: "text", subType: "css")
-        case "csv": return MIMEType(type: "text", subType: "csv")
-        case "doc": return MIMEType(type: "application", subType: "msword")
-        case "docx": return MIMEType(type: "application", subType: "vnd.openxmlformats-officedocument.wordprocessingml.document")
-        case "eot": return MIMEType(type: "application", subType: "vnd.ms-fontobject")
-        case "epub": return MIMEType(type: "application", subType: "epub+zip")
-        case "gz": return MIMEType(type: "application", subType: "gzip")
-        case "gif": return MIMEType(type: "image", subType: "gif")
-        case "heic": return MIMEType(type: "image", subType: "heic")
-        case "heif": return MIMEType(type: "image", subType: "heif")
-        case "htm": return MIMEType(type: "text", subType: "html")
-        case "html": return MIMEType(type: "text", subType: "html")
-        case "ico": return MIMEType(type: "image", subType: "vnd.microsoft.icon")
-        case "ics": return MIMEType(type: "text", subType: "calendar")
-        case "jar": return MIMEType(type: "application", subType: "java-archive")
-        case "jpeg": return MIMEType(type: "image", subType: "jpeg")
-        case "jpg": return MIMEType(type: "image", subType: "jpeg")
-        case "jpg2": return MIMEType(type: "image", subType: "jp2")
-        case "jp2": return MIMEType(type: "image", subType: "jp2")
-        case "j2c": return MIMEType(type: "image", subType: "jp2")
-        case "js": return MIMEType(type: "text", subType: "javascript")
-        case "json": return MIMEType(type: "application", subType: "json")
-        case "jsonld": return MIMEType(type: "application", subType: "ld+json")
-        case "mid": return MIMEType(type: "audio", subType: "midi audio/x-midi")
-        case "midi": return MIMEType(type: "audio", subType: "midi audio/x-midi")
-        case "mjs": return MIMEType(type: "text", subType: "javascript")
-        case "mp3": return MIMEType(type: "audio", subType: "mpeg")
-        case "mpeg": return MIMEType(type: "video", subType: "mpeg")
-        case "mpkg": return MIMEType(type: "application", subType: "vnd.apple.installer+xml")
-        case "odp": return MIMEType(type: "application", subType: "vnd.oasis.opendocument.presentation")
-        case "ods": return MIMEType(type: "application", subType: "vnd.oasis.opendocument.spreadsheet")
-        case "odt": return MIMEType(type: "application", subType: "vnd.oasis.opendocument.text")
-        case "oga": return MIMEType(type: "audio", subType: "ogg")
-        case "ogv": return MIMEType(type: "video", subType: "ogg")
-        case "ogx": return MIMEType(type: "application", subType: "ogg")
-        case "opus": return MIMEType(type: "audio", subType: "opus")
-        case "otf": return MIMEType(type: "font", subType: "otf")
-        case "png": return MIMEType(type: "image", subType: "png")
-        case "pdf": return MIMEType(type: "application", subType: "pdf")
-        case "php": return MIMEType(type: "application", subType: "php")
-        case "ppt": return MIMEType(type: "application", subType: "vnd.ms-powerpoint")
-        case "pptx": return MIMEType(type: "application", subType: "vnd.openxmlformats-officedocument.presentationml.presentation")
-        case "ps": return MIMEType(type: "application", subType: "postscript")
-        case "rar": return MIMEType(type: "application", subType: "vnd.rar")
-        case "rtf": return MIMEType(type: "application", subType: "rtf")
-        case "sh": return MIMEType(type: "application", subType: "x-sh")
-        case "svg": return MIMEType(type: "image", subType: "svg+xml")
-        case "swf": return MIMEType(type: "application", subType: "x-shockwave-flash")
-        case "tar": return MIMEType(type: "application", subType: "x-tar")
-        case "tif": return MIMEType(type: "image", subType: "tiff")
-        case "tiff": return MIMEType(type: "image", subType: "tiff")
-        case "ts": return MIMEType(type: "video", subType: "mp2t")
-        case "ttf": return MIMEType(type: "font", subType: "ttf")
-        case "txt": return MIMEType(type: "text", subType: "plain")
-        case "vsd": return MIMEType(type: "application", subType: "vnd.visio")
-        case "wav": return MIMEType(type: "audio", subType: "wav")
-        case "weba": return MIMEType(type: "audio", subType: "webm")
-        case "webm": return MIMEType(type: "video", subType: "webm")
-        case "webp": return MIMEType(type: "image", subType: "webp")
-        case "woff": return MIMEType(type: "font", subType: "woff")
-        case "woff2": return MIMEType(type: "font", subType: "woff2")
-        case "xhtml": return MIMEType(type: "application", subType: "xhtml+xml")
-        case "xls": return MIMEType(type: "application", subType: "vnd.ms-excel")
-        case "xlsx": return MIMEType(type: "application", subType: "vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        case "xml": return MIMEType(type: "application", subType: "xml")
-        case "xul": return MIMEType(type: "application", subType: "vnd.mozilla.xul+xml")
-        case "zip": return MIMEType(type: "application", subType: "zip")
-        case "3gp": return MIMEType(type: "video", subType: "3gpp")
-        case "3g2": return MIMEType(type: "video", subType: "3gpp2")
-        case "7z": return MIMEType(type: "application", subType: "x-7z-compressed")
-        default: return nil
+    public init?(rawValue: String) {
+        let parts = rawValue.split(separator: "/")
+        guard parts.count == 2 else { return nil }
+        self.type = parts[0].trimmingCharacters(in: .whitespaces)
+        self.subType = parts[1].trimmingCharacters(in: .whitespaces)
+    }
+}
+
+extension MIMEType: ExpressibleByStringLiteral {
+    
+    @inlinable
+    public init(stringLiteral value: String) {
+        self.init(rawValue: value)!
+    }
+}
+
+extension MIMEType {
+    
+    public static let bmp: MIMEType                = "image/bmp"
+    public static let gif: MIMEType                = "image/gif"
+    public static let heic: MIMEType               = "image/heic"
+    public static let heif: MIMEType               = "image/heif"
+    public static let jpeg: MIMEType               = "image/jpeg"
+    public static let jpeg2000: MIMEType           = "image/jp2"
+    public static let png: MIMEType                = "image/png"
+    public static let tiff: MIMEType               = "image/tiff"
+    public static let webp: MIMEType               = "image/webp"
+    
+}
+
+extension MIMEType {
+    
+    public static let pdf: MIMEType                = "application/pdf"
+    public static let postscript: MIMEType         = "application/postscript"
+    public static let svg: MIMEType                = "image/svg+xml"
+    
+}
+
+extension MIMEType {
+    
+    public static let css: MIMEType                = "text/css"
+    public static let html: MIMEType               = "text/html"
+    public static let javascript: MIMEType         = "application/javascript"
+    public static let json: MIMEType               = "application/json"
+    public static let xml: MIMEType                = "application/xml"
+    public static let xhtml: MIMEType              = "application/xhtml+xml"
+    
+}
+
+extension MIMEType {
+    
+    public static let otf: MIMEType                = "font/otf"
+    public static let ttf: MIMEType                = "font/ttf"
+    public static let woff: MIMEType               = "font/woff"
+    public static let woff2: MIMEType               = "font/woff2"
+    
+}
+
+extension MIMEType {
+    
+    #if canImport(CoreServices)
+    
+    @inlinable
+    public var _mediaTypes: [MediaType] {
+        let mediaTypes = UTTypeCreateAllIdentifiersForTag(kUTTagClassMIMEType, rawValue as CFString, nil)?.takeRetainedValue() as? [String]
+        return mediaTypes?.compactMap { $0.hasPrefix("dyn.") ? nil : MediaType(rawValue: $0) } ?? []
+    }
+    
+    #endif
+    
+    @inlinable
+    public var mediaTypes: [MediaType] {
+        switch self {
+        case "application/bzip": return ["public.bzip2-archive"]
+        case "application/bzip2": return ["public.bzip2-archive"]
+        case "application/epub+zip": return ["org.idpf.epub-container"]
+        case "application/gzip": return ["org.gnu.gnu-zip-archive"]
+        case "application/java-archive": return ["com.sun.java-archive"]
+        case "application/json": return ["public.json"]
+        case "application/msexcel": return ["com.microsoft.excel.xls", "com.microsoft.excel.xlt", "com.microsoft.excel.xlw"]
+        case "application/mspowerpoint": return ["com.microsoft.powerpoint.ppt", "com.microsoft.powerpoint.pot", "com.microsoft.powerpoint.pps"]
+        case "application/msword": return ["com.microsoft.word.doc", "com.microsoft.word.dot"]
+        case "application/octet-stream": return ["public.data", "com.apple.rcproject"]
+        case "application/pdf": return ["com.adobe.pdf"]
+        case "application/php": return ["public.php-script"]
+        case "application/postscript": return ["com.adobe.postscript"]
+        case "application/tar": return ["public.tar-archive"]
+        case "application/vnd.ms-excel": return ["com.microsoft.excel.xls", "com.microsoft.excel.xlt", "com.microsoft.excel.xlw"]
+        case "application/vnd.ms-powerpoint": return ["com.microsoft.powerpoint.ppt", "com.microsoft.powerpoint.pot", "com.microsoft.powerpoint.pps"]
+        case "application/vnd.oasis.opendocument.presentation": return ["org.oasis-open.opendocument.presentation"]
+        case "application/vnd.oasis.opendocument.spreadsheet": return ["org.oasis-open.opendocument.spreadsheet"]
+        case "application/vnd.oasis.opendocument.text": return ["org.oasis-open.opendocument.text"]
+        case "application/vnd.openxmlformats-officedocument.presentationml.presentation": return ["org.openxmlformats.presentationml.presentation"]
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": return ["org.openxmlformats.spreadsheetml.sheet"]
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document": return ["org.openxmlformats.wordprocessingml.document"]
+        case "application/x-7z-compressed": return ["org.7-zip.7-zip-archive"]
+        case "application/x-bz2": return ["public.bzip2-archive"]
+        case "application/x-bzip": return ["public.bzip2-archive"]
+        case "application/x-bzip2": return ["public.bzip2-archive"]
+        case "application/x-gzip": return ["org.gnu.gnu-zip-archive"]
+        case "application/x-tar": return ["public.tar-archive"]
+        case "application/x-zip-compressed": return ["public.zip-archive"]
+        case "application/xhtml+xml": return ["public.xhtml"]
+        case "application/xml": return ["public.xml"]
+        case "application/zip": return ["public.zip-archive"]
+        case "audio/3gpp": return ["public.3gpp"]
+        case "audio/3gpp2": return ["public.3gpp2"]
+        case "audio/aac": return ["public.aac-audio"]
+        case "audio/mp3": return ["public.mp3"]
+        case "audio/mpeg": return ["public.mp3", "com.apple.music.mp2"]
+        case "audio/mpeg3": return ["public.mp3"]
+        case "audio/mpg": return ["public.mp3"]
+        case "audio/vnd.wave": return ["com.microsoft.waveform-audio"]
+        case "audio/wav": return ["com.microsoft.waveform-audio"]
+        case "audio/wave": return ["com.microsoft.waveform-audio"]
+        case "audio/x-aac": return ["public.aac-audio"]
+        case "audio/x-mp3": return ["public.mp3"]
+        case "audio/x-mpeg": return ["public.mp3", "com.apple.music.mp2"]
+        case "audio/x-mpeg3": return ["public.mp3"]
+        case "audio/x-mpg": return ["public.mp3"]
+        case "audio/x-wav": return ["com.microsoft.waveform-audio"]
+        case "font/otf": return ["public.opentype-font"]
+        case "font/sfnt": return ["public.truetype-ttf-font"]
+        case "font/ttf": return ["public.truetype-ttf-font"]
+        case "font/woff": return ["org.w3c.woff"]
+        case "font/woff2": return ["org.w3c.woff2"]
+        case "image/bmp": return ["com.microsoft.bmp"]
+        case "image/gif": return ["com.compuserve.gif"]
+        case "image/heic": return ["public.heic"]
+        case "image/heif": return ["public.heif"]
+        case "image/jp2": return ["public.jpeg-2000"]
+        case "image/jpeg": return ["public.jpeg"]
+        case "image/jpg": return ["public.jpeg"]
+        case "image/png": return ["public.png"]
+        case "image/svg+xml": return ["public.svg-image"]
+        case "image/tiff": return ["public.tiff"]
+        case "image/vnd.microsoft.icon": return ["com.microsoft.ico"]
+        case "image/webp": return ["com.google.webp"]
+        case "text/calendar": return ["com.apple.ical.ics"]
+        case "text/comma-separated-values": return ["public.comma-separated-values-text"]
+        case "text/css": return ["public.css"]
+        case "text/csv": return ["public.comma-separated-values-text"]
+        case "text/html": return ["public.html"]
+        case "text/javascript": return ["com.netscape.javascript-source"]
+        case "text/php": return ["public.php-script"]
+        case "text/plain": return ["public.plain-text"]
+        case "text/x-php-script": return ["public.php-script"]
+        case "text/xml": return ["public.xml"]
+        case "video/3gpp": return ["public.3gpp"]
+        case "video/3gpp2": return ["public.3gpp2"]
+        case "video/avi": return ["public.avi"]
+        case "video/mpeg": return ["public.mpeg"]
+        case "video/mpg": return ["public.mpeg"]
+        case "video/msvideo": return ["public.avi"]
+        case "video/x-mpeg": return ["public.mpeg"]
+        case "video/x-mpg": return ["public.mpeg"]
+        case "video/x-msvideo": return ["public.avi"]
+        default: return []
         }
     }
+    
 }
