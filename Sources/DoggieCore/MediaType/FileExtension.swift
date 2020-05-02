@@ -225,7 +225,7 @@ extension MIMEType {
     #if canImport(CoreServices)
     
     @inlinable
-    public static func _mimeTypesWithFileExtension(_ fileExtension: String) -> [MIMEType] {
+    public static func _mimeTypesWithFileExtension(_ ext: String) -> [MIMEType] {
         return MediaType._mediaTypesWithFileExtension(ext).flatMap { $0._mimeTypes }
     }
     
