@@ -670,7 +670,7 @@ private protocol SVGImageProtocol {
 
 extension MediaType {
     
-    fileprivate var _mimeType: MIMEType? {
+    fileprivate var _mime_type: MIMEType? {
         switch self {
         case .bmp: return .bmp
         case .gif: return .gif
@@ -681,7 +681,7 @@ extension MediaType {
         case .png: return .png
         case .tiff: return .tiff
         case .webp: return .webp
-        default: return nil
+        default: return mimeType.first ?? _mimeType.first
         }
     }
 }
@@ -693,7 +693,7 @@ extension Image: SVGImageProtocol {
     }
     
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
-        guard let mediaType = storageType._mimeType?.rawValue else { return nil }
+        guard let mediaType = storageType._mime_type?.rawValue else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
         return "data:\(mediaType);base64," + data.base64EncodedString()
@@ -707,7 +707,7 @@ extension AnyImage: SVGImageProtocol {
     }
     
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
-        guard let mediaType = storageType._mimeType?.rawValue else { return nil }
+        guard let mediaType = storageType._mime_type?.rawValue else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.representation(using: storageType, properties: properties) else { return nil }
         return "data:\(mediaType);base64," + data.base64EncodedString()
@@ -721,7 +721,7 @@ extension ImageRep: SVGImageProtocol {
     }
     
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
-        guard let mediaType = self.mediaType?._mimeType?.rawValue else { return nil }
+        guard let mediaType = self.mediaType?._mime_type?.rawValue else { return nil }
         guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).encode(using: storageType, resolution: resolution, properties: properties) }
         return "data:\(mediaType);base64," + data.base64EncodedString()
@@ -801,7 +801,7 @@ extension CGImage: SVGImageProtocol {
     }
     
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
-        guard let mediaType = storageType._mimeType?.rawValue else { return nil }
+        guard let mediaType = storageType._mime_type?.rawValue else { return nil }
         guard let properties = properties as? [CGImageRep.PropertyKey : Any] else { return nil }
         guard let data = self.representation(using: storageType, resolution: resolution, properties: properties) else { return nil }
         return "data:\(mediaType);base64," + data.base64EncodedString()
