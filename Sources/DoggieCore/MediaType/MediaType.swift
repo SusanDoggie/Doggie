@@ -92,7 +92,7 @@ extension MediaType {
     #if canImport(CoreServices)
     
     @inlinable
-    public var _mimeType: [MIMEType] {
+    public var _mimeTypes: [MIMEType] {
         let mimeType = UTTypeCopyAllTagsWithClass(rawValue as CFString, kUTTagClassMIMEType)?.takeRetainedValue() as? [String]
         return mimeType?.compactMap { MIMEType(rawValue: $0) } ?? []
     }
@@ -100,7 +100,7 @@ extension MediaType {
     #endif
     
     @inlinable
-    public var mimeType: [MIMEType] {
+    public var mimeTypes: [MIMEType] {
         switch self {
         case "com.adobe.pdf": return ["application/pdf"]
         case "com.adobe.postscript": return ["application/postscript"]

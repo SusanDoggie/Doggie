@@ -681,7 +681,7 @@ extension MediaType {
         case .png: return .png
         case .tiff: return .tiff
         case .webp: return .webp
-        default: return mimeType.first ?? _mimeType.first
+        default: return mimeTypes.first ?? _mimeTypes.first
         }
     }
 }

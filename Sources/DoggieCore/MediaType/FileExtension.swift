@@ -34,8 +34,8 @@ extension MediaType {
     #if canImport(CoreServices)
     
     @inlinable
-    public static func _mediaTypesWithFileExtension(_ fileExtension: String) -> [MediaType] {
-        let mediaTypes = UTTypeCreateAllIdentifiersForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)?.takeRetainedValue() as? [String]
+    public static func _mediaTypesWithFileExtension(_ ext: String) -> [MediaType] {
+        let mediaTypes = UTTypeCreateAllIdentifiersForTag(kUTTagClassFilenameExtension, ext as CFString, nil)?.takeRetainedValue() as? [String]
         return mediaTypes?.compactMap { $0.hasPrefix("dyn.") ? nil : MediaType(rawValue: $0) } ?? []
     }
     
@@ -150,8 +150,7 @@ extension MediaType {
     
     @inlinable
     public var _fileExtension: [String] {
-        let fileExtension = UTTypeCopyAllTagsWithClass(rawValue as CFString, kUTTagClassFilenameExtension)?.takeRetainedValue() as? [String]
-        return fileExtension ?? []
+        return UTTypeCopyAllTagsWithClass(rawValue as CFString, kUTTagClassFilenameExtension)?.takeRetainedValue() as? [String] ?? []
     }
     
     #endif
@@ -223,8 +222,34 @@ extension MediaType {
 
 extension MIMEType {
     
+    #if canImport(CoreServices)
+    
     @inlinable
-    public static func fileExtension(_ ext: String) -> MIMEType? {
-        return MediaType.mediaTypesWithFileExtension(ext).first?.mimeType.first
+    public static func _mimeTypesWithFileExtension(_ fileExtension: String) -> [MIMEType] {
+        return MediaType._mediaTypesWithFileExtension(ext).flatMap { $0._mimeTypes }
+    }
+    
+    #endif
+    
+    @inlinable
+    public static func mimeTypesWithFileExtension(_ ext: String) -> [MIMEType] {
+        return MediaType.mediaTypesWithFileExtension(ext).flatMap { $0.mimeTypes }
+    }
+}
+
+extension MIMEType {
+    
+    #if canImport(CoreServices)
+    
+    @inlinable
+    public var _fileExtension: [String] {
+        return self._mediaTypes.flatMap { $0._fileExtension }
+    }
+    
+    #endif
+    
+    @inlinable
+    public var fileExtension: [String] {
+        return self.mediaTypes.flatMap { $0.fileExtension }
     }
 }
