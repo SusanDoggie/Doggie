@@ -41,6 +41,7 @@ git submodule foreach --recursive git pull origin master
 #       generate c files for libjpeg-turbo
 #
 
+rm -rf ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo || true
 mkdir -p ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo
 
 cd ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo
@@ -54,7 +55,6 @@ SOURCES="$( ninja -t graph jpeg | grep -oE '"[^"]*\.c"' | tr -d '"' )"
 for SOURCE in ${SOURCES}; do
   cp ${SOURCE} ${PROJECT_DIR}/Sources/libjpeg/src
 done
-
 
 rm -rf ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg || true
 mkdir -p ${PROJECT_DIR}/Sources/libjpeg/include/libjpeg
