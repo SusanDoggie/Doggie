@@ -25,7 +25,11 @@
 
 struct WEBPDecoder: ImageRepDecoder {
     
-    static var mediaType: MediaType {
+    static var supportedMediaTypes: [MediaType] {
+        return [.webp]
+    }
+    
+    var mediaType: MediaType {
         return .webp
     }
     

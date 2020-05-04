@@ -25,7 +25,11 @@
 
 struct BMPDecoder: ImageRepDecoder {
     
-    static var mediaType: MediaType {
+    static var supportedMediaTypes: [MediaType] {
+        return [.bmp]
+    }
+    
+    var mediaType: MediaType {
         return .bmp
     }
     

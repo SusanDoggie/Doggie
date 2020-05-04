@@ -25,7 +25,11 @@
 
 struct JPEGDecoder: ImageRepDecoder {
     
-    static var mediaType: MediaType {
+    static var supportedMediaTypes: [MediaType] {
+        return [.jpeg]
+    }
+    
+    var mediaType: MediaType {
         return .jpeg
     }
     

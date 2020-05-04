@@ -25,7 +25,9 @@
 
 protocol ImageRepDecoder: ImageRepBase {
     
-    static var mediaType: MediaType { get }
+    static var supportedMediaTypes: [MediaType] { get }
+    
+    var mediaType: MediaType { get }
     
     init?(data: Data) throws
 }

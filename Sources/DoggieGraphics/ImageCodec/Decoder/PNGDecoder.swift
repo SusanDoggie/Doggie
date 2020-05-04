@@ -25,7 +25,11 @@
 
 struct PNGDecoder: ImageRepDecoder {
     
-    static var mediaType: MediaType {
+    static var supportedMediaTypes: [MediaType] {
+        return [.png]
+    }
+    
+    var mediaType: MediaType {
         return .png
     }
     

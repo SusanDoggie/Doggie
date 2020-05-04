@@ -25,7 +25,11 @@
 
 struct TIFFDecoder: ImageRepDecoder {
     
-    static var mediaType: MediaType {
+    static var supportedMediaTypes: [MediaType] {
+        return [.tiff]
+    }
+    
+    var mediaType: MediaType {
         return .tiff
     }
     

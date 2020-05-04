@@ -133,8 +133,10 @@ extension ImageRep {
         
         var types: [MediaType] = []
         
-        for decoder in decoders where !types.contains(decoder.mediaType) {
-            types.append(decoder.mediaType)
+        for decoder in decoders {
+            for type in decoder.supportedMediaTypes where !types.contains(type) {
+                types.append(type)
+            }
         }
         
         return types
@@ -250,7 +252,7 @@ extension ImageRep {
     
     public var mediaType: MediaType? {
         guard let decoder = base as? ImageRepDecoder else { return nil }
-        return type(of: decoder).mediaType
+        return decoder.mediaType
     }
 }
 
