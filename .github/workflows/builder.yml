@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [xenial, bionic]
+        image: [xenial, bionic, 5.1-xenial, 5.1-bionic]
     steps:
     - uses: actions/checkout@v1
       with:
