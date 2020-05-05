@@ -30,7 +30,7 @@ public protocol _ColorPixel {
     init<C: ColorPixel>(_ color: C) where C.Model == Model
 }
 
-extension _ColorPixel: where Self: ColorPixel {
+extension _ColorPixel where Self: ColorPixel {
     
     @inlinable
     @inline(__always)
