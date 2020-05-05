@@ -70,7 +70,11 @@ extension Image where Pixel: TIFFEncodablePixel {
                         case 2:
                             if destination > dest {
                                 let lhs = destination - 1
-                                destination.pointee = destination.pointee.tiff_prediction_2_decode(lhs.pointee)
+                                if is_opaque {
+                                    destination.pointee = destination.pointee.tiff_prediction_2_decode_color(lhs.pointee)
+                                } else {
+                                    destination.pointee = destination.pointee.tiff_prediction_2_decode(lhs.pointee)
+                                }
                             }
                         default: fatalError("Unsupported tiff predictor.")
                         }
