@@ -125,7 +125,7 @@ extension Image {
                         guard source + bytesPerPixel <= source_end else { return }
                         
                         let _source = source.bindMemory(to: T.self, capacity: numberOfComponents)
-                        let _destination = UnsafeRawMutablePointer(destination).bindMemory(to: T.self, capacity: Pixel.numberOfComponents)
+                        let _destination = UnsafeMutableRawPointer(destination).bindMemory(to: T.self, capacity: Pixel.numberOfComponents)
                         
                         callback(_destination, _source)
                         
