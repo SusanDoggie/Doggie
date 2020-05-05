@@ -1099,10 +1099,10 @@ extension ColorSpace {
         
         switch bitsPerPixel {
             
-        case 32 * Model.numberOfComponents:
+        case 32 * numberOfComponents:
             
             var float32_alpha_none_BE: [RawBitmap.Channel] = []
-            for i in 0..<Model.numberOfComponents {
+            for i in 0..<numberOfComponents {
                 let lowerBound = i * 32
                 let upperBound = i * 32 + 32
                 float32_alpha_none_BE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
@@ -1119,7 +1119,7 @@ extension ColorSpace {
                         var destination = destination
                         var source = source
                         
-                        for _ in 0..<Model.numberOfComponents {
+                        for _ in 0..<numberOfComponents {
                             destination.pointee = Float(bitPattern: UInt32(bigEndian: source.pointee.bitPattern))
                             destination += 1
                             source += 1
@@ -1137,7 +1137,7 @@ extension ColorSpace {
             }
             
             var float32_alpha_none_LE: [RawBitmap.Channel] = []
-            for i in 0..<Model.numberOfComponents {
+            for i in 0..<numberOfComponents {
                 let lowerBound = i * 32
                 let upperBound = i * 32 + 32
                 float32_alpha_none_LE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
@@ -1154,7 +1154,7 @@ extension ColorSpace {
                         var destination = destination
                         var source = source
                         
-                        for _ in 0..<Model.numberOfComponents {
+                        for _ in 0..<numberOfComponents {
                             destination.pointee = Float(bitPattern: UInt32(littleEndian: source.pointee.bitPattern))
                             destination += 1
                             source += 1
@@ -1171,10 +1171,10 @@ extension ColorSpace {
                 return image
             }
             
-        case 64 * Model.numberOfComponents:
+        case 64 * numberOfComponents:
             
             var float64_alpha_none_BE: [RawBitmap.Channel] = []
-            for i in 0..<Model.numberOfComponents {
+            for i in 0..<numberOfComponents {
                 let lowerBound = i * 64
                 let upperBound = i * 64 + 64
                 float64_alpha_none_BE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
@@ -1191,7 +1191,7 @@ extension ColorSpace {
                         var destination = destination
                         var source = source
                         
-                        for _ in 0..<Model.numberOfComponents {
+                        for _ in 0..<numberOfComponents {
                             destination.pointee = Double(bitPattern: UInt64(bigEndian: source.pointee.bitPattern))
                             destination += 1
                             source += 1
@@ -1209,7 +1209,7 @@ extension ColorSpace {
             }
             
             var float64_alpha_none_LE: [RawBitmap.Channel] = []
-            for i in 0..<Model.numberOfComponents {
+            for i in 0..<numberOfComponents {
                 let lowerBound = i * 64
                 let upperBound = i * 64 + 64
                 float64_alpha_none_LE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
@@ -1226,7 +1226,7 @@ extension ColorSpace {
                         var destination = destination
                         var source = source
                         
-                        for _ in 0..<Model.numberOfComponents {
+                        for _ in 0..<numberOfComponents {
                             destination.pointee = Double(bitPattern: UInt64(littleEndian: source.pointee.bitPattern))
                             destination += 1
                             source += 1
@@ -1243,10 +1243,10 @@ extension ColorSpace {
                 return image
             }
             
-        case 32 * Model.numberOfComponents + 32:
+        case 32 * numberOfComponents + 32:
             
-            var float32_alpha_first_BE = [RawBitmap.Channel(index: Model.numberOfComponents, format: .unsigned, endianness: .big, bitRange: 0..<32)]
-            for i in 1...Model.numberOfComponents {
+            var float32_alpha_first_BE = [RawBitmap.Channel(index: numberOfComponents, format: .unsigned, endianness: .big, bitRange: 0..<32)]
+            for i in 1...numberOfComponents {
                 let lowerBound = i * 32
                 let upperBound = i * 32 + 32
                 float32_alpha_first_BE.append(RawBitmap.Channel(index: i - 1, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
@@ -1263,7 +1263,7 @@ extension ColorSpace {
                         var destination = destination
                         var _source = source + 1
                         
-                        for _ in 0..<Model.numberOfComponents {
+                        for _ in 0..<numberOfComponents {
                             destination.pointee = Float(bitPattern: UInt32(bigEndian: _source.pointee.bitPattern))
                             destination += 1
                             _source += 1
@@ -1280,8 +1280,8 @@ extension ColorSpace {
                 return image
             }
             
-            var float32_alpha_first_LE = [RawBitmap.Channel(index: Model.numberOfComponents, format: .unsigned, endianness: .little, bitRange: 0..<32)]
-            for i in 1...Model.numberOfComponents {
+            var float32_alpha_first_LE = [RawBitmap.Channel(index: numberOfComponents, format: .unsigned, endianness: .little, bitRange: 0..<32)]
+            for i in 1...numberOfComponents {
                 let lowerBound = i * 32
                 let upperBound = i * 32 + 32
                 float32_alpha_first_LE.append(RawBitmap.Channel(index: i - 1, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
@@ -1298,7 +1298,7 @@ extension ColorSpace {
                         var destination = destination
                         var _source = source + 1
                         
-                        for _ in 0..<Model.numberOfComponents {
+                        for _ in 0..<numberOfComponents {
                             destination.pointee = Float(bitPattern: UInt32(littleEndian: _source.pointee.bitPattern))
                             destination += 1
                             _source += 1
@@ -1316,7 +1316,7 @@ extension ColorSpace {
             }
             
             var float32_alpha_last_BE: [RawBitmap.Channel] = []
-            for i in 0...Model.numberOfComponents {
+            for i in 0...numberOfComponents {
                 let lowerBound = i * 32
                 let upperBound = i * 32 + 32
                 float32_alpha_last_BE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
@@ -1333,7 +1333,7 @@ extension ColorSpace {
                         var destination = destination
                         var source = source
                         
-                        for _ in 0...Model.numberOfComponents {
+                        for _ in 0...numberOfComponents {
                             destination.pointee = Float(bitPattern: UInt32(bigEndian: source.pointee.bitPattern))
                             destination += 1
                             source += 1
@@ -1349,7 +1349,7 @@ extension ColorSpace {
             }
             
             var float32_alpha_last_LE: [RawBitmap.Channel] = []
-            for i in 0...Model.numberOfComponents {
+            for i in 0...numberOfComponents {
                 let lowerBound = i * 32
                 let upperBound = i * 32 + 32
                 float32_alpha_last_LE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
@@ -1366,7 +1366,7 @@ extension ColorSpace {
                         var destination = destination
                         var source = source
                         
-                        for _ in 0...Model.numberOfComponents {
+                        for _ in 0...numberOfComponents {
                             destination.pointee = Float(bitPattern: UInt32(littleEndian: source.pointee.bitPattern))
                             destination += 1
                             source += 1
@@ -1381,10 +1381,10 @@ extension ColorSpace {
                 return image
             }
             
-        case 64 * Model.numberOfComponents + 64:
+        case 64 * numberOfComponents + 64:
             
-            var float64_alpha_first_BE = [RawBitmap.Channel(index: Model.numberOfComponents, format: .unsigned, endianness: .big, bitRange: 0..<64)]
-            for i in 1...Model.numberOfComponents {
+            var float64_alpha_first_BE = [RawBitmap.Channel(index: numberOfComponents, format: .unsigned, endianness: .big, bitRange: 0..<64)]
+            for i in 1...numberOfComponents {
                 let lowerBound = i * 64
                 let upperBound = i * 64 + 64
                 float64_alpha_first_BE.append(RawBitmap.Channel(index: i - 1, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
@@ -1401,7 +1401,7 @@ extension ColorSpace {
                         var destination = destination
                         var _source = source + 1
                         
-                        for _ in 0..<Model.numberOfComponents {
+                        for _ in 0..<numberOfComponents {
                             destination.pointee = Double(bitPattern: UInt64(bigEndian: _source.pointee.bitPattern))
                             destination += 1
                             _source += 1
@@ -1418,8 +1418,8 @@ extension ColorSpace {
                 return image
             }
             
-            var float64_alpha_first_LE = [RawBitmap.Channel(index: Model.numberOfComponents, format: .unsigned, endianness: .little, bitRange: 0..<64)]
-            for i in 1...Model.numberOfComponents {
+            var float64_alpha_first_LE = [RawBitmap.Channel(index: numberOfComponents, format: .unsigned, endianness: .little, bitRange: 0..<64)]
+            for i in 1...numberOfComponents {
                 let lowerBound = i * 64
                 let upperBound = i * 64 + 64
                 float64_alpha_first_LE.append(RawBitmap.Channel(index: i - 1, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
@@ -1436,7 +1436,7 @@ extension ColorSpace {
                         var destination = destination
                         var _source = source + 1
                         
-                        for _ in 0..<Model.numberOfComponents {
+                        for _ in 0..<numberOfComponents {
                             destination.pointee = Double(bitPattern: UInt64(littleEndian: _source.pointee.bitPattern))
                             destination += 1
                             _source += 1
@@ -1454,7 +1454,7 @@ extension ColorSpace {
             }
             
             var float64_alpha_last_BE: [RawBitmap.Channel] = []
-            for i in 0...Model.numberOfComponents {
+            for i in 0...numberOfComponents {
                 let lowerBound = i * 64
                 let upperBound = i * 64 + 64
                 float64_alpha_last_BE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
@@ -1471,7 +1471,7 @@ extension ColorSpace {
                         var destination = destination
                         var source = source
                         
-                        for _ in 0...Model.numberOfComponents {
+                        for _ in 0...numberOfComponents {
                             destination.pointee = Double(bitPattern: UInt64(bigEndian: source.pointee.bitPattern))
                             destination += 1
                             source += 1
@@ -1487,7 +1487,7 @@ extension ColorSpace {
             }
             
             var float64_alpha_last_LE: [RawBitmap.Channel] = []
-            for i in 0...Model.numberOfComponents {
+            for i in 0...numberOfComponents {
                 let lowerBound = i * 64
                 let upperBound = i * 64 + 64
                 float64_alpha_last_LE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
@@ -1504,7 +1504,7 @@ extension ColorSpace {
                         var destination = destination
                         var source = source
                         
-                        for _ in 0...Model.numberOfComponents {
+                        for _ in 0...numberOfComponents {
                             destination.pointee = Double(bitPattern: UInt64(littleEndian: source.pointee.bitPattern))
                             destination += 1
                             source += 1
