@@ -23,9 +23,14 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorPixel: Hashable {
+public protocol _ColorPixel {
     
-    associatedtype Model: ColorModel
+    associatedtype Model
+    
+    init<C: ColorPixel>(_ color: C) where C.Model == Model
+}
+
+public protocol ColorPixel: Hashable, _ColorPixel where Model: ColorModel {
     
     init()
     
