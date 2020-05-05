@@ -31,6 +31,8 @@ public protocol ColorPixel: Hashable {
     
     init(color: Model, opacity: Double)
     
+    init<C: ColorPixel>(_ color: C) where C.Model == Model
+    
     func component(_ index: Int) -> Double
     
     mutating func setComponent(_ index: Int, _ value: Double)
