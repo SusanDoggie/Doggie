@@ -43,7 +43,7 @@ extension _ColorPixel where Self: _GrayColorPixel {
     @inlinable
     @inline(__always)
     public func _convert<Pixel: _GrayColorPixel>(_: Pixel.Type) -> Pixel {
-        return Pixel(self)
+        return Pixel(color: self)
     }
 }
 
@@ -69,12 +69,18 @@ extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
     @inline(__always)
-    public init<C: _GrayColorPixel>(_ color: C) {
+    init<C: _GrayColorPixel>(color: C) {
         
         let w = _scale_integer(color.w, C.Component.max, Component.max)
         let a = _scale_integer(color.a, C.Component.max, Component.max)
         
         self.init(white: w, opacity: a)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init<C: _GrayColorPixel>(_ color: C) {
+        self.init(color: color)
     }
     
     @inlinable
