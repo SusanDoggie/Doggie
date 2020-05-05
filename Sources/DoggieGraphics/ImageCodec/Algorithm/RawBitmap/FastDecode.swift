@@ -154,6 +154,7 @@ extension ColorSpace {
         
         let bitsPerPixel = bitmaps[0].bitsPerPixel
         let channels = bitmaps[0].channels.sorted { $0.bitRange.lowerBound }
+        let is_opaque = !channels.contains { $0.index == numberOfComponents }
         
         guard bitmaps.allSatisfy({ $0.endianness == .big && $0.bitsPerPixel == bitsPerPixel && $0.channels.sorted { $0.bitRange.lowerBound } == channels }) else { return nil }
         
@@ -175,7 +176,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, true, UInt8.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
                             
                             destination.pointee.w = source.pointee
                             destination.pointee.a = UInt8.max
@@ -200,7 +201,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, true, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             destination.pointee.w = UInt16(bigEndian: source.pointee)
                             destination.pointee.a = UInt16.max
@@ -223,7 +224,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, true, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             destination.pointee.w = UInt16(littleEndian: source.pointee)
                             destination.pointee.a = UInt16.max
@@ -248,7 +249,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt8.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
                             
                             var source = source
                             
@@ -277,7 +278,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt8.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
                             
                             var source = source
                             
@@ -308,7 +309,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -337,7 +338,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -366,7 +367,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -395,7 +396,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -434,7 +435,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, true, UInt8.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
                             
                             var source = source
                             
@@ -470,7 +471,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, true, UInt8.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
                             
                             var source = source
                             
@@ -509,7 +510,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt8.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
                             
                             var source = source
                             
@@ -546,7 +547,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt8.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
                             
                             var source = source
                             
@@ -583,7 +584,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt8.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
                             
                             var source = source
                             
@@ -620,7 +621,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt8.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
                             
                             var source = source
                             
@@ -658,7 +659,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, true, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -694,7 +695,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, true, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -730,7 +731,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, true, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -766,7 +767,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, true, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -805,7 +806,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -842,7 +843,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -879,7 +880,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -916,7 +917,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -953,7 +954,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -990,7 +991,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -1027,7 +1028,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -1064,7 +1065,7 @@ extension ColorSpace {
                     
                     for bitmap in bitmaps {
                         
-                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
                             
                             var source = source
                             
@@ -1111,7 +1112,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Float.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
                         
                         var destination = destination
                         var source = source
@@ -1146,7 +1147,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Float.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
                         
                         var destination = destination
                         var source = source
@@ -1183,7 +1184,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Double.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
                         
                         var destination = destination
                         var source = source
@@ -1218,7 +1219,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Double.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
                         
                         var destination = destination
                         var source = source
@@ -1255,7 +1256,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Float.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
                         
                         var destination = destination
                         var _source = source + 1
@@ -1290,7 +1291,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Float.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
                         
                         var destination = destination
                         var _source = source + 1
@@ -1325,7 +1326,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Float.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
                         
                         var destination = destination
                         var source = source
@@ -1358,7 +1359,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Float.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
                         
                         var destination = destination
                         var source = source
@@ -1393,7 +1394,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Double.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
                         
                         var destination = destination
                         var _source = source + 1
@@ -1428,7 +1429,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Double.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
                         
                         var destination = destination
                         var _source = source + 1
@@ -1463,7 +1464,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Double.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
                         
                         var destination = destination
                         var source = source
@@ -1496,7 +1497,7 @@ extension ColorSpace {
                 
                 for bitmap in bitmaps {
                     
-                    image._fast_decode(bitmap, true, Double.self) { (destination, source) in
+                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
                         
                         var destination = destination
                         var source = source
