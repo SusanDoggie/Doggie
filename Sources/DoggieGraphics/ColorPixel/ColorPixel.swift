@@ -30,6 +30,15 @@ public protocol _ColorPixel {
     init<C: ColorPixel>(_ color: C) where C.Model == Model
 }
 
+extension _ColorPixel: where Self: ColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public init<C: ColorPixel>(_ color: C) where C.Model == Model {
+        self.init(color: color.color, opacity: color.opacity)
+    }
+}
+
 public protocol ColorPixel: Hashable, _ColorPixel where Model: ColorModel {
     
     init()
@@ -81,12 +90,6 @@ extension ColorPixel {
     @inline(__always)
     public init() {
         self.init(color: Model(), opacity: 0)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public init<C: ColorPixel>(_ color: C) where C.Model == Model {
-        self.init(color: color.color, opacity: color.opacity)
     }
 }
 

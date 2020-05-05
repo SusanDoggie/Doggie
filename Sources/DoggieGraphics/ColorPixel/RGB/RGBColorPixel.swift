@@ -28,6 +28,25 @@ public protocol _RGBColorPixelConvertible {
     func _convert<Pixel: _RGBColorPixel>(_: Pixel.Type) -> Pixel
 }
 
+extension _ColorPixel where Self: _RGBColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public init<C: ColorPixel>(_ color: C) where C.Model == Model {
+        if let color = color as? _RGBColorPixelConvertible {
+            self = color._convert(Self.self)
+        } else {
+            self.init(color: color.color, opacity: color.opacity)
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func _convert<Pixel: _RGBColorPixel>(_: Pixel.Type) -> Pixel {
+        return Pixel(self)
+    }
+}
+
 public protocol _RGBColorPixel: ColorPixel, _RGBColorPixelConvertible where Model == RGBColorModel {
     
     associatedtype Component: FixedWidthInteger & UnsignedInteger
@@ -74,25 +93,6 @@ extension ColorPixel where Self: _RGBColorPixel {
         let a = Component((opacity * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
         
         self.init(red: r, green: g, blue: b, opacity: a)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public init<C: ColorPixel>(_ color: C) where C.Model == Model {
-        if let color = color as? _RGBColorPixelConvertible {
-            self = color._convert(Self.self)
-        } else {
-            self.init(color: color.color, opacity: color.opacity)
-        }
-    }
-}
-
-extension ColorPixel where Self: _RGBColorPixel {
-    
-    @inlinable
-    @inline(__always)
-    public func _convert<Pixel: _RGBColorPixel>(_: Pixel.Type) -> Pixel {
-        return Pixel(self)
     }
 }
 
