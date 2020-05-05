@@ -23,9 +23,12 @@
 //  THE SOFTWARE.
 //
 
+@usableFromInline
 protocol TIFFEncodablePixel: ColorPixel {
     
-    func tiff_prediction_2(_ lhs: Self) -> Self
+    func tiff_prediction_2_encode(_ lhs: Self) -> Self
+    
+    func tiff_prediction_2_decode(_ lhs: Self) -> Self
     
     func tiff_encode_color<C: RangeReplaceableCollection>(_ data: inout C) where C.Element == UInt8
     
@@ -34,14 +37,26 @@ protocol TIFFEncodablePixel: ColorPixel {
 
 extension TIFFEncodablePixel where Self: _GrayColorPixel, Component: ByteOutputStreamable {
     
-    func tiff_prediction_2(_ lhs: Self) -> Self {
+    @inlinable
+    @inline(__always)
+    func tiff_prediction_2_encode(_ lhs: Self) -> Self {
         return Self(white: w &- lhs.w, opacity: a &- lhs.a)
     }
     
+    @inlinable
+    @inline(__always)
+    func tiff_prediction_2_decode(_ lhs: Self) -> Self {
+        return Self(white: w &+ lhs.w, opacity: a &+ lhs.a)
+    }
+    
+    @inlinable
+    @inline(__always)
     func tiff_encode_color<C: RangeReplaceableCollection>(_ data: inout C) where C.Element == UInt8 {
         data.encode(w.bigEndian)
     }
     
+    @inlinable
+    @inline(__always)
     func tiff_encode_opacity<C: RangeReplaceableCollection>(_ data: inout C) where C.Element == UInt8 {
         data.encode(a.bigEndian)
     }
@@ -49,16 +64,28 @@ extension TIFFEncodablePixel where Self: _GrayColorPixel, Component: ByteOutputS
 
 extension TIFFEncodablePixel where Self: _RGBColorPixel, Component: ByteOutputStreamable {
     
-    func tiff_prediction_2(_ lhs: Self) -> Self {
+    @inlinable
+    @inline(__always)
+    func tiff_prediction_2_encode(_ lhs: Self) -> Self {
         return Self(red: r &- lhs.r, green: g &- lhs.g, blue: b &- lhs.b, opacity: a &- lhs.a)
     }
     
+    @inlinable
+    @inline(__always)
+    func tiff_prediction_2_decode(_ lhs: Self) -> Self {
+        return Self(red: r &+ lhs.r, green: g &+ lhs.g, blue: b &+ lhs.b, opacity: a &+ lhs.a)
+    }
+    
+    @inlinable
+    @inline(__always)
     func tiff_encode_color<C: RangeReplaceableCollection>(_ data: inout C) where C.Element == UInt8 {
         data.encode(r.bigEndian)
         data.encode(g.bigEndian)
         data.encode(b.bigEndian)
     }
     
+    @inlinable
+    @inline(__always)
     func tiff_encode_opacity<C: RangeReplaceableCollection>(_ data: inout C) where C.Element == UInt8 {
         data.encode(a.bigEndian)
     }

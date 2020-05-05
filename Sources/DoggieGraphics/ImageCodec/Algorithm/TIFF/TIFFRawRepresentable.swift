@@ -209,7 +209,7 @@ func tiff_color_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predict
                     for _ in 0..<image.width {
                         
                         let rhs = source.pointee
-                        let pixel = rhs.tiff_prediction_2(lhs)
+                        let pixel = rhs.tiff_prediction_2_encode(lhs)
                         pixel.tiff_encode_color(&data)
                         lhs = rhs
                         source += 1
@@ -224,7 +224,7 @@ func tiff_color_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predict
                     for _ in 0..<image.width {
                         
                         let rhs = source.pointee
-                        let pixel = rhs.tiff_prediction_2(lhs)
+                        let pixel = rhs.tiff_prediction_2_encode(lhs)
                         pixel.tiff_encode_color(&data)
                         pixel.tiff_encode_opacity(&data)
                         lhs = rhs
@@ -267,7 +267,7 @@ func tiff_opacity_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predi
                 for _ in 0..<image.width {
                     
                     let rhs = source.pointee
-                    let pixel = rhs.tiff_prediction_2(lhs)
+                    let pixel = rhs.tiff_prediction_2_encode(lhs)
                     pixel.tiff_encode_opacity(&data)
                     lhs = rhs
                     source += 1
