@@ -154,6 +154,8 @@ extension ColorSpace {
         
         let bitsPerPixel = bitmaps[0].bitsPerPixel
         let channels = bitmaps[0].channels.sorted { $0.bitRange.lowerBound }
+        
+        let numberOfComponents = self.numberOfComponents
         let is_opaque = !channels.contains { $0.index == numberOfComponents }
         
         guard bitmaps.allSatisfy({ $0.endianness == .big && $0.bitsPerPixel == bitsPerPixel && $0.channels.sorted { $0.bitRange.lowerBound } == channels }) else { return nil }
