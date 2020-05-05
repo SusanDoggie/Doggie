@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [xenial, bionic, 5.1-xenial, 5.1-bionic]
+        image: [xenial, bionic]
     steps:
     - uses: actions/checkout@v1
       with:
@@ -81,3 +81,19 @@ jobs:
       uses: SusanDoggie/swift-action@master
       with:
         action: test
+  ubuntu-swift5.1:
+    name: ${{ matrix.image }}
+    container:
+      image: docker://swift:${{ matrix.image }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [5.1-xenial, 5.1-bionic]
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Build
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: build
