@@ -81,7 +81,7 @@ jobs:
       uses: SusanDoggie/swift-action@master
       with:
         action: test
-  ubuntu-swift5.1:
+  ubuntu_swift5.1:
     name: ${{ matrix.image }}
     container:
       image: docker://swift:${{ matrix.image }}
