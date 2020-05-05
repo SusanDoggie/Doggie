@@ -262,6 +262,35 @@ extension ColorSpace {
                     return image
                 }
                 
+                let gray16_alpha_first = [
+                    RawBitmap.Channel(index: 1, format: .unsigned, endianness: .big, bitRange: 0..<8),
+                    RawBitmap.Channel(index: 0, format: .unsigned, endianness: .big, bitRange: 8..<16),
+                ]
+                
+                if channels == gray16_alpha_first {
+                    
+                    var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                    
+                    for bitmap in bitmaps {
+                        
+                        image._fast_decode(bitmap, false, UInt8.self) { (destination, source) in
+                            
+                            var source = source
+                            
+                            destination.pointee.a = source.pointee
+                            source += 1
+                            
+                            destination.pointee.w = source.pointee
+                        }
+                    }
+                    
+                    if premultiplied {
+                        image._decode_premultiplied()
+                    }
+                    
+                    return image
+                }
+                
             case 32:
                 
                 let gray32_BE = [
@@ -312,6 +341,64 @@ extension ColorSpace {
                             source += 1
                             
                             destination.pointee.a = UInt16(littleEndian: source.pointee)
+                        }
+                    }
+                    
+                    if premultiplied {
+                        image._decode_premultiplied()
+                    }
+                    
+                    return image
+                }
+                
+                let gray32_alpha_first_BE = [
+                    RawBitmap.Channel(index: 1, format: .unsigned, endianness: .big, bitRange: 0..<16),
+                    RawBitmap.Channel(index: 0, format: .unsigned, endianness: .big, bitRange: 16..<32),
+                ]
+                
+                if channels == gray32_alpha_first_BE {
+                    
+                    var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                    
+                    for bitmap in bitmaps {
+                        
+                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                            
+                            var source = source
+                            
+                            destination.pointee.a = UInt16(bigEndian: source.pointee)
+                            source += 1
+                            
+                            destination.pointee.w = UInt16(bigEndian: source.pointee)
+                        }
+                    }
+                    
+                    if premultiplied {
+                        image._decode_premultiplied()
+                    }
+                    
+                    return image
+                }
+                
+                let gray32_alpha_first_LE = [
+                    RawBitmap.Channel(index: 1, format: .unsigned, endianness: .little, bitRange: 0..<16),
+                    RawBitmap.Channel(index: 0, format: .unsigned, endianness: .little, bitRange: 16..<32),
+                ]
+                
+                if channels == gray32_alpha_first_LE {
+                    
+                    var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+                    
+                    for bitmap in bitmaps {
+                        
+                        image._fast_decode(bitmap, false, UInt16.self) { (destination, source) in
+                            
+                            var source = source
+                            
+                            destination.pointee.a = UInt16(littleEndian: source.pointee)
+                            source += 1
+                            
+                            destination.pointee.w = UInt16(littleEndian: source.pointee)
                         }
                     }
                     
