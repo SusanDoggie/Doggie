@@ -38,8 +38,12 @@ git submodule foreach --recursive git pull origin master
 
 # =================    libjpeg    =================
 #
-#       generate c files for libjpeg-turbo
+#         generate files for libjpeg-turbo
 #
+
+echo
+echo "Generate files for libjpeg-turbo"
+echo
 
 rm -rf ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo || true
 mkdir -p ${PROJECT_DIR}/.build/dependencies/libjpeg-turbo
