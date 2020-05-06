@@ -30,6 +30,7 @@ extension Image {
     static func _denormalized<T: BinaryFloatingPoint>(_ channel_index: Int, _ value: T) -> T {
         guard channel_index < Pixel.Model.numberOfComponents else { return value }
         let range = Pixel.Model.rangeOfComponent(channel_index)
+        guard range != 0...1 else { return value }
         return value * T(range.upperBound - range.lowerBound) + T(range.lowerBound)
     }
 }

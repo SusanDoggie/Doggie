@@ -1,5 +1,5 @@
 //
-//  _fast_decode.swift
+//  _fast_decode_float.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,16 +23,31 @@
 //  THE SOFTWARE.
 //
 
+extension ColorModel {
+    
+    @inlinable
+    @inline(__always)
+    func _denormalized() -> Self {
+        var color = self
+        for i in 0..<Self.numberOfComponents where Self.rangeOfComponent(i) != 0...1 {
+            color.setNormalizedComponent(i, self[i])
+        }
+        return color
+    }
+}
+
 extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _fast_decode<T, R>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ premultiplied: Bool, _: T.Type, _: R.Type, callback: (UnsafeMutablePointer<R>, UnsafePointer<T>) -> Void) {
+    mutating func _fast_decode_float<T, R: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ should_denormalized: Bool, _ premultiplied: Bool, _: T.Type, _: R.Type, callback: (UnsafeMutablePointer<R>, UnsafePointer<T>) -> Void) {
         
         let numberOfComponents = is_opaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents
         
         let width = self.width
         let height = self.height
+        
+        let should_denormalized = should_denormalized && (0..<Pixel.Model.numberOfComponents).contains { Pixel.Model.rangeOfComponent($0) != 0...1 }
         
         self.withUnsafeMutableBufferPointer {
             
@@ -68,6 +83,9 @@ extension Image {
                             
                             callback(_destination, _source)
                             
+                            if should_denormalized {
+                                destination.pointee.color = destination.pointee.color._denormalized()
+                            }
                             if premultiplied {
                                 destination.pointee = destination.pointee.unpremultiplied()
                             }

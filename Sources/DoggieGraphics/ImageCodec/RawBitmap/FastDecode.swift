@@ -34,9 +34,6 @@ struct _fast_decode_info<Model: ColorModel> {
     let height: Int
     
     @usableFromInline
-    let is_opaque: Bool
-    
-    @usableFromInline
     let resolution: Resolution
     
     @usableFromInline
@@ -53,7 +50,6 @@ struct _fast_decode_info<Model: ColorModel> {
     init(
         width: Int,
         height: Int,
-        is_opaque: Bool,
         resolution: Resolution,
         colorSpace: ColorSpace<Model>,
         premultiplied: Bool,
@@ -61,7 +57,6 @@ struct _fast_decode_info<Model: ColorModel> {
     ) {
         self.width = width
         self.height = height
-        self.is_opaque = is_opaque
         self.resolution = resolution
         self.colorSpace = colorSpace
         self.premultiplied = premultiplied
@@ -81,7 +76,6 @@ extension ColorSpace {
         let channels = bitmaps[0].channels.sorted { $0.bitRange.lowerBound }
         
         let numberOfComponents = self.numberOfComponents
-        let is_opaque = !channels.contains { $0.index == numberOfComponents }
         
         guard bitmaps.allSatisfy({ $0.endianness == .big && $0.bitsPerPixel == bitsPerPixel && $0.channels.sorted { $0.bitRange.lowerBound } == channels }) else { return nil }
         
@@ -101,7 +95,7 @@ extension ColorSpace {
                     
                     var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, true, false, UInt8.self) { (destination, source) in
                         
                         destination.pointee.w = source.pointee
                         destination.pointee.a = UInt8.max
@@ -119,7 +113,7 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, true, false, UInt16.self) { (destination, source) in
                         
                         destination.pointee.w = UInt16(bigEndian: source.pointee)
                         destination.pointee.a = UInt16.max
@@ -135,7 +129,7 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, true, false, UInt16.self) { (destination, source) in
                         
                         destination.pointee.w = UInt16(littleEndian: source.pointee)
                         destination.pointee.a = UInt16.max
@@ -153,7 +147,7 @@ extension ColorSpace {
                     
                     var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt8.self) { (destination, source) in
                         
                         var source = source
                         
@@ -175,7 +169,7 @@ extension ColorSpace {
                     
                     var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt8.self) { (destination, source) in
                         
                         var source = source
                         
@@ -199,7 +193,7 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -221,7 +215,7 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -243,7 +237,7 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -265,7 +259,7 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -297,7 +291,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, true, false, UInt8.self) { (destination, source) in
                         
                         var source = source
                         
@@ -326,7 +320,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, true, false, UInt8.self) { (destination, source) in
                         
                         var source = source
                         
@@ -358,7 +352,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt8.self) { (destination, source) in
                         
                         var source = source
                         
@@ -388,7 +382,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt8.self) { (destination, source) in
                         
                         var source = source
                         
@@ -418,7 +412,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt8.self) { (destination, source) in
                         
                         var source = source
                         
@@ -448,7 +442,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt8.self) { (destination, source) in
                         
                         var source = source
                         
@@ -479,7 +473,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, true, false, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -508,7 +502,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, true, false, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -537,7 +531,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, true, false, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -566,7 +560,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, true, false, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -598,7 +592,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -628,7 +622,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -658,7 +652,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -688,7 +682,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -718,7 +712,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -748,7 +742,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -778,7 +772,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -808,7 +802,7 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
+                    image._fast_decode_pixel(bitmaps, false, premultiplied, UInt16.self) { (destination, source) in
                         
                         var source = source
                         
@@ -836,7 +830,6 @@ extension ColorSpace {
         let info = _fast_decode_info(
             width: width,
             height: height,
-            is_opaque: is_opaque,
             resolution: resolution,
             colorSpace: self,
             premultiplied: premultiplied,
