@@ -58,7 +58,7 @@ extension JPEGEncoder {
         switch image.base {
         case let image as Image<Gray16ColorPixel>:
             
-            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .genericGamma22Gray), properties: properties) }
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .genericGamma22Gray), properties: properties) }
             
             var _pixels = Data(count: image.pixels.count)
             
@@ -91,7 +91,7 @@ extension JPEGEncoder {
             
         case var image as Image<ARGB32ColorPixel>:
             
-            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
             
             image.withUnsafeMutableBufferPointer {
                 
@@ -120,7 +120,7 @@ extension JPEGEncoder {
             
         case var image as Image<RGBA32ColorPixel>:
             
-            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
             
             image.withUnsafeMutableBufferPointer {
                 
@@ -149,7 +149,7 @@ extension JPEGEncoder {
             
         case var image as Image<ABGR32ColorPixel>:
             
-            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
             
             image.withUnsafeMutableBufferPointer {
                 
@@ -178,7 +178,7 @@ extension JPEGEncoder {
             
         case var image as Image<BGRA32ColorPixel>:
             
-            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
             
             image.withUnsafeMutableBufferPointer {
                 
@@ -211,7 +211,7 @@ extension JPEGEncoder {
                 
                 let _image = Image<Gray16ColorPixel>(image) ?? Image<Gray16ColorPixel>(image: image, colorSpace: .genericGamma22Gray)
                 
-                guard let _iccData = _image.colorSpace.iccData else { return encode(image: AnyImage(_image), properties: properties) }
+                guard let _iccData = _image.colorSpace.iccData else { return encode(image: AnyImage(image: _image, colorSpace: .genericGamma22Gray), properties: properties) }
                 
                 var _pixels = Data(count: _image.pixels.count)
                 
@@ -246,7 +246,7 @@ extension JPEGEncoder {
                 
                 var _image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
                 
-                guard let _iccData = _image.colorSpace.iccData else { return encode(image: AnyImage(_image), properties: properties) }
+                guard let _iccData = _image.colorSpace.iccData else { return encode(image: AnyImage(image: _image, colorSpace: .sRGB), properties: properties) }
                 
                 _image.withUnsafeMutableBufferPointer {
                     
