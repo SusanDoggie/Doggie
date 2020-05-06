@@ -127,18 +127,18 @@ extension BinaryInteger {
 
 @inlinable
 @inline(__always)
-public func _scale_integer<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger & UnsignedInteger>(_ x: T, _ from_max: T, _ to_max: R) -> R {
+public func _mul_div<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger & UnsignedInteger>(_ x: T, _ to_max: R, _ from_max: T) -> R {
     
     guard from_max != to_max else { return R(x) }
     
     @inline(__always)
-    func __scale_integer<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ from_max: T, _ to_max: T) -> T {
+    func __mul_div<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ to_max: T, _ from_max: T) -> T {
         let (quotient, remainder) = from_max.dividingFullWidth(x.multipliedFullWidth(by: to_max))
         let (_remainder, overflow) = remainder.multipliedReportingOverflow(by: 2)
         return !overflow && _remainder < from_max ? quotient : quotient + 1
     }
     
-    return T.bitWidth > R.bitWidth ? R(__scale_integer(x, from_max, T(to_max))) : __scale_integer(R(x), R(from_max), to_max)
+    return T.bitWidth > R.bitWidth ? R(__mul_div(x, T(to_max), from_max)) : __mul_div(R(x), to_max, R(from_max))
 }
 
 @inlinable

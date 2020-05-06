@@ -55,17 +55,10 @@ extension ColorSpace {
                     
                     var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
-                            
-                            destination.pointee.w = source.pointee
-                            destination.pointee.a = UInt8.max
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        destination.pointee.w = source.pointee
+                        destination.pointee.a = UInt8.max
                     }
                     
                     return image
@@ -80,17 +73,10 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            destination.pointee.w = UInt16(bigEndian: source.pointee)
-                            destination.pointee.a = UInt16.max
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        destination.pointee.w = UInt16(bigEndian: source.pointee)
+                        destination.pointee.a = UInt16.max
                     }
                     
                     return image
@@ -103,17 +89,10 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            destination.pointee.w = UInt16(littleEndian: source.pointee)
-                            destination.pointee.a = UInt16.max
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        destination.pointee.w = UInt16(littleEndian: source.pointee)
+                        destination.pointee.a = UInt16.max
                     }
                     
                     return image
@@ -128,21 +107,14 @@ extension ColorSpace {
                     
                     var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.w = source.pointee
-                            source += 1
-                            
-                            destination.pointee.a = source.pointee
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.w = source.pointee
+                        source += 1
+                        
+                        destination.pointee.a = source.pointee
                     }
                     
                     return image
@@ -157,21 +129,14 @@ extension ColorSpace {
                     
                     var image = Image<Gray16ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.a = source.pointee
-                            source += 1
-                            
-                            destination.pointee.w = source.pointee
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.a = source.pointee
+                        source += 1
+                        
+                        destination.pointee.w = source.pointee
                     }
                     
                     return image
@@ -188,21 +153,14 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.w = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16(bigEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.w = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16(bigEndian: source.pointee)
                     }
                     
                     return image
@@ -217,21 +175,14 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.w = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16(littleEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.w = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16(littleEndian: source.pointee)
                     }
                     
                     return image
@@ -246,21 +197,14 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.a = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.w = UInt16(bigEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.a = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.w = UInt16(bigEndian: source.pointee)
                     }
                     
                     return image
@@ -275,21 +219,14 @@ extension ColorSpace {
                     
                     var image = Image<Gray32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.a = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.w = UInt16(littleEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.a = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.w = UInt16(littleEndian: source.pointee)
                     }
                     
                     return image
@@ -314,27 +251,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.b = source.pointee
-                            source += 1
-                            
-                            destination.pointee.g = source.pointee
-                            source += 1
-                            
-                            destination.pointee.r = source.pointee
-                            source += 1
-                            
-                            destination.pointee.a = UInt8.max
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.b = source.pointee
+                        source += 1
+                        
+                        destination.pointee.g = source.pointee
+                        source += 1
+                        
+                        destination.pointee.r = source.pointee
+                        source += 1
+                        
+                        destination.pointee.a = UInt8.max
                     }
                     
                     return image
@@ -350,27 +280,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.r = source.pointee
-                            source += 1
-                            
-                            destination.pointee.g = source.pointee
-                            source += 1
-                            
-                            destination.pointee.b = source.pointee
-                            source += 1
-                            
-                            destination.pointee.a = UInt8.max
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.r = source.pointee
+                        source += 1
+                        
+                        destination.pointee.g = source.pointee
+                        source += 1
+                        
+                        destination.pointee.b = source.pointee
+                        source += 1
+                        
+                        destination.pointee.a = UInt8.max
                     }
                     
                     return image
@@ -389,27 +312,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.a = source.pointee
-                            source += 1
-                            
-                            destination.pointee.b = source.pointee
-                            source += 1
-                            
-                            destination.pointee.g = source.pointee
-                            source += 1
-                            
-                            destination.pointee.r = source.pointee
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.a = source.pointee
+                        source += 1
+                        
+                        destination.pointee.b = source.pointee
+                        source += 1
+                        
+                        destination.pointee.g = source.pointee
+                        source += 1
+                        
+                        destination.pointee.r = source.pointee
                     }
                     
                     return image
@@ -426,27 +342,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.b = source.pointee
-                            source += 1
-                            
-                            destination.pointee.g = source.pointee
-                            source += 1
-                            
-                            destination.pointee.r = source.pointee
-                            source += 1
-                            
-                            destination.pointee.a = source.pointee
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.b = source.pointee
+                        source += 1
+                        
+                        destination.pointee.g = source.pointee
+                        source += 1
+                        
+                        destination.pointee.r = source.pointee
+                        source += 1
+                        
+                        destination.pointee.a = source.pointee
                     }
                     
                     return image
@@ -463,27 +372,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.a = source.pointee
-                            source += 1
-                            
-                            destination.pointee.r = source.pointee
-                            source += 1
-                            
-                            destination.pointee.g = source.pointee
-                            source += 1
-                            
-                            destination.pointee.b = source.pointee
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.a = source.pointee
+                        source += 1
+                        
+                        destination.pointee.r = source.pointee
+                        source += 1
+                        
+                        destination.pointee.g = source.pointee
+                        source += 1
+                        
+                        destination.pointee.b = source.pointee
                     }
                     
                     return image
@@ -500,27 +402,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA32ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt8.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt8.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.r = source.pointee
-                            source += 1
-                            
-                            destination.pointee.g = source.pointee
-                            source += 1
-                            
-                            destination.pointee.b = source.pointee
-                            source += 1
-                            
-                            destination.pointee.a = source.pointee
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.r = source.pointee
+                        source += 1
+                        
+                        destination.pointee.g = source.pointee
+                        source += 1
+                        
+                        destination.pointee.b = source.pointee
+                        source += 1
+                        
+                        destination.pointee.a = source.pointee
                     }
                     
                     return image
@@ -538,27 +433,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.b = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.r = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16.max
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.b = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.r = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16.max
                     }
                     
                     return image
@@ -574,27 +462,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.r = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.b = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16.max
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.r = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.b = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16.max
                     }
                     
                     return image
@@ -610,27 +491,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.b = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.r = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16.max
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.b = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.r = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16.max
                     }
                     
                     return image
@@ -646,27 +520,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.r = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.b = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16.max
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.r = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.b = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16.max
                     }
                     
                     return image
@@ -685,27 +552,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.a = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.b = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.r = UInt16(bigEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.a = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.b = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.r = UInt16(bigEndian: source.pointee)
                     }
                     
                     return image
@@ -722,27 +582,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.b = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.r = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16(bigEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.b = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.r = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16(bigEndian: source.pointee)
                     }
                     
                     return image
@@ -759,27 +612,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.a = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.r = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.b = UInt16(bigEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.a = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.r = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.b = UInt16(bigEndian: source.pointee)
                     }
                     
                     return image
@@ -796,27 +642,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.r = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.b = UInt16(bigEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16(bigEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.r = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.b = UInt16(bigEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16(bigEndian: source.pointee)
                     }
                     
                     return image
@@ -833,27 +672,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.a = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.b = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.r = UInt16(littleEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.a = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.b = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.r = UInt16(littleEndian: source.pointee)
                     }
                     
                     return image
@@ -870,27 +702,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.b = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.r = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16(littleEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.b = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.r = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16(littleEndian: source.pointee)
                     }
                     
                     return image
@@ -907,27 +732,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.a = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.r = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.b = UInt16(littleEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.a = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.r = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.b = UInt16(littleEndian: source.pointee)
                     }
                     
                     return image
@@ -944,27 +762,20 @@ extension ColorSpace {
                     
                     var image = Image<RGBA64ColorPixel>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
                     
-                    for bitmap in bitmaps {
+                    image._fast_decode_pixel(bitmaps, is_opaque, premultiplied, UInt16.self) { (destination, source) in
                         
-                        image._fast_decode(bitmap, is_opaque, UInt16.self) { (destination, source) in
-                            
-                            var source = source
-                            
-                            destination.pointee.r = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.g = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.b = UInt16(littleEndian: source.pointee)
-                            source += 1
-                            
-                            destination.pointee.a = UInt16(littleEndian: source.pointee)
-                        }
-                    }
-                    
-                    if premultiplied {
-                        image._decode_premultiplied()
+                        var source = source
+                        
+                        destination.pointee.r = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.g = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.b = UInt16(littleEndian: source.pointee)
+                        source += 1
+                        
+                        destination.pointee.a = UInt16(littleEndian: source.pointee)
                     }
                     
                     return image
@@ -976,185 +787,230 @@ extension ColorSpace {
         default: break
         }
         
+        @inline(__always)
+        func _fast_decode_alpha_none<T: FixedWidthInteger & UnsignedInteger, P>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P: _FloatComponentPixel, P.Scalar: BinaryFloatingPoint {
+            
+            switch endianness {
+            case .big: return _fast_decode_alpha_none(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
+            case .little: return _fast_decode_alpha_none(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(littleEndian: $0)) / P.Scalar(T.max) })
+            }
+        }
+        
+        @inline(__always)
+        func _fast_decode_alpha_none2<P>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
+            
+            return _fast_decode_alpha_none(bitmaps, is_opaque, .float, endianness, width, height, resolution, self, premultiplied, fileBacked, P.Scalar.self, decode)
+        }
+        
+        @inline(__always)
+        func _fast_decode_alpha_first<T: FixedWidthInteger & UnsignedInteger, P>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P: _FloatComponentPixel, P.Scalar: BinaryFloatingPoint {
+            
+            switch endianness {
+            case .big: return _fast_decode_alpha_first(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
+            case .little: return _fast_decode_alpha_first(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(littleEndian: $0)) / P.Scalar(T.max) })
+            }
+        }
+        
+        @inline(__always)
+        func _fast_decode_alpha_first2<P>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
+            
+            return _fast_decode_alpha_first(bitmaps, is_opaque, .float, endianness, width, height, resolution, self, premultiplied, fileBacked, P.Scalar.self, decode)
+        }
+        
+        @inline(__always)
+        func _fast_decode_alpha_last<T: FixedWidthInteger & UnsignedInteger, P>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P: _FloatComponentPixel, P.Scalar: BinaryFloatingPoint {
+            
+            switch endianness {
+            case .big: return _fast_decode_alpha_last(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
+            case .little: return _fast_decode_alpha_last(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(littleEndian: $0)) / P.Scalar(T.max) })
+            }
+        }
+        
+        @inline(__always)
+        func _fast_decode_alpha_last2<P>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
+            
+            return _fast_decode_alpha_last(bitmaps, is_opaque, .float, endianness, width, height, resolution, self, premultiplied, fileBacked, P.Scalar.self, decode)
+        }
+        
         switch bitsPerPixel {
             
         case 8 * numberOfComponents:
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, UInt8.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.big, UInt8.self) {
                 
                 return image
             }
             
         case 16 * numberOfComponents:
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.big, UInt16.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.little, UInt16.self) {
                 
                 return image
             }
             
         case 32 * numberOfComponents:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.big, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.little, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none2(.big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none2(.little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
         case 64 * numberOfComponents:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.big, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.little, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none2(.big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none2(.little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
         case 8 * numberOfComponents + 8:
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, UInt8.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.big, UInt8.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, UInt8.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.big, UInt8.self) {
                 
                 return image
             }
             
         case 16 * numberOfComponents + 16:
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.big, UInt16.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.little, UInt16.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.big, UInt16.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.little, UInt16.self) {
                 
                 return image
             }
             
         case 32 * numberOfComponents + 32:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.big, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.little, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.big, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.little, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first2(.big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first2(.little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last2(.big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last2(.little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
         case 64 * numberOfComponents + 64:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.big, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.little, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.big, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.little, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first2(.big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first2(.little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last2(.big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last2(.little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }

@@ -61,6 +61,10 @@ public protocol ImageProtocol: Hashable {
     
     func linearTone() -> Self
     
+    func premultiplied() -> Self
+    
+    func unpremultiplied() -> Self
+    
     func transposed() -> Self
     
     func verticalFlipped() -> Self

@@ -456,6 +456,21 @@ extension Image {
     
     @inlinable
     @inline(__always)
+    public func premultiplied() -> Image {
+        return self.map { $0.premultiplied() }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func unpremultiplied() -> Image {
+        return self.map { $0.unpremultiplied() }
+    }
+}
+
+extension Image {
+    
+    @inlinable
+    @inline(__always)
     public func transposed() -> Image {
         if pixels.isEmpty {
             return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)

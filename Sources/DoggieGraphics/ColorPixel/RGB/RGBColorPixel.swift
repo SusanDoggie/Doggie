@@ -75,10 +75,10 @@ extension ColorPixel where Self: _RGBColorPixel {
     @inline(__always)
     init<C: _RGBColorPixel>(color: C) {
         
-        let r = _scale_integer(color.r, C.Component.max, Component.max)
-        let g = _scale_integer(color.g, C.Component.max, Component.max)
-        let b = _scale_integer(color.b, C.Component.max, Component.max)
-        let a = _scale_integer(color.a, C.Component.max, Component.max)
+        let r = _mul_div(color.r, Component.max, C.Component.max)
+        let g = _mul_div(color.g, Component.max, C.Component.max)
+        let b = _mul_div(color.b, Component.max, C.Component.max)
+        let a = _mul_div(color.a, Component.max, C.Component.max)
         
         self.init(red: r, green: g, blue: b, opacity: a)
     }
@@ -170,6 +170,32 @@ extension ColorPixel where Self: _RGBColorPixel {
         set {
             self.a = Component((newValue * _max).clamped(to: 0..._max).rounded())
         }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func premultiplied() -> Self {
+        
+        guard a != 0 else { return self }
+        
+        let _r = _mul_div(r, a, Component.max)
+        let _g = _mul_div(g, a, Component.max)
+        let _b = _mul_div(b, a, Component.max)
+        
+        return Self(red: _r, green: _g, blue: _b, opacity: a)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func unpremultiplied() -> Self {
+        
+        guard a != 0 else { return self }
+        
+        let _r = _mul_div(r, Component.max, a)
+        let _g = _mul_div(g, Component.max, a)
+        let _b = _mul_div(b, Component.max, a)
+        
+        return Self(red: _r, green: _g, blue: _b, opacity: a)
     }
     
     @inlinable

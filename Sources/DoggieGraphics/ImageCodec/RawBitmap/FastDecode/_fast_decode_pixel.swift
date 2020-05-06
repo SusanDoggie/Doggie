@@ -1,5 +1,5 @@
 //
-//  _fast_decode.swift
+//  _fast_decode_pixel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,11 +23,11 @@
 //  THE SOFTWARE.
 //
 
-extension Image {
+extension Image where Pixel: TIFFEncodablePixel {
     
     @inlinable
     @inline(__always)
-    mutating func _fast_decode<T, R>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ premultiplied: Bool, _: T.Type, _: R.Type, callback: (UnsafeMutablePointer<R>, UnsafePointer<T>) -> Void) {
+    mutating func _fast_decode_pixel<T: FixedWidthInteger & UnsignedInteger>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ premultiplied: Bool, _: T.Type, callback: (UnsafeMutablePointer<Pixel>, UnsafePointer<T>) -> Void) {
         
         let numberOfComponents = is_opaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents
         
@@ -64,12 +64,25 @@ extension Image {
                             guard source + bytesPerPixel <= source_end else { return }
                             
                             let _source = source.bindMemory(to: T.self, capacity: numberOfComponents)
-                            let _destination = UnsafeMutableRawPointer(destination).bindMemory(to: R.self, capacity: Pixel.numberOfComponents)
                             
-                            callback(_destination, _source)
+                            callback(destination, _source)
                             
                             if premultiplied {
                                 destination.pointee = destination.pointee.unpremultiplied()
+                            }
+                            
+                            switch bitmap.tiff_predictor {
+                            case 1: break
+                            case 2:
+                                if destination > dest {
+                                    let lhs = destination - 1
+                                    if is_opaque {
+                                        destination.pointee = destination.pointee.tiff_prediction_2_decode_color(lhs.pointee)
+                                    } else {
+                                        destination.pointee = destination.pointee.tiff_prediction_2_decode(lhs.pointee)
+                                    }
+                                }
+                            default: fatalError("Unsupported tiff predictor.")
                             }
                             
                             source += bytesPerPixel
@@ -81,5 +94,6 @@ extension Image {
                 }
             }
         }
+        
     }
 }

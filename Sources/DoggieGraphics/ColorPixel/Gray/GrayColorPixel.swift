@@ -71,8 +71,8 @@ extension ColorPixel where Self: _GrayColorPixel {
     @inline(__always)
     init<C: _GrayColorPixel>(color: C) {
         
-        let w = _scale_integer(color.w, C.Component.max, Component.max)
-        let a = _scale_integer(color.a, C.Component.max, Component.max)
+        let w = _mul_div(color.w, Component.max, C.Component.max)
+        let a = _mul_div(color.a, Component.max, C.Component.max)
         
         self.init(white: w, opacity: a)
     }
@@ -156,6 +156,20 @@ extension ColorPixel where Self: _GrayColorPixel {
         set {
             self.a = Component((newValue * _max).clamped(to: 0..._max).rounded())
         }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func premultiplied() -> Self {
+        guard a != 0 else { return self }
+        return Self(white: _mul_div(w, a, Component.max), opacity: a)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func unpremultiplied() -> Self {
+        guard a != 0 else { return self }
+        return Self(white: _mul_div(w, Component.max, a), opacity: a)
     }
     
     @inlinable

@@ -63,11 +63,7 @@ extension ColorSpace {
                     image._decode_unsigned_pixel(bitmap, is_opaque, UInt8.self)
                 }
                 
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
-                
-                return image
+                return premultiplied ? image.unpremultiplied() : image
             }
             
             if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 16 && $0.format == .unsigned } }) {
@@ -78,11 +74,7 @@ extension ColorSpace {
                     image._decode_unsigned_pixel(bitmap, is_opaque, UInt16.self)
                 }
                 
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
-                
-                return image
+                return premultiplied ? image.unpremultiplied() : image
             }
             
         case let colorSpace as ColorSpace<RGBColorModel>:
@@ -95,11 +87,7 @@ extension ColorSpace {
                     image._decode_unsigned_pixel(bitmap, is_opaque, UInt8.self)
                 }
                 
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
-                
-                return image
+                return premultiplied ? image.unpremultiplied() : image
             }
             
             if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 16 && $0.format == .unsigned } }) {
@@ -110,11 +98,7 @@ extension ColorSpace {
                     image._decode_unsigned_pixel(bitmap, is_opaque, UInt16.self)
                 }
                 
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
-                
-                return image
+                return premultiplied ? image.unpremultiplied() : image
             }
             
         default: break
@@ -137,11 +121,7 @@ extension ColorSpace {
                 }
             }
             
-            if premultiplied {
-                image._decode_premultiplied()
-            }
-            
-            return image
+            return premultiplied ? image.unpremultiplied() : image
         }
         
         var image = Image<Float64ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
@@ -169,10 +149,6 @@ extension ColorSpace {
             }
         }
         
-        if premultiplied {
-            image._decode_premultiplied()
-        }
-        
-        return image
+        return premultiplied ? image.unpremultiplied() : image
     }
 }

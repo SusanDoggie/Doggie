@@ -25,7 +25,9 @@
 
 @inlinable
 @inline(__always)
-func _fast_decode_alpha_last<T, P>(_ channels: [RawBitmap.Channel], _ is_opaque: Bool, _ format: RawBitmap.Format, _ endianness: RawBitmap.Endianness, _: T.Type, _ decode: (T) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
+func _fast_decode_alpha_last<T, P>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ format: RawBitmap.Format, _ endianness: RawBitmap.Endianness, _ width: Int, _ height: Int, _ resolution: Resolution, _ colorSpace: ColorSpace<P.Model>, _ premultiplied: Bool, _ fileBacked: Bool, _: T.Type, _ decode: (T) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
+    
+    let channels = bitmaps[0].channels.sorted { $0.bitRange.lowerBound }
     
     let numberOfComponents = P.Model.numberOfComponents
     let bitsPerChannel = MemoryLayout<T>.stride << 3
@@ -39,43 +41,19 @@ func _fast_decode_alpha_last<T, P>(_ channels: [RawBitmap.Channel], _ is_opaque:
     
     guard channels == alpha_last else { return nil }
     
-    var image = Image<P>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+    var image = Image<P>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
     
-    for bitmap in bitmaps {
+    image._fast_decode(bitmaps, is_opaque, premultiplied, T.self, P.Scalar.self) { (destination, source) in
         
-        image._fast_decode(bitmap, is_opaque, T.self, P.Scalar.self) { (destination, source) in
-            
-            var destination = destination
-            var source = source
-            
-            for _ in 0...numberOfComponents {
-                destination.pointee = decode(source.pointee)
-                destination += 1
-                source += 1
-            }
+        var destination = destination
+        var source = source
+        
+        for _ in 0...numberOfComponents {
+            destination.pointee = decode(source.pointee)
+            destination += 1
+            source += 1
         }
     }
     
-    if premultiplied {
-        image._decode_premultiplied()
-    }
-    
     return image
-}
-
-@inlinable
-@inline(__always)
-func _fast_decode_alpha_last<T: FixedWidthInteger & UnsignedInteger, P>(_ channels: [RawBitmap.Channel], _ is_opaque: Bool, _ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P: _FloatComponentPixel {
-    
-    switch endianness {
-    case .big: return _fast_decode_alpha_last(channels, is_opaque, .unsigned, endianness, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
-    case .little: return _fast_decode_alpha_last(channels, is_opaque, .unsigned, endianness, T.self, { P.Scalar(T(littleEndian: $0)) / P.Scalar(T.max) })
-    }
-}
-
-@inlinable
-@inline(__always)
-func _fast_decode_alpha_last<P>(_ channels: [RawBitmap.Channel], _ is_opaque: Bool, _ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
-    
-    return _fast_decode_alpha_last(channels, is_opaque, float, endianness, T.self, decode)
 }

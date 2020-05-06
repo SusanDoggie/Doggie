@@ -394,7 +394,7 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
                             for value in ImageRepDecoderBitStream(buffer: source, count: count, bitWidth: Int(bitsPerPixel)) {
                                 
                                 if value != transparent {
-                                    _destination.pointee = Gray16ColorPixel(white: _scale_integer(value, channel_max, UInt8.max))
+                                    _destination.pointee = Gray16ColorPixel(white: _mul_div(value, UInt8.max, channel_max))
                                 }
                                 
                                 _destination += 1
@@ -421,7 +421,7 @@ func _png_image(ihdr: PNGDecoder.IHDR, chunks: [PNGChunk], width: Int, height: I
                             let value = source.pointee
                             
                             if value != transparent {
-                                destination.pointee = Gray16ColorPixel(white: _scale_integer(value, channel_max, UInt8.max))
+                                destination.pointee = Gray16ColorPixel(white: _mul_div(value, UInt8.max, channel_max))
                             }
                             
                             source += 1

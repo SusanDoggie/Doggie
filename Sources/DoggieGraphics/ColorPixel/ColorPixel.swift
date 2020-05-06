@@ -61,6 +61,10 @@ public protocol ColorPixel: Hashable, _ColorPixel where Model: ColorModel {
     
     func with(opacity: Double) -> Self
     
+    func premultiplied() -> Self
+    
+    func unpremultiplied() -> Self
+    
     func blended(source: Self) -> Self
     
     func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self
@@ -101,6 +105,23 @@ extension ColorPixel {
         var c = self
         c.opacity = opacity
         return c
+    }
+}
+
+extension ColorPixel {
+    
+    @inlinable
+    @inline(__always)
+    public func premultiplied() -> Self {
+        guard opacity != 0 else { return self }
+        return Self(color: color * opacity, opacity: opacity)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func unpremultiplied() -> Self {
+        guard opacity != 0 else { return self }
+        return Self(color: color / opacity, opacity: opacity)
     }
 }
 

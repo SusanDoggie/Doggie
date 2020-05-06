@@ -108,7 +108,7 @@ extension Image {
                         default: fatalError("Unsupported tiff predictor.")
                         }
                         
-                        _destination.pointee = _scale_integer(_d & channel_max, channel_max, T.max)
+                        _destination.pointee = _mul_div(_d & channel_max, T.max, channel_max)
                         
                         tiff_predictor_record = _d
                         

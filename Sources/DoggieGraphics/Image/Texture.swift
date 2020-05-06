@@ -284,6 +284,21 @@ extension Texture {
     
     @inlinable
     @inline(__always)
+    public func premultiplied() -> Texture {
+        return self.map { $0.premultiplied() }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func unpremultiplied() -> Texture {
+        return self.map { $0.unpremultiplied() }
+    }
+}
+
+extension Texture {
+    
+    @inlinable
+    @inline(__always)
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<RawPixel>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBufferPointer(body)

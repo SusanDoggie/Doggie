@@ -58,6 +58,10 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     func _linearTone() -> AnyImageBaseProtocol
     
+    func _premultiplied() -> AnyImageBaseProtocol
+    
+    func _unpremultiplied() -> AnyImageBaseProtocol
+    
     func _transposed() -> AnyImageBaseProtocol
     
     func _verticalFlipped() -> AnyImageBaseProtocol
@@ -81,6 +85,16 @@ extension Image: AnyImageBaseProtocol {
     @inlinable
     func _linearTone() -> AnyImageBaseProtocol {
         return self.linearTone()
+    }
+    
+    @inlinable
+    func _premultiplied() -> AnyImageBaseProtocol {
+        return self.premultiplied()
+    }
+    
+    @inlinable
+    func _unpremultiplied() -> AnyImageBaseProtocol {
+        return self.unpremultiplied()
     }
     
     @inlinable
@@ -257,6 +271,16 @@ extension AnyImage {
     @inlinable
     public func linearTone() -> AnyImage {
         return AnyImage(base: _base._linearTone())
+    }
+    
+    @inlinable
+    public func premultiplied() -> AnyImage {
+        return AnyImage(base: _base._premultiplied())
+    }
+    
+    @inlinable
+    public func unpremultiplied() -> AnyImage {
+        return AnyImage(base: _base._unpremultiplied())
     }
     
     @inlinable
