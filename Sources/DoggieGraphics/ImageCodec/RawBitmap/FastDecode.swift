@@ -788,7 +788,7 @@ extension ColorSpace {
         }
         
         @inline(__always)
-        func _fast_decode_alpha_none<T: FixedWidthInteger & UnsignedInteger, P>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P: _FloatComponentPixel, P.Scalar: BinaryFloatingPoint {
+        func _fast_decode_alpha_none<T: FixedWidthInteger, P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P.Model == Model {
             
             switch endianness {
             case .big: return _fast_decode_alpha_none(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
@@ -797,13 +797,13 @@ extension ColorSpace {
         }
         
         @inline(__always)
-        func _fast_decode_alpha_none2<P>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
+        func _fast_decode_alpha_none2<P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P.Model == Model {
             
             return _fast_decode_alpha_none(bitmaps, is_opaque, .float, endianness, width, height, resolution, self, premultiplied, fileBacked, P.Scalar.self, decode)
         }
         
         @inline(__always)
-        func _fast_decode_alpha_first<T: FixedWidthInteger & UnsignedInteger, P>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P: _FloatComponentPixel, P.Scalar: BinaryFloatingPoint {
+        func _fast_decode_alpha_first<T: FixedWidthInteger, P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P.Model == Model {
             
             switch endianness {
             case .big: return _fast_decode_alpha_first(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
@@ -812,13 +812,13 @@ extension ColorSpace {
         }
         
         @inline(__always)
-        func _fast_decode_alpha_first2<P>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
+        func _fast_decode_alpha_first2<P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P.Model == Model {
             
             return _fast_decode_alpha_first(bitmaps, is_opaque, .float, endianness, width, height, resolution, self, premultiplied, fileBacked, P.Scalar.self, decode)
         }
         
         @inline(__always)
-        func _fast_decode_alpha_last<T: FixedWidthInteger & UnsignedInteger, P>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P: _FloatComponentPixel, P.Scalar: BinaryFloatingPoint {
+        func _fast_decode_alpha_last<T: FixedWidthInteger, P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P.Model == Model {
             
             switch endianness {
             case .big: return _fast_decode_alpha_last(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
@@ -827,7 +827,7 @@ extension ColorSpace {
         }
         
         @inline(__always)
-        func _fast_decode_alpha_last2<P>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
+        func _fast_decode_alpha_last2<P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P.Model == Model {
             
             return _fast_decode_alpha_last(bitmaps, is_opaque, .float, endianness, width, height, resolution, self, premultiplied, fileBacked, P.Scalar.self, decode)
         }
