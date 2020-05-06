@@ -457,11 +457,7 @@ extension ColorSpace {
         
         black = a2b.denormalize(black)
         
-        black.setNormalizedComponent(0, black.x)
-        black.setNormalizedComponent(1, black.y)
-        black.setNormalizedComponent(2, black.z)
-        
-        return black
+        return black.denormalized()
     }
     
     static func _PCSLab_black_point(a2b: iccTransform, b2a: iccTransform) -> XYZColorModel {
@@ -479,9 +475,7 @@ extension ColorSpace {
         default: black = a2b.convertLinearToConnection(a2b.convertToLinear(color))
         }
         
-        black.setNormalizedComponent(0, black.lightness)
-        black.setNormalizedComponent(1, black.a)
-        black.setNormalizedComponent(2, black.b)
+        black = black.denormalized()
         
         return CIELabColorSpace(PCSXYZ).convertToXYZ(black)
     }
@@ -531,11 +525,7 @@ extension ICCColorSpace {
     @inline(__always)
     func convertToLinear(_ color: Model) -> Model {
         
-        var color = color
-        
-        for i in 0..<Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
+        var color = color.normalized()
         
         if let xyz = color as? XYZColorModel {
             color = a2b.normalize(xyz) as! Model
@@ -547,22 +537,14 @@ extension ICCColorSpace {
             result = a2b.denormalize(xyz) as! Model
         }
         
-        for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result[i])
-        }
-        
-        return result
+        return result.denormalized()
     }
     
     @inlinable
     @inline(__always)
     func convertFromLinear(_ color: Model) -> Model {
         
-        var color = color
-        
-        for i in 0..<Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
+        var color = color.normalized()
         
         if let xyz = color as? XYZColorModel {
             color = b2a.normalize(xyz) as! Model
@@ -574,22 +556,14 @@ extension ICCColorSpace {
             result = b2a.denormalize(xyz) as! Model
         }
         
-        for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result[i])
-        }
-        
-        return result
+        return result.denormalized()
     }
     
     @inlinable
     @inline(__always)
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         
-        var color = color
-        
-        for i in 0..<Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
+        var color = color.normalized()
         
         if let xyz = color as? XYZColorModel {
             color = a2b.normalize(xyz) as! Model
@@ -601,9 +575,7 @@ extension ICCColorSpace {
             result = a2b.denormalize(xyz) as! Connection.Model
         }
         
-        result.setNormalizedComponent(0, result[0])
-        result.setNormalizedComponent(1, result[1])
-        result.setNormalizedComponent(2, result[2])
+        result = result.denormalized()
         
         return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
     }
@@ -614,9 +586,7 @@ extension ICCColorSpace {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
         
-        color[0] = color.normalizedComponent(0)
-        color[1] = color.normalizedComponent(1)
-        color[2] = color.normalizedComponent(2)
+        color = color.normalized()
         
         if let xyz = color as? XYZColorModel {
             color = b2a.normalize(xyz) as! Connection.Model
@@ -628,22 +598,14 @@ extension ICCColorSpace {
             result = b2a.denormalize(xyz) as! Model
         }
         
-        for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result[i])
-        }
-        
-        return result
+        return result.denormalized()
     }
     
     @inlinable
     @inline(__always)
     func convertToXYZ(_ color: Model) -> XYZColorModel {
         
-        var color = color
-        
-        for i in 0..<Model.numberOfComponents {
-            color[i] = color.normalizedComponent(i)
-        }
+        var color = color.normalized()
         
         if let xyz = color as? XYZColorModel {
             color = a2b.normalize(xyz) as! Model
@@ -655,9 +617,7 @@ extension ICCColorSpace {
             result = a2b.denormalize(xyz) as! Connection.Model
         }
         
-        result.setNormalizedComponent(0, result[0])
-        result.setNormalizedComponent(1, result[1])
-        result.setNormalizedComponent(2, result[2])
+        result = result.denormalized()
         
         return self.connection.convertToXYZ(result) * chromaticAdaptationMatrix.inverse
     }
@@ -668,9 +628,7 @@ extension ICCColorSpace {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
         
-        color[0] = color.normalizedComponent(0)
-        color[1] = color.normalizedComponent(1)
-        color[2] = color.normalizedComponent(2)
+        color = color.normalized()
         
         if let xyz = color as? XYZColorModel {
             color = b2a.normalize(xyz) as! Connection.Model
@@ -682,11 +640,7 @@ extension ICCColorSpace {
             result = b2a.denormalize(xyz) as! Model
         }
         
-        for i in 0..<Model.numberOfComponents {
-            result.setNormalizedComponent(i, result[i])
-        }
-        
-        return result
+        return result.denormalized()
     }
 }
 

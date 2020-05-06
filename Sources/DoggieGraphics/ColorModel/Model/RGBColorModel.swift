@@ -277,6 +277,21 @@ extension RGBColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> RGBColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> RGBColorModel {
+        return self
+    }
+}
+
+extension RGBColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> RGBColorModel {
         return RGBColorModel(red: transform(red), green: transform(green), blue: transform(blue))
     }

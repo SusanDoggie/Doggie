@@ -362,31 +362,6 @@ extension Color {
 extension Color {
     
     @inlinable
-    public func normalizedComponent(_ index: Int) -> Double {
-        if index < Model.numberOfComponents {
-            return color.normalizedComponent(index)
-        } else if index == Model.numberOfComponents {
-            return opacity
-        } else {
-            fatalError()
-        }
-    }
-    
-    @inlinable
-    public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
-        if index < Model.numberOfComponents {
-            color.setNormalizedComponent(index, value)
-        } else if index == Model.numberOfComponents {
-            opacity = value
-        } else {
-            fatalError()
-        }
-    }
-}
-
-extension Color {
-    
-    @inlinable
     public var cieXYZ: Color<XYZColorModel> {
         return Color<XYZColorModel>(colorSpace: colorSpace.cieXYZ, color: colorSpace.convertToXYZ(color), opacity: opacity)
     }

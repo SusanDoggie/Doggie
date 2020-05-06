@@ -23,19 +23,6 @@
 //  THE SOFTWARE.
 //
 
-extension ColorModel {
-    
-    @inlinable
-    @inline(__always)
-    func _denormalized() -> Self {
-        var color = self
-        for i in 0..<Self.numberOfComponents where Self.rangeOfComponent(i) != 0...1 {
-            color.setNormalizedComponent(i, self[i])
-        }
-        return color
-    }
-}
-
 extension Image where Pixel: _FloatComponentPixel {
     
     @inlinable
@@ -84,7 +71,7 @@ extension Image where Pixel: _FloatComponentPixel {
                             callback(_destination, _source)
                             
                             if should_denormalized {
-                                destination.pointee.color = destination.pointee.color._denormalized()
+                                destination.pointee.color = destination.pointee.color.denormalized()
                             }
                             if premultiplied {
                                 destination.pointee = destination.pointee.unpremultiplied()

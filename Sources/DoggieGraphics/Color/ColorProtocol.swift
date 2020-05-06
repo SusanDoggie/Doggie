@@ -43,10 +43,6 @@ public protocol ColorProtocol {
     
     mutating func setComponent(_ index: Int, _ value: Double)
     
-    func normalizedComponent(_ index: Int) -> Double
-    
-    mutating func setNormalizedComponent(_ index: Int, _ value: Double)
-    
     var opacity: Double { get set }
     
     var isOpaque: Bool { get }

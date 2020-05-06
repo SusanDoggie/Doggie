@@ -42,10 +42,6 @@ protocol AnyColorBaseProtocol: PolymorphicHashable {
     
     mutating func setComponent(_ index: Int, _ value: Double)
     
-    func normalizedComponent(_ index: Int) -> Double
-    
-    mutating func setNormalizedComponent(_ index: Int, _ value: Double)
-    
     var opacity: Double { get set }
     
     var isOpaque: Bool { get }
@@ -206,16 +202,6 @@ extension AnyColor {
     @inlinable
     public mutating func setComponent(_ index: Int, _ value: Double) {
         return _base.setComponent(index, value)
-    }
-    
-    @inlinable
-    public func normalizedComponent(_ index: Int) -> Double {
-        return _base.normalizedComponent(index)
-    }
-    
-    @inlinable
-    public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
-        return _base.setNormalizedComponent(index, value)
     }
     
     @inlinable

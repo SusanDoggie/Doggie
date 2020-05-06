@@ -78,6 +78,21 @@ extension YCbCrColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> YCbCrColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> YCbCrColorModel {
+        return self
+    }
+}
+
+extension YCbCrColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> YCbCrColorModel {
         return YCbCrColorModel(y: transform(y), cb: transform(cb), cr: transform(cr))
     }

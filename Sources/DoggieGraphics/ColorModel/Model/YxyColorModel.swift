@@ -119,6 +119,21 @@ extension YxyColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> YxyColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> YxyColorModel {
+        return self
+    }
+}
+
+extension YxyColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> YxyColorModel {
         return YxyColorModel(luminance: transform(luminance), x: transform(x), y: transform(y))
     }

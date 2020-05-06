@@ -89,6 +89,21 @@ extension GrayColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> GrayColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> GrayColorModel {
+        return self
+    }
+}
+
+extension GrayColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: transform(white))
     }

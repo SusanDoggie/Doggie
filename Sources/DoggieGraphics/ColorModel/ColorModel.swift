@@ -36,6 +36,10 @@ public protocol ColorModel: _ColorModel, Hashable, Tensor where Scalar == Double
     init<T: ColorComponents>(_ components: T) where T.Model == Self
     
     var float32Components: Float32Components { get set }
+    
+    func normalized() -> Self
+    
+    func denormalized() -> Self
 }
 
 public protocol ColorComponents: Hashable, Tensor {
@@ -60,16 +64,26 @@ extension ColorModel {
     
     @inlinable
     @inline(__always)
-    public func normalizedComponent(_ index: Int) -> Double {
-        let range = Self.rangeOfComponent(index)
-        return (self[index] - range.lowerBound) / (range.upperBound - range.lowerBound)
+    public func normalized() -> Self {
+        var color = self
+        for i in 0..<Self.numberOfComponents {
+            let range = Self.rangeOfComponent(i)
+            guard range != 0...1 else { continue }
+            color[i] = (color[i] - range.lowerBound) / (range.upperBound - range.lowerBound)
+        }
+        return color
     }
     
     @inlinable
     @inline(__always)
-    public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
-        let range = Self.rangeOfComponent(index)
-        self[index] = value * (range.upperBound - range.lowerBound) + range.lowerBound
+    public func denormalized() -> Self {
+        var color = self
+        for i in 0..<Self.numberOfComponents {
+            let range = Self.rangeOfComponent(i)
+            guard range != 0...1 else { continue }
+            color[i] = color[i] * (range.upperBound - range.lowerBound) + range.lowerBound
+        }
+        return color
     }
 }
 

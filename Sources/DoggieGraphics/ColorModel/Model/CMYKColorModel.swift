@@ -166,6 +166,21 @@ extension CMYKColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> CMYKColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> CMYKColorModel {
+        return self
+    }
+}
+
+extension CMYKColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> CMYKColorModel {
         return CMYKColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow), black: transform(black))
     }

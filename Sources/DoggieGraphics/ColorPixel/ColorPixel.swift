@@ -49,10 +49,6 @@ public protocol ColorPixel: Hashable, _ColorPixel where Model: ColorModel {
     
     mutating func setComponent(_ index: Int, _ value: Double)
     
-    func normalizedComponent(_ index: Int) -> Double
-    
-    mutating func setNormalizedComponent(_ index: Int, _ value: Double)
-    
     var color: Model { get set }
     
     var opacity: Double { get set }
@@ -144,40 +140,6 @@ extension ColorPixel {
     
     @inlinable
     @inline(__always)
-    public static var numberOfComponents: Int {
-        return Model.numberOfComponents + 1
-    }
-    
-    @inlinable
-    @inline(__always)
-    public var numberOfComponents: Int {
-        return Self.numberOfComponents
-    }
-    
-    @inlinable
-    @inline(__always)
-    public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
-        if i < Model.numberOfComponents {
-            return Model.rangeOfComponent(i)
-        } else if i == Model.numberOfComponents {
-            return 0...1
-        } else {
-            fatalError()
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
-        return Self.rangeOfComponent(i)
-    }
-    
-}
-
-extension ColorPixel {
-    
-    @inlinable
-    @inline(__always)
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
             return color[index]
@@ -193,32 +155,6 @@ extension ColorPixel {
     public mutating func setComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
             color[index] = value
-        } else if index == Model.numberOfComponents {
-            opacity = value
-        } else {
-            fatalError("Index out of range.")
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func normalizedComponent(_ index: Int) -> Double {
-        if index < Model.numberOfComponents {
-            let range = Model.rangeOfComponent(index)
-            return (self.component(index) - range.lowerBound) / (range.upperBound - range.lowerBound)
-        } else if index == Model.numberOfComponents {
-            return opacity
-        } else {
-            fatalError("Index out of range.")
-        }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public mutating func setNormalizedComponent(_ index: Int, _ value: Double) {
-        if index < Model.numberOfComponents {
-            let range = Model.rangeOfComponent(index)
-            self.setComponent(index, value * (range.upperBound - range.lowerBound) + range.lowerBound)
         } else if index == Model.numberOfComponents {
             opacity = value
         } else {

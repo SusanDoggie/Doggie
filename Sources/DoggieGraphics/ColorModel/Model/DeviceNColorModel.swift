@@ -75,6 +75,21 @@ extension Device2ColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> Device2ColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> Device2ColorModel {
+        return self
+    }
+}
+
+extension Device2ColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device2ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -147,6 +162,21 @@ public struct Device3ColorModel: ColorModel {
         set {
             Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
+    }
+}
+
+extension Device3ColorModel {
+    
+    @inlinable
+    @inline(__always)
+    public func normalized() -> Device3ColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> Device3ColorModel {
+        return self
     }
 }
 
@@ -239,6 +269,21 @@ extension Device4ColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> Device4ColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> Device4ColorModel {
+        return self
+    }
+}
+
+extension Device4ColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device4ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -324,6 +369,21 @@ public struct Device5ColorModel: ColorModel {
         set {
             Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
+    }
+}
+
+extension Device5ColorModel {
+    
+    @inlinable
+    @inline(__always)
+    public func normalized() -> Device5ColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> Device5ColorModel {
+        return self
     }
 }
 
@@ -435,6 +495,21 @@ extension Device6ColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> Device6ColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> Device6ColorModel {
+        return self
+    }
+}
+
+extension Device6ColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device6ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -539,6 +614,21 @@ public struct Device7ColorModel: ColorModel {
         set {
             Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
+    }
+}
+
+extension Device7ColorModel {
+    
+    @inlinable
+    @inline(__always)
+    public func normalized() -> Device7ColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> Device7ColorModel {
+        return self
     }
 }
 
@@ -658,6 +748,21 @@ public struct Device8ColorModel: ColorModel {
         set {
             Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
+    }
+}
+
+extension Device8ColorModel {
+    
+    @inlinable
+    @inline(__always)
+    public func normalized() -> Device8ColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> Device8ColorModel {
+        return self
     }
 }
 
@@ -790,6 +895,21 @@ extension Device9ColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> Device9ColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> Device9ColorModel {
+        return self
+    }
+}
+
+extension Device9ColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device9ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -915,6 +1035,21 @@ public struct DeviceAColorModel: ColorModel {
         set {
             Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
+    }
+}
+
+extension DeviceAColorModel {
+    
+    @inlinable
+    @inline(__always)
+    public func normalized() -> DeviceAColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> DeviceAColorModel {
+        return self
     }
 }
 
@@ -1055,6 +1190,21 @@ public struct DeviceBColorModel: ColorModel {
         set {
             Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
+    }
+}
+
+extension DeviceBColorModel {
+    
+    @inlinable
+    @inline(__always)
+    public func normalized() -> DeviceBColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> DeviceBColorModel {
+        return self
     }
 }
 
@@ -1208,6 +1358,21 @@ extension DeviceCColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> DeviceCColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> DeviceCColorModel {
+        return self
+    }
+}
+
+extension DeviceCColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceCColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1354,6 +1519,21 @@ public struct DeviceDColorModel: ColorModel {
         set {
             Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
+    }
+}
+
+extension DeviceDColorModel {
+    
+    @inlinable
+    @inline(__always)
+    public func normalized() -> DeviceDColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> DeviceDColorModel {
+        return self
     }
 }
 
@@ -1522,6 +1702,21 @@ extension DeviceEColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> DeviceEColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> DeviceEColorModel {
+        return self
+    }
+}
+
+extension DeviceEColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceEColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1682,6 +1877,21 @@ public struct DeviceFColorModel: ColorModel {
         set {
             Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
         }
+    }
+}
+
+extension DeviceFColorModel {
+    
+    @inlinable
+    @inline(__always)
+    public func normalized() -> DeviceFColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> DeviceFColorModel {
+        return self
     }
 }
 

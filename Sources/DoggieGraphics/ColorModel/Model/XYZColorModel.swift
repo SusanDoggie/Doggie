@@ -145,6 +145,21 @@ extension XYZColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> XYZColorModel {
+        return XYZColorModel(x: x / 2, y: y, z: z / 2)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> XYZColorModel {
+        return XYZColorModel(x: x * 2, y: y, z: z * 2)
+    }
+}
+
+extension XYZColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> XYZColorModel {
         return XYZColorModel(x: transform(x), y: transform(y), z: transform(z))
     }

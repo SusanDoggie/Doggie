@@ -157,6 +157,21 @@ extension CMYColorModel {
     
     @inlinable
     @inline(__always)
+    public func normalized() -> CMYColorModel {
+        return self
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func denormalized() -> CMYColorModel {
+        return self
+    }
+}
+
+extension CMYColorModel {
+    
+    @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> CMYColorModel {
         return CMYColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
