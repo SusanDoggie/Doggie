@@ -52,8 +52,8 @@ jobs:
       uses: SusanDoggie/swift-action@master
       with:
         action: test
-  ubuntu:
-    name: ${{ matrix.image }}
+  ubuntu_swift_latest:
+    name: latest-${{ matrix.image }}
     container:
       image: docker://swift:${{ matrix.image }}
     runs-on: ubuntu-latest
