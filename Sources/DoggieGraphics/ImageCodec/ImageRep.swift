@@ -166,6 +166,14 @@ extension ImageRep {
         
         throw Error.UnknownFormat
     }
+    
+    public init(contentsOf url: URL, options: Data.ReadingOptions = []) throws {
+        try self.init(data: Data(contentsOf: url, options: options))
+    }
+    
+    public init(contentsOfFile path: String, options: Data.ReadingOptions = []) throws {
+        try self.init(data: Data(contentsOf: URL(fileURLWithPath: path), options: options))
+    }
 }
 
 extension ImageRep {
@@ -312,6 +320,14 @@ extension AnyImage {
     
     public init(data: Data, fileBacked: Bool = false) throws {
         self = try ImageRep(data: data).image(fileBacked: fileBacked)
+    }
+    
+    public init(contentsOf url: URL, options: Data.ReadingOptions = [], fileBacked: Bool = false) throws {
+        try self.init(data: Data(contentsOf: url, options: options), fileBacked: fileBacked)
+    }
+    
+    public init(contentsOfFile path: String, options: Data.ReadingOptions = [], fileBacked: Bool = false) throws {
+        try self.init(data: Data(contentsOf: URL(fileURLWithPath: path), options: options), fileBacked: fileBacked)
     }
 }
 

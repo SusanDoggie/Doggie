@@ -231,6 +231,14 @@ extension FontCollection {
         
         throw Error.UnknownFormat
     }
+    
+    public init(contentsOf url: URL, options: Data.ReadingOptions = []) throws {
+        try self.init(data: Data(contentsOf: url, options: options))
+    }
+    
+    public init(contentsOfFile path: String, options: Data.ReadingOptions = []) throws {
+        try self.init(data: Data(contentsOf: URL(fileURLWithPath: path), options: options))
+    }
 }
 
 extension FontCollection {
@@ -239,7 +247,7 @@ extension FontCollection {
         
         self.init()
         
-        let fonts = FileManager.default.fileUrls(urls).parallelMap { try? FontCollection(data: Data(contentsOf: $0, options: .alwaysMapped)) }
+        let fonts = FileManager.default.fileUrls(urls).parallelMap { try? FontCollection(contentsOf: $0, options: .alwaysMapped) }
         
         for _fonts in fonts {
             if let _fonts = _fonts {

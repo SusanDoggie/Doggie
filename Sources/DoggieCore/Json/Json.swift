@@ -625,6 +625,16 @@ extension Json {
     public init(decode data: Data) throws {
         self = try JSONDecoder().decode(Json.self, from: data)
     }
+    
+    @inlinable
+    public init(contentsOf url: URL, options: Data.ReadingOptions = []) throws {
+        try self.init(decode: Data(contentsOf: url, options: options))
+    }
+    
+    @inlinable
+    public init(contentsOfFile path: String, options: Data.ReadingOptions = []) throws {
+        try self.init(decode: Data(contentsOf: URL(fileURLWithPath: path), options: options))
+    }
 }
 
 extension Json {

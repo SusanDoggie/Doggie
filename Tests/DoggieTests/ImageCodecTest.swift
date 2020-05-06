@@ -712,11 +712,8 @@ class ImageCodecTest: XCTestCase {
         
         for image in images where image.pathExtension == "png" {
             
-            guard let png_data = try? Data(contentsOf: image) else { XCTFail(); return }
-            guard let tiff_data = try? Data(contentsOf: image.deletingPathExtension().appendingPathExtension("tif")) else { XCTFail(); return }
-            
-            guard let png_image = try? AnyImage(data: png_data) else { XCTFail(); return }
-            guard let tiff_image = try? AnyImage(data: tiff_data) else { XCTFail(); return }
+            guard let png_image = try? AnyImage(contentsOf: image) else { XCTFail(); return }
+            guard let tiff_image = try? AnyImage(contentsOf: image.deletingPathExtension().appendingPathExtension("tif")) else { XCTFail(); return }
             
             XCTAssertEqual(png_image.width, tiff_image.width)
             XCTAssertEqual(png_image.height, tiff_image.height)
@@ -759,13 +756,10 @@ class ImageCodecTest: XCTestCase {
         
         for image in images where image.pathExtension == "png" {
             
-            guard let png_data = try? Data(contentsOf: image) else { XCTFail(); return }
-            guard let tiff_data = try? Data(contentsOf: image.deletingPathExtension().appendingPathComponent("default.tif")) else { XCTFail(); return }
-            
-            guard let imageRep = try? ImageRep(data: png_data) else { XCTFail(); return }
+            guard let imageRep = try? ImageRep(contentsOf: image) else { XCTFail(); return }
             let png_image = AnyImage(imageRep: imageRep)
             
-            guard let tiff_image = try? AnyImage(data: tiff_data) else { XCTFail(); return }
+            guard let tiff_image = try? AnyImage(contentsOf: image.deletingPathExtension().appendingPathComponent("default.tif")) else { XCTFail(); return }
             
             XCTAssertEqual(png_image.width, tiff_image.width)
             XCTAssertEqual(png_image.height, tiff_image.height)
@@ -804,8 +798,7 @@ class ImageCodecTest: XCTestCase {
                 
                 let png_image = AnyImage(imageRep: imageRep.page(i))
                 
-                guard let tiff_data = try? Data(contentsOf: image.deletingPathExtension().appendingPathComponent("\(i).tif")) else { XCTFail(); return }
-                guard let tiff_image = try? AnyImage(data: tiff_data) else { XCTFail(); return }
+                guard let tiff_image = try? AnyImage(contentsOf: image.deletingPathExtension().appendingPathComponent("\(i).tif")) else { XCTFail(); return }
                 
                 XCTAssertEqual(png_image.width, tiff_image.width)
                 XCTAssertEqual(png_image.height, tiff_image.height)
@@ -847,14 +840,11 @@ class ImageCodecTest: XCTestCase {
         
         guard let images = try? FileManager.default.contentsOfDirectory(at: images_dir.appendingPathComponent("tiff_orientation_test_1"), includingPropertiesForKeys: nil, options: []) else { XCTFail(); return }
         
-        guard let first_tiff_data = try? Data(contentsOf: images[0]) else { XCTFail(); return }
-        
-        guard let answer = try? AnyImage(data: first_tiff_data) else { XCTFail(); return }
+        guard let answer = try? AnyImage(contentsOf: images[0]) else { XCTFail(); return }
         
         for image in images.dropFirst() {
             
-            guard let tiff_data = try? Data(contentsOf: image) else { XCTFail(); return }
-            guard let result = try? AnyImage(data: tiff_data) else { XCTFail(); return }
+            guard let result = try? AnyImage(contentsOf: image) else { XCTFail(); return }
             
             XCTAssertEqual(answer.width, result.width)
             XCTAssertEqual(answer.height, result.height)
@@ -894,14 +884,11 @@ class ImageCodecTest: XCTestCase {
         
         guard let images = try? FileManager.default.contentsOfDirectory(at: images_dir.appendingPathComponent("tiff_orientation_test_2"), includingPropertiesForKeys: nil, options: []) else { XCTFail(); return }
         
-        guard let first_tiff_data = try? Data(contentsOf: images[0]) else { XCTFail(); return }
-        
-        guard let answer = try? AnyImage(data: first_tiff_data) else { XCTFail(); return }
+        guard let answer = try? AnyImage(contentsOf: images[0]) else { XCTFail(); return }
         
         for image in images.dropFirst() {
             
-            guard let tiff_data = try? Data(contentsOf: image) else { XCTFail(); return }
-            guard let result = try? AnyImage(data: tiff_data) else { XCTFail(); return }
+            guard let result = try? AnyImage(contentsOf: image) else { XCTFail(); return }
             
             XCTAssertEqual(answer.width, result.width)
             XCTAssertEqual(answer.height, result.height)

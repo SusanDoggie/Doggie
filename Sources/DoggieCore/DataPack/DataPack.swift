@@ -55,6 +55,16 @@ public struct DataPack {
     }
     
     @inlinable
+    public init(contentsOf url: URL, options: Data.ReadingOptions = []) throws {
+        try self.init(decode: Data(contentsOf: url, options: options))
+    }
+    
+    @inlinable
+    public init(contentsOfFile path: String, options: Data.ReadingOptions = []) throws {
+        try self.init(decode: Data(contentsOf: URL(fileURLWithPath: path), options: options))
+    }
+    
+    @inlinable
     public init(_ value: Bool) {
         self.base = .boolean(value)
     }

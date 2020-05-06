@@ -40,6 +40,14 @@ extension SDXMLDocument {
         guard parser.parse() else { throw parser.parserError.map { Error.parser($0.localizedDescription) } ?? Error.unknown }
         self = parser.document
     }
+    
+    public init(contentsOf url: URL, options: Data.ReadingOptions = []) throws {
+        try self.init(data: Data(contentsOf: url, options: options))
+    }
+    
+    public init(contentsOfFile path: String, options: Data.ReadingOptions = []) throws {
+        try self.init(data: Data(contentsOf: URL(fileURLWithPath: path), options: options))
+    }
 }
 
 final class SDXMLParser: XMLParser, XMLParserDelegate {
