@@ -47,6 +47,26 @@ struct _fast_decode_info<Model: ColorModel> {
     
     @usableFromInline
     let fileBacked: Bool
+    
+    @inlinable
+    @inline(__always)
+    init(
+        width: Int,
+        height: Int,
+        is_opaque: Bool,
+        resolution: Resolution,
+        colorSpace: ColorSpace<Model>,
+        premultiplied: Bool,
+        fileBacked: Bool
+    ) {
+        self.width = width
+        self.height = height
+        self.is_opaque = is_opaque
+        self.resolution = resolution
+        self.colorSpace = colorSpace
+        self.premultiplied = premultiplied
+        self.fileBacked = fileBacked
+    }
 }
 
 extension ColorSpace {
