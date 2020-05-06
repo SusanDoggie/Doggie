@@ -36,11 +36,11 @@ extension ColorModel {
     }
 }
 
-extension Image {
+extension Image where Pixel: _FloatComponentPixel {
     
     @inlinable
     @inline(__always)
-    mutating func _fast_decode_float<T, R: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ should_denormalized: Bool, _ premultiplied: Bool, _: T.Type, _: R.Type, callback: (UnsafeMutablePointer<R>, UnsafePointer<T>) -> Void) {
+    mutating func _fast_decode_float<T>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ should_denormalized: Bool, _ premultiplied: Bool, _: T.Type, callback: (UnsafeMutablePointer<Pixel.Scalar>, UnsafePointer<T>) -> Void) {
         
         let numberOfComponents = is_opaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents
         
@@ -79,7 +79,7 @@ extension Image {
                             guard source + bytesPerPixel <= source_end else { return }
                             
                             let _source = source.bindMemory(to: T.self, capacity: numberOfComponents)
-                            let _destination = UnsafeMutableRawPointer(destination).bindMemory(to: R.self, capacity: Pixel.numberOfComponents)
+                            let _destination = UnsafeMutableRawPointer(destination).bindMemory(to: Pixel.Scalar.self, capacity: Pixel.numberOfComponents)
                             
                             callback(_destination, _source)
                             

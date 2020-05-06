@@ -43,7 +43,7 @@ func _fast_decode_alpha_first<T, P: _FloatComponentPixel>(_ bitmaps: [RawBitmap]
     
     var image = Image<P>(width: info.width, height: info.height, resolution: info.resolution, colorSpace: info.colorSpace, fileBacked: info.fileBacked)
     
-    image._fast_decode_float(bitmaps, false, should_denormalized, info.premultiplied, T.self, P.Scalar.self) { (destination, source) in
+    image._fast_decode_float(bitmaps, false, should_denormalized, info.premultiplied, T.self) { (destination, source) in
         
         var destination = destination
         var _source = source + 1
