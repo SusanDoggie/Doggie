@@ -30,13 +30,13 @@ struct WEBPEncoder: ImageRepEncoder {
     
     let bytesPerRow: Int
     
-    var format: PixelFormat
+    let format: PixelFormat
     
     let pixels: Data
     
-    var quality: Double?
+    let iccData: Data?
     
-    var iccData: Data?
+    var quality: Double?
 }
 
 extension WEBPEncoder {
@@ -46,50 +46,40 @@ extension WEBPEncoder {
         let pixels: Data
         let bytesPerRow: Int
         let format: PixelFormat
-        
-        let iccData: Data?
+        let iccData: Data
         
         switch image.base {
         case let image as Image<RGBA32ColorPixel>:
             
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            
             pixels = image.pixels.data
             bytesPerRow = 4 * image.width
             format = image.isOpaque ? .RGBX : .RGBA
-            
-            iccData = image.colorSpace.iccData
+            iccData = _iccData
             
         case let image as Image<BGRA32ColorPixel>:
+            
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
             
             pixels = image.pixels.data
             bytesPerRow = 4 * image.width
             format = image.isOpaque ? .BGRX : .BGRA
-            
-            iccData = image.colorSpace.iccData
+            iccData = _iccData
             
         default:
             
-            if let image = Image<RGBA32ColorPixel>(image) {
-                
-                pixels = image.pixels.data
-                bytesPerRow = 4 * image.width
-                format = image.isOpaque ? .RGBX : .RGBA
-                
-                iccData = image.colorSpace.iccData
-                
-            } else {
-                
-                let image = Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
-                
-                pixels = image.pixels.data
-                bytesPerRow = 4 * image.width
-                format = image.isOpaque ? .RGBX : .RGBA
-                
-                iccData = image.colorSpace.iccData
-            }
+            let image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
+            
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            
+            pixels = image.pixels.data
+            bytesPerRow = 4 * image.width
+            format = image.isOpaque ? .RGBX : .RGBA
+            iccData = _iccData
         }
         
-        var encoder = WEBPEncoder(width: image.width, height: image.height, bytesPerRow: bytesPerRow, format: format, pixels: pixels)
-        encoder.iccData = iccData
+        var encoder = WEBPEncoder(width: image.width, height: image.height, bytesPerRow: bytesPerRow, format: format, pixels: pixels, iccData: iccData)
         
         if let quality = properties[.compressionQuality] as? Double {
             encoder.quality = (quality * 100).clamped(to: 0...100)
@@ -167,8 +157,7 @@ extension WEBPEncoder {
         
         guard let pixels = image.dataProvider?.data as Data? else { return nil }
         
-        var encoder = WEBPEncoder(width: image.width, height: image.height, bytesPerRow: bytesPerRow, format: format, pixels: pixels)
-        encoder.iccData = iccData
+        var encoder = WEBPEncoder(width: image.width, height: image.height, bytesPerRow: bytesPerRow, format: format, pixels: pixels, iccData: iccData)
         
         if let quality = properties[.compressionQuality] as? Double {
             encoder.quality = (quality * 100).clamped(to: 0...100)

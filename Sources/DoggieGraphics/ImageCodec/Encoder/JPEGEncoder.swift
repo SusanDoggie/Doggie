@@ -35,9 +35,9 @@ struct JPEGEncoder: ImageRepEncoder {
     
     let pixels: Data
     
-    var quality: Int = 75
+    let iccData: Data
     
-    var iccData: Data?
+    var quality: Int = 75
     
     var density_unit: UINT8 = 0
     var x_density: UINT16 = 1
@@ -49,14 +49,20 @@ extension JPEGEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
-        var encoder: JPEGEncoder
+        let pixels: Data
+        let bytesPerRow: Int
+        let format: J_COLOR_SPACE
+        let components: Int32
+        let iccData: Data
         
         switch image.base {
         case let image as Image<Gray16ColorPixel>:
             
-            var data = Data(count: image.pixels.count)
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .genericGamma22Gray), properties: properties) }
             
-            data.withUnsafeMutableBufferPointer {
+            var _pixels = Data(count: image.pixels.count)
+            
+            _pixels.withUnsafeMutableBufferPointer {
                 
                 guard var destination = $0.baseAddress else { return }
                 
@@ -77,10 +83,16 @@ extension JPEGEncoder {
                 }
             }
             
-            encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: image.width, format: JCS_GRAYSCALE, components: 1, pixels: data)
+            pixels = _pixels
+            bytesPerRow = image.width
+            format = JCS_GRAYSCALE
+            components = 1
+            iccData = _iccData
             
         case var image as Image<ARGB32ColorPixel>:
             
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            
             image.withUnsafeMutableBufferPointer {
                 
                 guard var pixels = $0.baseAddress else { return }
@@ -100,10 +112,16 @@ extension JPEGEncoder {
                 }
             }
             
-            encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_XRGB, components: 4, pixels: image.pixels.data)
+            pixels = image.pixels.data
+            bytesPerRow = 4 * image.width
+            format = JCS_EXT_XRGB
+            components = 4
+            iccData = _iccData
             
         case var image as Image<RGBA32ColorPixel>:
             
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            
             image.withUnsafeMutableBufferPointer {
                 
                 guard var pixels = $0.baseAddress else { return }
@@ -123,10 +141,16 @@ extension JPEGEncoder {
                 }
             }
             
-            encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_RGBX, components: 4, pixels: image.pixels.data)
+            pixels = image.pixels.data
+            bytesPerRow = 4 * image.width
+            format = JCS_EXT_RGBX
+            components = 4
+            iccData = _iccData
             
         case var image as Image<ABGR32ColorPixel>:
             
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            
             image.withUnsafeMutableBufferPointer {
                 
                 guard var pixels = $0.baseAddress else { return }
@@ -146,10 +170,16 @@ extension JPEGEncoder {
                 }
             }
             
-            encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_XBGR, components: 4, pixels: image.pixels.data)
+            pixels = image.pixels.data
+            bytesPerRow = 4 * image.width
+            format = JCS_EXT_XBGR
+            components = 4
+            iccData = _iccData
             
         case var image as Image<BGRA32ColorPixel>:
             
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image, colorSpace: .sRGB), properties: properties) }
+            
             image.withUnsafeMutableBufferPointer {
                 
                 guard var pixels = $0.baseAddress else { return }
@@ -169,7 +199,11 @@ extension JPEGEncoder {
                 }
             }
             
-            encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: 4 * image.width, format: JCS_EXT_BGRX, components: 4, pixels: image.pixels.data)
+            pixels = image.pixels.data
+            bytesPerRow = 4 * image.width
+            format = JCS_EXT_BGRX
+            components = 4
+            iccData = _iccData
             
         default:
             
@@ -177,9 +211,11 @@ extension JPEGEncoder {
                 
                 let _image = Image<Gray16ColorPixel>(image) ?? Image<Gray16ColorPixel>(image: image, colorSpace: .genericGamma22Gray)
                 
-                var data = Data(count: _image.pixels.count)
+                guard let _iccData = _image.colorSpace.iccData else { return encode(image: AnyImage(_image), properties: properties) }
                 
-                data.withUnsafeMutableBufferPointer {
+                var _pixels = Data(count: _image.pixels.count)
+                
+                _pixels.withUnsafeMutableBufferPointer {
                     
                     guard var destination = $0.baseAddress else { return }
                     
@@ -200,11 +236,17 @@ extension JPEGEncoder {
                     }
                 }
                 
-                encoder = JPEGEncoder(width: _image.width, height: _image.height, bytesPerRow: _image.width, format: JCS_GRAYSCALE, components: 1, pixels: data)
+                pixels = _pixels
+                bytesPerRow = _image.width
+                format = JCS_GRAYSCALE
+                components = 1
+                iccData = _iccData
                 
             } else {
                 
                 var _image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
+                
+                guard let _iccData = _image.colorSpace.iccData else { return encode(image: AnyImage(_image), properties: properties) }
                 
                 _image.withUnsafeMutableBufferPointer {
                     
@@ -225,11 +267,15 @@ extension JPEGEncoder {
                     }
                 }
                 
-                encoder = JPEGEncoder(width: _image.width, height: _image.height, bytesPerRow: 4 * _image.width, format: JCS_EXT_RGBX, components: 4, pixels: _image.pixels.data)
+                pixels = _image.pixels.data
+                bytesPerRow = 4 * _image.width
+                format = JCS_EXT_RGBX
+                components = 4
+                iccData = _iccData
             }
         }
         
-        encoder.iccData = image.colorSpace.iccData
+        var encoder = JPEGEncoder(width: image.width, height: image.height, bytesPerRow: bytesPerRow, format: format, components: components, pixels: pixels, iccData: iccData)
         
         if let _quality = properties[.compressionQuality] as? Double {
             encoder.quality = Int(_quality * 100).clamped(to: 0...100)
@@ -297,9 +343,7 @@ extension JPEGEncoder {
             
             jpeg_start_compress(&cinfo, 1)
             
-            iccData?.withUnsafeBytes { data in
-                jpeg_write_icc_profile(&cinfo, data.baseAddress?.assumingMemoryBound(to: JOCTET.self), UInt32(data.count))
-            }
+            iccData.withUnsafeBytes { data in jpeg_write_icc_profile(&cinfo, data.baseAddress?.assumingMemoryBound(to: JOCTET.self), UInt32(data.count)) }
             
             var scanline = pixels.assumingMemoryBound(to: UInt8.self)
             
