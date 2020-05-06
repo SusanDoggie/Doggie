@@ -62,7 +62,7 @@ func _fast_decode_alpha_none<T, P: _FloatComponentPixel>(_ bitmaps: [RawBitmap],
 
 @inlinable
 @inline(__always)
-func _fast_decode_alpha_none<T: FixedWidthInteger, P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _: T.Type) -> Image<P>? {
+func _fast_decode_alpha_none<T: FixedWidthInteger, P: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _: T.Type) -> Image<P>? {
     
     switch endianness {
     case .big: return _fast_decode_alpha_none(bitmaps, .unsigned, endianness, info, T.self) { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) }
@@ -72,7 +72,7 @@ func _fast_decode_alpha_none<T: FixedWidthInteger, P: _FloatComponentPixel>(_ en
 
 @inlinable
 @inline(__always)
-func _fast_decode_alpha_none<P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? {
+func _fast_decode_alpha_none<P: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? {
     
     return _fast_decode_alpha_none(bitmaps, .float, endianness, info, P.Scalar.self, decode)
 }
