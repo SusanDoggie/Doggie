@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-func _fast_decode_alpha_none<T, P>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ format: RawBitmap.Format, _ endianness: RawBitmap.Endianness, _ width: Int, _ height: Int, _ resolution: Resolution, _ colorSpace: ColorSpace<P.Model>, _ premultiplied: Bool, _ fileBacked: Bool, _: T.Type, _ decode: (T) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
+func _fast_decode_alpha_none<T, P: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ format: RawBitmap.Format, _ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _: T.Type, _ decode: (T) -> P.Scalar) -> Image<P>? {
     
     let channels = bitmaps[0].channels.sorted { $0.bitRange.lowerBound }
     
@@ -41,9 +41,9 @@ func _fast_decode_alpha_none<T, P>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ 
     
     guard channels == alpha_none else { return nil }
     
-    var image = Image<P>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, fileBacked: fileBacked)
+    var image = Image<P>(width: info.width, height: info.height, resolution: info.resolution, colorSpace: info.colorSpace, fileBacked: info.fileBacked)
     
-    image._fast_decode(bitmaps, is_opaque, premultiplied, T.self, P.Scalar.self) { (destination, source) in
+    image._fast_decode(bitmaps, info.is_opaque, info.premultiplied, T.self, P.Scalar.self) { (destination, source) in
         
         var destination = destination
         var source = source
@@ -59,3 +59,21 @@ func _fast_decode_alpha_none<T, P>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ 
     
     return image
 }
+
+@inlinable
+@inline(__always)
+func _fast_decode_alpha_none<T: FixedWidthInteger, P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _: T.Type) -> Image<P>? {
+    
+    switch endianness {
+    case .big: return _fast_decode_alpha_none(bitmaps, .unsigned, endianness, info, T.self) { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) }
+    case .little: return _fast_decode_alpha_none(bitmaps, .unsigned, endianness, info, T.self) { P.Scalar(T(littleEndian: $0)) / P.Scalar(T.max) }
+    }
+}
+
+@inlinable
+@inline(__always)
+func _fast_decode_alpha_none<P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? {
+    
+    return _fast_decode_alpha_none(bitmaps, .float, endianness, info, P.Scalar.self, decode)
+}
+        

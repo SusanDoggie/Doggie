@@ -23,6 +23,32 @@
 //  THE SOFTWARE.
 //
 
+@frozen
+@usableFromInline
+struct _fast_decode_info<Model: ColorModel> {
+    
+    @usableFromInline
+    let width: Int
+    
+    @usableFromInline
+    let height: Int
+    
+    @usableFromInline
+    let is_opaque: Bool
+    
+    @usableFromInline
+    let resolution: Resolution
+    
+    @usableFromInline
+    let colorSpace: ColorSpace<Model>
+    
+    @usableFromInline
+    let premultiplied: Bool
+    
+    @usableFromInline
+    let fileBacked: Bool
+}
+
 extension ColorSpace {
     
     @inlinable
@@ -787,230 +813,195 @@ extension ColorSpace {
         default: break
         }
         
-        @inline(__always)
-        func _fast_decode_alpha_none<T: FixedWidthInteger, P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P.Model == Model {
-            
-            switch endianness {
-            case .big: return _fast_decode_alpha_none(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
-            case .little: return _fast_decode_alpha_none(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(littleEndian: $0)) / P.Scalar(T.max) })
-            }
-        }
-        
-        @inline(__always)
-        func _fast_decode_alpha_none2<P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P.Model == Model {
-            
-            return _fast_decode_alpha_none(bitmaps, is_opaque, .float, endianness, width, height, resolution, self, premultiplied, fileBacked, P.Scalar.self, decode)
-        }
-        
-        @inline(__always)
-        func _fast_decode_alpha_first<T: FixedWidthInteger, P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P.Model == Model {
-            
-            switch endianness {
-            case .big: return _fast_decode_alpha_first(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
-            case .little: return _fast_decode_alpha_first(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(littleEndian: $0)) / P.Scalar(T.max) })
-            }
-        }
-        
-        @inline(__always)
-        func _fast_decode_alpha_first2<P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P.Model == Model {
-            
-            return _fast_decode_alpha_first(bitmaps, is_opaque, .float, endianness, width, height, resolution, self, premultiplied, fileBacked, P.Scalar.self, decode)
-        }
-        
-        @inline(__always)
-        func _fast_decode_alpha_last<T: FixedWidthInteger, P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P.Model == Model {
-            
-            switch endianness {
-            case .big: return _fast_decode_alpha_last(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
-            case .little: return _fast_decode_alpha_last(bitmaps, is_opaque, .unsigned, endianness, width, height, resolution, self, premultiplied, fileBacked, T.self, { P.Scalar(T(littleEndian: $0)) / P.Scalar(T.max) })
-            }
-        }
-        
-        @inline(__always)
-        func _fast_decode_alpha_last2<P: _FloatComponentPixel>(_ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P.Model == Model {
-            
-            return _fast_decode_alpha_last(bitmaps, is_opaque, .float, endianness, width, height, resolution, self, premultiplied, fileBacked, P.Scalar.self, decode)
-        }
+        let info = _fast_decode_info(
+            width: width,
+            height: height,
+            is_opaque: is_opaque,
+            resolution: resolution,
+            colorSpace: self,
+            premultiplied: premultiplied,
+            fileBacked: fileBacked
+        )
         
         switch bitsPerPixel {
             
         case 8 * numberOfComponents:
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.big, UInt8.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.big, info, UInt8.self) {
                 
                 return image
             }
             
         case 16 * numberOfComponents:
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.big, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.big, info, UInt16.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.little, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.little, info, UInt16.self) {
                 
                 return image
             }
             
         case 32 * numberOfComponents:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.big, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.big, info, UInt3.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.little, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.little, info, UInt3.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none2(.big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.big, info, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none2(.little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(.little, info, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
         case 64 * numberOfComponents:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.big, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.big, info, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.little, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.little, info, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none2(.big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.big, info, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none2(.little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(.little, info, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
         case 8 * numberOfComponents + 8:
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.big, UInt8.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.big, info, UInt8.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.big, UInt8.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.big, info, UInt8.self) {
                 
                 return image
             }
             
         case 16 * numberOfComponents + 16:
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.big, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.big, info, UInt16.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.little, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.little, info, UInt16.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.big, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.big, info, UInt16.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.little, UInt16.self) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.little, info, UInt16.self) {
                 
                 return image
             }
             
         case 32 * numberOfComponents + 32:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.big, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.big, info, UInt3.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.little, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.little, info, UInt3.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.big, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.big, info, UInt3.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.little, UInt32.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.little, info, UInt3.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first2(.big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.big, info, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first2(.little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(.little, info, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last2(.big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.big, info, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last2(.little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(.little, info, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
         case 64 * numberOfComponents + 64:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.big, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.big, info, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.little, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.little, info, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.big, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.big, info, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.little, UInt64.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.little, info, UInt64.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first2(.big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.big, info, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first2(.little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(.little, info, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last2(.big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.big, info, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last2(.little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(.little, info, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
