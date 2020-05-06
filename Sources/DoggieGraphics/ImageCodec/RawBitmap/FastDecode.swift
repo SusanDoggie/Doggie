@@ -23,127 +23,6 @@
 //  THE SOFTWARE.
 //
 
-extension Image where Pixel: TIFFEncodablePixel {
-    
-    @inlinable
-    @inline(__always)
-    mutating func _fast_decode<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ is_opaque: Bool, _: T.Type, callback: (UnsafeMutablePointer<Pixel>, UnsafePointer<T>) -> Void) {
-        
-        let numberOfComponents = is_opaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents
-        
-        let width = self.width
-        let height = self.height
-        
-        guard bitmap.startsRow < height else { return }
-        
-        let bytesPerPixel = bitmap.bitsPerPixel >> 3
-        
-        self.withUnsafeMutableBufferPointer {
-            
-            guard var dest = $0.baseAddress else { return }
-            
-            dest += bitmap.startsRow * width
-            
-            var data = bitmap.data
-            
-            for _ in bitmap.startsRow..<height {
-                
-                let _length = min(bitmap.bytesPerRow, data.count)
-                guard _length != 0 else { return }
-                
-                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
-                    
-                    guard var source = bytes.baseAddress else { return }
-                    var destination = dest
-                    let source_end = source + _length
-                    
-                    for _ in 0..<width {
-                        
-                        guard source + bytesPerPixel <= source_end else { return }
-                        
-                        let _source = source.bindMemory(to: T.self, capacity: numberOfComponents)
-                        
-                        callback(destination, _source)
-                        
-                        switch bitmap.tiff_predictor {
-                        case 1: break
-                        case 2:
-                            if destination > dest {
-                                let lhs = destination - 1
-                                if is_opaque {
-                                    destination.pointee = destination.pointee.tiff_prediction_2_decode_color(lhs.pointee)
-                                } else {
-                                    destination.pointee = destination.pointee.tiff_prediction_2_decode(lhs.pointee)
-                                }
-                            }
-                        default: fatalError("Unsupported tiff predictor.")
-                        }
-                        
-                        source += bytesPerPixel
-                        destination += 1
-                    }
-                    
-                    dest += width
-                }
-            }
-        }
-    }
-}
-
-extension Image {
-    
-    @inlinable
-    @inline(__always)
-    mutating func _fast_decode<T: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ is_opaque: Bool, _: T.Type, callback: (UnsafeMutablePointer<T>, UnsafePointer<T>) -> Void) {
-        
-        let numberOfComponents = is_opaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents
-        
-        let width = self.width
-        let height = self.height
-        
-        guard bitmap.startsRow < height else { return }
-        
-        let bytesPerPixel = bitmap.bitsPerPixel >> 3
-        
-        self.withUnsafeMutableBufferPointer {
-            
-            guard var dest = $0.baseAddress else { return }
-            
-            dest += bitmap.startsRow * width
-            
-            var data = bitmap.data
-            
-            for _ in bitmap.startsRow..<height {
-                
-                let _length = min(bitmap.bytesPerRow, data.count)
-                guard _length != 0 else { return }
-                
-                data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
-                    
-                    guard var source = bytes.baseAddress else { return }
-                    var destination = dest
-                    let source_end = source + _length
-                    
-                    for _ in 0..<width {
-                        
-                        guard source + bytesPerPixel <= source_end else { return }
-                        
-                        let _source = source.bindMemory(to: T.self, capacity: numberOfComponents)
-                        let _destination = UnsafeMutableRawPointer(destination).bindMemory(to: T.self, capacity: Pixel.numberOfComponents)
-                        
-                        callback(_destination, _source)
-                        
-                        source += bytesPerPixel
-                        destination += 1
-                    }
-                    
-                    dest += width
-                }
-            }
-        }
-    }
-}
-
 extension ColorSpace {
     
     @inlinable
@@ -1099,422 +978,183 @@ extension ColorSpace {
         
         switch bitsPerPixel {
             
-        case 32 * numberOfComponents:
+        case 8 * numberOfComponents:
             
-            var float32_alpha_none_BE: [RawBitmap.Channel] = []
-            for i in 0..<numberOfComponents {
-                let lowerBound = i * 32
-                let upperBound = i * 32 + 32
-                float32_alpha_none_BE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
-            }
-            
-            if channels == float32_alpha_none_BE {
-                
-                var image = Image<Float32ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
-                
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var source = source
-                        
-                        for _ in 0..<numberOfComponents {
-                            destination.pointee = Float(bitPattern: UInt32(bigEndian: source.pointee.bitPattern))
-                            destination += 1
-                            source += 1
-                        }
-                        
-                        destination.pointee = 1
-                    }
-                }
-                
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, UInt8.self) {
                 
                 return image
             }
             
-            var float32_alpha_none_LE: [RawBitmap.Channel] = []
-            for i in 0..<numberOfComponents {
-                let lowerBound = i * 32
-                let upperBound = i * 32 + 32
-                float32_alpha_none_LE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
+        case 16 * numberOfComponents:
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, UInt16.self) {
+                
+                return image
             }
             
-            if channels == float32_alpha_none_LE {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, UInt16.self) {
                 
-                var image = Image<Float32ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+                return image
+            }
+            
+        case 32 * numberOfComponents:
+            
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, UInt32.self) {
                 
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var source = source
-                        
-                        for _ in 0..<numberOfComponents {
-                            destination.pointee = Float(bitPattern: UInt32(littleEndian: source.pointee.bitPattern))
-                            destination += 1
-                            source += 1
-                        }
-                        
-                        destination.pointee = 1
-                    }
-                }
+                return image
+            }
+            
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, UInt32.self) {
                 
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+                return image
+            }
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+                
+                return image
+            }
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
         case 64 * numberOfComponents:
             
-            var float64_alpha_none_BE: [RawBitmap.Channel] = []
-            for i in 0..<numberOfComponents {
-                let lowerBound = i * 64
-                let upperBound = i * 64 + 64
-                float64_alpha_none_BE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
-            }
-            
-            if channels == float64_alpha_none_BE {
-                
-                var image = Image<Float64ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
-                
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var source = source
-                        
-                        for _ in 0..<numberOfComponents {
-                            destination.pointee = Double(bitPattern: UInt64(bigEndian: source.pointee.bitPattern))
-                            destination += 1
-                            source += 1
-                        }
-                        
-                        destination.pointee = 1
-                    }
-                }
-                
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, UInt64.self) {
                 
                 return image
             }
             
-            var float64_alpha_none_LE: [RawBitmap.Channel] = []
-            for i in 0..<numberOfComponents {
-                let lowerBound = i * 64
-                let upperBound = i * 64 + 64
-                float64_alpha_none_LE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, UInt64.self) {
+                
+                return image
             }
             
-            if channels == float64_alpha_none_LE {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
                 
-                var image = Image<Float64ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+                return image
+            }
+            
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(channels, is_opaque, .little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
                 
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var source = source
-                        
-                        for _ in 0..<numberOfComponents {
-                            destination.pointee = Double(bitPattern: UInt64(littleEndian: source.pointee.bitPattern))
-                            destination += 1
-                            source += 1
-                        }
-                        
-                        destination.pointee = 1
-                    }
-                }
+                return image
+            }
+            
+        case 8 * numberOfComponents + 8:
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, UInt8.self) {
                 
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+                return image
+            }
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, UInt8.self) {
+                
+                return image
+            }
+            
+        case 16 * numberOfComponents + 16:
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, UInt16.self) {
+                
+                return image
+            }
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, UInt16.self) {
+                
+                return image
+            }
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, UInt16.self) {
+                
+                return image
+            }
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, UInt16.self) {
                 
                 return image
             }
             
         case 32 * numberOfComponents + 32:
             
-            var float32_alpha_first_BE = [RawBitmap.Channel(index: numberOfComponents, format: .unsigned, endianness: .big, bitRange: 0..<32)]
-            for i in 1...numberOfComponents {
-                let lowerBound = i * 32
-                let upperBound = i * 32 + 32
-                float32_alpha_first_BE.append(RawBitmap.Channel(index: i - 1, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
-            }
-            
-            if channels == float32_alpha_first_BE {
-                
-                var image = Image<Float32ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
-                
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var _source = source + 1
-                        
-                        for _ in 0..<numberOfComponents {
-                            destination.pointee = Float(bitPattern: UInt32(bigEndian: _source.pointee.bitPattern))
-                            destination += 1
-                            _source += 1
-                        }
-                        
-                        destination.pointee = Float(bitPattern: UInt32(bigEndian: source.pointee.bitPattern))
-                    }
-                }
-                
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, UInt32.self) {
                 
                 return image
             }
             
-            var float32_alpha_first_LE = [RawBitmap.Channel(index: numberOfComponents, format: .unsigned, endianness: .little, bitRange: 0..<32)]
-            for i in 1...numberOfComponents {
-                let lowerBound = i * 32
-                let upperBound = i * 32 + 32
-                float32_alpha_first_LE.append(RawBitmap.Channel(index: i - 1, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
-            }
-            
-            if channels == float32_alpha_first_LE {
-                
-                var image = Image<Float32ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
-                
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var _source = source + 1
-                        
-                        for _ in 0..<numberOfComponents {
-                            destination.pointee = Float(bitPattern: UInt32(littleEndian: _source.pointee.bitPattern))
-                            destination += 1
-                            _source += 1
-                        }
-                        
-                        destination.pointee = Float(bitPattern: UInt32(littleEndian: source.pointee.bitPattern))
-                    }
-                }
-                
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, UInt32.self) {
                 
                 return image
             }
             
-            var float32_alpha_last_BE: [RawBitmap.Channel] = []
-            for i in 0...numberOfComponents {
-                let lowerBound = i * 32
-                let upperBound = i * 32 + 32
-                float32_alpha_last_BE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
-            }
-            
-            if channels == float32_alpha_last_BE {
-                
-                var image = Image<Float32ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
-                
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var source = source
-                        
-                        for _ in 0...numberOfComponents {
-                            destination.pointee = Float(bitPattern: UInt32(bigEndian: source.pointee.bitPattern))
-                            destination += 1
-                            source += 1
-                        }
-                    }
-                }
-                
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, UInt32.self) {
                 
                 return image
             }
             
-            var float32_alpha_last_LE: [RawBitmap.Channel] = []
-            for i in 0...numberOfComponents {
-                let lowerBound = i * 32
-                let upperBound = i * 32 + 32
-                float32_alpha_last_LE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, UInt32.self) {
+                
+                return image
             }
             
-            if channels == float32_alpha_last_LE {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
                 
-                var image = Image<Float32ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+                return image
+            }
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
                 
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Float.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var source = source
-                        
-                        for _ in 0...numberOfComponents {
-                            destination.pointee = Float(bitPattern: UInt32(littleEndian: source.pointee.bitPattern))
-                            destination += 1
-                            source += 1
-                        }
-                    }
-                }
+                return image
+            }
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
                 
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+                return image
+            }
+            
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }
             
         case 64 * numberOfComponents + 64:
             
-            var float64_alpha_first_BE = [RawBitmap.Channel(index: numberOfComponents, format: .unsigned, endianness: .big, bitRange: 0..<64)]
-            for i in 1...numberOfComponents {
-                let lowerBound = i * 64
-                let upperBound = i * 64 + 64
-                float64_alpha_first_BE.append(RawBitmap.Channel(index: i - 1, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
-            }
-            
-            if channels == float64_alpha_first_BE {
-                
-                var image = Image<Float64ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
-                
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var _source = source + 1
-                        
-                        for _ in 0..<numberOfComponents {
-                            destination.pointee = Double(bitPattern: UInt64(bigEndian: _source.pointee.bitPattern))
-                            destination += 1
-                            _source += 1
-                        }
-                        
-                        destination.pointee = Double(bitPattern: UInt64(bigEndian: source.pointee.bitPattern))
-                    }
-                }
-                
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, UInt64.self) {
                 
                 return image
             }
             
-            var float64_alpha_first_LE = [RawBitmap.Channel(index: numberOfComponents, format: .unsigned, endianness: .little, bitRange: 0..<64)]
-            for i in 1...numberOfComponents {
-                let lowerBound = i * 64
-                let upperBound = i * 64 + 64
-                float64_alpha_first_LE.append(RawBitmap.Channel(index: i - 1, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
-            }
-            
-            if channels == float64_alpha_first_LE {
-                
-                var image = Image<Float64ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
-                
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var _source = source + 1
-                        
-                        for _ in 0..<numberOfComponents {
-                            destination.pointee = Double(bitPattern: UInt64(littleEndian: _source.pointee.bitPattern))
-                            destination += 1
-                            _source += 1
-                        }
-                        
-                        destination.pointee = Double(bitPattern: UInt64(littleEndian: source.pointee.bitPattern))
-                    }
-                }
-                
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, UInt64.self) {
                 
                 return image
             }
             
-            var float64_alpha_last_BE: [RawBitmap.Channel] = []
-            for i in 0...numberOfComponents {
-                let lowerBound = i * 64
-                let upperBound = i * 64 + 64
-                float64_alpha_last_BE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .big, bitRange: lowerBound..<upperBound))
-            }
-            
-            if channels == float64_alpha_last_BE {
-                
-                var image = Image<Float64ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
-                
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var source = source
-                        
-                        for _ in 0...numberOfComponents {
-                            destination.pointee = Double(bitPattern: UInt64(bigEndian: source.pointee.bitPattern))
-                            destination += 1
-                            source += 1
-                        }
-                    }
-                }
-                
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, UInt64.self) {
                 
                 return image
             }
             
-            var float64_alpha_last_LE: [RawBitmap.Channel] = []
-            for i in 0...numberOfComponents {
-                let lowerBound = i * 64
-                let upperBound = i * 64 + 64
-                float64_alpha_last_LE.append(RawBitmap.Channel(index: i, format: .unsigned, endianness: .little, bitRange: lowerBound..<upperBound))
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, UInt64.self) {
+                
+                return image
             }
             
-            if channels == float64_alpha_last_LE {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
                 
-                var image = Image<Float64ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+                return image
+            }
+            
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(channels, is_opaque, .little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
                 
-                for bitmap in bitmaps {
-                    
-                    image._fast_decode(bitmap, is_opaque, Double.self) { (destination, source) in
-                        
-                        var destination = destination
-                        var source = source
-                        
-                        for _ in 0...numberOfComponents {
-                            destination.pointee = Double(bitPattern: UInt64(littleEndian: source.pointee.bitPattern))
-                            destination += 1
-                            source += 1
-                        }
-                    }
-                }
+                return image
+            }
+            
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .big, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
                 
-                if premultiplied {
-                    image._decode_premultiplied()
-                }
+                return image
+            }
+            
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(channels, is_opaque, .little, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
                 
                 return image
             }

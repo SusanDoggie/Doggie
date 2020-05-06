@@ -1,5 +1,5 @@
 //
-//  DecodeAlignedChannel.swift
+//  _fast_decode.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,11 +23,13 @@
 //  THE SOFTWARE.
 //
 
-extension Image {
+extension Image where Pixel: TIFFEncodablePixel {
     
     @inlinable
     @inline(__always)
-    mutating func _decode_aligned_channel<T: FixedWidthInteger, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type, _ : R.Type) {
+    mutating func _fast_decode<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ is_opaque: Bool, _: T.Type, callback: (UnsafeMutablePointer<Pixel>, UnsafePointer<T>) -> Void) {
+        
+        let numberOfComponents = is_opaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents
         
         let width = self.width
         let height = self.height
@@ -36,17 +38,11 @@ extension Image {
         
         let bytesPerPixel = bitmap.bitsPerPixel >> 3
         
-        let channel = bitmap.channels[channel_idx]
-        let channel_max: R = scalbn(1, T.bitWidth) - 1
-        let byteOffset = channel.bitRange.lowerBound >> 3
-        
-        self.withUnsafeMutableBytes {
+        self.withUnsafeMutableBufferPointer {
             
-            guard var dest = $0.baseAddress?.bindMemory(to: R.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
+            guard var dest = $0.baseAddress else { return }
             
-            let row = Pixel.numberOfComponents * width
-            
-            dest += bitmap.startsRow * row
+            dest += bitmap.startsRow * width
             
             var data = bitmap.data
             
@@ -61,50 +57,35 @@ extension Image {
                     var destination = dest
                     let source_end = source + _length
                     
-                    var tiff_predictor_record: T = 0
-                    
                     for _ in 0..<width {
                         
                         guard source + bytesPerPixel <= source_end else { return }
                         
-                        let _destination = destination + channel.index
-                        let _source = source + byteOffset
+                        let _source = source.bindMemory(to: T.self, capacity: numberOfComponents)
                         
-                        let _s: T
-                        let _d: T
-                        
-                        switch channel.endianness {
-                        case .big: _s = T(bigEndian: _source.bindMemory(to: T.self, capacity: 1).pointee)
-                        case .little: _s = T(littleEndian: _source.bindMemory(to: T.self, capacity: 1).pointee)
-                        }
+                        callback(destination, _source)
                         
                         switch bitmap.tiff_predictor {
-                        case 1: _d = _s
-                        case 2: _d = _s &+ tiff_predictor_record
+                        case 1: break
+                        case 2:
+                            if destination > dest {
+                                let lhs = destination - 1
+                                if is_opaque {
+                                    destination.pointee = destination.pointee.tiff_prediction_2_decode_color(lhs.pointee)
+                                } else {
+                                    destination.pointee = destination.pointee.tiff_prediction_2_decode(lhs.pointee)
+                                }
+                            }
                         default: fatalError("Unsupported tiff predictor.")
                         }
                         
-                        if T.isSigned {
-                            _destination.pointee = Image._denormalized(channel.index, R(UInt64(bitPattern: Int64(_d) &- Int64(T.min))) / channel_max)
-                        } else {
-                            _destination.pointee = Image._denormalized(channel.index, R(_d) / channel_max)
-                        }
-                        
-                        tiff_predictor_record = _d
-                        
                         source += bytesPerPixel
-                        
-                        if is_opaque {
-                            destination[Pixel.numberOfComponents - 1] = 1
-                        }
-                        
-                        destination += Pixel.numberOfComponents
+                        destination += 1
                     }
                     
-                    dest += row
+                    dest += width
                 }
             }
         }
     }
-    
 }

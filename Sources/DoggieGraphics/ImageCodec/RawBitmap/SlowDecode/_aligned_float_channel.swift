@@ -1,5 +1,5 @@
 //
-//  DecodeAlignedFloatChannel.swift
+//  _aligned_float_channel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.

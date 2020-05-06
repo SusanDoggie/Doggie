@@ -132,7 +132,7 @@ extension ColorSpace {
                     case (0, .big, 0, 16, .unsigned): image._decode_aligned_channel(bitmap, channel_idx, is_opaque, UInt16.self, Float.self)
                     case (0, .big, 0, 16, .signed): image._decode_aligned_channel(bitmap, channel_idx, is_opaque, Int16.self, Float.self)
                     case (0, .big, 0, 32, .float): image._decode_aligned_channel(bitmap, channel_idx, is_opaque, Float.self, Float.self)
-                    default: image._decode_channel(bitmap, channel_idx, is_opaque, Float.self)
+                    default: image._decode_float_channel(bitmap, channel_idx, is_opaque, Float.self)
                     }
                 }
             }
@@ -161,7 +161,7 @@ extension ColorSpace {
                 case (0, .big, 0, 64, .float): image._decode_aligned_channel(bitmap, channel_idx, is_opaque, Double.self, Double.self)
                 default:
                     if channel.bitRange.count <= 64 {
-                        image._decode_channel(bitmap, channel_idx, is_opaque, Double.self)
+                        image._decode_float_channel(bitmap, channel_idx, is_opaque, Double.self)
                     } else {
                         image._decode_channel_to_double(bitmap, channel_idx, is_opaque)
                     }

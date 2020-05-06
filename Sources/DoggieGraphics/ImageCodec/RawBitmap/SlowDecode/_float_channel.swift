@@ -1,5 +1,5 @@
 //
-//  DecodeChannel.swift
+//  _float_channel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -27,7 +27,7 @@ extension Image {
     
     @inlinable
     @inline(__always)
-    mutating func _decode_channel<T: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type) {
+    mutating func _decode_float_channel<T: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type) {
         
         let width = self.width
         let height = self.height
