@@ -127,18 +127,18 @@ extension BinaryInteger {
 
 @inlinable
 @inline(__always)
-public func _mul_div<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger & UnsignedInteger>(_ x: T, _ to_max: R, _ from_max: T) -> R {
+public func _mul_div<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger & UnsignedInteger>(_ x: T, _ y: R, _ z: T) -> R {
     
-    guard from_max != to_max else { return R(x) }
+    guard y != z else { return R(x) }
     
     @inline(__always)
-    func __mul_div<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ to_max: T, _ from_max: T) -> T {
-        let (quotient, remainder) = from_max.dividingFullWidth(x.multipliedFullWidth(by: to_max))
+    func __mul_div<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ y: T, _ z: T) -> T {
+        let (quotient, remainder) = z.dividingFullWidth(x.multipliedFullWidth(by: y))
         let (_remainder, overflow) = remainder.multipliedReportingOverflow(by: 2)
-        return !overflow && _remainder < from_max ? quotient : quotient + 1
+        return !overflow && _remainder < z ? quotient : quotient + 1
     }
     
-    return T.bitWidth > R.bitWidth ? R(__mul_div(x, T(to_max), from_max)) : __mul_div(R(x), to_max, R(from_max))
+    return T.bitWidth > R.bitWidth ? R(__mul_div(x, T(y), z)) : __mul_div(R(x), y, R(z))
 }
 
 @inlinable
