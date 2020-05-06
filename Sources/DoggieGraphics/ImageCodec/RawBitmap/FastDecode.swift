@@ -846,12 +846,12 @@ extension ColorSpace {
             
         case 32 * numberOfComponents:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .big, info, UInt3.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .big, info, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .little, info, UInt3.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .little, info, UInt32.self) {
                 
                 return image
             }
@@ -924,22 +924,22 @@ extension ColorSpace {
             
         case 32 * numberOfComponents + 32:
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .big, info, UInt3.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .big, info, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .little, info, UInt3.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .little, info, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .big, info, UInt3.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .big, info, UInt32.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .little, info, UInt3.self) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .little, info, UInt32.self) {
                 
                 return image
             }
