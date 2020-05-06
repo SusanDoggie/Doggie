@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-func _fast_decode_alpha_first<T, P>(_ channels: [RawBitmap.Channel], _ is_opaque: Bool, _ format: RawBitmap.Format, _ endianness: RawBitmap.Endianness, _: T.Type, _ decode: (T) -> P.Scalar) -> Image<P>? where: P: _FloatComponentPixel {
+func _fast_decode_alpha_first<T, P>(_ channels: [RawBitmap.Channel], _ is_opaque: Bool, _ format: RawBitmap.Format, _ endianness: RawBitmap.Endianness, _: T.Type, _ decode: (T) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
     
     let numberOfComponents = P.Model.numberOfComponents
     let bitsPerChannel = MemoryLayout<T>.stride << 3
@@ -67,7 +67,7 @@ func _fast_decode_alpha_first<T, P>(_ channels: [RawBitmap.Channel], _ is_opaque
 
 @inlinable
 @inline(__always)
-func _fast_decode_alpha_first<T: FixedWidthInteger & UnsignedInteger, P>(_ channels: [RawBitmap.Channel], _ is_opaque: Bool, _ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where: P: _FloatComponentPixel {
+func _fast_decode_alpha_first<T: FixedWidthInteger & UnsignedInteger, P>(_ channels: [RawBitmap.Channel], _ is_opaque: Bool, _ endianness: RawBitmap.Endianness, _: T.Type) -> Image<P>? where P: _FloatComponentPixel {
     
     switch endianness {
     case .big: return _fast_decode_alpha_first(channels, is_opaque, .unsigned, endianness, T.self, { P.Scalar(T(bigEndian: $0)) / P.Scalar(T.max) })
@@ -77,7 +77,7 @@ func _fast_decode_alpha_first<T: FixedWidthInteger & UnsignedInteger, P>(_ chann
 
 @inlinable
 @inline(__always)
-func _fast_decode_alpha_first<P>(_ channels: [RawBitmap.Channel], _ is_opaque: Bool, _ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where: P: _FloatComponentPixel {
+func _fast_decode_alpha_first<P>(_ channels: [RawBitmap.Channel], _ is_opaque: Bool, _ endianness: RawBitmap.Endianness, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? where P: _FloatComponentPixel {
     
     return _fast_decode_alpha_first(channels, is_opaque, float, endianness, T.self, decode)
 }
