@@ -97,7 +97,7 @@ jobs:
       uses: SusanDoggie/swift-action@master
       with:
         action: build
-  swift_nightly:
+  ubuntu_swift_nightly:
     name: ${{ matrix.image }}
     container:
       image: docker://swiftlang/swift:${{ matrix.image }}
@@ -105,11 +105,34 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        image: [nightly-xenial, nightly-bionic, nightly-focal, nightly-centos8, nightly-amazonlinux2]
+        image: [nightly-xenial, nightly-bionic, nightly-focal]
     steps:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
+    - name: Build
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: build
+    - name: Run tests
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: test
+  linux_swift_nightly:
+    name: ${{ matrix.image }}
+    container:
+      image: docker://swiftlang/swift:${{ matrix.image }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      matrix:
+        image: [nightly-centos8, nightly-amazonlinux2]
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Install dependencies
+      run: yum update && yum install -y zlib-devel
     - name: Build
       uses: SusanDoggie/swift-action@master
       with:
