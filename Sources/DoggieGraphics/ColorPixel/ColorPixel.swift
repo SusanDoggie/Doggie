@@ -140,6 +140,21 @@ extension ColorPixel {
     
     @inlinable
     @inline(__always)
+    public static var numberOfComponents: Int {
+        return Model.numberOfComponents + 1
+    }
+    
+    @inlinable
+    @inline(__always)
+    public var numberOfComponents: Int {
+        return Self.numberOfComponents
+    }
+}
+
+extension ColorPixel {
+    
+    @inlinable
+    @inline(__always)
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
             return color[index]
