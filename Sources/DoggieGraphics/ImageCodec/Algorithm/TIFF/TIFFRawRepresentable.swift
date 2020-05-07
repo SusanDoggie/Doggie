@@ -51,7 +51,7 @@ extension Image: TIFFRawRepresentable {
                     for _ in 0..<count {
                         let color = source.pointee.color.normalized()
                         for i in 0..<Pixel.Model.numberOfComponents {
-                            data.encode(UInt16((color.component(i) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                            data.encode(UInt16((color[i] * 65535).clamped(to: 0...65535).rounded()).bigEndian)
                         }
                         source += 1
                     }
@@ -60,7 +60,7 @@ extension Image: TIFFRawRepresentable {
                         let pixel = source.pointee
                         let color = pixel.color.normalized()
                         for i in 0..<Pixel.Model.numberOfComponents {
-                            data.encode(UInt16((color.component(i) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                            data.encode(UInt16((color[i] * 65535).clamped(to: 0...65535).rounded()).bigEndian)
                         }
                         data.encode(UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
                         source += 1
@@ -84,7 +84,7 @@ extension Image: TIFFRawRepresentable {
                                 
                                 let color = source.pointee.color.normalized()
                                 for i in 0..<Pixel.Model.numberOfComponents {
-                                    let c = UInt16((color.component(i) * 65535).clamped(to: 0...65535).rounded())
+                                    let c = UInt16((color[i] * 65535).clamped(to: 0...65535).rounded())
                                     let s = c &- lhs[i]
                                     data.encode(s.bigEndian)
                                     lhs[i] = c
@@ -104,7 +104,7 @@ extension Image: TIFFRawRepresentable {
                                 let pixel = source.pointee
                                 let color = pixel.color.normalized()
                                 for i in 0..<Pixel.Model.numberOfComponents {
-                                    let c = UInt16((color.component(i) * 65535).clamped(to: 0...65535).rounded())
+                                    let c = UInt16((color[i] * 65535).clamped(to: 0...65535).rounded())
                                     let s = c &- lhs[i]
                                     data.encode(s.bigEndian)
                                     lhs[i] = c
@@ -300,18 +300,18 @@ func tiff_color_data<Pixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque:
             if isOpaque {
                 for _ in 0..<count {
                     let color = source.pointee.color.normalized()
-                    data.encode(UInt16((color.component(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
-                    data.encode(Int16((color.component(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
-                    data.encode(Int16((color.component(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(UInt16((color[0] * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.encode(Int16((color[1] * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(Int16((color[2] * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
                     source += 1
                 }
             } else {
                 for _ in 0..<count {
                     let pixel = source.pointee
                     let color = pixel.color.normalized()
-                    data.encode(UInt16((color.component(0) * 65535).clamped(to: 0...65535).rounded()).bigEndian)
-                    data.encode(Int16((color.component(1) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
-                    data.encode(Int16((color.component(2) * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(UInt16((color[0] * 65535).clamped(to: 0...65535).rounded()).bigEndian)
+                    data.encode(Int16((color[1] * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
+                    data.encode(Int16((color[2] * 65535 - 32768).clamped(to: -32768...32767).rounded()).bigEndian)
                     data.encode(UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
                     source += 1
                 }
@@ -330,9 +330,9 @@ func tiff_color_data<Pixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque:
                         
                         let color = source.pointee.color.normalized()
                         
-                        let _l2 = UInt16((color.component(0) * 65535).clamped(to: 0...65535).rounded())
-                        let _a2 = Int16((color.component(1) * 65535 - 32768).clamped(to: -32768...32767).rounded())
-                        let _b2 = Int16((color.component(2) * 65535 - 32768).clamped(to: -32768...32767).rounded())
+                        let _l2 = UInt16((color[0] * 65535).clamped(to: 0...65535).rounded())
+                        let _a2 = Int16((color[1] * 65535 - 32768).clamped(to: -32768...32767).rounded())
+                        let _b2 = Int16((color[2] * 65535 - 32768).clamped(to: -32768...32767).rounded())
                         
                         let _l3 = _l2 &- _l1
                         let _a3 = _a2 &- _a1
@@ -363,9 +363,9 @@ func tiff_color_data<Pixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque:
                         let pixel = source.pointee
                         let color = pixel.color.normalized()
                         
-                        let _l2 = UInt16((color.component(0) * 65535).clamped(to: 0...65535).rounded())
-                        let _a2 = Int16((color.component(1) * 65535 - 32768).clamped(to: -32768...32767).rounded())
-                        let _b2 = Int16((color.component(2) * 65535 - 32768).clamped(to: -32768...32767).rounded())
+                        let _l2 = UInt16((color[0] * 65535).clamped(to: 0...65535).rounded())
+                        let _a2 = Int16((color[1] * 65535 - 32768).clamped(to: -32768...32767).rounded())
+                        let _b2 = Int16((color[2] * 65535 - 32768).clamped(to: -32768...32767).rounded())
                         let _o2 = UInt16((pixel.opacity * 65535).clamped(to: 0...65535).rounded())
                         
                         let _l3 = _l2 &- _l1
