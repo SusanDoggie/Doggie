@@ -105,7 +105,7 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        image: [nightly-xenial, nightly-bionic, nightly-centos8, nightly-amazonlinux2]
+        image: [nightly-xenial, nightly-bionic, nightly-focal, nightly-centos8, nightly-amazonlinux2]
     steps:
     - uses: actions/checkout@v1
       with:
