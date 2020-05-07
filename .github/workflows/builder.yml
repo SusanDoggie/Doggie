@@ -110,6 +110,15 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
+    - name: Prepare
+      run: apt-get update
+    - name: Install ICC profiles
+      run: apt-get install -y icc-profiles
+    - name: Install fonts
+      run: |
+        export DEBIAN_FRONTEND=noninteractive
+        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+        apt-get install -y fontconfig fonts-noto ttf-mscorefonts-installer
     - name: Build
       uses: SusanDoggie/swift-action@master
       with:
