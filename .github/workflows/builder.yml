@@ -142,8 +142,6 @@ jobs:
         submodules: recursive
     - name: Prepare		
       run: yum update
-    - name: Install ICC profiles
-      run: yum install -y icc-profiles
     - name: Install fonts
       run: yum install -y fontconfig
     - name: Build
