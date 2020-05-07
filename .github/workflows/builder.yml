@@ -146,8 +146,8 @@ jobs:
       run: yum install -y icc-profiles
     - name: Install fonts
       run: yum install -y fontconfig
-    - name: Install dependencies
-      run: yum update && yum install -y zlib-devel
+    - name: Install zlib
+      run: yum install -y zlib-devel
     - name: Build
       uses: SusanDoggie/swift-action@master
       with:
