@@ -145,10 +145,7 @@ jobs:
     - name: Install ICC profiles
       run: yum install -y icc-profiles
     - name: Install fonts
-      run: |
-        export DEBIAN_FRONTEND=noninteractive
-        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
-        yum install -y fontconfig fonts-noto ttf-mscorefonts-installer
+      run: yum install -y fontconfig
     - name: Install dependencies
       run: yum update && yum install -y zlib-devel
     - name: Build
