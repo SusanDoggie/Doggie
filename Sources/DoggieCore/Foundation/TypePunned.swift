@@ -51,23 +51,62 @@ public func withUnsafeMutableTypePunnedPointer<T, U, R>(of value: inout T, to: U
     }
 }
 
-extension ContiguousBuffer {
+extension UnsafeBufferPointer {
     
     @inlinable
     @inline(__always)
     public func withUnsafeTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         
-        return try withUnsafeBufferPointer {
+        precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
+        
+        guard let baseAddress = self.baseAddress else { return try body(UnsafeBufferPointer<T>(start: nil, count: 0)) }
+        
+        let capacity = self.count * MemoryLayout<Element>.stride / MemoryLayout<T>.stride
+        
+        return try baseAddress.withMemoryRebound(to: T.self, capacity: capacity) { try body(UnsafeBufferPointer<T>(start: $0, count: capacity)) }
+    }
+}
+
+extension UnsafeMutableBufferPointer {
+    
+    @inlinable
+    @inline(__always)
+    public mutating func withUnsafeMutableTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
+        
+        precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
+        
+        guard let baseAddress = self.baseAddress else {
             
-            precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
+            var buf = UnsafeMutableBufferPointer<T>(start: nil, count: 0)
             
-            guard let baseAddress = $0.baseAddress else { return try body(UnsafeBufferPointer(start: nil, count: 0)) }
+            defer { precondition(buf.baseAddress == nil) }
+            defer { precondition(buf.count == 0) }
             
-            let capacity = $0.count * MemoryLayout<Element>.stride / MemoryLayout<T>.stride
+            return try body(&buf)
+        }
+        
+        let capacity = self.count * MemoryLayout<Element>.stride / MemoryLayout<T>.stride
+        
+        return try baseAddress.withMemoryRebound(to: T.self, capacity: capacity) { baseAddress in
             
-            return try baseAddress.withMemoryRebound(to: T.self, capacity: capacity) { try body(UnsafeBufferPointer(start: $0, count: capacity)) }
+            var buf = UnsafeMutableBufferPointer<T>(start: baseAddress, count: capacity)
+            
+            defer { precondition(buf.baseAddress == baseAddress) }
+            defer { precondition(buf.count == capacity) }
+            
+            return try body(&buf)
         }
     }
+}
+
+extension ContiguousBuffer {
+    
+    @inlinable
+    @inline(__always)
+    public func withUnsafeTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
+        return try withUnsafeBufferPointer { try $0.withUnsafeTypePunnedBufferPointer(to: T.self, body) }
+    }
+    
 }
 
 extension ContiguousMutableBuffer {
@@ -75,32 +114,6 @@ extension ContiguousMutableBuffer {
     @inlinable
     @inline(__always)
     public mutating func withUnsafeMutableTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
-        
-        return try withUnsafeMutableBufferPointer {
-            
-            precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
-            
-            guard let baseAddress = $0.baseAddress else {
-                
-                var buf = UnsafeMutableBufferPointer<T>(start: nil, count: 0)
-                
-                defer { precondition(buf.baseAddress == nil) }
-                defer { precondition(buf.count == 0) }
-                
-                return try body(&buf)
-            }
-            
-            let capacity = $0.count * MemoryLayout<Element>.stride / MemoryLayout<T>.stride
-            
-            return try baseAddress.withMemoryRebound(to: T.self, capacity: capacity) { baseAddress in
-                
-                var buf = UnsafeMutableBufferPointer(start: baseAddress, count: capacity)
-                
-                defer { precondition(buf.baseAddress == baseAddress) }
-                defer { precondition(buf.count == capacity) }
-                
-                return try body(&buf)
-            }
-        }
+        return try withUnsafeMutableBufferPointer { try $0.withUnsafeMutableTypePunnedBufferPointer(to: T.self, body) }
     }
 }

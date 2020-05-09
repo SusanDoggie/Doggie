@@ -57,7 +57,7 @@ extension Image {
             }
         }
         
-        self.withUnsafeTypePunnedBufferPointer(to: Double.self) {
+        self.withUnsafeMutableTypePunnedBufferPointer(to: Double.self) {
             
             guard var dest = $0.baseAddress else { return }
             

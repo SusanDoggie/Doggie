@@ -40,7 +40,7 @@ extension Image {
         let channel_max: R = scalbn(1, T.bitWidth) - 1
         let byteOffset = channel.bitRange.lowerBound >> 3
         
-        self.withUnsafeTypePunnedBufferPointer(to: R.self) {
+        self.withUnsafeMutableTypePunnedBufferPointer(to: R.self) {
             
             guard var dest = $0.baseAddress else { return }
             
