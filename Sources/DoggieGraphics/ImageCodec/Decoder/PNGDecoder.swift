@@ -767,9 +767,9 @@ func _png_filter(ihdr: PNGDecoder.IHDR, width: Int, height: Int, data: Data) -> 
             
             do {
                 
-                try result.withUnsafeMutableBytes { (bytes: UnsafeMutableRawBufferPointer) in
+                try result.withUnsafeMutableTypePunnedBufferPointer(to: UInt8.self) {
                     
-                    guard let destination = bytes.bindMemory(to: UInt8.self).baseAddress else { return }
+                    guard let destination = $0.baseAddress else { return }
                     
                     func filling(_ value: UInt8, _ column: Int, _ row: Int, _ _width: Int, _ _height: Int) {
                         

@@ -63,10 +63,10 @@ public struct Device2ColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -157,10 +157,10 @@ public struct Device3ColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -257,10 +257,10 @@ public struct Device4ColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -364,10 +364,10 @@ public struct Device5ColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -483,10 +483,10 @@ public struct Device6ColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -609,10 +609,10 @@ public struct Device7ColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -743,10 +743,10 @@ public struct Device8ColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -883,10 +883,10 @@ public struct Device9ColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -1030,10 +1030,10 @@ public struct DeviceAColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -1185,10 +1185,10 @@ public struct DeviceBColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -1346,10 +1346,10 @@ public struct DeviceCColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -1514,10 +1514,10 @@ public struct DeviceDColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -1690,10 +1690,10 @@ public struct DeviceEColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -1872,10 +1872,10 @@ public struct DeviceFColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -2023,10 +2023,10 @@ extension Device2ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -2123,10 +2123,10 @@ extension Device3ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -2231,10 +2231,10 @@ extension Device4ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -2348,10 +2348,10 @@ extension Device5ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -2482,10 +2482,10 @@ extension Device6ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -2625,10 +2625,10 @@ extension Device7ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -2779,10 +2779,10 @@ extension Device8ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -2941,10 +2941,10 @@ extension Device9ColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -3112,10 +3112,10 @@ extension DeviceAColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -3294,10 +3294,10 @@ extension DeviceBColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -3484,10 +3484,10 @@ extension DeviceCColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -3683,10 +3683,10 @@ extension DeviceDColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -3893,10 +3893,10 @@ extension DeviceEColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         
@@ -4111,10 +4111,10 @@ extension DeviceFColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         

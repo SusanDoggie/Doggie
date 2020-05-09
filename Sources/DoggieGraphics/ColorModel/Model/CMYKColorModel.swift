@@ -60,10 +60,10 @@ public struct CMYKColorModel: ColorModel {
     @inlinable
     public subscript(position: Int) -> Double {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Double.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Double.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Double.self) { $0[position] = newValue }
         }
     }
 }
@@ -260,10 +260,10 @@ extension CMYKColorModel {
         @inlinable
         public subscript(position: Int) -> Scalar {
             get {
-                return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Scalar.self)[position] }
+                return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { $0[position] }
             }
             set {
-                Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[position] = newValue }
+                withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[position] = newValue }
             }
         }
         

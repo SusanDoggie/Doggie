@@ -56,9 +56,9 @@ extension Image {
         
         let bytesPerPixel = bitmap.bitsPerPixel >> 3
         
-        self.withUnsafeMutableBytes {
+        self.withUnsafeMutableTypePunnedBufferPointer(to: T.self) {
             
-            guard var dest = $0.baseAddress?.bindMemory(to: T.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
+            guard var dest = $0.baseAddress else { return }
             
             bitmap.channels.withUnsafeBufferPointer { channels in
                 

@@ -57,9 +57,9 @@ extension Image {
             }
         }
         
-        self.withUnsafeMutableBytes {
+        self.withUnsafeTypePunnedBufferPointer(to: Double.self) {
             
-            guard var dest = $0.baseAddress?.bindMemory(to: Double.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
+            guard var dest = $0.baseAddress else { return }
             
             let row = Pixel.numberOfComponents * width
             

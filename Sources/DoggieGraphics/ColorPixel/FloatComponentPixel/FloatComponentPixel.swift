@@ -69,13 +69,13 @@ extension ColorPixel where Self: _FloatComponentPixel {
     @inlinable
     @inline(__always)
     public func component(_ index: Int) -> Double {
-        return Swift.withUnsafeBytes(of: self) { Double($0.bindMemory(to: Scalar.self)[index]) }
+        return withUnsafeTypePunnedPointer(of: self, to: Scalar.self) { Double($0[index]) }
     }
     
     @inlinable
     @inline(__always)
     public mutating func setComponent(_ index: Int, _ value: Double) {
-        Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Scalar.self)[index] = Scalar(value) }
+        withUnsafeMutableTypePunnedPointer(of: &self, to: Scalar.self) { $0[index] = Scalar(value) }
     }
     
     @inlinable

@@ -513,6 +513,10 @@ extension MappedBuffer: DataProtocol where Element == UInt8 {
     }
 }
 
+extension MappedBuffer: ContiguousMutableBuffer {
+    
+}
+
 extension MappedBuffer: Equatable where Element: Equatable {
     
     @inlinable

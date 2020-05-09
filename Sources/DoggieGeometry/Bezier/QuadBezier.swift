@@ -128,10 +128,10 @@ extension QuadBezier {
     @inline(__always)
     public subscript(position: Int) -> Element {
         get {
-            return Swift.withUnsafeBytes(of: self) { $0.bindMemory(to: Element.self)[position] }
+            return withUnsafeTypePunnedPointer(of: self, to: Element.self) { $0[position] }
         }
         set {
-            Swift.withUnsafeMutableBytes(of: &self) { $0.bindMemory(to: Element.self)[position] = newValue }
+            withUnsafeMutableTypePunnedPointer(of: &self, to: Element.self) { $0[position] = newValue }
         }
     }
 }

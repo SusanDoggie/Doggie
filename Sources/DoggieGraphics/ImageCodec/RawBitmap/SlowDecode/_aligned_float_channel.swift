@@ -39,9 +39,9 @@ extension Image {
         let channel = bitmap.channels[channel_idx]
         let byteOffset = channel.bitRange.lowerBound >> 3
         
-        self.withUnsafeMutableBytes {
+        self.withUnsafeTypePunnedBufferPointer(to: R.self) {
             
-            guard var dest = $0.baseAddress?.bindMemory(to: R.self, capacity: Pixel.numberOfComponents * $0.count) else { return }
+            guard var dest = $0.baseAddress else { return }
             
             let row = Pixel.numberOfComponents * width
             

@@ -302,7 +302,8 @@ extension SFNTMORX {
                     }
                     
                     if l != r {
-                        buffer.withUnsafeMutableBufferPointer { _ = memmove($0.baseAddress! + start + r, $0.baseAddress! + start + l, (end - start - l - r) * MemoryLayout<Int>.stride) }
+                        let count = (end - start - l - r) * MemoryLayout<Int>.stride
+                        buffer.withUnsafeMutableBytes { _ = memmove($0.baseAddress! + start + r, $0.baseAddress! + start + l, count) }
                     }
                     
                     switch m.1 {
