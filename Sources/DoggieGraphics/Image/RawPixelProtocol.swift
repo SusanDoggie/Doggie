@@ -141,3 +141,18 @@ extension RawPixelProtocol {
         return copy
     }
 }
+
+extension RawPixelProtocol {
+    
+    @inlinable
+    @inline(__always)
+    public func withUnsafeTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
+        return try withUnsafeBufferPointer { try $0.withUnsafeTypePunnedBufferPointer(to: T.self, body) }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public mutating func withUnsafeMutableTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
+        return try withUnsafeMutableBufferPointer { try $0.withUnsafeMutableTypePunnedBufferPointer(to: T.self, body) }
+    }
+}
