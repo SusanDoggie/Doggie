@@ -95,7 +95,7 @@ extension Data {
     }
 }
 
-extension Data {
+extension Data: ContiguousMutableBuffer {
     
     @inlinable
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<UInt8>) throws -> R) rethrows -> R {
