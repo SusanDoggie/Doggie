@@ -28,11 +28,11 @@ public protocol _RGBColorPixelConvertible {
     func _convert<Pixel: _RGBColorPixel>(_: Pixel.Type) -> Pixel
 }
 
-extension _ColorPixel where Self: _RGBColorPixel {
+extension ColorPixel where Self: _RGBColorPixel {
     
     @inlinable
     @inline(__always)
-    public init<C: ColorPixel>(_ color: C) where C.Model == Model {
+    public init<C: ColorPixel>(_ color: C) where Model == C.Model {
         if let color = color as? _RGBColorPixelConvertible {
             self = color._convert(Self.self)
         } else {

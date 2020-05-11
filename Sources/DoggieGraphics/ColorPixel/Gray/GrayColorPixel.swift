@@ -28,11 +28,11 @@ public protocol _GrayColorPixelConvertible {
     func _convert<Pixel: _GrayColorPixel>(_: Pixel.Type) -> Pixel
 }
 
-extension _ColorPixel where Self: _GrayColorPixel {
+extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
     @inline(__always)
-    public init<C: ColorPixel>(_ color: C) where C.Model == Model {
+    public init<C: ColorPixel>(_ color: C) where Model == C.Model {
         if let color = color as? _GrayColorPixelConvertible {
             self = color._convert(Self.self)
         } else {

@@ -23,27 +23,15 @@
 //  THE SOFTWARE.
 //
 
-public protocol _ColorPixel {
+public protocol ColorPixel: Hashable {
     
-    associatedtype Model
-    
-    init<C: ColorPixel>(_ color: C) where C.Model == Model
-}
-
-extension _ColorPixel where Self: ColorPixel {
-    
-    @inlinable
-    @inline(__always)
-    public init<C: ColorPixel>(_ color: C) where C.Model == Model {
-        self.init(color: color.color, opacity: color.opacity)
-    }
-}
-
-public protocol ColorPixel: Hashable, _ColorPixel where Model: ColorModel {
+    associatedtype Model: ColorModel
     
     init()
     
     init(color: Model, opacity: Double)
+    
+    init<C: ColorPixel>(_ color: C) where Model == C.Model
     
     func component(_ index: Int) -> Double
     
@@ -80,6 +68,12 @@ extension ColorPixel {
     @inlinable
     @inline(__always)
     public init(_ color: Color<Model>) {
+        self.init(color: color.color, opacity: color.opacity)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public init<C: ColorPixel>(_ color: C) where Model == C.Model {
         self.init(color: color.color, opacity: color.opacity)
     }
 }
