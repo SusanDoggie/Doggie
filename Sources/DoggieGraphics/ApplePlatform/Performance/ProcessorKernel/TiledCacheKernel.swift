@@ -220,11 +220,21 @@ extension TiledCacheKernel.Info {
                         mipmapped: false)
                     descriptor.usage = .shaderWrite
                     
-                    guard let texture = commandBuffer.device.makeBuffer(buffer)?.makeTexture(descriptor: descriptor, offset: 0, bytesPerRow: block.width * 4) else { return nil }
+                    guard let texture = commandBuffer.device.makeTexture(buffer, descriptor: descriptor, bytesPerRow: block.width * 4) else { return nil }
                     
                     let image = self.image.transformed(by: SDTransform.reflectY(extent.midY))
                     
                     renderer.render(image, to: texture, commandBuffer: commandBuffer, bounds: CGRect(extent), colorSpace: workingColorSpace)
+                    
+                    #if os(macOS) || targetEnvironment(macCatalyst)
+                    
+                    if texture.storageMode == .managed {
+                        let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder()
+                        blitCommandEncoder?.synchronize(resource: texture)
+                        blitCommandEncoder?.endEncoding()
+                    }
+                    
+                    #endif
                     
                     return (block, buffer)
                 }
