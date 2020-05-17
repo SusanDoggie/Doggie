@@ -142,6 +142,22 @@ extension AttributedString {
 extension AttributedString {
     
     @inlinable
+    func _attributes_slice(from range: Range<Int>) -> [_Attribute] {
+        
+        var attributes: [_Attribute] = []
+        
+        let start_attribute = _attributes.lazy.filter { $0.index <= range.lowerBound }.max { $0.index }?.attribute
+        
+        if let start_attribute = start_attribute {
+            attributes.append(_Attribute(index: range.lowerBound, attribute: start_attribute))
+        }
+        
+        attributes.append(contentsOf: _attributes.lazy.filter { $0.index != range.lowerBound && range ~= $0.index })
+        
+        return attributes
+    }
+    
+    @inlinable
     public func attributedSubstring(from range: Range<Int>) -> AttributedString {
         
         precondition(range.clamped(to: 0..<_string.count) == range, "Index out of range.")
@@ -150,15 +166,7 @@ extension AttributedString {
         let endIndex = _string.index(_string.startIndex, offsetBy: range.upperBound)
         
         let substring = _string[startIndex..<endIndex]
-        
-        var attributes: [_Attribute] = []
-        
-        let start_attribute = _attributes.lazy.filter { $0.index <= range.lowerBound }.max { $0.index }?.attribute
-        if let start_attribute = start_attribute {
-            attributes.append(_Attribute(index: 0, attribute: start_attribute))
-        }
-        
-        attributes.append(contentsOf: _attributes.lazy.compactMap { $0.index != range.lowerBound && range ~= $0.index ? _Attribute(index: $0.index - range.lowerBound, attribute: $0.attribute) : nil })
+        let attributes = _attributes_slice(from: range).map { _Attribute(index: $0.index - range.lowerBound, attribute: $0.attribute) }
         
         return AttributedString(string: substring, attributes: attributes)
     }
@@ -235,18 +243,11 @@ extension AttributedString {
             
         } else {
             
-            let attributes = self._attributes
+            var attributes = _attributes_slice(from: 0..<range.lowerBound)
+            attributes.append(_Attribute(index: range.lowerBound, attribute: attribute))
+            attributes.append(contentsOf: _attributes_slice(from: range.upperBound..<_string.count))
             
-            self._attributes = attributes.filter { $0.index < range.lowerBound }
-            self._attributes.append(_Attribute(index: range.lowerBound, attribute: attribute))
-            
-            let attributes_in_range = attributes.lazy.filter { $0.index != range.lowerBound && range ~= $0.index }
-            if let attribute = attributes_in_range.max(by: { $0.index })?.attribute {
-                self._attributes.append(_Attribute(index: range.upperBound, attribute: attribute))
-            }
-            
-            self._attributes.append(contentsOf: attributes.lazy.filter { $0.index > range.upperBound })
-            
+            self._attributes = attributes
             self._fix_attributes()
         }
     }
@@ -264,35 +265,16 @@ extension AttributedString {
             
         } else {
             
-            let attributes = self._attributes
+            var attributes = _attributes_slice(from: 0..<range.lowerBound)
             
-            self._attributes = attributes.filter { $0.index <= range.lowerBound }
-            
-            if self._attributes[self._attributes.count - 1].index == range.lowerBound {
-                
-                self._attributes[self._attributes.count - 1].attribute[keyPath: keyPath] = value
-                
-            } else {
-                
-                var attribute = self._attributes[self._attributes.count - 1].attribute
-                attribute[keyPath: keyPath] = value
-                self._attributes.append(_Attribute(index: range.lowerBound, attribute: attribute))
-            }
-            
-            let attributes_in_range = attributes.lazy.filter { $0.index != range.lowerBound && range ~= $0.index }
-            
-            for var attribute in attributes_in_range {
+            for var attribute in _attributes_slice(from: range) {
                 attribute.attribute[keyPath: keyPath] = value
-                self._attributes.append(attribute)
+                attributes.append(attribute)
             }
             
-            if var attribute = attributes_in_range.max(by: { $0.index }) {
-                attribute.attribute[keyPath: keyPath] = value
-                self._attributes.append(_Attribute(index: range.upperBound, attribute: attribute.attribute))
-            }
+            attributes.append(contentsOf: _attributes_slice(from: range.upperBound..<_string.count))
             
-            self._attributes.append(contentsOf: attributes.lazy.filter { $0.index > range.upperBound })
-            
+            self._attributes = attributes
             self._fix_attributes()
         }
     }
