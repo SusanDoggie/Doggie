@@ -158,14 +158,20 @@ extension AttributedString {
     }
     
     @inlinable
-    public func attributedSubstring(from range: Range<Int>) -> AttributedString {
+    public func substring(from range: Range<Int>) -> Substring {
         
         precondition(range.clamped(to: 0..<_string.count) == range, "Index out of range.")
         
         let startIndex = _string.index(_string.startIndex, offsetBy: range.lowerBound)
         let endIndex = _string.index(_string.startIndex, offsetBy: range.upperBound)
         
-        let substring = _string[startIndex..<endIndex]
+        return _string[startIndex..<endIndex]
+    }
+    
+    @inlinable
+    public func attributedSubstring(from range: Range<Int>) -> AttributedString {
+        
+        let substring = self.substring(from: range)
         let attributes = _attributes_slice(from: range).map { _Attribute(index: $0.index - range.lowerBound, attribute: $0.attribute) }
         
         return AttributedString(string: substring, attributes: attributes)
@@ -302,5 +308,30 @@ extension AttributedString {
         result.append(replacement)
         result.append(self.attributedSubstring(from: range.upperBound..<_string.count))
         return result
+    }
+}
+
+extension AttributedString {
+    
+    @inlinable
+    public func enumerateLines(invoking body: (AttributedString, Range<Int>, inout Bool) throws -> Void) rethrows {
+        
+        var stop = false
+        
+        var _startIndex = self.string.startIndex
+        for _endIndex in self.string.indexed().lazy.compactMap({ $1.isNewline ? $0 : nil }) {
+            
+            let startIndex = self.string.distance(from: self.string.startIndex, to: _startIndex)
+            let endIndex = self.string.distance(from: self.string.startIndex, to: _endIndex)
+            
+            try body(self.attributedSubstring(from: startIndex..<endIndex), startIndex..<endIndex, &stop)
+            
+            guard !stop else { return }
+            
+            _startIndex = self.string.index(after: _endIndex)
+        }
+        
+        let startIndex = self.string.distance(from: self.string.startIndex, to: _startIndex)
+        try body(self.attributedSubstring(from: startIndex..<self.count), startIndex..<self.count, &stop)
     }
 }
