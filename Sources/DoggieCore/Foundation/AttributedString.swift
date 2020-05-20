@@ -229,10 +229,10 @@ extension AttributedString {
     }
     
     @inlinable
-    public mutating func setAttribute<T>(_ value: T, for keyPath: WritableKeyPath<Attribute, T>) {
+    public mutating func setAttribute(callback: (inout Attribute) -> Void) {
         
         for i in 0..<self._attributes.count {
-            self._attributes[i].attribute[keyPath: keyPath] = value
+            callback(&self._attributes[i].attribute)
         }
         
         self._fix_attributes()
@@ -259,14 +259,14 @@ extension AttributedString {
     }
     
     @inlinable
-    public mutating func setAttribute<T>(_ value: T, for keyPath: WritableKeyPath<Attribute, T>, in range: Range<Int>) {
+    public mutating func setAttribute(in range: Range<Int>, callback: (inout Attribute) -> Void) {
         
         precondition(range.clamped(to: 0..<_string.count) == range, "Index out of range.")
         
         if _string.isEmpty {
             
             var attribute = self._attributes[0]
-            attribute.attribute[keyPath: keyPath] = value
+            callback(&attribute.attribute)
             self._attributes = [attribute]
             
         } else {
@@ -274,7 +274,7 @@ extension AttributedString {
             var attributes = _attributes_slice(from: 0..<range.lowerBound)
             
             for var attribute in _attributes_slice(from: range) {
-                attribute.attribute[keyPath: keyPath] = value
+                callback(&attribute.attribute)
                 attributes.append(attribute)
             }
             
