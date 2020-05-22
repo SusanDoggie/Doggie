@@ -158,6 +158,11 @@ extension FontCollection {
     }
     
     @inlinable
+    public func subtracting(_ other: FontCollection) -> FontCollection {
+        return FontCollection(fonts: fonts.subtracting(other.fonts))
+    }
+    
+    @inlinable
     @discardableResult
     public mutating func insert(_ newMember: Font) -> (inserted: Bool, memberAfterInsert: Font) {
         return fonts.insert(newMember.with(size: 0, features: [:]))
@@ -189,6 +194,27 @@ extension FontCollection {
     public mutating func formSymmetricDifference(_ other: FontCollection) {
         fonts.formSymmetricDifference(other.fonts)
     }
+    
+    @inlinable
+    public mutating func subtract(_ other: FontCollection) {
+        fonts.subtract(other.fonts)
+    }
+    
+    @inlinable
+    public func isSubset(of other: FontCollection) -> Bool {
+        return fonts.isSubset(of: other.fonts)
+    }
+    
+    @inlinable
+    public func isDisjoint(with other: FontCollection) -> Bool {
+        return fonts.isDisjoint(with: other.fonts)
+    }
+    
+    @inlinable
+    public func isSuperset(of other: FontCollection) -> Bool {
+        return fonts.isSuperset(of: other.fonts)
+    }
+    
 }
 
 extension FontCollection: CustomStringConvertible {
