@@ -37,6 +37,7 @@ struct SFNTFontFace: FontFaceBase {
     var hmtx: Data
     var vhea: SFNTVHEA?
     var vmtx: Data?
+    var ltag: SFNTLTAG?
     var glyf: SFNTGLYF?
     var sbix: SFNTSBIX?
     var feat: SFNTFEAT?
@@ -74,6 +75,7 @@ struct SFNTFontFace: FontFaceBase {
         
         self.os2 = try table["OS/2"].map { try SFNTOS2($0) }
         
+        self.ltag = try table["ltag"].map { try SFNTLTAG($0) }
         self.feat = try table["feat"].map { try SFNTFEAT($0) }
         self.morx = try table["morx"].map { try SFNTMORX($0) }
         self.gdef = try table["GDEF"].map { try OTFGDEF($0) }
@@ -254,7 +256,7 @@ extension SFNTFontFace {
                 
                 if feature.isExclusive {
                     
-                    let name = queryName(Int(feature.nameIndex))
+                    let name = queryName(Int(feature.nameIndex), nil)
                     let defaultSetting = feature[feature.defaultSetting]?.setting
                     
                     var settingNames: [Int: String] = [:]
@@ -265,7 +267,7 @@ extension SFNTFontFace {
                         guard let setting = setting else { continue }
                         
                         availableSettings.append(Int(setting.setting))
-                        settingNames[Int(setting.setting)] = queryName(Int(setting.nameIndex))
+                        settingNames[Int(setting.setting)] = queryName(Int(setting.nameIndex), nil)
                     }
                     
                     result.append(AATFontFeatureBase(
@@ -283,7 +285,7 @@ extension SFNTFontFace {
                         
                         guard let setting = setting else { continue }
                         
-                        let name = queryName(Int(setting.nameIndex))
+                        let name = queryName(Int(setting.nameIndex), nil)
                         
                         result.append(AATFontFeatureBase(
                             feature: UInt16(feature.feature),
@@ -435,59 +437,70 @@ extension SFNTFontFace {
 
 extension SFNTFontFace {
     
-    func queryName(_ id: Int) -> String? {
+    var names: Set<Int> {
+        return Set(name.record.map { Int($0.name) })
+    }
+    
+    var languages: Set<String> {
         
-        if let macOSRoman = name.record.firstIndex(where: { $0.platform.platform == 1 && $0.platform.specific == 0 && $0.name == id }) {
-            return self.name[macOSRoman]
+        var languages = name.record.compactMap { $0.iso_language }
+        
+        if let ltag = ltag {
+            languages += ltag.compactMap { $0 }
         }
-        if let unicode = name.record.firstIndex(where: { $0.platform.platform == 0 && $0.name == id }) {
-            return self.name[unicode]
+        
+        return Set(languages)
+    }
+    
+    func queryName(_ id: Int, _ language: String?) -> String? {
+        
+        if let language = language {
+            
+            let lang = ltag?.indexed().first { $0.1 == language }?.0
+            
+            for (idx, record) in name.record.indexed() where record.name == id {
+                
+                guard record.platform.encoding != nil else { continue }
+                
+                if record.platform.platform == 0 {
+                    
+                    if let lang = lang, record.language == lang {
+                        return self.name[idx]
+                    }
+                    
+                } else if record.iso_language == language {
+                    
+                    return self.name[idx]
+                }
+            }
         }
+        
+        for (idx, record) in name.record.indexed() where record.name == id {
+            guard record.platform.encoding != nil else { continue }
+            return self.name[idx]
+        }
+        
         return nil
     }
     
-    var copyright: String? {
-        return queryName(0)
-    }
-    
     var fontName: String? {
-        return queryName(6)
+        return queryName(6, "en") ?? queryName(6, nil)
     }
     
     var familyName: String? {
-        return queryName(1)
+        return queryName(1, "en") ?? queryName(6, nil)
     }
     
     var faceName: String? {
-        return queryName(2)
+        return queryName(2, "en") ?? queryName(6, nil)
     }
     
     var uniqueName: String? {
-        return queryName(3)
+        return queryName(3, "en") ?? queryName(6, nil)
     }
     
     var displayName: String? {
-        return queryName(4)
-    }
-    
-    var version: String? {
-        return queryName(5)
-    }
-    
-    var trademark: String? {
-        return queryName(7)
-    }
-    
-    var manufacturer: String? {
-        return queryName(8)
-    }
-    
-    var designer: String? {
-        return queryName(9)
-    }
-    
-    var license: String? {
-        return queryName(13)
+        return queryName(4, "en") ?? queryName(6, nil)
     }
 }
 

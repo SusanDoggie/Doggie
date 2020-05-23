@@ -82,14 +82,10 @@ protocol FontFaceBase {
     
     var familyClass: Font.FamilyClass? { get }
     
-    var designer: String? { get }
+    var names: Set<Int> { get }
+    var languages: Set<String> { get }
+    func queryName(_ id: Int, _ language: String?) -> String?
     
-    var version: String? { get }
-    
-    var trademark: String? { get }
-    var manufacturer: String? { get }
-    var license: String? { get }
-    var copyright: String? { get }
 }
 
 public struct Font {
@@ -564,26 +560,111 @@ extension Font {
     public var familyClass: FamilyClass? {
         return details.familyClass
     }
+}
+
+extension Font {
+    
+    @frozen
+    public struct Name: RawRepresentable, Hashable {
+        
+        public var rawValue: Int
+        
+        @inlinable
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+        
+        public static var copyright             = Font.Name(rawValue: 0)
+        public static var familyName            = Font.Name(rawValue: 1)
+        public static var faceName              = Font.Name(rawValue: 2)
+        public static var uniqueName            = Font.Name(rawValue: 3)
+        public static var displayName           = Font.Name(rawValue: 4)
+        public static var version               = Font.Name(rawValue: 5)
+        public static var fontName              = Font.Name(rawValue: 6)
+        public static var trademark             = Font.Name(rawValue: 7)
+        public static var manufacturer          = Font.Name(rawValue: 8)
+        public static var designer              = Font.Name(rawValue: 9)
+        public static var license               = Font.Name(rawValue: 13)
+        public static var preferredFamilyName   = Font.Name(rawValue: 16)
+        public static var preferredFaceName     = Font.Name(rawValue: 17)
+    }
+    
+    public var names: Set<Name> {
+        return Set(base.names.map { Name(rawValue: $0) })
+    }
+    public var languages: Set<String> {
+        return base.languages
+    }
+    public func queryName(for name: Font.Name, language: String? = nil) -> String? {
+        return base.queryName(name.rawValue, language)
+    }
     
     public var designer: String? {
-        return base.designer
+        return self.queryName(for: .designer)
     }
     
     public var version: String? {
-        return base.version
+        return self.queryName(for: .version)
     }
     
     public var trademark: String? {
-        return base.trademark
+        return self.queryName(for: .trademark)
     }
     public var manufacturer: String? {
-        return base.manufacturer
+        return self.queryName(for: .manufacturer)
     }
     public var license: String? {
-        return base.license
+        return self.queryName(for: .license)
     }
     public var copyright: String? {
-        return base.copyright
+        return self.queryName(for: .copyright)
+    }
+    
+}
+
+extension Font {
+    
+    public func localizedName(for name: Font.Name) -> String? {
+        
+        let locales = Locale.preferredLanguages.map { Locale(identifier: $0) }
+        
+        for locale in locales {
+            
+            guard let languageCode = locale.languageCode else { continue }
+            let scriptCode = locale.scriptCode
+            let regionCode = locale.regionCode
+            
+            if let scriptCode = scriptCode, let regionCode = regionCode, let string = self.queryName(for: name, language: "\(languageCode)-\(scriptCode)_\(regionCode)") {
+                return string
+            }
+            if let regionCode = regionCode, let string = self.queryName(for: name, language: "\(languageCode)_\(regionCode)") {
+                return string
+            }
+            if let scriptCode = scriptCode, let string = self.queryName(for: name, language: "\(languageCode)-\(scriptCode)") {
+                return string
+            }
+            if let string = self.queryName(for: name, language: languageCode) {
+                return string
+            }
+        }
+        
+        return nil
+    }
+    
+    public var localizedFamilyName: String? {
+        return self.localizedName(for: .preferredFamilyName)
+            ?? self.queryName(for: .preferredFamilyName)
+            ?? self.localizedName(for: .familyName)
+            ?? self.queryName(for: .familyName)
+    }
+    public var localizedFaceName: String? {
+        return self.localizedName(for: .preferredFaceName)
+            ?? self.queryName(for: .preferredFaceName)
+            ?? self.localizedName(for: .faceName)
+            ?? self.queryName(for: .faceName)
+    }
+    public var localizedDisplayName: String? {
+        return self.localizedName(for: .displayName) ?? self.displayName
     }
     
 }
