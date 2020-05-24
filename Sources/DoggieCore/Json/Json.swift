@@ -34,7 +34,7 @@ public enum JsonType: Hashable {
 }
 
 @frozen
-public struct Json {
+public struct Json: Hashable {
     
     @usableFromInline
     let base: Base
@@ -204,35 +204,6 @@ extension Json: CustomStringConvertible {
     }
 }
 
-extension Json: Hashable {
-    
-    @inlinable
-    public static func == (lhs: Json, rhs: Json) -> Bool {
-        switch (lhs.base, rhs.base) {
-        case (.null, .null): return true
-        case let (.boolean(lhs), .boolean(rhs)): return lhs == rhs
-        case let (.string(lhs), .string(rhs)): return lhs == rhs
-        case let (.number(lhs), .number(rhs)): return lhs == rhs
-        case let (.array(lhs), .array(rhs)): return lhs == rhs
-        case let (.dictionary(lhs), .dictionary(rhs)): return lhs == rhs
-        default: return false
-        }
-    }
-    
-    @inlinable
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(type)
-        switch self.base {
-        case let .boolean(bool): hasher.combine(bool)
-        case let .string(string): hasher.combine(string)
-        case let .number(number): hasher.combine(number)
-        case let .array(array): hasher.combine(array)
-        case let .dictionary(dictionary): hasher.combine(dictionary)
-        default: break
-        }
-    }
-}
-
 extension Json {
     
     @inlinable
@@ -274,13 +245,13 @@ extension Json {
 extension Json {
     
     @usableFromInline
-    enum Base {
+    enum Base: Hashable {
         case null
         case boolean(Bool)
         case string(String)
         case number(Number)
         case array([Json])
-        case dictionary([String:Json])
+        case dictionary([String: Json])
     }
 }
 

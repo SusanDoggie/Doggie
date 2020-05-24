@@ -327,7 +327,7 @@ extension DataPack {
         case binary(Data)
         case uuid(UUID)
         case array([DataPack])
-        case dictionary([String:DataPack])
+        case dictionary([String: DataPack])
         case undecoded(SDUndecodedObject)
     }
 }
