@@ -261,11 +261,11 @@ extension Json.Base {
     var type: JsonType {
         switch self {
         case .null: return .null
-        case .boolean(_): return .boolean
-        case .string(_): return .string
-        case .number(_): return .number
-        case .array(_): return .array
-        case .dictionary(_): return .dictionary
+        case .boolean: return .boolean
+        case .string: return .string
+        case .number: return .number
+        case .array: return .array
+        case .dictionary: return .dictionary
         }
     }
     

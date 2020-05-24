@@ -186,7 +186,7 @@ extension DataPack: CustomStringConvertible {
         case .uuid: return "\(uuid!)"
         case .array: return "\(array!)"
         case .dictionary: return "\(dictionary!)"
-        case .unknown(_): return "unknown"
+        case .unknown: return "unknown"
         }
     }
 }
@@ -248,7 +248,7 @@ extension DataPack {
     @inlinable
     public var isUnknownType: Bool {
         switch type {
-        case .unknown(_): return true
+        case .unknown: return true
         default: return false
         }
     }
@@ -338,15 +338,15 @@ extension DataPack.Base {
     var type: DataPackType {
         switch self {
         case .null: return .null
-        case .boolean(_): return .boolean
-        case .string(_): return .string
-        case .signed(_): return .signed
-        case .unsigned(_): return .unsigned
-        case .number(_): return .number
-        case .binary(_): return .binary
-        case .uuid(_): return .uuid
-        case .array(_): return .array
-        case .dictionary(_): return .dictionary
+        case .boolean: return .boolean
+        case .string: return .string
+        case .signed: return .signed
+        case .unsigned: return .unsigned
+        case .number: return .number
+        case .binary: return .binary
+        case .uuid: return .uuid
+        case .array: return .array
+        case .dictionary: return .dictionary
         case let .undecoded(value): return value.type
         }
     }
@@ -767,7 +767,7 @@ struct SDUndecodedObject {
     var binary: Data? {
         switch type {
         case .binary: return data
-        case .unknown(_): return data
+        case .unknown: return data
         default: return nil
         }
     }
