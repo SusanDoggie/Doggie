@@ -467,7 +467,7 @@ extension SVGContext {
     
     private func apply_style(_ element: inout SDXMLElement, _ visibleBound: inout Rect, _ objectBound: Shape, _ object_transform: SDTransform) {
         
-        var style: [String: String] = self.blendMode == .normal ? [:] : ["isolation": "isolate"]
+        var style: [String: String] = ["isolation": "isolate"]
         
         let _objectBound = objectBound.boundary
         
