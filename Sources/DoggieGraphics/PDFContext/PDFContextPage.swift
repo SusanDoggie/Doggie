@@ -441,6 +441,9 @@ extension PDFContext.Page {
                 
                 self.next = nil
                 
+                set_blendmode()
+                set_opacity(self.opacity)
+                
                 let commands = next.finalize()
                 if transparency_layers[commands] == nil {
                     transparency_layers[commands] = "Fm\(transparency_layers.count + 1)"
