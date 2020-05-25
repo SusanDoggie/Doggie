@@ -396,10 +396,10 @@ extension ColorSpace {
         if let luminance = profile[.Luminance]?.XYZArray?.first?.y {
             cieXYZ = CIEXYZColorSpace(white: white, black: black, luminance: luminance.representingValue)
         } else {
-            cieXYZ = CIEXYZColorSpace(white: white, black: black)
+            cieXYZ = CIEXYZColorSpace(white: white, black: black, luminance: 1)
         }
         
-        let _PCSXYZ = CIEXYZColorSpace(white: PCSXYZ.white, black: black * CIEXYZColorSpace(white: white).chromaticAdaptationMatrix(to: PCSXYZ, .default))
+        let _PCSXYZ = CIEXYZColorSpace(white: PCSXYZ.white, black: black * CIEXYZColorSpace(white: white).chromaticAdaptationMatrix(to: PCSXYZ, .default), luminance: 1)
         
         let chromaticAdaptationMatrix = cieXYZ.chromaticAdaptationMatrix(to: _PCSXYZ, .default)
         
