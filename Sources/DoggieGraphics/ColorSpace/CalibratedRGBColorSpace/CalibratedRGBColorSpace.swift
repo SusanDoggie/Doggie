@@ -39,6 +39,36 @@ extension ColorSpace where Model == RGBColorModel {
     public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> ColorSpace {
         return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white), red: red, green: green, blue: blue, gamma: gamma))
     }
+    
+    @inlinable
+    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point) -> ColorSpace {
+        return ColorSpace(base: CalibratedRGBColorSpace(CIEXYZColorSpace(white: white, black: black), red: red, green: green, blue: blue))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, gamma: Double) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white, black: black), red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma)))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white, black: black), red: red, green: green, blue: blue, gamma: gamma))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: Point, luminance: Double, contrastRatio: Double, red: Point, green: Point, blue: Point) -> ColorSpace {
+        return ColorSpace(base: CalibratedRGBColorSpace(CIEXYZColorSpace(white: white, luminance: luminance, contrastRatio: contrastRatio), red: red, green: green, blue: blue))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: Point, luminance: Double, contrastRatio: Double, red: Point, green: Point, blue: Point, gamma: Double) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white, luminance: luminance, contrastRatio: contrastRatio), red: red, green: green, blue: blue, gamma: (gamma, gamma, gamma)))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: Point, luminance: Double, contrastRatio: Double, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> ColorSpace {
+        return ColorSpace(base: CalibratedGammaRGBColorSpace(CIEXYZColorSpace(white: white, luminance: luminance, contrastRatio: contrastRatio), red: red, green: green, blue: blue, gamma: gamma))
+    }
 }
 
 @usableFromInline

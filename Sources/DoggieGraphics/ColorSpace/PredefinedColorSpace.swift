@@ -158,10 +158,50 @@ extension AnyColorSpace {
     public static func cieLuv(white: Point) -> AnyColorSpace {
         return AnyColorSpace(ColorSpace.cieLuv(white: white))
     }
+    @inlinable
+    public static func cieXYZ(white: XYZColorModel, black: XYZColorModel) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieXYZ(white: white, black: black))
+    }
+    @inlinable
+    public static func cieYxy(white: XYZColorModel, black: XYZColorModel) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieYxy(white: white, black: black))
+    }
+    @inlinable
+    public static func cieLab(white: XYZColorModel, black: XYZColorModel) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieLab(white: white, black: black))
+    }
+    @inlinable
+    public static func cieLuv(white: XYZColorModel, black: XYZColorModel) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieLuv(white: white, black: black))
+    }
+    @inlinable
+    public static func cieXYZ(white: Point, luminance: Double, contrastRatio: Double) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieXYZ(white: white, luminance: luminance, contrastRatio: contrastRatio))
+    }
+    @inlinable
+    public static func cieYxy(white: Point, luminance: Double, contrastRatio: Double) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieYxy(white: white, luminance: luminance, contrastRatio: contrastRatio))
+    }
+    @inlinable
+    public static func cieLab(white: Point, luminance: Double, contrastRatio: Double) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieLab(white: white, luminance: luminance, contrastRatio: contrastRatio))
+    }
+    @inlinable
+    public static func cieLuv(white: Point, luminance: Double, contrastRatio: Double) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.cieLuv(white: white, luminance: luminance, contrastRatio: contrastRatio))
+    }
     
     @inlinable
     public static func calibratedGray(white: Point, gamma: Double = 1) -> AnyColorSpace {
         return AnyColorSpace(ColorSpace.calibratedGray(white: white, gamma: gamma))
+    }
+    @inlinable
+    public static func calibratedGray(white: XYZColorModel, black: XYZColorModel, gamma: Double = 1) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedGray(white: white, black: black, gamma: gamma))
+    }
+    @inlinable
+    public static func calibratedGray(white: Point, luminance: Double, contrastRatio: Double, gamma: Double = 1) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedGray(white: white, luminance: luminance, contrastRatio: contrastRatio, gamma: gamma))
     }
     
     @inlinable
@@ -177,6 +217,34 @@ extension AnyColorSpace {
     @inlinable
     public static func calibratedRGB(white: Point, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> AnyColorSpace {
         return AnyColorSpace(ColorSpace.calibratedRGB(white: white, red: red, green: green, blue: blue, gamma: gamma))
+    }
+    @inlinable
+    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(white: white, black: black, red: red, green: green, blue: blue))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, gamma: Double) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(white: white, black: black, red: red, green: green, blue: blue, gamma: gamma))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: XYZColorModel, black: XYZColorModel, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(white: white, black: black, red: red, green: green, blue: blue, gamma: gamma))
+    }
+    @inlinable
+    public static func calibratedRGB(white: Point, luminance: Double, contrastRatio: Double, red: Point, green: Point, blue: Point) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(white: white, luminance: luminance, contrastRatio: contrastRatio, red: red, green: green, blue: blue))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: Point, luminance: Double, contrastRatio: Double, red: Point, green: Point, blue: Point, gamma: Double) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(white: white, luminance: luminance, contrastRatio: contrastRatio, red: red, green: green, blue: blue, gamma: gamma))
+    }
+    
+    @inlinable
+    public static func calibratedRGB(white: Point, luminance: Double, contrastRatio: Double, red: Point, green: Point, blue: Point, gamma: (Double, Double, Double)) -> AnyColorSpace {
+        return AnyColorSpace(ColorSpace.calibratedRGB(white: white, luminance: luminance, contrastRatio: contrastRatio, red: red, green: green, blue: blue, gamma: gamma))
     }
 }
 

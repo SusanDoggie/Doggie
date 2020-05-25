@@ -34,6 +34,16 @@ extension ColorSpace where Model == XYZColorModel {
     public static func cieXYZ(white: Point) -> ColorSpace {
         return ColorSpace(base: CIEXYZColorSpace(white: white))
     }
+    
+    @inlinable
+    public static func cieXYZ(white: XYZColorModel, black: XYZColorModel) -> ColorSpace {
+        return ColorSpace(base: CIEXYZColorSpace(white: white, black: black))
+    }
+    
+    @inlinable
+    public static func cieXYZ(white: Point, luminance: Double, contrastRatio: Double) -> ColorSpace {
+        return ColorSpace(base: CIEXYZColorSpace(white: white, luminance: luminance, contrastRatio: contrastRatio))
+    }
 }
 
 @frozen
@@ -53,9 +63,37 @@ struct CIEXYZColorSpace: ColorSpaceBaseProtocol {
     let luminance: Double
     
     @inlinable
-    init(white: Model, black: Model = XYZColorModel(), luminance: Double = 1) {
+    init(white: Model) {
+        self.white = white
+        self.black = XYZColorModel()
+        self.luminance = 1
+    }
+    
+    @inlinable
+    init(white: Model, black: Model, luminance: Double) {
         self.white = white
         self.black = black
+        self.luminance = luminance
+    }
+    
+    @inlinable
+    init(white: Point) {
+        self.white = XYZColorModel(luminance: 1, point: white)
+        self.black = XYZColorModel()
+        self.luminance = 1
+    }
+    
+    @inlinable
+    init(white: Model, black: Model) {
+        self.white = XYZColorModel(luminance: 1, point: white.point)
+        self.black = XYZColorModel(luminance: black.luminance / white.luminance, point: black.point)
+        self.luminance = white.luminance
+    }
+    
+    @inlinable
+    init(white: Point, luminance: Double, contrastRatio: Double) {
+        self.white = XYZColorModel(luminance: 1, point: white)
+        self.black = XYZColorModel(luminance: 1 / contrastRatio, point: white)
         self.luminance = luminance
     }
 }
@@ -68,19 +106,6 @@ extension CIEXYZColorSpace {
         hasher.combine(white)
         hasher.combine(black)
         hasher.combine(luminance)
-    }
-}
-
-extension CIEXYZColorSpace {
-    
-    @inlinable
-    init(white: Point) {
-        self.init(white: XYZColorModel(luminance: 1, point: white))
-    }
-    
-    @inlinable
-    init(white: Point, luminance: Double, contrastRatio: Double) {
-        self.init(white: XYZColorModel(luminance: 1, point: white), black: XYZColorModel(luminance: 1 / contrastRatio, point: white), luminance: luminance)
     }
 }
 

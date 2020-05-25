@@ -34,6 +34,16 @@ extension ColorSpace where Model == YxyColorModel {
     public static func cieYxy(white: Point) -> ColorSpace {
         return ColorSpace(base: CIEYxyColorSpace(CIEXYZColorSpace(white: white)))
     }
+    
+    @inlinable
+    public static func cieYxy(white: XYZColorModel, black: XYZColorModel) -> ColorSpace {
+        return ColorSpace(base: CIEYxyColorSpace(CIEXYZColorSpace(white: white, black: black)))
+    }
+    
+    @inlinable
+    public static func cieYxy(white: Point, luminance: Double, contrastRatio: Double) -> ColorSpace {
+        return ColorSpace(base: CIEYxyColorSpace(CIEXYZColorSpace(white: white, luminance: luminance, contrastRatio: contrastRatio)))
+    }
 }
 
 @frozen
