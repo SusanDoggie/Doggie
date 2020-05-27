@@ -30,17 +30,19 @@ public struct PDFStream: Hashable {
     var dictionary: [PDFName: PDFObject] {
         didSet {
             self.dictionary["Length"] = PDFObject(data.count)
+            self.cache = Cache()
         }
     }
     
     public var data: Data {
         didSet {
             self.dictionary["Length"] = PDFObject(data.count)
+            self.cache = Cache()
         }
     }
     
     @usableFromInline
-    let cache = Cache()
+    var cache = Cache()
     
     @inlinable
     public init(dictionary: [PDFName: PDFObject] = [:], data: Data = Data()) {
