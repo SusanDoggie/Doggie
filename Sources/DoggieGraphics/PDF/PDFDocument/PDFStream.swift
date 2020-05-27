@@ -27,7 +27,11 @@
 public struct PDFStream: Hashable {
     
     @usableFromInline
-    var dictionary: [PDFName: PDFObject]
+    var dictionary: [PDFName: PDFObject] {
+        didSet {
+            self.dictionary["Length"] = PDFObject(data.count)
+        }
+    }
     
     public var data: Data {
         didSet {
