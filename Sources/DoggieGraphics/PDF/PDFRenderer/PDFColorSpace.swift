@@ -151,79 +151,91 @@ extension PDFColorSpace {
 
 extension PDFColorSpace {
     
+    static func deviceGrayFromRGB(_ colorSpace: ColorSpace<RGBColorModel>) -> ColorSpace<GrayColorModel> {
+        return .wrapped(
+            base: colorSpace,
+            convertFromBase: { GrayColorModel(white: 0.3 * $0.red + 0.59 * $0.green + 0.11 * $0.blue) },
+            convertToBase: { RGBColorModel(red: $0.white, green: $0.white, blue: $0.white) }
+        )
+    }
+    
+    static func deviceGrayFromCMYK(_ colorSpace: ColorSpace<CMYKColorModel>) -> ColorSpace<GrayColorModel> {
+        return .wrapped(
+            base: colorSpace,
+            convertFromBase: { GrayColorModel(white: 1 - min(1, 0.3 * $0.cyan + 0.59 * $0.magenta + 0.11 * $0.yellow + $0.black)) },
+            convertToBase: { CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 1 - $0.white) }
+        )
+    }
+    
+    static func deviceRGBFromGray(_ colorSpace: ColorSpace<GrayColorModel>) -> ColorSpace<RGBColorModel> {
+        return .wrapped(
+            base: colorSpace,
+            convertFromBase: { RGBColorModel(red: $0.white, green: $0.white, blue: $0.white) },
+            convertToBase: { GrayColorModel(white: 0.3 * $0.red + 0.59 * $0.green + 0.11 * $0.blue) }
+        )
+    }
+    
+    static func deviceRGBFromCMYK(_ colorSpace: ColorSpace<CMYKColorModel>) -> ColorSpace<RGBColorModel> {
+        return .wrapped(base: colorSpace, convertFromBase: RGBColorModel.init, convertToBase: CMYKColorModel.init)
+    }
+    
+    static func deviceCMYKFromGray(_ colorSpace: ColorSpace<GrayColorModel>) -> ColorSpace<CMYKColorModel> {
+        return .wrapped(
+            base: colorSpace,
+            convertFromBase: { CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 1 - $0.white) },
+            convertToBase: { GrayColorModel(white: 1 - min(1, 0.3 * $0.cyan + 0.59 * $0.magenta + 0.11 * $0.yellow + $0.black) }
+        )
+    }
+    
+    static func deviceCMYKFromRGB(_ colorSpace: ColorSpace<RGBColorModel>) -> ColorSpace<CMYKColorModel> {
+        return .wrapped(base: colorSpace, convertFromBase: CMYKColorModel.init, convertToBase: RGBColorModel.init)
+    }
+    
+}
+
+extension PDFColorSpace {
+    
     func create_color(_ color: [PDFNumber], device colorSpace: AnyColorSpace?) -> AnyColor? {
         
         switch self {
         case .deviceGray:
             
-            let color = color.map { $0.doubleValue ?? 0 }
+            let _colorSpace: AnyColorSpace
             
             switch colorSpace?.base {
-                
-            case let colorSpace as ColorSpace<GrayColorModel>:
-                
-                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: color)
-                
-            case let colorSpace as ColorSpace<RGBColorModel>:
-                
-                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: [color[0], color[0], color[0]])
-                
-            case let colorSpace as ColorSpace<CMYKColorModel>:
-                
-                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: [0, 0, 0, 1 - color[0]])
-                
-            default: return nil
+            case let colorSpace as ColorSpace<GrayColorModel>: _colorSpace = AnyColorSpace(colorSpace)
+            case let colorSpace as ColorSpace<RGBColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceGrayFromRGB(colorSpace))
+            case let colorSpace as ColorSpace<CMYKColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceGrayFromCMYK(colorSpace))
+            default: _colorSpace = .genericGamma22Gray
             }
+            
+            return AnyColor(colorSpace: _colorSpace, components: color)
             
         case .deviceRGB:
             
-            let color = color.map { $0.doubleValue ?? 0 }
+            let _colorSpace: AnyColorSpace
             
             switch colorSpace?.base {
-                
-            case let colorSpace as ColorSpace<GrayColorModel>:
-                
-                let gray = 0.3 * color[0] + 0.59 * color[1] + 0.11 * color[2]
-                
-                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: [gray])
-                
-            case let colorSpace as ColorSpace<RGBColorModel>:
-                
-                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: color)
-                
-            case let colorSpace as ColorSpace<CMYKColorModel>:
-                
-                let rgb = RGBColorModel(red: color[0], green: color[1], blue: color[2])
-                
-                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: CMYKColorModel(rgb))
-                
-            default: return nil
+            case let colorSpace as ColorSpace<GrayColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceRGBFromGray(colorSpace))
+            case let colorSpace as ColorSpace<RGBColorModel>: _colorSpace = AnyColorSpace(colorSpace)
+            case let colorSpace as ColorSpace<CMYKColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceRGBFromCMYK(colorSpace))
+            default: _colorSpace = .sRGB
             }
+            
+            return AnyColor(colorSpace: _colorSpace, components: color)
             
         case .deviceCMYK:
             
-            let color = color.map { $0.doubleValue ?? 0 }
+            let _colorSpace: AnyColorSpace
             
             switch colorSpace?.base {
-                
-            case let colorSpace as ColorSpace<GrayColorModel>:
-                
-                let gray = 1 - min(1, 0.3 * color[0] + 0.59 * color[1] + 0.11 * color[2] + color[3])
-                
-                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: [gray])
-                
-            case let colorSpace as ColorSpace<RGBColorModel>:
-                
-                let cmyk = CMYKColorModel(cyan: color[0], magenta: color[1], yellow: color[2], black: color[3])
-                
-                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: RGBColorModel(cmyk))
-                
-            case let colorSpace as ColorSpace<CMYKColorModel>:
-                
-                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: color)
-                
-            default: return nil
+            case let colorSpace as ColorSpace<GrayColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceCMYKFromGray(colorSpace))
+            case let colorSpace as ColorSpace<RGBColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceCMYKFromRGB(colorSpace))
+            case let colorSpace as ColorSpace<CMYKColorModel>: _colorSpace = AnyColorSpace(colorSpace)
+            default: _colorSpace = AnyColorSpace(PDFColorSpace.deviceCMYKFromRGB(.sRGB))
             }
+            
+            return AnyColor(colorSpace: _colorSpace, components: color)
             
         case let .indexed(base, table):
             

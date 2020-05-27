@@ -33,6 +33,8 @@ struct PDFBitmap {
     
     let decodeParms: [PDFName: PDFObject]
     
+    let premultiplied: Bool
+    
     let data: Data
     
     init?(width: Int,
@@ -40,6 +42,7 @@ struct PDFBitmap {
           bitsPerComponent: Int,
           colorSpace: PDFColorSpace,
           decodeParms: [PDFName: PDFObject],
+          premultiplied: Bool,
           data: Data) {
         
         guard bitsPerComponent % 8 == 0 else { return nil }
@@ -49,6 +52,7 @@ struct PDFBitmap {
         self.bitsPerComponent = bitsPerComponent
         self.colorSpace = colorSpace
         self.decodeParms = decodeParms
+        self.premultiplied = premultiplied
         self.data = data
     }
     
@@ -103,9 +107,18 @@ extension PDFBitmap {
     
     func create_image(mask: PDFBitmap?, device colorSpace: AnyColorSpace?) -> AnyImage? {
         
-        switch (self.colorSpace, colorSpace?.base) {
+        switch self.colorSpace {
             
-        case (.deviceGray, let colorSpace as ColorSpace<GrayColorModel>):
+        case .deviceGray:
+            
+            let _colorSpace: AnyColorSpace
+            
+            switch colorSpace?.base {
+            case let colorSpace as ColorSpace<GrayColorModel>: _colorSpace = AnyColorSpace(colorSpace)
+            case let colorSpace as ColorSpace<RGBColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceGrayFromRGB(colorSpace))
+            case let colorSpace as ColorSpace<CMYKColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceGrayFromCMYK(colorSpace))
+            default: _colorSpace = .genericGamma22Gray
+            }
             
             var bitmaps = [self.rawBitmap]
             
@@ -113,9 +126,18 @@ extension PDFBitmap {
                 bitmaps.append(mask.maskBitmap(self.colorSpace.numberOfComponents))
             }
             
-            return AnyImage(width: self.width, height: self.height, colorSpace: AnyColorSpace(colorSpace), bitmaps: bitmaps, premultiplied: false)
+            return AnyImage(width: self.width, height: self.height, colorSpace: _colorSpace, bitmaps: bitmaps, premultiplied: self.premultiplied)
             
-        case (.deviceRGB, let colorSpace as ColorSpace<RGBColorModel>):
+        case .deviceRGB:
+            
+            let _colorSpace: AnyColorSpace
+            
+            switch colorSpace?.base {
+            case let colorSpace as ColorSpace<GrayColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceRGBFromGray(colorSpace))
+            case let colorSpace as ColorSpace<RGBColorModel>: _colorSpace = AnyColorSpace(colorSpace)
+            case let colorSpace as ColorSpace<CMYKColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceRGBFromCMYK(colorSpace))
+            default: _colorSpace = .sRGB
+            }
             
             var bitmaps = [self.rawBitmap]
             
@@ -123,9 +145,18 @@ extension PDFBitmap {
                 bitmaps.append(mask.maskBitmap(self.colorSpace.numberOfComponents))
             }
             
-            return AnyImage(width: self.width, height: self.height, colorSpace: AnyColorSpace(colorSpace), bitmaps: bitmaps, premultiplied: false)
+            return AnyImage(width: self.width, height: self.height, colorSpace: _colorSpace, bitmaps: bitmaps, premultiplied: self.premultiplied)
             
-        case (.deviceCMYK, let colorSpace as ColorSpace<CMYKColorModel>):
+        case .deviceCMYK:
+            
+            let _colorSpace: AnyColorSpace
+            
+            switch colorSpace?.base {
+            case let colorSpace as ColorSpace<GrayColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceCMYKFromGray(colorSpace))
+            case let colorSpace as ColorSpace<RGBColorModel>: _colorSpace = AnyColorSpace(PDFColorSpace.deviceCMYKFromRGB(colorSpace))
+            case let colorSpace as ColorSpace<CMYKColorModel>: _colorSpace = AnyColorSpace(colorSpace)
+            default: _colorSpace = AnyColorSpace(PDFColorSpace.deviceCMYKFromRGB(.sRGB))
+            }
             
             var bitmaps = [self.rawBitmap]
             
@@ -133,17 +164,19 @@ extension PDFBitmap {
                 bitmaps.append(mask.maskBitmap(self.colorSpace.numberOfComponents))
             }
             
-            return AnyImage(width: self.width, height: self.height, colorSpace: AnyColorSpace(colorSpace), bitmaps: bitmaps, premultiplied: false)
+            return AnyImage(width: self.width, height: self.height, colorSpace: _colorSpace, bitmaps: bitmaps, premultiplied: self.premultiplied)
             
-        case (let .indexed(base, table), _):
+        case let .indexed(base, table):
             
             guard self.bitsPerComponent == 8 else { return nil }
             
-            guard let _color = PDFBitmap(width: self.width, height: self.height, bitsPerComponent: 8, colorSpace: base, decodeParms: self.decodeParms, data: Data(self.data.flatMap { table[Int($0)] })) else { return nil }
+            let black = Data(count: base.numberOfComponents)
+            
+            guard let _color = PDFBitmap(width: self.width, height: self.height, bitsPerComponent: 8, colorSpace: base, decodeParms: self.decodeParms, premultiplied: self.premultiplied, data: Data(self.data.flatMap { table.indices ~= Int($0) ? table[Int($0)] : black })) else { return nil }
             
             return _color.create_image(mask: mask, device: colorSpace)
             
-        case (let .colorSpace(colorSpace), _):
+        case let .colorSpace(colorSpace):
             
             var bitmaps = [self.rawBitmap]
             
@@ -151,9 +184,7 @@ extension PDFBitmap {
                 bitmaps.append(mask.maskBitmap(self.colorSpace.numberOfComponents))
             }
             
-            return AnyImage(width: self.width, height: self.height, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: false)
-            
-        default: return nil
+            return AnyImage(width: self.width, height: self.height, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: self.premultiplied)
         }
     }
 }

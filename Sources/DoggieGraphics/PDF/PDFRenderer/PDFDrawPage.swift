@@ -715,7 +715,7 @@ extension PDFRenderer {
         
         guard let colorSpace = _colorSpace else { return }
         
-        guard let color = PDFBitmap(width: width, height: height, bitsPerComponent: bitsPerComponent, colorSpace: colorSpace, decodeParms: decodeParms, data: data) else { return }
+        guard let color = PDFBitmap(width: width, height: height, bitsPerComponent: bitsPerComponent, colorSpace: colorSpace, decodeParms: decodeParms, premultiplied: false, data: data) else { return }
         
         if let _mask = table["SMask"]?.stream,
             let mask_width = _mask["Width"].intValue,
@@ -729,7 +729,7 @@ extension PDFRenderer {
             
             let mask_decodeParms = _mask["DecodeParms"].dictionary  ?? [:]
             
-            let mask = PDFBitmap(width: mask_width, height: mask_height, bitsPerComponent: mask_bitsPerComponent, colorSpace: .deviceGray, decodeParms: mask_decodeParms, data: mask_data)
+            let mask = PDFBitmap(width: mask_width, height: mask_height, bitsPerComponent: mask_bitsPerComponent, colorSpace: .deviceGray, decodeParms: mask_decodeParms, premultiplied: false, data: mask_data)
             
             if self.alphaMask {
                 
