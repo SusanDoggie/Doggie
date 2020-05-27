@@ -85,9 +85,6 @@ extension PDFContext {
         let pages_token = PDFXref(object: xref_table.count + 1, generation: 0)
         xref_table[pages_token] = [:]
         
-        let catalog_token = PDFXref(object: xref_table.count + 1, generation: 0)
-        xref_table[catalog_token] = [:]
-        
         for page in self.pages {
             
             var _page = try page.page(&xref_table)
@@ -103,7 +100,6 @@ extension PDFContext {
             "Type": PDFObject("Pages" as PDFName),
             "Count": PDFObject(_pages.count),
             "Kids": PDFObject(_pages.map { PDFObject($0) }),
-            "Parent": PDFObject(catalog_token),
         ]
         
         xref_table[pages_token] = pages
@@ -113,6 +109,7 @@ extension PDFContext {
             "Pages": PDFObject(pages_token),
         ]
         
+        let catalog_token = PDFXref(object: xref_table.count + 1, generation: 0)
         xref_table[catalog_token] = catalog
         
         let dateFormatter = DateFormatter()
