@@ -29,26 +29,23 @@ public struct PDFStream: Hashable {
     @usableFromInline
     var dictionary: [PDFName: PDFObject] {
         didSet {
-            self.dictionary["Length"] = PDFObject(data.count)
             self.cache = Cache()
         }
     }
     
     public var data: Data {
         didSet {
-            self.dictionary["Length"] = PDFObject(data.count)
             self.cache = Cache()
         }
     }
     
     @usableFromInline
-    var cache = Cache()
+    private(set) var cache = Cache()
     
     @inlinable
     public init(dictionary: [PDFName: PDFObject] = [:], data: Data = Data()) {
         self.dictionary = dictionary
         self.data = data
-        self.dictionary["Length"] = PDFObject(data.count)
     }
 }
 
@@ -171,6 +168,10 @@ extension PDFStream {
     
     @inlinable
     public func encode(_ data: inout Data) {
+        
+        var dictionary = self.dictionary
+        dictionary["Length"] = PDFObject(data.count)
+        
         data.append(utf8: "<<\n")
         for (name, object) in dictionary {
             name.encode(&data)
@@ -178,6 +179,7 @@ extension PDFStream {
             object.encode(&data)
             data.append(utf8: "\n")
         }
+        
         data.append(utf8: ">>\n")
         data.append(utf8: "stream\n")
         data.append(self.data)
