@@ -148,3 +148,92 @@ extension PDFColorSpace {
         }
     }
 }
+
+extension PDFColorSpace {
+    
+    func create_color(_ color: [PDFNumber], device colorSpace: AnyColorSpace?) -> AnyColor? {
+        
+        switch self {
+        case .deviceGray:
+            
+            let color = color.map { $0.doubleValue ?? 0 }
+            
+            switch colorSpace?.base {
+                
+            case let colorSpace as ColorSpace<GrayColorModel>:
+                
+                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: color)
+                
+            case let colorSpace as ColorSpace<RGBColorModel>:
+                
+                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: [color[0], color[0], color[0]])
+                
+            case let colorSpace as ColorSpace<CMYKColorModel>:
+                
+                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: [0, 0, 0, 1 - color[0]])
+                
+            default: return nil
+            }
+            
+        case .deviceRGB:
+            
+            let color = color.map { $0.doubleValue ?? 0 }
+            
+            switch colorSpace?.base {
+                
+            case let colorSpace as ColorSpace<GrayColorModel>:
+                
+                let gray = 0.3 * color[0] + 0.59 * color[1] + 0.11 * color[2]
+                
+                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: [gray])
+                
+            case let colorSpace as ColorSpace<RGBColorModel>:
+                
+                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: color)
+                
+            case let colorSpace as ColorSpace<CMYKColorModel>:
+                
+                let rgb = RGBColorModel(red: color[0], green: color[1], blue: color[2])
+                
+                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: CMYKColorModel(rgb))
+                
+            default: return nil
+            }
+            
+        case .deviceCMYK:
+            
+            let color = color.map { $0.doubleValue ?? 0 }
+            
+            switch colorSpace?.base {
+                
+            case let colorSpace as ColorSpace<GrayColorModel>:
+                
+                let gray = 1 - min(1, 0.3 * color[0] + 0.59 * color[1] + 0.11 * color[2] + color[3])
+                
+                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: [gray])
+                
+            case let colorSpace as ColorSpace<RGBColorModel>:
+                
+                let cmyk = CMYKColorModel(cyan: color[0], magenta: color[1], yellow: color[2], black: color[3])
+                
+                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: RGBColorModel(cmyk))
+                
+            case let colorSpace as ColorSpace<CMYKColorModel>:
+                
+                return AnyColor(colorSpace: AnyColorSpace(colorSpace), components: color)
+                
+            default: return nil
+            }
+            
+        case let .indexed(base, table):
+            
+            guard let index = color[0].int64Value else { return nil }
+            
+            let _color = table[Int(index)].map { PDFNumber(Double($0) / 255) }
+            
+            return 0..<table.count ~= Int(index) ? base.create_color(_color, device: colorSpace) : nil
+            
+        case let .colorSpace(colorSpace): return AnyColor(colorSpace: colorSpace, components: color.map { $0.doubleValue ?? 0 })
+        }
+    }
+}

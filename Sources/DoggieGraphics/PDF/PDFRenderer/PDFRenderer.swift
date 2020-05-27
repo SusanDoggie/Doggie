@@ -106,93 +106,8 @@ extension SVGContext: PDFRendererContextProtocol {
 
 extension PDFRenderer {
     
-    private var context_colorspace: AnyColorSpace? {
+    var context_colorspace: AnyColorSpace? {
         return (context as? PDFRendererContextProtocol)?._colorspace
-    }
-    
-    private var deviceGray: AnyColorSpace? {
-        return context_colorspace.flatMap { $0.base as? ColorSpace<GrayColorModel> }.map { AnyColorSpace($0) }
-    }
-    
-    private var deviceRGB: AnyColorSpace? {
-        return context_colorspace.flatMap { $0.base as? ColorSpace<RGBColorModel> }.map { AnyColorSpace($0) }
-    }
-    
-    private var deviceCMYK: AnyColorSpace? {
-        return context_colorspace.flatMap { $0.base as? ColorSpace<CMYKColorModel> }.map { AnyColorSpace($0) }
-    }
-    
-    private func convert(_ colorSpace: PDFColorSpace, _ color: [PDFNumber]) -> AnyColor? {
-        
-        switch colorSpace {
-        case .deviceGray:
-            
-            let color = color.map { $0.doubleValue ?? 0 }
-            
-            if let deviceGray = deviceGray {
-                return AnyColor(colorSpace: deviceGray, components: color)
-            }
-            
-            if let deviceRGB = deviceRGB {
-                return AnyColor(colorSpace: deviceRGB, components: [color[0], color[0], color[0]])
-            }
-            
-            if let deviceCMYK = deviceCMYK {
-                return AnyColor(colorSpace: deviceCMYK, components: [0, 0, 0, 1 - color[0]])
-            }
-            
-            return nil
-            
-        case .deviceRGB:
-            
-            let color = color.map { $0.doubleValue ?? 0 }
-            
-            if let deviceRGB = deviceRGB {
-                return AnyColor(colorSpace: deviceRGB, components: color)
-            }
-            
-            let rgb = RGBColorModel(red: color[0], green: color[1], blue: color[2])
-            
-            if let deviceGray = deviceGray {
-                let gray = 0.3 * rgb.red + 0.59 * rgb.green + 0.11 * rgb.blue
-                return AnyColor(colorSpace: deviceGray, components: [gray])
-            }
-            
-            if let deviceCMYK = deviceCMYK {
-                return AnyColor(colorSpace: deviceCMYK, components: CMYKColorModel(rgb))
-            }
-            
-            return nil
-            
-        case .deviceCMYK:
-            
-            let color = color.map { $0.doubleValue ?? 0 }
-            
-            if let deviceCMYK = deviceCMYK {
-                return AnyColor(colorSpace: deviceCMYK, components: color)
-            }
-            
-            let cmyk = CMYKColorModel(cyan: color[0], magenta: color[1], yellow: color[2], black: color[3])
-            
-            if let deviceGray = deviceGray {
-                let gray = 1 - min(1, 0.3 * cmyk.cyan + 0.59 * cmyk.magenta + 0.11 * cmyk.yellow + cmyk.black)
-                return AnyColor(colorSpace: deviceGray, components: [gray])
-            }
-            
-            if let deviceRGB = deviceRGB {
-                return AnyColor(colorSpace: deviceRGB, components: RGBColorModel(cmyk))
-            }
-            
-            return nil
-            
-        case let .indexed(base, table):
-            
-            guard let index = color[0].int64Value else { return nil }
-            
-            return 0..<table.count ~= Int(index) ? self.convert(base, table[Int(index)].map { PDFNumber(Double($0) / 255) }) : nil
-            
-        case let .colorSpace(colorSpace): return AnyColor(colorSpace: colorSpace, components: color.map { $0.doubleValue ?? 0 })
-        }
     }
 }
 
@@ -207,11 +122,11 @@ extension PDFRenderer {
     }
     
     var fill: AnyColor? {
-        return self.convert(state.fillColorSpace, state.fill)
+        return state.fillColorSpace.create_color(state.fill, device: context_colorspace)
     }
     
     var stroke: AnyColor? {
-        return self.convert(state.strokeColorSpace, state.stroke)?.with(opacity: state.strokeOpacity)
+        return state.strokeColorSpace.create_color(state.stroke, device: context_colorspace)?.with(opacity: state.strokeOpacity)
     }
     
     var path: Shape {
@@ -251,10 +166,6 @@ extension PDFRenderer {
         if state.strokeColorSpace.numberOfComponents == color.count {
             state.stroke = color
         }
-    }
-    
-    var hasMask: Bool {
-        return state.mask != nil || !state.clipPath.isEmpty
     }
     
     var opacity: Double {
@@ -477,95 +388,6 @@ extension PDFRenderer {
         context.draw(image: image, in: Rect(x: 0, y: 0, width: 1, height: 1))
     }
     
-    func createImage(color: PDFBitmap, mask: PDFBitmap?) -> AnyImage? {
-        
-        switch color.colorSpace {
-            
-        case .deviceGray:
-            
-            if let deviceGray = self.deviceGray {
-                
-                var bitmaps = [color.rawBitmap]
-                
-                if let mask = mask, mask.width == color.width && mask.height == color.height {
-                    bitmaps.append(mask.maskBitmap(color.colorSpace.numberOfComponents))
-                }
-                
-                return AnyImage(width: color.width, height: color.height, colorSpace: deviceGray, bitmaps: bitmaps, premultiplied: false)
-            }
-            
-            if let deviceRGB = self.deviceRGB {
-                
-            }
-            
-            if let deviceCMYK = self.deviceCMYK {
-                
-            }
-            
-        case .deviceRGB:
-            
-            if let deviceRGB = self.deviceRGB {
-                
-                var bitmaps = [color.rawBitmap]
-                
-                if let mask = mask, mask.width == color.width && mask.height == color.height {
-                    bitmaps.append(mask.maskBitmap(color.colorSpace.numberOfComponents))
-                }
-                
-                return AnyImage(width: color.width, height: color.height, colorSpace: deviceRGB, bitmaps: bitmaps, premultiplied: false)
-            }
-            
-            if let deviceGray = self.deviceGray {
-                
-            }
-            
-            if let deviceCMYK = self.deviceCMYK {
-                
-            }
-            
-        case .deviceCMYK:
-            
-            if let deviceCMYK = self.deviceCMYK {
-                
-                var bitmaps = [color.rawBitmap]
-                
-                if let mask = mask, mask.width == color.width && mask.height == color.height {
-                    bitmaps.append(mask.maskBitmap(color.colorSpace.numberOfComponents))
-                }
-                
-                return AnyImage(width: color.width, height: color.height, colorSpace: deviceCMYK, bitmaps: bitmaps, premultiplied: false)
-            }
-            
-            if let deviceGray = self.deviceGray {
-                
-            }
-            
-            if let deviceRGB = self.deviceRGB {
-                
-            }
-            
-        case let .indexed(base, table):
-            
-            guard color.bitsPerComponent == 8 else { return nil }
-            
-            guard let _color = PDFBitmap(width: color.width, height: color.height, bitsPerComponent: 8, colorSpace: base, decodeParms: color.decodeParms, data: Data(color.data.flatMap { table[Int($0)] })) else { return nil }
-            
-            return self.createImage(color: _color, mask: mask)
-            
-        case let .colorSpace(colorSpace):
-            
-            var bitmaps = [color.rawBitmap]
-            
-            if let mask = mask, mask.width == color.width && mask.height == color.height {
-                bitmaps.append(mask.maskBitmap(color.colorSpace.numberOfComponents))
-            }
-            
-            return AnyImage(width: color.width, height: color.height, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: false)
-        }
-        
-        return nil
-    }
-    
     func draw(winding: Shape.WindingRule) {
         
         if alphaMask {
@@ -672,7 +494,7 @@ extension PDFRenderer {
         guard let stops = self.make_gradient_stops(function: function) else { return }
         guard stops.allSatisfy({ $0.color.count == colorSpace.numberOfComponents }) else { return }
         
-        let colors = stops.map { self.convert(colorSpace, $0.color.map { PDFNumber($0) }) ?? .black }
+        let colors = stops.map { colorSpace.create_color($0.color.map { PDFNumber($0) }, device: context_colorspace) ?? .black }
         
         let _stops = zip(stops, colors).map { GradientStop(offset: $0.offset, color: $1) }
         
@@ -684,7 +506,7 @@ extension PDFRenderer {
         guard let stops = self.make_gradient_stops(function: function) else { return }
         guard stops.allSatisfy({ $0.color.count == colorSpace.numberOfComponents }) else { return }
         
-        let colors = stops.map { self.convert(colorSpace, $0.color.map { PDFNumber($0) }) ?? .black }
+        let colors = stops.map { colorSpace.create_color($0.color.map { PDFNumber($0) }, device: context_colorspace) ?? .black }
         
         let _stops = zip(stops, colors).map { GradientStop(offset: $0.offset, color: $1) }
         

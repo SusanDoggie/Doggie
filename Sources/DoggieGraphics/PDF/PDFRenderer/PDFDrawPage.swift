@@ -541,6 +541,11 @@ extension PDFRenderer {
                         
                         let cache = xobject.cache
                         
+                        if xobject["SMask"].isStream {
+                            self.saveGraphicState()
+                            self.resetMask()
+                        }
+                        
                         var image: AnyImage?
                         var mask: AnyImage?
                         
@@ -570,14 +575,6 @@ extension PDFRenderer {
                         
                         if self.alphaMask {
                             
-                            let has_mask = self.hasMask
-                            
-                            if has_mask {
-                                self.beginTransparencyLayer()
-                            } else {
-                                self.saveGraphicState()
-                            }
-                            
                             if let mask = mask {
                                 self.drawClip(alphaMask: false) { $0.drawImage(image: mask) }
                             }
@@ -585,35 +582,19 @@ extension PDFRenderer {
                             self.path = Shape(rect: Rect(x: 0, y: 0, width: 1, height: 1))
                             self.draw(winding: .nonZero)
                             
-                            if has_mask {
-                                self.endTransparencyLayer()
-                            } else {
-                                self.restoreGraphicState()
-                            }
-                            
                         } else if let image = image, let mask = mask {
-                            
-                            let has_mask = self.hasMask
-                            
-                            if has_mask {
-                                self.beginTransparencyLayer()
-                            } else {
-                                self.saveGraphicState()
-                            }
                             
                             self.drawClip(alphaMask: false) { $0.drawImage(image: mask) }
                             
                             self.drawImage(image: image)
                             
-                            if has_mask {
-                                self.endTransparencyLayer()
-                            } else {
-                                self.restoreGraphicState()
-                            }
-                            
                         } else if let image = image {
                             
                             self.drawImage(image: image)
+                        }
+                        
+                        if xobject["SMask"].isStream {
+                            self.restoreGraphicState()
                         }
                         
                     default: break
@@ -752,19 +733,11 @@ extension PDFRenderer {
             
             if self.alphaMask {
                 
-                let has_mask = self.hasMask
-                
-                if has_mask {
-                    self.beginTransparencyLayer()
-                } else {
-                    self.saveGraphicState()
-                }
-                
                 if let mask = mask {
                     
                     self.drawClip(alphaMask: false) {
                         
-                        if let mask = $0.createImage(color: mask, mask: nil) {
+                        if let mask = mask.create_image(mask: nil, device: $0.context_colorspace) {
                             $0.drawImage(image: mask)
                             cache?.mask = mask
                         }
@@ -774,62 +747,40 @@ extension PDFRenderer {
                 self.path = Shape(rect: Rect(x: 0, y: 0, width: 1, height: 1))
                 self.draw(winding: .nonZero)
                 
-                if has_mask {
-                    self.endTransparencyLayer()
-                } else {
-                    self.restoreGraphicState()
-                }
-                
             } else if width == mask_width && height == mask_height {
                 
-                if let image = self.createImage(color: color, mask: mask) {
+                if let image = color.create_image(mask: mask, device: context_colorspace) {
+                    
                     self.drawImage(image: image)
                     cache?.image = image
                 }
                 
             } else if let mask = mask {
                 
-                let has_mask = self.hasMask
-                
-                if has_mask {
-                    self.beginTransparencyLayer()
-                } else {
-                    self.saveGraphicState()
-                }
-                
                 self.drawClip(alphaMask: false) {
                     
-                    if let mask = $0.createImage(color: mask, mask: nil) {
+                    if let mask = mask.create_image(mask: nil, device: $0.context_colorspace) {
                         $0.drawImage(image: mask)
                         cache?.mask = mask
                     }
                 }
                 
-                if let image = self.createImage(color: color, mask: nil) {
+                if let image = color.create_image(mask: nil, device: context_colorspace) {
+                    
                     self.drawImage(image: image)
                     cache?.image = image
                 }
                 
-                if has_mask {
-                    self.endTransparencyLayer()
-                } else {
-                    self.restoreGraphicState()
-                }
+            } else if let image = color.create_image(mask: nil, device: context_colorspace) {
                 
-            } else {
-                
-                if let image = self.createImage(color: color, mask: nil) {
-                    self.drawImage(image: image)
-                    cache?.image = image
-                }
-            }
-            
-        } else {
-            
-            if let image = self.createImage(color: color, mask: nil) {
                 self.drawImage(image: image)
                 cache?.image = image
             }
+            
+        } else if let image = color.create_image(mask: nil, device: context_colorspace) {
+            
+            self.drawImage(image: image)
+            cache?.image = image
         }
     }
 }
