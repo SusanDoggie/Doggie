@@ -77,7 +77,7 @@ extension WrappedColorSpace {
     func hash(into hasher: inout Hasher) {
         hasher.combine("WrappedColorSpace")
         hasher.combine(token)
-        hasher.combine(base)
+        base.hash(into: &hasher)
     }
     
     @inlinable
