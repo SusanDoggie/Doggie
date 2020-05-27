@@ -29,7 +29,7 @@ extension PDFContext.Page {
         
         let key = image.imageTableKey
         
-        let name: String
+        let name: PDFName
         
         if let _name = imageTable[key] {
             
@@ -37,59 +37,53 @@ extension PDFContext.Page {
             
         } else {
             
-            guard var stream = image.pdf_data(properties: properties) else { return }
+            guard var (color, mask) = image.pdf_data(properties: properties) else { return }
             
-            stream.0.table["DecodeParms"] = """
-            <<
-            \(stream.0.table.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
-            >>
-            """
-            stream.0.table["Width"] = "\(image.width)"
-            stream.0.table["Height"] = "\(image.height)"
-            stream.0.table["Interpolate"] = "true"
+            color["DecodeParms"] = PDFObject(color.dictionary)
+            color["Width"] = PDFObject(image.width)
+            color["Height"] = PDFObject(image.height)
+            color["Interpolate"] = true
             
             if state.is_clip {
-                stream.0.table["ColorSpace"] = "/DeviceGray"
+                color["ColorSpace"] = PDFObject("DeviceGray" as PDFName)
             }
             
-            if var mask = stream.1 {
+            if var _mask = mask {
                 
-                mask.table["DecodeParms"] = """
-                <<
-                \(mask.table.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
-                >>
-                """
-                mask.table["Width"] = "\(image.width)"
-                mask.table["Height"] = "\(image.height)"
-                mask.table["Interpolate"] = "true"
-                mask.table["ColorSpace"] = "/DeviceGray"
+                _mask["DecodeParms"] = PDFObject(_mask.dictionary)
+                _mask["Width"] = PDFObject(image.width)
+                _mask["Height"] = PDFObject(image.height)
+                _mask["Interpolate"] = true
+                _mask["ColorSpace"] = PDFObject("DeviceGray" as PDFName)
                 
-                stream.1 = mask
+                mask = _mask
             }
             
-            name = "Im\(imageTable.count + 1)"
+            name = PDFName("Im\(imageTable.count + 1)")
             current_layer.imageTable[key] = name
-            current_layer.image[name] = stream
+            current_layer.image[name] = (color, mask)
         }
         
         let transform = .reflectY(0.5) * .scale(x: image.width, y: image.height) * transform * _mirrored_transform
         let _transform = [
-            "\(Decimal(transform.a).rounded(scale: 9))",
-            "\(Decimal(transform.d).rounded(scale: 9))",
-            "\(Decimal(transform.b).rounded(scale: 9))",
-            "\(Decimal(transform.e).rounded(scale: 9))",
-            "\(Decimal(transform.c).rounded(scale: 9))",
-            "\(Decimal(transform.f).rounded(scale: 9))",
+            transform.a,
+            transform.d,
+            transform.b,
+            transform.e,
+            transform.c,
+            transform.f,
         ]
         
-        current_layer.state.commands += "q\n"
+        current_layer.state.commands.append(.command("q"))
         
         set_blendmode()
         set_opacity(self.opacity)
         
-        current_layer.state.commands += "\(_transform.joined(separator: " ")) cm\n"
-        current_layer.state.commands += "/\(name) Do\n"
-        current_layer.state.commands += "Q\n"
+        current_layer.state.commands.append(contentsOf: _transform.map { PDFCommand($0) })
+        current_layer.state.commands.append(.command("cm"))
+        current_layer.state.commands.append(.name(name))
+        current_layer.state.commands.append(.command("Do"))
+        current_layer.state.commands.append(.command("Q"))
     }
 }
 
@@ -100,7 +94,7 @@ private protocol PDFImageProtocol {
     
     var imageTableKey: PDFContext.ImageTableKey { get }
     
-    func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFContext.ImageStream, PDFContext.ImageStream?)?
+    func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFStream, PDFStream?)?
 }
 
 extension AnyImage: PDFImageProtocol {
@@ -109,48 +103,50 @@ extension AnyImage: PDFImageProtocol {
         return PDFContext.ImageTableKey(self)
     }
     
-    fileprivate func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFContext.ImageStream, PDFContext.ImageStream?)? {
+    fileprivate func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFStream, PDFStream?)? {
         
         let compression = properties[.compression] as? PDFContext.CompressionScheme ?? .noPrediction
         
-        var table: [String: String] = ["Columns": "\(width)", "Colors": "\(colorSpace.numberOfComponents)"]
-        let color: Data
-        var mask: Data?
+        var color = PDFStream(dictionary: [
+            "Columns": PDFObject(width),
+            "Colors": PDFObject(colorSpace.numberOfComponents),
+        ])
+        var mask: PDFStream?
         
         var bitsPerChannel = 0
         
         switch compression {
         case .noPrediction:
             
-            guard let _stream = self.tiff_predictor(predictor: 1, true, &bitsPerChannel) else { return nil }
-            color = _stream.data
+            guard let stream = self.tiff_predictor(predictor: 1, true, &bitsPerChannel) else { return nil }
+            color.data = stream.data
             
             if !self.isOpaque {
-                guard let _stream = self.tiff_predictor(predictor: 1, false, &bitsPerChannel) else { return nil }
-                mask = _stream.data
+                guard let stream = self.tiff_predictor(predictor: 1, false, &bitsPerChannel) else { return nil }
+                mask = PDFStream(data: stream.data)
             }
             
-            table["Predictor"] = "1"
-            table["BitsPerComponent"] = "\(bitsPerChannel)"
+            color["Predictor"] = 1
+            color["BitsPerComponent"] = PDFObject(bitsPerChannel)
             
         case .tiffPrediction:
             
-            guard let _stream = self.tiff_predictor(predictor: 2, true, &bitsPerChannel) else { return nil }
-            color = _stream.data
+            guard let stream = self.tiff_predictor(predictor: 2, true, &bitsPerChannel) else { return nil }
+            color.data = stream.data
             
             if !self.isOpaque {
-                guard let _stream = self.tiff_predictor(predictor: 2, false, &bitsPerChannel) else { return nil }
-                mask = _stream.data
+                guard let stream = self.tiff_predictor(predictor: 2, false, &bitsPerChannel) else { return nil }
+                mask = PDFStream(data: stream.data)
             }
             
-            table["Predictor"] = "2"
-            table["BitsPerComponent"] = "\(bitsPerChannel)"
+            color["Predictor"] = 2
+            color["BitsPerComponent"] = PDFObject(bitsPerChannel)
         }
         
-        var mask_table = table
-        mask_table["Colors"] = "1"
+        mask?.dictionary = color.dictionary
+        mask?["Colors"] = 1
         
-        return (PDFContext.ImageStream(table: table, data: color), mask.map { PDFContext.ImageStream(table: mask_table, data: $0) })
+        return (color, mask)
     }
 }
 

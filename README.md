@@ -68,7 +68,7 @@ context.draw(shape: ellipse1, winding: .nonZero, color: RGBColorModel(red: 247/2
 context.stroke(shape: ellipse1, width: 1, cap: .round, join: .round, color: RGBColorModel())
 context.draw(shape: ellipse2, winding: .nonZero, color: RGBColorModel(red: 234/255, green: 24/255, blue: 71/255))
 context.stroke(shape: ellipse2, width: 1, cap: .round, join: .round, color: RGBColorModel())
-        
+
 let image: Image<ARGB32ColorPixel> = context.image
 ```
 ![drawing sample](docs/images/readme/drawing_sample.png)

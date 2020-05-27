@@ -30,126 +30,28 @@ extension PDFContext {
         case unsupportedColorSpace
     }
     
-    static func _write(_ array: [String], to data: inout Data, xref: inout [Int]) -> Int {
-        xref.append(data.count)
-        data.append(utf8: "\(xref.count) 0 obj\n[\n")
-        data.append(utf8: array.lazy.map { "\($0)" }.joined(separator: "\n"))
-        data.append(utf8: "\n]\nendobj\n")
-        return xref.count
-    }
-    
-    static func _write(_ obj: String, to data: inout Data, xref: inout [Int]) -> Int {
-        xref.append(data.count)
-        data.append(utf8: """
-            \(xref.count) 0 obj
-            (\(obj))
-            endobj
-            
-            """)
-        return xref.count
-    }
-    
-    static func _write(_ obj: PDFObject, to data: inout Data, xref: inout [Int]) -> Int {
-        xref.append(data.count)
-        data.append(utf8: "\(xref.count) 0 obj\n")
-        obj.write(to: &data)
-        data.append(utf8: "\nendobj\n")
-        return xref.count
-    }
-    
-    static func _write(_ dictionary: [String: String], to data: inout Data, xref: inout [Int]) -> Int {
-        xref.append(data.count)
-        data.append(utf8: "\(xref.count) 0 obj\n<<\n")
-        data.append(utf8: dictionary.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
-        data.append(utf8: "\n>>\nendobj\n")
-        return xref.count
-    }
-    
-    static func _write(stream: Data, properties: [PropertyKey: Any], _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
+    public func data(properties: [PropertyKey: Any] = [:]) throws -> Data {
         
-        let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
+        let document = try self._document(properties: properties)
         
-        var dictionary = dictionary
-        var stream = stream
+        var data = Data()
+        data.append(utf8: "%PDF-1.3\n")
         
-        if dictionary["Filter"] == nil, deflate_level != .none, let compressed = try? Deflate(level: deflate_level, windowBits: 15).process(stream) {
-            stream = compressed
-            dictionary["Filter"] = "/FlateDecode"
+        let trailer = document._trailer
+        let xref_table = trailer.xref.sorted { $0.key < $1.key }
+        
+        var xref: [Int] = []
+        
+        for (_xref, object) in xref_table {
+            xref.append(data.count)
+            data.append(utf8: "\(_xref.object) 0 obj\n")
+            object.encode(&data)
+            data.append(utf8: "\nendobj\n")
         }
-        
-        dictionary["Length"] = "\(stream.count)"
-        
-        xref.append(data.count)
-        data.append(utf8: "\(xref.count) 0 obj\n")
-        data.append(utf8: "<<\n")
-        data.append(utf8: dictionary.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
-        data.append(utf8: "\n>>\n")
-        data.append(utf8: "stream\n")
-        data.append(stream)
-        data.append(utf8: "\nendstream\n")
-        data.append(utf8: "endobj\n")
-        return xref.count
-    }
-    
-    static func _write(stream: String, properties: [PropertyKey: Any], _ dictionary: [String: String] = [:], to data: inout Data, xref: inout [Int]) -> Int {
-        
-        let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
-        
-        var dictionary = dictionary
-        
-        xref.append(data.count)
-        
-        if dictionary["Filter"] == nil, deflate_level != .none, let compressed = try? Deflate(level: deflate_level, windowBits: 15).process(stream._utf8_data) {
-            
-            dictionary["Filter"] = "/FlateDecode"
-            dictionary["Length"] = "\(compressed.count)"
-            
-            data.append(utf8: "\(xref.count) 0 obj\n")
-            data.append(utf8: "<<\n")
-            data.append(utf8: dictionary.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
-            data.append(utf8: "\n>>\n")
-            data.append(utf8: "stream\n")
-            data.append(compressed)
-            data.append(utf8: "\nendstream\n")
-            data.append(utf8: "endobj\n")
-            
-        } else {
-            
-            dictionary["Length"] = "\(stream.utf8.count)"
-            
-            data.append(utf8: "\(xref.count) 0 obj\n")
-            data.append(utf8: "<<\n")
-            data.append(utf8: dictionary.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n"))
-            data.append(utf8: "\n>>\n")
-            data.append(utf8: "stream\n")
-            data.append(utf8: stream)
-            data.append(utf8: "\nendstream\n")
-            data.append(utf8: "endobj\n")
-        }
-        
-        return xref.count
-    }
-    
-    static func _write_trailer(catalog: Int, to data: inout Data, xref: inout [Int]) {
-        
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMddHHmmss"
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        
-        let date = PDFContext._write("D:\(dateFormatter.string(from: Date()))Z00'00'", to: &data, xref: &xref)
-        let producer = PDFContext._write("Doggie PDF Generator", to: &data, xref: &xref)
-        
-        let info = PDFContext._write(["Producer": "\(producer) 0 R", "CreationDate": "\(date) 0 R", "ModDate": "\(date) 0 R"], to: &data, xref: &xref)
         
         let startxref = data.count
         
-        data.append(utf8: """
-            xref
-            0 \(xref.count + 1)
-            0000000000 65535 f
-            
-            """)
+        data.append(utf8: "xref\n0 \(xref.count + 1)\n0000000000 65535 f \n")
         
         for x in xref {
             data.append(utf8: "\("0000000000\(x)".suffix(10)) 00000 n \n")
@@ -157,296 +59,272 @@ extension PDFContext {
         
         data.append(utf8: "trailer\n")
         
-        let trailer = [
-            "Size": "\(xref.count + 1)",
-            "Info": "\(info) 0 R",
-            "Root": "\(catalog) 0 R",
-        ]
+        trailer.encode(&data)
         
-        let _trailer = trailer.lazy.map { "/\($0.key) \($0.value)" }.joined(separator: "\n")
-        data.append(utf8: """
-            <<
-            \(_trailer)
-            >>
-            
-            """)
-        
-        data.append(utf8: """
-            startxref
-            \(startxref)
-            %%EOF
-            
-            """)
-    }
-    
-    public func data(properties: [PropertyKey: Any] = [:]) throws -> Data {
-        
-        var data = Data()
-        data.append(utf8: "%PDF-1.3\n")
-        
-        struct PageContent {
-            
-            var resources: Int
-            var commands: Int
-        }
-        
-        var xref: [Int] = []
-        var _pages: [Int] = []
-        
-        let xobj_group = PDFContext._write([
-            "S": "/Transparency",
-            "I": "true",
-            "K": "false",
-            ], to: &data, xref: &xref)
-        
-        let mask_group = PDFContext._write([
-            "S": "/Transparency",
-            "CS": "/DeviceGray",
-            "I": "true",
-            "K": "false",
-            ], to: &data, xref: &xref)
-        
-        let groups = PDFContext.Page.XObjectGroup(transparency_layer: xobj_group, mask: mask_group)
-        
-        let _pages_contents = try self.pages.map { try PageContent(
-            resources: $0.write_resources(xobjectGroup: groups, properties: properties, to: &data, xref: &xref),
-            commands: $0.write_commands(properties: properties, to: &data, xref: &xref))
-        }
-        
-        let _parent = xref.count + self.pages.count + 1
-        
-        for (page, contents) in zip(self.pages, _pages_contents) {
-            
-            let _mirrored_bleed = page._mirrored_bleed
-            let _mirrored_trim = page._mirrored_trim
-            let _mirrored_margin = page._mirrored_margin
-            
-            let media = [
-                Decimal(page.media.minX).rounded(scale: 9),
-                Decimal(page.media.minY).rounded(scale: 9),
-                Decimal(page.media.maxX).rounded(scale: 9),
-                Decimal(page.media.maxY).rounded(scale: 9),
-            ]
-            let bleed = [
-                Decimal(_mirrored_bleed.minX).rounded(scale: 9),
-                Decimal(_mirrored_bleed.minY).rounded(scale: 9),
-                Decimal(_mirrored_bleed.maxX).rounded(scale: 9),
-                Decimal(_mirrored_bleed.maxY).rounded(scale: 9),
-            ]
-            let trim = [
-                Decimal(_mirrored_trim.minX).rounded(scale: 9),
-                Decimal(_mirrored_trim.minY).rounded(scale: 9),
-                Decimal(_mirrored_trim.maxX).rounded(scale: 9),
-                Decimal(_mirrored_trim.maxY).rounded(scale: 9),
-            ]
-            let margin = [
-                Decimal(_mirrored_margin.minX).rounded(scale: 9),
-                Decimal(_mirrored_margin.minY).rounded(scale: 9),
-                Decimal(_mirrored_margin.maxX).rounded(scale: 9),
-                Decimal(_mirrored_margin.maxY).rounded(scale: 9),
-            ]
-            
-            var dict = [
-                "Type": "/Page",
-                "Parent": "\(_parent) 0 R",
-                "MediaBox": "[\(media.lazy.map { "\($0)" }.joined(separator: " "))]",
-                "Resources": "\(contents.resources) 0 R",
-                "Contents": "\(contents.commands) 0 R",
-            ]
-            
-            if media != bleed {
-                dict["BleedBox"] = "[\(bleed.lazy.map { "\($0)" }.joined(separator: " "))]"
-            }
-            if media != bleed {
-                dict["TrimBox"] = "[\(trim.lazy.map { "\($0)" }.joined(separator: " "))]"
-            }
-            if media != bleed {
-                dict["ArtBox"] = "[\(margin.lazy.map { "\($0)" }.joined(separator: " "))]"
-            }
-            
-            _pages.append(PDFContext._write(dict, to: &data, xref: &xref))
-        }
-        
-        let pages = PDFContext._write([
-            "Type": "/Pages",
-            "Count": "\(_pages.count)",
-            "Kids": "[\n\(_pages.map { "\($0) 0 R" }.joined(separator: "\n"))\n]",
-            ], to: &data, xref: &xref)
-        
-        let catalog = PDFContext._write([
-            "Type": "/Catalog",
-            "Pages": "\(pages) 0 R",
-            ], to: &data, xref: &xref)
-        
-        PDFContext._write_trailer(catalog: catalog, to: &data, xref: &xref)
+        data.append(utf8: "\nstartxref\n\(startxref)\n%%EOF\n")
         
         return data
+    }
+    
+    public func document(properties: [PropertyKey: Any] = [:]) throws -> PDFDocument {
+        
+        let document = try self._document(properties: properties)
+        
+        let trailer = document._trailer
+        var xref_table = trailer.xref
+        xref_table = xref_table.mapValues { PDFDocument.dereference_all($0._apply_xref(xref_table)) }
+        
+        return PDFDocument(PDFDocument.dereference_all(trailer._apply_xref(xref_table)))
+    }
+    
+    private func _document(properties: [PropertyKey: Any] = [:]) throws -> PDFDocument {
+        
+        var xref_table: [PDFXref: PDFObject] = [:]
+        var _pages: [PDFXref] = []
+        
+        let pages_token = PDFXref(object: xref_table.count + 1, generation: 0)
+        xref_table[pages_token] = [:]
+        
+        let catalog_token = PDFXref(object: xref_table.count + 1, generation: 0)
+        xref_table[catalog_token] = [:]
+        
+        for page in self.pages {
+            
+            var _page = try page.page(&xref_table)
+            _page.object["Parent"] = PDFObject(pages_token)
+            
+            let page_token = PDFXref(object: xref_table.count + 1, generation: 0)
+            xref_table[page_token] = _page.object
+            
+            _pages.append(page_token)
+        }
+        
+        let pages: PDFObject = [
+            "Type": PDFObject("Pages" as PDFName),
+            "Count": PDFObject(_pages.count),
+            "Kids": PDFObject(_pages.map { PDFObject($0) }),
+            "Parent": PDFObject(catalog_token),
+        ]
+        
+        xref_table[pages_token] = pages
+        
+        let catalog: PDFObject = [
+            "Type": PDFObject("Catalog" as PDFName),
+            "Pages": PDFObject(pages_token),
+        ]
+        
+        xref_table[catalog_token] = catalog
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMddHHmmss"
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        
+        let date = PDFObject("D:\(dateFormatter.string(from: Date()))Z00'00'")
+        
+        let trailer: PDFObject = [
+            "Size": PDFObject(xref_table.count + 1),
+            "Root": PDFObject(catalog_token),
+            "Info": [
+                "Producer": "Doggie PDF Generator",
+                "CreationDate": date,
+                "ModDate": date
+            ],
+        ]
+        
+        return PDFDocument(trailer._apply_xref(xref_table.mapValues { $0.stream.map { PDFObject($0.compressed(properties)) } ?? $0 }))
     }
 }
 
 extension PDFContext.Page {
     
-    struct XObjectGroup {
+    func page(_ xref_table: inout [PDFXref: PDFObject]) throws -> PDFPage {
         
-        var transparency_layer: Int
-        var mask: Int
-    }
-    
-    func write_resources(xobjectGroup: XObjectGroup, properties: [PDFContext.PropertyKey: Any], to data: inout Data, xref: inout [Int]) throws -> Int {
+        guard let iccData = self.colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
         
-        guard let iccData = colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
+        var page = PDFPage()
         
-        let _rangeOfComponents = (0..<colorSpace.numberOfComponents).map { colorSpace.rangeOfComponent($0) }.flatMap { [Decimal($0.lowerBound).rounded(scale: 9), Decimal($0.upperBound).rounded(scale: 9)] }
+        page.mediaBox = self.media
+        page.bleedBox = self._mirrored_bleed
+        page.trimBox = self._mirrored_trim
+        page.artBox = self._mirrored_margin
         
-        let iccBased = PDFContext._write(stream: iccData, properties: properties, [
-            "N": "\(colorSpace.numberOfComponents)",
-            "Range": "[\n\(_rangeOfComponents.lazy.map { "\($0)" }.joined(separator: "\n"))\n]",
-            ], to: &data, xref: &xref)
+        var commands = PDFStream()
+        self.finalize().encode(&commands.data)
         
-        let _colorSpaceRef = PDFContext._write(["/ICCBased \(iccBased) 0 R"], to: &data, xref: &xref)
-        let _colorSpace = PDFContext._write(["Cs1": "\(_colorSpaceRef) 0 R"], to: &data, xref: &xref)
+        let commands_token = PDFXref(object: xref_table.count + 1, generation: 0)
+        xref_table[commands_token] = PDFObject(commands)
         
-        var shading_table: [String: String] = [:]
+        page.object["Contents"] = PDFObject(commands_token)
         
-        for (shading, name) in self.shading {
+        let rangeOfComponents = (0..<self.colorSpace.numberOfComponents).map { self.colorSpace.rangeOfComponent($0) }.flatMap { [$0.lowerBound, $0.upperBound] }
+        let icc_object = PDFObject(["N": PDFObject(self.colorSpace.numberOfComponents), "Range": PDFObject(rangeOfComponents)], iccData)
+        
+        let icc_object_token = PDFXref(object: xref_table.count + 1, generation: 0)
+        xref_table[icc_object_token] = icc_object
+        
+        let colorSpace: PDFObject = [PDFObject("ICCBased" as PDFName), PDFObject(icc_object_token)]
+        
+        let resources_token = PDFXref(object: xref_table.count + 1, generation: 0)
+        xref_table[resources_token] = [:]
+        
+        page.resources = PDFObject(resources_token)
+        
+        var resources: PDFObject = [
+            "ProcSet": [
+                PDFObject("PDF" as PDFName),
+                PDFObject("ImageB" as PDFName),
+                PDFObject("ImageC" as PDFName),
+                PDFObject("ImageI" as PDFName),
+            ],
+            "ColorSpace": ["Cs1": colorSpace],
+        ]
+        
+        var extGState: PDFObject = [:]
+        var shading: PDFObject = [:]
+        var xobject: PDFObject = [:]
+        
+        for (shader, name) in self.shading {
             
-            let _function: Int
+            let function: PDFObject
             
-            switch shading.function.type {
-            case 2, 3: _function = PDFContext._write(shading.function.pdf_object, to: &data, xref: &xref)
-            case 4:
-                
-                let _domain = shading.function.domain.flatMap { [Decimal($0.lowerBound).rounded(scale: 9), Decimal($0.upperBound).rounded(scale: 9)] }
-                let _range = shading.function.range.flatMap { [Decimal($0.lowerBound).rounded(scale: 9), Decimal($0.upperBound).rounded(scale: 9)] }
-                
-                _function = PDFContext._write(stream: shading.function.postscript, properties: properties, [
-                    "FunctionType": "\(shading.function.type)",
-                    "Domain": "[\n\(_domain.lazy.map { "\($0)" }.joined(separator: "\n"))\n]",
-                    "Range": "[\n\(_range.lazy.map { "\($0)" }.joined(separator: "\n"))\n]",
-                    ], to: &data, xref: &xref)
-                
+            switch shader.function.type {
+            case 2, 3, 4: function = shader.function.pdf_object
             default: continue
             }
             
-            let _shading: Int
+            let function_token = PDFXref(object: xref_table.count + 1, generation: 0)
+            xref_table[function_token] = function
             
-            switch shading.type {
+            let _shading: PDFObject
+            
+            switch shader.type {
             case 1:
                 
-                _shading = PDFContext._write([
-                    "ColorSpace": shading.deviceGray ? "/DeviceGray" : "\(_colorSpaceRef) 0 R",
-                    "ShadingType": "\(shading.type)",
-                    "Function": "\(_function) 0 R",
-                    ], to: &data, xref: &xref)
+                _shading = [
+                    "ColorSpace": shader.deviceGray ? PDFObject("DeviceGray" as PDFName) : colorSpace,
+                    "ShadingType": PDFObject(shader.type),
+                    "Function": PDFObject(function_token),
+                ]
                 
             case 2, 3:
                 
-                _shading = PDFContext._write([
-                    "ColorSpace": shading.deviceGray ? "/DeviceGray" : "\(_colorSpaceRef) 0 R",
-                    "ShadingType": "\(shading.type)",
-                    "Function": "\(_function) 0 R",
-                    "Coords": "[\(shading.coords.lazy.map { "\($0)" }.joined(separator: " "))]",
-                    "Extend": "[\(shading.e0) \(shading.e1)]",
-                    ], to: &data, xref: &xref)
+                _shading = [
+                    "ColorSpace": shader.deviceGray ? PDFObject("DeviceGray" as PDFName) : colorSpace,
+                    "ShadingType": PDFObject(shader.type),
+                    "Function": PDFObject(function_token),
+                    "Coords": PDFObject(shader.coords),
+                    "Extend": PDFObject([PDFObject(shader.e0), PDFObject(shader.e1)]),
+                ]
                 
             default: continue
             }
             
-            shading_table[name] = "\(_shading) 0 R"
+            shading[name] = _shading
         }
         
-        let _shading = PDFContext._write(shading_table, to: &data, xref: &xref)
-        
-        var extGState_table: [String: String] = [:]
-        for (gstate, name) in extGState {
-            extGState_table[name] = "<</Type /ExtGState \(gstate)>>"
+        for (var gstate, name) in self.extGState {
+            gstate["Type"] = PDFObject("ExtGState" as PDFName)
+            extGState[name] = gstate
         }
         
-        var xobject_table: [String: String] = [:]
-        for (name, (var image, mask)) in image {
+        for (name, (var image, mask)) in self.image {
             
             if var mask = mask {
                 
-                mask.table["Type"] = "/XObject"
-                mask.table["Subtype"] = "/Image"
+                let mask_token = PDFXref(object: xref_table.count + 1, generation: 0)
+                xref_table[mask_token] = PDFObject(mask)
                 
-                let xobj = PDFContext._write(stream: mask.data, properties: properties, mask.table, to: &data, xref: &xref)
-                image.table["SMask"] = "\(xobj) 0 R"
+                mask["Type"] = PDFObject("XObject" as PDFName)
+                mask["Subtype"] = PDFObject("Image" as PDFName)
+                image["SMask"] = PDFObject(mask_token)
             }
             
-            image.table["Type"] = "/XObject"
-            image.table["Subtype"] = "/Image"
+            image["Type"] = PDFObject("XObject" as PDFName)
+            image["Subtype"] = PDFObject("Image" as PDFName)
             
-            if image.table["ColorSpace"] == nil {
-                image.table["ColorSpace"] = "\(_colorSpaceRef) 0 R"
+            if image["ColorSpace"] == nil {
+                image["ColorSpace"] = colorSpace
             }
             
-            let xobj = PDFContext._write(stream: image.data, properties: properties, image.table, to: &data, xref: &xref)
-            xobject_table[name] = "\(xobj) 0 R"
+            let image_token = PDFXref(object: xref_table.count + 1, generation: 0)
+            xref_table[image_token] = PDFObject(image)
+            
+            xobject[name] = PDFObject(image_token)
         }
         
-        let _resources = xref.count + 3 + transparency_layers.count + mask.count << 1
-        
-        let bbox = [
-            Decimal(self.media.minX).rounded(scale: 9),
-            Decimal(self.media.minY).rounded(scale: 9),
-            Decimal(self.media.maxX).rounded(scale: 9),
-            Decimal(self.media.maxY).rounded(scale: 9),
+        let mask_group: PDFObject = [
+            "S": PDFObject("Transparency" as PDFName),
+            "CS": PDFObject("DeviceGray" as PDFName),
+            "I": true,
+            "K": false,
         ]
         
-        for (name, commands) in mask {
+        let mask_group_token = PDFXref(object: xref_table.count + 1, generation: 0)
+        xref_table[mask_group_token] = mask_group
+        
+        for (name, commands) in self.mask {
             
-            let dictionary = [
-                "Type": "/XObject",
-                "Subtype": "/Form",
-                "FormType": "1",
-                "Matrix": "[1 0 0 1 0 0]",
-                "BBox": "[\(bbox.lazy.map { "\($0)" }.joined(separator: " "))]",
-                "Resources": "\(_resources) 0 R",
-                "Group": "\(xobjectGroup.mask) 0 R",
+            var xobj = PDFStream(dictionary: [
+                "Type": PDFObject("XObject" as PDFName),
+                "Subtype": PDFObject("Form" as PDFName),
+                "FormType": 1,
+                "Matrix": [1, 0, 0, 1, 0, 0],
+                "BBox": PDFObject(self.media),
+                "Resources": PDFObject(resources_token),
+                "Group": PDFObject(mask_group_token),
+            ])
+            
+            commands.encode(&xobj.data)
+            
+            let xobj_token = PDFXref(object: xref_table.count + 1, generation: 0)
+            xref_table[xobj_token] = PDFObject(xobj)
+            
+            extGState[name] = [
+                "Type": PDFObject("ExtGState" as PDFName),
+                "SMask": [
+                    "Type": PDFObject("Mask" as PDFName),
+                    "S": PDFObject("Luminosity" as PDFName),
+                    "G": PDFObject(xobj_token),
+                ],
             ]
-            
-            let xobj = PDFContext._write(stream: commands, properties: properties, dictionary, to: &data, xref: &xref)
-            
-            let sMask = PDFContext._write([
-                "Type": "/Mask",
-                "S": "/Luminosity",
-                "G": "\(xobj) 0 R",
-                ], to: &data, xref: &xref)
-            
-            extGState_table[name] = "<</Type /ExtGState /SMask \(sMask) 0 R>>"
         }
         
-        let _extGState = PDFContext._write(extGState_table, to: &data, xref: &xref)
+        let transparency_layer_group: PDFObject = [
+            "S": PDFObject("Transparency" as PDFName),
+            "I": true,
+            "K": false,
+        ]
         
-        for (commands, name) in transparency_layers {
+        let transparency_layer_group_token = PDFXref(object: xref_table.count + 1, generation: 0)
+        xref_table[transparency_layer_group_token] = transparency_layer_group
+        
+        for (commands, name) in self.transparency_layers {
             
-            let dictionary = [
-                "Type": "/XObject",
-                "Subtype": "/Form",
-                "FormType": "1",
-                "Matrix": "[1 0 0 1 0 0]",
-                "BBox": "[\(bbox.lazy.map { "\($0)" }.joined(separator: " "))]",
-                "Resources": "\(_resources) 0 R",
-                "Group": "\(xobjectGroup.transparency_layer) 0 R",
-            ]
+            var xobj = PDFStream(dictionary: [
+                "Type": PDFObject("XObject" as PDFName),
+                "Subtype": PDFObject("Form" as PDFName),
+                "FormType": 1,
+                "Matrix": [1, 0, 0, 1, 0, 0],
+                "BBox": PDFObject(self.media),
+                "Resources": PDFObject(resources_token),
+                "Group": PDFObject(transparency_layer_group_token),
+            ])
             
-            let xobj = PDFContext._write(stream: commands, properties: properties, dictionary, to: &data, xref: &xref)
-            xobject_table[name] = "\(xobj) 0 R"
+            commands.encode(&xobj.data)
+            
+            let xobj_token = PDFXref(object: xref_table.count + 1, generation: 0)
+            xref_table[xobj_token] = PDFObject(xobj)
+            
+            xobject[name] = PDFObject(xobj_token)
         }
         
-        let _xobject = PDFContext._write(xobject_table, to: &data, xref: &xref)
+        resources["ExtGState"] = extGState.count == 0 ? nil : extGState
+        resources["Shading"] = shading.count == 0 ? nil : shading
+        resources["XObject"] = xobject.count == 0 ? nil : xobject
         
-        return PDFContext._write([
-            "ProcSet": "[/PDF /ImageB /ImageC /ImageI]",
-            "ColorSpace": "\(_colorSpace) 0 R",
-            "ExtGState": "\(_extGState) 0 R",
-            "XObject": "\(_xobject) 0 R",
-            "Shading": "\(_shading) 0 R",
-            ], to: &data, xref: &xref)
-    }
-    
-    func write_commands(properties: [PDFContext.PropertyKey: Any], to data: inout Data, xref: inout [Int]) throws -> Int {
-        return PDFContext._write(stream: finalize(), properties: properties, to: &data, xref: &xref)
+        xref_table[resources_token] = resources
+        
+        return page
     }
 }

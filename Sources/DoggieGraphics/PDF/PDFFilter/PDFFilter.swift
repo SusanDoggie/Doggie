@@ -1,5 +1,5 @@
 //
-//  PDFName.swift
+//  PDFFilter.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,28 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public struct PDFName: PDFObject, Hashable {
+public protocol PDFFilter {
     
-    public var name: String
-    
-    public init(_ name: String) {
-        self.name = name
-    }
-    public init<S: StringProtocol>(_ name: S) {
-        self.name = String(name)
-    }
-}
-
-extension PDFName: ExpressibleByStringLiteral {
-    
-    public init(stringLiteral value: StringLiteralType) {
-        self.init(value)
-    }
-}
-
-extension PDFName {
-    
-    public func write(to data: inout Data) {
-        data.append(utf8: "/\(name)")
-    }
+    static func decode(_ data: inout Data) -> Data?
 }

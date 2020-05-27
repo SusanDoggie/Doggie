@@ -1,5 +1,5 @@
 //
-//  PDFContextShading.swift
+//  PDFXref.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,17 +23,37 @@
 //  THE SOFTWARE.
 //
 
-extension PDFContext {
+@frozen
+@usableFromInline
+struct PDFXref: Hashable, Comparable {
     
-    struct Shading: Hashable {
-        
-        var type: Int
-        
-        var deviceGray: Bool
-        
-        var coords: [Double]
-        var function: PDFContext.Function
-        var e0: Bool
-        var e1: Bool
+    @usableFromInline
+    var object: Int
+    
+    @usableFromInline
+    var generation: UInt16
+}
+
+extension PDFXref {
+    
+    @inlinable
+    static func < (lhs: PDFXref, rhs: PDFXref) -> Bool {
+        return (lhs.object, lhs.generation) < (rhs.object, rhs.generation)
+    }
+}
+
+extension PDFXref: CustomStringConvertible {
+    
+    @inlinable
+    var description: String {
+        return "\(object) \(generation) R"
+    }
+}
+
+extension PDFXref {
+    
+    @inlinable
+    func encode(_ data: inout Data) {
+        data.append(utf8: "\(object) \(generation) R")
     }
 }

@@ -288,7 +288,7 @@ extension PDFContext {
 
 extension PDFContext {
     
-    public func drawShading(_ shader: PDFContext.Function) {
+    public func drawShading(_ shader: PDFFunction) {
         current_page.drawShading(shader)
     }
 }

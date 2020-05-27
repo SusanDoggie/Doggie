@@ -1,5 +1,5 @@
 //
-//  PDFDictionary.swift
+//  PDFName.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,48 +23,51 @@
 //  THE SOFTWARE.
 //
 
-public struct PDFDictionary: PDFObject {
+@frozen
+public struct PDFName: Hashable {
     
-    var dictionary: [PDFName: PDFObject]
+    @usableFromInline
+    var value: Data
     
-    public init() {
-        self.dictionary = [:]
+    @inlinable
+    public init(_ value: String) {
+        self.value = value._utf8_data
     }
     
-    public init(_ dictionary: [PDFName: PDFObject]) {
-        self.dictionary = dictionary
-    }
-}
-
-extension PDFDictionary: ExpressibleByDictionaryLiteral {
-    
-    public init(dictionaryLiteral elements: (PDFName, PDFObject) ...) {
-        self.init(Dictionary(uniqueKeysWithValues: elements))
+    @inlinable
+    public init<S: StringProtocol>(_ value: S) {
+        self.init(String(value))
     }
 }
 
-extension PDFDictionary {
+extension PDFName: ExpressibleByStringLiteral {
     
-    public subscript(name: PDFName) -> PDFObject? {
-        get {
-            return dictionary[name]
-        }
-        set {
-            dictionary[name] = newValue
-        }
+    @inlinable
+    public init(stringLiteral value: StringLiteralType) {
+        self.init(value)
     }
 }
 
-extension PDFDictionary {
+extension PDFName: CustomStringConvertible {
     
-    public func write(to data: inout Data) {
-        data.append(utf8: "<<\n")
-        for (key, value) in dictionary {
-            key.write(to: &data)
-            data.append(utf8: " ")
-            value.write(to: &data)
-            data.append(utf8: "\n")
-        }
-        data.append(utf8: ">>")
+    @inlinable
+    public var description: String {
+        return "/\(string.escaped(asASCII: false))"
+    }
+}
+
+extension PDFName {
+    
+    @inlinable
+    public var string: String {
+        return value.pdf_string()
+    }
+}
+
+extension PDFName {
+    
+    @inlinable
+    public func encode(_ data: inout Data) {
+        data.append(utf8: "/\(string.escaped(asASCII: false))")
     }
 }
