@@ -183,7 +183,7 @@ extension PDFColorSpace {
         return .wrapped(
             base: colorSpace,
             convertFromBase: { CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 1 - $0.white) },
-            convertToBase: { GrayColorModel(white: 1 - min(1, 0.3 * $0.cyan + 0.59 * $0.magenta + 0.11 * $0.yellow + $0.black) }
+            convertToBase: { GrayColorModel(white: 1 - min(1, 0.3 * $0.cyan + 0.59 * $0.magenta + 0.11 * $0.yellow + $0.black)) }
         )
     }
     
@@ -209,7 +209,7 @@ extension PDFColorSpace {
             default: _colorSpace = .genericGamma22Gray
             }
             
-            return AnyColor(colorSpace: _colorSpace, components: color)
+            return AnyColor(colorSpace: _colorSpace, components: color.map { $0.doubleValue ?? 0 })
             
         case .deviceRGB:
             
@@ -222,7 +222,7 @@ extension PDFColorSpace {
             default: _colorSpace = .sRGB
             }
             
-            return AnyColor(colorSpace: _colorSpace, components: color)
+            return AnyColor(colorSpace: _colorSpace, components: color.map { $0.doubleValue ?? 0 })
             
         case .deviceCMYK:
             
@@ -235,7 +235,7 @@ extension PDFColorSpace {
             default: _colorSpace = AnyColorSpace(PDFColorSpace.deviceCMYKFromRGB(.sRGB))
             }
             
-            return AnyColor(colorSpace: _colorSpace, components: color)
+            return AnyColor(colorSpace: _colorSpace, components: color.map { $0.doubleValue ?? 0 })
             
         case let .indexed(base, table):
             
