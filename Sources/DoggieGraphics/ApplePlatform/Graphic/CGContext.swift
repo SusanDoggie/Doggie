@@ -89,7 +89,7 @@ extension CGContext {
         self.concatenate(CGAffineTransform(transform))
     }
     
-    open func drawClip(colorSpace: CGColorSpace = CGColorSpaceCreateDeviceGray(), body: (CGContext) throws -> Void) rethrows {
+    open func clipToDrawing(colorSpace: CGColorSpace = CGColorSpaceCreateDeviceGray(), body: (CGContext) throws -> Void) rethrows {
         try CGContextClipToDrawing(self, colorSpace: colorSpace, command: body)
     }
     

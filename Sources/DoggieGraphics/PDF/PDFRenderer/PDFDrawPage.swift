@@ -171,7 +171,7 @@ extension PDFRenderer {
                             guard let group = mask["G"]?.stream else { break }
                             guard let mask_data = group.decode() else { break }
                             
-                            self.drawClip(alphaMask: true) { renderer in
+                            self.clipToDrawing(alphaMask: true) { renderer in
                                 
                                 let transform = group["Matrix"].transform ?? SDTransform.identity
                                 let resources = group["Resources"] == nil ? resources : resources.merging(group["Resources"]) { _, rhs in rhs }
@@ -186,7 +186,7 @@ extension PDFRenderer {
                             guard let group = mask["G"]?.stream else { break }
                             guard let mask_data = group.decode() else { break }
                             
-                            self.drawClip(alphaMask: false) { renderer in
+                            self.clipToDrawing(alphaMask: false) { renderer in
                                 
                                 if let colorSpace = PDFColorSpace(group["CS"]) {
                                     renderer.setFillColorSpace(colorSpace)
@@ -578,7 +578,7 @@ extension PDFRenderer {
                         if self.alphaMask {
                             
                             if let mask = mask {
-                                self.drawClip(alphaMask: false) { $0.drawImage(image: mask) }
+                                self.clipToDrawing(alphaMask: false) { $0.drawImage(image: mask) }
                             }
                             
                             self.path = Shape(rect: Rect(x: 0, y: 0, width: 1, height: 1))
@@ -586,7 +586,7 @@ extension PDFRenderer {
                             
                         } else if let image = image, let mask = mask {
                             
-                            self.drawClip(alphaMask: false) { $0.drawImage(image: mask) }
+                            self.clipToDrawing(alphaMask: false) { $0.drawImage(image: mask) }
                             
                             self.drawImage(image: image)
                             
@@ -737,7 +737,7 @@ extension PDFRenderer {
                 
                 if let mask = mask {
                     
-                    self.drawClip(alphaMask: false) {
+                    self.clipToDrawing(alphaMask: false) {
                         
                         if let mask = mask.create_image(mask: nil, device: $0.context_colorspace) {
                             $0.drawImage(image: mask)
@@ -759,7 +759,7 @@ extension PDFRenderer {
                 
             } else if let mask = mask {
                 
-                self.drawClip(alphaMask: false) {
+                self.clipToDrawing(alphaMask: false) {
                     
                     if let mask = mask.create_image(mask: nil, device: $0.context_colorspace) {
                         $0.drawImage(image: mask)

@@ -266,12 +266,12 @@ extension PDFContext {
 
 extension PDFContext {
     
-    public func drawClip(body: (DrawableContext) throws -> Void) rethrows {
-        try self.drawClip { (context: PDFContext) in try body(context) }
+    public func clipToDrawing(body: (DrawableContext) throws -> Void) rethrows {
+        try self.clipToDrawing { (context: PDFContext) in try body(context) }
     }
     
-    public func drawClip(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (PDFContext) throws -> Void) rethrows {
-        try current_page.drawClip(colorSpace: colorSpace) { try body(PDFContext(pages: [$0])) }
+    public func clipToDrawing(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (PDFContext) throws -> Void) rethrows {
+        try current_page.clipToDrawing(colorSpace: colorSpace) { try body(PDFContext(pages: [$0])) }
     }
 }
 

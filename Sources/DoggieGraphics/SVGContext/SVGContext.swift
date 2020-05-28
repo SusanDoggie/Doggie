@@ -872,11 +872,11 @@ extension SVGContext {
         current_layer.state.clip = .clip(id)
     }
     
-    public func drawClip(body: (DrawableContext) throws -> Void) rethrows {
-        try self.drawClip { (context: SVGContext) in try body(context) }
+    public func clipToDrawing(body: (DrawableContext) throws -> Void) rethrows {
+        try self.clipToDrawing { (context: SVGContext) in try body(context) }
     }
     
-    public func drawClip(body: (SVGContext) throws -> Void) rethrows {
+    public func clipToDrawing(body: (SVGContext) throws -> Void) rethrows {
         
         let mask_context = SVGContext(copyStates: current_layer)
         mask_context.global = global ?? self

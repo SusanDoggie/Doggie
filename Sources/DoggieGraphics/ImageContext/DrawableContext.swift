@@ -57,7 +57,7 @@ public protocol DrawableContext: AnyObject {
     
     func clip(shape: Shape, winding: Shape.WindingRule)
     
-    func drawClip(body: (DrawableContext) throws -> Void) rethrows
+    func clipToDrawing(body: (DrawableContext) throws -> Void) rethrows
     
     func draw<Image: ImageProtocol>(image: Image, transform: SDTransform)
     

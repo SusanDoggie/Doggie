@@ -680,7 +680,7 @@ extension PDFContext.Page {
 
 extension PDFContext.Page {
     
-    func drawClip(colorSpace: ColorSpace<GrayColorModel>, body: (PDFContext.Page) throws -> Void) rethrows {
+    func clipToDrawing(colorSpace: ColorSpace<GrayColorModel>, body: (PDFContext.Page) throws -> Void) rethrows {
         
         current_layer.state.commands.append(.command("Q"))
         current_layer.state.commands.append(.command("q"))

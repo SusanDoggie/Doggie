@@ -315,7 +315,7 @@ extension PDFRenderer {
             
             let transform = context.transform.inverse
             
-            context.drawClip { context in
+            context.clipToDrawing { context in
                 
                 context.concatenate(transform)
                 
@@ -354,7 +354,7 @@ extension PDFRenderer {
         
         if let (alphaMask, mask) = state.mask {
             
-            self._drawClip(alphaMask: alphaMask, body: mask)
+            self._clipToDrawing(alphaMask: alphaMask, body: mask)
             
         } else {
             
@@ -362,11 +362,11 @@ extension PDFRenderer {
         }
     }
     
-    private func _drawClip(alphaMask: Bool, body: @escaping (PDFRenderer) -> Void) {
+    private func _clipToDrawing(alphaMask: Bool, body: @escaping (PDFRenderer) -> Void) {
         
         let clipPath = state.clipPath
         
-        context.drawClip { context in
+        context.clipToDrawing { context in
             
             let renderer = PDFRenderer(context: context, alphaMask: alphaMask)
             
@@ -383,7 +383,7 @@ extension PDFRenderer {
         }
     }
     
-    func drawClip(alphaMask: Bool, body: @escaping (PDFRenderer) -> Void) {
+    func clipToDrawing(alphaMask: Bool, body: @escaping (PDFRenderer) -> Void) {
         
         let current_transform = context.transform
         
@@ -392,7 +392,7 @@ extension PDFRenderer {
             body(context)
         })
         
-        self._drawClip(alphaMask: alphaMask, body: body)
+        self._clipToDrawing(alphaMask: alphaMask, body: body)
     }
     
     func drawImage(image: AnyImage) {

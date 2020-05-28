@@ -46,7 +46,7 @@ class ShapeRegionTest: XCTestCase {
         
         context.draw(rect: Rect(x: 0, y: 0, width: width, height: height), color: .black)
         
-        context.drawClip { (context: ImageContext<Gray16ColorPixel>) in
+        context.clipToDrawing { (context: ImageContext<Gray16ColorPixel>) in
             
             context.draw(shape: shape2, winding: winding2, color: .white)
             context.stroke(shape: shape2, width: 5, cap: .round, join: .round, color: .black)

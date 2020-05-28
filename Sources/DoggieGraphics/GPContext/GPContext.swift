@@ -486,7 +486,7 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func drawClip(body: (GPContext) throws -> Void) rethrows {
+    public func clipToDrawing(body: (GPContext) throws -> Void) rethrows {
         
         let width = self.width
         let height = self.height
