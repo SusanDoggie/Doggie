@@ -64,18 +64,16 @@ extension PDFDocument {
     
     public enum Error: Swift.Error {
         
-        case invalidFormat(Int)
+        case invalidFormat
     }
     
     public init(data: Data) throws {
-        
-        self.init()
         
         var data = data
         
         data.pdf_remove_last_whitespaces()
         
-        guard data.popLast(5).elementsEqual("%%EOF".utf8) else { throw Error.invalidFormat(#line) }
+        guard data.popLast(5).elementsEqual("%%EOF".utf8) else { throw Error.invalidFormat }
         
         data.pdf_remove_last_whitespaces()
         
@@ -97,12 +95,12 @@ extension PDFDocument {
         
         data.pdf_remove_last_whitespaces()
         
-        guard data.popLast(9).elementsEqual("startxref".utf8) else { throw Error.invalidFormat(#line) }
+        guard data.popLast(9).elementsEqual("startxref".utf8) else { throw Error.invalidFormat }
         
         var _xref = data.popFirst(xref_offset)
         swap(&data, &_xref)
         
-        self.trailer = try PDFDocument.decode_trailer(data, _xref)
+        try self.init(PDFDocument.decode_trailer(data, _xref))
     }
     
     static func dereference_all(_ object: PDFObject) -> PDFObject {
@@ -141,7 +139,7 @@ extension PDFDocument {
         
         var xref_data = xref_data
         
-        guard xref_data.popFirst(4).elementsEqual("xref".utf8) else { throw Error.invalidFormat(#line) }
+        guard xref_data.popFirst(4).elementsEqual("xref".utf8) else { throw Error.invalidFormat }
         
         xref_data.pdf_remove_whitespaces()
         
@@ -149,34 +147,34 @@ extension PDFDocument {
         
         while let xref_start = xref_data.pdf_decode_digits() {
             
-            guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
-            guard let xref_count = xref_data.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
+            guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat }
+            guard let xref_count = xref_data.pdf_decode_digits() else { throw Error.invalidFormat }
             
             for object in xref_start..<xref_start + xref_count {
                 
                 xref_data.pdf_remove_whitespaces()
                 
-                guard let offset = xref_data.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
-                guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
-                guard let _generation = xref_data.pdf_decode_digits(), let generation = UInt16(exactly: _generation) else { throw Error.invalidFormat(#line) }
-                guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
+                guard let offset = xref_data.pdf_decode_digits() else { throw Error.invalidFormat }
+                guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat }
+                guard let _generation = xref_data.pdf_decode_digits(), let generation = UInt16(exactly: _generation) else { throw Error.invalidFormat }
+                guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat }
                 
                 switch xref_data.popFirst() {
                 case 0x66: xref_offsets.append((PDFXref(object: object, generation: generation), offset, false))
                 case 0x6E: xref_offsets.append((PDFXref(object: object, generation: generation), offset, true))
-                default: throw Error.invalidFormat(#line)
+                default: throw Error.invalidFormat
                 }
             }
             
             xref_data.pdf_remove_whitespaces()
         }
         
-        guard !xref_offsets.isEmpty else { throw Error.invalidFormat(#line) }
-        guard xref_data.popFirst(7).elementsEqual("trailer".utf8) else { throw Error.invalidFormat(#line) }
+        guard !xref_offsets.isEmpty else { throw Error.invalidFormat }
+        guard xref_data.popFirst(7).elementsEqual("trailer".utf8) else { throw Error.invalidFormat }
         
         xref_data.pdf_remove_whitespaces()
         
-        guard let trailer = PDFObject(&xref_data, [:]), trailer.isObject else { throw Error.invalidFormat(#line) }
+        guard let trailer = PDFObject(&xref_data, [:]), trailer.isObject else { throw Error.invalidFormat }
         
         var xref_table: [PDFXref: Data] = [:]
         
@@ -201,18 +199,18 @@ extension PDFDocument {
         var data = data
         data.pdf_remove_whitespaces()
         
-        guard let object = data.pdf_decode_digits(), xref.object == object else { throw Error.invalidFormat(#line) }
-        guard data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
-        guard let generation = data.pdf_decode_digits(), xref.generation == generation else { throw Error.invalidFormat(#line) }
-        guard data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
+        guard let object = data.pdf_decode_digits(), xref.object == object else { throw Error.invalidFormat }
+        guard data.popFirst() == 0x20 else { throw Error.invalidFormat }
+        guard let generation = data.pdf_decode_digits(), xref.generation == generation else { throw Error.invalidFormat }
+        guard data.popFirst() == 0x20 else { throw Error.invalidFormat }
         
-        guard data.popFirst(3).elementsEqual("obj".utf8) else { throw Error.invalidFormat(#line) }
+        guard data.popFirst(3).elementsEqual("obj".utf8) else { throw Error.invalidFormat }
         
-        guard let obj = PDFObject(&data, xref_table) else { throw Error.invalidFormat(#line) }
+        guard let obj = PDFObject(&data, xref_table) else { throw Error.invalidFormat }
         
         data.pdf_remove_whitespaces()
         
-        guard data.popFirst(6).elementsEqual("endobj".utf8) else { throw Error.invalidFormat(#line) }
+        guard data.popFirst(6).elementsEqual("endobj".utf8) else { throw Error.invalidFormat }
         
         return obj
     }

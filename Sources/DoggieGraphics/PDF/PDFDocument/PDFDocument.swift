@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct PDFDocument: RandomAccessCollection, MutableCollection, ExpressibleByArrayLiteral {
+public struct PDFDocument: RandomAccessCollection {
     
     @usableFromInline
     var pages: [PDFPage]
@@ -32,27 +32,9 @@ public struct PDFDocument: RandomAccessCollection, MutableCollection, Expressibl
     @usableFromInline
     var _trailer: PDFObject = [:]
     
-    @inlinable
-    public init() {
-        self.pages = []
-    }
-    
-    @inlinable
-    public init(_ pages: [PDFPage]) {
-        self.pages = pages
-    }
-    
     init(_ trailer: PDFObject) {
         self.pages = trailer.catalog.pages
         self._trailer = trailer
-    }
-}
-
-extension PDFDocument {
-    
-    @inlinable
-    public init(arrayLiteral pages: PDFPage ...) {
-        self.init(pages)
     }
 }
 
@@ -145,33 +127,5 @@ extension PDFDocument {
         set {
             pages[position] = newValue
         }
-    }
-}
-
-extension PDFDocument: RangeReplaceableCollection {
-    
-    @inlinable
-    public mutating func append(_ newElement: PDFPage) {
-        pages.append(newElement)
-    }
-    
-    @inlinable
-    public mutating func append<S: Sequence>(contentsOf newElements: S) where S.Element == PDFPage {
-        pages.append(contentsOf: newElements)
-    }
-    
-    @inlinable
-    public mutating func reserveCapacity(_ minimumCapacity: Int) {
-        pages.reserveCapacity(minimumCapacity)
-    }
-    
-    @inlinable
-    public mutating func removeAll(keepingCapacity keepCapacity: Bool = false) {
-        pages.removeAll(keepingCapacity: keepCapacity)
-    }
-    
-    @inlinable
-    public mutating func replaceSubrange<C: Collection>(_ subRange: Range<Int>, with newElements: C) where C.Element == PDFPage {
-        pages.replaceSubrange(subRange, with: newElements)
     }
 }
