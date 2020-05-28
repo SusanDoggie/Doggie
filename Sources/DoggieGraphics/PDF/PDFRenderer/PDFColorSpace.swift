@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-indirect enum PDFColorSpace: Hashable {
+public indirect enum PDFColorSpace: Hashable {
     
     case deviceGray
     case deviceRGB
@@ -31,7 +31,7 @@ indirect enum PDFColorSpace: Hashable {
     case indexed(PDFColorSpace, [Data])
     case colorSpace(AnyColorSpace)
     
-    init(_ colorSpace: AnyColorSpace) {
+    public init(_ colorSpace: AnyColorSpace) {
         self = .colorSpace(colorSpace)
     }
 }

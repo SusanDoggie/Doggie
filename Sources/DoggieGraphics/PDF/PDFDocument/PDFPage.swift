@@ -125,3 +125,11 @@ extension PDFPage {
         return self.object["Contents"].stream
     }
 }
+
+extension PDFPage {
+    
+    public var colorSpaces: Set<PDFColorSpace> {
+        let colorSpaces = resources["ColorSpace"].dictionary?.values.map { PDFColorSpace($0) } ?? []
+        return Set(colorSpaces)
+    }
+}
