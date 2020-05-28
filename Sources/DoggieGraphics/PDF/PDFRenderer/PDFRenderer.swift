@@ -168,6 +168,10 @@ extension PDFRenderer {
         }
     }
     
+    var should_isolate: Bool {
+        return opacity < 1
+    }
+    
     var opacity: Double {
         get {
             return context.opacity

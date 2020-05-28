@@ -530,10 +530,9 @@ extension PDFRenderer {
                         
                         guard let contents = xobject.decode() else { break }
                         
-                        if xobject["Group"]["S"].name == "Transparency" && xobject["Group"]["I"] == true {
+                        if self.should_isolate || (xobject["Group"]["S"].name == "Transparency" && xobject["Group"]["I"] == true) {
                             
                             self.beginTransparencyLayer()
-                            
                             self.concatenate(transform)
                             
                             self._render(contents, resources, drawing_clip)
