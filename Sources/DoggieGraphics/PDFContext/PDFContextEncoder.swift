@@ -142,6 +142,7 @@ extension PDFContext.Page {
         var page = PDFPage()
         
         page.mediaBox = self.media
+        page.cropBox = self._mirrored_crop
         page.bleedBox = self._mirrored_bleed
         page.trimBox = self._mirrored_trim
         page.artBox = self._mirrored_margin

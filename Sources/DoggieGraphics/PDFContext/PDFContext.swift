@@ -31,11 +31,12 @@ public class PDFContext: DrawableContext {
         self.pages = pages
     }
     
-    public init(media: Rect, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: AnyColorSpace = AnyColorSpace.sRGB) {
-        let bleed = bleed ?? media
+    public init(media: Rect, crop: Rect? = nil, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: AnyColorSpace = AnyColorSpace.sRGB) {
+        let crop = crop ?? media
+        let bleed = bleed ?? crop
         let trim = trim ?? bleed
         let margin = margin ?? trim
-        let page = Page(media: media, bleed: bleed, trim: trim, margin: margin, colorSpace: colorSpace)
+        let page = Page(media: media, crop: crop, bleed: bleed, trim: trim, margin: margin, colorSpace: colorSpace)
         page.initialize()
         self.pages = [page]
     }
@@ -43,8 +44,8 @@ public class PDFContext: DrawableContext {
 
 extension PDFContext {
     
-    public convenience init<Model>(media: Rect, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: ColorSpace<Model>) {
-        self.init(media: media, bleed: bleed, trim: trim, margin: margin, colorSpace: AnyColorSpace(colorSpace))
+    public convenience init<Model>(media: Rect, crop: Rect? = nil, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: ColorSpace<Model>) {
+        self.init(media: media, crop: crop, bleed: bleed, trim: trim, margin: margin, colorSpace: AnyColorSpace(colorSpace))
     }
     
     public convenience init(width: Double, height: Double, unit: Resolution.Unit = .point, colorSpace: AnyColorSpace = AnyColorSpace.sRGB) {
@@ -71,7 +72,7 @@ extension PDFContext {
     }
     
     public func nextPage(colorSpace: AnyColorSpace? = nil) {
-        self.nextPage(media: current_page.media, bleed: current_page.bleed, trim: current_page.trim, margin: current_page.margin, colorSpace: colorSpace)
+        self.nextPage(media: current_page.media, crop: current_page.crop, bleed: current_page.bleed, trim: current_page.trim, margin: current_page.margin, colorSpace: colorSpace)
     }
     
     public func nextPage(width: Double, height: Double, unit: Resolution.Unit = .point, colorSpace: AnyColorSpace? = nil) {
@@ -80,12 +81,13 @@ extension PDFContext {
         self.nextPage(media: Rect(x: 0, y: 0, width: _width, height: _height), colorSpace: colorSpace)
     }
     
-    public func nextPage(media: Rect, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: AnyColorSpace? = nil) {
+    public func nextPage(media: Rect, crop: Rect? = nil, bleed: Rect? = nil, trim: Rect? = nil, margin: Rect? = nil, colorSpace: AnyColorSpace? = nil) {
         precondition(!current_page.state.is_clip, "Multiple pages is not allowed for clip context.")
-        let bleed = bleed ?? media
+        let crop = crop ?? media
+        let bleed = bleed ?? crop
         let trim = trim ?? bleed
         let margin = margin ?? trim
-        let page = Page(media: media, bleed: bleed, trim: trim, margin: margin, colorSpace: colorSpace ?? current_page.colorSpace)
+        let page = Page(media: media, crop: crop, bleed: bleed, trim: trim, margin: margin, colorSpace: colorSpace ?? current_page.colorSpace)
         page.initialize()
         self.pages.append(page)
     }
@@ -95,6 +97,9 @@ extension PDFContext {
     
     public var media: Rect {
         return current_page.media
+    }
+    public var crop: Rect {
+        return current_page.crop
     }
     public var bleed: Rect {
         return current_page.bleed

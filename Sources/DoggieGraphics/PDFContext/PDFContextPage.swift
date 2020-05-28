@@ -85,6 +85,7 @@ extension PDFContext {
     final class Page {
         
         let media: Rect
+        let crop: Rect
         let bleed: Rect
         let trim: Rect
         let margin: Rect
@@ -98,8 +99,9 @@ extension PDFContext {
         private var next: Page?
         private weak var global: Page?
         
-        init(media: Rect, bleed: Rect, trim: Rect, margin: Rect, colorSpace: AnyColorSpace) {
+        init(media: Rect, crop: Rect, bleed: Rect, trim: Rect, margin: Rect, colorSpace: AnyColorSpace) {
             self.media = media
+            self.crop = crop
             self.bleed = bleed
             self.trim = trim
             self.margin = margin
@@ -167,6 +169,9 @@ extension PDFContext.Page {
         return Rect.bound([p0, p1])
     }
     
+    var _mirrored_crop: Rect {
+        return _mirror(crop)
+    }
     var _mirrored_bleed: Rect {
         return _mirror(bleed)
     }
@@ -181,7 +186,7 @@ extension PDFContext.Page {
 extension PDFContext.Page {
     
     private convenience init(copyStates context: PDFContext.Page, colorSpace: AnyColorSpace) {
-        self.init(media: context.media, bleed: context.bleed, trim: context.trim, margin: context.margin, colorSpace: colorSpace)
+        self.init(media: context.media, crop: context.crop, bleed: context.bleed, trim: context.trim, margin: context.margin, colorSpace: colorSpace)
         self.state.is_clip = context.state.is_clip
         self.styles = context.styles
         self.styles.opacity = 1
@@ -220,7 +225,7 @@ extension PDFContext.Page {
     }
     
     private func _clone(global: PDFContext.Page?) -> PDFContext.Page {
-        let clone = PDFContext.Page(media: media, bleed: bleed, trim: trim, margin: margin, colorSpace: colorSpace)
+        let clone = PDFContext.Page(media: media, crop: crop, bleed: bleed, trim: trim, margin: margin, colorSpace: colorSpace)
         clone.state = self.state
         clone.styles = self.styles
         clone.graphicStateStack = self.graphicStateStack

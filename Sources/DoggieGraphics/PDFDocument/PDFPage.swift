@@ -66,7 +66,7 @@ extension PDFPage {
     
     public var cropBox: Rect? {
         get {
-            return self.search("CropBox").rect
+            return self.search("CropBox").rect ?? mediaBox
         }
         set {
             self.object["CropBox"] = newValue.map(PDFObject.init) ?? nil
@@ -75,7 +75,7 @@ extension PDFPage {
     
     public var bleedBox: Rect? {
         get {
-            return self.search("BleedBox").rect
+            return self.search("BleedBox").rect ?? cropBox
         }
         set {
             self.object["BleedBox"] = newValue.map(PDFObject.init) ?? nil
@@ -84,7 +84,7 @@ extension PDFPage {
     
     public var trimBox: Rect? {
         get {
-            return self.search("TrimBox").rect
+            return self.search("TrimBox").rect ?? cropBox
         }
         set {
             self.object["TrimBox"] = newValue.map(PDFObject.init) ?? nil
@@ -93,7 +93,7 @@ extension PDFPage {
     
     public var artBox: Rect? {
         get {
-            return self.search("ArtBox").rect
+            return self.search("ArtBox").rect ?? cropBox
         }
         set {
             self.object["ArtBox"] = newValue.map(PDFObject.init) ?? nil
