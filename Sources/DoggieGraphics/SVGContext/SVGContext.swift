@@ -119,7 +119,9 @@ extension SVGContext {
 extension SVGContext {
     
     fileprivate enum Clip {
-        case clip(String)
+        
+        case clip(String, Shape, Shape.WindingRule)
+        
         case mask(String)
     }
     
@@ -465,7 +467,7 @@ extension SVGContext {
 
 extension SVGContext {
     
-    private func apply_style(_ element: inout SDXMLElement, _ visibleBound: inout Rect, _ objectBound: Shape, _ object_transform: SDTransform) {
+    private func apply_style(_ element: inout SDXMLElement, _ visibleBound: inout Rect, _ objectBound: Shape, _ clip_object: Bool, _ object_transform: SDTransform) {
         
         var style: [String: String] = ["isolation": "isolate"]
         
@@ -555,12 +557,12 @@ extension SVGContext {
         default: break
         }
         
-        if let clip = self.current_layer.state.clip {
+        if clip_object, let clip = self.current_layer.state.clip {
             if !element.attributes(for: "transform").isEmpty {
                 element = SDXMLElement(name: "g", elements: [element])
             }
             switch clip {
-            case let .clip(id): element.setAttribute(for: "clip-path", value: "url(#\(id))")
+            case let .clip(id, _, _): element.setAttribute(for: "clip-path", value: "url(#\(id))")
             case let .mask(id): element.setAttribute(for: "mask", value: "url(#\(id))")
             }
         }
@@ -574,18 +576,18 @@ extension SVGContext {
         }
     }
     
-    private func append(_ newElement: SDXMLElement, _ visibleBound: Rect, _ objectBound: Shape, _ object_transform: SDTransform) {
+    private func append(_ newElement: SDXMLElement, _ visibleBound: Rect, _ objectBound: Shape, _ clip_object: Bool, _ object_transform: SDTransform) {
         guard !self.transform.determinant.almostZero() else { return }
         var newElement = newElement
         var visibleBound = visibleBound
-        self.apply_style(&newElement, &visibleBound, objectBound, object_transform)
+        self.apply_style(&newElement, &visibleBound, objectBound, clip_object, object_transform)
         self.current_layer.state.elements.append(newElement)
         self.current_layer.state.visibleBound = self.current_layer.state.visibleBound.map { $0.union(visibleBound) } ?? visibleBound
         self.current_layer.state.objectBound = self.current_layer.state.objectBound.map { $0.identity + objectBound.identity } ?? objectBound
     }
     
-    private func append(_ newElement: SDXMLElement, _ objectBound: Shape, _ object_transform: SDTransform) {
-        self.append(newElement, objectBound.boundary, objectBound, object_transform)
+    private func append(_ newElement: SDXMLElement, _ objectBound: Shape, _ clip_object: Bool, _ object_transform: SDTransform) {
+        self.append(newElement, objectBound.boundary, objectBound, clip_object, object_transform)
     }
 }
 
@@ -616,7 +618,7 @@ extension SVGContext {
                 guard let visibleBound = next.state.visibleBound else { return }
                 guard let objectBound = next.state.objectBound else { return }
                 
-                self.append(SDXMLElement(name: "g", elements: next.state.elements), visibleBound, objectBound, .identity)
+                self.append(SDXMLElement(name: "g", elements: next.state.elements), visibleBound, objectBound, true, .identity)
             }
         }
     }
@@ -653,7 +655,7 @@ extension SVGContext {
             element.setAttribute(for: "fill-opacity", value: "\(color.opacity)")
         }
         
-        self.append(element, shape, .identity)
+        self.append(element, shape, true, .identity)
     }
 }
 
@@ -778,7 +780,7 @@ extension SVGContext {
         element.setAttribute(for: "transform", value: transform.attributeStr())
         
         let _bound = Shape(rect: Rect(x: 0, y: 0, width: image.width, height: image.height)) * transform
-        self.append(element, _bound, transform)
+        self.append(element, _bound, true, transform)
     }
     
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform, using storageType: MediaType, properties: [ImageRep.PropertyKey: Any]) {
@@ -864,12 +866,14 @@ extension SVGContext {
         case .evenOdd: clipRule = "evenodd"
         }
         
-        let shape = shape * self.transform
-        let clipPath = SDXMLElement(name: "clipPath", attributes: ["id": id], elements: [SDXMLElement(name: "path", attributes: ["d": shape.identity.encode(), "clip-rule": clipRule])])
+        var shape = shape * self.transform
+        shape = shape.identity
+        
+        let clipPath = SDXMLElement(name: "clipPath", attributes: ["id": id], elements: [SDXMLElement(name: "path", attributes: ["d": shape.encode(), "clip-rule": clipRule])])
         
         defs.append(clipPath)
         
-        current_layer.state.clip = .clip(id)
+        current_layer.state.clip = .clip(id, shape, winding)
     }
     
     public func clipToDrawing(body: (DrawableContext) throws -> Void) rethrows {
@@ -986,7 +990,7 @@ extension SVGContext {
             element.setAttribute(for: "fill-opacity", value: "\(gradient.opacity)")
         }
         
-        self.append(element, shape, .identity)
+        self.append(element, shape, true, .identity)
     }
 }
 
@@ -997,28 +1001,20 @@ extension SVGContext {
         self.drawLinearGradient(stops: stops, start: start, end: end, spreadMethod: startSpread)
     }
     
-    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, spreadMethod: GradientSpreadMode) {
-        
-        guard !self.transform.determinant.almostZero() else { return }
+    private func create_gradient<C>(stops: [GradientStop<C>], start: Point, end: Point, spreadMethod: GradientSpreadMode, element: SDXMLElement) -> String {
         
         let id = new_name("GRADIENT")
         
-        var element = SDXMLElement(name: "linearGradient", attributes: [
-            "id": id,
-            "gradientUnits": "userSpaceOnUse",
-            "x1": "\(Decimal(start.x).rounded(scale: 9))",
-            "y1": "\(Decimal(start.y).rounded(scale: 9))",
-            "x2": "\(Decimal(end.x).rounded(scale: 9))",
-            "y2": "\(Decimal(end.y).rounded(scale: 9))",
-        ])
+        var element = element
+        
+        element.setAttribute(for: "id", value: id)
+        element.setAttribute(for: "gradientUnits", value: "userSpaceOnUse")
         
         switch spreadMethod {
         case .reflect: element.setAttribute(for: "spreadMethod", value: "reflect")
         case .repeat: element.setAttribute(for: "spreadMethod", value: "repeat")
         default: break
         }
-        
-        element.setAttribute(for: "gradientTransform", value: self.transform.attributeStr())
         
         for (_, stop) in stops.indexed().sorted(by: { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }) {
             var _stop = SDXMLElement(name: "stop")
@@ -1032,15 +1028,55 @@ extension SVGContext {
         
         defs.append(element)
         
-        let rect = SDXMLElement(name: "rect", attributes: [
-            "fill": "url(#\(id))",
-            "x": "\(Decimal(viewBox.minX).rounded(scale: 9))",
-            "y": "\(Decimal(viewBox.minY).rounded(scale: 9))",
-            "width": "\(Decimal(viewBox.width).rounded(scale: 9))",
-            "height": "\(Decimal(viewBox.height).rounded(scale: 9))",
+        return "url(#\(id))"
+    }
+    
+    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, spreadMethod: GradientSpreadMode) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        
+        let objectBound: Shape
+        let clip_object: Bool
+        
+        var element: SDXMLElement
+        
+        if case let .clip(_, shape, winding) = current_layer.state.clip {
+            
+            element = SDXMLElement(name: "path", attributes: ["d": shape.encode()])
+            
+            switch winding {
+            case .nonZero: element.setAttribute(for: "fill-rule", value: "nonzero")
+            case .evenOdd: element.setAttribute(for: "fill-rule", value: "evenodd")
+            }
+            
+            objectBound = shape
+            clip_object = false
+            
+        } else {
+            
+            element = SDXMLElement(name: "rect", attributes: [
+                "x": "\(Decimal(viewBox.minX).rounded(scale: 9))",
+                "y": "\(Decimal(viewBox.minY).rounded(scale: 9))",
+                "width": "\(Decimal(viewBox.width).rounded(scale: 9))",
+                "height": "\(Decimal(viewBox.height).rounded(scale: 9))",
+            ])
+            
+            objectBound = Shape(rect: self.viewBox)
+            clip_object = true
+        }
+        
+        var gradient = SDXMLElement(name: "linearGradient", attributes: [
+            "x1": "\(Decimal(start.x).rounded(scale: 9))",
+            "y1": "\(Decimal(start.y).rounded(scale: 9))",
+            "x2": "\(Decimal(end.x).rounded(scale: 9))",
+            "y2": "\(Decimal(end.y).rounded(scale: 9))",
         ])
         
-        self.append(rect, Shape(rect: self.viewBox), .identity)
+        gradient.setAttribute(for: "gradientTransform", value: self.transform.attributeStr())
+        
+        element.setAttribute(for: "fill", value: create_gradient(stops: stops, start: start, end: end, spreadMethod: spreadMethod, element: gradient))
+        
+        self.append(element, objectBound, clip_object, .identity)
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
@@ -1052,14 +1088,40 @@ extension SVGContext {
         
         guard !self.transform.determinant.almostZero() else { return }
         
-        let id = new_name("GRADIENT")
+        let objectBound: Shape
+        let clip_object: Bool
+        
+        var element: SDXMLElement
+        
+        if case let .clip(_, shape, winding) = current_layer.state.clip {
+            
+            element = SDXMLElement(name: "path", attributes: ["d": shape.encode()])
+            
+            switch winding {
+            case .nonZero: element.setAttribute(for: "fill-rule", value: "nonzero")
+            case .evenOdd: element.setAttribute(for: "fill-rule", value: "evenodd")
+            }
+            
+            objectBound = shape
+            clip_object = false
+            
+        } else {
+            
+            element = SDXMLElement(name: "rect", attributes: [
+                "x": "\(Decimal(viewBox.minX).rounded(scale: 9))",
+                "y": "\(Decimal(viewBox.minY).rounded(scale: 9))",
+                "width": "\(Decimal(viewBox.width).rounded(scale: 9))",
+                "height": "\(Decimal(viewBox.height).rounded(scale: 9))",
+            ])
+            
+            objectBound = Shape(rect: self.viewBox)
+            clip_object = true
+        }
         
         let magnitude = (start - end).magnitude
         let phase = (start - end).phase
         
-        var element = SDXMLElement(name: "radialGradient", attributes: [
-            "id": id,
-            "gradientUnits": "userSpaceOnUse",
+        var gradient = SDXMLElement(name: "radialGradient", attributes: [
             "fx": "\(Decimal(0.5 + magnitude).rounded(scale: 9))",
             "fy": "0.5",
             "cx": "0.5",
@@ -1068,36 +1130,12 @@ extension SVGContext {
             "r": "\(Decimal(endRadius).rounded(scale: 9))",
         ])
         
-        switch spreadMethod {
-        case .reflect: element.setAttribute(for: "spreadMethod", value: "reflect")
-        case .repeat: element.setAttribute(for: "spreadMethod", value: "repeat")
-        default: break
-        }
-        
         let transform = SDTransform.translate(x: -0.5, y: -0.5) * SDTransform.rotate(phase) * SDTransform.translate(x: end.x, y: end.y) * self.transform
-        element.setAttribute(for: "gradientTransform", value: transform.attributeStr())
+        gradient.setAttribute(for: "gradientTransform", value: transform.attributeStr())
         
-        for (_, stop) in stops.indexed().sorted(by: { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }) {
-            var _stop = SDXMLElement(name: "stop")
-            _stop.setAttribute(for: "offset", value: "\(Decimal(stop.offset).rounded(scale: 9))")
-            _stop.setAttribute(for: "stop-color", value: create_color(stop.color))
-            if stop.color.opacity < 1 {
-                _stop.setAttribute(for: "stop-opacity", value: "\(Decimal(stop.color.opacity).rounded(scale: 9))")
-            }
-            element.append(_stop)
-        }
+        element.setAttribute(for: "fill", value: create_gradient(stops: stops, start: start, end: end, spreadMethod: spreadMethod, element: gradient))
         
-        defs.append(element)
-        
-        let rect = SDXMLElement(name: "rect", attributes: [
-            "fill": "url(#\(id))",
-            "x": "\(Decimal(viewBox.minX).rounded(scale: 9))",
-            "y": "\(Decimal(viewBox.minY).rounded(scale: 9))",
-            "width": "\(Decimal(viewBox.width).rounded(scale: 9))",
-            "height": "\(Decimal(viewBox.height).rounded(scale: 9))",
-        ])
-        
-        self.append(rect, Shape(rect: self.viewBox), .identity)
+        self.append(element, objectBound, clip_object, .identity)
     }
 }
 
