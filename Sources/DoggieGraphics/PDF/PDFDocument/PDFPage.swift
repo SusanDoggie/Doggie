@@ -129,7 +129,7 @@ extension PDFPage {
 extension PDFPage {
     
     public var colorSpaces: Set<PDFColorSpace> {
-        let colorSpaces = resources["ColorSpace"].dictionary?.values.map { PDFColorSpace($0) } ?? []
+        let colorSpaces = resources["ColorSpace"].dictionary?.values.compactMap { PDFColorSpace($0) } ?? []
         return Set(colorSpaces)
     }
 }
