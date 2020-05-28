@@ -291,3 +291,47 @@ extension png_filter0_decoder {
         flag = false
     }
 }
+
+extension png_filter0_encoder {
+    
+    mutating func encode<S: DataProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
+        try source.regions.forEach { try $0.withUnsafeBytes { try encode($0.bindMemory(to: UInt8.self), callback) } }
+    }
+    
+    mutating func encode<S: DataProtocol, C: RangeReplaceableCollection>(_ source: S, _ output: inout C) where C.Element == UInt8 {
+        encode(source) { output.append(contentsOf: $0) }
+    }
+    
+    mutating func finalize<C: RangeReplaceableCollection>(_ output: inout C) where C.Element == UInt8 {
+        finalize { output.append(contentsOf: $0) }
+    }
+    
+    mutating func process(_ source: Data) -> Data {
+        var result = Data(capacity: source.count)
+        self.encode(source, &result)
+        self.finalize(&result)
+        return result
+    }
+}
+
+extension png_filter0_decoder {
+    
+    mutating func decode<S: DataProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) rethrows {
+        try source.regions.forEach { try $0.withUnsafeBytes { try decode($0.bindMemory(to: UInt8.self), callback) } }
+    }
+    
+    mutating func decode<S: DataProtocol, C: RangeReplaceableCollection>(_ source: S, _ output: inout C) where C.Element == UInt8 {
+        decode(source) { output.append(contentsOf: $0) }
+    }
+    
+    mutating func finalize<C: RangeReplaceableCollection>(_ output: inout C) where C.Element == UInt8 {
+        finalize { output.append(contentsOf: $0) }
+    }
+    
+    mutating func process(_ source: Data) -> Data {
+        var result = Data(capacity: source.count)
+        self.decode(source, &result)
+        self.finalize(&result)
+        return result
+    }
+}

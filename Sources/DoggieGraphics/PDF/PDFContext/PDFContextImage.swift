@@ -105,110 +105,143 @@ extension AnyImage: PDFImageProtocol {
     
     fileprivate func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFStream, PDFStream?)? {
         
-        let compression = properties[.compression] as? PDFContext.CompressionScheme ?? .noPrediction
+        let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
+        let compression = deflate_level == .none ? .noPrediction : properties[.compression] as? PDFContext.CompressionScheme ?? .noPrediction
         
-        var color = PDFStream(dictionary: [
-            "Columns": PDFObject(width),
-            "Colors": PDFObject(colorSpace.numberOfComponents),
-        ])
+        var color: PDFStream
         var mask: PDFStream?
-        
-        var bitsPerChannel = 0
         
         switch compression {
         case .noPrediction:
             
-            guard let stream = self.tiff_predictor(predictor: 1, true, &bitsPerChannel) else { return nil }
-            color.data = stream.data
+            guard let stream = self.tiff_predictor(predictor: 1, true) else { return nil }
+            color = stream
             
             if !self.isOpaque {
-                guard let stream = self.tiff_predictor(predictor: 1, false, &bitsPerChannel) else { return nil }
-                mask = PDFStream(data: stream.data)
+                guard let stream = self.tiff_predictor(predictor: 1, false) else { return nil }
+                mask = stream
+                
+                mask?["Predictor"] = 1
             }
             
             color["Predictor"] = 1
-            color["BitsPerComponent"] = PDFObject(bitsPerChannel)
             
         case .tiffPrediction:
             
-            guard let stream = self.tiff_predictor(predictor: 2, true, &bitsPerChannel) else { return nil }
-            color.data = stream.data
+            guard let stream = self.tiff_predictor(predictor: 2, true) else { return nil }
+            color = stream
             
             if !self.isOpaque {
-                guard let stream = self.tiff_predictor(predictor: 2, false, &bitsPerChannel) else { return nil }
-                mask = PDFStream(data: stream.data)
+                guard let stream = self.tiff_predictor(predictor: 2, false) else { return nil }
+                mask = stream
+                
+                mask?["Predictor"] = 2
             }
             
             color["Predictor"] = 2
-            color["BitsPerComponent"] = PDFObject(bitsPerChannel)
+            
+        case .pngPrediction:
+            
+            guard let stream = self.tiff_predictor(predictor: 1, true), let bitsPerChannel = stream["BitsPerComponent"].intValue else { return nil }
+            color = stream
+            
+            let bitsPerPixel = bitsPerChannel * colorSpace.numberOfComponents
+            let bytesPerPixel = bitsPerPixel >> 3
+            let bytesPerRow = bytesPerPixel * width
+            
+            var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel))
+            color.data = png_filter0.process(stream.data)
+            
+            if !self.isOpaque {
+                
+                guard let stream = self.tiff_predictor(predictor: 1, false), let bitsPerChannel = stream["BitsPerComponent"].intValue else { return nil }
+                mask = stream
+                
+                let bitsPerPixel = bitsPerChannel
+                let bytesPerPixel = bitsPerChannel >> 3
+                let bytesPerRow = bytesPerPixel * width
+                
+                var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel))
+                mask?.data = png_filter0.process(stream.data)
+                
+                mask?["Predictor"] = 15
+            }
+            
+            color["Predictor"] = 15
         }
         
-        mask?.dictionary = color.dictionary
-        mask?["Colors"] = 1
-        
-        return (color, mask)
+        return (color.compressed(properties), mask?.compressed(properties))
     }
 }
 
 extension AnyImage {
     
-    private func tiff_predictor(predictor: Int, _ color: Bool, _ bitsPerChannel: inout Int) -> MappedBuffer<UInt8>? {
+    private func tiff_predictor(predictor: Int, _ color: Bool) -> PDFStream? {
+        
+        let bitsPerChannel: Int
+        let data: MappedBuffer<UInt8>
         
         switch self.base {
         case let image as Image<ARGB32ColorPixel>:
             
             bitsPerChannel = 8
             
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
+            data = color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
             
         case let image as Image<ARGB64ColorPixel>:
             
             bitsPerChannel = 16
             
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
+            data = color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
             
         case let image as Image<RGBA32ColorPixel>:
             
             bitsPerChannel = 8
             
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
+            data = color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
             
         case let image as Image<RGBA64ColorPixel>:
             
             bitsPerChannel = 16
             
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
+            data = color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
             
         case let image as Image<ABGR32ColorPixel>:
             
             bitsPerChannel = 8
             
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
+            data = color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
             
         case let image as Image<BGRA32ColorPixel>:
             
             bitsPerChannel = 8
             
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
+            data = color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
             
         case let image as Image<Gray16ColorPixel>:
             
             bitsPerChannel = 8
             
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
+            data = color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
             
         case let image as Image<Gray32ColorPixel>:
             
             bitsPerChannel = 16
             
-            return color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
+            data = color ? tiff_color_data(image, predictor, true) : tiff_opacity_data(image, predictor)
             
         default:
             
             bitsPerChannel = 16
             
             guard let image = self.base as? TIFFRawRepresentable else { return nil }
-            return color ? image.tiff_color_data(predictor, true) : image.tiff_opacity_data(predictor)
+            data = color ? image.tiff_color_data(predictor, true) : image.tiff_opacity_data(predictor)
         }
+        
+        return PDFStream(dictionary: [
+            "Columns": PDFObject(self.width),
+            "Colors": color ? PDFObject(colorSpace.numberOfComponents) : 1,
+            "BitsPerComponent": PDFObject(bitsPerChannel),
+        ], data: data.data)
     }
 }

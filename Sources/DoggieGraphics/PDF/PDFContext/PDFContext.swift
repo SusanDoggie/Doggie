@@ -242,6 +242,8 @@ extension PDFContext {
         case noPrediction
         
         case tiffPrediction
+        
+        case pngPrediction
     }
     
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform, properties: [PropertyKey: Any]) {

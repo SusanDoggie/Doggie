@@ -60,8 +60,8 @@ struct PDFBitmap {
 
 extension PDFBitmap {
     
-    var predictor: Int? {
-        return decodeParms["Predictor"]?.intValue
+    var predictor: Int {
+        return decodeParms["Predictor"]?.intValue ?? 1
     }
     
     var bitsPerPixel: Int {
@@ -95,11 +95,49 @@ extension PDFBitmap {
             RawBitmap.Channel(index: index, format: .unsigned, endianness: .big, bitRange: 0..<bitsPerComponent)
         ]
         
-        return RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, tiff_predictor: predictor ?? 1, channels: channels, data: data)
+        let bitsPerPixel = self.bitsPerPixel
+        let bytesPerRow = self.bytesPerRow
+        let predictor = self.predictor
+        
+        var data = self.data
+        
+        switch predictor {
+            
+        case 10...15:
+            
+            var png_filter0 = png_filter0_decoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel))
+            
+            var buffer = Data(capacity: data.count)
+            png_filter0.decode(data, &buffer)
+            png_filter0.finalize(&buffer)
+            
+            data = buffer
+            
+        default: break
+        }
+        
+        return RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, tiff_predictor: predictor == 2 ? 2 : 1, channels: channels, data: data)
     }
     
     var rawBitmap: RawBitmap {
-        return RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, tiff_predictor: predictor ?? 1, channels: channels, data: data)
+        
+        let bitsPerPixel = self.bitsPerPixel
+        let bytesPerRow = self.bytesPerRow
+        let predictor = self.predictor
+        
+        var data = self.data
+        
+        switch predictor {
+            
+        case 10...15:
+            
+            var png_filter0 = png_filter0_decoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel))
+            data = png_filter0.process(data)
+            
+        default: break
+        }
+        
+        return RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, tiff_predictor: predictor == 2 ? 2 : 1, channels: channels, data: data)
     }
 }
 
