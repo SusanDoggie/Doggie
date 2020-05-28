@@ -131,7 +131,7 @@ extension PDFDocument {
         
         let (trailer, _xref_table) = try _decode_trailer(data, xref_data)
         
-        var xref_table = try Dictionary(uniqueKeysWithValues: _xref_table.map { ($0, try decode_indirect_object($0, $1, _xref_table)) })
+        var xref_table = Dictionary(uniqueKeysWithValues: _xref_table.compactMap { try? ($0, decode_indirect_object($0, $1, _xref_table)) })
         xref_table = xref_table.mapValues { dereference_all($0._apply_xref(xref_table)) }
         
         return dereference_all(trailer._apply_xref(xref_table))

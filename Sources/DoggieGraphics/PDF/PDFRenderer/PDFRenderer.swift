@@ -126,7 +126,7 @@ extension PDFRenderer {
     }
     
     var stroke: AnyColor? {
-        return state.strokeColorSpace.create_color(state.stroke, device: context_colorspace)?.with(opacity: state.strokeOpacity)
+        return state.strokeColorSpace.create_color(state.stroke, device: context_colorspace)
     }
     
     var path: Shape {
@@ -430,15 +430,15 @@ extension PDFRenderer {
         }
         
         let opacity = context.opacity
-        context.opacity = 1
+        context.opacity = state.strokeOpacity
         
         if alphaMask {
             
-            context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: AnyColor.white.with(opacity: state.strokeOpacity))
+            context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: AnyColor.white)
             
         } else {
             
-            context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: stroke ?? AnyColor.black.with(opacity: state.strokeOpacity))
+            context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: stroke ?? AnyColor.black)
         }
         
         state.path = Shape()

@@ -530,12 +530,25 @@ extension PDFRenderer {
                         
                         guard let contents = xobject.decode() else { break }
                         
-                        self.beginTransparencyLayer()
-                        self.concatenate(transform)
-                        
-                        self._render(contents, resources, drawing_clip)
-                        
-                        self.endTransparencyLayer()
+                        if xobject["Group"]["S"].name == "Transparency" && xobject["Group"]["I"] == true {
+                            
+                            self.beginTransparencyLayer()
+                            
+                            self.concatenate(transform)
+                            
+                            self._render(contents, resources, drawing_clip)
+                            
+                            self.endTransparencyLayer()
+                            
+                        } else {
+                            
+                            self.saveGraphicState()
+                            self.concatenate(transform)
+                            
+                            self._render(contents, resources, drawing_clip)
+                            
+                            self.restoreGraphicState()
+                        }
                         
                     case "Image":
                         

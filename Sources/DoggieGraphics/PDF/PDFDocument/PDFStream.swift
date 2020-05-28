@@ -170,7 +170,7 @@ extension PDFStream {
     public func encode(_ data: inout Data) {
         
         var dictionary = self.dictionary
-        dictionary["Length"] = PDFObject(data.count)
+        dictionary["Length"] = PDFObject(self.data.count)
         
         data.append(utf8: "<<\n")
         for (name, object) in dictionary {
