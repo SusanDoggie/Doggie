@@ -272,13 +272,14 @@ extension PDFRenderer {
     }
     
     func saveGraphicState() {
-        context.saveGraphicState()
         graphicStateStack.append(state)
+        context.saveGraphicState()
     }
     
     func restoreGraphicState() {
+        guard let state = graphicStateStack.popLast() else { return }
+        self.state = state
         context.restoreGraphicState()
-        state = graphicStateStack.popLast() ?? state
     }
     
     func beginTransparencyLayer() {
@@ -288,8 +289,18 @@ extension PDFRenderer {
     }
     
     func endTransparencyLayer() {
-        state = layerStack.popLast() ?? state
+        guard let state = layerStack.popLast() else { return }
+        self.state = state
         context.endTransparencyLayer()
+    }
+    
+    func makeBalance() {
+        while !graphicStateStack.isEmpty {
+            self.restoreGraphicState()
+        }
+        while !layerStack.isEmpty {
+            self.endTransparencyLayer()
+        }
     }
     
     func set_clip_list(_ clipPath: [(Shape, Shape.WindingRule)]) {
@@ -385,7 +396,7 @@ extension PDFRenderer {
     }
     
     func drawImage(image: AnyImage) {
-        context.draw(image: image, in: Rect(x: 0, y: 0, width: 1, height: 1))
+        context.draw(image: image, transform: SDTransform.scale(x: 1 / Double(image.width), y: 1 / Double(image.height)) * SDTransform.reflectY(0.5))
     }
     
     func draw(winding: Shape.WindingRule) {

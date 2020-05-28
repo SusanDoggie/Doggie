@@ -41,6 +41,8 @@ extension PDFRenderer {
         
         let resources = page.resources
         self._render(contents, resources, false)
+        
+        self.makeBalance()
     }
     
     private func _render(_ stream: Data, _ resources: PDFObject, _ drawing_clip: Bool) {
