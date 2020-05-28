@@ -338,6 +338,10 @@ public struct Gradient<Color: ColorProtocol> {
     
     public var stops: [GradientStop<Color>]
     
+    public var startSpread: GradientSpreadMode = .pad
+    
+    public var endSpread: GradientSpreadMode = .pad
+    
     @inlinable
     @inline(__always)
     public init(type: GradientType, start: Point, end: Point, stops: [GradientStop<Color>]) {
@@ -356,6 +360,8 @@ extension Gradient where Color == AnyColor {
         self.init(type: gradient.type, start: gradient.start, end: gradient.end, stops: gradient.stops.map(GradientStop<AnyColor>.init))
         self.transform = gradient.transform
         self.opacity = gradient.opacity
+        self.startSpread = gradient.startSpread
+        self.endSpread = gradient.endSpread
     }
 }
 
@@ -367,6 +373,8 @@ extension Gradient {
         var result = Gradient<DoggieGraphics.Color<Model>>(type: self.type, start: self.start, end: self.end, stops: self.stops.map { $0.convert(to: colorSpace, intent: intent) })
         result.transform = self.transform
         result.opacity = self.opacity
+        result.startSpread = self.startSpread
+        result.endSpread = self.endSpread
         return result
     }
     
@@ -376,6 +384,8 @@ extension Gradient {
         var result = Gradient<AnyColor>(type: self.type, start: self.start, end: self.end, stops: self.stops.map { $0.convert(to: colorSpace, intent: intent) })
         result.transform = self.transform
         result.opacity = self.opacity
+        result.startSpread = self.startSpread
+        result.endSpread = self.endSpread
         return result
     }
 }
@@ -472,8 +482,8 @@ extension DrawableContext {
         self.concatenate(transform)
         
         switch gradient.type {
-        case .linear: self.drawLinearGradient(stops: gradient.stops, start: gradient.start, end: gradient.end, startSpread: .pad, endSpread: .pad)
-        case .radial: self.drawRadialGradient(stops: gradient.stops, start: gradient.start, startRadius: 0, end: gradient.end, endRadius: 0.5, startSpread: .pad, endSpread: .pad)
+        case .linear: self.drawLinearGradient(stops: gradient.stops, start: gradient.start, end: gradient.end, startSpread: gradient.startSpread, endSpread: gradient.endSpread)
+        case .radial: self.drawRadialGradient(stops: gradient.stops, start: gradient.start, startRadius: 0, end: gradient.end, endRadius: 0.5, startSpread: gradient.startSpread, endSpread: gradient.endSpread)
         }
         
         self.endTransparencyLayer()

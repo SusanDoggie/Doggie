@@ -242,7 +242,9 @@ extension GPContext {
         
         self.concatenate(transform)
         
-        let options: CGGradientDrawingOptions = [.drawsBeforeStartLocation, .drawsAfterEndLocation]
+        var options: CGGradientDrawingOptions = []
+        if gradient.startSpread == .pad { options.insert(.drawsBeforeStartLocation) }
+        if gradient.endSpread == .pad { options.insert(.drawsAfterEndLocation) }
         
         switch gradient.type {
         case .linear: self.drawLinearGradient(colorSpace: colorSpace, stops: gradient.stops, start: gradient.start, end: gradient.end, options: options)

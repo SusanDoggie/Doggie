@@ -915,6 +915,12 @@ extension SVGContext {
                 "y2": "\(Decimal(gradient.end.y).rounded(scale: 9))",
             ])
             
+            switch gradient.startSpread {
+            case .reflect: element.setAttribute(for: "spreadMethod", value: "reflect")
+            case .repeat: element.setAttribute(for: "spreadMethod", value: "repeat")
+            default: break
+            }
+            
             element.setAttribute(for: "gradientTransform", value: gradient.transform.attributeStr())
             
             for stop in gradient.stops {
@@ -942,6 +948,12 @@ extension SVGContext {
                 "cx": "0.5",
                 "cy": "0.5",
             ])
+            
+            switch gradient.startSpread {
+            case .reflect: element.setAttribute(for: "spreadMethod", value: "reflect")
+            case .repeat: element.setAttribute(for: "spreadMethod", value: "repeat")
+            default: break
+            }
             
             let transform = SDTransform.translate(x: -0.5, y: -0.5) * SDTransform.rotate(phase) * SDTransform.translate(x: gradient.end.x, y: gradient.end.y) * gradient.transform
             element.setAttribute(for: "gradientTransform", value: transform.attributeStr())
@@ -997,7 +1009,6 @@ extension SVGContext {
 extension SVGContext {
     
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
-        guard startSpread == endSpread else { return }
         self.drawLinearGradient(stops: stops, start: start, end: end, spreadMethod: startSpread)
     }
     
@@ -1080,7 +1091,6 @@ extension SVGContext {
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
-        guard startSpread == endSpread else { return }
         self.drawRadialGradient(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, spreadMethod: startSpread)
     }
     
