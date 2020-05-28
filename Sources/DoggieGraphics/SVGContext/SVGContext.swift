@@ -1012,6 +1012,10 @@ extension SVGContext {
         self.drawLinearGradient(stops: stops, start: start, end: end, spreadMethod: startSpread)
     }
     
+    public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
+        self.drawRadialGradient(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, spreadMethod: startSpread)
+    }
+    
     private func create_gradient<C>(stops: [GradientStop<C>], start: Point, end: Point, spreadMethod: GradientSpreadMode, element: SDXMLElement) -> String {
         
         let id = new_name("GRADIENT")
@@ -1088,10 +1092,6 @@ extension SVGContext {
         element.setAttribute(for: "fill", value: create_gradient(stops: stops, start: start, end: end, spreadMethod: spreadMethod, element: gradient))
         
         self.append(element, objectBound, clip_object, .identity)
-    }
-    
-    public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
-        self.drawRadialGradient(stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, spreadMethod: startSpread)
     }
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, spreadMethod: GradientSpreadMode) {
