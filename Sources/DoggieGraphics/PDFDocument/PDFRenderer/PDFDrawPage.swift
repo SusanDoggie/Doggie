@@ -655,6 +655,18 @@ extension PDFRenderer {
                 
                 data = ASCII85Filter.decode(&stream)
                 
+            case "LZWDecode", "LZW":
+                
+                filters.removeFirst()
+                
+                data = LZWFilter.decode(&stream)
+                
+            case "RunLengthDecode", "RL":
+                
+                filters.removeFirst()
+                
+                data = RunLengthFilter.decode(&stream)
+                
             default: return nil
             }
         }
@@ -682,7 +694,8 @@ extension PDFRenderer {
                     
                 case "LZWDecode", "LZW":
                     
-                    return nil
+                    var data = data
+                    return LZWFilter.decode(&data)
                     
                 case "FlateDecode", "Fl":
                     
@@ -690,7 +703,8 @@ extension PDFRenderer {
                     
                 case "RunLengthDecode", "RL":
                     
-                    return nil
+                    var data = data
+                    return RunLengthFilter.decode(&data)
                     
                 case "CCITTFaxDecode", "CCF":
                     

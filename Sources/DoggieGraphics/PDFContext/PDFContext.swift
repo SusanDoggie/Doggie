@@ -239,7 +239,18 @@ extension PDFContext {
         
         case compression
         
+        case compressionScheme
+        
         case deflateLevel
+    }
+    
+    public enum Compression: CaseIterable {
+        
+        case runLength
+        
+        case lzw
+        
+        case deflate
     }
     
     public enum CompressionScheme: CaseIterable {

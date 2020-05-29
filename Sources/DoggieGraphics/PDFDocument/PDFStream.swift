@@ -125,7 +125,8 @@ extension PDFStream {
             
         case "LZWDecode":
             
-            return nil
+            var data = data
+            return LZWFilter.decode(&data)
             
         case "FlateDecode":
             
@@ -133,7 +134,8 @@ extension PDFStream {
             
         case "RunLengthDecode":
             
-            return nil
+            var data = data
+            return RunLengthFilter.decode(&data)
             
         default: return nil
         }
@@ -153,11 +155,29 @@ extension PDFStream {
         
         var copy = self
         
+        let compression = properties[.compression] as? PDFContext.Compression
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         
-        if deflate_level != .none, let compressed = try? Deflate(level: deflate_level, windowBits: 15).process(copy.data) {
-            copy.dictionary["Filter"] = PDFObject("FlateDecode" as PDFName)
-            copy.data = compressed
+        switch compression {
+            
+        case .deflate:
+            
+            if deflate_level != .none, let compressed = try? Deflate(level: deflate_level, windowBits: 15).process(copy.data) {
+                copy.data = compressed
+                copy.dictionary["Filter"] = PDFObject("FlateDecode" as PDFName)
+            }
+            
+        case .lzw:
+            
+            copy.data = LZWFilter.encode(copy.data)
+            copy.dictionary["Filter"] = PDFObject("LZWDecode" as PDFName)
+            
+        case .runLength:
+            
+            copy.data = RunLengthFilter.encode(copy.data)
+            copy.dictionary["Filter"] = PDFObject("RunLengthDecode" as PDFName)
+            
+        default: break
         }
         
         return copy

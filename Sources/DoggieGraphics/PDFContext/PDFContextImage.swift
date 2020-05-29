@@ -105,13 +105,22 @@ extension AnyImage: PDFImageProtocol {
     
     fileprivate func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFStream, PDFStream?)? {
         
+        let compression = properties[.compression] as? PDFContext.Compression
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
-        let compression = deflate_level == .none ? .noPrediction : properties[.compression] as? PDFContext.CompressionScheme ?? .noPrediction
+        
+        let compressionScheme: PDFContext.CompressionScheme
+        
+        switch (compression, deflate_level) {
+        case (.deflate, .none): compressionScheme = .noPrediction
+        case (.deflate, _): compressionScheme = properties[.compressionScheme] as? PDFContext.CompressionScheme ?? .noPrediction
+        case (.lzw, _): compressionScheme = properties[.compressionScheme] as? PDFContext.CompressionScheme ?? .noPrediction
+        default: compressionScheme = .noPrediction
+        }
         
         var color: PDFStream
         var mask: PDFStream?
         
-        switch compression {
+        switch compressionScheme {
         case .noPrediction:
             
             guard let stream = self.tiff_predictor(predictor: 1, true) else { return nil }
