@@ -174,7 +174,7 @@ extension PDFDocument {
         
         xref_data.pdf_remove_whitespaces()
         
-        guard let trailer = PDFObject(&xref_data, [:]), trailer.isObject else { throw Error.invalidFormat }
+        guard let trailer = PDFObject(&xref_data, [:]), trailer.isDictionary else { throw Error.invalidFormat }
         
         var xref_table: [PDFXref: Data] = [:]
         

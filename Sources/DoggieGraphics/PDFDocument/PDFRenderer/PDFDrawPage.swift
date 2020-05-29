@@ -32,6 +32,12 @@ extension DrawableContext {
 
 extension PDFRenderer {
     
+    private struct PageInfo: Hashable {
+        
+        let contents: Data
+        let resources: PDFObject
+    }
+    
     func render(_ page: PDFPage) {
         
         guard let contents = page.contents?.decode() else { return }
@@ -40,12 +46,20 @@ extension PDFRenderer {
         self.concatenate(.reflectY(mediaBox.midY))
         
         let resources = page.resources
-        self._render(contents, resources, false)
+        self._render(PageInfo(contents: contents, resources: resources), false, [])
         
         self.makeBalance()
     }
     
-    private func _render(_ stream: Data, _ resources: PDFObject, _ drawing_clip: Bool) {
+    private func _render(_ info: PageInfo, _ drawing_clip: Bool, _ render_stack: Set<PageInfo>) {
+        
+        guard !render_stack.contains(info) else { return }
+        
+        var render_stack = render_stack
+        render_stack.insert(info)
+        
+        var stream = info.contents
+        let resources = info.resources
         
         let extGState = resources["ExtGState"]
         let colorSpaces = resources["ColorSpace"].dictionary?.compactMapValues { PDFColorSpace($0) } ?? [:]
@@ -54,7 +68,6 @@ extension PDFRenderer {
         
         var stack: [PDFCommand] = []
         
-        var stream = stream
         while !stream.isEmpty {
             
             guard let command = PDFCommand.decode_command(&stream) else { continue }
@@ -164,41 +177,30 @@ extension PDFRenderer {
                         
                     } else if let mask = gatste["SMask"]?.dictionary {
                         
+                        guard let group = mask["G"]?.stream else { break }
+                        guard let mask_data = group.decode() else { break }
+                        
+                        let transform = group["Matrix"].transform ?? SDTransform.identity
+                        let resources = group["Resources"] == nil ? resources : resources.merging(group["Resources"]) { _, rhs in rhs }
+                        
                         switch mask["S"]?.name {
                             
                         case "Alpha":
                             
-                            guard let group = mask["G"]?.stream else { break }
-                            guard let mask_data = group.decode() else { break }
-                            
                             self.clipToDrawing(alphaMask: true) { renderer in
-                                
-                                let transform = group["Matrix"].transform ?? SDTransform.identity
-                                let resources = group["Resources"] == nil ? resources : resources.merging(group["Resources"]) { _, rhs in rhs }
                                 
                                 renderer.concatenate(transform)
                                 
-                                renderer._render(mask_data, resources, true)
+                                renderer._render(PageInfo(contents: mask_data, resources: resources), true, render_stack)
                             }
                             
                         case "Luminosity":
                             
-                            guard let group = mask["G"]?.stream else { break }
-                            guard let mask_data = group.decode() else { break }
-                            
                             self.clipToDrawing(alphaMask: false) { renderer in
-                                
-                                if let colorSpace = PDFColorSpace(group["CS"]) {
-                                    renderer.setFillColorSpace(colorSpace)
-                                    renderer.setStrokeColorSpace(colorSpace)
-                                }
-                                
-                                let transform = group["Matrix"].transform ?? SDTransform.identity
-                                let resources = group["Resources"] == nil ? resources : resources.merging(group["Resources"]) { _, rhs in rhs }
                                 
                                 renderer.concatenate(transform)
                                 
-                                renderer._render(mask_data, resources, true)
+                                renderer._render(PageInfo(contents: mask_data, resources: resources), true, render_stack)
                             }
                             
                         default: break
@@ -535,7 +537,7 @@ extension PDFRenderer {
                             self.beginTransparencyLayer()
                             self.concatenate(transform)
                             
-                            self._render(contents, resources, drawing_clip)
+                            self._render(PageInfo(contents: contents, resources: resources), drawing_clip, render_stack)
                             
                             self.endTransparencyLayer()
                             
@@ -544,7 +546,7 @@ extension PDFRenderer {
                             self.saveGraphicState()
                             self.concatenate(transform)
                             
-                            self._render(contents, resources, drawing_clip)
+                            self._render(PageInfo(contents: contents, resources: resources), drawing_clip, render_stack)
                             
                             self.restoreGraphicState()
                         }

@@ -283,10 +283,10 @@ extension PDFObject {
     }
     
     @inlinable
-    public var isObject: Bool {
+    public var isDictionary: Bool {
         switch base {
         case .dictionary: return true
-        case let .xref(xref): return self.xref[xref]?.isObject ?? false
+        case let .xref(xref): return self.xref[xref]?.isDictionary ?? false
         default: return false
         }
     }
@@ -530,8 +530,10 @@ extension PDFObject {
     
     @inlinable
     public func merging(_ other: PDFObject, uniquingKeysWith combine: (PDFObject, PDFObject) throws -> PDFObject) rethrows -> PDFObject {
-        guard let lhs = self.dictionary, let rhs = other.dictionary else { return try combine(self, other) }
-        return try PDFObject(lhs.merging(rhs) { try $0.merging($1, uniquingKeysWith: combine) })
+        switch (self.base, other.base) {
+        case let (.dictionary(lhs), .dictionary(rhs)): return try PDFObject(lhs.merging(rhs) { try $0.merging($1, uniquingKeysWith: combine) })
+        default: return try combine(self, other)
+        }
     }
 }
 

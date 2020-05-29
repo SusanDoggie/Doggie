@@ -86,7 +86,7 @@ extension PDFObject {
     var catalog: PDFObject {
         get {
             let catalog = self["Root"]
-            guard catalog.isObject, catalog["Type"].name == "Catalog" else { return PDFObject.empty_catalog }
+            guard catalog.isDictionary, catalog["Type"].name == "Catalog" else { return PDFObject.empty_catalog }
             return catalog
         }
         set {

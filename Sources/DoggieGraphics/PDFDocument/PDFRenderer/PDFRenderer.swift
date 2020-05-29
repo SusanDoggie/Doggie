@@ -169,7 +169,7 @@ extension PDFRenderer {
     }
     
     var should_isolate: Bool {
-        return opacity < 1
+        return opacity < 1 || !state.clipPath.isEmpty || state.mask != nil
     }
     
     var opacity: Double {
@@ -405,15 +405,7 @@ extension PDFRenderer {
     
     func draw(winding: Shape.WindingRule) {
         
-        if alphaMask {
-            
-            context.draw(shape: state.path, winding: winding, color: AnyColor.white)
-            
-        } else {
-            
-            context.draw(shape: state.path, winding: winding, color: fill ?? .black)
-        }
-        
+        context.draw(shape: state.path, winding: winding, color: alphaMask ? AnyColor.white : fill ?? .black)
         state.path = Shape()
     }
     
@@ -436,15 +428,7 @@ extension PDFRenderer {
         let opacity = context.opacity
         context.opacity = state.strokeOpacity
         
-        if alphaMask {
-            
-            context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: AnyColor.white)
-            
-        } else {
-            
-            context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: stroke ?? AnyColor.black)
-        }
-        
+        context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
         state.path = Shape()
         
         context.opacity = opacity

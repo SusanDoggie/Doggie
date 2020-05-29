@@ -129,7 +129,68 @@ extension PDFContext {
             ],
         ]
         
+        solve_duplicate(&xref_table)
+        
         return PDFDocument(trailer._apply_xref(xref_table.mapValues { $0.stream.map { PDFObject($0.compressed(properties)) } ?? $0 }))
+    }
+    
+    private func solve_duplicate(_ xref_table: inout [PDFXref: PDFObject]) {
+        
+        var list: [PDFObject: Int] = [:]
+        var map: [PDFObject: PDFXref] = Dictionary(xref_table.map { ($1, $0) }) { lhs, rhs in min(lhs, rhs) }
+        
+        for item in xref_table.values {
+            search_duplicate(item, &list)
+        }
+        
+        for (item, count) in list where count > 1 && map[item] == nil {
+            let token = PDFXref(object: xref_table.count + 1, generation: 0)
+            xref_table[token] = item
+            map[item] = token
+        }
+        
+        for (key, value) in xref_table {
+            xref_table[key] = solve_duplicate(value, false, &map)
+        }
+    }
+    
+    private func solve_duplicate(_ object: PDFObject, _ flag: Bool, _ map: inout [PDFObject: PDFXref]) -> PDFObject {
+        
+        var object = object
+        let token = map[object]
+        
+        if let dictionary = object.dictionary {
+            
+            for (key, value) in dictionary {
+                object[key] = solve_duplicate(value, true, &map)
+            }
+        }
+        if let array = object.array {
+            object = PDFObject(array.map { solve_duplicate($0, true, &map) })
+        }
+        
+        return flag ? token.map { PDFObject($0) } ?? object : object
+    }
+    
+    private func search_duplicate(_ object: PDFObject, _ list: inout [PDFObject: Int]) {
+        
+        if let dictionary = object.dictionary {
+            
+            for item in dictionary.values {
+                search_duplicate(item, &list)
+            }
+            
+            list[object, default: 0] += 1
+        }
+        
+        if let array = object.array {
+            
+            for item in array {
+                search_duplicate(item, &list)
+            }
+            
+            list[object, default: 0] += 1
+        }
     }
 }
 
@@ -251,16 +312,6 @@ extension PDFContext.Page {
             xobject[name] = PDFObject(image_token)
         }
         
-        let mask_group: PDFObject = [
-            "S": PDFObject("Transparency" as PDFName),
-            "CS": PDFObject("DeviceGray" as PDFName),
-            "I": true,
-            "K": false,
-        ]
-        
-        let mask_group_token = PDFXref(object: xref_table.count + 1, generation: 0)
-        xref_table[mask_group_token] = mask_group
-        
         for (name, commands) in self.mask {
             
             var xobj = PDFStream(dictionary: [
@@ -270,7 +321,12 @@ extension PDFContext.Page {
                 "Matrix": [1, 0, 0, 1, 0, 0],
                 "BBox": PDFObject(self.media),
                 "Resources": PDFObject(resources_token),
-                "Group": PDFObject(mask_group_token),
+                "Group": [
+                    "S": PDFObject("Transparency" as PDFName),
+                    "CS": PDFObject("DeviceGray" as PDFName),
+                    "I": true,
+                    "K": false,
+                ],
             ])
             
             commands.encode(&xobj.data)
@@ -288,15 +344,6 @@ extension PDFContext.Page {
             ]
         }
         
-        let transparency_layer_group: PDFObject = [
-            "S": PDFObject("Transparency" as PDFName),
-            "I": true,
-            "K": false,
-        ]
-        
-        let transparency_layer_group_token = PDFXref(object: xref_table.count + 1, generation: 0)
-        xref_table[transparency_layer_group_token] = transparency_layer_group
-        
         for (commands, name) in self.transparency_layers {
             
             var xobj = PDFStream(dictionary: [
@@ -306,7 +353,11 @@ extension PDFContext.Page {
                 "Matrix": [1, 0, 0, 1, 0, 0],
                 "BBox": PDFObject(self.media),
                 "Resources": PDFObject(resources_token),
-                "Group": PDFObject(transparency_layer_group_token),
+                "Group": [
+                    "S": PDFObject("Transparency" as PDFName),
+                    "I": true,
+                    "K": false,
+                ],
             ])
             
             commands.encode(&xobj.data)
