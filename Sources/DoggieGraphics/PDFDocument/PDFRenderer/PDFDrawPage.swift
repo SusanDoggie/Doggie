@@ -681,39 +681,13 @@ extension PDFRenderer {
             data.flatMap { data in
                 
                 switch filter {
-                    
-                case "ASCIIHexDecode", "AHx":
-                    
-                    var data = data
-                    return ASCIIHexFilter.decode(&data)
-                    
-                case "ASCII85Decode", "A85":
-                    
-                    var data = data
-                    return ASCII85Filter.decode(&data)
-                    
-                case "LZWDecode", "LZW":
-                    
-                    var data = data
-                    return LZWFilter.decode(&data)
-                    
-                case "FlateDecode", "Fl":
-                    
-                    return try? Inflate().process(data)
-                    
-                case "RunLengthDecode", "RL":
-                    
-                    var data = data
-                    return RunLengthFilter.decode(&data)
-                    
-                case "CCITTFaxDecode", "CCF":
-                    
-                    return nil
-                    
-                case "DCTDecode", "DCT":
-                    
-                    return nil
-                    
+                case "ASCIIHexDecode", "AHx": return ASCIIHexFilter.decode(data)
+                case "ASCII85Decode", "A85": return ASCII85Filter.decode(data)
+                case "LZWDecode", "LZW": return LZWFilter.decode(data)
+                case "FlateDecode", "Fl": return try? Inflate().process(data)
+                case "RunLengthDecode", "RL": return RunLengthFilter.decode(data)
+                case "CCITTFaxDecode", "CCF": return nil
+                case "DCTDecode", "DCT": return nil
                 default: return nil
                 }
             }

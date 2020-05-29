@@ -112,31 +112,11 @@ extension PDFStream {
     private func decode(_ data: Data, _ filter: PDFName) -> Data? {
         
         switch filter {
-            
-        case "ASCIIHexDecode":
-            
-            var data = data
-            return ASCIIHexFilter.decode(&data)
-            
-        case "ASCII85Decode":
-            
-            var data = data
-            return ASCII85Filter.decode(&data)
-            
-        case "LZWDecode":
-            
-            var data = data
-            return LZWFilter.decode(&data)
-            
-        case "FlateDecode":
-            
-            return try? Inflate().process(data)
-            
-        case "RunLengthDecode":
-            
-            var data = data
-            return RunLengthFilter.decode(&data)
-            
+        case "ASCIIHexDecode": return ASCIIHexFilter.decode(data)
+        case "ASCII85Decode": return ASCII85Filter.decode(data)
+        case "LZWDecode": return LZWFilter.decode(data)
+        case "FlateDecode": return try? Inflate().process(data)
+        case "RunLengthDecode": return RunLengthFilter.decode(data)
         default: return nil
         }
     }

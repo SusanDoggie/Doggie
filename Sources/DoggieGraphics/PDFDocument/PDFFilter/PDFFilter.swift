@@ -27,3 +27,11 @@ public protocol PDFFilter {
     
     static func decode(_ data: inout Data) -> Data?
 }
+
+extension PDFFilter {
+    
+    public static func decode(_ data: Data) -> Data? {
+        var data = data
+        return decode(&data)
+    }
+}
