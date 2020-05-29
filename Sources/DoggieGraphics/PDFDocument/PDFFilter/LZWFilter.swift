@@ -164,13 +164,13 @@ public struct LZWFilter: PDFFilter {
                 let index = Int(code - 258)
                 guard index < table.count else { return nil }
                 
-                let sequence = table[index]
-                
                 if var last_sequence = table.last {
-                    guard let char = sequence.first else { return nil }
+                    guard let char = table[index].first else { return nil }
                     last_sequence.append(char)
                     table[table.count - 1] = last_sequence
                 }
+                
+                let sequence = table[index]
                 
                 result.append(sequence)
                 table.append(sequence)
