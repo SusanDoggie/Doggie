@@ -53,8 +53,13 @@ public struct RunLengthFilter: PDFFilter {
             } else {
                 
                 if repeat_count > 1, let byte = buffer.popLast() {
-                    result.append(UInt8(257 - repeat_count))
-                    result.append(byte)
+                    
+                    while repeat_count > 0 {
+                        let count = min(128, repeat_count)
+                        result.append(UInt8(257 - count))
+                        result.append(byte)
+                        repeat_count -= count
+                    }
                 }
                 
                 buffer.append(byte)
@@ -64,13 +69,20 @@ public struct RunLengthFilter: PDFFilter {
         
         if repeat_count == 1 {
             
-            result.append(UInt8(buffer.count - 1))
-            result.append(buffer)
+            while !buffer.isEmpty {
+                let bytes = buffer.popFirst(min(128, buffer.count))
+                result.append(UInt8(bytes.count - 1))
+                result.append(bytes)
+            }
             
         } else if let byte = buffer.popLast() {
             
-            result.append(UInt8(257 - repeat_count))
-            result.append(byte)
+            while repeat_count > 0 {
+                let count = min(128, repeat_count)
+                result.append(UInt8(257 - count))
+                result.append(byte)
+                repeat_count -= count
+            }
         }
         
         result.append(128)
