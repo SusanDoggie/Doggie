@@ -457,32 +457,18 @@ struct TIFFPage: ImageRepBase {
         return 1...4 ~= orientation ? resolution : Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit)
     }
     
-    func _decompressed(data: Data, fileBacked: Bool) throws -> Data {
-        
+    func _decompressed(_ data: Data) -> Data? {
         switch compression {
-            
         case 1: return data
-            
-        case 5:
-            
-            guard let decoded = TIFFLZWDecoder.decode(data) else { throw ImageRep.Error.InvalidFormat("Invalid compressed data.") }
-            return decoded
-            
-        case 8:
-            
-            return try Inflate().process(data)
-            
-        case 32773:
-            
-            guard let decoded = TIFFPackBitsDecoder.decode(data) else { throw ImageRep.Error.InvalidFormat("Invalid compressed data.") }
-            return decoded
-            
+        case 5: return try? TIFFLZWDecoder.decode(data)
+        case 8: return try? Inflate().process(data)
+        case 32773: return try? TIFFPackBitsDecoder.decode(data)
         default: fatalError()
         }
     }
     
     func decompressed_strips(fileBacked: Bool) -> [Data] {
-        return strips.map { (try? _decompressed(data: $0, fileBacked: fileBacked)) ?? Data() }
+        return strips.map { _decompressed($0) ?? Data() }
     }
     
     func image(fileBacked: Bool) -> AnyImage {

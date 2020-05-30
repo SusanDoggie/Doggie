@@ -25,14 +25,14 @@
 
 public protocol TIFFCompressionDecoder {
     
-    static func decode(_ data: inout Data) -> Data?
+    static func decode(_ input: inout Data) throws -> Data
     
 }
 
 extension TIFFCompressionDecoder {
     
-    public static func decode(_ data: Data) -> Data? {
+    public static func decode(_ data: Data) throws -> Data {
         var data = data
-        return decode(&data)
+        return try decode(&data)
     }
 }

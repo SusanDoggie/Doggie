@@ -114,9 +114,9 @@ extension PDFStream {
         switch filter {
         case "ASCIIHexDecode": return ASCIIHexFilter.decode(data)
         case "ASCII85Decode": return ASCII85Filter.decode(data)
-        case "LZWDecode": return TIFFLZWDecoder.decode(data)
+        case "LZWDecode": return try? TIFFLZWDecoder.decode(data)
         case "FlateDecode": return try? Inflate().process(data)
-        case "RunLengthDecode": return TIFFPackBitsDecoder.decode(data)
+        case "RunLengthDecode": return try? TIFFPackBitsDecoder.decode(data)
         default: return nil
         }
     }

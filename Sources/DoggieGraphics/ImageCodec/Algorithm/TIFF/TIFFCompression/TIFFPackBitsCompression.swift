@@ -119,28 +119,33 @@ public class TIFFPackBitsEncoder: CompressionCodec {
 
 public struct TIFFPackBitsDecoder: TIFFCompressionDecoder {
     
-    public static func decode(_ data: inout Data) -> Data? {
+    public enum Error: Swift.Error {
         
-        var result = Data()
+        case unexpectedEndOfStream
+    }
+    
+    public static func decode(_ input: inout Data) throws -> Data {
         
-        while let count = data.popFirst() {
+        var output = Data()
+        
+        while let count = input.popFirst() {
             
             guard count != 128 else { break }
             
             if count <= 127 {
                 
-                let bytes = data.popFirst(Int(count) + 1)
-                guard bytes.count == count + 1 else { return nil }
+                let bytes = input.popFirst(Int(count) + 1)
+                guard bytes.count == count + 1 else { throw Error.unexpectedEndOfStream }
                 
-                result.append(bytes)
+                output.append(bytes)
                 
             } else {
                 
-                guard let byte = data.popFirst() else { return nil }
-                result.append(contentsOf: repeatElement(byte, count: 257 - Int(count)))
+                guard let byte = input.popFirst() else { throw Error.unexpectedEndOfStream }
+                output.append(contentsOf: repeatElement(byte, count: 257 - Int(count)))
             }
         }
         
-        return result
+        return output
     }
 }

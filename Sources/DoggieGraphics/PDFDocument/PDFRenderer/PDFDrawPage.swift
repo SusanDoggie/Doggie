@@ -659,13 +659,13 @@ extension PDFRenderer {
                 
                 filters.removeFirst()
                 
-                data = TIFFLZWDecoder.decode(&stream)
+                data = try? TIFFLZWDecoder.decode(&stream)
                 
             case "RunLengthDecode", "RL":
                 
                 filters.removeFirst()
                 
-                data = TIFFPackBitsDecoder.decode(&stream)
+                data = try? TIFFPackBitsDecoder.decode(&stream)
                 
             default: return nil
             }
@@ -683,9 +683,9 @@ extension PDFRenderer {
                 switch filter {
                 case "ASCIIHexDecode", "AHx": return ASCIIHexFilter.decode(data)
                 case "ASCII85Decode", "A85": return ASCII85Filter.decode(data)
-                case "LZWDecode", "LZW": return TIFFLZWDecoder.decode(data)
+                case "LZWDecode", "LZW": return try? TIFFLZWDecoder.decode(data)
                 case "FlateDecode", "Fl": return try? Inflate().process(data)
-                case "RunLengthDecode", "RL": return TIFFPackBitsDecoder.decode(data)
+                case "RunLengthDecode", "RL": return try? TIFFPackBitsDecoder.decode(data)
                 case "CCITTFaxDecode", "CCF": return nil
                 case "DCTDecode", "DCT": return nil
                 default: return nil

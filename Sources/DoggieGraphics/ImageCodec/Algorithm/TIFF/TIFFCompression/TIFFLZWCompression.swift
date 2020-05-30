@@ -69,19 +69,21 @@ public class TIFFLZWEncoder: CompressionCodec {
     
     private let maxBitsWidth: Int
     
-    private var writer: TIFFLZWBitsWriter
-    private var table: [Data] = []
-    
     private var tableLimit: Int {
         return 1 << maxBitsWidth
     }
     
+    private var table: [Data] = []
+    private var writer: TIFFLZWBitsWriter = {
+        var writer = TIFFLZWBitsWriter()
+        writer.write(256, 9)
+        return writer
+    }()
+    
     public private(set) var isEndOfStream: Bool = false
     
     public init(maxBitsWidth: Int = 12) {
-        self.maxBitsWidth = max(12, maxBitsWidth)
-        self.writer = TIFFLZWBitsWriter()
-        self.writer.write(256, 9)
+        self.maxBitsWidth = max(9, maxBitsWidth)
         self.table.reserveCapacity(tableLimit - 258)
     }
     
@@ -113,14 +115,14 @@ public class TIFFLZWEncoder: CompressionCodec {
             let sequence = source.prefix(max_length + 1)
             source = UnsafeBufferPointer(rebasing: source.dropFirst(max_length))
             
-            if table.count > tableLimit - 259 {
+            if table.count + 259 < tableLimit {
                 
-                writer.write(256, bit_count)
-                table.removeAll(keepingCapacity: true)
+                table.append(Data(sequence))
                 
             } else {
                 
-                table.append(Data(sequence))
+                writer.write(256, bit_count)
+                table.removeAll(keepingCapacity: true)
             }
         }
         
@@ -145,7 +147,12 @@ public class TIFFLZWEncoder: CompressionCodec {
 
 public struct TIFFLZWDecoder: TIFFCompressionDecoder {
     
-    public static func decode(_ data: inout Data) -> Data? {
+    public enum Error: Swift.Error {
+        
+        case invalidInputData
+    }
+    
+    public static func decode(_ input: inout Data) throws -> Data {
         
         var table: [Data] = []
         table.reserveCapacity(0xEFE)
@@ -155,7 +162,7 @@ public struct TIFFLZWDecoder: TIFFCompressionDecoder {
         
         func next_code() -> UInt? {
             
-            while let byte = data.popFirst() {
+            while let byte = input.popFirst() {
                 
                 bits = (bits << 8) | UInt(byte)
                 bitsize += 8
@@ -176,7 +183,7 @@ public struct TIFFLZWDecoder: TIFFCompressionDecoder {
             return nil
         }
         
-        var result = Data()
+        var output = Data()
         
         while let code = next_code() {
             
@@ -193,27 +200,26 @@ public struct TIFFLZWDecoder: TIFFCompressionDecoder {
                     table[table.count - 1] = last_sequence
                 }
                 
-                result.append(UInt8(code))
-                table.append(result.suffix(1))
+                output.append(UInt8(code))
+                table.append(output.suffix(1))
                 
             } else {
                 
                 let index = Int(code - 258)
-                guard index < table.count else { return nil }
+                guard index < table.count else { throw Error.invalidInputData }
                 
                 if var last_sequence = table.last {
-                    guard let char = table[index].first else { return nil }
-                    last_sequence.append(char)
+                    last_sequence.append(table[index].first!)
                     table[table.count - 1] = last_sequence
                 }
                 
                 let sequence = table[index]
                 
-                result.append(sequence)
+                output.append(sequence)
                 table.append(sequence)
             }
         }
         
-        return result
+        return output
     }
 }
