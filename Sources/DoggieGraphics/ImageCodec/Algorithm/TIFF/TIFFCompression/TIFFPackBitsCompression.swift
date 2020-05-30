@@ -69,11 +69,15 @@ public class TIFFPackBitsEncoder: CompressionCodec {
                 
                 if repeat_count > 1, let byte = record.popLast() {
                     
-                    while repeat_count > 0 {
+                    while repeat_count > 1 {
                         let count = min(128, repeat_count)
                         buffer.append(UInt8(257 - count))
                         buffer.append(byte)
                         repeat_count -= count
+                    }
+                    
+                    if repeat_count == 1 {
+                        record.append(byte)
                     }
                 }
                 
@@ -98,13 +102,18 @@ public class TIFFPackBitsEncoder: CompressionCodec {
                 buffer.append(bytes)
             }
             
-        } else if let byte = record.popLast() {
+        } else if repeat_count > 1, let byte = record.popLast() {
             
-            while repeat_count > 0 {
+            while repeat_count > 1 {
                 let count = min(128, repeat_count)
                 buffer.append(UInt8(257 - count))
                 buffer.append(byte)
                 repeat_count -= count
+            }
+            
+            if repeat_count == 1 {
+                buffer.append(0 as UInt8)
+                buffer.append(byte)
             }
         }
         
