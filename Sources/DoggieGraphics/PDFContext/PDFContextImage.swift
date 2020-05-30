@@ -111,12 +111,12 @@ extension AnyImage: PDFImageProtocol {
         
         switch compression {
         case .none: predictor = .none
-        case .lzw: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .tiff
-        case .runLength: predictor = .none
+        case .lzw: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
+        case .runLength: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
         case .deflate:
             switch deflate_level {
             case .none: predictor = .none
-            default: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .tiff
+            default: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
             }
         }
         
