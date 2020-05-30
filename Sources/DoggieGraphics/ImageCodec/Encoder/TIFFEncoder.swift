@@ -72,7 +72,7 @@ struct TIFFEncoder: ImageRepEncoder {
         switch compression {
         case .none: predictor = .none
         case .lzw: predictor = properties[.predictor] as? TIFFPrediction ?? .subtract
-        case .packBits: predictor = properties[.predictor] as? TIFFPrediction ?? .none
+        case .packBits: predictor = properties[.predictor] as? TIFFPrediction ?? .subtract
         case .deflate:
             switch deflate_level {
             case .none: predictor = .none
