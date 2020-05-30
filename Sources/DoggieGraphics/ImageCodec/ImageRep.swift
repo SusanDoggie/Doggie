@@ -356,8 +356,8 @@ extension ImageRep {
         return self.representation(using: .tiff, properties: [.compression: compression, .predictor: predictor])
     }
     
-    public func pngRepresentation(interlaced: Bool = false) -> Data? {
-        return self.representation(using: .png, properties: [.interlaced: interlaced])
+    public func pngRepresentation(predictor: PNGPrediction = .all, interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, properties: [.predictor: predictor, .interlaced: interlaced])
     }
     
     public func jpegRepresentation(compressionQuality: Double) -> Data? {
@@ -371,8 +371,8 @@ extension Image {
         return self.representation(using: .tiff, properties: [.compression: compression, .predictor: predictor])
     }
     
-    public func pngRepresentation(interlaced: Bool = false) -> Data? {
-        return self.representation(using: .png, properties: [.interlaced: interlaced])
+    public func pngRepresentation(predictor: PNGPrediction = .all, interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, properties: [.predictor: predictor, .interlaced: interlaced])
     }
     
     public func jpegRepresentation(compressionQuality: Double) -> Data? {
@@ -386,8 +386,8 @@ extension AnyImage {
         return self.representation(using: .tiff, properties: [.compression: compression, .predictor: predictor])
     }
     
-    public func pngRepresentation(interlaced: Bool = false) -> Data? {
-        return self.representation(using: .png, properties: [.interlaced: interlaced])
+    public func pngRepresentation(predictor: PNGPrediction = .all, interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, properties: [.predictor: predictor, .interlaced: interlaced])
     }
     
     public func jpegRepresentation(compressionQuality: Double) -> Data? {

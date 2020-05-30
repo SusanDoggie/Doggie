@@ -107,16 +107,35 @@ extension AnyImage: PDFImageProtocol {
         
         let compression = properties[.compression] as? PDFContext.CompressionScheme ?? .deflate
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
-        let predictor: PDFContext.CompressionPrediction
         
-        switch compression {
-        case .none: predictor = .none
-        case .lzw: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
-        case .runLength: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
-        case .deflate:
-            switch deflate_level {
+        var predictor: PDFContext.CompressionPrediction = .none
+        var png_predictor: PNGPrediction = .all
+        
+        switch properties[.predictor] {
+            
+        case let prediction as TIFFPrediction:
+            
+            switch prediction {
             case .none: predictor = .none
-            default: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
+            case .subtract: predictor = .tiff
+            }
+            
+        case let prediction as PNGPrediction:
+            
+            predictor = .png
+            png_predictor = prediction
+            
+        default:
+            
+            switch compression {
+            case .none: predictor = .none
+            case .lzw: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
+            case .runLength: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
+            case .deflate:
+                switch deflate_level {
+                case .none: predictor = .none
+                default: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
+                }
             }
         }
         
@@ -161,7 +180,7 @@ extension AnyImage: PDFImageProtocol {
             let bytesPerPixel = bitsPerPixel >> 3
             let bytesPerRow = bytesPerPixel * width
             
-            var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel), methods: .all)
+            var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel), methods: png_predictor)
             color.data = png_filter0.process(stream.data)
             
             if !self.isOpaque {
@@ -173,13 +192,27 @@ extension AnyImage: PDFImageProtocol {
                 let bytesPerPixel = bitsPerChannel >> 3
                 let bytesPerRow = bytesPerPixel * width
                 
-                var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel), methods: .all)
+                var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel), methods: png_predictor)
                 mask?.data = png_filter0.process(stream.data)
                 
-                mask?["Predictor"] = 15
+                switch png_predictor {
+                case .none: mask?["Predictor"] = 10
+                case .subtract: mask?["Predictor"] = 11
+                case .up: mask?["Predictor"] = 12
+                case .average: mask?["Predictor"] = 13
+                case .paeth: mask?["Predictor"] = 14
+                default: mask?["Predictor"] = 15
+                }
             }
             
-            color["Predictor"] = 15
+            switch png_predictor {
+            case .none: color["Predictor"] = 10
+            case .subtract: color["Predictor"] = 11
+            case .up: color["Predictor"] = 12
+            case .average: color["Predictor"] = 13
+            case .paeth: color["Predictor"] = 14
+            default: color["Predictor"] = 15
+            }
         }
         
         return (color.compressed(properties), mask?.compressed(properties))

@@ -162,8 +162,8 @@ extension CGImageRep {
         return self.representation(using: .tiff, properties: [.compression: compression])
     }
     
-    public func pngRepresentation(interlaced: Bool = false) -> Data? {
-        return self.representation(using: .png, properties: [.interlaced: interlaced])
+    public func pngRepresentation(predictor: PNGPrediction = .all, interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, properties: [.predictor: predictor, .interlaced: interlaced])
     }
     
     public func jpegRepresentation(compressionQuality: Double) -> Data? {
@@ -181,8 +181,8 @@ extension CGImage {
         return self.representation(using: .tiff, resolution: resolution, properties: [.compression: compression])
     }
     
-    open func pngRepresentation(resolution: Resolution = .default, interlaced: Bool = false) -> Data? {
-        return self.representation(using: .png, resolution: resolution, properties: [.interlaced: interlaced])
+    open func pngRepresentation(resolution: Resolution = .default, predictor: PNGPrediction = .all, interlaced: Bool = false) -> Data? {
+        return self.representation(using: .png, resolution: resolution, properties: [.predictor: predictor, .interlaced: interlaced])
     }
     
     open func jpegRepresentation(resolution: Resolution = .default, compressionQuality: Double) -> Data? {
