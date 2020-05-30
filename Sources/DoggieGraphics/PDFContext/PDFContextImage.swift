@@ -111,31 +111,27 @@ extension AnyImage: PDFImageProtocol {
         var predictor: PDFContext.CompressionPrediction = .none
         var png_predictor: PNGPrediction = .all
         
-        switch properties[.predictor] {
+        if compression != .none && (compression != .deflate || deflate_level != .none) {
             
-        case let prediction as TIFFPrediction:
-            
-            switch prediction {
-            case .none: predictor = .none
-            case .subtract: predictor = .tiff
-            }
-            
-        case let prediction as PNGPrediction:
-            
-            predictor = .png
-            png_predictor = prediction
-            
-        default:
-            
-            switch compression {
-            case .none: predictor = .none
-            case .lzw: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
-            case .runLength: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
-            case .deflate:
-                switch deflate_level {
+            switch properties[.predictor] {
+                
+            case let prediction as TIFFPrediction:
+                
+                switch prediction {
                 case .none: predictor = .none
-                default: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .png
+                case .subtract: predictor = .tiff
                 }
+                
+            case let prediction as PNGPrediction:
+                
+                predictor = .png
+                png_predictor = prediction
+                
+            case let prediction as PDFContext.CompressionPrediction:
+                
+                predictor = prediction
+                
+            default: predictor = .png
             }
         }
         
