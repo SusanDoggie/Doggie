@@ -160,12 +160,30 @@ public struct TIFFLZWDecoder: TIFFCompressionDecoder {
         var bits: UInt = 0
         var bitsize: UInt = 0
         
+        var last_code_size: UInt?
+        
         func next_code() -> UInt? {
             
             while let byte = input.popFirst() {
                 
                 bits = (bits << 8) | UInt(byte)
                 bitsize += 8
+                
+                if let code_size = last_code_size, bitsize >= code_size {
+                    
+                    let remain = bitsize - code_size
+                    let code = bits >> remain
+                    
+                    if code == 256 {
+                        
+                        bits &= (1 << remain) - 1
+                        bitsize = remain
+                        
+                        last_code_size = nil
+                        
+                        return code
+                    }
+                }
                 
                 let code_size = log2(UInt(table.count + 258)) + 1
                 
@@ -176,6 +194,8 @@ public struct TIFFLZWDecoder: TIFFCompressionDecoder {
                 
                 bits &= (1 << remain) - 1
                 bitsize = remain
+                
+                last_code_size = code_size
                 
                 return code
             }

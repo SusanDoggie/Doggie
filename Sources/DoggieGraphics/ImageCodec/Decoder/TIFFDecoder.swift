@@ -467,10 +467,6 @@ struct TIFFPage: ImageRepBase {
         }
     }
     
-    func decompressed_strips(fileBacked: Bool) -> [Data] {
-        return strips.map { _decompressed($0) ?? Data() }
-    }
-    
     func image(fileBacked: Bool) -> AnyImage {
         
         let colorSpace = self.colorSpace
@@ -535,8 +531,11 @@ struct TIFFPage: ImageRepBase {
                     }
                 }
                 
-                for (i, data) in decompressed_strips(fileBacked: fileBacked).enumerated() {
-                    bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: (bitsPerPixel * _width).align(8) >> 3, endianness: .big, startsRow: i * rowsPerStrip, predictor: predictor, channels: channels, data: data))
+                for (i, _strip) in strips.enumerated() {
+                    
+                    guard let strip = _decompressed(_strip) else { continue }
+                    
+                    bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: (bitsPerPixel * _width).align(8) >> 3, endianness: .big, startsRow: i * rowsPerStrip, predictor: predictor, channels: channels, data: strip))
                 }
                 
                 image = AnyImage(width: _width, height: _height, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked)
@@ -547,7 +546,7 @@ struct TIFFPage: ImageRepBase {
                 
                 var premultiplied = false
                 
-                for (i, (strips, (bits, format))) in zip(decompressed_strips(fileBacked: fileBacked).chunked(by: stripsPerImage), zip(self.bitsPerSample, self.sampleFormat)).enumerated() {
+                for (i, (strips, (bits, format))) in zip(strips.chunked(by: stripsPerImage), zip(self.bitsPerSample, self.sampleFormat)).enumerated() {
                     
                     let channel_index: Int
                     
@@ -560,11 +559,16 @@ struct TIFFPage: ImageRepBase {
                         channel_index = self.colorSpace.numberOfComponents
                     }
                     
-                    for (j, strip) in strips.enumerated() {
+                    for (j, _strip) in strips.enumerated() {
+                        
+                        guard let strip = _decompressed(_strip) else { continue }
                         
                         if photometric == 8 && (channel_index == 1 || channel_index == 2) && format == 1 {
+                            
                             bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            
                         } else {
+                            
                             switch format {
                             case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
                             case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
@@ -601,8 +605,6 @@ struct TIFFPage: ImageRepBase {
         
         guard let pixel = pixel else { return }
         
-        var destination = pixel
-        
         palette.withUnsafeBufferPointer {
             
             guard let palette = $0.baseAddress else { return }
@@ -612,7 +614,11 @@ struct TIFFPage: ImageRepBase {
             var remain = _height
             let rowSize = _width * ((bitWidth + 7) >> 3)
             
-            for strip in decompressed_strips(fileBacked: fileBacked) {
+            for (i, _strip) in strips.enumerated() {
+                
+                guard let strip = _decompressed(_strip) else { continue }
+                
+                var destination = pixel + rowsPerStrip * i * _width
                 
                 let rowCount = min(rowsPerStrip, remain)
                 

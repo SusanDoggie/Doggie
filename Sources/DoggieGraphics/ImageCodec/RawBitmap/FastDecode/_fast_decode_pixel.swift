@@ -36,22 +36,21 @@ extension Image where Pixel: TIFFEncodablePixel {
         
         self.withUnsafeMutableBufferPointer {
             
-            guard var dest = $0.baseAddress else { return }
+            guard let dest = $0.baseAddress else { return }
             
             for bitmap in bitmaps {
                 
-                guard bitmap.startsRow < height else { return }
+                guard bitmap.startsRow < height else { continue }
                 
                 let bytesPerPixel = bitmap.bitsPerPixel >> 3
                 
-                dest += bitmap.startsRow * width
-                
+                var dest = dest + bitmap.startsRow * width
                 var data = bitmap.data
                 
                 for _ in bitmap.startsRow..<height {
                     
                     let _length = min(bitmap.bytesPerRow, data.count)
-                    guard _length != 0 else { return }
+                    guard _length != 0 else { break }
                     
                     data.popFirst(bitmap.bytesPerRow).withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                         
