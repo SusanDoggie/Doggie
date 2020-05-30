@@ -352,8 +352,8 @@ extension AnyImage {
 
 extension ImageRep {
     
-    public func tiffRepresentation(compression: TIFFCompressionScheme = .none) -> Data? {
-        return self.representation(using: .tiff, properties: [.compression: compression])
+    public func tiffRepresentation(compression: TIFFCompressionScheme = .none, predictor: TIFFPrediction = .none) -> Data? {
+        return self.representation(using: .tiff, properties: [.compression: compression, .predictor: predictor])
     }
     
     public func pngRepresentation(interlaced: Bool = false) -> Data? {
@@ -367,8 +367,8 @@ extension ImageRep {
 
 extension Image {
     
-    public func tiffRepresentation(compression: ImageRep.TIFFCompressionScheme = .none) -> Data? {
-        return self.representation(using: .tiff, properties: [.compression: compression])
+    public func tiffRepresentation(compression: ImageRep.TIFFCompressionScheme = .none, predictor: TIFFPrediction = .none) -> Data? {
+        return self.representation(using: .tiff, properties: [.compression: compression, .predictor: predictor])
     }
     
     public func pngRepresentation(interlaced: Bool = false) -> Data? {
@@ -382,8 +382,8 @@ extension Image {
 
 extension AnyImage {
     
-    public func tiffRepresentation(compression: ImageRep.TIFFCompressionScheme = .none) -> Data? {
-        return self.representation(using: .tiff, properties: [.compression: compression])
+    public func tiffRepresentation(compression: ImageRep.TIFFCompressionScheme = .none, predictor: TIFFPrediction = .none) -> Data? {
+        return self.representation(using: .tiff, properties: [.compression: compression, .predictor: predictor])
     }
     
     public func pngRepresentation(interlaced: Bool = false) -> Data? {

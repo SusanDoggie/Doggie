@@ -161,7 +161,7 @@ extension AnyImage: PDFImageProtocol {
             let bytesPerPixel = bitsPerPixel >> 3
             let bytesPerRow = bytesPerPixel * width
             
-            var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel))
+            var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel), methods: .all)
             color.data = png_filter0.process(stream.data)
             
             if !self.isOpaque {
@@ -173,7 +173,7 @@ extension AnyImage: PDFImageProtocol {
                 let bytesPerPixel = bitsPerChannel >> 3
                 let bytesPerRow = bytesPerPixel * width
                 
-                var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel))
+                var png_filter0 = png_filter0_encoder(row_length: bytesPerRow, bitsPerPixel: UInt8(bitsPerPixel), methods: .all)
                 mask?.data = png_filter0.process(stream.data)
                 
                 mask?["Predictor"] = 15

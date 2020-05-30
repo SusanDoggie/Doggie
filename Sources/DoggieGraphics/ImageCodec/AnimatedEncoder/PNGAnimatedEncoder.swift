@@ -60,9 +60,9 @@ extension PNGEncoder: AnimatedImageEncoder {
         return PNGChunk(signature: "fcTL", data: data)
     }
     
-    static func encodeFrameDataChunk<Pixel>(image: Image<Pixel>, region: PNGRegion, sequence_number: Int, deflate_level: Deflate.Level, interlaced: Bool, opaque: Bool) -> PNGChunk? where Pixel: TIFFEncodablePixel {
+    static func encodeFrameDataChunk<Pixel>(image: Image<Pixel>, region: PNGRegion, sequence_number: Int, deflate_level: Deflate.Level, predictor: PNGPrediction, interlaced: Bool, opaque: Bool) -> PNGChunk? where Pixel: TIFFEncodablePixel {
         
-        guard let encoded_data = encodeIDAT(image: image, region: region, deflate_level: deflate_level, interlaced: interlaced, opaque: opaque)?.data else { return nil }
+        guard let encoded_data = encodeIDAT(image: image, region: region, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced, opaque: opaque)?.data else { return nil }
         
         var data = Data(capacity: encoded_data.count + 4)
         
@@ -135,7 +135,7 @@ extension PNGEncoder: AnimatedImageEncoder {
         return region
     }
     
-    static func encodeFrames<Pixel>(frames: [Frame<Pixel>], deflate_level: Deflate.Level, interlaced: Bool, opaque: Bool) -> [PNGChunk]? where Pixel: TIFFEncodablePixel {
+    static func encodeFrames<Pixel>(frames: [Frame<Pixel>], deflate_level: Deflate.Level, predictor: PNGPrediction, interlaced: Bool, opaque: Bool) -> [PNGChunk]? where Pixel: TIFFEncodablePixel {
         
         var chunks: [PNGChunk] = []
         chunks.reserveCapacity(frames.count << 1)
@@ -176,13 +176,13 @@ extension PNGEncoder: AnimatedImageEncoder {
             
             if i == 0 {
                 
-                guard let idat = encodeIDAT(image: frame.image, region: region, deflate_level: deflate_level, interlaced: interlaced, opaque: opaque) else { return nil }
+                guard let idat = encodeIDAT(image: frame.image, region: region, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced, opaque: opaque) else { return nil }
                 
                 chunks.append(idat)
                 
             } else {
                 
-                guard let fdat = encodeFrameDataChunk(image: frame.image, region: region, sequence_number: sequence_number, deflate_level: deflate_level, interlaced: interlaced, opaque: opaque) else { return nil }
+                guard let fdat = encodeFrameDataChunk(image: frame.image, region: region, sequence_number: sequence_number, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced, opaque: opaque) else { return nil }
                 
                 chunks.append(fdat)
                 
@@ -198,6 +198,7 @@ extension PNGEncoder: AnimatedImageEncoder {
     static func encode(image: AnimatedImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
+        let predictor = properties[.predictor] as? PNGPrediction ?? .all
         let interlaced = properties[.interlaced] as? Bool == true
         
         let opaque = image.frames.allSatisfy { $0.image.isOpaque }
@@ -226,7 +227,7 @@ extension PNGEncoder: AnimatedImageEncoder {
             
             let frames = image.frames.map { Frame(image: Image<Gray16ColorPixel>(image: $0.image, colorSpace: colorSpace), duration: $0.duration) }
             
-            guard let _frame_chunks = encodeFrames(frames: frames, deflate_level: deflate_level, interlaced: interlaced, opaque: opaque) else { return nil }
+            guard let _frame_chunks = encodeFrames(frames: frames, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced, opaque: opaque) else { return nil }
             
             frame_chunks = _frame_chunks
             
@@ -245,7 +246,7 @@ extension PNGEncoder: AnimatedImageEncoder {
             
             let frames = image.frames.map { Frame(image: Image<RGBA32ColorPixel>(image: $0.image, colorSpace: colorSpace), duration: $0.duration) }
             
-            guard let _frame_chunks = encodeFrames(frames: frames, deflate_level: deflate_level, interlaced: interlaced, opaque: opaque) else { return nil }
+            guard let _frame_chunks = encodeFrames(frames: frames, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced, opaque: opaque) else { return nil }
             
             frame_chunks = _frame_chunks
         }

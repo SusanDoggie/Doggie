@@ -49,6 +49,8 @@ extension CGImageRep {
         
         case compressionQuality
         
+        case predictor
+        
         case interlaced
         
         case depthData
@@ -80,11 +82,13 @@ extension CGImageRep {
             }
             
             if #available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
-                var filter = IMAGEIO_PNG_FILTER_NONE
-                filter |= IMAGEIO_PNG_FILTER_SUB
-                filter |= IMAGEIO_PNG_FILTER_UP
-                filter |= IMAGEIO_PNG_FILTER_AVG
-                filter |= IMAGEIO_PNG_FILTER_PAETH
+                let predictor = properties[.predictor] as? PNGPrediction ?? .all
+                var filter: Int32 = 0
+                if predictor.contains(.none) { filter |= IMAGEIO_PNG_FILTER_NONE }
+                if predictor.contains(.subtract) { filter |= IMAGEIO_PNG_FILTER_SUB }
+                if predictor.contains(.up) { filter |= IMAGEIO_PNG_FILTER_UP }
+                if predictor.contains(.average) { filter |= IMAGEIO_PNG_FILTER_AVG }
+                if predictor.contains(.paeth) { filter |= IMAGEIO_PNG_FILTER_PAETH }
                 _png_properties[kCGImagePropertyPNGCompressionFilter] = filter
             }
             

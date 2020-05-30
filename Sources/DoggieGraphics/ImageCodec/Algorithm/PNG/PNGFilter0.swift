@@ -23,6 +23,23 @@
 //  THE SOFTWARE.
 //
 
+public struct PNGPrediction: OptionSet {
+    
+    public var rawValue: Int
+    
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+    
+    public static let none: PNGPrediction      = PNGPrediction(rawValue: 1 << 0)
+    public static let subtract: PNGPrediction  = PNGPrediction(rawValue: 1 << 1)
+    public static let up: PNGPrediction        = PNGPrediction(rawValue: 1 << 2)
+    public static let average: PNGPrediction   = PNGPrediction(rawValue: 1 << 3)
+    public static let paeth: PNGPrediction     = PNGPrediction(rawValue: 1 << 4)
+    
+    public static let all: PNGPrediction       = [.none, .subtract, .up, .average, .paeth]
+}
+
 private func average(_ a: UInt8, _ b: UInt8) -> UInt8 {
     return UInt8((UInt16(a) &+ UInt16(b)) >> 1)
 }
@@ -52,12 +69,23 @@ struct png_filter0_encoder {
     private var index: Int
     private var flag: Bool
     
-    init(row_length: Int, bitsPerPixel: UInt8) {
+    private let f0: Bool
+    private let f1: Bool
+    private let f2: Bool
+    private let f3: Bool
+    private let f4: Bool
+    
+    init(row_length: Int, bitsPerPixel: UInt8, methods: PNGPrediction) {
         self.row_length = row_length
         self.stride = max(1, Int(bitsPerPixel >> 3))
         self.buffer = Array(repeating: 0, count: row_length + (row_length + 1) * 5)
         self.index = 0
         self.flag = true
+        self.f0 = methods.contains(.none)
+        self.f1 = methods.contains(.subtract)
+        self.f2 = methods.contains(.up)
+        self.f3 = methods.contains(.average)
+        self.f4 = methods.contains(.paeth)
     }
 }
 
@@ -96,11 +124,11 @@ extension png_filter0_encoder {
                 
                 if index == row_length {
                     
-                    let s0 = b0.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-                    let s1 = b1.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-                    let s2 = b2.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-                    let s3 = b3.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-                    let s4 = b4.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
+                    let s0 = f0 ? b0.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
+                    let s1 = f1 ? b1.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
+                    let s2 = f2 ? b2.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
+                    let s3 = f3 ? b3.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
+                    let s4 = f4 ? b4.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
                     
                     var t = s0
                     var p = b0
@@ -171,11 +199,11 @@ extension png_filter0_encoder {
                 let b3 = UnsafeBufferPointer(rebasing: _b3.prefix(row_length + 1))
                 let b4 = UnsafeBufferPointer(rebasing: _b4.prefix(row_length + 1))
                 
-                let s0 = b0.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-                let s1 = b1.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-                let s2 = b2.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-                let s3 = b3.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
-                let s4 = b4.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) }
+                let s0 = f0 ? b0.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
+                let s1 = f1 ? b1.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
+                let s2 = f2 ? b2.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
+                let s3 = f3 ? b3.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
+                let s4 = f4 ? b4.dropFirst().reduce(0.0) { $0 + abs(Double(Int8(bitPattern: $1))) } : .infinity
                 
                 var t = s0
                 var p = b0
