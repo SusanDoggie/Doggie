@@ -105,18 +105,18 @@ extension AnyImage: PDFImageProtocol {
     
     fileprivate func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFStream, PDFStream?)? {
         
-        let compression = properties[.compression] as? PDFContext.CompressionScheme ?? .none
+        let compression = properties[.compression] as? PDFContext.CompressionScheme ?? .deflate
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         let predictor: PDFContext.CompressionPrediction
         
         switch compression {
         case .none: predictor = .none
-        case .lzw: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .none
+        case .lzw: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .tiff
         case .runLength: predictor = .none
         case .deflate:
             switch deflate_level {
             case .none: predictor = .none
-            default: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .none
+            default: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .tiff
             }
         }
         

@@ -65,18 +65,18 @@ struct TIFFEncoder: ImageRepEncoder {
         let resolutionX: Double
         let resolutionY: Double
         
-        let compression = properties[.compression] as? ImageRep.TIFFCompressionScheme ?? .none
+        let compression = properties[.compression] as? ImageRep.TIFFCompressionScheme ?? .deflate
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         let predictor: TIFFPrediction
         
         switch compression {
         case .none: predictor = .none
-        case .lzw: predictor = .subtract
-        case .packBits: predictor = .none
+        case .lzw: predictor = properties[.predictor] as? TIFFPrediction ?? .subtract
+        case .packBits: predictor = properties[.predictor] as? TIFFPrediction ?? .none
         case .deflate:
             switch deflate_level {
             case .none: predictor = .none
-            default: predictor = .subtract
+            default: predictor = properties[.predictor] as? TIFFPrediction ?? .subtract
             }
         }
         

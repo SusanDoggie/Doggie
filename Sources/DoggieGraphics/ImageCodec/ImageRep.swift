@@ -271,6 +271,8 @@ extension ImageRep {
         
         case compressionQuality
         
+        case predictor
+        
         case deflateLevel
         
         case interlaced
