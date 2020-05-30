@@ -135,7 +135,7 @@ extension PDFStream {
         
         var copy = self
         
-        let compression = properties[.compression] as? PDFContext.CompressionScheme
+        let compression = properties[.compression] as? PDFContext.CompressionScheme ?? .deflate
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         
         switch compression {
