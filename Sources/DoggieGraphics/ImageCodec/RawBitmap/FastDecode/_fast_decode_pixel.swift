@@ -71,9 +71,9 @@ extension Image where Pixel: TIFFEncodablePixel {
                                 destination.pointee = destination.pointee.unpremultiplied()
                             }
                             
-                            switch bitmap.tiff_predictor {
-                            case 1: break
-                            case 2:
+                            switch bitmap.predictor {
+                            case .none: break
+                            case .subtract:
                                 if destination > dest {
                                     let lhs = destination - 1
                                     if is_opaque {
@@ -82,7 +82,6 @@ extension Image where Pixel: TIFFEncodablePixel {
                                         destination.pointee = destination.pointee.tiff_prediction_2_decode(lhs.pointee)
                                     }
                                 }
-                            default: fatalError("Unsupported tiff predictor.")
                             }
                             
                             source += bytesPerPixel

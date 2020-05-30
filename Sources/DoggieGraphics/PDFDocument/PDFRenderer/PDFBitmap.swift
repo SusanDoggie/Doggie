@@ -116,7 +116,7 @@ extension PDFBitmap {
         default: break
         }
         
-        return RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, tiff_predictor: predictor == 2 ? 2 : 1, channels: channels, data: data)
+        return RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, predictor: predictor == 2 ? .subtract : .none, channels: channels, data: data)
     }
     
     var rawBitmap: RawBitmap {
@@ -137,7 +137,7 @@ extension PDFBitmap {
         default: break
         }
         
-        return RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, tiff_predictor: predictor == 2 ? 2 : 1, channels: channels, data: data)
+        return RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, predictor: predictor == 2 ? .subtract : .none, channels: channels, data: data)
     }
 }
 

@@ -60,7 +60,7 @@ extension Image {
                     var destination = dest
                     let source_end = source + _length
                     
-                    var tiff_predictor_record: T = 0
+                    var predictor_record: T = 0
                     
                     for _ in 0..<width {
                         
@@ -77,15 +77,14 @@ extension Image {
                         case .little: _s = T(littleEndian: _source.bindMemory(to: T.self, capacity: 1).pointee)
                         }
                         
-                        switch bitmap.tiff_predictor {
-                        case 1: _d = _s
-                        case 2: _d = _s &+ tiff_predictor_record
-                        default: fatalError("Unsupported tiff predictor.")
+                        switch bitmap.predictor {
+                        case .none: _d = _s
+                        case .subtract: _d = _s &+ predictor_record
                         }
                         
                         _destination.pointee = _d
                         
-                        tiff_predictor_record = _d
+                        predictor_record = _d
                         
                         source += bytesPerPixel
                         

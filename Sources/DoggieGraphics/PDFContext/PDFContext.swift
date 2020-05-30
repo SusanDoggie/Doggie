@@ -239,12 +239,14 @@ extension PDFContext {
         
         case compression
         
-        case compressionScheme
+        case predictor
         
         case deflateLevel
     }
     
-    public enum Compression: CaseIterable {
+    public enum CompressionScheme: CaseIterable {
+        
+        case none
         
         case runLength
         
@@ -253,13 +255,13 @@ extension PDFContext {
         case deflate
     }
     
-    public enum CompressionScheme: CaseIterable {
+    public enum CompressionPrediction: CaseIterable {
         
-        case noPrediction
+        case none
         
-        case tiffPrediction
+        case tiff
         
-        case pngPrediction
+        case png
     }
     
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform, properties: [PropertyKey: Any]) {

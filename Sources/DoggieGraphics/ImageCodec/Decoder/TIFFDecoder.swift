@@ -167,7 +167,7 @@ struct TIFFPage: ImageRepBase {
     var _height: Int
     
     var compression: Int = 1
-    var predictor: Int = 1
+    var predictor: TIFFPrediction = .none
     var planarConfiguration: Int = 1
     
     var sampleFormat: [Int] = []
@@ -247,7 +247,11 @@ struct TIFFPage: ImageRepBase {
             self.compression = _compression
         }
         if let predictor = tags.first(where: { $0.tag == .Predictor }), let _predictor = try? predictor.fatchInteger() {
-            self.predictor = _predictor
+            switch _predictor {
+            case 1: self.predictor = .none
+            case 2: self.predictor = .subtract
+            default: throw ImageRep.Error.Unsupported("Unsupported predictor.")
+            }
         }
         if let planarConfiguration = tags.first(where: { $0.tag == .PlanarConfiguration }), let _planarConfiguration = try? planarConfiguration.fatchInteger() {
             self.planarConfiguration = _planarConfiguration
@@ -269,11 +273,10 @@ struct TIFFPage: ImageRepBase {
         
         switch self.compression {
         case 1: break
-        case 8:
+        case 5, 8, 32773:
             switch self.predictor {
-            case 1: break
-            case 2: guard self.photometric != 3 else { throw ImageRep.Error.Unsupported("Unsupported compression.") }
-            default: throw ImageRep.Error.Unsupported("Unsupported compression.")
+            case .none: break
+            case .subtract: guard self.photometric != 3 else { throw ImageRep.Error.Unsupported("Unsupported compression.") }
             }
         default: throw ImageRep.Error.Unsupported("Unsupported compression.")
         }
@@ -455,14 +458,25 @@ struct TIFFPage: ImageRepBase {
     }
     
     func _decompressed(data: Data, fileBacked: Bool) throws -> Data {
+        
         switch compression {
+            
         case 1: return data
+            
+        case 5:
+            
+            guard let decoded = TIFFLZWDecoder.decode(data) else { throw ImageRep.Error.InvalidFormat("Invalid compressed data.") }
+            return decoded
+            
         case 8:
-            var decompressed = MappedBuffer<UInt8>(capacity: data.count, fileBacked: fileBacked)
-            let inflate = try Inflate()
-            try inflate.update(data, &decompressed)
-            try inflate.finalize(&decompressed)
-            return decompressed.data
+            
+            return try Inflate().process(data)
+            
+        case 32773:
+            
+            guard let decoded = TIFFPackBitsDecoder.decode(data) else { throw ImageRep.Error.InvalidFormat("Invalid compressed data.") }
+            return decoded
+            
         default: fatalError()
         }
     }
@@ -536,7 +550,7 @@ struct TIFFPage: ImageRepBase {
                 }
                 
                 for (i, data) in decompressed_strips(fileBacked: fileBacked).enumerated() {
-                    bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: (bitsPerPixel * _width).align(8) >> 3, endianness: .big, startsRow: i * rowsPerStrip, tiff_predictor: predictor, channels: channels, data: data))
+                    bitmaps.append(RawBitmap(bitsPerPixel: bitsPerPixel, bytesPerRow: (bitsPerPixel * _width).align(8) >> 3, endianness: .big, startsRow: i * rowsPerStrip, predictor: predictor, channels: channels, data: data))
                 }
                 
                 image = AnyImage(width: _width, height: _height, resolution: resolution, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked)
@@ -563,12 +577,12 @@ struct TIFFPage: ImageRepBase {
                     for (j, strip) in strips.enumerated() {
                         
                         if photometric == 8 && (channel_index == 1 || channel_index == 2) && format == 1 {
-                            bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
                         } else {
                             switch format {
-                            case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                            case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
-                            case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, tiff_predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 1: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .unsigned, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 2: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .signed, endianness: endianness, bitRange: 0..<bits)], data: strip))
+                            case 3: bitmaps.append(RawBitmap(bitsPerPixel: bits, bytesPerRow: (bits * _width).align(8) >> 3, endianness: .big, startsRow: j * rowsPerStrip, predictor: predictor, channels: [RawBitmap.Channel(index: channel_index, format: .float, endianness: endianness, bitRange: 0..<bits)], data: strip))
                             default: break
                             }
                         }

@@ -67,9 +67,9 @@ extension Image {
             
             var data = bitmap.data
             
-            var tiff_predictor_record: [UInt8] = Array(repeating: 0, count: bytesPerChannel + (channel.bitRange.count & 7 == 0 ? 0 : 1))
+            var predictor_record: [UInt8] = Array(repeating: 0, count: bytesPerChannel + (channel.bitRange.count & 7 == 0 ? 0 : 1))
             
-            tiff_predictor_record.withUnsafeMutableBufferPointer { tiff_predictor_record in
+            predictor_record.withUnsafeMutableBufferPointer { predictor_record in
                 
                 for _ in bitmap.startsRow..<height {
                     
@@ -84,8 +84,8 @@ extension Image {
                         
                         var _bitsOffset = 0
                         
-                        if bitmap.tiff_predictor != 1 {
-                            memset(tiff_predictor_record.baseAddress!, 0, tiff_predictor_record.count)
+                        if bitmap.predictor != .none {
+                            memset(predictor_record.baseAddress!, 0, predictor_record.count)
                         }
                         
                         for _ in 0..<width {
@@ -96,8 +96,9 @@ extension Image {
                             
                             let _d: UInt64
                             
-                            switch bitmap.tiff_predictor {
-                            case 1:
+                            switch bitmap.predictor {
+                                
+                            case .none:
                                 
                                 var bitPattern: UInt64 = 0
                                 for i in 0..<8 {
@@ -106,34 +107,32 @@ extension Image {
                                 
                                 _d = bitPattern
                                 
-                            case 2:
+                            case .subtract:
                                 
                                 var overflow = false
-                                for i in 0..<tiff_predictor_record.count {
+                                for i in 0..<predictor_record.count {
                                     let byte: UInt8
                                     if i == 0 && channel.bitRange.count & 7 != 0 {
                                         let mask = ~((0xFF as UInt8) >> (channel.bitRange.count & 7))
-                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1, channel.bitRange.count & 7) & mask
+                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, predictor_record.count - i - 1, channel.bitRange.count & 7) & mask
                                     } else {
-                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, tiff_predictor_record.count - i - 1, 8)
+                                        byte = read_channel(source + _bitsOffset >> 3, _bitsOffset & 7, predictor_record.count - i - 1, 8)
                                     }
                                     if overflow {
-                                        let (_add, _overflow) = tiff_predictor_record[i].addingReportingOverflow(1)
-                                        (tiff_predictor_record[i], overflow) = _add.addingReportingOverflow(byte)
+                                        let (_add, _overflow) = predictor_record[i].addingReportingOverflow(1)
+                                        (predictor_record[i], overflow) = _add.addingReportingOverflow(byte)
                                         overflow = _overflow || overflow
                                     } else {
-                                        (tiff_predictor_record[i], overflow) = tiff_predictor_record[i].addingReportingOverflow(byte)
+                                        (predictor_record[i], overflow) = predictor_record[i].addingReportingOverflow(byte)
                                     }
                                 }
                                 
                                 var bitPattern: UInt64 = 0
-                                for byte in tiff_predictor_record.reversed().prefix(8) {
+                                for byte in predictor_record.reversed().prefix(8) {
                                     bitPattern = (bitPattern << 8) | UInt64(byte)
                                 }
                                 
                                 _d = bitPattern
-                                
-                            default: fatalError("Unsupported tiff predictor.")
                             }
                             
                             switch channel.format {

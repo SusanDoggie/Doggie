@@ -114,9 +114,9 @@ extension PDFStream {
         switch filter {
         case "ASCIIHexDecode": return ASCIIHexFilter.decode(data)
         case "ASCII85Decode": return ASCII85Filter.decode(data)
-        case "LZWDecode": return LZWFilter.decode(data)
+        case "LZWDecode": return TIFFLZWDecoder.decode(data)
         case "FlateDecode": return try? Inflate().process(data)
-        case "RunLengthDecode": return RunLengthFilter.decode(data)
+        case "RunLengthDecode": return TIFFPackBitsDecoder.decode(data)
         default: return nil
         }
     }
@@ -135,7 +135,7 @@ extension PDFStream {
         
         var copy = self
         
-        let compression = properties[.compression] as? PDFContext.Compression
+        let compression = properties[.compression] as? PDFContext.CompressionScheme
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
         
         switch compression {
@@ -149,13 +149,17 @@ extension PDFStream {
             
         case .lzw:
             
-            copy.data = LZWFilter.encode(copy.data)
-            copy.dictionary["Filter"] = PDFObject("LZWDecode" as PDFName)
+            if let compressed = try? TIFFLZWEncoder().process(copy.data) {
+                copy.data = compressed
+                copy.dictionary["Filter"] = PDFObject("LZWDecode" as PDFName)
+            }
             
         case .runLength:
             
-            copy.data = RunLengthFilter.encode(copy.data)
-            copy.dictionary["Filter"] = PDFObject("RunLengthDecode" as PDFName)
+            if let compressed = try? TIFFPackBitsEncoder().process(copy.data) {
+                copy.data = compressed
+                copy.dictionary["Filter"] = PDFObject("RunLengthDecode" as PDFName)
+            }
             
         default: break
         }

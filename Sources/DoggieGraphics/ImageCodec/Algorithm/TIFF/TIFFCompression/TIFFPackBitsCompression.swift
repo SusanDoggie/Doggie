@@ -1,5 +1,5 @@
 //
-//  RunLengthFilter.swift
+//  TIFFPackBitsCompression.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,72 +23,101 @@
 //  THE SOFTWARE.
 //
 
-public struct RunLengthFilter: PDFFilter {
+public class TIFFPackBitsEncoder: CompressionCodec {
     
-    public static func encode(_ data: Data) -> Data {
+    public enum Error: Swift.Error {
         
-        var result = Data()
+        case endOfStream
+    }
+    
+    private var buffer: Data
+    
+    private var record: Data
+    private var repeat_count: Int
+    
+    public private(set) var isEndOfStream: Bool = false
+    
+    public init() {
+        self.buffer = Data()
+        self.record = Data()
+        self.repeat_count = 0
+    }
+    
+    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
-        var buffer = Data()
-        var repeat_count = 0
+        guard !isEndOfStream else { throw Error.endOfStream }
         
-        for byte in data {
+        for byte in source {
             
-            if buffer.last == byte {
+            if record.last == byte {
                 
-                while buffer.count > 1 {
-                    let bytes = buffer.popFirst(min(128, buffer.count - 1))
-                    result.append(UInt8(bytes.count - 1))
-                    result.append(bytes)
+                while record.count > 1 {
+                    let bytes = record.popFirst(min(128, record.count - 1))
+                    buffer.append(UInt8(bytes.count - 1))
+                    buffer.append(bytes)
                 }
                 
                 repeat_count += 1
                 
                 if repeat_count == 128 {
-                    result.append(129)
-                    result.append(byte)
-                    buffer = Data()
+                    buffer.append(129)
+                    buffer.append(byte)
+                    record = Data()
                 }
                 
             } else {
                 
-                if repeat_count > 1, let byte = buffer.popLast() {
+                if repeat_count > 1, let byte = record.popLast() {
                     
                     while repeat_count > 0 {
                         let count = min(128, repeat_count)
-                        result.append(UInt8(257 - count))
-                        result.append(byte)
+                        buffer.append(UInt8(257 - count))
+                        buffer.append(byte)
                         repeat_count -= count
                     }
                 }
                 
-                buffer.append(byte)
+                record.append(byte)
                 repeat_count = 1
             }
         }
         
+        buffer.withUnsafeBufferPointer(callback)
+        buffer.removeAll(keepingCapacity: true)
+    }
+    
+    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+        
+        guard !isEndOfStream else { throw Error.endOfStream }
+        
         if repeat_count == 1 {
             
-            while !buffer.isEmpty {
-                let bytes = buffer.popFirst(min(128, buffer.count))
-                result.append(UInt8(bytes.count - 1))
-                result.append(bytes)
+            while !record.isEmpty {
+                let bytes = record.popFirst(min(128, record.count))
+                buffer.append(UInt8(bytes.count - 1))
+                buffer.append(bytes)
             }
             
-        } else if let byte = buffer.popLast() {
+        } else if let byte = record.popLast() {
             
             while repeat_count > 0 {
                 let count = min(128, repeat_count)
-                result.append(UInt8(257 - count))
-                result.append(byte)
+                buffer.append(UInt8(257 - count))
+                buffer.append(byte)
                 repeat_count -= count
             }
         }
         
-        result.append(128)
+        buffer.append(128)
         
-        return result
+        buffer.withUnsafeBufferPointer(callback)
+        buffer.removeAll()
+        
+        isEndOfStream = true
     }
+}
+
+public struct TIFFPackBitsDecoder: TIFFCompressionDecoder {
     
     public static func decode(_ data: inout Data) -> Data? {
         

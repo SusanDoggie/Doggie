@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public struct ASCII85Filter: PDFFilter {
+struct ASCII85Filter: PDFFilter {
     
-    public static func encode(_ data: Data) -> Data {
+    static func encode(_ data: Data) -> Data {
         
         var result = Data()
         
@@ -124,7 +124,7 @@ public struct ASCII85Filter: PDFFilter {
         return result
     }
     
-    public static func decode(_ data: inout Data) -> Data? {
+    static func decode(_ data: inout Data) -> Data? {
         
         var result = Data()
         

@@ -105,29 +105,32 @@ extension AnyImage: PDFImageProtocol {
     
     fileprivate func pdf_data(properties: [PDFContext.PropertyKey: Any]) -> (PDFStream, PDFStream?)? {
         
-        let compression = properties[.compression] as? PDFContext.Compression
+        let compression = properties[.compression] as? PDFContext.CompressionScheme ?? .none
         let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
+        let predictor: PDFContext.CompressionPrediction
         
-        let compressionScheme: PDFContext.CompressionScheme
-        
-        switch (compression, deflate_level) {
-        case (.deflate, .none): compressionScheme = .noPrediction
-        case (.deflate, _): compressionScheme = properties[.compressionScheme] as? PDFContext.CompressionScheme ?? .noPrediction
-        case (.lzw, _): compressionScheme = properties[.compressionScheme] as? PDFContext.CompressionScheme ?? .noPrediction
-        default: compressionScheme = .noPrediction
+        switch compression {
+        case .none: predictor = .none
+        case .lzw: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .none
+        case .runLength: predictor = .none
+        case .deflate:
+            switch deflate_level {
+            case .none: predictor = .none
+            default: predictor = properties[.predictor] as? PDFContext.CompressionPrediction ?? .none
+            }
         }
         
         var color: PDFStream
         var mask: PDFStream?
         
-        switch compressionScheme {
-        case .noPrediction:
+        switch predictor {
+        case .none:
             
-            guard let stream = self.tiff_predictor(predictor: 1, true) else { return nil }
+            guard let stream = self.tiff_prediction(predictor: .none, true) else { return nil }
             color = stream
             
             if !self.isOpaque {
-                guard let stream = self.tiff_predictor(predictor: 1, false) else { return nil }
+                guard let stream = self.tiff_prediction(predictor: .none, false) else { return nil }
                 mask = stream
                 
                 mask?["Predictor"] = 1
@@ -135,13 +138,13 @@ extension AnyImage: PDFImageProtocol {
             
             color["Predictor"] = 1
             
-        case .tiffPrediction:
+        case .tiff:
             
-            guard let stream = self.tiff_predictor(predictor: 2, true) else { return nil }
+            guard let stream = self.tiff_prediction(predictor: .subtract, true) else { return nil }
             color = stream
             
             if !self.isOpaque {
-                guard let stream = self.tiff_predictor(predictor: 2, false) else { return nil }
+                guard let stream = self.tiff_prediction(predictor: .subtract, false) else { return nil }
                 mask = stream
                 
                 mask?["Predictor"] = 2
@@ -149,9 +152,9 @@ extension AnyImage: PDFImageProtocol {
             
             color["Predictor"] = 2
             
-        case .pngPrediction:
+        case .png:
             
-            guard let stream = self.tiff_predictor(predictor: 1, true), let bitsPerChannel = stream["BitsPerComponent"].intValue else { return nil }
+            guard let stream = self.tiff_prediction(predictor: .none, true), let bitsPerChannel = stream["BitsPerComponent"].intValue else { return nil }
             color = stream
             
             let bitsPerPixel = bitsPerChannel * colorSpace.numberOfComponents
@@ -163,7 +166,7 @@ extension AnyImage: PDFImageProtocol {
             
             if !self.isOpaque {
                 
-                guard let stream = self.tiff_predictor(predictor: 1, false), let bitsPerChannel = stream["BitsPerComponent"].intValue else { return nil }
+                guard let stream = self.tiff_prediction(predictor: .none, false), let bitsPerChannel = stream["BitsPerComponent"].intValue else { return nil }
                 mask = stream
                 
                 let bitsPerPixel = bitsPerChannel
@@ -185,7 +188,7 @@ extension AnyImage: PDFImageProtocol {
 
 extension AnyImage {
     
-    private func tiff_predictor(predictor: Int, _ color: Bool) -> PDFStream? {
+    private func tiff_prediction(predictor: TIFFPrediction, _ color: Bool) -> PDFStream? {
         
         let bitsPerChannel: Int
         let data: MappedBuffer<UInt8>

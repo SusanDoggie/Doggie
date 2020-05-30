@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public struct ASCIIHexFilter: PDFFilter {
+struct ASCIIHexFilter: PDFFilter {
     
-    public static func decode(_ data: inout Data) -> Data? {
+    static func decode(_ data: inout Data) -> Data? {
         
         var result = Data()
         

@@ -95,14 +95,13 @@ extension Image {
                                 case .little: _destination.pointee = T(littleEndian: _source.bindMemory(to: T.self, capacity: 1).pointee)
                                 }
                                 
-                                switch bitmap.tiff_predictor {
-                                case 1: break
-                                case 2:
+                                switch bitmap.predictor {
+                                case .none: break
+                                case .subtract:
                                     if destination > dest {
                                         let lhs = _destination - Pixel.numberOfComponents
                                         _destination.pointee &+= lhs.pointee
                                     }
-                                default: fatalError("Unsupported tiff predictor.")
                                 }
                             }
                             

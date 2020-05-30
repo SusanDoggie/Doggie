@@ -29,7 +29,7 @@ public protocol CompressionCodec: AnyObject {
     
     func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws
     
-    func process(_ source: Data) throws -> Data
+    func process<C: RangeReplaceableCollection>(_ source: Data, _ output: inout C) throws where C.Element == UInt8
 }
 
 extension CompressionCodec {
@@ -53,10 +53,15 @@ extension CompressionCodec {
 extension CompressionCodec {
     
     @inlinable
+    public func process<C: RangeReplaceableCollection>(_ source: Data, _ output: inout C) throws where C.Element == UInt8 {
+        try self.update(source, &output)
+        try self.finalize(&output)
+    }
+    
+    @inlinable
     public func process(_ source: Data) throws -> Data {
         var result = Data(capacity: source.count)
-        try self.update(source, &result)
-        try self.finalize(&result)
+        try self.process(source, &result)
         return result
     }
 }

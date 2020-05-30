@@ -83,7 +83,7 @@ extension Image {
                     
                     var _bitsOffset = 0
                     
-                    var tiff_predictor_record: T = 0
+                    var predictor_record: T = 0
                     
                     for _ in 0..<width {
                         
@@ -102,15 +102,14 @@ extension Image {
                         
                         let _d: T
                         
-                        switch bitmap.tiff_predictor {
-                        case 1: _d = bitPattern
-                        case 2: _d = bitPattern &+ tiff_predictor_record
-                        default: fatalError("Unsupported tiff predictor.")
+                        switch bitmap.predictor {
+                        case .none: _d = bitPattern
+                        case .subtract: _d = bitPattern &+ predictor_record
                         }
                         
                         _destination.pointee = _mul_div(_d & channel_max, T.max, channel_max)
                         
-                        tiff_predictor_record = _d
+                        predictor_record = _d
                         
                         if is_opaque {
                             destination[Pixel.numberOfComponents - 1] = T.max

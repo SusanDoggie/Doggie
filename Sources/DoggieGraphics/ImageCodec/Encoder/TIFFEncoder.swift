@@ -57,8 +57,6 @@ struct TIFFEncoder: ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
-        let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
-        
         let bitsPerChannel: Int
         let photometric: Int
         var pixelData: MappedBuffer<UInt8>
@@ -68,14 +66,17 @@ struct TIFFEncoder: ImageRepEncoder {
         let resolutionY: Double
         
         let compression = properties[.compression] as? ImageRep.TIFFCompressionScheme ?? .none
-        let predictor: Int
+        let deflate_level = properties[.deflateLevel] as? Deflate.Level ?? .default
+        let predictor: TIFFPrediction
         
         switch compression {
-        case .none: predictor = 1
+        case .none: predictor = .none
+        case .lzw: predictor = .subtract
+        case .packBits: predictor = .none
         case .deflate:
             switch deflate_level {
-            case .none: predictor = 1
-            default: predictor = 2
+            case .none: predictor = .none
+            default: predictor = .subtract
             }
         }
         
@@ -173,22 +174,30 @@ struct TIFFEncoder: ImageRepEncoder {
             }
         }
         
-        switch compression {
-        case .none: break
-        case .deflate:
-            switch deflate_level {
-            case .none: break
-            default:
-                do {
-                    var compressed = MappedBuffer<UInt8>(fileBacked: true)
-                    let deflate = try Deflate(level: deflate_level, windowBits: 15)
-                    try deflate.update(pixelData, &compressed)
-                    try deflate.finalize(&compressed)
-                    pixelData = compressed
-                } catch {
-                    return nil
+        do {
+            
+            let encoder: CompressionCodec?
+            
+            switch compression {
+            case .none: encoder = nil
+            case .lzw: encoder = TIFFLZWEncoder()
+            case .packBits: encoder = TIFFPackBitsEncoder()
+            case .deflate:
+                switch deflate_level {
+                case .none: encoder = nil
+                default: encoder = try Deflate(level: deflate_level, windowBits: 15)
                 }
             }
+            
+            if let encoder = encoder {
+                var compressed = MappedBuffer<UInt8>(fileBacked: true)
+                try encoder.update(pixelData, &compressed)
+                try encoder.finalize(&compressed)
+                pixelData = compressed
+            }
+            
+        } catch {
+            return nil
         }
         
         var tag_count: UInt16 = 15
@@ -207,13 +216,15 @@ struct TIFFEncoder: ImageRepEncoder {
         encode(tag: .ImageHeight, type: 3, value: [image.height], &data)
         switch compression {
         case .none: encode(tag: .Compression, type: 3, value: [1], &data)
+        case .lzw: encode(tag: .Compression, type: 3, value: [5], &data)
+        case .packBits: encode(tag: .Compression, type: 3, value: [32773], &data)
         case .deflate:
             switch deflate_level {
             case .none: encode(tag: .Compression, type: 3, value: [1], &data)
             default: encode(tag: .Compression, type: 3, value: [8], &data)
             }
         }
-        encode(tag: .Predictor, type: 3, value: [predictor], &data)
+        encode(tag: .Predictor, type: 3, value: [predictor.rawValue], &data)
         encode(tag: .PlanarConfiguration, type: 3, value: [1], &data)
         encode(tag: .Photometric, type: 3, value: [photometric], &data)
         encode(tag: .StripByteCounts, type: 4, value: [pixelData.count], &data)

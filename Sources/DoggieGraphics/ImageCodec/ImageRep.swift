@@ -150,7 +150,6 @@ extension ImageRep {
         case UnknownFormat
         case InvalidFormat(String)
         case Unsupported(String)
-        case DecoderError(String)
     }
     
     public init(data: Data) throws {
@@ -280,6 +279,10 @@ extension ImageRep {
     public enum TIFFCompressionScheme: CaseIterable {
         
         case none
+        
+        case lzw
+        
+        case packBits
         
         case deflate
     }

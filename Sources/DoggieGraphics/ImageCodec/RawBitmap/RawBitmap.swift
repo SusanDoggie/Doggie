@@ -40,13 +40,13 @@ public struct RawBitmap {
     public let endianness: Endianness
     public let startsRow: Int
     
-    public let tiff_predictor: Int
+    public let predictor: TIFFPrediction
     
     public let channels: [Channel]
     
     public let data: Data
     
-    public init(bitsPerPixel: Int, bytesPerRow: Int, endianness: Endianness = .big, startsRow: Int = 0, tiff_predictor: Int = 1, channels: [Channel], data: Data) {
+    public init(bitsPerPixel: Int, bytesPerRow: Int, endianness: Endianness = .big, startsRow: Int = 0, predictor: TIFFPrediction = .none, channels: [Channel], data: Data) {
         
         precondition(channels.allSatisfy({ 0...bitsPerPixel ~= $0.bitRange.lowerBound && 0...bitsPerPixel ~= $0.bitRange.upperBound }), "Invalid channel bitRange.")
         
@@ -73,7 +73,7 @@ public struct RawBitmap {
         self.bitsPerPixel = bitsPerPixel
         self.bytesPerRow = bytesPerRow
         self.startsRow = startsRow
-        self.tiff_predictor = tiff_predictor
+        self.predictor = predictor
         self.data = data
     }
 }

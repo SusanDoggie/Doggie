@@ -1,5 +1,5 @@
 //
-//  LZWFilter.swift
+//  TIFFLZWCompression.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,61 +23,82 @@
 //  THE SOFTWARE.
 //
 
-public struct LZWFilter: PDFFilter {
+private struct TIFFLZWBitsWriter {
     
-    private struct BitsWriter {
+    var buffer = Data()
+    
+    var byte: UInt8 = 0
+    var bitsize: UInt = 0
+    
+    mutating func write(_ bits: UInt, _ size: UInt) {
         
-        var buffer = Data()
+        var bits = bits & ((1 << size) - 1)
+        var remain = size
         
-        var byte: UInt8 = 0
-        var bitsize: UInt = 0
-        
-        mutating func write(_ bits: UInt, _ size: UInt) {
+        while remain != 0 {
             
-            var bits = bits & ((1 << size) - 1)
-            var remain = size
+            let _size = min(8 - bitsize, remain)
+            remain -= _size
             
-            while remain != 0 {
-                
-                let _size = min(8 - bitsize, remain)
-                remain -= _size
-                
-                byte = (byte << _size) | UInt8(bits >> remain)
-                bits &= (1 << remain) - 1
-                
-                bitsize += _size
-                
-                if bitsize == 8 {
-                    buffer.append(byte)
-                    byte = 0
-                    bitsize = 0
-                }
+            byte = (byte << _size) | UInt8(bits >> remain)
+            bits &= (1 << remain) - 1
+            
+            bitsize += _size
+            
+            if bitsize == 8 {
+                buffer.append(byte)
+                byte = 0
+                bitsize = 0
             }
-        }
-        
-        mutating func flush() {
-            buffer.append(byte << (8 - bitsize))
         }
     }
     
-    public static func encode(_ data: Data, _ table_limit: Int = 4096) -> Data {
+    mutating func finalize() {
+        if bitsize != 0 {
+            buffer.append(byte << (8 - bitsize))
+        }
+    }
+}
+
+public class TIFFLZWEncoder: CompressionCodec {
+    
+    public enum Error: Swift.Error {
         
-        var data = data
+        case endOfStream
+    }
+    
+    private let maxBitsWidth: Int
+    
+    private var writer: TIFFLZWBitsWriter
+    private var table: [Data] = []
+    
+    private var tableLimit: Int {
+        return 1 << maxBitsWidth
+    }
+    
+    public private(set) var isEndOfStream: Bool = false
+    
+    public init(maxBitsWidth: Int = 12) {
+        self.maxBitsWidth = max(12, maxBitsWidth)
+        self.writer = TIFFLZWBitsWriter()
+        self.writer.write(256, 9)
+        self.table.reserveCapacity(tableLimit - 258)
+    }
+    
+    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
-        var writer = BitsWriter()
-        writer.write(256, 9)
+        guard !isEndOfStream else { throw Error.endOfStream }
         
-        var table: [Data] = []
-        table.reserveCapacity(table_limit - 258)
+        var source = source
         
-        while let char = data.first {
+        while let char = source.first {
             
             let bit_count = log2(UInt(table.count + 258)) + 1
             
             var max_length = 0
             var index: Int?
             
-            for (i, sequence) in table.enumerated() where max_length < sequence.count && data.starts(with: sequence) {
+            for (i, sequence) in table.enumerated() where max_length < sequence.count && source.starts(with: sequence) {
                 max_length = sequence.count
                 index = i
             }
@@ -89,29 +110,45 @@ public struct LZWFilter: PDFFilter {
                 max_length = 1
             }
             
-            let sequence =  data.prefix(max_length + 1)
-            data = data.dropFirst(max_length)
+            let sequence = source.prefix(max_length + 1)
+            source = UnsafeBufferPointer(rebasing: source.dropFirst(max_length))
             
-            if table.count > table_limit - 259 {
+            if table.count > tableLimit - 259 {
                 
                 writer.write(256, bit_count)
                 table.removeAll(keepingCapacity: true)
                 
             } else {
                 
-                table.append(sequence)
+                table.append(Data(sequence))
             }
         }
         
+        writer.buffer.withUnsafeBufferPointer(callback)
+        writer.buffer.removeAll(keepingCapacity: true)
+    }
+    
+    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+        
+        guard !isEndOfStream else { throw Error.endOfStream }
+        
         writer.write(257, log2(UInt(table.count + 258)) + 1)
         
-        return writer.buffer
+        writer.finalize()
+        
+        writer.buffer.withUnsafeBufferPointer(callback)
+        writer.buffer.removeAll()
+        
+        isEndOfStream = true
     }
+}
+
+public struct TIFFLZWDecoder: TIFFCompressionDecoder {
     
     public static func decode(_ data: inout Data) -> Data? {
         
         var table: [Data] = []
-        table.reserveCapacity(4096 - 258)
+        table.reserveCapacity(0xEFE)
         
         var bits: UInt = 0
         var bitsize: UInt = 0

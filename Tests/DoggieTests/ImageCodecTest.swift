@@ -652,6 +652,114 @@ class ImageCodecTest: XCTestCase {
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
     
+    func testTiff1PackBits() {
+        
+        guard let data = sample1.tiffRepresentation(compression: .packBits) else { XCTFail(); return }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample1.pixels, result.pixels)
+    }
+    
+    func testTiff2PackBits() {
+        
+        guard let data = sample2.tiffRepresentation(compression: .packBits) else { XCTFail(); return }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample2.pixels, result.pixels)
+    }
+    
+    func testTiff3PackBits() {
+        
+        guard let data = sample3.tiffRepresentation(compression: .packBits) else { XCTFail(); return }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample3.pixels, result.pixels)
+    }
+    
+    func testTiff4PackBits() {
+        
+        guard let data = sample4.tiffRepresentation(compression: .packBits) else { XCTFail(); return }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample4.pixels, result.pixels)
+    }
+    
+    func testTiff5PackBits() {
+        
+        guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation(compression: .packBits) else { XCTFail(); return }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample1.pixels, result.pixels)
+    }
+    
+    func testTiff6PackBits() {
+        
+        guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation(compression: .packBits) else { XCTFail(); return }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample2.pixels, result.pixels)
+    }
+    
+    func testTiff1LZW() {
+        
+        guard let data = sample1.tiffRepresentation(compression: .lzw) else { XCTFail(); return }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample1.pixels, result.pixels)
+    }
+    
+    func testTiff2LZW() {
+        
+        guard let data = sample2.tiffRepresentation(compression: .lzw) else { XCTFail(); return }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample2.pixels, result.pixels)
+    }
+    
+    func testTiff3LZW() {
+        
+        guard let data = sample3.tiffRepresentation(compression: .lzw) else { XCTFail(); return }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample3.pixels, result.pixels)
+    }
+    
+    func testTiff4LZW() {
+        
+        guard let data = sample4.tiffRepresentation(compression: .lzw) else { XCTFail(); return }
+        
+        guard let result = try? Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample4.pixels, result.pixels)
+    }
+    
+    func testTiff5LZW() {
+        
+        guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation(compression: .lzw) else { XCTFail(); return }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample1.pixels, result.pixels)
+    }
+    
+    func testTiff6LZW() {
+        
+        guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation(compression: .lzw) else { XCTFail(); return }
+        
+        guard let result = try? Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB) else { XCTFail(); return }
+        
+        XCTAssertEqual(sample2.pixels, result.pixels)
+    }
+    
     func testTiff1Deflate() {
         
         guard let data = sample1.tiffRepresentation(compression: .deflate) else { XCTFail(); return }

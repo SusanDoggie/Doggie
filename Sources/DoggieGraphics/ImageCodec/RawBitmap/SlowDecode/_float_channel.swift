@@ -86,7 +86,7 @@ extension Image {
                     
                     var _bitsOffset = 0
                     
-                    var tiff_predictor_record: UInt64 = 0
+                    var predictor_record: UInt64 = 0
                     
                     for _ in 0..<width {
                         
@@ -105,10 +105,9 @@ extension Image {
                         
                         let _d: UInt64
                         
-                        switch bitmap.tiff_predictor {
-                        case 1: _d = bitPattern
-                        case 2: _d = bitPattern &+ tiff_predictor_record
-                        default: fatalError("Unsupported tiff predictor.")
+                        switch bitmap.predictor {
+                        case .none: _d = bitPattern
+                        case .subtract: _d = bitPattern &+ predictor_record
                         }
                         
                         switch channel.format {
@@ -117,7 +116,7 @@ extension Image {
                         default: break
                         }
                         
-                        tiff_predictor_record = _d
+                        predictor_record = _d
                         
                         if is_opaque {
                             destination[Pixel.numberOfComponents - 1] = 1

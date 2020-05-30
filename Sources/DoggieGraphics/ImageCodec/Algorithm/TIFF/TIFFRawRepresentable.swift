@@ -25,14 +25,14 @@
 
 protocol TIFFRawRepresentable {
     
-    func tiff_color_data(_ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8>
+    func tiff_color_data(_ predictor: TIFFPrediction, _ isOpaque: Bool) -> MappedBuffer<UInt8>
     
-    func tiff_opacity_data(_ predictor: Int) -> MappedBuffer<UInt8>
+    func tiff_opacity_data(_ predictor: TIFFPrediction) -> MappedBuffer<UInt8>
 }
 
 extension Image: TIFFRawRepresentable {
     
-    func tiff_color_data(_ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+    func tiff_color_data(_ predictor: TIFFPrediction, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
         
         let samplesPerPixel = isOpaque ? Pixel.Model.numberOfComponents : Pixel.Model.numberOfComponents + 1
         let bytesPerSample = 2
@@ -44,7 +44,9 @@ extension Image: TIFFRawRepresentable {
             guard var source = $0.baseAddress else { return }
             
             switch predictor {
-            case 1:
+                
+            case .none:
+                
                 let count = self.width * self.height
                 
                 if isOpaque {
@@ -66,7 +68,8 @@ extension Image: TIFFRawRepresentable {
                         source += 1
                     }
                 }
-            case 2:
+                
+            case .subtract:
                 
                 var lhs: [UInt16] = Array(repeating: 0, count: samplesPerPixel)
                 
@@ -120,14 +123,13 @@ extension Image: TIFFRawRepresentable {
                         }
                     }
                 }
-            default: fatalError()
             }
         }
         
         return data
     }
     
-    func tiff_opacity_data(_ predictor: Int) -> MappedBuffer<UInt8> {
+    func tiff_opacity_data(_ predictor: TIFFPrediction) -> MappedBuffer<UInt8> {
         
         let bytesPerSample = 2
         
@@ -138,14 +140,17 @@ extension Image: TIFFRawRepresentable {
             guard var source = $0.baseAddress else { return }
             
             switch predictor {
-            case 1:
+                
+            case .none:
+                
                 let count = self.width * self.height
                 
                 for _ in 0..<count {
                     data.encode(UInt16((source.pointee.opacity * 65535).clamped(to: 0...65535).rounded()).bigEndian)
                     source += 1
                 }
-            case 2:
+                
+            case .subtract:
                 
                 var lhs: UInt16 = 0
                 
@@ -163,7 +168,6 @@ extension Image: TIFFRawRepresentable {
                         source += 1
                     }
                 }
-            default: fatalError()
             }
         }
         
@@ -171,7 +175,7 @@ extension Image: TIFFRawRepresentable {
     }
 }
 
-func tiff_color_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
+func tiff_color_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predictor: TIFFPrediction, _ isOpaque: Bool) -> MappedBuffer<UInt8> {
     
     let samplesPerPixel = isOpaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents
     let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
@@ -183,7 +187,9 @@ func tiff_color_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predict
         guard var source = $0.baseAddress else { return }
         
         switch predictor {
-        case 1:
+            
+        case .none:
+            
             let count = image.width * image.height
             
             if isOpaque {
@@ -200,7 +206,8 @@ func tiff_color_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predict
                     source += 1
                 }
             }
-        case 2:
+            
+        case .subtract:
             
             if isOpaque {
                 
@@ -234,14 +241,13 @@ func tiff_color_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predict
                     }
                 }
             }
-        default: fatalError()
         }
     }
     
     return data
 }
 
-func tiff_opacity_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predictor: Int) -> MappedBuffer<UInt8> {
+func tiff_opacity_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predictor: TIFFPrediction) -> MappedBuffer<UInt8> {
     
     let bytesPerSample = MemoryLayout<Pixel>.stride / Pixel.numberOfComponents
     
@@ -252,7 +258,9 @@ func tiff_opacity_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predi
         guard var source = $0.baseAddress else { return }
         
         switch predictor {
-        case 1:
+            
+        case .none:
+            
             let count = image.width * image.height
             
             for _ in 0..<count {
@@ -260,7 +268,8 @@ func tiff_opacity_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predi
                 pixel.tiff_encode_opacity(&data)
                 source += 1
             }
-        case 2:
+            
+        case .subtract:
             
             for _ in 0..<image.height {
                 
@@ -275,14 +284,13 @@ func tiff_opacity_data<Pixel: TIFFEncodablePixel>(_ image: Image<Pixel>, _ predi
                     source += 1
                 }
             }
-        default: fatalError()
         }
     }
     
     return data
 }
 
-func tiff_color_data<Pixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque: Bool) -> MappedBuffer<UInt8> where Pixel.Model == LabColorModel {
+func tiff_color_data<Pixel>(_ image: Image<Pixel>, _ predictor: TIFFPrediction, _ isOpaque: Bool) -> MappedBuffer<UInt8> where Pixel.Model == LabColorModel {
     
     let samplesPerPixel = isOpaque ? 3 : 4
     let bytesPerSample = 2
@@ -294,7 +302,9 @@ func tiff_color_data<Pixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque:
         guard var source = $0.baseAddress else { return }
         
         switch predictor {
-        case 1:
+            
+        case .none:
+            
             let count = image.width * image.height
             
             if isOpaque {
@@ -316,7 +326,8 @@ func tiff_color_data<Pixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque:
                     source += 1
                 }
             }
-        case 2:
+            
+        case .subtract:
             
             if isOpaque {
                 
@@ -387,7 +398,6 @@ func tiff_color_data<Pixel>(_ image: Image<Pixel>, _ predictor: Int, _ isOpaque:
                     }
                 }
             }
-        default: fatalError()
         }
     }
     
