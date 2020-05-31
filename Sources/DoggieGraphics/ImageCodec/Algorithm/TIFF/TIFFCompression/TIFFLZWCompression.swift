@@ -124,10 +124,12 @@ public class TIFFLZWEncoder: CompressionCodec {
                 writer.write(256, bit_count)
                 table.removeAll(keepingCapacity: true)
             }
+            
+            if writer.buffer.count > 4095 {
+                writer.buffer.withUnsafeBufferPointer(callback)
+                writer.buffer.removeAll(keepingCapacity: true)
+            }
         }
-        
-        writer.buffer.withUnsafeBufferPointer(callback)
-        writer.buffer.removeAll(keepingCapacity: true)
     }
     
     public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
@@ -139,7 +141,6 @@ public class TIFFLZWEncoder: CompressionCodec {
         writer.finalize()
         
         writer.buffer.withUnsafeBufferPointer(callback)
-        writer.buffer.removeAll()
         
         isEndOfStream = true
     }

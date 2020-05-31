@@ -51,10 +51,11 @@ public class TIFFPackBitsEncoder: CompressionCodec {
             
             if record.last == byte {
                 
-                while record.count > 1 {
-                    let bytes = record.popFirst(min(128, record.count - 1))
-                    buffer.append(UInt8(bytes.count - 1))
-                    buffer.append(bytes)
+                if record.count > 1 {
+                    buffer.append(UInt8(record.count - 2))
+                    buffer.append(record.dropLast())
+                    record = record.suffix(1)
+                    repeat_count = 1
                 }
                 
                 repeat_count += 1
@@ -62,65 +63,55 @@ public class TIFFPackBitsEncoder: CompressionCodec {
                 if repeat_count == 128 {
                     buffer.append(129)
                     buffer.append(byte)
-                    record = Data()
+                    record.removeAll(keepingCapacity: true)
+                    repeat_count = 0
                 }
                 
             } else {
                 
-                if repeat_count > 1, let byte = record.popLast() {
-                    
-                    while repeat_count > 1 {
-                        let count = min(128, repeat_count)
-                        buffer.append(UInt8(257 - count))
-                        buffer.append(byte)
-                        repeat_count -= count
-                    }
-                    
-                    if repeat_count == 1 {
-                        record.append(byte)
-                    }
+                if repeat_count > 1 {
+                    buffer.append(UInt8(257 - repeat_count))
+                    buffer.append(record.last!)
+                    record.removeAll(keepingCapacity: true)
+                    repeat_count = 0
                 }
                 
                 record.append(byte)
                 repeat_count = 1
+                
+                if record.count == 128 {
+                    buffer.append(127)
+                    buffer.append(record)
+                    record.removeAll(keepingCapacity: true)
+                    repeat_count = 0
+                }
+            }
+            
+            if buffer.count > 4095 {
+                buffer.withUnsafeBufferPointer(callback)
+                buffer.removeAll(keepingCapacity: true)
             }
         }
-        
-        buffer.withUnsafeBufferPointer(callback)
-        buffer.removeAll(keepingCapacity: true)
     }
     
     public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
         
         guard !isEndOfStream else { throw Error.endOfStream }
         
-        if repeat_count == 1 {
+        if repeat_count > 1 {
             
-            while !record.isEmpty {
-                let bytes = record.popFirst(min(128, record.count))
-                buffer.append(UInt8(bytes.count - 1))
-                buffer.append(bytes)
-            }
+            buffer.append(UInt8(257 - repeat_count))
+            buffer.append(record.last!)
             
-        } else if repeat_count > 1, let byte = record.popLast() {
+        } else if record.count > 0 {
             
-            while repeat_count > 1 {
-                let count = min(128, repeat_count)
-                buffer.append(UInt8(257 - count))
-                buffer.append(byte)
-                repeat_count -= count
-            }
-            
-            if repeat_count == 1 {
-                buffer.append(0 as UInt8)
-                buffer.append(byte)
-            }
+            buffer.append(UInt8(record.count - 1))
+            buffer.append(record)
         }
         
         buffer.append(128)
         
         buffer.withUnsafeBufferPointer(callback)
-        buffer.removeAll()
         
         isEndOfStream = true
     }
