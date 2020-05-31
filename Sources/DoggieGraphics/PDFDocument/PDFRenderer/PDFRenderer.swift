@@ -493,7 +493,7 @@ extension PDFRenderer {
         guard let stops = self.make_gradient_stops(function: function) else { return }
         guard stops.allSatisfy({ $0.color.count == colorSpace.numberOfComponents }) else { return }
         
-        let colors = stops.map { colorSpace.create_color($0.color.map { PDFNumber($0) }, device: context_colorspace) ?? .black }
+        let colors = stops.map { alphaMask ? AnyColor.white : colorSpace.create_color($0.color.map { PDFNumber($0) }, device: context_colorspace) ?? .black }
         
         let _stops = zip(stops, colors).map { GradientStop(offset: $0.offset, color: $1) }
         
@@ -505,7 +505,7 @@ extension PDFRenderer {
         guard let stops = self.make_gradient_stops(function: function) else { return }
         guard stops.allSatisfy({ $0.color.count == colorSpace.numberOfComponents }) else { return }
         
-        let colors = stops.map { colorSpace.create_color($0.color.map { PDFNumber($0) }, device: context_colorspace) ?? .black }
+        let colors = stops.map { alphaMask ? AnyColor.white : colorSpace.create_color($0.color.map { PDFNumber($0) }, device: context_colorspace) ?? .black }
         
         let _stops = zip(stops, colors).map { GradientStop(offset: $0.offset, color: $1) }
         
