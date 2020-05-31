@@ -58,6 +58,8 @@ extension Image where Pixel: TIFFEncodablePixel {
                         var destination = dest
                         let source_end = source + _length
                         
+                        var predictor_record = Pixel()
+                        
                         for _ in 0..<width {
                             
                             guard source + bytesPerPixel <= source_end else { return }
@@ -66,21 +68,20 @@ extension Image where Pixel: TIFFEncodablePixel {
                             
                             callback(destination, _source)
                             
-                            if premultiplied {
-                                destination.pointee = destination.pointee.unpremultiplied()
-                            }
-                            
                             switch bitmap.predictor {
                             case .none: break
                             case .subtract:
-                                if destination > dest {
-                                    let lhs = destination - 1
-                                    if is_opaque {
-                                        destination.pointee = destination.pointee.tiff_prediction_2_decode_color(lhs.pointee)
-                                    } else {
-                                        destination.pointee = destination.pointee.tiff_prediction_2_decode(lhs.pointee)
-                                    }
+                                if is_opaque {
+                                    destination.pointee = destination.pointee.tiff_prediction_2_decode_color(predictor_record)
+                                } else {
+                                    destination.pointee = destination.pointee.tiff_prediction_2_decode(predictor_record)
                                 }
+                            }
+                            
+                            predictor_record = destination.pointee
+                            
+                            if premultiplied {
+                                destination.pointee = destination.pointee.unpremultiplied()
                             }
                             
                             source += bytesPerPixel
@@ -92,6 +93,5 @@ extension Image where Pixel: TIFFEncodablePixel {
                 }
             }
         }
-        
     }
 }
