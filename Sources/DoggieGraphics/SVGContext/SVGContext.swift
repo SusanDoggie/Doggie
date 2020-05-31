@@ -733,10 +733,17 @@ extension ImageRep: SVGImageProtocol {
     }
     
     fileprivate func encode(using storageType: MediaType, resolution: Resolution, properties: Any) -> String? {
-        guard let mediaType = self.mediaType?._mime_type?.rawValue else { return nil }
-        guard let properties = properties as? [ImageRep.PropertyKey : Any] else { return nil }
-        guard let data = self.originalData else { return AnyImage(imageRep: self, fileBacked: true).encode(using: storageType, resolution: resolution, properties: properties) }
-        return "data:\(mediaType);base64," + data.base64EncodedString()
+        
+        if let data = self.originalData, let mediaType = self.mediaType?._mime_type?.rawValue {
+            
+            return "data:\(mediaType);base64," + data.base64EncodedString()
+            
+        } else {
+            
+            let image = AnyImage(imageRep: self, fileBacked: true)
+            
+            return image.encode(using: storageType, resolution: resolution, properties: properties)
+        }
     }
 }
 
