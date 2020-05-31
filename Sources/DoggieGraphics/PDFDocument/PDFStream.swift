@@ -56,9 +56,9 @@ extension PDFStream {
         
         let lck = SDLock()
         
-        var image: AnyImage?
+        var image: ImageRep?
         
-        var mask: AnyImage?
+        var mask: ImageRep?
         
         @usableFromInline
         init() { }

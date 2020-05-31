@@ -37,6 +37,17 @@ struct PDFBitmap {
     
     let data: Data
     
+    init?(info: [PDFName: PDFObject], colorSpace: PDFColorSpace, data: Data) {
+        
+        guard let width = info["Width"]?.intValue ?? info["W"]?.intValue else { return nil }
+        guard let height = info["Height"]?.intValue ?? info["H"]?.intValue else { return nil }
+        guard let bitsPerComponent = info["BitsPerComponent"]?.intValue ?? info["BPC"]?.intValue else { return nil }
+        
+        let decodeParms = info["DecodeParms"]?.dictionary ?? info["DP"]?.dictionary ?? [:]
+        
+        self.init(width: width, height: height, bitsPerComponent: bitsPerComponent, colorSpace: colorSpace, decodeParms: decodeParms, premultiplied: false, data: data)
+    }
+    
     init?(width: Int,
           height: Int,
           bitsPerComponent: Int,

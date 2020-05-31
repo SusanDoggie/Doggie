@@ -509,7 +509,7 @@ extension PDFRenderer {
                 
                 let filters = table["Filter"]?.filters ?? table["F"]?.filters ?? []
                 
-                if let image_data = self.decode_image(filters, &stream) {
+                if let image_data = self.decode_inline_image(filters, &stream) {
                     
                     self.draw_image(table, colorSpaces, drawing_clip, image_data, nil)
                 }
@@ -562,8 +562,8 @@ extension PDFRenderer {
                             self.resetMask()
                         }
                         
-                        var image: AnyImage?
-                        var mask: AnyImage?
+                        var image: ImageRep?
+                        var mask: ImageRep?
                         
                         cache.lck.synchronized {
                             
@@ -630,7 +630,16 @@ extension PDFRenderer {
         }
     }
     
-    private func decode_image(_ filters: [PDFName], _ stream: inout Data) -> Data? {
+    private enum ImageData {
+        
+        case data(Data)
+        
+        case image(ImageRep)
+    }
+    
+    private func decode_inline_image(_ filters: [PDFName], _ stream: inout Data) -> ImageData? {
+        
+        print("inline_image:", filters)
         
         var filters = filters
         var data: Data?
@@ -674,114 +683,139 @@ extension PDFRenderer {
         return data.flatMap { self.decode_image(filters, $0) }
     }
     
-    private func decode_image(_ filters: [PDFName], _ stream: Data) -> Data? {
+    private func decode_image(_ filters: [PDFName], _ stream: Data) -> ImageData? {
         
-        return filters.reduce(stream) { data, filter in
+        return filters.reduce(.data(stream)) { data, filter in
             
-            data.flatMap { data in
+            switch data {
+                
+            case let .data(data):
                 
                 switch filter {
-                case "ASCIIHexDecode", "AHx": return ASCIIHexFilter.decode(data)
-                case "ASCII85Decode", "A85": return ASCII85Filter.decode(data)
-                case "LZWDecode", "LZW": return try? TIFFLZWDecoder.decode(data)
-                case "FlateDecode", "Fl": return try? Inflate().process(data)
-                case "RunLengthDecode", "RL": return try? TIFFPackBitsDecoder.decode(data)
+                case "ASCIIHexDecode", "AHx": return ASCIIHexFilter.decode(data).map { .data($0) }
+                case "ASCII85Decode", "A85": return ASCII85Filter.decode(data).map { .data($0) }
+                case "LZWDecode", "LZW": return try? .data(TIFFLZWDecoder.decode(data))
+                case "FlateDecode", "Fl": return try? .data(Inflate().process(data))
+                case "RunLengthDecode", "RL": return try? .data(TIFFPackBitsDecoder.decode(data))
                 case "CCITTFaxDecode", "CCF": return nil
-                case "DCTDecode", "DCT": return nil
+                case "DCTDecode", "DCT": return try? .image(ImageRep(data: data))
                 default: return nil
                 }
+                
+            default: return data
             }
         }
     }
     
-    private func draw_image(_ table: [PDFName: PDFObject], _ colorSpaces: [PDFName: PDFColorSpace], _ drawing_clip: Bool, _ data: Data, _ cache: PDFStream.Cache?) {
+    private func draw_image(_ table: [PDFName: PDFObject], _ colorSpaces: [PDFName: PDFColorSpace], _ drawing_clip: Bool, _ data: ImageData, _ cache: PDFStream.Cache?) {
         
         guard let width = table["Width"]?.intValue ?? table["W"]?.intValue else { return }
         guard let height = table["Height"]?.intValue ?? table["H"]?.intValue else { return }
-        guard let bitsPerComponent = table["BitsPerComponent"]?.intValue ?? table["BPC"]?.intValue else { return }
         
-        let decodeParms = table["DecodeParms"]?.dictionary ?? table["DP"]?.dictionary ?? [:]
-        
-        var _colorSpace: PDFColorSpace?
+        var colorSpace: PDFColorSpace = .deviceRGB
         
         if let name = table["ColorSpace"]?.name ?? table["CS"]?.name {
             
-            _colorSpace = colorSpaces[name]
+            colorSpace = colorSpaces[name] ?? colorSpace
             
         } else if let obj = table["ColorSpace"] ?? table["CS"] {
             
-            _colorSpace = PDFColorSpace(obj, colorSpaces)
+            colorSpace = PDFColorSpace(obj, colorSpaces) ?? colorSpace
         }
         
         if drawing_clip {
-            _colorSpace = _colorSpace ?? .deviceGray
+            colorSpace = .deviceGray
         }
         
-        guard let colorSpace = _colorSpace else { return }
-        
-        guard let color = PDFBitmap(width: width, height: height, bitsPerComponent: bitsPerComponent, colorSpace: colorSpace, decodeParms: decodeParms, premultiplied: false, data: data) else { return }
+        func create_image(mask: PDFBitmap?, _ context_colorspace: AnyColorSpace?) -> ImageRep? {
+            
+            switch data {
+                
+            case let .data(data):
+                
+                guard let bitmap = PDFBitmap(info: table, colorSpace: colorSpace, data: data) else { return nil }
+                
+                return bitmap.create_image(mask: mask, device: context_colorspace).map { ImageRep(image: $0) }
+                
+            case let .image(image): return image
+            }
+        }
         
         if let _mask = table["SMask"]?.stream,
             let mask_width = _mask["Width"].intValue,
             let mask_height = _mask["Height"].intValue,
-            let mask_bitsPerComponent = _mask["BitsPerComponent"].intValue,
             let mask_data = self.decode_image(_mask["Filter"].filters ?? [], _mask.data) {
             
             if let mask_colorSpace = PDFColorSpace(_mask["ColorSpace"]) ?? PDFColorSpace(_mask["CS"]) {
                 guard mask_colorSpace == .deviceGray else { return }
             }
             
-            let mask_decodeParms = _mask["DecodeParms"].dictionary  ?? [:]
+            func create_mask_bitmap() -> PDFBitmap? {
+                
+                switch mask_data {
+                    
+                case let .data(data):
+                    
+                    return PDFBitmap(info: _mask.dictionary, colorSpace: .deviceGray, data: data)
+                    
+                case .image: return nil
+                }
+            }
             
-            let mask = PDFBitmap(width: mask_width, height: mask_height, bitsPerComponent: mask_bitsPerComponent, colorSpace: .deviceGray, decodeParms: mask_decodeParms, premultiplied: false, data: mask_data)
+            func create_mask_image(_ context_colorspace: AnyColorSpace?) -> ImageRep? {
+                
+                switch mask_data {
+                    
+                case let .data(data):
+                    
+                    guard let bitmap = PDFBitmap(info: _mask.dictionary, colorSpace: .deviceGray, data: data) else { return nil }
+                    
+                    return bitmap.create_image(mask: nil, device: context_colorspace).map { ImageRep(image: $0) }
+                    
+                case let .image(image): return image
+                }
+            }
             
             if self.alphaMask {
                 
-                if let mask = mask {
+                self.clipToDrawing(alphaMask: false) {
                     
-                    self.clipToDrawing(alphaMask: false) {
-                        
-                        if let mask = mask.create_image(mask: nil, device: $0.context_colorspace) {
-                            $0.drawImage(image: mask)
-                            cache?.mask = mask
-                        }
+                    if let mask = create_mask_image($0.context_colorspace) {
+                        $0.drawImage(image: mask)
+                        cache?.mask = mask
                     }
                 }
                 
                 self.path = Shape(rect: Rect(x: 0, y: 0, width: 1, height: 1))
                 self.draw(winding: .nonZero)
                 
-            } else if width == mask_width && height == mask_height {
+            } else if width == mask_width && height == mask_height, let mask = create_mask_bitmap() {
                 
-                if let image = color.create_image(mask: mask, device: context_colorspace) {
+                if let image = create_image(mask: mask, context_colorspace) {
                     
                     self.drawImage(image: image)
                     cache?.image = image
                 }
                 
-            } else if let mask = mask {
+            } else {
                 
                 self.clipToDrawing(alphaMask: false) {
                     
-                    if let mask = mask.create_image(mask: nil, device: $0.context_colorspace) {
+                    if let mask = create_mask_image($0.context_colorspace) {
+                        
                         $0.drawImage(image: mask)
                         cache?.mask = mask
                     }
                 }
                 
-                if let image = color.create_image(mask: nil, device: context_colorspace) {
+                if let image = create_image(mask: nil, context_colorspace) {
                     
                     self.drawImage(image: image)
                     cache?.image = image
                 }
-                
-            } else if let image = color.create_image(mask: nil, device: context_colorspace) {
-                
-                self.drawImage(image: image)
-                cache?.image = image
             }
             
-        } else if let image = color.create_image(mask: nil, device: context_colorspace) {
+        } else if let image = create_image(mask: nil, context_colorspace) {
             
             self.drawImage(image: image)
             cache?.image = image

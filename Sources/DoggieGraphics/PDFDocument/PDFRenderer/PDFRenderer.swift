@@ -399,7 +399,7 @@ extension PDFRenderer {
         self._clipToDrawing(alphaMask: alphaMask, body: body)
     }
     
-    func drawImage(image: AnyImage) {
+    func drawImage(image: ImageRep) {
         context.draw(image: image, transform: SDTransform.scale(x: 1 / Double(image.width), y: 1 / Double(image.height)) * SDTransform.reflectY(0.5))
     }
     
