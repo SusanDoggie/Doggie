@@ -639,8 +639,6 @@ extension PDFRenderer {
     
     private func decode_inline_image(_ filters: [PDFName], _ stream: inout Data) -> ImageData? {
         
-        print("inline_image:", filters)
-        
         var filters = filters
         var data: Data?
         
