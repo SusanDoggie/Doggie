@@ -466,14 +466,34 @@ extension PDFRenderer {
             
             var stops: [PDFGradientStop] = []
             
-            for (range, function) in zip(ranges, function.functions) {
+            for ((range, encode), function) in zip(zip(ranges, function.encode), function.functions) {
                 
                 guard let subdomain = function.domain.first else { return nil }
                 guard var _stops = self.make_gradient_stops(function: function) else { return nil }
                 
-                let s = (range.upperBound - range.lowerBound) / (subdomain.upperBound - subdomain.lowerBound)
+                let s = (subdomain.upperBound - subdomain.lowerBound) / (encode.t1 - encode.t0)
+                let t = (range.upperBound - range.lowerBound) / (subdomain.upperBound - subdomain.lowerBound)
                 
-                _stops = _stops.map { PDFGradientStop(offset: ($0.offset - subdomain.lowerBound) * s + range.lowerBound, color: $0.color) }
+                _stops = _stops.map { PDFGradientStop(offset: ($0.offset - encode.t0) * s + subdomain.lowerBound, color: $0.color) }
+                
+                let prefix = zip(_stops, _stops.dropFirst()).first { !subdomain.contains($0.offset) && subdomain.contains($1.offset) }
+                let suffix = zip(_stops, _stops.dropFirst()).first { subdomain.contains($0.offset) && !subdomain.contains($1.offset) }
+                
+                _stops = _stops.filter { subdomain.contains($0.offset) }
+                
+                if let (f0, f1) = prefix {
+                    let t = (subdomain.lowerBound - f0.offset) / (f1.offset - f0.offset)
+                    let color = zip(f0.color, f1.color).map { LinearInterpolate(t, $0, $1) }
+                    _stops.insert(PDFGradientStop(offset: subdomain.lowerBound, color: color), at: 0)
+                }
+                
+                if let (f0, f1) = suffix {
+                    let t = (subdomain.upperBound - f0.offset) / (f1.offset - f0.offset)
+                    let color = zip(f0.color, f1.color).map { LinearInterpolate(t, $0, $1) }
+                    _stops.append(PDFGradientStop(offset: subdomain.upperBound, color: color))
+                }
+                
+                _stops = _stops.map { PDFGradientStop(offset: ($0.offset - subdomain.lowerBound) * t + range.lowerBound, color: $0.color) }
                 
                 if stops.last == _stops.first {
                     stops.append(contentsOf: _stops.dropFirst())

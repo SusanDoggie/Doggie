@@ -30,7 +30,7 @@ public struct PDFFunction: Hashable {
     
     let functions: [PDFFunction]
     let bounds: [Double]
-    let encode: [ClosedRange<Double>]
+    let encode: [Encode]
     
     let c0: [Double]
     let c1: [Double]
@@ -38,6 +38,20 @@ public struct PDFFunction: Hashable {
     
     public let range: [ClosedRange<Double>]
     public let postscript: String
+}
+
+extension PDFFunction {
+    
+    public struct Encode: Hashable {
+        
+        public var t0: Double
+        public var t1: Double
+        
+        public init(_ t0: Double, _ t1: Double) {
+            self.t0 = t0
+            self.t1 = t1
+        }
+    }
 }
 
 extension PDFFunction {
@@ -55,7 +69,7 @@ extension PDFFunction {
         self.postscript = ""
     }
     
-    public init(domain: ClosedRange<Double> = 0...1, functions: [PDFFunction], bounds: [Double], encode: [ClosedRange<Double>]) {
+    public init(domain: ClosedRange<Double> = 0...1, functions: [PDFFunction], bounds: [Double], encode: [Encode]) {
         self.type = 3
         self.domain = [domain]
         self.functions = functions
@@ -87,10 +101,13 @@ extension PDFFunction {
     init?(_ object: PDFObject) {
         
         guard let type = object["FunctionType"].intValue else { return nil }
-        guard let domain = object["Domain"].array?.compactMap({ $0.doubleValue }), domain.count & 1 == 0 else { return nil }
+        guard let _domain = object["Domain"].array?.compactMap({ $0.doubleValue }), _domain.count & 1 == 0 else { return nil }
+        
+        let domain = _domain.chunked(by: 2)
+        guard domain.allSatisfy({ $0.first! <= $0.last! }) else { return nil }
         
         self.type = type
-        self.domain = domain.chunked(by: 2).map { $0.first!...$0.last! }
+        self.domain = domain.map { $0.first!...$0.last! }
         
         switch type {
             
@@ -115,6 +132,7 @@ extension PDFFunction {
         case 3:
             
             guard self.domain.count == 1 else { return nil }
+            let domain = self.domain[0]
             
             guard let functions = object["Functions"].array?.compactMap({ PDFFunction($0) }) else { return nil }
             guard let bounds = object["Bounds"].array?.compactMap({ $0.doubleValue }) else { return nil }
@@ -124,9 +142,12 @@ extension PDFFunction {
             guard bounds.count + 1 == functions.count else { return nil }
             guard encode.count == functions.count * 2 else { return nil }
             
+            guard zip(bounds, bounds.dropFirst()).allSatisfy({ $0 <= $1 }) else { return nil }
+            guard bounds.allSatisfy({ domain ~= $0 }) else { return nil }
+            
             self.functions = functions
             self.bounds = bounds
-            self.encode = encode.chunked(by: 2).map { $0.first!...$0.last! }
+            self.encode = encode.chunked(by: 2).map { Encode($0.first!, $0.last!) }
             
             self.c0 = []
             self.c1 = []
@@ -161,7 +182,7 @@ extension PDFFunction {
                 "Domain": PDFObject(domain.flatMap { [$0.lowerBound, $0.upperBound] }),
                 "Functions": PDFObject(functions.map { $0.pdf_object }),
                 "Bounds": PDFObject(bounds),
-                "Encode": PDFObject(encode.flatMap { [$0.lowerBound, $0.upperBound] }),
+                "Encode": PDFObject(encode.flatMap { [$0.t0, $0.t1] }),
             ]
             
         case 4:

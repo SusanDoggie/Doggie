@@ -723,7 +723,7 @@ extension PDFContext.Page {
         
         var functions: [PDFFunction] = []
         var bounds: [Double] = []
-        var encode: [ClosedRange<Double>] = []
+        var encode: [PDFFunction.Encode] = []
         
         for (lhs, rhs) in zip(stops, stops.dropFirst()) {
             
@@ -732,7 +732,7 @@ extension PDFContext.Page {
             
             functions.append(PDFFunction(c0: c0, c1: c1))
             bounds.append(rhs.offset)
-            encode.append(0...1)
+            encode.append(PDFFunction.Encode(0, 1))
         }
         
         return PDFFunction(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
@@ -751,12 +751,12 @@ extension PDFContext.Page {
         
         var functions: [PDFFunction] = []
         var bounds: [Double] = []
-        var encode: [ClosedRange<Double>] = []
+        var encode: [PDFFunction.Encode] = []
         
         for (lhs, rhs) in zip(stops, stops.dropFirst()) {
             functions.append(PDFFunction(c0: [lhs.color.opacity], c1: [rhs.color.opacity]))
             bounds.append(rhs.offset)
-            encode.append(0...1)
+            encode.append(PDFFunction.Encode(0, 1))
         }
         
         return PDFFunction(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
