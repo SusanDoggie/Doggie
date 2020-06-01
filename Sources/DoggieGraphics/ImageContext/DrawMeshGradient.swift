@@ -74,6 +74,16 @@ extension ImageContext {
         @inline(__always)
         func _draw(_ patch: CubicBezierPatch<Point>, _ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>, _ c2: Float32ColorPixel<Pixel.Model>, _ c3: Float32ColorPixel<Pixel.Model>) {
             
+            let width = rasterizer.width
+            let height = rasterizer.height
+            
+            let min_x = Int(min(min(patch.m00.x, patch.m03.x), min(patch.m30.x, patch.m33.x)).rounded(.up))
+            let max_x = Int(max(max(patch.m00.x, patch.m03.x), max(patch.m30.x, patch.m33.x)).rounded(.down))
+            let min_y = Int(min(min(patch.m00.y, patch.m03.y), min(patch.m30.y, patch.m33.y)).rounded(.up))
+            let max_y = Int(max(max(patch.m00.y, patch.m03.y), max(patch.m30.y, patch.m33.y)).rounded(.down))
+            
+            guard 0 <= max_x && min_x <= width && 0 <= max_y && min_y <= height else { return }
+            
             let d0 = patch.m00 - patch.m03
             let d1 = patch.m30 - patch.m33
             let d2 = patch.m00 - patch.m30
