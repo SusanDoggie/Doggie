@@ -1,5 +1,5 @@
 //
-//  DrawGradientMesh.swift
+//  DrawMeshGradient.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -25,7 +25,7 @@
 
 @frozen
 @usableFromInline
-struct ImageContextGradientMeshRasterizeBuffer<P: ColorPixel>: RasterizeBufferProtocol {
+struct ImageContextMeshGradientRasterizeBuffer<P: ColorPixel>: RasterizeBufferProtocol {
     
     @usableFromInline
     var blender: ImageContextPixelBlender<P>
@@ -46,13 +46,13 @@ struct ImageContextGradientMeshRasterizeBuffer<P: ColorPixel>: RasterizeBufferPr
     
     @inlinable
     @inline(__always)
-    static func + (lhs: ImageContextGradientMeshRasterizeBuffer, rhs: Int) -> ImageContextGradientMeshRasterizeBuffer {
-        return ImageContextGradientMeshRasterizeBuffer(blender: lhs.blender + rhs, width: lhs.width, height: lhs.height)
+    static func + (lhs: ImageContextMeshGradientRasterizeBuffer, rhs: Int) -> ImageContextMeshGradientRasterizeBuffer {
+        return ImageContextMeshGradientRasterizeBuffer(blender: lhs.blender + rhs, width: lhs.width, height: lhs.height)
     }
     
     @inlinable
     @inline(__always)
-    static func += (lhs: inout ImageContextGradientMeshRasterizeBuffer, rhs: Int) {
+    static func += (lhs: inout ImageContextMeshGradientRasterizeBuffer, rhs: Int) {
         lhs.blender += rhs
     }
 }
@@ -61,7 +61,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _drawGradient(_ rasterizer: ImageContextGradientMeshRasterizeBuffer<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float64ColorPixel<Pixel.Model>, _ c1: Float64ColorPixel<Pixel.Model>, _ c2: Float64ColorPixel<Pixel.Model>, _ c3: Float64ColorPixel<Pixel.Model>) {
+    func _drawGradient(_ rasterizer: ImageContextMeshGradientRasterizeBuffer<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float64ColorPixel<Pixel.Model>, _ c1: Float64ColorPixel<Pixel.Model>, _ c2: Float64ColorPixel<Pixel.Model>, _ c3: Float64ColorPixel<Pixel.Model>) {
         
         let (p0, p1, p2, p3) = patch.split(0.5, 0.5)
         
@@ -113,7 +113,7 @@ extension ImageContext {
         
         self.withUnsafePixelBlender { blender in
             
-            let rasterizer = ImageContextGradientMeshRasterizeBuffer(blender: blender, width: width, height: height)
+            let rasterizer = ImageContextMeshGradientRasterizeBuffer(blender: blender, width: width, height: height)
             
             _drawGradient(rasterizer, patch * transform, _c0, _c1, _c2, _c3)
         }
