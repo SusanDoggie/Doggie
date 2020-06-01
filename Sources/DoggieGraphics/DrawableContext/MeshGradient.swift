@@ -109,7 +109,7 @@ extension MeshGradient {
             let top = result.count < column ? nil : result[result.count - column]
             let left = result.count % column == 0 ? nil : result[result.count - 1]
             
-            guard let m00 = top?.m30 ?? points.popFirst() else { return result }
+            guard let m00 = top?.m30 ?? left?.m03 ?? points.popFirst() else { return result }
             guard let m01 = top?.m31 ?? points.popFirst() else { return result }
             guard let m02 = top?.m32 ?? points.popFirst() else { return result }
             guard let m03 = top?.m33 ?? points.popFirst() else { return result }
@@ -154,7 +154,7 @@ extension MeshGradient {
             let top = result.count < column ? nil : result[result.count - column]
             let left = result.count % column == 0 ? nil : result[result.count - 1]
             
-            guard let c00 = top?.2 ?? colors.popFirst() else { return result }
+            guard let c00 = top?.2 ?? left?.1 ?? colors.popFirst() else { return result }
             guard let c01 = top?.3 ?? colors.popFirst() else { return result }
             guard let c10 = left?.3 ?? colors.popFirst() else { return result }
             guard let c11 = colors.popFirst() else { return result }
