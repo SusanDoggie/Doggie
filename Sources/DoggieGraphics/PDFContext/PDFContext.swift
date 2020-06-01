@@ -308,6 +308,13 @@ extension PDFContext {
 
 extension PDFContext {
     
+    public func drawGradient<C>(_ mesh: MeshGradient<C>) {
+        
+    }
+}
+
+extension PDFContext {
+    
     public func drawShading(_ shader: PDFFunction) {
         current_page.drawShading(shader)
     }

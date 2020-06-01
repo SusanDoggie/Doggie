@@ -32,7 +32,7 @@ public func ColorSeparation<Pixel>(_ image: Image<Pixel>, _ palette: [Pixel]) ->
 @inlinable
 @inline(__always)
 public func ColorSeparation<Pixel>(_ texture: Texture<Pixel>, _ palette: [Pixel]) -> Texture<Pixel> {
-    return palette.map(Float64ColorPixel.init).withUnsafeBufferPointer { palette in texture.map { pixel in Pixel(palette.min { Float64ColorPixel(pixel).distance(to: $0) }!) } }
+    return palette.map(Float32ColorPixel.init).withUnsafeBufferPointer { palette in texture.map { pixel in Pixel(palette.min { Float32ColorPixel(pixel).distance(to: $0) }!) } }
 }
 
 @inlinable

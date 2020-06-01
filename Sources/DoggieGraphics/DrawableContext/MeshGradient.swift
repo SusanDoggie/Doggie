@@ -33,36 +33,34 @@ public enum MeshGradientPatchType: CaseIterable {
 @frozen
 public struct MeshGradient<Color: ColorProtocol> {
     
-    public let type: MeshGradientPatchType
+    public var type: MeshGradientPatchType
     
-    public let column: Int
-    public let row: Int
+    public var column: Int
+    public var row: Int
     
-    public let points: [Point]
-    public let colors: [Color]
+    public var points: [Point]
+    public var colors: [Color]
     
     public var transform: SDTransform = .identity
     public var opacity: Double = 1
     
     @inlinable
     @inline(__always)
-    public init?(type: MeshGradientPatchType, column: Int, row: Int, points: [Point], colors: [Color]) {
+    public init(type: MeshGradientPatchType, column: Int, row: Int, points: [Point], colors: [Color]) {
         self.type = type
         self.row = row
         self.column = column
         self.points = points
         self.colors = colors
-        guard self.colors.count == (row + 1) * (column + 1) else { return nil }
-        guard self.patches.count == row * column else { return nil }
     }
 }
 
-extension Gradient where Color == AnyColor {
+extension MeshGradient where Color == AnyColor {
     
     @inlinable
     @inline(__always)
-    public init<M>(_ gradient: Gradient<DoggieGraphics.Color<M>>) {
-        self.init(type: gradient.type, column: gradient.column, row: gradient.row, points: gradient.points, colors: gradient.colors.map(GradientStop<AnyColor>.init))
+    public init<M>(_ gradient: MeshGradient<DoggieGraphics.Color<M>>) {
+        self.init(type: gradient.type, column: gradient.column, row: gradient.row, points: gradient.points, colors: gradient.colors.map(AnyColor.init))
         self.transform = gradient.transform
         self.opacity = gradient.opacity
     }
@@ -144,4 +142,26 @@ extension MeshGradient {
         return result
     }
     
+    @inlinable
+    @inline(__always)
+    public var patch_colors: [(Color, Color, Color, Color)] {
+        
+        var result: [(Color, Color, Color, Color)] = []
+        var colors = self.colors[...]
+        
+        while !colors.isEmpty {
+            
+            let top = result.count < column ? nil : result[result.count - column]
+            let left = result.count % column == 0 ? nil : result[result.count - 1]
+            
+            guard let c00 = top?.2 ?? colors.popFirst() else { return result }
+            guard let c01 = top?.3 ?? colors.popFirst() else { return result }
+            guard let c10 = left?.3 ?? colors.popFirst() else { return result }
+            guard let c11 = colors.popFirst() else { return result }
+            
+            result.append((c00, c01, c10, c11))
+        }
+        
+        return result
+    }
 }

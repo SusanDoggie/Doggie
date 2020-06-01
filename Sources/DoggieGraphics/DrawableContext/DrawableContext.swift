@@ -74,6 +74,8 @@ public protocol DrawableContext: AnyObject {
     func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode)
     
     func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode)
+    
+    func drawGradient<C>(_ mesh: MeshGradient<C>)
 }
 
 extension DrawableContext {

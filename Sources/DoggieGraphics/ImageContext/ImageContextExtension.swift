@@ -78,6 +78,6 @@ extension ImageContext {
     @inlinable
     @inline(__always)
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
-        self.draw(texture: Texture<Float64ColorPixel<Pixel.Model>>(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
+        self.draw(texture: Texture<Float32ColorPixel<Pixel.Model>>(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
     }
 }

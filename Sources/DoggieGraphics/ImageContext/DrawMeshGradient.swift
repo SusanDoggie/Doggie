@@ -61,7 +61,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _drawGradient(_ rasterizer: ImageContextMeshGradientRasterizeBuffer<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float64ColorPixel<Pixel.Model>, _ c1: Float64ColorPixel<Pixel.Model>, _ c2: Float64ColorPixel<Pixel.Model>, _ c3: Float64ColorPixel<Pixel.Model>) {
+    func _drawGradient(_ rasterizer: ImageContextMeshGradientRasterizeBuffer<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>, _ c2: Float32ColorPixel<Pixel.Model>, _ c3: Float32ColorPixel<Pixel.Model>) {
         
         let (p0, p1, p2, p3) = patch.split(0.5, 0.5)
         
@@ -72,7 +72,7 @@ extension ImageContext {
         let c8 = 0.5 * (c4 + c7)
         
         @inline(__always)
-        func _draw(_ patch: CubicBezierPatch<Point>, _ c0: Float64ColorPixel<Pixel.Model>, _ c1: Float64ColorPixel<Pixel.Model>, _ c2: Float64ColorPixel<Pixel.Model>, _ c3: Float64ColorPixel<Pixel.Model>) {
+        func _draw(_ patch: CubicBezierPatch<Point>, _ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>, _ c2: Float32ColorPixel<Pixel.Model>, _ c3: Float32ColorPixel<Pixel.Model>) {
             
             let d0 = patch.m00 - patch.m03
             let d1 = patch.m30 - patch.m33
@@ -98,7 +98,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func drawGradient<C: ColorProtocol>(_ patch: CubicBezierPatch<Point>, color c0: C, _ c1: C, _ c2: C, _ c3: C) {
+    public func drawGradient<C>(_ mesh: MeshGradient<C>) {
         
         let width = self.width
         let height = self.height
@@ -106,16 +106,22 @@ extension ImageContext {
         
         guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
         
-        let _c0 = Float64ColorPixel(c0.convert(to: colorSpace, intent: renderingIntent))
-        let _c1 = Float64ColorPixel(c1.convert(to: colorSpace, intent: renderingIntent))
-        let _c2 = Float64ColorPixel(c2.convert(to: colorSpace, intent: renderingIntent))
-        let _c3 = Float64ColorPixel(c3.convert(to: colorSpace, intent: renderingIntent))
+        let patches = mesh.patches
+        let colors = mesh.patch_colors.map { (
+            Float32ColorPixel($0.convert(to: colorSpace, intent: renderingIntent)),
+            Float32ColorPixel($1.convert(to: colorSpace, intent: renderingIntent)),
+            Float32ColorPixel($2.convert(to: colorSpace, intent: renderingIntent)),
+            Float32ColorPixel($3.convert(to: colorSpace, intent: renderingIntent))
+            ) }
         
         self.withUnsafePixelBlender { blender in
             
-            let rasterizer = ImageContextMeshGradientRasterizeBuffer(blender: blender, width: width, height: height)
-            
-            _drawGradient(rasterizer, patch * transform, _c0, _c1, _c2, _c3)
+            for (patch, (c0, c1, c2, c3)) in zip(patches, colors) {
+                
+                let rasterizer = ImageContextMeshGradientRasterizeBuffer(blender: blender, width: width, height: height)
+                
+                _drawGradient(rasterizer, patch * transform, c0, c1, c2, c3)
+            }
         }
     }
 }

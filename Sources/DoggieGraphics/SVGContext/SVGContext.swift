@@ -1158,6 +1158,13 @@ extension SVGContext {
 
 extension SVGContext {
     
+    public func drawGradient<C>(_ mesh: MeshGradient<C>) {
+        
+    }
+}
+
+extension SVGContext {
+    
     private func _effect_element(_ type: String, _ effect: SVGEffect, _ visibleBound: inout Rect, _ objectBound: Rect) -> String? {
         
         let id = new_name(type)

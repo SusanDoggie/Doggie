@@ -53,14 +53,14 @@ extension ImageContext {
                 stencil.withUnsafeStencilTexture { stencil in
                     for y in stride(from: 0, to: height * antialias, by: antialias) {
                         for x in stride(from: 0, to: width * antialias, by: antialias) {
-                            blender.draw { () -> Float64ColorPixel<Pixel.Model> in
+                            blender.draw { () -> Float32ColorPixel<Pixel.Model> in
                                 var pixel: T = 0
                                 for _y in y..<y + antialias {
                                     for _x in x..<x + antialias {
                                         pixel += stencil.pixel(Point(x: _x, y: _y) * __transform)
                                     }
                                 }
-                                return Float64ColorPixel(color: color, opacity: Double(pixel) / div)
+                                return Float32ColorPixel(color: color, opacity: Double(pixel) / div)
                             }
                             blender += 1
                         }
@@ -74,7 +74,7 @@ extension ImageContext {
                 stencil.withUnsafeStencilTexture { stencil in
                     for y in 0..<height {
                         for x in 0..<width {
-                            blender.draw { Float64ColorPixel(color: color, opacity: Double(stencil.pixel(Point(x: x, y: y) * _transform))) }
+                            blender.draw { Float32ColorPixel(color: color, opacity: Double(stencil.pixel(Point(x: x, y: y) * _transform))) }
                             blender += 1
                         }
                     }
@@ -106,13 +106,13 @@ extension ImageContext {
                 var blender = blender
                 
                 let __transform = SDTransform.scale(1 / Double(antialias)) * _transform
-                let div = Double(antialias * antialias)
+                let div = Float(antialias * antialias)
                 
                 texture.withUnsafeTexture { texture in
                     for y in stride(from: 0, to: height * antialias, by: antialias) {
                         for x in stride(from: 0, to: width * antialias, by: antialias) {
-                            blender.draw { () -> Float64ColorPixel<Pixel.Model> in
-                                var pixel = Float64ColorPixel<Pixel.Model>()
+                            blender.draw { () -> Float32ColorPixel<Pixel.Model> in
+                                var pixel = Float32ColorPixel<Pixel.Model>()
                                 for _y in y..<y + antialias {
                                     for _x in x..<x + antialias {
                                         pixel += texture.pixel(Point(x: _x, y: _y) * __transform)
@@ -227,13 +227,13 @@ struct _UnsafeStencilTexture<T: BinaryFloatingPoint>: _ResamplingImplement where
 }
 
 @usableFromInline
-struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement where Base.RawPixel: ColorPixel, Base.Pixel == Float64ColorPixel<Base.RawPixel.Model> {
+struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement where Base.RawPixel: ColorPixel {
     
     @usableFromInline
     typealias RawPixel = Base.RawPixel
     
     @usableFromInline
-    typealias Pixel = Base.Pixel
+    typealias Pixel = Float32ColorPixel<RawPixel.Model>
     
     @usableFromInline
     let pixels: UnsafeBufferPointer<RawPixel>
@@ -266,15 +266,15 @@ struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement whe
     
     @inlinable
     @inline(__always)
-    func read_source(_ x: Int, _ y: Int) -> Float64ColorPixel<RawPixel.Model> {
+    func read_source(_ x: Int, _ y: Int) -> Float32ColorPixel<RawPixel.Model> {
         
-        guard width != 0 && height != 0 else { return Float64ColorPixel() }
+        guard width != 0 && height != 0 else { return Float32ColorPixel() }
         
         let (x_flag, _x) = horizontalWrappingMode.addressing(x, width)
         let (y_flag, _y) = verticalWrappingMode.addressing(y, height)
         
         let pixel = pixels[_y * width + _x]
-        return x_flag && y_flag ? Float64ColorPixel(pixel) : Float64ColorPixel(color: pixel.color, opacity: 0)
+        return x_flag && y_flag ? Float32ColorPixel(pixel) : Float32ColorPixel(color: pixel.color, opacity: 0)
     }
 }
 

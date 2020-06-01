@@ -27,7 +27,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func draw(shape: Shape, color: Float64ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
+    func draw(shape: Shape, color: Float32ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
         
         guard shape.contains(where: { !$0.isEmpty }) else { return }
         
@@ -124,7 +124,7 @@ extension ImageContext {
                         _stencil += antialias * _min_x + _min_y * _stencil_width2
                         
                         let _antialias2 = antialias * antialias
-                        let div = Double(_antialias2)
+                        let div = Float(_antialias2)
                         
                         for _ in _min_y..<_max_y {
                             
@@ -133,7 +133,7 @@ extension ImageContext {
                             
                             for _ in _min_x..<_max_x {
                                 
-                                _blender.draw { () -> Float64ColorPixel<Pixel.Model>? in
+                                _blender.draw { () -> Float32ColorPixel<Pixel.Model>? in
                                     
                                     var _p: UInt8 = 0
                                     
@@ -153,7 +153,7 @@ extension ImageContext {
                                     if _p != 0 {
                                         var color = color
                                         if _p != _antialias2 {
-                                            color.opacity *= Double(_p) / div
+                                            color._opacity *= Float(_p) / div
                                         }
                                         return color
                                     }
@@ -220,8 +220,8 @@ extension ImageContext {
     @inline(__always)
     public func draw(shape: Shape, winding: Shape.WindingRule, color: Pixel.Model, opacity: Double = 1) {
         switch winding {
-        case .nonZero: self.draw(shape: shape, color: Float64ColorPixel(color: color, opacity: opacity)) { $0 != 0 }
-        case .evenOdd: self.draw(shape: shape, color: Float64ColorPixel(color: color, opacity: opacity)) { $0 & 1 == 1 }
+        case .nonZero: self.draw(shape: shape, color: Float32ColorPixel(color: color, opacity: opacity)) { $0 != 0 }
+        case .evenOdd: self.draw(shape: shape, color: Float32ColorPixel(color: color, opacity: opacity)) { $0 & 1 == 1 }
         }
     }
 }

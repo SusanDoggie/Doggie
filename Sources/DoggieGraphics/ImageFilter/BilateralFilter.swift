@@ -49,9 +49,9 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _
     precondition(range > 0, "range is less than or equal to zero.")
     
     @inline(__always)
-    func dot(_ c0: Float64ColorPixel<Pixel.Model>, _ c1: Float64ColorPixel<Pixel.Model>) -> Double {
+    func dot(_ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>) -> Float {
         let d = c0 - c1
-        return d.color.reduce(d.opacity * d.opacity) { $0 + $1 * $1 }
+        return d._color.reduce(d._opacity * d._opacity) { $0 + $1 * $1 }
     }
     
     let _r0 = Int(ceil(6 * spatial.width)) >> 1
@@ -62,9 +62,9 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _
     let width = texture.width
     let height = texture.height
     
-    let _c0 = -0.5 / (spatial.width * spatial.width)
-    let _c1 = -0.5 / (spatial.height * spatial.height)
-    let _c2 = -0.5 / (range * range)
+    let _c0 = -0.5 / Float(spatial.width * spatial.width)
+    let _c1 = -0.5 / Float(spatial.height * spatial.height)
+    let _c2 = -0.5 / Float(range * range)
     
     result.withUnsafeMutableBufferPointer {
         
@@ -86,17 +86,17 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _
                     
                     var kernel = texture + min_x + min_y * width
                     
-                    let _p = Float64ColorPixel(texture.pointee)
-                    var s = Float64ColorPixel<Pixel.Model>()
-                    var t = 0.0
+                    let _p = Float32ColorPixel(texture.pointee)
+                    var s = Float32ColorPixel<Pixel.Model>()
+                    var t: Float = 0.0
                     
                     for y in min_y...max_y {
                         var _kernel = kernel
                         for x in min_x...max_x {
                             
-                            let _k = Float64ColorPixel(_kernel.pointee)
-                            let _x = _c0 * Double(x * x)
-                            let _y = _c1 * Double(y * y)
+                            let _k = Float32ColorPixel(_kernel.pointee)
+                            let _x = _c0 * Float(x * x)
+                            let _y = _c1 * Float(y * y)
                             let _z = _c2 * dot(_p, _k)
                             let w = exp(_x + _y + _z)
                             

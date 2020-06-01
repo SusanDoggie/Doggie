@@ -31,7 +31,7 @@ struct ImageContextPixelBlender<P: ColorPixel> {
     var destination: UnsafeMutablePointer<P>
     
     @usableFromInline
-    var clip: UnsafePointer<Double>?
+    var clip: UnsafePointer<Float>?
     
     @usableFromInline
     let opacity: Double
@@ -44,7 +44,7 @@ struct ImageContextPixelBlender<P: ColorPixel> {
     
     @inlinable
     @inline(__always)
-    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Double>?, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
+    init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Float>?, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
         self.destination = destination
         self.clip = clip
         self.opacity = opacity
@@ -73,7 +73,7 @@ struct ImageContextPixelBlender<P: ColorPixel> {
             
             if let _clip = clip?.pointee {
                 if _clip > 0, var source = color() {
-                    source.opacity *= opacity * _clip
+                    source.opacity *= opacity * Double(_clip)
                     destination.pointee.blend(source: source)
                 }
             } else if var source = color() {
@@ -85,7 +85,7 @@ struct ImageContextPixelBlender<P: ColorPixel> {
             
             if let _clip = clip?.pointee {
                 if _clip > 0, var source = color() {
-                    source.opacity *= opacity * _clip
+                    source.opacity *= opacity * Double(_clip)
                     destination.pointee.blend(source: source, compositingMode: compositingMode, blendMode: blendMode)
                 }
             } else if var source = color() {

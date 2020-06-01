@@ -53,8 +53,8 @@ private struct ImageContextStyles {
 
 private struct GraphicState {
     
-    var clip: MappedBuffer<Double>?
-    var depth: MappedBuffer<Double>?
+    var clip: MappedBuffer<Float>?
+    var depth: MappedBuffer<Float>?
     
     var styles: ImageContextStyles
     var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm
@@ -79,10 +79,10 @@ private struct GraphicState {
 struct ImageContextState {
     
     @usableFromInline
-    var clip: MappedBuffer<Double>?
+    var clip: MappedBuffer<Float>?
     
     @usableFromInline
-    var depth: MappedBuffer<Double>?
+    var depth: MappedBuffer<Float>?
     
     @usableFromInline
     var isDirty: Bool = false
@@ -164,13 +164,13 @@ extension ImageContext {
 
 extension ImageContext {
     
-    public var clipStencilTexture: StencilTexture<Double> {
+    public var clipStencilTexture: StencilTexture<Float> {
         let current_layer = self.current_layer
         let pixels = current_layer.state.clip ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         return StencilTexture(width: image.width, height: image.height, pixels: pixels, resamplingAlgorithm: .default)
     }
     
-    public func withUnsafeMutableClipBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
+    public func withUnsafeMutableClipBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Float>) throws -> R) rethrows -> R {
         
         let current_layer = self.current_layer
         
@@ -185,7 +185,7 @@ extension ImageContext {
         return result
     }
     
-    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>?) throws -> R) rethrows -> R {
+    public func withUnsafeClipBufferPointer<R>(_ body: (UnsafeBufferPointer<Float>?) throws -> R) rethrows -> R {
         return try current_layer.state.clip?.withUnsafeBufferPointer(body) ?? body(nil)
     }
     
@@ -199,9 +199,11 @@ extension ImageContext {
             
         } else if current_layer.state.clip == nil || value == 0 {
             
-            current_layer.state.clip = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
+            current_layer.state.clip = MappedBuffer(repeating: Float(value), count: image.width * image.height, fileBacked: image.fileBacked)
             
         } else {
+            
+            let value = Float(value)
             
             withUnsafeMutableDepthBufferPointer { buf in
                 
@@ -381,13 +383,13 @@ public enum ImageContextRenderDepthCompareMode: CaseIterable {
 
 extension ImageContext {
     
-    public var depthStencilTexture: StencilTexture<Double> {
+    public var depthStencilTexture: StencilTexture<Float> {
         let current_layer = self.current_layer
         let pixels = current_layer.state.depth ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
         return StencilTexture(width: image.width, height: image.height, pixels: pixels, resamplingAlgorithm: .default)
     }
     
-    public func withUnsafeMutableDepthBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Double>) throws -> R) rethrows -> R {
+    public func withUnsafeMutableDepthBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Float>) throws -> R) rethrows -> R {
         
         let current_layer = self.current_layer
         
@@ -402,7 +404,7 @@ extension ImageContext {
         return result
     }
     
-    public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Double>?) throws -> R) rethrows -> R {
+    public func withUnsafeDepthBufferPointer<R>(_ body: (UnsafeBufferPointer<Float>?) throws -> R) rethrows -> R {
         return try current_layer.state.depth?.withUnsafeBufferPointer(body) ?? body(nil)
     }
 }
@@ -437,9 +439,11 @@ extension ImageContext {
             
         } else if current_layer.state.depth == nil || value == 0 {
             
-            current_layer.state.depth = MappedBuffer(repeating: value, count: image.width * image.height, fileBacked: image.fileBacked)
+            current_layer.state.depth = MappedBuffer(repeating: Float(value), count: image.width * image.height, fileBacked: image.fileBacked)
             
         } else {
+            
+            let value = Float(value)
             
             withUnsafeMutableDepthBufferPointer { buf in
                 
@@ -546,7 +550,7 @@ extension ImageContext {
     @inlinable
     @inline(__always)
     public func clipToDrawing(body: (DrawableContext) throws -> Void) rethrows {
-        try self.clipToDrawing { (context: ImageContext<Float64ColorPixel<GrayColorModel>>) in try body(context) }
+        try self.clipToDrawing { (context: ImageContext<Float32ColorPixel<GrayColorModel>>) in try body(context) }
     }
     
     @inlinable
@@ -563,7 +567,7 @@ extension ImageContext {
         try body(_clip)
         
         if _clip.state.isDirty {
-            current_layer.state.clip = _clip.image.pixels.map { $0.color.white * $0.opacity }
+            current_layer.state.clip = _clip.image.pixels.map { Float($0.color.white * $0.opacity) }
         } else {
             current_layer.clearClipBuffer(with: 0)
         }

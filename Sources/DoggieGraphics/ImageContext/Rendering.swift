@@ -31,7 +31,7 @@ struct ImageContextRenderBuffer<P: ColorPixel>: RasterizeBufferProtocol {
     var blender: ImageContextPixelBlender<P>
     
     @usableFromInline
-    var depth: UnsafeMutablePointer<Double>?
+    var depth: UnsafeMutablePointer<Float>?
     
     @usableFromInline
     var width: Int
@@ -41,7 +41,7 @@ struct ImageContextRenderBuffer<P: ColorPixel>: RasterizeBufferProtocol {
     
     @inlinable
     @inline(__always)
-    init(blender: ImageContextPixelBlender<P>, depth: UnsafeMutablePointer<Double>?, width: Int, height: Int) {
+    init(blender: ImageContextPixelBlender<P>, depth: UnsafeMutablePointer<Float>?, width: Int, height: Int) {
         self.blender = blender
         self.depth = depth
         self.width = width
@@ -259,21 +259,23 @@ extension ImageContext {
                         
                         if let _depth = depthFun?(b.position) {
                             
+                            let depth = Float(_depth)
+                            
                             guard 0...1 ~= _depth else { return nil }
                             guard let depth_ptr = buf.depth else { return nil }
                             
                             switch depthCompareMode {
                             case .always: break
                             case .never: return nil
-                            case .equal: guard _depth == depth_ptr.pointee else { return nil }
-                            case .notEqual: guard _depth != depth_ptr.pointee else { return nil }
-                            case .less: guard _depth < depth_ptr.pointee else { return nil }
-                            case .lessEqual: guard _depth <= depth_ptr.pointee else { return nil }
-                            case .greater: guard _depth > depth_ptr.pointee else { return nil }
-                            case .greaterEqual: guard _depth >= depth_ptr.pointee else { return nil }
+                            case .equal: guard depth == depth_ptr.pointee else { return nil }
+                            case .notEqual: guard depth != depth_ptr.pointee else { return nil }
+                            case .less: guard depth < depth_ptr.pointee else { return nil }
+                            case .lessEqual: guard depth <= depth_ptr.pointee else { return nil }
+                            case .greater: guard depth > depth_ptr.pointee else { return nil }
+                            case .greaterEqual: guard depth >= depth_ptr.pointee else { return nil }
                             }
                             
-                            depth_ptr.pointee = _depth
+                            depth_ptr.pointee = depth
                             
                             if let source = shader(ImageContextRenderStageIn(vertex: b, triangle: (_v0, _v1, _v2), barycentric: barycentric, projection: position, depth: _depth)) {
                                 return source

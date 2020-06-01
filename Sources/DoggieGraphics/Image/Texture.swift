@@ -26,7 +26,7 @@
 @frozen
 public struct Texture<RawPixel: ColorPixel>: TextureProtocol {
     
-    public typealias Pixel = Float64ColorPixel<RawPixel.Model>
+    public typealias Pixel = Float32ColorPixel<RawPixel.Model>
     
     public let width: Int
     
@@ -334,15 +334,15 @@ extension Texture: _ResamplingImplement {
     
     @inlinable
     @inline(__always)
-    func read_source(_ x: Int, _ y: Int) -> Float64ColorPixel<RawPixel.Model> {
+    func read_source(_ x: Int, _ y: Int) -> Float32ColorPixel<RawPixel.Model> {
         
-        guard width != 0 && height != 0 else { return Float64ColorPixel() }
+        guard width != 0 && height != 0 else { return Float32ColorPixel() }
         
         let (x_flag, _x) = horizontalWrappingMode.addressing(x, width)
         let (y_flag, _y) = verticalWrappingMode.addressing(y, height)
         
         let pixel = pixels[_y * width + _x]
-        return x_flag && y_flag ? Float64ColorPixel(pixel) : Float64ColorPixel(color: pixel.color, opacity: 0)
+        return x_flag && y_flag ? Float32ColorPixel(pixel) : Float32ColorPixel(color: pixel.color, opacity: 0)
     }
 }
 

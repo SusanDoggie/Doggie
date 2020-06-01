@@ -86,13 +86,13 @@ extension ColorSpace: AnyColorSpaceBaseProtocol {
         if let colorSpace = self as? ColorSpace<P.Model> {
             return Image<P>(image: image, colorSpace: colorSpace, intent: intent)
         } else {
-            return Image<Float64ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
+            return Image<Float32ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
         }
     }
     
     @inlinable
     func _create_image(image: AnyImage, intent: RenderingIntent) -> AnyImageBaseProtocol {
-        return Image<Float64ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
+        return Image<Float32ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
     }
     
     @inlinable
