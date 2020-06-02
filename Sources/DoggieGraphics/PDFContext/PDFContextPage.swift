@@ -74,7 +74,7 @@ struct PDFContextState {
     fileprivate var transparency_layers: [[PDFCommand]: PDFName] = [:]
     fileprivate var mask: [PDFName: [PDFCommand]] = [:]
     fileprivate var image: [PDFName: (PDFStream, PDFStream?)] = [:]
-    fileprivate var shading: [PDFContext.Shading: PDFName] = [:]
+    fileprivate var shading: [AnyHashable: PDFName] = [:]
     
     fileprivate var clip: PDFContext.Clip?
     
@@ -157,6 +157,24 @@ extension PDFContext {
         var function: PDFFunction
         var e0: Bool
         var e1: Bool
+    }
+    
+    struct MeshCoordData: Hashable {
+        
+        var flag: Int
+        var coord: [Point]
+    }
+    
+    struct MeshShading: Hashable {
+        
+        var type: Int
+        
+        var deviceGray: Bool
+        
+        var numberOfComponents: Int
+        
+        var coord: [MeshCoordData]
+        var color: [[[Double]]]
     }
 }
 
@@ -303,7 +321,7 @@ extension PDFContext.Page {
             }
         }
     }
-    var shading: [PDFContext.Shading: PDFName] {
+    var shading: [AnyHashable: PDFName] {
         get {
             return global?.shading ?? state.shading
         }
@@ -762,7 +780,7 @@ extension PDFContext.Page {
         return PDFFunction(functions: functions, bounds: Array(bounds.dropLast()), encode: encode)
     }
     
-    private func _draw_gradient(_ color: PDFContext.Shading, _ mask: PDFContext.Shading?) {
+    private func _draw_gradient(_ color: AnyHashable, _ mask: AnyHashable?) {
         
         let transform = _mirrored_transform
         let _transform = [
@@ -892,6 +910,234 @@ extension PDFContext.Page {
                 function: create_gradient_opacity_function(stops: stops),
                 e0: startSpread == .pad,
                 e1: endSpread == .pad
+            )
+            
+            self._draw_gradient(color, mask)
+            
+        } else {
+            
+            self._draw_gradient(color, nil)
+        }
+    }
+}
+
+extension PDFContext.Page {
+    
+    public func drawGradient<C>(_ mesh: MeshGradient<C>) {
+        
+        let mesh = mesh.convert(to: colorSpace, intent: renderingIntent)
+        
+        var patch_coord_data: [PDFContext.MeshCoordData] = []
+        var patch_color_data: [[[Double]]] = []
+        var patch_opacity_data: [[[Double]]] = []
+        
+        let type: Int
+        
+        switch mesh.type {
+        case .coonsPatch: type = 6
+        case .tensorProduct: type = 7
+        }
+        
+        func encode(_ direction: Int, _ patch: CubicBezierPatch<Point>, _ c0: AnyColor, _ c1: AnyColor, _ c2: AnyColor, _ c3: AnyColor) {
+            
+            switch direction {
+                
+            case 0:
+                
+                let _c0 = (0..<colorSpace.numberOfComponents).map { c0.component($0) }
+                let _c1 = (0..<colorSpace.numberOfComponents).map { c1.component($0) }
+                let _c2 = (0..<colorSpace.numberOfComponents).map { c2.component($0) }
+                let _c3 = (0..<colorSpace.numberOfComponents).map { c3.component($0) }
+                
+                switch mesh.type {
+                case .coonsPatch:
+                    
+                    patch_coord_data.append(PDFContext.MeshCoordData(
+                        flag: 0,
+                        coord: [
+                            patch.m30, patch.m20, patch.m10, patch.m00,
+                            patch.m01, patch.m02, patch.m03,
+                            patch.m13, patch.m23, patch.m33,
+                            patch.m32, patch.m31,
+                        ]
+                    ))
+                    
+                case .tensorProduct:
+                    
+                    patch_coord_data.append(PDFContext.MeshCoordData(
+                        flag: 0,
+                        coord: [
+                            patch.m30, patch.m20, patch.m10, patch.m00,
+                            patch.m01, patch.m02, patch.m03,
+                            patch.m13, patch.m23, patch.m33,
+                            patch.m32, patch.m31,
+                            patch.m11, patch.m12, patch.m21, patch.m22,
+                        ]
+                    ))
+                }
+                
+                patch_color_data.append([_c0, _c1, _c2, _c3])
+                patch_opacity_data.append([[c0.opacity * mesh.opacity], [c1.opacity * mesh.opacity], [c2.opacity * mesh.opacity], [c3.opacity * mesh.opacity]])
+                
+            case 1:
+                
+                let _c0 = (0..<colorSpace.numberOfComponents).map { c0.component($0) }
+                let _c1 = (0..<colorSpace.numberOfComponents).map { c1.component($0) }
+                
+                switch mesh.type {
+                case .coonsPatch:
+                    
+                    patch_coord_data.append(PDFContext.MeshCoordData(
+                        flag: 2,
+                        coord: [
+                            patch.m20, patch.m10, patch.m00,
+                            patch.m01, patch.m02, patch.m03,
+                            patch.m13, patch.m23,
+                        ]
+                    ))
+                    
+                case .tensorProduct:
+                    
+                    patch_coord_data.append(PDFContext.MeshCoordData(
+                        flag: 2,
+                        coord: [
+                            patch.m20, patch.m10, patch.m00,
+                            patch.m01, patch.m02, patch.m03,
+                            patch.m13, patch.m23,
+                            patch.m11, patch.m12, patch.m21, patch.m22,
+                        ]
+                    ))
+                }
+                
+                patch_color_data.append([_c0, _c1])
+                patch_opacity_data.append([[c0.opacity * mesh.opacity], [c1.opacity * mesh.opacity]])
+                
+            case 2:
+                
+                let _c1 = (0..<colorSpace.numberOfComponents).map { c1.component($0) }
+                let _c3 = (0..<colorSpace.numberOfComponents).map { c3.component($0) }
+                
+                switch mesh.type {
+                case .coonsPatch:
+                    
+                    patch_coord_data.append(PDFContext.MeshCoordData(
+                        flag: 2,
+                        coord: [
+                            patch.m01, patch.m02, patch.m03,
+                            patch.m13, patch.m23, patch.m33,
+                            patch.m32, patch.m31,
+                        ]
+                    ))
+                    
+                case .tensorProduct:
+                    
+                    patch_coord_data.append(PDFContext.MeshCoordData(
+                        flag: 2,
+                        coord: [
+                            patch.m01, patch.m02, patch.m03,
+                            patch.m13, patch.m23, patch.m33,
+                            patch.m32, patch.m31,
+                            patch.m11, patch.m12, patch.m21, patch.m22,
+                        ]
+                    ))
+                }
+                
+                patch_color_data.append([_c1, _c3])
+                patch_opacity_data.append([[c1.opacity * mesh.opacity], [c3.opacity * mesh.opacity]])
+                
+            case 3:
+                
+                let _c2 = (0..<colorSpace.numberOfComponents).map { c2.component($0) }
+                let _c3 = (0..<colorSpace.numberOfComponents).map { c3.component($0) }
+                
+                switch mesh.type {
+                case .coonsPatch:
+                    
+                    patch_coord_data.append(PDFContext.MeshCoordData(
+                        flag: 3,
+                        coord: [
+                            patch.m30, patch.m20, patch.m10,
+                            patch.m13, patch.m23, patch.m33,
+                            patch.m32, patch.m31,
+                        ]
+                    ))
+                    
+                case .tensorProduct:
+                    
+                    patch_coord_data.append(PDFContext.MeshCoordData(
+                        flag: 3,
+                        coord: [
+                            patch.m30, patch.m20, patch.m10,
+                            patch.m13, patch.m23, patch.m33,
+                            patch.m32, patch.m31,
+                            patch.m11, patch.m12, patch.m21, patch.m22,
+                        ]
+                    ))
+                }
+                
+                patch_color_data.append([_c2, _c3])
+                patch_opacity_data.append([[c2.opacity * mesh.opacity], [c3.opacity * mesh.opacity]])
+                
+            default: break
+            }
+        }
+        
+        let patches = mesh.patches
+        let colors = mesh.patch_colors
+        
+        guard patches.count == mesh.row * mesh.column else { return }
+        guard colors.count == mesh.row * mesh.column else { return }
+        
+        for x in 0..<mesh.column {
+            
+            if x & 1 == 0 {
+                
+                for y in 0..<mesh.row {
+                    
+                    let patch = patches[y * mesh.row + x]
+                    let color = colors[y * mesh.row + x]
+                    
+                    if x == 0 && y == 0 {
+                        encode(0, patch, color.0, color.1, color.2, color.3)
+                    } else if y == 0 {
+                        encode(2, patch, color.0, color.1, color.2, color.3)
+                    } else {
+                        encode(3, patch, color.0, color.1, color.2, color.3)
+                    }
+                }
+                
+            } else {
+                
+                for y in (0..<mesh.row).reversed() {
+                    
+                    let patch = patches[y * mesh.row + x]
+                    let color = colors[y * mesh.row + x]
+                    
+                    if y + 1 == mesh.row {
+                        encode(2, patch, color.0, color.1, color.2, color.3)
+                    } else {
+                        encode(1, patch, color.0, color.1, color.2, color.3)
+                    }
+                }
+            }
+        }
+        
+        let color = PDFContext.MeshShading(
+            type: type,
+            deviceGray: false,
+            numberOfComponents: colorSpace.numberOfComponents,
+            coord: patch_coord_data,
+            color: patch_color_data
+        )
+        
+        if patch_opacity_data.contains(where: { $0.contains { $0[0] < 1 } }) {
+            
+            let mask = PDFContext.MeshShading(
+                type: type,
+                deviceGray: true,
+                numberOfComponents: 1,
+                coord: patch_coord_data,
+                color: patch_opacity_data
             )
             
             self._draw_gradient(color, mask)

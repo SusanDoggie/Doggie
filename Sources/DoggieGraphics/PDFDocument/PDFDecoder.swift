@@ -25,6 +25,20 @@
 
 extension Data {
     
+    mutating func pdf_remove_whitespaces_and_comment() {
+        
+        self.pdf_remove_whitespaces()
+        
+        while self.first == 0x25 {
+            
+            while self.first != 0x0A && self.first != 0x0D {
+                self = self.dropFirst()
+            }
+            
+            self.pdf_remove_whitespaces()
+        }
+    }
+    
     mutating func pdf_remove_whitespaces() {
         while self.first == 0x00 || self.first == 0x09 || self.first == 0x0A || self.first == 0x0C || self.first == 0x0D || self.first == 0x20 {
             self = self.dropFirst()
@@ -64,7 +78,7 @@ extension PDFDocument {
     
     public enum Error: Swift.Error {
         
-        case invalidFormat
+        case invalidFormat(Int)
     }
     
     public init(data: Data) throws {
@@ -73,7 +87,7 @@ extension PDFDocument {
         
         data.pdf_remove_last_whitespaces()
         
-        guard data.popLast(5).elementsEqual("%%EOF".utf8) else { throw Error.invalidFormat }
+        guard data.popLast(5).elementsEqual("%%EOF".utf8) else { throw Error.invalidFormat(#line) }
         
         data.pdf_remove_last_whitespaces()
         
@@ -95,12 +109,9 @@ extension PDFDocument {
         
         data.pdf_remove_last_whitespaces()
         
-        guard data.popLast(9).elementsEqual("startxref".utf8) else { throw Error.invalidFormat }
+        guard data.popLast(9).elementsEqual("startxref".utf8) else { throw Error.invalidFormat(#line) }
         
-        var _xref = data.popFirst(xref_offset)
-        swap(&data, &_xref)
-        
-        try self.init(PDFDocument.decode_trailer(data, _xref))
+        try self.init(PDFDocument.decode_trailer(data, data.dropFirst(xref_offset), [xref_offset]))
     }
     
     static func dereference_all(_ object: PDFObject) -> PDFObject {
@@ -125,67 +136,183 @@ extension PDFDocument {
         }
     }
     
-    private static func decode_trailer(_ data: Data, _ xref_data: Data) throws -> PDFObject {
+    private static func decode_trailer(_ data: Data, _ xref_data: Data, _ stack: Set<Int>) throws -> PDFObject {
         
-        let (trailer, _xref_table) = try _decode_trailer(data, xref_data)
+        let (trailer, _xref_table) = try _decode_trailer(data, xref_data, stack)
         
-        var xref_table = Dictionary(uniqueKeysWithValues: _xref_table.compactMap { try? ($0, decode_indirect_object($0, $1, _xref_table)) })
+        var xref_table = Dictionary(uniqueKeysWithValues: _xref_table.compactMap { try? ($0, decode_indirect_object($0, $1, _xref_table).1) })
         xref_table = xref_table.mapValues { dereference_all($0._apply_xref(xref_table)) }
         
         return dereference_all(trailer._apply_xref(xref_table))
     }
     
-    private static func _decode_trailer(_ data: Data, _ xref_data: Data) throws -> (PDFObject, [PDFXref: Data]) {
+    private static func _decode_object_stream(_ object: PDFObject, _ xref_table: [PDFXref: Data]) throws -> [PDFXref: Data] {
         
-        var xref_data = xref_data
+        guard object.isStream else { throw Error.invalidFormat(#line) }
         
-        guard xref_data.popFirst(4).elementsEqual("xref".utf8) else { throw Error.invalidFormat }
+        var xref_table = xref_table
         
+        guard object["Type"].name == "ObjStm" else { throw Error.invalidFormat(#line) }
+        
+        guard let count = object["N"].intValue else { throw Error.invalidFormat(#line) }
+        guard let first = object["First"].intValue else { throw Error.invalidFormat(#line) }
+        
+        guard var stream = object.stream?.decode() else { throw Error.invalidFormat(#line) }
+        let stream_start = stream.dropFirst(first)
+        
+        var xref_offsets: [(PDFXref, Int)] = []
+        
+        for _ in 0..<count {
+            stream.pdf_remove_whitespaces()
+            guard let object = stream.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
+            stream.pdf_remove_whitespaces()
+            guard let offset = stream.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
+            xref_offsets.append((PDFXref(object: object, generation: 0), offset))
+        }
+        
+        var result: [PDFXref: Data] = [:]
+        
+        var extends = object["Extends"]
+        
+        while case let .xref(xref) = extends.base {
+            
+            guard var extends_data = xref_table[xref] else { break }
+            xref_table[xref] = nil
+            
+            guard let _extends = PDFObject(&extends_data, xref_table) else { break }
+            extends = _extends
+        }
+        
+        if let table = try? _decode_object_stream(extends, xref_table) {
+            result = table
+        }
+        
+        for (xref, offset) in xref_offsets {
+            result[xref] = stream_start.dropFirst(offset)
+        }
+        
+        return result
+    }
+    
+    private static func _decode_object_stream(_ data: Data, _ xref_table: [PDFXref: Data]) throws -> [PDFXref: Data] {
+        
+        let (_, object_stream) = try decode_indirect_object(nil, data, xref_table)
+        
+        return try _decode_object_stream(object_stream, xref_table)
+    }
+    
+    private static func _decode_xref_stream(_ data: Data, _ xref_data: Data, _ stack: Set<Int>) throws -> (PDFObject, [PDFXref: Data]) {
+        
+        let (trailer_xref, trailer) = try decode_indirect_object(nil, xref_data, [:])
+        guard trailer.isStream else { throw Error.invalidFormat(#line) }
+        
+        guard trailer["Type"].name == "XRef" else { throw Error.invalidFormat(#line) }
+        
+        guard let field_size = trailer["W"].array?.compactMap({ $0.intValue }), field_size.count == 3 else { throw Error.invalidFormat(#line) }
+        guard let size = trailer["Size"].intValue else { throw Error.invalidFormat(#line) }
+        
+        let index = trailer["Index"].array?.compactMap({ $0.intValue }) ?? [0, size]
+        guard index.count == 2 else { throw Error.invalidFormat(#line) }
+        
+        guard var stream = trailer.stream?.decode() else { throw Error.invalidFormat(#line) }
+        
+        func read_bytes(_ size: Int) -> Int? {
+            var bytes = 0
+            for _ in 0..<size {
+                guard let byte = stream.popFirst() else { return nil }
+                bytes = (bytes << 8) | Int(byte)
+            }
+            return bytes
+        }
+        
+        var xref_offsets: [(PDFXref, Int)] = []
+        var object_stream: Set<PDFXref> = []
+        
+        for object in index[0]..<index[0] + index[1] {
+            
+            guard let type = read_bytes(field_size[0]) else { throw Error.invalidFormat(#line) }
+            guard let field2 = read_bytes(field_size[1]) else { throw Error.invalidFormat(#line) }
+            guard let field3 = read_bytes(field_size[2]) else { throw Error.invalidFormat(#line) }
+            
+            switch type {
+            case 0: break
+            case 1: xref_offsets.append((PDFXref(object: object, generation: UInt16(field3)), field2))
+            case 2: object_stream.insert(PDFXref(object: field2, generation: 0))
+            default: break
+            }
+        }
+        
+        var xref_table: [PDFXref: Data] = [:]
+        
+        if let prev = trailer["Prev"].intValue, !stack.contains(prev) {
+            var stack = stack
+            stack.insert(prev)
+            xref_table = try _decode_xref_stream(data, data.dropFirst(prev), stack).1
+        }
+        
+        for (xref, offset) in xref_offsets where xref != trailer_xref {
+            xref_table[xref] = data.dropFirst(offset)
+        }
+        
+        for object_xref in object_stream where object_xref != trailer_xref {
+            guard let object_stream = xref_table[object_xref] else { continue }
+            var xref_table = xref_table
+            xref_table[object_xref] = nil
+            xref_table[trailer_xref] = nil
+            guard let table = try? _decode_object_stream(object_stream, xref_table) else { continue }
+            xref_table.merge(table) { _, rhs in rhs }
+        }
+        
+        return (PDFObject(trailer.dictionary ?? [:]), xref_table)
+    }
+    
+    private static func _decode_trailer(_ data: Data, _ xref_data: Data, _ stack: Set<Int>) throws -> (PDFObject, [PDFXref: Data]) {
+        
+        if !xref_data.prefix(4).elementsEqual("xref".utf8) {
+            return try _decode_xref_stream(data, xref_data, stack)
+        }
+        
+        var xref_data = xref_data.dropFirst(4)
         xref_data.pdf_remove_whitespaces()
         
         var xref_offsets: [(PDFXref, Int, Bool)] = []
         
         while let xref_start = xref_data.pdf_decode_digits() {
             
-            guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat }
-            guard let xref_count = xref_data.pdf_decode_digits() else { throw Error.invalidFormat }
+            guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
+            guard let xref_count = xref_data.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
             
             for object in xref_start..<xref_start + xref_count {
                 
                 xref_data.pdf_remove_whitespaces()
                 
-                guard let offset = xref_data.pdf_decode_digits() else { throw Error.invalidFormat }
-                guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat }
-                guard let _generation = xref_data.pdf_decode_digits(), let generation = UInt16(exactly: _generation) else { throw Error.invalidFormat }
-                guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat }
+                guard let offset = xref_data.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
+                guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
+                guard let _generation = xref_data.pdf_decode_digits(), let generation = UInt16(exactly: _generation) else { throw Error.invalidFormat(#line) }
+                guard xref_data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
                 
                 switch xref_data.popFirst() {
                 case 0x66: xref_offsets.append((PDFXref(object: object, generation: generation), offset, false))
                 case 0x6E: xref_offsets.append((PDFXref(object: object, generation: generation), offset, true))
-                default: throw Error.invalidFormat
+                default: throw Error.invalidFormat(#line)
                 }
             }
             
             xref_data.pdf_remove_whitespaces()
         }
         
-        guard !xref_offsets.isEmpty else { throw Error.invalidFormat }
-        guard xref_data.popFirst(7).elementsEqual("trailer".utf8) else { throw Error.invalidFormat }
+        guard !xref_offsets.isEmpty else { throw Error.invalidFormat(#line) }
+        guard xref_data.popFirst(7).elementsEqual("trailer".utf8) else { throw Error.invalidFormat(#line) }
         
-        xref_data.pdf_remove_whitespaces()
-        
-        guard let trailer = PDFObject(&xref_data, [:]), trailer.isDictionary else { throw Error.invalidFormat }
+        guard let trailer = PDFObject(&xref_data, [:]), trailer.isDictionary else { throw Error.invalidFormat(#line) }
         
         var xref_table: [PDFXref: Data] = [:]
         
-        if let prev = trailer["Prev"].intValue {
-            var data = data
-            var _xref = data.popFirst(prev)
-            swap(&data, &_xref)
-            xref_table = try _decode_trailer(data, _xref).1
+        if let prev = trailer["Prev"].intValue, !stack.contains(prev) {
+            var stack = stack
+            stack.insert(prev)
+            xref_table = try _decode_trailer(data, data.dropFirst(prev), stack).1
         }
-        
-        xref_offsets.sort { $0.1 < $1.1 }
         
         for (xref, offset, flag) in xref_offsets where flag {
             xref_table[xref] = data.dropFirst(offset)
@@ -194,25 +321,29 @@ extension PDFDocument {
         return (trailer, xref_table)
     }
     
-    private static func decode_indirect_object(_ xref: PDFXref, _ data: Data, _ xref_table: [PDFXref: Data]) throws -> PDFObject {
+    private static func decode_indirect_object(_ xref: PDFXref?, _ data: Data, _ xref_table: [PDFXref: Data]) throws -> (PDFXref, PDFObject) {
         
         var data = data
-        data.pdf_remove_whitespaces()
+        data.pdf_remove_whitespaces_and_comment()
         
-        guard let object = data.pdf_decode_digits(), xref.object == object else { throw Error.invalidFormat }
-        guard data.popFirst() == 0x20 else { throw Error.invalidFormat }
-        guard let generation = data.pdf_decode_digits(), xref.generation == generation else { throw Error.invalidFormat }
-        guard data.popFirst() == 0x20 else { throw Error.invalidFormat }
+        guard let object = data.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
+        guard data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
+        guard let generation = data.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
+        guard data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
         
-        guard data.popFirst(3).elementsEqual("obj".utf8) else { throw Error.invalidFormat }
+        if let xref = xref {
+            guard xref.object == object && xref.generation == generation else { throw Error.invalidFormat(#line) }
+        }
         
-        guard let obj = PDFObject(&data, xref_table) else { throw Error.invalidFormat }
+        guard data.popFirst(3).elementsEqual("obj".utf8) else { throw Error.invalidFormat(#line) }
         
-        data.pdf_remove_whitespaces()
+        guard let obj = PDFObject(&data, xref_table) else { throw Error.invalidFormat(#line) }
         
-        guard data.popFirst(6).elementsEqual("endobj".utf8) else { throw Error.invalidFormat }
+        data.pdf_remove_whitespaces_and_comment()
         
-        return obj
+        guard data.popFirst(6).elementsEqual("endobj".utf8) else { throw Error.invalidFormat(#line) }
+        
+        return (PDFXref(object: object, generation: UInt16(generation)), obj)
     }
     
 }
@@ -221,16 +352,7 @@ extension PDFObject {
     
     init?(_ data: inout Data, _ xref_table: [PDFXref: Data] = [:]) {
         
-        data.pdf_remove_whitespaces()
-        
-        while data.first == 0x25 {
-            
-            while data.first != 0x0A && data.first != 0x0D {
-                data = data.dropFirst()
-            }
-            
-            data.pdf_remove_whitespaces()
-        }
+        data.pdf_remove_whitespaces_and_comment()
         
         switch data.first ?? 0 {
             
@@ -307,14 +429,14 @@ extension PDFObject {
         
         guard copy.popFirst() == 0x5B else { return nil }
         
-        copy.pdf_remove_whitespaces()
+        copy.pdf_remove_whitespaces_and_comment()
         
         var array: [PDFObject] = []
         
         while copy.first != 0x5D, let obj = PDFObject(&copy, xref_table) {
             
             array.append(obj)
-            copy.pdf_remove_whitespaces()
+            copy.pdf_remove_whitespaces_and_comment()
         }
         
         guard copy.popFirst() == 0x5D else { return nil }
@@ -330,7 +452,7 @@ extension PDFObject {
         guard copy.popFirst() == 0x3C else { return nil }
         guard copy.popFirst() == 0x3C else { return nil }
         
-        copy.pdf_remove_whitespaces()
+        copy.pdf_remove_whitespaces_and_comment()
         
         var dictionary: [PDFName: PDFObject] = [:]
         
@@ -339,13 +461,13 @@ extension PDFObject {
             guard let value = PDFObject(&copy, xref_table) else { return nil }
             dictionary[name] = value
             
-            copy.pdf_remove_whitespaces()
+            copy.pdf_remove_whitespaces_and_comment()
         }
         
         guard copy.popFirst() == 0x3E else { return nil }
         guard copy.popFirst() == 0x3E else { return nil }
         
-        copy.pdf_remove_whitespaces()
+        copy.pdf_remove_whitespaces_and_comment()
         
         if copy.prefix(6).elementsEqual("stream".utf8) {
             
@@ -389,7 +511,7 @@ extension PDFObject {
         
         let stream = copy.popFirst(length)
         
-        copy.pdf_remove_whitespaces()
+        copy.pdf_remove_whitespaces_and_comment()
         
         guard copy.popFirst(9).elementsEqual("endstream".utf8) else { return nil }
         

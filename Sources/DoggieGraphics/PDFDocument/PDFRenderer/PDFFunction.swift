@@ -119,6 +119,8 @@ extension PDFFunction {
             let c0 = object["C0"].array?.compactMap { $0.doubleValue } ?? [0]
             let c1 = object["C1"].array?.compactMap { $0.doubleValue } ?? [1]
             
+            guard c0.count == c1.count else { return nil }
+            
             self.exponent = n
             self.c0 = c0
             self.c1 = c1
@@ -139,6 +141,7 @@ extension PDFFunction {
             guard let encode = object["Encode"].array?.compactMap({ $0.doubleValue }) else { return nil }
             
             guard functions.allSatisfy({ $0.domain.count == 1 }) else { return nil }
+            guard functions.dropFirst().allSatisfy({ $0.numberOfOutputs == functions[0].numberOfOutputs }) else { return nil }
             guard bounds.count + 1 == functions.count else { return nil }
             guard encode.count == functions.count * 2 else { return nil }
             
@@ -157,6 +160,64 @@ extension PDFFunction {
             
         default: return nil
         }
+    }
+}
+
+extension PDFFunction {
+    
+    var numberOfInputs: Int {
+        switch type {
+        case 2: return 1
+        case 3: return 1
+        case 4: return domain.count
+        default: return 0
+        }
+    }
+    
+    var numberOfOutputs: Int {
+        switch type {
+        case 2: return c0.count
+        case 3: return functions.first?.numberOfOutputs ?? 0
+        case 4: return range.count
+        default: return 0
+        }
+    }
+}
+
+extension PDFFunction {
+    
+    func eval(_ inputs: Double ... ) -> [Double] {
+        
+        switch type {
+        case 2:
+            
+            guard inputs.count == 1 else { return [] }
+            
+            let t = pow(inputs[0], exponent)
+            
+            return zip(c0, c1).map { $0 + t * ($1 - $0) }
+            
+        case 3:
+            
+            guard inputs.count == 1 else { return [] }
+            
+            let domain = self.domain[0]
+            
+            let ranges = zip([domain.lowerBound] + bounds, bounds + [domain.upperBound]).map { $0...$1 }
+            
+            let t = inputs[0]
+            
+            for ((range, encode), function) in zip(zip(ranges, encode), functions) where range ~= t {
+                
+                let s = (t - range.lowerBound) / (range.upperBound - range.lowerBound) * (encode.t1 - encode.t0) + encode.t0
+                
+                return function.eval(s)
+            }
+            
+        default: break
+        }
+        
+        return []
     }
 }
 

@@ -68,9 +68,7 @@ extension PDFRenderer {
         
         var stack: [PDFCommand] = []
         
-        while !stream.isEmpty {
-            
-            guard let command = PDFCommand.decode_command(&stream) else { continue }
+        while let command = PDFCommand.decode_command(&stream) {
             
             switch command.command {
                 
@@ -431,33 +429,34 @@ extension PDFRenderer {
             case "sh":
                 
                 let _name = stack.popLast()?.name
-                if let name = _name, let shading = shading[name].dictionary {
+                if let name = _name, let _shading = shading[name].dictionary {
                     
-                    guard let _colorSpace = shading["ColorSpace"], let colorSpace = PDFColorSpace(_colorSpace) else { break }
+                    guard let _colorSpace = _shading["ColorSpace"], let colorSpace = PDFColorSpace(_colorSpace) else { break }
                     
-                    switch shading["ShadingType"]?.intValue {
+                    switch _shading["ShadingType"]?.intValue {
                         
                     case 2:
                         
                         var startSpread = GradientSpreadMode.none
                         var endSpread = GradientSpreadMode.none
                         
-                        if let extend = shading["Extend"]?.array?.compactMap({ $0.boolValue }), extend.count == 2 {
+                        if let extend = _shading["Extend"]?.array?.compactMap({ $0.boolValue }), extend.count == 2 {
                             if extend[0] { startSpread = .pad }
                             if extend[1] { endSpread = .pad }
                         }
                         
-                        let domain = shading["Domain"]?.array?.compactMap { $0.doubleValue } ?? [0, 1]
+                        let domain = _shading["Domain"]?.array?.compactMap { $0.doubleValue } ?? [0, 1]
                         guard domain.count == 2 else { break }
                         
-                        guard let coords = shading["Coords"]?.array?.compactMap({ $0.doubleValue }), coords.count == 4 else { break }
+                        guard let coords = _shading["Coords"]?.array?.compactMap({ $0.doubleValue }), coords.count == 4 else { break }
                         
                         let x1 = coords[0]
                         let y1 = coords[1]
                         let x2 = coords[2]
                         let y2 = coords[3]
                         
-                        guard let _function = shading["Function"], let function = PDFFunction(_function) else { break }
+                        guard let _function = _shading["Function"], let function = PDFFunction(_function) else { break }
+                        guard function.numberOfInputs == 1 && function.numberOfOutputs == colorSpace.numberOfComponents else { break }
                         
                         self.drawLinearGradient(function: function, colorSpace: colorSpace, start: Point(x: x1, y: y1), end: Point(x: x2, y: y2), startSpread: startSpread, endSpread: endSpread)
                         
@@ -466,15 +465,15 @@ extension PDFRenderer {
                         var startSpread = GradientSpreadMode.none
                         var endSpread = GradientSpreadMode.none
                         
-                        if let extend = shading["Extend"]?.array?.compactMap({ $0.boolValue }), extend.count == 2 {
+                        if let extend = _shading["Extend"]?.array?.compactMap({ $0.boolValue }), extend.count == 2 {
                             if extend[0] { startSpread = .pad }
                             if extend[1] { endSpread = .pad }
                         }
                         
-                        let domain = shading["Domain"]?.array?.compactMap { $0.doubleValue } ?? [0, 1]
+                        let domain = _shading["Domain"]?.array?.compactMap { $0.doubleValue } ?? [0, 1]
                         guard domain.count == 2 else { break }
                         
-                        guard let coords = shading["Coords"]?.array?.compactMap({ $0.doubleValue }), coords.count == 6 else { break }
+                        guard let coords = _shading["Coords"]?.array?.compactMap({ $0.doubleValue }), coords.count == 6 else { break }
                         
                         let x1 = coords[0]
                         let y1 = coords[1]
@@ -483,7 +482,8 @@ extension PDFRenderer {
                         let y2 = coords[4]
                         let r2 = coords[5]
                         
-                        guard let _function = shading["Function"], let function = PDFFunction(_function) else { break }
+                        guard let _function = _shading["Function"], let function = PDFFunction(_function) else { break }
+                        guard function.numberOfInputs == 1 && function.numberOfOutputs == colorSpace.numberOfComponents else { break }
                         
                         self.drawRadialGradient(function: function, colorSpace: colorSpace, start: Point(x: x1, y: y1), startRadius: r1, end: Point(x: x2, y: y2), endRadius: r2, startSpread: startSpread, endSpread: endSpread)
                         

@@ -245,41 +245,93 @@ extension PDFContext.Page {
         
         for (shader, name) in self.shading {
             
-            let function: PDFObject
-            
-            switch shader.function.type {
-            case 2, 3, 4: function = shader.function.pdf_object
-            default: continue
-            }
-            
-            let function_token = PDFXref(object: xref_table.count + 1, generation: 0)
-            xref_table[function_token] = function
-            
-            let _shading: PDFObject
-            
-            switch shader.type {
-            case 1:
+            switch shader {
                 
-                _shading = [
+            case let shader as PDFContext.Shading:
+                
+                let function: PDFObject
+                
+                switch shader.function.type {
+                case 2, 3, 4: function = shader.function.pdf_object
+                default: continue
+                }
+                
+                let function_token = PDFXref(object: xref_table.count + 1, generation: 0)
+                xref_table[function_token] = function
+                
+                let _shading: PDFObject
+                
+                switch shader.type {
+                case 1:
+                    
+                    _shading = [
+                        "ColorSpace": shader.deviceGray ? PDFObject("DeviceGray" as PDFName) : colorSpace,
+                        "ShadingType": PDFObject(shader.type),
+                        "Function": PDFObject(function_token),
+                    ]
+                    
+                case 2, 3:
+                    
+                    _shading = [
+                        "ColorSpace": shader.deviceGray ? PDFObject("DeviceGray" as PDFName) : colorSpace,
+                        "ShadingType": PDFObject(shader.type),
+                        "Function": PDFObject(function_token),
+                        "Coords": PDFObject(shader.coords),
+                        "Extend": PDFObject([PDFObject(shader.e0), PDFObject(shader.e1)]),
+                    ]
+                    
+                default: continue
+                }
+                
+                shading[name] = _shading
+                
+            case let shader as PDFContext.MeshShading:
+                
+                var data = Data()
+                
+                let _coord = shader.coord.flatMap { $0.coord }
+                let _color = shader.color.joined()
+                
+                guard let min_x = _coord.lazy.map({ $0.x }).min() else { break }
+                guard let max_x = _coord.lazy.map({ $0.x }).max() else { break }
+                guard let min_y = _coord.lazy.map({ $0.y }).min() else { break }
+                guard let max_y = _coord.lazy.map({ $0.y }).max() else { break }
+                
+                let min_color = (0..<shader.numberOfComponents).map { i in min(0, _color.lazy.map { $0[i] }.min() ?? 0) }
+                let max_color = (0..<shader.numberOfComponents).map { i in max(1, _color.lazy.map { $0[i] }.max() ?? 1) }
+                
+                var decode: [PDFObject] = [PDFObject(min_x), PDFObject(max_x), PDFObject(min_y), PDFObject(max_y)]
+                decode += zip(min_color, max_color).flatMap { [PDFObject($0), PDFObject($1)] }
+                
+                for (coord, color) in zip(shader.coord, shader.color) {
+                    data.append(UInt8(coord.flag))
+                    for point in coord.coord {
+                        data.encode(BEUInt32(((point.x - min_x) / (max_x - min_x) * 4294967295).clamped(to: 0...4294967295)))
+                        data.encode(BEUInt32(((point.y - min_y) / (max_y - min_y) * 4294967295).clamped(to: 0...4294967295)))
+                    }
+                    for c in color {
+                        for (c, (min, max)) in zip(c, zip(min_color, max_color)) {
+                            data.encode(UInt8(((c - min) / (max - min) * 255).clamped(to: 0...255)))
+                        }
+                    }
+                }
+                
+                let _shading = PDFStream(dictionary: [
                     "ColorSpace": shader.deviceGray ? PDFObject("DeviceGray" as PDFName) : colorSpace,
                     "ShadingType": PDFObject(shader.type),
-                    "Function": PDFObject(function_token),
-                ]
+                    "BitsPerCoordinate": 32,
+                    "BitsPerComponent": 8,
+                    "BitsPerFlag": 8,
+                    "Decode": PDFObject(decode),
+                ], data: data)
                 
-            case 2, 3:
+                let shading_token = PDFXref(object: xref_table.count + 1, generation: 0)
+                xref_table[shading_token] = PDFObject(_shading)
                 
-                _shading = [
-                    "ColorSpace": shader.deviceGray ? PDFObject("DeviceGray" as PDFName) : colorSpace,
-                    "ShadingType": PDFObject(shader.type),
-                    "Function": PDFObject(function_token),
-                    "Coords": PDFObject(shader.coords),
-                    "Extend": PDFObject([PDFObject(shader.e0), PDFObject(shader.e1)]),
-                ]
+                shading[name] = PDFObject(shading_token)
                 
-            default: continue
+            default: break
             }
-            
-            shading[name] = _shading
         }
         
         for (var gstate, name) in self.extGState {
