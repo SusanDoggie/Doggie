@@ -487,6 +487,41 @@ extension PDFRenderer {
                         
                         self.drawRadialGradient(function: function, colorSpace: colorSpace, start: Point(x: x1, y: y1), startRadius: r1, end: Point(x: x2, y: y2), endRadius: r2, startSpread: startSpread, endSpread: endSpread)
                         
+                    case 6, 7:
+                        
+                        guard let bitsPerCoordinate = _shading["BitsPerCoordinate"]?.intValue else { break }
+                        guard let bitsPerComponent = _shading["BitsPerComponent"]?.intValue else { break }
+                        guard let bitsPerFlag = _shading["BitsPerFlag"]?.intValue else { break }
+                        guard let decode = _shading["Decode"]?.array?.compactMap({ $0.doubleValue }) else { break }
+                        guard let data = shading[name].stream?.decode() else { break }
+                        
+                        let isCoonsPatch = _shading["ShadingType"]?.intValue == 6
+                        
+                        if let _function = _shading["Function"] {
+                            
+                            guard decode.count == 6 else { break }
+                            
+                            if let functions = _function.array?.compactMap({ PDFFunction($0) }) {
+                                
+                                guard functions.count == colorSpace.numberOfComponents else { break }
+                                guard functions.allSatisfy({ $0.numberOfInputs == 1 && $0.numberOfOutputs == 1 }) else { break }
+                                
+                                self.drawMeshGradient(functions: functions, colorSpace: colorSpace, isCoonsPatch: isCoonsPatch, bitsPerCoordinate: bitsPerCoordinate, bitsPerComponent: bitsPerComponent, bitsPerFlag: bitsPerFlag, decode: decode, data: data)
+                                
+                            } else if let function = PDFFunction(_function) {
+                                
+                                guard function.numberOfInputs == 1 && function.numberOfOutputs == colorSpace.numberOfComponents else { break }
+                                
+                                self.drawMeshGradient(functions: [function], colorSpace: colorSpace, isCoonsPatch: isCoonsPatch, bitsPerCoordinate: bitsPerCoordinate, bitsPerComponent: bitsPerComponent, bitsPerFlag: bitsPerFlag, decode: decode, data: data)
+                            }
+                            
+                        } else {
+                            
+                            guard decode.count == 4 + colorSpace.numberOfComponents * 2 else { break }
+                            
+                            self.drawMeshGradient(functions: [], colorSpace: colorSpace, isCoonsPatch: isCoonsPatch, bitsPerCoordinate: bitsPerCoordinate, bitsPerComponent: bitsPerComponent, bitsPerFlag: bitsPerFlag, decode: decode, data: data)
+                        }
+                        
                     default: break
                     }
                 }

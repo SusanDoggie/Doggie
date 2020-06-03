@@ -531,4 +531,373 @@ extension PDFRenderer {
         
         context.drawRadialGradient(stops: _stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread)
     }
+    
+    struct BitsReader {
+        
+        var data: Data
+        
+        var bits: UInt = 0
+        var bitsize: UInt = 0
+        
+        mutating func clear() {
+            let size = bitsize & 7
+            guard bitsize >= size else { return }
+            let remain = bitsize - size
+            bits &= (1 << remain) - 1
+            bitsize = remain
+        }
+        
+        mutating func next(_ size: Int) -> UInt? {
+            
+            if bitsize >= size {
+                
+                let remain = bitsize - UInt(size)
+                let code = bits >> remain
+                
+                bits &= (1 << remain) - 1
+                bitsize = remain
+                
+                return code
+            }
+            
+            while let byte = data.popFirst() {
+                
+                bits = (bits << 8) | UInt(byte)
+                bitsize += 8
+                
+                guard bitsize >= size else { continue }
+                
+                let remain = bitsize - UInt(size)
+                let code = bits >> remain
+                
+                bits &= (1 << remain) - 1
+                bitsize = remain
+                
+                return code
+            }
+            
+            return nil
+        }
+    }
+    
+    struct PatchData {
+        
+        var flag: UInt
+        
+        var _coords: [UInt]
+        
+        var _colors: [UInt]
+        
+        var coords: [Double] = []
+        
+        var colors: [Double] = []
+        
+        mutating func decode(functions: [PDFFunction], colorSpace: PDFColorSpace, bitsPerCoordinate: Int, bitsPerComponent: Int, decode: [Double]) {
+            
+            let max_coord = (1 << bitsPerCoordinate) - 1
+            let max_color = (1 << bitsPerComponent) - 1
+            
+            let numberOfComponents = colorSpace.numberOfComponents
+            
+            func decode_coord(_ coord: ArraySlice<UInt>) -> [Double] {
+                let x = Double(coord.first!) / Double(max_coord) * (decode[1] - decode[0]) + decode[0]
+                let y = Double(coord.last!) / Double(max_coord) * (decode[3] - decode[2]) + decode[2]
+                return [x, y]
+            }
+            
+            switch functions.count {
+                
+            case 0:
+                
+                func interpolate(_ x: UInt, _ decode: ArraySlice<Double>) -> Double {
+                    return Double(x) / Double(max_color) * (decode.last! - decode.first!) + decode.first!
+                }
+                
+                func decode_color(_ x: ArraySlice<UInt>) -> [Double] {
+                    return zip(x, decode.dropFirst(4).chunked(by: 2)).map { interpolate($0, $1) }
+                }
+                
+                self.coords = self._coords.chunked(by: 2).flatMap(decode_coord)
+                self.colors = self._colors.chunked(by: numberOfComponents).flatMap(decode_color)
+                
+            case 1:
+                
+                func decode_color(_ x: UInt) -> [Double] {
+                    return functions[0].eval(Double(x) / Double(max_color) * (decode[5] - decode[4]) + decode[4])
+                }
+                
+                self.coords = self._coords.chunked(by: 2).flatMap(decode_coord)
+                self.colors = self._colors.flatMap(decode_color)
+                
+            default:
+                
+                func decode_color(_ x: UInt) -> [Double] {
+                    let t = Double(x) / Double(max_color) * (decode[5] - decode[4]) + decode[4]
+                    return functions.map { $0.eval(t)[0] }
+                }
+                
+                self.coords = self._coords.chunked(by: 2).flatMap(decode_coord)
+                self.colors = self._colors.flatMap(decode_color)
+            }
+        }
+    }
+    
+    func drawMeshGradient(functions: [PDFFunction], colorSpace: PDFColorSpace, isCoonsPatch: Bool, bitsPerCoordinate: Int, bitsPerComponent: Int, bitsPerFlag: Int, decode: [Double], data: Data) {
+        
+        var reader = BitsReader(data: data)
+        var patch_data: [PatchData] = []
+        
+        let numberOfComponents = functions.count == 0 ? colorSpace.numberOfComponents : 1
+        
+        while let flag = reader.next(bitsPerFlag) {
+            
+            var coords: [UInt] = []
+            var colors: [UInt] = []
+            
+            switch flag {
+            case 0:
+                
+                let _count = isCoonsPatch ? 24 : 32
+                
+                while coords.count < _count {
+                    guard let d = reader.next(bitsPerCoordinate) else { return }
+                    coords.append(d)
+                }
+                
+                while colors.count < numberOfComponents * 4 {
+                    guard let c = reader.next(bitsPerComponent) else { return }
+                    colors.append(c)
+                }
+                
+            case 1, 2, 3:
+                
+                let _count = isCoonsPatch ? 16 : 24
+                
+                while coords.count < _count{
+                    guard let d = reader.next(bitsPerCoordinate) else { return }
+                    coords.append(d)
+                }
+                
+                while colors.count < numberOfComponents * 2 {
+                    guard let c = reader.next(bitsPerComponent) else { return }
+                    colors.append(c)
+                }
+                
+            default: return
+            }
+            
+            patch_data.append(PatchData(flag: flag, _coords: coords, _colors: colors))
+            reader.clear()
+        }
+        
+        struct Patch {
+            
+            var m00: Point
+            var m01: Point
+            var m02: Point
+            var m03: Point
+            var m10: Point
+            var m13: Point
+            var m20: Point
+            var m23: Point
+            var m30: Point
+            var m31: Point
+            var m32: Point
+            var m33: Point
+            
+            var m11: Point?
+            var m12: Point?
+            var m21: Point?
+            var m22: Point?
+            
+            var c0: [Double]
+            var c1: [Double]
+            var c2: [Double]
+            var c3: [Double]
+            
+        }
+        
+        func draw_patches(_ patches: [Patch]) {
+            
+            guard !patches.isEmpty else { return }
+            
+            var points: [Point] = []
+            var colors: [AnyColor] = []
+            
+            for (i, patch) in patches.enumerated() {
+                
+                if i == 0 {
+                    
+                    points.append(patch.m00)
+                    points.append(patch.m01)
+                    points.append(patch.m02)
+                    points.append(patch.m03)
+                    points.append(patch.m13)
+                    points.append(patch.m23)
+                    points.append(patch.m33)
+                    points.append(patch.m32)
+                    points.append(patch.m31)
+                    points.append(patch.m30)
+                    points.append(patch.m20)
+                    points.append(patch.m10)
+                    patch.m11.map { points.append($0) }
+                    patch.m12.map { points.append($0) }
+                    patch.m21.map { points.append($0) }
+                    patch.m22.map { points.append($0) }
+                    colors.append(alphaMask ? AnyColor.white : colorSpace.create_color(patch.c0.map { PDFNumber($0) }, device: context_colorspace) ?? .black)
+                    colors.append(alphaMask ? AnyColor.white : colorSpace.create_color(patch.c1.map { PDFNumber($0) }, device: context_colorspace) ?? .black)
+                    colors.append(alphaMask ? AnyColor.white : colorSpace.create_color(patch.c2.map { PDFNumber($0) }, device: context_colorspace) ?? .black)
+                    colors.append(alphaMask ? AnyColor.white : colorSpace.create_color(patch.c3.map { PDFNumber($0) }, device: context_colorspace) ?? .black)
+                    
+                } else if i & 1 == 0 {
+                    
+                    points.append(patch.m01)
+                    points.append(patch.m02)
+                    points.append(patch.m03)
+                    points.append(patch.m13)
+                    points.append(patch.m23)
+                    points.append(patch.m33)
+                    points.append(patch.m32)
+                    points.append(patch.m31)
+                    patch.m11.map { points.append($0) }
+                    patch.m12.map { points.append($0) }
+                    patch.m21.map { points.append($0) }
+                    patch.m22.map { points.append($0) }
+                    colors.append(alphaMask ? AnyColor.white : colorSpace.create_color(patch.c1.map { PDFNumber($0) }, device: context_colorspace) ?? .black)
+                    colors.append(alphaMask ? AnyColor.white : colorSpace.create_color(patch.c3.map { PDFNumber($0) }, device: context_colorspace) ?? .black)
+                    
+                } else {
+                    
+                    points.append(patch.m31)
+                    points.append(patch.m32)
+                    points.append(patch.m33)
+                    points.append(patch.m23)
+                    points.append(patch.m13)
+                    points.append(patch.m03)
+                    points.append(patch.m02)
+                    points.append(patch.m01)
+                    patch.m21.map { points.append($0) }
+                    patch.m22.map { points.append($0) }
+                    patch.m11.map { points.append($0) }
+                    patch.m12.map { points.append($0) }
+                    colors.append(alphaMask ? AnyColor.white : colorSpace.create_color(patch.c3.map { PDFNumber($0) }, device: context_colorspace) ?? .black)
+                    colors.append(alphaMask ? AnyColor.white : colorSpace.create_color(patch.c1.map { PDFNumber($0) }, device: context_colorspace) ?? .black)
+                }
+            }
+            
+            let gradient = MeshGradient(type: .coonsPatch, column: patches.count, row: 1, points: points, colors: colors)
+            
+            context.drawGradient(gradient)
+        }
+        
+        var patches: [Patch] = []
+        var prev_patch: Patch?
+        
+        for i in 0..<patch_data.count {
+            
+            var patch_data = patch_data[i]
+            patch_data.decode(functions: functions, colorSpace: colorSpace, bitsPerCoordinate: bitsPerCoordinate, bitsPerComponent: bitsPerComponent, decode: decode)
+            
+            let points = patch_data.coords.chunked(by: 2).map { Point(x: $0.first!, y: $0.last!) }
+            let colors = patch_data.colors.chunked(by: colorSpace.numberOfComponents)
+            
+            switch patch_data.flag {
+                
+            case 1:
+                
+                guard var _prev_patch = prev_patch else { return }
+                
+                _prev_patch = Patch(
+                    m00: _prev_patch.m30, m01: _prev_patch.m20, m02: _prev_patch.m10, m03: _prev_patch.m00,
+                    m10: _prev_patch.m31, m13: _prev_patch.m01,
+                    m20: _prev_patch.m32, m23: _prev_patch.m02,
+                    m30: _prev_patch.m33, m31: _prev_patch.m23, m32: _prev_patch.m13, m33: _prev_patch.m03,
+                    m11: _prev_patch.m21, m12: _prev_patch.m11,
+                    m21: _prev_patch.m22, m22: _prev_patch.m12,
+                    c0: _prev_patch.c2, c1: _prev_patch.c0,
+                    c2: _prev_patch.c3, c3: _prev_patch.c1)
+                
+                prev_patch = _prev_patch
+                
+                if patches.count == 1 {
+                    
+                    patches[0] = _prev_patch
+                    
+                } else if patches.count > 1 {
+                    
+                    draw_patches(patches)
+                    patches = []
+                }
+                
+            case 3:
+                
+                guard var _prev_patch = prev_patch else { return }
+                
+                _prev_patch = Patch(
+                    m00: _prev_patch.m03, m01: _prev_patch.m13, m02: _prev_patch.m23, m03: _prev_patch.m33,
+                    m10: _prev_patch.m02, m13: _prev_patch.m32,
+                    m20: _prev_patch.m01, m23: _prev_patch.m31,
+                    m30: _prev_patch.m00, m31: _prev_patch.m10, m32: _prev_patch.m20, m33: _prev_patch.m30,
+                    m11: _prev_patch.m12, m12: _prev_patch.m22,
+                    m21: _prev_patch.m11, m22: _prev_patch.m21,
+                    c0: _prev_patch.c1, c1: _prev_patch.c3,
+                    c2: _prev_patch.c0, c3: _prev_patch.c2)
+                
+                prev_patch = _prev_patch
+                
+                if patches.count == 1 {
+                    
+                    patches[0] = _prev_patch
+                    
+                } else if patches.count > 1 {
+                    
+                    draw_patches(patches)
+                    patches = []
+                }
+                
+            default: break
+            }
+            
+            switch patch_data.flag {
+                
+            case 0:
+                
+                draw_patches(patches)
+                
+                let patch = Patch(
+                    m00: points[3], m01: points[4], m02: points[5], m03: points[6],
+                    m10: points[2], m13: points[7],
+                    m20: points[1], m23: points[8],
+                    m30: points[0], m31: points[11], m32: points[10], m33: points[9],
+                    m11: isCoonsPatch ? nil : points[13], m12: isCoonsPatch ? nil : points[14],
+                    m21: isCoonsPatch ? nil : points[12], m22: isCoonsPatch ? nil : points[15],
+                    c0: Array(colors[1]), c1: Array(colors[2]),
+                    c2: Array(colors[0]), c3: Array(colors[3]))
+                
+                patches = [patch]
+                prev_patch = patch
+                
+            case 1, 2, 3:
+                
+                guard let _prev_patch = prev_patch else { return }
+                
+                let patch = Patch(
+                    m00: _prev_patch.m33, m01: points[0], m02: points[1], m03: points[2],
+                    m10: _prev_patch.m23, m13: points[3],
+                    m20: _prev_patch.m13, m23: points[4],
+                    m30: _prev_patch.m03, m31: points[7], m32: points[6], m33: points[5],
+                    m11: isCoonsPatch ? nil : points[9], m12: isCoonsPatch ? nil : points[10],
+                    m21: isCoonsPatch ? nil : points[8], m22: isCoonsPatch ? nil : points[11],
+                    c0: _prev_patch.c3, c1: Array(colors[0]),
+                    c2: _prev_patch.c1, c3: Array(colors[1]))
+                
+                patches.append(patch)
+                prev_patch = patch
+                
+            default: break
+            }
+        }
+        
+        draw_patches(patches)
+    }
 }
