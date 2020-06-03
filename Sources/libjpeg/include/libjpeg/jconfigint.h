@@ -1,5 +1,5 @@
 /* libjpeg-turbo build number */
-#define BUILD  "20200518"
+#define BUILD  "20200603"
 
 /* Compiler's inline keyword */
 #undef inline
