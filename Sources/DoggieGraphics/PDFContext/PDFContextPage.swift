@@ -989,10 +989,10 @@ extension PDFContext.Page {
                 switch mesh.type {
                 case .coonsPatch: break
                 case .tensorProduct:
+                    coord_data.append(patch.m21)
                     coord_data.append(patch.m11)
                     coord_data.append(patch.m12)
                     coord_data.append(patch.m22)
-                    coord_data.append(patch.m21)
                 }
                 
                 patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
@@ -1011,10 +1011,10 @@ extension PDFContext.Page {
                 switch mesh.type {
                 case .coonsPatch: break
                 case .tensorProduct:
+                    coord_data.append(patch.m11)
                     coord_data.append(patch.m21)
                     coord_data.append(patch.m22)
                     coord_data.append(patch.m12)
-                    coord_data.append(patch.m11)
                 }
                 
                 patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
@@ -1033,10 +1033,10 @@ extension PDFContext.Page {
                 switch mesh.type {
                 case .coonsPatch: break
                 case .tensorProduct:
+                    coord_data.append(patch.m12)
                     coord_data.append(patch.m22)
                     coord_data.append(patch.m21)
                     coord_data.append(patch.m11)
-                    coord_data.append(patch.m12)
                 }
                 
                 patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
@@ -1055,10 +1055,10 @@ extension PDFContext.Page {
                 switch mesh.type {
                 case .coonsPatch: break
                 case .tensorProduct:
+                    coord_data.append(patch.m22)
                     coord_data.append(patch.m12)
                     coord_data.append(patch.m11)
                     coord_data.append(patch.m21)
-                    coord_data.append(patch.m22)
                 }
                 
                 patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
@@ -1100,9 +1100,9 @@ extension PDFContext.Page {
                 case .coonsPatch: break
                 case .tensorProduct:
                     coord_data.append(patch.m12)
-                    coord_data.append(patch.m22)
-                    coord_data.append(patch.m21)
                     coord_data.append(patch.m11)
+                    coord_data.append(patch.m21)
+                    coord_data.append(patch.m22)
                 }
                 
                 patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
