@@ -785,9 +785,11 @@ extension PDFRenderer {
                 }
             }
             
-            let gradient = MeshGradient(type: .coonsPatch, column: patches.count, row: 1, points: points, colors: colors)
-            
-            context.drawGradient(gradient)
+            if isCoonsPatch {
+                context.drawGradient(MeshGradient(type: .coonsPatch, column: patches.count, row: 1, points: points, colors: colors))
+            } else {
+                context.drawGradient(MeshGradient(type: .tensorProduct, column: patches.count, row: 1, points: points, colors: colors))
+            }
         }
         
         var patches: [Patch] = []
