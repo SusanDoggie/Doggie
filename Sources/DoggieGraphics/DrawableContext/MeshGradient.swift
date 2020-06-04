@@ -84,18 +84,18 @@ extension MeshGradient {
             
             counter += 1
             
-            if i != 0 && j != 0 { _points.append(patch.m00) }
-            if j != 0 { _points.append(patch.m01) }
-            if j != 0 { _points.append(patch.m02) }
-            if j != 0 { _points.append(patch.m03) }
+            if i == 0 && j == 0 { _points.append(patch.m00) }
+            if j == 0 { _points.append(patch.m01) }
+            if j == 0 { _points.append(patch.m02) }
+            if j == 0 { _points.append(patch.m03) }
             _points.append(patch.m13)
             _points.append(patch.m23)
             _points.append(patch.m33)
             _points.append(patch.m32)
             _points.append(patch.m31)
-            if i != 0 { _points.append(patch.m30) }
-            if i != 0 { _points.append(patch.m20) }
-            if i != 0 { _points.append(patch.m10) }
+            if i == 0 { _points.append(patch.m30) }
+            if i == 0 { _points.append(patch.m20) }
+            if i == 0 { _points.append(patch.m10) }
             
             if type == .tensorProduct {
                 _points.append(patch.m11)
