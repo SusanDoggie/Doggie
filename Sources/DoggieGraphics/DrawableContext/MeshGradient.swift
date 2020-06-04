@@ -66,6 +66,55 @@ extension MeshGradient where Color == AnyColor {
     }
 }
 
+extension MeshGradient {
+    
+    @inlinable
+    @inline(__always)
+    public init?(type: MeshGradientPatchType, column: Int, row: Int, patches: [CubicBezierPatch<Point>], colors: [(Color, Color, Color, Color)]) {
+        
+        var _points: [Point] = []
+        var _colors: [Color] = []
+        
+        var counter = 0
+        
+        for (patch, (c0, c1, c2, c3)) in zip(patches, colors) {
+            
+            let i = counter % column
+            let j = counter / column
+            
+            counter += 1
+            
+            if i != 0 && j != 0 { _points.append(patch.m00) }
+            if j != 0 { _points.append(patch.m01) }
+            if j != 0 { _points.append(patch.m02) }
+            if j != 0 { _points.append(patch.m03) }
+            _points.append(patch.m13)
+            _points.append(patch.m23)
+            _points.append(patch.m33)
+            _points.append(patch.m32)
+            _points.append(patch.m31)
+            if i != 0 { _points.append(patch.m30) }
+            if i != 0 { _points.append(patch.m20) }
+            if i != 0 { _points.append(patch.m10) }
+            
+            if type == .tensorProduct {
+                _points.append(patch.m11)
+                _points.append(patch.m12)
+                _points.append(patch.m21)
+                _points.append(patch.m22)
+            }
+            
+            _colors.append(c0)
+            _colors.append(c1)
+            _colors.append(c2)
+        }
+        
+        guard counter == column * row else { return nil }
+        
+        self.init(type: type, column: column, row: row, points: _points, colors: _colors)
+    }
+}
+
 extension MeshGradient: Equatable where Color: Equatable {
     
 }
