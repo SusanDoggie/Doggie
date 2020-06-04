@@ -104,9 +104,9 @@ extension MeshGradient {
                 _points.append(patch.m22)
             }
             
-            _colors.append(c0)
-            _colors.append(c1)
-            _colors.append(c2)
+            if i == 0 && j == 0 { _colors.append(c0) }
+            if j == 0 { _colors.append(c1) }
+            if i == 0 { _colors.append(c2) }
             _colors.append(c3)
         }
         
