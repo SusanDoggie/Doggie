@@ -107,6 +107,7 @@ extension MeshGradient {
             _colors.append(c0)
             _colors.append(c1)
             _colors.append(c2)
+            _colors.append(c3)
         }
         
         guard counter == column * row else { return nil }
