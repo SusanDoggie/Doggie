@@ -37,6 +37,24 @@ class MappedBufferTest: XCTestCase {
         XCTAssertTrue(array.elementsEqual(mapped))
     }
     
+    func testMappedBufferAlloc2() {
+        
+        let mapped = MappedBuffer(repeating: 0, count: 64)
+        let array = MappedBuffer(repeating: 0, count: 64)
+        
+        XCTAssertEqual(array.count, mapped.count)
+        XCTAssertTrue(array.elementsEqual(mapped))
+    }
+    
+    func testMappedBufferAlloc3() {
+        
+        let mapped = MappedBuffer(repeating: 0, count: 64, fileBacked: true)
+        let array = MappedBuffer(repeating: 0, count: 64)
+        
+        XCTAssertEqual(array.count, mapped.count)
+        XCTAssertTrue(array.elementsEqual(mapped))
+    }
+    
     func testMappedBufferAppend() {
         
         var mapped: MappedBuffer<Int> = []
