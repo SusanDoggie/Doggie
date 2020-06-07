@@ -62,7 +62,12 @@ final class CGContextProcessorKernel: CIImageProcessorKernel {
         let width = Int(output.region.width)
         let height = Int(output.region.height)
         
-        guard let context = CGContext(data: output.baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: output.bytesPerRow, space: info.colorSpace, bitmapInfo: CGImageByteOrderInfo.order32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue) else { throw Error.unknown }
+        let baseAddress = output.baseAddress
+        let bytesPerRow = output.bytesPerRow
+        
+        memset(baseAddress, 0, bytesPerRow * height)
+        
+        guard let context = CGContext(data: baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: bytesPerRow, space: info.colorSpace, bitmapInfo: CGImageByteOrderInfo.order32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue) else { throw Error.unknown }
         
         context.translateBy(x: -output.region.minX, y: -output.region.minY)
         
