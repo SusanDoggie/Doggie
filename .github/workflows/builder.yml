@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [xenial, bionic]
+        image: [xenial, bionic, focal]
     steps:
     - uses: actions/checkout@v1
       with:
@@ -73,6 +73,30 @@ jobs:
         export DEBIAN_FRONTEND=noninteractive
         echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
         apt-get install -y fontconfig fonts-noto ttf-mscorefonts-installer
+    - name: Build
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: build
+    - name: Run tests
+      uses: SusanDoggie/swift-action@master
+      with:
+        action: test
+  linux_swift_latest:
+    name: latest-${{ matrix.image }}
+    container:
+      image: docker://swift:${{ matrix.image }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [centos8, amazonlinux2]
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: recursive
+    - name: Prepare		
+      run: yum update
+    - name: Install fonts
+      run: yum install -y fontconfig google-noto-*
     - name: Build
       uses: SusanDoggie/swift-action@master
       with:
