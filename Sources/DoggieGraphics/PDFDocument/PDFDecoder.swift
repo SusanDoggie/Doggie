@@ -81,6 +81,14 @@ extension PDFDocument {
         case invalidFormat(Int)
     }
     
+    public init(contentsOf url: URL, options: Data.ReadingOptions = []) throws {
+        try self.init(data: Data(contentsOf: url, options: options))
+    }
+    
+    public init(contentsOfFile path: String, options: Data.ReadingOptions = []) throws {
+        try self.init(data: Data(contentsOf: URL(fileURLWithPath: path), options: options))
+    }
+    
     public init(data: Data) throws {
         
         var data = data
