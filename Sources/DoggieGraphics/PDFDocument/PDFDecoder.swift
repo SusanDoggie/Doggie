@@ -147,7 +147,7 @@ extension PDFDocument {
         
         let (trailer, _xref_table) = try _decode_trailer(data, xref_data, stack)
         
-        let xref_table = Dictionary(uniqueKeysWithValues: _xref_table.compactMap { try? ($0, decode_indirect_object($0, $1, _xref_table).1) })
+        let xref_table = Dictionary(uniqueKeysWithValues: _xref_table.compactMap { key, data in PDFObject.decode_indirect_object(key, data, _xref_table, []).map { (key, $0.1) } })
         
         return dereference_all(trailer, xref_table)._apply_xref(xref_table)
     }
@@ -182,10 +182,10 @@ extension PDFDocument {
         
         while case let .xref(xref) = extends.base {
             
-            guard var extends_data = xref_table[xref] else { break }
+            guard let extends_data = xref_table[xref] else { break }
             xref_table[xref] = nil
             
-            guard let _extends = PDFObject(&extends_data, xref_table) else { break }
+            guard let _extends = PDFObject.decode_indirect_object(nil, extends_data, xref_table, [])?.1 else { break }
             extends = _extends
         }
         
@@ -202,14 +202,14 @@ extension PDFDocument {
     
     private static func _decode_object_stream(_ data: Data, _ xref_table: [PDFXref: Data]) throws -> [PDFXref: Data] {
         
-        let (_, object_stream) = try decode_indirect_object(nil, data, xref_table)
+        guard let (_, object_stream) = PDFObject.decode_indirect_object(nil, data, xref_table, []) else { throw Error.invalidFormat(#line) }
         
         return try _decode_object_stream(object_stream, xref_table)
     }
     
     private static func _decode_xref_stream(_ data: Data, _ xref_data: Data, _ stack: Set<Int>) throws -> (PDFObject, [PDFXref: Data]) {
         
-        let (trailer_xref, trailer) = try decode_indirect_object(nil, xref_data, [:])
+        guard let (trailer_xref, trailer) = PDFObject.decode_indirect_object(nil, xref_data, [:], []) else { throw Error.invalidFormat(#line) }
         guard trailer.isStream else { throw Error.invalidFormat(#line) }
         
         guard trailer["Type"].name == "XRef" else { throw Error.invalidFormat(#line) }
@@ -310,7 +310,7 @@ extension PDFDocument {
         guard !xref_offsets.isEmpty else { throw Error.invalidFormat(#line) }
         guard xref_data.popFirst(7).elementsEqual("trailer".utf8) else { throw Error.invalidFormat(#line) }
         
-        guard let trailer = PDFObject(&xref_data, [:]), trailer.isDictionary else { throw Error.invalidFormat(#line) }
+        guard let trailer = PDFObject(&xref_data), trailer.isDictionary else { throw Error.invalidFormat(#line) }
         
         var xref_table: [PDFXref: Data] = [:]
         
@@ -327,36 +327,41 @@ extension PDFDocument {
         return (trailer, xref_table)
     }
     
-    private static func decode_indirect_object(_ xref: PDFXref?, _ data: Data, _ xref_table: [PDFXref: Data]) throws -> (PDFXref, PDFObject) {
-        
-        var data = data
-        data.pdf_remove_whitespaces_and_comment()
-        
-        guard let object = data.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
-        guard data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
-        guard let generation = data.pdf_decode_digits() else { throw Error.invalidFormat(#line) }
-        guard data.popFirst() == 0x20 else { throw Error.invalidFormat(#line) }
-        
-        if let xref = xref {
-            guard xref.object == object && xref.generation == generation else { throw Error.invalidFormat(#line) }
-        }
-        
-        guard data.popFirst(3).elementsEqual("obj".utf8) else { throw Error.invalidFormat(#line) }
-        
-        guard let obj = PDFObject(&data, xref_table) else { throw Error.invalidFormat(#line) }
-        
-        data.pdf_remove_whitespaces_and_comment()
-        
-        guard data.popFirst(6).elementsEqual("endobj".utf8) else { throw Error.invalidFormat(#line) }
-        
-        return (PDFXref(object: object, generation: UInt16(generation)), obj)
-    }
-    
 }
 
 extension PDFObject {
     
     init?(_ data: inout Data, _ xref_table: [PDFXref: Data] = [:]) {
+        guard let object = PDFObject.decode(&data, xref_table, []) else { return nil }
+        self = object
+    }
+    
+    fileprivate static func decode_indirect_object(_ xref: PDFXref?, _ data: Data, _ xref_table: [PDFXref: Data], _ stack: Set<PDFXref>) -> (PDFXref, PDFObject)? {
+        
+        var data = data
+        data.pdf_remove_whitespaces_and_comment()
+        
+        guard let object = data.pdf_decode_digits() else { return nil }
+        guard data.popFirst() == 0x20 else { return nil }
+        guard let generation = data.pdf_decode_digits() else { return nil }
+        guard data.popFirst() == 0x20 else { return nil }
+        
+        if let xref = xref {
+            guard xref.object == object && xref.generation == generation else { return nil }
+        }
+        
+        guard data.popFirst(3).elementsEqual("obj".utf8) else { return nil }
+        
+        guard let obj = decode(&data, xref_table, stack) else { return nil }
+        
+        data.pdf_remove_whitespaces_and_comment()
+        
+        guard data.popFirst(6).elementsEqual("endobj".utf8) else { return nil }
+        
+        return (PDFXref(object: object, generation: UInt16(generation)), obj)
+    }
+    
+    private static func decode(_ data: inout Data, _ xref_table: [PDFXref: Data], _ stack: Set<PDFXref>) -> PDFObject? {
         
         data.pdf_remove_whitespaces_and_comment()
         
@@ -366,44 +371,44 @@ extension PDFObject {
             
             if data.dropFirst().first == 0x3C {
                 
-                guard let obj = PDFObject.decode_dictionary_or_stream(&data, xref_table) else { return nil }
-                self = obj
+                guard let obj = decode_dictionary_or_stream(&data, xref_table, stack) else { return nil }
+                return obj
                 
             } else {
                 
                 guard let string = PDFString(&data) else { return nil }
-                self.init(string)
+                return PDFObject(string)
             }
             
         case 0x2F:
             
             guard let name = PDFName(&data) else { return nil }
-            self.init(name)
+            return PDFObject(name)
             
         case 0x5B:
             
-            guard let array = PDFObject.decode_array(&data, xref_table) else { return nil }
-            self = array
+            guard let array = decode_array(&data, xref_table, stack) else { return nil }
+            return array
             
         case 0x28:
             
             guard let string = PDFString(&data) else { return nil }
-            self.init(string)
+            return PDFObject(string)
             
         case 0x2B, 0x2D, 0x2E:
             
             guard let number = PDFNumber(&data) else { return nil }
-            self.init(number)
+            return PDFObject(number)
             
         case 0x30...0x39:
             
             if let xref = PDFXref(&data) {
                 
-                self.init(xref)
+                return PDFObject(xref)
                 
             } else if let number = PDFNumber(&data) {
                 
-                self.init(number)
+                return PDFObject(number)
                 
             } else {
                 
@@ -413,23 +418,23 @@ extension PDFObject {
         case 0x74:
             
             guard data.popFirst(4).elementsEqual("true".utf8) else { return nil }
-            self = true
+            return true
             
         case 0x66:
             
             guard data.popFirst(5).elementsEqual("false".utf8) else { return nil }
-            self = false
+            return false
             
         case 0x6E:
             
             guard data.popFirst(4).elementsEqual("null".utf8) else { return nil }
-            self = nil
+            return nil as PDFObject
             
         default: return nil
         }
     }
     
-    private static func decode_array(_ data: inout Data, _ xref_table: [PDFXref: Data]) -> PDFObject? {
+    private static func decode_array(_ data: inout Data, _ xref_table: [PDFXref: Data], _ stack: Set<PDFXref>) -> PDFObject? {
         
         var copy = data
         
@@ -439,7 +444,7 @@ extension PDFObject {
         
         var array: [PDFObject] = []
         
-        while copy.first != 0x5D, let obj = PDFObject(&copy, xref_table) {
+        while copy.first != 0x5D, let obj = decode(&copy, xref_table, stack) {
             
             array.append(obj)
             copy.pdf_remove_whitespaces_and_comment()
@@ -451,7 +456,7 @@ extension PDFObject {
         return PDFObject(array)
     }
     
-    private static func decode_dictionary_or_stream(_ data: inout Data, _ xref_table: [PDFXref: Data]) -> PDFObject? {
+    private static func decode_dictionary_or_stream(_ data: inout Data, _ xref_table: [PDFXref: Data], _ stack: Set<PDFXref>) -> PDFObject? {
         
         var copy = data
         
@@ -464,7 +469,7 @@ extension PDFObject {
         
         while copy.first != 0x3E, let name = PDFName(&copy) {
             
-            guard let value = PDFObject(&copy, xref_table) else { return nil }
+            guard let value = decode(&copy, xref_table, stack) else { return nil }
             dictionary[name] = value
             
             copy.pdf_remove_whitespaces_and_comment()
@@ -477,18 +482,16 @@ extension PDFObject {
         
         if copy.prefix(6).elementsEqual("stream".utf8) {
             
-            if let _length = dictionary["Length"] {
+            var stack = stack
+            
+            while case let .xref(xref) = dictionary["Length"]?.base {
                 
-                var stack: Set<PDFXref> = []
+                guard !stack.contains(xref), let length_data = xref_table[xref] else { return nil }
                 
-                while case let .xref(xref) = _length.base {
-                    
-                    stack.insert(xref)
-                    
-                    guard !stack.contains(xref), var length_data = xref_table[xref] else { return nil }
-                    guard let length = PDFObject(&length_data) else { return nil }
-                    dictionary["Length"] = length
-                }
+                stack.insert(xref)
+                
+                guard let length = decode_indirect_object(xref, length_data, xref_table, stack)?.1 else { return nil }
+                dictionary["Length"] = length
             }
             
             guard let stream = decode_stream(&copy, dictionary) else { return nil }
