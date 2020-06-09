@@ -367,6 +367,16 @@ extension PDFObject {
         
         switch data.first ?? 0 {
             
+        case 0x2F:
+            
+            guard let name = PDFName(&data) else { return nil }
+            return PDFObject(name)
+            
+        case 0x5B:
+            
+            guard let array = decode_array(&data, xref_table, stack) else { return nil }
+            return array
+            
         case 0x3C:
             
             if data.dropFirst().first == 0x3C {
@@ -379,16 +389,6 @@ extension PDFObject {
                 guard let string = PDFString(&data) else { return nil }
                 return PDFObject(string)
             }
-            
-        case 0x2F:
-            
-            guard let name = PDFName(&data) else { return nil }
-            return PDFObject(name)
-            
-        case 0x5B:
-            
-            guard let array = decode_array(&data, xref_table, stack) else { return nil }
-            return array
             
         case 0x28:
             

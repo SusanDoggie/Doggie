@@ -872,22 +872,35 @@ extension PDFCommand {
         }
         
         switch data.first ?? 0 {
+            
         case 0x2F:
             
             guard let name = PDFName(&data) else { return nil }
             return .name(name)
             
-        case 0x3C: return decode_dictionary(&data)
         case 0x5B: return decode_array(&data)
+            
+        case 0x3C:
+            
+            if data.dropFirst().first == 0x3C {
+                
+                return decode_dictionary(&data)
+                
+            } else {
+                
+                guard let string = PDFString(&data) else { return nil }
+                return .string(string)
+            }
+            
+        case 0x28:
+            
+            guard let string = PDFString(&data) else { return nil }
+            return .string(string)
+            
         case 0x2B, 0x2D, 0x2E, 0x30...0x39:
             
             guard let number = PDFNumber(&data) else { return nil }
             return .number(number)
-            
-        case 0x28, 0x3C:
-            
-            guard let string = PDFString(&data) else { return nil }
-            return .string(string)
             
         default: return decode_string(&data)
         }
