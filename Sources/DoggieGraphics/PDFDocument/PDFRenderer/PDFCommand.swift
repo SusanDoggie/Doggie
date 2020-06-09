@@ -35,6 +35,8 @@ enum PDFCommand: Hashable {
     
     case array([PDFCommand])
     
+    case dictionary([PDFName: PDFCommand])
+    
 }
 
 extension PDFCommand {
@@ -81,6 +83,7 @@ extension PDFCommand: CustomStringConvertible {
         case let .string(value): return "\(value)"
         case let .number(value): return "\(value)"
         case let .array(value): return "\(value)"
+        case let .dictionary(value): return "\(value)"
         }
     }
 }
@@ -135,6 +138,13 @@ extension PDFCommand {
         default: return nil
         }
     }
+    
+    var dictionary: [PDFName: PDFCommand]? {
+        switch self {
+        case let .dictionary(value): return value
+        default: return nil
+        }
+    }
 }
 
 extension PDFCommand {
@@ -154,6 +164,17 @@ extension PDFCommand {
                 data.append(utf8: "\n")
             }
             data.append(utf8: "]")
+            
+        case let .dictionary(dictionary):
+            
+            data.append(utf8: "<<\n")
+            for (name, object) in dictionary {
+                name.encode(&data)
+                data.append(utf8: " ")
+                object.encode(&data)
+                data.append(utf8: "\n")
+            }
+            data.append(utf8: ">>")
         }
     }
 }

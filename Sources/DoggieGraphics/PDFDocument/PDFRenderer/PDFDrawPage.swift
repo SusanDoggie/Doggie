@@ -877,6 +877,7 @@ extension PDFCommand {
             guard let name = PDFName(&data) else { return nil }
             return .name(name)
             
+        case 0x3C: return decode_dictionary(&data)
         case 0x5B: return decode_array(&data)
         case 0x2B, 0x2D, 0x2E, 0x30...0x39:
             
@@ -892,7 +893,7 @@ extension PDFCommand {
         }
     }
     
-    static func decode_string(_ data: inout Data) -> PDFCommand? {
+    private static func decode_string(_ data: inout Data) -> PDFCommand? {
         
         var copy = data
         
@@ -913,7 +914,33 @@ extension PDFCommand {
         return .command(chars.pdf_string())
     }
     
-    static func decode_array(_ data: inout Data) -> PDFCommand? {
+    private static func decode_dictionary(_ data: inout Data) -> PDFCommand? {
+        
+        var copy = data
+        
+        guard copy.popFirst() == 0x3C else { return nil }
+        guard copy.popFirst() == 0x3C else { return nil }
+        
+        copy.pdf_remove_whitespaces_and_comment()
+        
+        var dictionary: [PDFName: PDFCommand] = [:]
+        
+        while copy.first != 0x3E, let name = PDFName(&copy) {
+            
+            guard let value = decode_command(&copy) else { return nil }
+            dictionary[name] = value
+            
+            copy.pdf_remove_whitespaces_and_comment()
+        }
+        
+        guard copy.popFirst() == 0x3E else { return nil }
+        guard copy.popFirst() == 0x3E else { return nil }
+        
+        data = copy
+        return .dictionary(dictionary)
+    }
+    
+    private static func decode_array(_ data: inout Data) -> PDFCommand? {
         
         var copy = data
         
