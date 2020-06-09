@@ -71,10 +71,8 @@ extension PDFContext {
         let document = try self._document(properties: properties)
         
         let trailer = document._trailer
-        var xref_table = trailer.xref
-        xref_table = xref_table.mapValues { PDFDocument.dereference_all($0._apply_xref(xref_table)) }
         
-        return PDFDocument(PDFDocument.dereference_all(trailer._apply_xref(xref_table)))
+        return PDFDocument(PDFDocument.dereference_all(trailer, trailer.xref)._apply_xref(trailer.xref))
     }
     
     private func _document(properties: [PropertyKey: Any] = [:]) throws -> PDFDocument {
