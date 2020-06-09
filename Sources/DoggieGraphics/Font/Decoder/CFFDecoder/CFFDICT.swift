@@ -138,13 +138,13 @@ struct CFFDICT: ByteDecodable {
 extension CFFDICT {
     
     var fdArrayOffset: Int? {
-        if case let .some(.integer(offset)) = dict[1236]?.first, offset != 0 {
+        if case let .integer(offset) = dict[1236]?.first, offset != 0 {
             return offset
         }
         return nil
     }
     var fdSelectOffset: Int? {
-        if case let .some(.integer(offset)) = dict[1237]?.first, offset != 0 {
+        if case let .integer(offset) = dict[1237]?.first, offset != 0 {
             return offset
         }
         return nil
@@ -158,28 +158,28 @@ extension CFFDICT {
     }
     
     var subrsOffset: Int? {
-        if case let .some(.integer(offset)) = dict[19]?.first, offset != 0 {
+        if case let .integer(offset) = dict[19]?.first, offset != 0 {
             return offset
         }
         return nil
     }
     
     var charstringType: Int {
-        if case let .some(.integer(type)) = dict[1206]?.first {
+        if case let .integer(type) = dict[1206]?.first {
             return type
         }
         return 2
     }
     
     var charStringsOffset: Int? {
-        if case let .some(.integer(offset)) = dict[17]?.first, offset != 0 {
+        if case let .integer(offset) = dict[17]?.first, offset != 0 {
             return offset
         }
         return nil
     }
     
     var encodingOffset: Int? {
-        if case let .some(.integer(offset)) = dict[16]?.first, offset != 0 {
+        if case let .integer(offset) = dict[16]?.first, offset != 0 {
             return offset
         }
         return nil
