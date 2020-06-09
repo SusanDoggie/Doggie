@@ -114,23 +114,22 @@ extension PDFDocument {
         try self.init(PDFDocument.decode_trailer(data, data.dropFirst(xref_offset), [xref_offset]))
     }
     
-    static func dereference_all(_ object: PDFObject) -> PDFObject {
+    static func dereference_all(_ object: PDFObject, _ xref_table: [PDFXref: PDFObject], _ stack: Set<PDFXref> = []) -> PDFObject {
         
         switch object.base {
             
-        case let .array(array): return PDFObject(array.map { dereference_all($0._apply_xref(object.xref)) })
-        case let .dictionary(dictionary): return PDFObject(dictionary.mapValues { dereference_all($0._apply_xref(object.xref)) })
-        case let .stream(stream): return PDFObject(stream.dictionary.mapValues { dereference_all($0._apply_xref(object.xref)) }, stream.data)
+        case let .array(array): return PDFObject(array.map { dereference_all($0, xref_table, stack)._apply_xref(xref_table) })
+        case let .dictionary(dictionary): return PDFObject(dictionary.mapValues { dereference_all($0, xref_table, stack)._apply_xref(xref_table) })
+        case let .stream(stream): return PDFObject(stream.dictionary.mapValues { dereference_all($0, xref_table, stack)._apply_xref(xref_table) }, stream.data)
             
         case let .xref(xref):
             
-            guard var target = object.xref[xref] else { return object }
+            guard !stack.contains(xref), let target = xref_table[xref] else { return object }
             
-            var xref_table = object.xref
-            xref_table[xref] = nil
-            target.xref = xref_table
+            var stack = stack
+            stack.insert(xref)
             
-            return dereference_all(target)
+            return dereference_all(target, xref_table, stack)
             
         default: return object
         }
@@ -140,10 +139,9 @@ extension PDFDocument {
         
         let (trailer, _xref_table) = try _decode_trailer(data, xref_data, stack)
         
-        var xref_table = Dictionary(uniqueKeysWithValues: _xref_table.compactMap { try? ($0, decode_indirect_object($0, $1, _xref_table).1) })
-        xref_table = xref_table.mapValues { dereference_all($0._apply_xref(xref_table)) }
+        let xref_table = Dictionary(uniqueKeysWithValues: _xref_table.compactMap { try? ($0, decode_indirect_object($0, $1, _xref_table).1) })
         
-        return dereference_all(trailer._apply_xref(xref_table))
+        return dereference_all(trailer, xref_table)._apply_xref(xref_table)
     }
     
     private static func _decode_object_stream(_ object: PDFObject, _ xref_table: [PDFXref: Data]) throws -> [PDFXref: Data] {
@@ -473,14 +471,14 @@ extension PDFObject {
             
             if let _length = dictionary["Length"] {
                 
-                var xref_table = xref_table
+                var stack: Set<PDFXref> = []
                 
                 while case let .xref(xref) = _length.base {
                     
-                    guard var length_data = xref_table[xref] else { return nil }
-                    xref_table[xref] = nil
+                    stack.insert(xref)
                     
-                    guard let length = PDFObject(&length_data, xref_table) else { return nil }
+                    guard !stack.contains(xref), var length_data = xref_table[xref] else { return nil }
+                    guard let length = PDFObject(&length_data) else { return nil }
                     dictionary["Length"] = length
                 }
             }
