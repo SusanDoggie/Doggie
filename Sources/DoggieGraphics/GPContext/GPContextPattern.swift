@@ -23,30 +23,33 @@
 //  THE SOFTWARE.
 //
 
-@frozen
-public struct GPContextPattern {
-    
-    public var bound: Rect
-    
-    public var xStep: Double
-    public var yStep: Double
-    
-    public var transform: SDTransform = .identity
-    public var opacity: Double = 1
-    
-    public var callback: (GPContext) -> Void
-    
-    @inlinable
-    @inline(__always)
-    public init(bound: Rect, xStep: Double, yStep: Double, callback: @escaping (GPContext) -> Void) {
-        self.bound = bound
-        self.xStep = xStep
-        self.yStep = yStep
-        self.callback = callback
-    }
-}
+#if canImport(CoreImage)
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
+    
+    @frozen
+    public struct Pattern {
+        
+        public var bound: Rect
+        
+        public var xStep: Double
+        public var yStep: Double
+        
+        public var transform: SDTransform = .identity
+        public var opacity: Double = 1
+        
+        public var callback: (GPContext) -> Void
+        
+        @inlinable
+        @inline(__always)
+        public init(bound: Rect, xStep: Double, yStep: Double, callback: @escaping (GPContext) -> Void) {
+            self.bound = bound
+            self.xStep = xStep
+            self.yStep = yStep
+            self.callback = callback
+        }
+    }
     
     private func draw_pattern(bound: Rect, xStep: Double, yStep: Double, callback: (GPContext) -> Void) {
         
@@ -71,7 +74,7 @@ extension GPContext {
         }
     }
     
-    public func drawPattern(_ pattern: GPContextPattern) {
+    public func drawPattern(_ pattern: Pattern) {
         
         guard self.width != 0 && self.height != 0 && !self.transform.determinant.almostZero() else { return }
         
@@ -119,3 +122,5 @@ extension GPContext {
     }
     
 }
+
+#endif
