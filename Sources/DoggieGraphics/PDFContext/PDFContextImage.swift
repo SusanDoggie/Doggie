@@ -31,7 +31,7 @@ extension PDFContext.Page {
         
         let name: PDFName
         
-        if let _name = imageTable[key] {
+        if let _name = resources.imageTable[key] {
             
             name = _name
             
@@ -59,9 +59,9 @@ extension PDFContext.Page {
                 mask = _mask
             }
             
-            name = PDFName("Im\(imageTable.count + 1)")
-            current_layer.imageTable[key] = name
-            current_layer.image[name] = (color, mask)
+            name = PDFName("Im\(resources.imageTable.count + 1)")
+            resources.imageTable[key] = name
+            resources.image[name] = (color, mask)
         }
         
         let transform = .reflectY(0.5) * .scale(x: image.width, y: image.height) * transform * _mirrored_transform

@@ -68,13 +68,7 @@ struct PDFContextState {
     var commands: [PDFCommand] = []
     fileprivate var currentStyle = PDFContext.CurrentStyle()
     
-    fileprivate var imageTable: [PDFContext.ImageTableKey: PDFName] = [:]
-    
-    fileprivate var extGState: [PDFObject: PDFName] = [:]
-    fileprivate var transparency_layers: [[PDFCommand]: PDFName] = [:]
-    fileprivate var mask: [PDFName: [PDFCommand]] = [:]
-    fileprivate var image: [PDFName: (PDFStream, PDFStream?)] = [:]
-    fileprivate var shading: [AnyHashable: PDFName] = [:]
+    fileprivate var resources = PDFContext.PDFResources()
     
     fileprivate var clip: PDFContext.Clip?
     
@@ -134,6 +128,19 @@ extension PDFContext {
         var blend: PDFName? = nil
     }
     
+    struct PDFResources {
+        
+        var imageTable: [PDFContext.ImageTableKey: PDFName] = [:]
+        
+        var extGState: [PDFObject: PDFName] = [:]
+        var transparency_layers: [[PDFCommand]: PDFName] = [:]
+        var mask: [PDFName: [PDFCommand]] = [:]
+        var image: [PDFName: (PDFStream, PDFStream?)] = [:]
+        var shading: [AnyHashable: PDFName] = [:]
+        var pattern: [PDFName: PDFContext.PDFPattern] = [:]
+        
+    }
+
     struct ImageTableKey: Hashable {
         
         let image: AnyImage
@@ -147,7 +154,7 @@ extension PDFContext {
         }
     }
     
-    struct Shading: Hashable {
+    struct PDFShading: Hashable {
         
         var type: Int
         
@@ -159,13 +166,13 @@ extension PDFContext {
         var e1: Bool
     }
     
-    struct MeshCoordData: Hashable {
+    struct PDFMeshCoordData: Hashable {
         
         var flag: Int
         var coord: [Point]
     }
     
-    struct MeshShading: Hashable {
+    struct PDFMeshShading: Hashable {
         
         var type: Int
         
@@ -173,8 +180,26 @@ extension PDFContext {
         
         var numberOfComponents: Int
         
-        var coord: [MeshCoordData]
+        var coord: [PDFMeshCoordData]
         var color: [[[Double]]]
+    }
+    
+    struct PDFPattern {
+        
+        var type: Int
+        var paintType: Int
+        
+        var tilingType: Int
+        
+        var bound: Rect
+        var xStep: Double
+        var yStep: Double
+        
+        var transform: SDTransform
+        
+        var resources: PDFResources
+        
+        var commands: [PDFCommand]
     }
 }
 
@@ -260,76 +285,15 @@ extension PDFContext.Page {
         return state.commands + [.command("Q")]
     }
     
-    var imageTable: [PDFContext.ImageTableKey: PDFName] {
+    var resources: PDFContext.PDFResources {
         get {
-            return global?.imageTable ?? state.imageTable
+            return global?.resources ?? state.resources
         }
         set {
             if let global = self.global {
-                global.state.imageTable = newValue
+                global.state.resources = newValue
             } else {
-                self.state.imageTable = newValue
-            }
-        }
-    }
-    
-    var extGState: [PDFObject: PDFName] {
-        get {
-            return global?.extGState ?? state.extGState
-        }
-        set {
-            if let global = self.global {
-                global.state.extGState = newValue
-            } else {
-                self.state.extGState = newValue
-            }
-        }
-    }
-    var transparency_layers: [[PDFCommand]: PDFName] {
-        get {
-            return global?.transparency_layers ?? state.transparency_layers
-        }
-        set {
-            if let global = self.global {
-                global.state.transparency_layers = newValue
-            } else {
-                self.state.transparency_layers = newValue
-            }
-        }
-    }
-    var mask: [PDFName: [PDFCommand]] {
-        get {
-            return global?.mask ?? state.mask
-        }
-        set {
-            if let global = self.global {
-                global.state.mask = newValue
-            } else {
-                self.state.mask = newValue
-            }
-        }
-    }
-    var image: [PDFName: (PDFStream, PDFStream?)] {
-        get {
-            return global?.image ?? state.image
-        }
-        set {
-            if let global = self.global {
-                global.state.image = newValue
-            } else {
-                self.state.image = newValue
-            }
-        }
-    }
-    var shading: [AnyHashable: PDFName] {
-        get {
-            return global?.shading ?? state.shading
-        }
-        set {
-            if let global = self.global {
-                global.state.shading = newValue
-            } else {
-                self.state.shading = newValue
+                self.state.resources = newValue
             }
         }
     }
@@ -437,26 +401,25 @@ extension PDFContext.Page {
         current_layer.state.commands.append(.command("q"))
         current_layer.state.currentStyle.apply(to: current_layer)
         
-        if let clip = current_layer.state.clip {
+        switch current_layer.state.clip {
             
-            switch clip {
-                
-            case let .clip(shape, winding):
-                
-                self.encode_path(shape: shape, commands: &current_layer.state.commands)
-                
-                switch winding {
-                case .nonZero: current_layer.state.commands.append(.command("W"))
-                case .evenOdd: current_layer.state.commands.append(.command("W*"))
-                }
-                
-                current_layer.state.commands.append(.command("n"))
-                
-            case let .mask(name):
-                
-                current_layer.state.commands.append(.name(name))
-                current_layer.state.commands.append(.command("gs"))
+        case let .clip(shape, winding):
+            
+            self.encode_path(shape: shape, commands: &current_layer.state.commands)
+            
+            switch winding {
+            case .nonZero: current_layer.state.commands.append(.command("W"))
+            case .evenOdd: current_layer.state.commands.append(.command("W*"))
             }
+            
+            current_layer.state.commands.append(.command("n"))
+            
+        case let .mask(name):
+            
+            current_layer.state.commands.append(.name(name))
+            current_layer.state.commands.append(.command("gs"))
+            
+        default: break
         }
     }
 }
@@ -489,12 +452,11 @@ extension PDFContext.Page {
                 set_opacity(self.opacity)
                 
                 let commands = next.finalize()
-                if transparency_layers[commands] == nil {
-                    transparency_layers[commands] = PDFName("Fm\(transparency_layers.count + 1)")
+                if resources.transparency_layers[commands] == nil {
+                    resources.transparency_layers[commands] = PDFName("Fm\(resources.transparency_layers.count + 1)")
                 }
                 
-                let _layer = transparency_layers[commands]!
-                self.state.commands.append(.name(_layer))
+                self.state.commands.append(.name(resources.transparency_layers[commands]!))
                 self.state.commands.append(.command("Do"))
             }
         }
@@ -587,11 +549,11 @@ extension PDFContext.Page {
     func set_opacity(_ opacity: Double) {
         
         let gstate: PDFObject = ["ca": PDFObject(opacity)]
-        if extGState[gstate] == nil {
-            extGState[gstate] = PDFName("Gs\(extGState.count + 1)")
+        if resources.extGState[gstate] == nil {
+            resources.extGState[gstate] = PDFName("Gs\(resources.extGState.count + 1)")
         }
         
-        let _opacity = extGState[gstate]!
+        let _opacity = resources.extGState[gstate]!
         if current_layer.state.currentStyle.opacity != _opacity {
             current_layer.state.commands.append(.name(_opacity))
             current_layer.state.commands.append(.command("gs"))
@@ -620,11 +582,11 @@ extension PDFContext.Page {
         }
         
         let gstate: PDFObject = ["BM": PDFObject(_mode)]
-        if extGState[gstate] == nil {
-            extGState[gstate] = PDFName("Gs\(extGState.count + 1)")
+        if resources.extGState[gstate] == nil {
+            resources.extGState[gstate] = PDFName("Gs\(resources.extGState.count + 1)")
         }
         
-        let _blend = extGState[gstate]!
+        let _blend = resources.extGState[gstate]!
         if current_layer.state.currentStyle.blend != _blend {
             current_layer.state.commands.append(.name(_blend))
             current_layer.state.commands.append(.command("gs"))
@@ -716,8 +678,8 @@ extension PDFContext.Page {
         
         try body(mask)
         
-        let name = PDFName("Mk\(self.mask.count + 1)")
-        current_layer.mask[name] = mask.finalize()
+        let name = PDFName("Mk\(resources.mask.count + 1)")
+        resources.mask[name] = mask.finalize()
         
         current_layer.state.commands.append(.name(name))
         current_layer.state.commands.append(.command("gs"))
@@ -796,43 +758,41 @@ extension PDFContext.Page {
         
         if let mask = mask {
             
-            if self.shading[mask] == nil {
-                self.shading[mask] = PDFName("Sh\(self.shading.count + 1)")
+            if resources.shading[mask] == nil {
+                resources.shading[mask] = PDFName("Sh\(resources.shading.count + 1)")
             }
             
             var mask_commands: [PDFCommand] = [.name("DeviceGray"), .command("cs")]
             
-            if let clip = current_layer.state.clip {
+            switch current_layer.state.clip {
                 
-                switch clip {
-                    
-                case let .clip(shape, winding):
-                    
-                    self.encode_path(shape: shape, commands: &mask_commands)
-                    
-                    switch winding {
-                    case .nonZero: mask_commands.append(.command("W"))
-                    case .evenOdd: mask_commands.append(.command("W*"))
-                    }
-                    
-                    mask_commands.append(.command("n"))
-                    
-                case let .mask(name):
-                    
-                    mask_commands.append(.name(name))
-                    mask_commands.append(.command("gs"))
+            case let .clip(shape, winding):
+                
+                self.encode_path(shape: shape, commands: &mask_commands)
+                
+                switch winding {
+                case .nonZero: mask_commands.append(.command("W"))
+                case .evenOdd: mask_commands.append(.command("W*"))
                 }
+                
+                mask_commands.append(.command("n"))
+                
+            case let .mask(name):
+                
+                mask_commands.append(.name(name))
+                mask_commands.append(.command("gs"))
+                
+            default: break
             }
             
             mask_commands.append(contentsOf: _transform.map { PDFCommand($0) })
             mask_commands.append(.command("cm"))
             
-            let _shading = self.shading[mask]!
-            mask_commands.append(.name(_shading))
+            mask_commands.append(.name(resources.shading[mask]!))
             mask_commands.append(.command("sh"))
             
-            let name = PDFName("Mk\(self.mask.count + 1)")
-            self.mask[name] = mask_commands
+            let name = PDFName("Mk\(resources.mask.count + 1)")
+            resources.mask[name] = mask_commands
             
             current_layer.state.commands.append(.name(name))
             current_layer.state.commands.append(.command("gs"))
@@ -841,15 +801,14 @@ extension PDFContext.Page {
         set_blendmode()
         set_opacity(self.opacity)
         
-        if self.shading[color] == nil {
-            self.shading[color] = PDFName("Sh\(self.shading.count + 1)")
+        if resources.shading[color] == nil {
+            resources.shading[color] = PDFName("Sh\(resources.shading.count + 1)")
         }
         
         current_layer.state.commands.append(contentsOf: _transform.map { PDFCommand($0) })
         current_layer.state.commands.append(.command("cm"))
         
-        let _shading = self.shading[color]!
-        current_layer.state.commands.append(.name(_shading))
+        current_layer.state.commands.append(.name(resources.shading[color]!))
         current_layer.state.commands.append(.command("sh"))
         current_layer.state.commands.append(.command("Q"))
     }
@@ -859,7 +818,7 @@ extension PDFContext.Page {
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
         guard stops.count >= 2 else { return }
         
-        let color = PDFContext.Shading(
+        let color = PDFContext.PDFShading(
             type: 2,
             deviceGray: state.is_clip,
             coords: [start.x, start.y, end.x, end.y],
@@ -870,7 +829,7 @@ extension PDFContext.Page {
         
         if stops.contains(where: { !$0.color.isOpaque }) {
             
-            let mask = PDFContext.Shading(
+            let mask = PDFContext.PDFShading(
                 type: 2,
                 deviceGray: true,
                 coords: [start.x, start.y, end.x, end.y],
@@ -892,7 +851,7 @@ extension PDFContext.Page {
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
         guard stops.count >= 2 else { return }
         
-        let color = PDFContext.Shading(
+        let color = PDFContext.PDFShading(
             type: 3,
             deviceGray: state.is_clip,
             coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
@@ -903,7 +862,7 @@ extension PDFContext.Page {
         
         if stops.contains(where: { !$0.color.isOpaque }) {
             
-            let mask = PDFContext.Shading(
+            let mask = PDFContext.PDFShading(
                 type: 3,
                 deviceGray: true,
                 coords: [start.x, start.y, startRadius, end.x, end.y, endRadius],
@@ -933,9 +892,11 @@ extension PDFContext.Page {
     
     public func drawGradient<C>(_ mesh: MeshGradient<C>) {
         
+        guard !self.transform.determinant.almostZero() && !mesh.transform.determinant.almostZero() else { return }
+        
         let mesh = mesh.convert(to: colorSpace, intent: renderingIntent)
         
-        var patch_coord_data: [PDFContext.MeshCoordData] = []
+        var patch_coord_data: [PDFContext.PDFMeshCoordData] = []
         var patch_color_data: [[[Double]]] = []
         var patch_opacity_data: [[[Double]]] = []
         
@@ -973,7 +934,7 @@ extension PDFContext.Page {
                     coord_data.append(patch.m22)
                 }
                 
-                patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
+                patch_coord_data.append(PDFContext.PDFMeshCoordData(flag: flag, coord: coord_data))
                 
                 patch_color_data.append([_c2, _c0, _c1, _c3])
                 patch_opacity_data.append([[c2.opacity * mesh.opacity], [c0.opacity * mesh.opacity], [c1.opacity * mesh.opacity], [c3.opacity * mesh.opacity]])
@@ -995,7 +956,7 @@ extension PDFContext.Page {
                     coord_data.append(patch.m22)
                 }
                 
-                patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
+                patch_coord_data.append(PDFContext.PDFMeshCoordData(flag: flag, coord: coord_data))
                 
                 patch_color_data.append([_c1, _c3])
                 patch_opacity_data.append([[c1.opacity * mesh.opacity], [c3.opacity * mesh.opacity]])
@@ -1017,7 +978,7 @@ extension PDFContext.Page {
                     coord_data.append(patch.m12)
                 }
                 
-                patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
+                patch_coord_data.append(PDFContext.PDFMeshCoordData(flag: flag, coord: coord_data))
                 
                 patch_color_data.append([_c3, _c1])
                 patch_opacity_data.append([[c3.opacity * mesh.opacity], [c1.opacity * mesh.opacity]])
@@ -1039,7 +1000,7 @@ extension PDFContext.Page {
                     coord_data.append(patch.m11)
                 }
                 
-                patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
+                patch_coord_data.append(PDFContext.PDFMeshCoordData(flag: flag, coord: coord_data))
                 
                 patch_color_data.append([_c2, _c0])
                 patch_opacity_data.append([[c2.opacity * mesh.opacity], [c0.opacity * mesh.opacity]])
@@ -1061,7 +1022,7 @@ extension PDFContext.Page {
                     coord_data.append(patch.m21)
                 }
                 
-                patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
+                patch_coord_data.append(PDFContext.PDFMeshCoordData(flag: flag, coord: coord_data))
                 
                 patch_color_data.append([_c0, _c2])
                 patch_opacity_data.append([[c0.opacity * mesh.opacity], [c2.opacity * mesh.opacity]])
@@ -1083,7 +1044,7 @@ extension PDFContext.Page {
                     coord_data.append(patch.m21)
                 }
                 
-                patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
+                patch_coord_data.append(PDFContext.PDFMeshCoordData(flag: flag, coord: coord_data))
                 
                 patch_color_data.append([_c3, _c2])
                 patch_opacity_data.append([[c3.opacity * mesh.opacity], [c2.opacity * mesh.opacity]])
@@ -1105,7 +1066,7 @@ extension PDFContext.Page {
                     coord_data.append(patch.m22)
                 }
                 
-                patch_coord_data.append(PDFContext.MeshCoordData(flag: flag, coord: coord_data))
+                patch_coord_data.append(PDFContext.PDFMeshCoordData(flag: flag, coord: coord_data))
                 
                 patch_color_data.append([_c2, _c3])
                 patch_opacity_data.append([[c2.opacity * mesh.opacity], [c3.opacity * mesh.opacity]])
@@ -1114,7 +1075,7 @@ extension PDFContext.Page {
             }
         }
         
-        let patches = mesh.patches
+        let patches = mesh.patches.map { $0 * mesh.transform }
         let colors = mesh.patch_colors
         
         guard patches.count == mesh.row * mesh.column else { return }
@@ -1175,7 +1136,7 @@ extension PDFContext.Page {
             }
         }
         
-        let color = PDFContext.MeshShading(
+        let color = PDFContext.PDFMeshShading(
             type: type,
             deviceGray: false,
             numberOfComponents: colorSpace.numberOfComponents,
@@ -1185,7 +1146,7 @@ extension PDFContext.Page {
         
         if patch_opacity_data.contains(where: { $0.contains { $0[0] < 1 } }) {
             
-            let mask = PDFContext.MeshShading(
+            let mask = PDFContext.PDFMeshShading(
                 type: type,
                 deviceGray: true,
                 numberOfComponents: 1,
@@ -1198,6 +1159,108 @@ extension PDFContext.Page {
         } else {
             
             self._draw_gradient(color, nil)
+        }
+    }
+}
+
+extension PDFContext.Page {
+    
+    private func _draw_pattern(_ pattern: Pattern, _ shape: Shape, _ winding: Shape.WindingRule, _ clip: PDFContext.Clip?) {
+        
+        current_layer.state.commands.append(.command("Q"))
+        current_layer.state.commands.append(.command("q"))
+        current_layer.state.currentStyle.apply(to: current_layer)
+        
+        switch clip {
+            
+        case let .clip(shape, winding):
+            
+            self.encode_path(shape: shape, commands: &current_layer.state.commands)
+            
+            switch winding {
+            case .nonZero: current_layer.state.commands.append(.command("W"))
+            case .evenOdd: current_layer.state.commands.append(.command("W*"))
+            }
+            
+            current_layer.state.commands.append(.command("n"))
+            
+        case let .mask(name):
+            
+            current_layer.state.commands.append(.name(name))
+            current_layer.state.commands.append(.command("gs"))
+            
+        default: break
+        }
+        
+        set_blendmode()
+        set_opacity(pattern.opacity * self.opacity)
+        
+        let pattern_context = PDFContext.Page(media: pattern.bound, crop: pattern.bound, bleed: pattern.bound, trim: pattern.bound, margin: pattern.bound, colorSpace: colorSpace)
+        pattern_context.initialize()
+        
+        pattern.callback(PDFContext(pages: [pattern_context]))
+        
+        let name = PDFName("P\(resources.pattern.count + 1)")
+        resources.pattern[name] = PDFContext.PDFPattern(
+            type: 1,
+            paintType: 1,
+            tilingType: 3,
+            bound: pattern.bound,
+            xStep: pattern.xStep,
+            yStep: pattern.yStep,
+            transform: .reflectY(pattern.bound.midY) * pattern.transform * _mirrored_transform,
+            resources: pattern_context.resources,
+            commands: pattern_context.finalize()
+        )
+        
+        current_layer.state.commands.append(.name("Pattern"))
+        current_layer.state.commands.append(.command("cs"))
+        current_layer.state.commands.append(.name(name))
+        current_layer.state.commands.append(.command("scn"))
+        
+        self.encode_path(shape: shape, commands: &current_layer.state.commands)
+        switch winding {
+        case .nonZero: current_layer.state.commands.append(.command("f"))
+        case .evenOdd: current_layer.state.commands.append(.command("f*"))
+        }
+        
+        current_layer.state.commands.append(.command("Q"))
+        current_layer.state.commands.append(.command("q"))
+        current_layer.state.currentStyle.apply(to: current_layer)
+        
+        switch current_layer.state.clip {
+            
+        case let .clip(shape, winding):
+            
+            self.encode_path(shape: shape, commands: &current_layer.state.commands)
+            
+            switch winding {
+            case .nonZero: current_layer.state.commands.append(.command("W"))
+            case .evenOdd: current_layer.state.commands.append(.command("W*"))
+            }
+            
+            current_layer.state.commands.append(.command("n"))
+            
+        case let .mask(name):
+            
+            current_layer.state.commands.append(.name(name))
+            current_layer.state.commands.append(.command("gs"))
+            
+        default: break
+        }
+    }
+    
+    func drawPattern(_ pattern: Pattern) {
+        
+        guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
+        
+        if case let .clip(shape, winding) = current_layer.state.clip {
+            
+            self._draw_pattern(pattern, shape, winding, nil)
+            
+        } else {
+            
+            self._draw_pattern(pattern, Shape(rect: self.media), .nonZero, current_layer.state.clip)
         }
     }
 }
@@ -1221,7 +1284,7 @@ extension PDFContext.Page {
         set_blendmode()
         set_opacity(self.opacity)
         
-        let shading = PDFContext.Shading(
+        let shading = PDFContext.PDFShading(
             type: 1,
             deviceGray: state.is_clip,
             coords: [],
@@ -1230,15 +1293,14 @@ extension PDFContext.Page {
             e1: false
         )
         
-        if self.shading[shading] == nil {
-            self.shading[shading] = PDFName("Sh\(self.shading.count + 1)")
+        if resources.shading[shading] == nil {
+            resources.shading[shading] = PDFName("Sh\(resources.shading.count + 1)")
         }
         
         current_layer.state.commands.append(contentsOf: _transform.map { PDFCommand($0) })
         current_layer.state.commands.append(.command("cm"))
         
-        let _shading = self.shading[shading]!
-        current_layer.state.commands.append(.name(_shading))
+        current_layer.state.commands.append(.name(resources.shading[shading]!))
         current_layer.state.commands.append(.command("sh"))
         current_layer.state.commands.append(.command("Q"))
     }

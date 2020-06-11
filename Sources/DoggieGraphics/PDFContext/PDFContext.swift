@@ -27,7 +27,7 @@ public class PDFContext: DrawableContext {
     
     var pages: [Page] = []
     
-    private init(pages: [Page]) {
+    init(pages: [Page]) {
         self.pages = pages
     }
     
@@ -310,6 +310,13 @@ extension PDFContext {
     
     public func drawGradient<C>(_ mesh: MeshGradient<C>) {
         current_page.drawGradient(mesh)
+    }
+}
+
+extension PDFContext {
+    
+    public func drawPattern(_ pattern: Pattern) {
+        current_page.drawPattern(pattern)
     }
 }
 

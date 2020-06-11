@@ -1165,6 +1165,89 @@ extension SVGContext {
 
 extension SVGContext {
     
+    private func create_pattern(pattern: Pattern) -> String {
+        
+        let pattern_context = SVGContext(viewBox: pattern.bound, resolution: resolution)
+        pattern_context.global = global ?? self
+        
+        if pattern.xStep < pattern.bound.width || pattern.yStep < pattern.bound.height {
+            
+            pattern_context.clip(rect: pattern.bound)
+            pattern_context.beginTransparencyLayer()
+            
+            pattern.callback(pattern_context)
+            
+            pattern_context.endTransparencyLayer()
+            
+        } else {
+            
+            pattern.callback(pattern_context)
+        }
+        
+        let id = new_name("PATTERN")
+        
+        var element = SDXMLElement(name: "pattern", attributes: [
+            "x": "\(Decimal(pattern.bound.minX).rounded(scale: 9))",
+            "y": "\(Decimal(pattern.bound.minY).rounded(scale: 9))",
+            "width": "\(Decimal(pattern.xStep).rounded(scale: 9))",
+            "height": "\(Decimal(pattern.yStep).rounded(scale: 9))",
+            "viewBox": getDataString(pattern.bound.minX, pattern.bound.minY, pattern.xStep, pattern.yStep),
+        ], elements: pattern_context.state.elements)
+        
+        let transform = pattern.transform * self.transform
+        element.setAttribute(for: "patternTransform", value: transform.attributeStr())
+        
+        element.setAttribute(for: "id", value: id)
+        element.setAttribute(for: "patternUnits", value: "userSpaceOnUse")
+        element.setAttribute(for: "patternContentUnits", value: "userSpaceOnUse")
+        
+        defs.append(element)
+        
+        return "url(#\(id))"
+    }
+    
+    public func drawPattern(_ pattern: Pattern) {
+        
+        guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
+        
+        let objectBound: Shape
+        let clip_object: Bool
+        
+        var element: SDXMLElement
+        
+        if case let .clip(_, shape, winding) = current_layer.state.clip {
+            
+            element = SDXMLElement(name: "path", attributes: ["d": shape.encode()])
+            
+            switch winding {
+            case .nonZero: element.setAttribute(for: "fill-rule", value: "nonzero")
+            case .evenOdd: element.setAttribute(for: "fill-rule", value: "evenodd")
+            }
+            
+            objectBound = shape
+            clip_object = false
+            
+        } else {
+            
+            element = SDXMLElement(name: "rect", attributes: [
+                "x": "\(Decimal(viewBox.minX).rounded(scale: 9))",
+                "y": "\(Decimal(viewBox.minY).rounded(scale: 9))",
+                "width": "\(Decimal(viewBox.width).rounded(scale: 9))",
+                "height": "\(Decimal(viewBox.height).rounded(scale: 9))",
+            ])
+            
+            objectBound = Shape(rect: self.viewBox)
+            clip_object = true
+        }
+        
+        element.setAttribute(for: "fill", value: create_pattern(pattern: pattern))
+        
+        self.append(element, objectBound, clip_object, .identity)
+    }
+}
+
+extension SVGContext {
+    
     private func _effect_element(_ type: String, _ effect: SVGEffect, _ visibleBound: inout Rect, _ objectBound: Rect) -> String? {
         
         let id = new_name(type)

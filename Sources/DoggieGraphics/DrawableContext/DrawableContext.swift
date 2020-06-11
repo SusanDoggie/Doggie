@@ -76,6 +76,8 @@ public protocol DrawableContext: AnyObject {
     func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode)
     
     func drawGradient<C>(_ mesh: MeshGradient<C>)
+    
+    func drawPattern(_ pattern: Pattern)
 }
 
 extension DrawableContext {

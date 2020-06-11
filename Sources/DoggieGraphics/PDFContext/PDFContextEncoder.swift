@@ -194,58 +194,83 @@ extension PDFContext {
 
 extension PDFContext.Page {
     
-    func page(_ xref_table: inout [PDFXref: PDFObject]) throws -> PDFPage {
-        
-        guard let iccData = self.colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
-        
-        var page = PDFPage()
-        
-        page.mediaBox = self.media
-        page.cropBox = self._mirrored_crop
-        page.bleedBox = self._mirrored_bleed
-        page.trimBox = self._mirrored_trim
-        page.artBox = self._mirrored_margin
-        
-        var commands = PDFStream()
-        self.finalize().encode(&commands.data)
-        
-        let commands_token = PDFXref(object: xref_table.count + 1, generation: 0)
-        xref_table[commands_token] = PDFObject(commands)
-        
-        page.object["Contents"] = PDFObject(commands_token)
-        
-        let rangeOfComponents = (0..<self.colorSpace.numberOfComponents).map { self.colorSpace.rangeOfComponent($0) }.flatMap { [$0.lowerBound, $0.upperBound] }
-        let icc_object = PDFObject(["N": PDFObject(self.colorSpace.numberOfComponents), "Range": PDFObject(rangeOfComponents)], iccData)
-        
-        let icc_object_token = PDFXref(object: xref_table.count + 1, generation: 0)
-        xref_table[icc_object_token] = icc_object
-        
-        let colorSpace: PDFObject = [PDFObject("ICCBased" as PDFName), PDFObject(icc_object_token)]
+    func encode_resources(_ resources: PDFContext.PDFResources, _ colorSpace: PDFObject, _ xref_table: inout [PDFXref: PDFObject]) -> PDFXref {
         
         let resources_token = PDFXref(object: xref_table.count + 1, generation: 0)
         xref_table[resources_token] = [:]
         
-        page.resources = PDFObject(resources_token)
-        
-        var resources: PDFObject = [
-            "ProcSet": [
-                PDFObject("PDF" as PDFName),
-                PDFObject("ImageB" as PDFName),
-                PDFObject("ImageC" as PDFName),
-                PDFObject("ImageI" as PDFName),
-            ],
-            "ColorSpace": ["Cs1": colorSpace],
-        ]
-        
         var extGState: PDFObject = [:]
         var shading: PDFObject = [:]
+        var pattern: PDFObject = [:]
         var xobject: PDFObject = [:]
         
-        for (shader, name) in self.shading {
+        for (var gstate, name) in resources.extGState {
+            gstate["Type"] = PDFObject("ExtGState" as PDFName)
+            extGState[name] = gstate
+        }
+        
+        for (name, (var image, mask)) in resources.image {
+            
+            if var mask = mask {
+                
+                let mask_token = PDFXref(object: xref_table.count + 1, generation: 0)
+                xref_table[mask_token] = PDFObject(mask)
+                
+                mask["Type"] = PDFObject("XObject" as PDFName)
+                mask["Subtype"] = PDFObject("Image" as PDFName)
+                image["SMask"] = PDFObject(mask_token)
+            }
+            
+            image["Type"] = PDFObject("XObject" as PDFName)
+            image["Subtype"] = PDFObject("Image" as PDFName)
+            
+            if image["ColorSpace"] == nil {
+                image["ColorSpace"] = colorSpace
+            }
+            
+            let image_token = PDFXref(object: xref_table.count + 1, generation: 0)
+            xref_table[image_token] = PDFObject(image)
+            
+            xobject[name] = PDFObject(image_token)
+        }
+        
+        for (name, commands) in resources.mask {
+            
+            var xobj = PDFStream(dictionary: [
+                "Type": PDFObject("XObject" as PDFName),
+                "Subtype": PDFObject("Form" as PDFName),
+                "FormType": 1,
+                "Matrix": [1, 0, 0, 1, 0, 0],
+                "BBox": PDFObject(self.media),
+                "Resources": PDFObject(resources_token),
+                "Group": [
+                    "S": PDFObject("Transparency" as PDFName),
+                    "CS": PDFObject("DeviceGray" as PDFName),
+                    "I": true,
+                    "K": false,
+                ],
+            ])
+            
+            commands.encode(&xobj.data)
+            
+            let xobj_token = PDFXref(object: xref_table.count + 1, generation: 0)
+            xref_table[xobj_token] = PDFObject(xobj)
+            
+            extGState[name] = [
+                "Type": PDFObject("ExtGState" as PDFName),
+                "SMask": [
+                    "Type": PDFObject("Mask" as PDFName),
+                    "S": PDFObject("Luminosity" as PDFName),
+                    "G": PDFObject(xobj_token),
+                ],
+            ]
+        }
+        
+        for (shader, name) in resources.shading {
             
             switch shader {
                 
-            case let shader as PDFContext.Shading:
+            case let shader as PDFContext.PDFShading:
                 
                 let function: PDFObject
                 
@@ -283,7 +308,7 @@ extension PDFContext.Page {
                 
                 shading[name] = _shading
                 
-            case let shader as PDFContext.MeshShading:
+            case let shader as PDFContext.PDFMeshShading:
                 
                 var data = Data()
                 
@@ -332,69 +357,29 @@ extension PDFContext.Page {
             }
         }
         
-        for (var gstate, name) in self.extGState {
-            gstate["Type"] = PDFObject("ExtGState" as PDFName)
-            extGState[name] = gstate
-        }
-        
-        for (name, (var image, mask)) in self.image {
-            
-            if var mask = mask {
-                
-                let mask_token = PDFXref(object: xref_table.count + 1, generation: 0)
-                xref_table[mask_token] = PDFObject(mask)
-                
-                mask["Type"] = PDFObject("XObject" as PDFName)
-                mask["Subtype"] = PDFObject("Image" as PDFName)
-                image["SMask"] = PDFObject(mask_token)
-            }
-            
-            image["Type"] = PDFObject("XObject" as PDFName)
-            image["Subtype"] = PDFObject("Image" as PDFName)
-            
-            if image["ColorSpace"] == nil {
-                image["ColorSpace"] = colorSpace
-            }
-            
-            let image_token = PDFXref(object: xref_table.count + 1, generation: 0)
-            xref_table[image_token] = PDFObject(image)
-            
-            xobject[name] = PDFObject(image_token)
-        }
-        
-        for (name, commands) in self.mask {
+        for (name, _pattern) in resources.pattern {
             
             var xobj = PDFStream(dictionary: [
-                "Type": PDFObject("XObject" as PDFName),
-                "Subtype": PDFObject("Form" as PDFName),
-                "FormType": 1,
-                "Matrix": [1, 0, 0, 1, 0, 0],
-                "BBox": PDFObject(self.media),
-                "Resources": PDFObject(resources_token),
-                "Group": [
-                    "S": PDFObject("Transparency" as PDFName),
-                    "CS": PDFObject("DeviceGray" as PDFName),
-                    "I": true,
-                    "K": false,
-                ],
+                "Type": PDFObject("Pattern" as PDFName),
+                "PatternType": PDFObject(_pattern.type),
+                "PaintType": PDFObject(_pattern.paintType),
+                "TilingType": PDFObject(_pattern.tilingType),
+                "BBox": PDFObject(_pattern.bound),
+                "XStep": PDFObject(_pattern.xStep),
+                "YStep": PDFObject(_pattern.yStep),
+                "Resources": PDFObject(self.encode_resources(_pattern.resources, colorSpace, &xref_table)),
+                "Matrix": PDFObject(_pattern.transform),
             ])
             
-            commands.encode(&xobj.data)
+            _pattern.commands.encode(&xobj.data)
             
             let xobj_token = PDFXref(object: xref_table.count + 1, generation: 0)
             xref_table[xobj_token] = PDFObject(xobj)
             
-            extGState[name] = [
-                "Type": PDFObject("ExtGState" as PDFName),
-                "SMask": [
-                    "Type": PDFObject("Mask" as PDFName),
-                    "S": PDFObject("Luminosity" as PDFName),
-                    "G": PDFObject(xobj_token),
-                ],
-            ]
+            pattern[name] = PDFObject(xobj_token)
         }
         
-        for (commands, name) in self.transparency_layers {
+        for (commands, name) in resources.transparency_layers {
             
             var xobj = PDFStream(dictionary: [
                 "Type": PDFObject("XObject" as PDFName),
@@ -418,11 +403,55 @@ extension PDFContext.Page {
             xobject[name] = PDFObject(xobj_token)
         }
         
-        resources["ExtGState"] = extGState.count == 0 ? nil : extGState
-        resources["Shading"] = shading.count == 0 ? nil : shading
-        resources["XObject"] = xobject.count == 0 ? nil : xobject
+        var _resources: PDFObject = [
+            "ProcSet": [
+                PDFObject("PDF" as PDFName),
+                PDFObject("ImageB" as PDFName),
+                PDFObject("ImageC" as PDFName),
+                PDFObject("ImageI" as PDFName),
+            ],
+            "ColorSpace": ["Cs1": colorSpace],
+        ]
         
-        xref_table[resources_token] = resources
+        _resources["ExtGState"] = extGState.count == 0 ? nil : extGState
+        _resources["Shading"] = shading.count == 0 ? nil : shading
+        _resources["Pattern"] = pattern.count == 0 ? nil : pattern
+        _resources["XObject"] = xobject.count == 0 ? nil : xobject
+        
+        xref_table[resources_token] = _resources
+        
+        return resources_token
+    }
+    
+    func page(_ xref_table: inout [PDFXref: PDFObject]) throws -> PDFPage {
+        
+        guard let iccData = self.colorSpace.iccData else { throw PDFContext.EncodeError.unsupportedColorSpace }
+        
+        var page = PDFPage()
+        
+        page.mediaBox = self.media
+        page.cropBox = self._mirrored_crop
+        page.bleedBox = self._mirrored_bleed
+        page.trimBox = self._mirrored_trim
+        page.artBox = self._mirrored_margin
+        
+        var commands = PDFStream()
+        self.finalize().encode(&commands.data)
+        
+        let commands_token = PDFXref(object: xref_table.count + 1, generation: 0)
+        xref_table[commands_token] = PDFObject(commands)
+        
+        page.object["Contents"] = PDFObject(commands_token)
+        
+        let rangeOfComponents = (0..<self.colorSpace.numberOfComponents).map { self.colorSpace.rangeOfComponent($0) }.flatMap { [$0.lowerBound, $0.upperBound] }
+        let icc_object = PDFObject(["N": PDFObject(self.colorSpace.numberOfComponents), "Range": PDFObject(rangeOfComponents)], iccData)
+        
+        let icc_object_token = PDFXref(object: xref_table.count + 1, generation: 0)
+        xref_table[icc_object_token] = icc_object
+        
+        let colorSpace: PDFObject = [PDFObject("ICCBased" as PDFName), PDFObject(icc_object_token)]
+        
+        page.resources = PDFObject(self.encode_resources(self.resources, colorSpace, &xref_table))
         
         return page
     }
