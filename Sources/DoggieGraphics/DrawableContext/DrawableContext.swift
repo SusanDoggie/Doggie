@@ -242,6 +242,8 @@ extension DrawableContext {
         
         self.concatenate(transform)
         
+        self.opacity = gradient.opacity
+        
         switch gradient.type {
         case .linear: self.drawLinearGradient(stops: gradient.stops, start: gradient.start, end: gradient.end, startSpread: gradient.startSpread, endSpread: gradient.endSpread)
         case .radial: self.drawRadialGradient(stops: gradient.stops, start: gradient.start, startRadius: 0, end: gradient.end, endRadius: 0.5, startSpread: gradient.startSpread, endSpread: gradient.endSpread)
@@ -288,5 +290,66 @@ extension DrawableContext {
     @inline(__always)
     public func stroke<C>(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>) {
         self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, gradient: gradient)
+    }
+}
+
+extension DrawableContext {
+    
+    @inlinable
+    @inline(__always)
+    public func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern) {
+        
+        self.beginTransparencyLayer()
+        
+        self.clip(shape: shape, winding: winding)
+        
+        let boundary = shape.originalBoundary
+        let transform = SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
+        
+        self.concatenate(transform)
+        
+        self.drawPattern(pattern)
+        
+        self.endTransparencyLayer()
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern) {
+        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, pattern: pattern)
+    }
+}
+
+extension DrawableContext {
+    
+    @inlinable
+    @inline(__always)
+    public func draw(rect: Rect, pattern: Pattern) {
+        self.draw(shape: Shape(rect: rect), winding: .nonZero, pattern: pattern)
+    }
+    @inlinable
+    @inline(__always)
+    public func draw(roundedRect rect: Rect, radius: Radius, pattern: Pattern) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, pattern: pattern)
+    }
+    @inlinable
+    @inline(__always)
+    public func draw(ellipseIn rect: Rect, pattern: Pattern) {
+        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, pattern: pattern)
+    }
+    @inlinable
+    @inline(__always)
+    public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern) {
+        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, pattern: pattern)
+    }
+    @inlinable
+    @inline(__always)
+    public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern) {
+        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, pattern: pattern)
+    }
+    @inlinable
+    @inline(__always)
+    public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern) {
+        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, pattern: pattern)
     }
 }

@@ -1170,7 +1170,7 @@ extension SVGContext {
         let pattern_context = SVGContext(viewBox: pattern.bound, resolution: resolution)
         pattern_context.global = global ?? self
         
-        if pattern.xStep < pattern.bound.width || pattern.yStep < pattern.bound.height {
+        if pattern.xStep != pattern.bound.width || pattern.yStep != pattern.bound.height {
             
             pattern_context.clip(rect: pattern.bound)
             pattern_context.beginTransparencyLayer()
@@ -1241,6 +1241,10 @@ extension SVGContext {
         }
         
         element.setAttribute(for: "fill", value: create_pattern(pattern: pattern))
+        
+        if pattern.opacity < 1 {
+            element.setAttribute(for: "fill-opacity", value: "\(pattern.opacity)")
+        }
         
         self.append(element, objectBound, clip_object, .identity)
     }

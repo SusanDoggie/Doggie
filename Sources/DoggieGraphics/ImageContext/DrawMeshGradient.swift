@@ -126,7 +126,12 @@ extension ImageContext {
         
         self.withUnsafePixelBlender { blender in
             
-            for (patch, (c0, c1, c2, c3)) in zip(patches, colors) {
+            for (patch, var (c0, c1, c2, c3)) in zip(patches, colors) {
+                
+                c0.opacity *= mesh.opacity
+                c1.opacity *= mesh.opacity
+                c2.opacity *= mesh.opacity
+                c3.opacity *= mesh.opacity
                 
                 let rasterizer = ImageContextMeshGradientRasterizeBuffer(blender: blender, width: width, height: height)
                 
