@@ -1206,7 +1206,7 @@ extension SVGContext {
         return "url(#\(id))"
     }
     
-    public func draw(shape: Shape, winding: Shape.WindingRule, gradient: Pattern) {
+    public func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern) {
         
         guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
         

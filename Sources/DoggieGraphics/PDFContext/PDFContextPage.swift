@@ -1250,6 +1250,13 @@ extension PDFContext.Page {
         }
     }
     
+    func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern) {
+        
+        guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
+        
+        self._draw_pattern(pattern, shape, winding, current_layer.state.clip)
+    }
+    
     func drawPattern(_ pattern: Pattern) {
         
         guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }

@@ -315,6 +315,9 @@ extension PDFContext {
 
 extension PDFContext {
     
+    public func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern) {
+        current_page.draw(shape: shape, winding: winding, pattern: pattern)
+    }
     public func drawPattern(_ pattern: Pattern) {
         current_page.drawPattern(pattern)
     }
