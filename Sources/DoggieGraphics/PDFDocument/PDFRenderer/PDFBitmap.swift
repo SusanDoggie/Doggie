@@ -234,6 +234,8 @@ extension PDFBitmap {
             }
             
             return AnyImage(width: self.width, height: self.height, colorSpace: colorSpace, bitmaps: bitmaps, premultiplied: self.premultiplied)
+            
+        default: return nil
         }
     }
 }

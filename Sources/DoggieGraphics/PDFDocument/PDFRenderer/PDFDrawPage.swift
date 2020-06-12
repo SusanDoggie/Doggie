@@ -64,6 +64,7 @@ extension PDFRenderer {
         let extGState = resources["ExtGState"]
         let colorSpaces = resources["ColorSpace"].dictionary?.compactMapValues { PDFColorSpace($0) } ?? [:]
         let shading = resources["Shading"]
+        let pattern = resources["Pattern"]
         let xobject = resources["XObject"]
         
         var stack: [PDFCommand] = []
@@ -331,6 +332,7 @@ extension PDFRenderer {
                 case "DeviceGray": self.setStrokeColorSpace(.deviceGray)
                 case "DeviceRGB": self.setStrokeColorSpace(.deviceRGB)
                 case "DeviceCMYK": self.setStrokeColorSpace(.deviceCMYK)
+                case "Pattern": self.setStrokeColorSpace(.pattern(nil))
                 default:
                     if let name = _colorSpace, let colorSpace = colorSpaces[name] {
                         self.setStrokeColorSpace(colorSpace)
@@ -344,6 +346,7 @@ extension PDFRenderer {
                 case "DeviceGray": self.setFillColorSpace(.deviceGray)
                 case "DeviceRGB": self.setFillColorSpace(.deviceRGB)
                 case "DeviceCMYK": self.setFillColorSpace(.deviceCMYK)
+                case "Pattern": self.setFillColorSpace(.pattern(nil))
                 default:
                     if let name = _colorSpace, let colorSpace = colorSpaces[name] {
                         self.setFillColorSpace(colorSpace)
@@ -352,27 +355,97 @@ extension PDFRenderer {
                 
             case "SC", "SCN":
                 
-                var color: [PDFNumber] = []
-                
-                for _ in 0..<self.strokeColorSpace.numberOfComponents {
-                    color.append(stack.popLast()?.number ?? 0)
+                if case let .pattern(base) = self.strokeColorSpace {
+                    
+                    guard let _pattern = stack.popLast()?.name else { break }
+                    
+                    if let base = base {
+                        
+                        var color: [PDFNumber] = []
+                        
+                        for _ in 0..<base.numberOfComponents {
+                            color.append(stack.popLast()?.number ?? 0)
+                        }
+                        
+                        color.reverse()
+                        
+                        self.setStrokeColor(color)
+                    }
+                    
+                    if let pattern = pattern[_pattern].stream, pattern["Type"].name == "Pattern" || pattern["Type"] == nil {
+                        
+                        guard let paintType = pattern["PaintType"].intValue else { break }
+                        guard let bound = pattern["BBox"].rect else { break }
+                        guard let xStep = pattern["XStep"].doubleValue else { break }
+                        guard let yStep = pattern["YStep"].doubleValue else { break }
+                        let transform = pattern["Matrix"].transform ?? SDTransform.identity
+                        
+                        guard let contents = pattern.decode() else { break }
+                        
+                        let _pattern = PDFPattern(paintType: paintType, bound: bound, xStep: xStep, yStep: yStep, transform: transform) { $0._render(PageInfo(contents: contents, resources: pattern["Resources"]), drawing_clip, render_stack) }
+                        
+                        self.setStrokePattern(_pattern)
+                    }
+                    
+                } else {
+                    
+                    var color: [PDFNumber] = []
+                    
+                    for _ in 0..<self.strokeColorSpace.numberOfComponents {
+                        color.append(stack.popLast()?.number ?? 0)
+                    }
+                    
+                    color.reverse()
+                    
+                    self.setStrokeColor(color)
                 }
-                
-                color.reverse()
-                
-                self.setStrokeColor(color)
                 
             case "sc", "scn":
                 
-                var color: [PDFNumber] = []
-                
-                for _ in 0..<self.fillColorSpace.numberOfComponents {
-                    color.append(stack.popLast()?.number ?? 0)
+                if case let .pattern(base) = self.fillColorSpace {
+                    
+                    guard let _pattern = stack.popLast()?.name else { break }
+                    
+                    if let base = base {
+                        
+                        var color: [PDFNumber] = []
+                        
+                        for _ in 0..<base.numberOfComponents {
+                            color.append(stack.popLast()?.number ?? 0)
+                        }
+                        
+                        color.reverse()
+                        
+                        self.setFillColor(color)
+                    }
+                    
+                    if let pattern = pattern[_pattern].stream, pattern["Type"].name == "Pattern" || pattern["Type"] == nil {
+                        
+                        guard let paintType = pattern["PaintType"].intValue else { break }
+                        guard let bound = pattern["BBox"].rect else { break }
+                        guard let xStep = pattern["XStep"].doubleValue else { break }
+                        guard let yStep = pattern["YStep"].doubleValue else { break }
+                        let transform = pattern["Matrix"].transform ?? SDTransform.identity
+                        
+                        guard let contents = pattern.decode() else { break }
+                        
+                        let _pattern = PDFPattern(paintType: paintType, bound: bound, xStep: xStep, yStep: yStep, transform: transform) { $0._render(PageInfo(contents: contents, resources: pattern["Resources"]), drawing_clip, render_stack) }
+                        
+                        self.setFillPattern(_pattern)
+                    }
+                    
+                } else {
+                    
+                    var color: [PDFNumber] = []
+                    
+                    for _ in 0..<self.fillColorSpace.numberOfComponents {
+                        color.append(stack.popLast()?.number ?? 0)
+                    }
+                    
+                    color.reverse()
+                    
+                    self.setFillColor(color)
                 }
-                
-                color.reverse()
-                
-                self.setFillColor(color)
                 
             case "G":
                 

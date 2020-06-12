@@ -41,6 +41,21 @@ class PDFRenderer {
 
 extension PDFRenderer {
     
+    struct PDFPattern {
+        
+        var paintType: Int
+        
+        var bound: Rect
+        
+        var xStep: Double
+        var yStep: Double
+        
+        var transform: SDTransform
+        
+        var callback: (PDFRenderer) -> Void
+        
+    }
+    
     private struct GraphicState {
         
         var fillColorSpace: PDFColorSpace = .deviceRGB
@@ -48,6 +63,9 @@ extension PDFRenderer {
         
         var fill: [PDFNumber] = [0, 0, 0]
         var stroke: [PDFNumber] = [0, 0, 0]
+        
+        var fillPattern: PDFPattern?
+        var strokePattern: PDFPattern?
         
         var strokeOpacity: Double = 1
         
@@ -129,6 +147,14 @@ extension PDFRenderer {
         return state.strokeColorSpace.create_color(state.stroke, device: context_colorspace)
     }
     
+    var fillPattern: PDFPattern? {
+        return state.fillPattern
+    }
+    
+    var strokePattern: PDFPattern? {
+        return state.strokePattern
+    }
+    
     var path: Shape {
         get {
             return state.path
@@ -159,13 +185,23 @@ extension PDFRenderer {
     func setFillColor(_ color: [PDFNumber]) {
         if state.fillColorSpace.numberOfComponents == color.count {
             state.fill = color
+            state.fillPattern = nil
         }
+    }
+    
+    func setFillPattern(_ pattern: PDFPattern) {
+        state.fillPattern = pattern
     }
     
     func setStrokeColor(_ color: [PDFNumber]) {
         if state.strokeColorSpace.numberOfComponents == color.count {
             state.stroke = color
+            state.strokePattern = nil
         }
+    }
+    
+    func setStrokePattern(_ pattern: PDFPattern) {
+        state.strokePattern = pattern
     }
     
     var should_isolate: Bool {
@@ -405,7 +441,53 @@ extension PDFRenderer {
     
     func draw(winding: Shape.WindingRule) {
         
-        context.draw(shape: state.path, winding: winding, color: alphaMask ? AnyColor.white : fill ?? .black)
+        if case .pattern = self.fillColorSpace, let pattern = self.fillPattern {
+            
+            switch pattern.paintType {
+                
+            case 1:
+                
+                var _pattern = Pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) { pattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
+                
+                _pattern.transform = pattern.transform
+                
+                context.draw(shape: state.path, winding: winding, pattern: _pattern)
+                
+            case 2:
+                
+                context.beginTransparencyLayer()
+                
+                context.clipToDrawing { context in
+                    
+                    var _pattern = Pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) {
+                        
+                        let renderer = PDFRenderer(context: $0, alphaMask: false)
+                        
+                        renderer.setFillColorSpace(.deviceGray)
+                        renderer.setFillColor([1])
+                        renderer.setStrokeColorSpace(.deviceGray)
+                        renderer.setStrokeColor([1])
+                        
+                        pattern.callback(renderer)
+                    }
+                    
+                    _pattern.transform = pattern.transform
+                    
+                    context.draw(shape: state.path, winding: winding, pattern: _pattern)
+                }
+                
+                context.draw(shape: state.path, winding: winding, color: alphaMask ? AnyColor.white : fill ?? .black)
+                
+                context.endTransparencyLayer()
+                
+            default: break
+            }
+            
+        } else {
+            
+            context.draw(shape: state.path, winding: winding, color: alphaMask ? AnyColor.white : fill ?? .black)
+        }
+        
         state.path = Shape()
     }
     
@@ -428,7 +510,53 @@ extension PDFRenderer {
         let opacity = context.opacity
         context.opacity = state.strokeOpacity
         
-        context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
+        if case .pattern = self.strokeColorSpace, let pattern = self.strokePattern {
+            
+            switch pattern.paintType {
+                
+            case 1:
+                
+                var _pattern = Pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) { pattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
+                
+                _pattern.transform = pattern.transform
+                
+                context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, pattern: _pattern)
+                
+            case 2:
+                
+                context.beginTransparencyLayer()
+                
+                context.clipToDrawing { context in
+                    
+                    var _pattern = Pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) {
+                        
+                        let renderer = PDFRenderer(context: $0, alphaMask: false)
+                        
+                        renderer.setFillColorSpace(.deviceGray)
+                        renderer.setFillColor([1])
+                        renderer.setStrokeColorSpace(.deviceGray)
+                        renderer.setStrokeColor([1])
+                        
+                        pattern.callback(renderer)
+                    }
+                    
+                    _pattern.transform = pattern.transform
+                    
+                    context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, pattern: _pattern)
+                }
+                
+                context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
+                
+                context.endTransparencyLayer()
+                
+            default: break
+            }
+            
+        } else {
+            
+            context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
+        }
+        
         state.path = Shape()
         
         context.opacity = opacity

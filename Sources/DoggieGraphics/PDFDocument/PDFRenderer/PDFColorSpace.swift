@@ -30,6 +30,7 @@ public indirect enum PDFColorSpace: Hashable {
     case deviceCMYK
     case indexed(PDFColorSpace, [Data])
     case colorSpace(AnyColorSpace)
+    case pattern(PDFColorSpace?)
     
     public init(_ colorSpace: AnyColorSpace) {
         self = .colorSpace(colorSpace)
@@ -45,6 +46,7 @@ extension PDFColorSpace {
         case .deviceCMYK: return 4
         case .indexed: return 1
         case let .colorSpace(colorSpace): return colorSpace.numberOfComponents
+        case let .pattern(base): return base?.numberOfComponents ?? 0
         }
     }
     
@@ -62,6 +64,7 @@ extension PDFColorSpace {
             case is ColorSpace<CMYKColorModel>: return [0, 0, 0, 1]
             default: return Array(repeating: 0, count: colorSpace.numberOfComponents)
             }
+        case let .pattern(base): return base?.black
         }
     }
 }
@@ -143,6 +146,17 @@ extension PDFColorSpace {
             let table = data.chunked(by: base.numberOfComponents).prefix(hival + 1)
             
             self = .indexed(base, Array(table))
+            
+        case "Pattern":
+            
+            if let array = object.array, let base = PDFColorSpace(PDFObject(array.dropFirst()), colorSpaces) {
+                
+                self = .pattern(base)
+                
+            } else {
+                
+                self = .pattern(nil)
+            }
             
         default: return nil
         }
@@ -246,6 +260,8 @@ extension PDFColorSpace {
             return 0..<table.count ~= Int(index) ? base.create_color(_color, device: colorSpace) : nil
             
         case let .colorSpace(colorSpace): return AnyColor(colorSpace: colorSpace, components: color.map { $0.doubleValue ?? 0 })
+            
+        case let .pattern(base): return base.flatMap { $0.create_color(color, device: colorSpace) }
         }
     }
 }
