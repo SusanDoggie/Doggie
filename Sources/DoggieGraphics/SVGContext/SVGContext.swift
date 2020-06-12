@@ -1206,6 +1206,27 @@ extension SVGContext {
         return "url(#\(id))"
     }
     
+    public func draw(shape: Shape, winding: Shape.WindingRule, gradient: Pattern) {
+        
+        guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
+        
+        let shape = shape * self.transform
+        var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
+        
+        switch winding {
+        case .nonZero: element.setAttribute(for: "fill-rule", value: "nonzero")
+        case .evenOdd: element.setAttribute(for: "fill-rule", value: "evenodd")
+        }
+        
+        element.setAttribute(for: "fill", value: create_pattern(pattern: pattern))
+        
+        if pattern.opacity < 1 {
+            element.setAttribute(for: "fill-opacity", value: "\(pattern.opacity)")
+        }
+        
+        self.append(element, shape, true, .identity)
+    }
+    
     public func drawPattern(_ pattern: Pattern) {
         
         guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
