@@ -380,9 +380,11 @@ extension PDFRenderer {
                         guard let yStep = pattern["YStep"].doubleValue else { break }
                         let transform = pattern["Matrix"].transform ?? SDTransform.identity
                         
+                        let resources = pattern["Resources"] == nil ? resources : resources.merging(pattern["Resources"]) { _, rhs in rhs }
+                        
                         guard let contents = pattern.decode() else { break }
                         
-                        let _pattern = PDFPattern(paintType: paintType, bound: bound, xStep: xStep, yStep: yStep, transform: transform) { $0._render(PageInfo(contents: contents, resources: pattern["Resources"]), drawing_clip, render_stack) }
+                        let _pattern = PDFPattern(paintType: paintType, bound: bound, xStep: xStep, yStep: yStep, transform: transform) { $0._render(PageInfo(contents: contents, resources: resources), drawing_clip, render_stack) }
                         
                         self.setStrokePattern(_pattern)
                     }
@@ -427,9 +429,11 @@ extension PDFRenderer {
                         guard let yStep = pattern["YStep"].doubleValue else { break }
                         let transform = pattern["Matrix"].transform ?? SDTransform.identity
                         
+                        let resources = pattern["Resources"] == nil ? resources : resources.merging(pattern["Resources"]) { _, rhs in rhs }
+                        
                         guard let contents = pattern.decode() else { break }
                         
-                        let _pattern = PDFPattern(paintType: paintType, bound: bound, xStep: xStep, yStep: yStep, transform: transform) { $0._render(PageInfo(contents: contents, resources: pattern["Resources"]), drawing_clip, render_stack) }
+                        let _pattern = PDFPattern(paintType: paintType, bound: bound, xStep: xStep, yStep: yStep, transform: transform) { $0._render(PageInfo(contents: contents, resources: resources), drawing_clip, render_stack) }
                         
                         self.setFillPattern(_pattern)
                     }
