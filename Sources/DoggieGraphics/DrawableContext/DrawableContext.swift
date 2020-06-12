@@ -77,6 +77,10 @@ public protocol DrawableContext: AnyObject {
     
     func drawGradient<C>(_ mesh: MeshGradient<C>)
     
+    func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern)
+    
+    func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern)
+    
     func drawPattern(_ pattern: Pattern)
 }
 
