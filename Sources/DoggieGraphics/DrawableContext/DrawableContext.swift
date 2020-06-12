@@ -303,11 +303,6 @@ extension DrawableContext {
         
         self.clip(shape: shape, winding: winding)
         
-        let boundary = shape.originalBoundary
-        let transform = SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
-        
-        self.concatenate(transform)
-        
         self.drawPattern(pattern)
         
         self.endTransparencyLayer()
