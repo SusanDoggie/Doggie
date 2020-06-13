@@ -1199,7 +1199,6 @@ extension SVGContext {
         
         element.setAttribute(for: "id", value: id)
         element.setAttribute(for: "patternUnits", value: "userSpaceOnUse")
-        element.setAttribute(for: "patternContentUnits", value: "userSpaceOnUse")
         
         defs.append(element)
         
