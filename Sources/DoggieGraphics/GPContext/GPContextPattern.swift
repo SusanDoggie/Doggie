@@ -95,7 +95,7 @@ extension GPContext {
             
             pattern.callback(context)
             
-            let image = context.image
+            let image = context.image._insertingIntermediate()
             
             self.draw_pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) { context in
                 

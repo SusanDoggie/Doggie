@@ -137,7 +137,7 @@ extension GPContext {
 
 extension CIImage {
     
-    fileprivate func _insertingIntermediate() -> CIImage {
+    func _insertingIntermediate() -> CIImage {
         if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {
             return self.insertingIntermediate()
         }
