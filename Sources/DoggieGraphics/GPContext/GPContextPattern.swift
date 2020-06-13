@@ -83,8 +83,12 @@ extension GPContext {
         
         self.opacity = pattern.opacity
         
-        let width = Int((Point(x: pattern.bound.width, y: 0) * self.transform).magnitude.rounded(.up))
-        let height = Int((Point(x: 0, y: pattern.bound.height) * self.transform).magnitude.rounded(.up))
+        var transform = self.transform
+        transform.tx = 0
+        transform.ty = 0
+        
+        let width = max(1, Int((Point(x: pattern.bound.width, y: 0) * transform).magnitude.rounded(.up)))
+        let height = max(1, Int((Point(x: 0, y: pattern.bound.height) * transform).magnitude.rounded(.up)))
         
         if width < self.width && height < self.height {
             
