@@ -127,7 +127,7 @@ extension GPContext {
                 
                 for y in minY..<maxY {
                     let transform = cell_transform * SDTransform.translate(x: 0, y: Double(y) * pattern.yStep) * cell_transform.inverse
-                    combined = combined.map { row.transformed(by: transform).composited(over: $0) } ?? row.transformed(by: transform)
+                    combined = combined.map { combined_row.transformed(by: transform).composited(over: $0) } ?? combined_row.transformed(by: transform)
                 }
             }
             
