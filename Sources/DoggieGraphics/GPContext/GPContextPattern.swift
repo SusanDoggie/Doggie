@@ -58,8 +58,8 @@ extension GPContext {
         
         let minX = Int(((frame.minX - bound.minX) / xStep).rounded(.down))
         let maxX = Int(((frame.maxX - bound.minX) / xStep).rounded(.up))
-        let minY = Int(((frame.minY - bound.minY) / xStep).rounded(.down))
-        let maxY = Int(((frame.maxY - bound.minY) / xStep).rounded(.up))
+        let minY = Int(((frame.minY - bound.minY) / yStep).rounded(.down))
+        let maxY = Int(((frame.maxY - bound.minY) / yStep).rounded(.up))
         
         for y in minY..<maxY {
             for x in minX..<maxX {
@@ -92,21 +92,43 @@ extension GPContext {
         
         if width < self.width && height < self.height {
             
-            let context = GPContext(width: width, height: height)
+            let cell_transform = SDTransform.scale(x: pattern.bound.width / Double(width), y: pattern.bound.height / Double(height)) * SDTransform.translate(x: pattern.bound.minX, y: pattern.bound.minY)
             
-            context.scale(x: Double(width) / pattern.bound.width, y: Double(height) / pattern.bound.height)
-            context.translate(x: -pattern.bound.minX, y: -pattern.bound.minY)
-            
-            pattern.callback(context)
-            
-            let image = context.image._insertingIntermediate()
-            
-            self.draw_pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) { context in
+            let image: CIImage = {
                 
-                context.translate(x: pattern.bound.minX, y: pattern.bound.minY)
-                context.scale(x: pattern.bound.width / Double(width), y: pattern.bound.height / Double(height))
+                let context = GPContext(width: width, height: height)
                 
-                context.draw(image: image, transform: .identity)
+                context.concatenate(cell_transform.inverse)
+                
+                pattern.callback(context)
+                
+                return context.image._insertingIntermediate()
+            }()
+            
+            var combined: CIImage?
+            
+            let transform = self.transform.inverse
+            let frame = Rect.bound(Rect(x: 0, y: 0, width: self.width, height: self.height).points.map { $0 * transform })
+            
+            let minX = Int(((frame.minX - pattern.bound.minX) / pattern.xStep).rounded(.down))
+            let maxX = Int(((frame.maxX - pattern.bound.minX) / pattern.xStep).rounded(.up))
+            let minY = Int(((frame.minY - pattern.bound.minY) / pattern.yStep).rounded(.down))
+            let maxY = Int(((frame.maxY - pattern.bound.minY) / pattern.yStep).rounded(.up))
+            
+            for x in minX..<maxX {
+                let transform = cell_transform * SDTransform.translate(x: Double(x) * pattern.xStep, y: 0) * cell_transform.inverse
+                combined = combined.map { image.transformed(by: transform).composited(over: $0) } ?? image.transformed(by: transform)
+            }
+            
+            if let row = combined {
+                for y in minY..<maxY {
+                    let transform = cell_transform * SDTransform.translate(x: 0, y: Double(y) * pattern.yStep) * cell_transform.inverse
+                    combined = combined.map { row.transformed(by: transform).composited(over: $0) } ?? row.transformed(by: transform)
+                }
+            }
+            
+            if let combined = combined {
+                self.draw(image: combined, transform: cell_transform)
             }
             
         } else {

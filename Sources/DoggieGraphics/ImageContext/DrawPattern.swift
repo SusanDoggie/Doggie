@@ -34,8 +34,8 @@ extension ImageContext {
         
         let minX = Int(((frame.minX - bound.minX) / xStep).rounded(.down))
         let maxX = Int(((frame.maxX - bound.minX) / xStep).rounded(.up))
-        let minY = Int(((frame.minY - bound.minY) / xStep).rounded(.down))
-        let maxY = Int(((frame.maxY - bound.minY) / xStep).rounded(.up))
+        let minY = Int(((frame.minY - bound.minY) / yStep).rounded(.down))
+        let maxY = Int(((frame.maxY - bound.minY) / yStep).rounded(.up))
         
         for y in minY..<maxY {
             for x in minX..<maxX {
