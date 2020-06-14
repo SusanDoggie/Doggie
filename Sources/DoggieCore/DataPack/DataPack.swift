@@ -51,7 +51,7 @@ public struct DataPack {
     
     @inlinable
     public init(decode data: Data) {
-        self.init(.undecoded(SDUndecodedObject(data: data)))
+        self.init(.undecoded(UndecodedObject(data: data)))
     }
     
     @inlinable
@@ -328,7 +328,7 @@ extension DataPack {
         case uuid(UUID)
         case array([DataPack])
         case dictionary([String: DataPack])
-        case undecoded(SDUndecodedObject)
+        case undecoded(UndecodedObject)
     }
 }
 
@@ -431,6 +431,9 @@ extension DataPack.Base {
         default: return nil
         }
     }
+}
+
+extension DataPack.Base {
     
     @inlinable
     func encode(to data: inout MappedBuffer<UInt8>) {
@@ -685,37 +688,43 @@ extension DataPack {
     }
 }
 
-@frozen
-@usableFromInline
-struct SDUndecodedObject {
+extension DataPack {
     
+    @frozen
     @usableFromInline
-    let type: DataPackType
-    
-    @usableFromInline
-    let data: Data
-    
-    @inlinable
-    init(data: Data) {
-        if let type = data.first {
-            switch type {
-            case 0x3F: self.type = .null
-            case 0x66, 0x74: self.type = .boolean
-            case 0x69: self.type = .signed
-            case 0x75: self.type = .unsigned
-            case 0x6E: self.type = .number
-            case 0x73: self.type = .string
-            case 0x62: self.type = .binary
-            case 0x67: self.type = .uuid
-            case 0x61: self.type = .array
-            case 0x64: self.type = .dictionary
-            default: self.type = .unknown(type)
+    struct UndecodedObject {
+        
+        @usableFromInline
+        let type: DataPackType
+        
+        @usableFromInline
+        let data: Data
+        
+        @inlinable
+        init(data: Data) {
+            if let type = data.first {
+                switch type {
+                case 0x3F: self.type = .null
+                case 0x66, 0x74: self.type = .boolean
+                case 0x69: self.type = .signed
+                case 0x75: self.type = .unsigned
+                case 0x6E: self.type = .number
+                case 0x73: self.type = .string
+                case 0x62: self.type = .binary
+                case 0x67: self.type = .uuid
+                case 0x61: self.type = .array
+                case 0x64: self.type = .dictionary
+                default: self.type = .unknown(type)
+                }
+            } else {
+                self.type = .null
             }
-        } else {
-            self.type = .null
+            self.data = type == .boolean ? data : data.dropFirst()
         }
-        self.data = type == .boolean ? data : data.dropFirst()
     }
+}
+
+extension DataPack.UndecodedObject {
     
     @inlinable
     var boolValue: Bool? {
@@ -789,6 +798,9 @@ struct SDUndecodedObject {
         guard type == .dictionary else { return nil }
         return Dictionary((0..<count).lazy.compactMap { self[keyValuePairs: $0] }) { lhs, _ in lhs }
     }
+}
+
+extension DataPack.UndecodedObject {
     
     @inlinable
     var count: Int {
@@ -844,6 +856,9 @@ struct SDUndecodedObject {
         let value = DataPack(decode: _value)
         return value.isNil ? nil : (key, value)
     }
+}
+
+extension DataPack.UndecodedObject {
     
     @inlinable
     func encode(to data: inout MappedBuffer<UInt8>) {

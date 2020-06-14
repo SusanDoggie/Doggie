@@ -23,14 +23,19 @@
 //  THE SOFTWARE.
 //
 
-public indirect enum PDFColorSpace: Hashable {
+public enum PDFColorSpace: Hashable {
     
     case deviceGray
+    
     case deviceRGB
+    
     case deviceCMYK
-    case indexed(PDFColorSpace, [Data])
+    
     case colorSpace(AnyColorSpace)
-    case pattern(PDFColorSpace?)
+    
+    indirect case indexed(PDFColorSpace, [Data])
+    
+    indirect case pattern(PDFColorSpace?)
     
     public init(_ colorSpace: AnyColorSpace) {
         self = .colorSpace(colorSpace)
@@ -166,43 +171,43 @@ extension PDFColorSpace {
 extension PDFColorSpace {
     
     static func deviceGrayFromRGB(_ colorSpace: ColorSpace<RGBColorModel>) -> ColorSpace<GrayColorModel> {
-        return .wrapped(
+        return ColorSpace.wrapped(
             base: colorSpace,
             convertFromBase: { GrayColorModel(white: 0.3 * $0.red + 0.59 * $0.green + 0.11 * $0.blue) },
-            convertToBase: { RGBColorModel(red: $0.white, green: $0.white, blue: $0.white) }
+            convertToBase: RGBColorModel.init
         )
     }
     
     static func deviceGrayFromCMYK(_ colorSpace: ColorSpace<CMYKColorModel>) -> ColorSpace<GrayColorModel> {
-        return .wrapped(
+        return ColorSpace.wrapped(
             base: colorSpace,
             convertFromBase: { GrayColorModel(white: 1 - min(1, 0.3 * $0.cyan + 0.59 * $0.magenta + 0.11 * $0.yellow + $0.black)) },
-            convertToBase: { CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 1 - $0.white) }
+            convertToBase: CMYKColorModel.init
         )
     }
     
     static func deviceRGBFromGray(_ colorSpace: ColorSpace<GrayColorModel>) -> ColorSpace<RGBColorModel> {
-        return .wrapped(
+        return ColorSpace.wrapped(
             base: colorSpace,
-            convertFromBase: { RGBColorModel(red: $0.white, green: $0.white, blue: $0.white) },
+            convertFromBase: RGBColorModel.init,
             convertToBase: { GrayColorModel(white: 0.3 * $0.red + 0.59 * $0.green + 0.11 * $0.blue) }
         )
     }
     
     static func deviceRGBFromCMYK(_ colorSpace: ColorSpace<CMYKColorModel>) -> ColorSpace<RGBColorModel> {
-        return .wrapped(base: colorSpace, convertFromBase: RGBColorModel.init, convertToBase: CMYKColorModel.init)
+        return ColorSpace.wrapped(base: colorSpace, convertFromBase: RGBColorModel.init, convertToBase: CMYKColorModel.init)
     }
     
     static func deviceCMYKFromGray(_ colorSpace: ColorSpace<GrayColorModel>) -> ColorSpace<CMYKColorModel> {
-        return .wrapped(
+        return ColorSpace.wrapped(
             base: colorSpace,
-            convertFromBase: { CMYKColorModel(cyan: 0, magenta: 0, yellow: 0, black: 1 - $0.white) },
+            convertFromBase: CMYKColorModel.init,
             convertToBase: { GrayColorModel(white: 1 - min(1, 0.3 * $0.cyan + 0.59 * $0.magenta + 0.11 * $0.yellow + $0.black)) }
         )
     }
     
     static func deviceCMYKFromRGB(_ colorSpace: ColorSpace<RGBColorModel>) -> ColorSpace<CMYKColorModel> {
-        return .wrapped(base: colorSpace, convertFromBase: CMYKColorModel.init, convertToBase: RGBColorModel.init)
+        return ColorSpace.wrapped(base: colorSpace, convertFromBase: CMYKColorModel.init, convertToBase: RGBColorModel.init)
     }
     
 }
