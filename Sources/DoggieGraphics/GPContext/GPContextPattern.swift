@@ -107,6 +107,7 @@ extension GPContext {
                 return context.image._insertingIntermediate()
             }()
             
+            var combined_row: CIImage?
             var combined: CIImage?
             
             let transform = self.transform.inverse
@@ -119,10 +120,11 @@ extension GPContext {
             
             for x in minX..<maxX {
                 let transform = cell_transform * SDTransform.translate(x: Double(x) * pattern.xStep, y: 0) * cell_transform.inverse
-                combined = combined.map { image.transformed(by: transform).composited(over: $0) } ?? image.transformed(by: transform)
+                combined_row = combined_row.map { image.transformed(by: transform).composited(over: $0) } ?? image.transformed(by: transform)
             }
             
-            if let row = combined {
+            if let combined_row = combined_row {
+                
                 for y in minY..<maxY {
                     let transform = cell_transform * SDTransform.translate(x: 0, y: Double(y) * pattern.yStep) * cell_transform.inverse
                     combined = combined.map { row.transformed(by: transform).composited(over: $0) } ?? row.transformed(by: transform)
