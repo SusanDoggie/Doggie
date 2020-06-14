@@ -1207,7 +1207,9 @@ extension SVGContext {
     
     public func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern) {
         
-        guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
+        guard !self.transform.determinant.almostZero() else { return }
+        guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
+        guard !pattern.transform.determinant.almostZero() else { return }
         
         let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
@@ -1228,7 +1230,9 @@ extension SVGContext {
     
     public func drawPattern(_ pattern: Pattern) {
         
-        guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
+        guard !self.transform.determinant.almostZero() else { return }
+        guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
+        guard !pattern.transform.determinant.almostZero() else { return }
         
         let objectBound: Shape
         let clip_object: Bool

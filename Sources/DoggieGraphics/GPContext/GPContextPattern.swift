@@ -77,6 +77,8 @@ extension GPContext {
     public func drawPattern(_ pattern: Pattern) {
         
         guard self.width != 0 && self.height != 0 && !self.transform.determinant.almostZero() else { return }
+        guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
+        guard !pattern.transform.determinant.almostZero() else { return }
         
         self.beginTransparencyLayer()
         self.concatenate(pattern.transform)

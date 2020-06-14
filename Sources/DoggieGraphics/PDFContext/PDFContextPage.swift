@@ -1254,14 +1254,18 @@ extension PDFContext.Page {
         
         let shape = shape * _mirrored_transform
         
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
+        guard !pattern.transform.determinant.almostZero() else { return }
         
         self._draw_pattern(pattern, shape, winding, current_layer.state.clip)
     }
     
     func drawPattern(_ pattern: Pattern) {
         
-        guard !self.transform.determinant.almostZero() && !pattern.transform.determinant.almostZero() else { return }
+        guard !self.transform.determinant.almostZero() else { return }
+        guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
+        guard !pattern.transform.determinant.almostZero() else { return }
         
         if case let .clip(shape, winding) = current_layer.state.clip {
             
