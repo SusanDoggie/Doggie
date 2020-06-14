@@ -45,3 +45,16 @@ public struct Pattern {
         self.callback = callback
     }
 }
+
+extension Pattern {
+    
+    public var center: Point {
+        get {
+            return bound.center * transform
+        }
+        set {
+            let offset = newValue - center
+            transform *= SDTransform.translate(x: offset.x, y: offset.y)
+        }
+    }
+}
