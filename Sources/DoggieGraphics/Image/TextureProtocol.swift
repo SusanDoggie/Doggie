@@ -51,7 +51,7 @@ public protocol TextureProtocol: RawPixelProtocol {
 @usableFromInline
 protocol _TextureProtocolImplement: TextureProtocol {
     
-    init(width: Int, height: Int, pixels: MappedBuffer<RawPixel>, resamplingAlgorithm: ResamplingAlgorithm)
+    init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, pixels: MappedBuffer<RawPixel>)
 }
 
 extension _TextureProtocolImplement {
