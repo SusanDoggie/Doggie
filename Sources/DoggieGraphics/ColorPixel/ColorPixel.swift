@@ -103,7 +103,6 @@ extension ColorPixel {
     @inlinable
     @inline(__always)
     public func premultiplied() -> Self {
-        guard opacity != 0 else { return self }
         return Self(color: color * opacity, opacity: opacity)
     }
     

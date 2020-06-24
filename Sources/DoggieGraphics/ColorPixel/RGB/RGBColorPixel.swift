@@ -176,8 +176,6 @@ extension ColorPixel where Self: _RGBColorPixel {
     @inline(__always)
     public func premultiplied() -> Self {
         
-        guard a != 0 else { return self }
-        
         let _r = _mul_div(r, a, Component.max)
         let _g = _mul_div(g, a, Component.max)
         let _b = _mul_div(b, a, Component.max)

@@ -161,7 +161,6 @@ extension ColorPixel where Self: _GrayColorPixel {
     @inlinable
     @inline(__always)
     public func premultiplied() -> Self {
-        guard a != 0 else { return self }
         return Self(white: _mul_div(w, a, Component.max), opacity: a)
     }
     
