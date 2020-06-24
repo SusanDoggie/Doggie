@@ -70,8 +70,8 @@ extension CIImage {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) {
             
             let areaMin = CIFilter.morphologyRectangleMinimum()
-            areaMin.width = Float(radius.width)
-            areaMin.height = Float(radius.height)
+            areaMin.width = Float(abs(radius.width) * 2)
+            areaMin.height = Float(abs(radius.height) * 2)
             areaMin.inputImage = self
             
             return areaMin.outputImage
@@ -133,8 +133,8 @@ extension CIImage {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) {
             
             let areaMax = CIFilter.morphologyRectangleMaximum()
-            areaMax.width = Float(radius.width)
-            areaMax.height = Float(radius.height)
+            areaMax.width = Float(abs(radius.width) * 2)
+            areaMax.height = Float(abs(radius.height) * 2)
             areaMax.inputImage = self
             
             return areaMax.outputImage
