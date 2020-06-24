@@ -32,6 +32,11 @@ public struct Texture<RawPixel: ColorPixel>: TextureProtocol {
     
     public let height: Int
     
+    public var resamplingAlgorithm: ResamplingAlgorithm
+    
+    public var horizontalWrappingMode: WrappingMode = .none
+    public var verticalWrappingMode: WrappingMode = .none
+    
     @usableFromInline
     var _pixels: MappedBuffer<RawPixel>
     
@@ -41,22 +46,17 @@ public struct Texture<RawPixel: ColorPixel>: TextureProtocol {
         return _pixels
     }
     
-    public var resamplingAlgorithm: ResamplingAlgorithm
-    
-    public var horizontalWrappingMode: WrappingMode = .none
-    public var verticalWrappingMode: WrappingMode = .none
-    
     @inlinable
     @inline(__always)
-    init(width: Int, height: Int, pixels: MappedBuffer<RawPixel>, resamplingAlgorithm: ResamplingAlgorithm) {
+    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixels: MappedBuffer<RawPixel>) {
         precondition(_isPOD(RawPixel.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         precondition(width * height == pixels.count, "mismatch pixels count.")
         self.width = width
         self.height = height
-        self._pixels = pixels
         self.resamplingAlgorithm = resamplingAlgorithm
+        self._pixels = pixels
     }
     
     @inlinable
@@ -67,8 +67,8 @@ public struct Texture<RawPixel: ColorPixel>: TextureProtocol {
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
-        self._pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
         self.resamplingAlgorithm = resamplingAlgorithm
+        self._pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
     }
     
     @inlinable
@@ -90,7 +90,7 @@ extension Texture where RawPixel: _GrayColorPixel {
     @inline(__always)
     public init<P: _GrayColorPixel>(_ texture: Texture<P>) {
         let pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
-        self.init(width: texture.width, height: texture.height, pixels: pixels, resamplingAlgorithm: texture.resamplingAlgorithm)
+        self.init(width: texture.width, height: texture.height, resamplingAlgorithm: texture.resamplingAlgorithm, pixels: pixels)
         self.horizontalWrappingMode = texture.horizontalWrappingMode
         self.verticalWrappingMode = texture.verticalWrappingMode
     }
@@ -99,7 +99,7 @@ extension Texture where RawPixel: _GrayColorPixel {
     @inline(__always)
     public init<P: _GrayColorPixel>(_ texture: Texture<P>) where P.Component == RawPixel.Component {
         let pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
-        self.init(width: texture.width, height: texture.height, pixels: pixels, resamplingAlgorithm: texture.resamplingAlgorithm)
+        self.init(width: texture.width, height: texture.height, resamplingAlgorithm: texture.resamplingAlgorithm, pixels: pixels)
         self.horizontalWrappingMode = texture.horizontalWrappingMode
         self.verticalWrappingMode = texture.verticalWrappingMode
     }
@@ -111,7 +111,7 @@ extension Texture where RawPixel: _RGBColorPixel {
     @inline(__always)
     public init<P: _RGBColorPixel>(_ texture: Texture<P>) {
         let pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
-        self.init(width: texture.width, height: texture.height, pixels: pixels, resamplingAlgorithm: texture.resamplingAlgorithm)
+        self.init(width: texture.width, height: texture.height, resamplingAlgorithm: texture.resamplingAlgorithm, pixels: pixels)
         self.horizontalWrappingMode = texture.horizontalWrappingMode
         self.verticalWrappingMode = texture.verticalWrappingMode
     }
@@ -120,7 +120,7 @@ extension Texture where RawPixel: _RGBColorPixel {
     @inline(__always)
     public init<P: _RGBColorPixel>(_ texture: Texture<P>) where P.Component == RawPixel.Component {
         let pixels = texture.pixels as? MappedBuffer<RawPixel> ?? texture.pixels.map(RawPixel.init)
-        self.init(width: texture.width, height: texture.height, pixels: pixels, resamplingAlgorithm: texture.resamplingAlgorithm)
+        self.init(width: texture.width, height: texture.height, resamplingAlgorithm: texture.resamplingAlgorithm, pixels: pixels)
         self.horizontalWrappingMode = texture.horizontalWrappingMode
         self.verticalWrappingMode = texture.verticalWrappingMode
     }
@@ -131,7 +131,7 @@ extension Texture {
     @inlinable
     @inline(__always)
     public init(image: Image<RawPixel>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
-        self.init(width: image.width, height: image.height, pixels: image.pixels, resamplingAlgorithm: resamplingAlgorithm)
+        self.init(width: image.width, height: image.height, resamplingAlgorithm: resamplingAlgorithm, pixels: image.pixels)
     }
 }
 
@@ -140,7 +140,7 @@ extension Image {
     @inlinable
     @inline(__always)
     public init(texture: Texture<Pixel>, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>) {
-        self.init(width: texture.width, height: texture.height, resolution: resolution, pixels: texture.pixels, colorSpace: colorSpace)
+        self.init(width: texture.width, height: texture.height, resolution: resolution, colorSpace: colorSpace, pixels: texture.pixels)
     }
 }
 

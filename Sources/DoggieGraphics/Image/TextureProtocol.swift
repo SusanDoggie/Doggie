@@ -72,7 +72,7 @@ extension _TextureProtocolImplement {
     @inline(__always)
     public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P> {
         
-        var texture = try Texture<P>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
+        var texture = try Texture<P>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, pixels: pixels.map(transform))
         
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode
@@ -84,7 +84,7 @@ extension _TextureProtocolImplement {
     @inline(__always)
     public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> StencilTexture<P> {
         
-        var texture = try StencilTexture<P>(width: width, height: height, pixels: pixels.map(transform), resamplingAlgorithm: resamplingAlgorithm)
+        var texture = try StencilTexture<P>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, pixels: pixels.map(transform))
         
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode

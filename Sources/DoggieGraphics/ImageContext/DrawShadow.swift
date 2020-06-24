@@ -46,7 +46,7 @@ extension ImageContext {
         let filter = GaussianBlurFilter(Float(0.5 * shadowBlur))
         let _offset = Point(x: Double(filter.count >> 1) - shadowOffset.width, y: Double(filter.count >> 1) - shadowOffset.height)
         
-        let shadow_layer = StencilTexture(width: width, height: height, pixels: stencil, resamplingAlgorithm: .linear).convolution(horizontal: filter, vertical: filter, algorithm: convolutionAlgorithm)
+        let shadow_layer = StencilTexture(width: width, height: height, resamplingAlgorithm: .linear, pixels: stencil).convolution(horizontal: filter, vertical: filter, algorithm: convolutionAlgorithm)
         
         stencil.withUnsafeBufferPointer { stencil in
             

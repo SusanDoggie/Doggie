@@ -31,6 +31,12 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
     
     public var resolution: Resolution
     
+    public var colorSpace: ColorSpace<Pixel.Model> {
+        didSet {
+            cache = ImageCache()
+        }
+    }
+    
     @usableFromInline
     var _pixels: MappedBuffer<Pixel>
     
@@ -40,18 +46,12 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
         return _pixels
     }
     
-    public var colorSpace: ColorSpace<Pixel.Model> {
-        didSet {
-            cache = ImageCache()
-        }
-    }
-    
     @usableFromInline
     var cache = ImageCache()
     
     @inlinable
     @inline(__always)
-    init(width: Int, height: Int, resolution: Resolution, pixels: MappedBuffer<Pixel>, colorSpace: ColorSpace<Pixel.Model>) {
+    public init(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, pixels: MappedBuffer<Pixel>) {
         precondition(_isPOD(Pixel.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
@@ -59,8 +59,8 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
         self.width = width
         self.height = height
         self.resolution = resolution
-        self._pixels = pixels
         self.colorSpace = colorSpace
+        self._pixels = pixels
     }
     
     @inlinable
@@ -130,14 +130,14 @@ extension Image where Pixel: _GrayColorPixel {
     @inline(__always)
     public init<P: _GrayColorPixel>(_ image: Image<P>) {
         let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
-        self.init(width: image.width, height: image.height, resolution: image.resolution, pixels: pixels, colorSpace: image.colorSpace)
+        self.init(width: image.width, height: image.height, resolution: image.resolution, colorSpace: image.colorSpace, pixels: pixels)
     }
     
     @inlinable
     @inline(__always)
     public init<P: _GrayColorPixel>(_ image: Image<P>) where P.Component == Pixel.Component {
         let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
-        self.init(width: image.width, height: image.height, resolution: image.resolution, pixels: pixels, colorSpace: image.colorSpace)
+        self.init(width: image.width, height: image.height, resolution: image.resolution, colorSpace: image.colorSpace, pixels: pixels)
     }
 }
 
@@ -147,14 +147,14 @@ extension Image where Pixel: _RGBColorPixel {
     @inline(__always)
     public init<P: _RGBColorPixel>(_ image: Image<P>) {
         let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
-        self.init(width: image.width, height: image.height, resolution: image.resolution, pixels: pixels, colorSpace: image.colorSpace)
+        self.init(width: image.width, height: image.height, resolution: image.resolution, colorSpace: image.colorSpace, pixels: pixels)
     }
     
     @inlinable
     @inline(__always)
     public init<P: _RGBColorPixel>(_ image: Image<P>) where P.Component == Pixel.Component {
         let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
-        self.init(width: image.width, height: image.height, resolution: image.resolution, pixels: pixels, colorSpace: image.colorSpace)
+        self.init(width: image.width, height: image.height, resolution: image.resolution, colorSpace: image.colorSpace, pixels: pixels)
     }
 }
 
@@ -347,7 +347,7 @@ extension Image {
     @inlinable
     @inline(__always)
     public func linearTone() -> Image {
-        return Image(width: width, height: height, resolution: resolution, pixels: pixels.map(colorSpace.convertToLinear), colorSpace: colorSpace.linearTone)
+        return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace.linearTone, pixels: pixels.map(colorSpace.convertToLinear))
     }
     
     @inlinable
@@ -448,7 +448,7 @@ extension Image {
     @inlinable
     @inline(__always)
     public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Image<P> where P.Model == Pixel.Model {
-        return try Image<P>(width: width, height: height, resolution: resolution, pixels: pixels.map(transform), colorSpace: colorSpace)
+        return try Image<P>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixels: pixels.map(transform))
     }
 }
 
@@ -473,11 +473,11 @@ extension Image {
     @inline(__always)
     public func transposed() -> Image {
         if pixels.isEmpty {
-            return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: [], colorSpace: colorSpace)
+            return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), colorSpace: colorSpace, pixels: [])
         }
         var copy = pixels
         pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(width, height, source.baseAddress!, 1, destination.baseAddress!, 1) } }
-        return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), pixels: copy, colorSpace: colorSpace)
+        return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), colorSpace: colorSpace, pixels: copy)
     }
 }
 

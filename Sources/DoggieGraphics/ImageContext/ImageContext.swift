@@ -167,7 +167,7 @@ extension ImageContext {
     public var clipStencilTexture: StencilTexture<Float> {
         let current_layer = self.current_layer
         let pixels = current_layer.state.clip ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
-        return StencilTexture(width: image.width, height: image.height, pixels: pixels, resamplingAlgorithm: .default)
+        return StencilTexture(width: image.width, height: image.height, resamplingAlgorithm: .default, pixels: pixels)
     }
     
     public func withUnsafeMutableClipBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Float>) throws -> R) rethrows -> R {
@@ -386,7 +386,7 @@ extension ImageContext {
     public var depthStencilTexture: StencilTexture<Float> {
         let current_layer = self.current_layer
         let pixels = current_layer.state.depth ?? MappedBuffer(repeating: 1, count: image.width * image.height, fileBacked: image.fileBacked)
-        return StencilTexture(width: image.width, height: image.height, pixels: pixels, resamplingAlgorithm: .default)
+        return StencilTexture(width: image.width, height: image.height, resamplingAlgorithm: .default, pixels: pixels)
     }
     
     public func withUnsafeMutableDepthBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Float>) throws -> R) rethrows -> R {

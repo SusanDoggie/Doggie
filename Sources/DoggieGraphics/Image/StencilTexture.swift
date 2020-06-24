@@ -34,6 +34,11 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     
     public let height: Int
     
+    public var resamplingAlgorithm: ResamplingAlgorithm
+    
+    public var horizontalWrappingMode: WrappingMode = .none
+    public var verticalWrappingMode: WrappingMode = .none
+    
     @usableFromInline
     var _pixels: MappedBuffer<T>
     
@@ -43,22 +48,17 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
         return _pixels
     }
     
-    public var resamplingAlgorithm: ResamplingAlgorithm
-    
-    public var horizontalWrappingMode: WrappingMode = .none
-    public var verticalWrappingMode: WrappingMode = .none
-    
     @inlinable
     @inline(__always)
-    init(width: Int, height: Int, pixels: MappedBuffer<T>, resamplingAlgorithm: ResamplingAlgorithm) {
+    public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixels: MappedBuffer<T>) {
         precondition(_isPOD(T.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         precondition(width * height == pixels.count, "mismatch pixels count.")
         self.width = width
         self.height = height
-        self._pixels = pixels
         self.resamplingAlgorithm = resamplingAlgorithm
+        self._pixels = pixels
     }
     
     @inlinable
@@ -69,8 +69,8 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
         precondition(height >= 0, "negative height is not allowed.")
         self.width = width
         self.height = height
-        self._pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
         self.resamplingAlgorithm = resamplingAlgorithm
+        self._pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
     }
     
     @inlinable
@@ -103,7 +103,7 @@ extension StencilTexture {
     @inlinable
     @inline(__always)
     public init<P>(image: Image<P>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
-        self.init(width: image.width, height: image.height, pixels: image.pixels.map { T($0.opacity) }, resamplingAlgorithm: resamplingAlgorithm)
+        self.init(width: image.width, height: image.height, resamplingAlgorithm: resamplingAlgorithm, pixels: image.pixels.map { T($0.opacity) })
     }
 }
 
@@ -112,7 +112,7 @@ extension Image where Pixel: ScalarMultiplicative, Pixel.Scalar: BinaryFloatingP
     @inlinable
     @inline(__always)
     public init(texture: StencilTexture<Pixel.Scalar>, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, background: Pixel, foreground: Pixel) {
-        self.init(width: texture.width, height: texture.height, resolution: resolution, pixels: texture.pixels.map { LinearInterpolate($0, background, foreground) }, colorSpace: colorSpace)
+        self.init(width: texture.width, height: texture.height, resolution: resolution, colorSpace: colorSpace, pixels: texture.pixels.map { LinearInterpolate($0, background, foreground) })
     }
 }
 
