@@ -1,11 +1,14 @@
 /* libjpeg-turbo build number */
-#define BUILD  "20200603"
+#define BUILD  "20200624"
 
 /* Compiler's inline keyword */
 #undef inline
 
 /* How to obtain function inlining. */
 #define INLINE  __inline__ __attribute__((always_inline))
+
+/* How to obtain thread-local storage */
+#define THREAD_LOCAL  __thread
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME  "libjpeg-turbo"
