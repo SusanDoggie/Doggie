@@ -65,17 +65,29 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
-    open func areaMin(_ radius: Size) throws -> CIImage {
+    open func areaMin(_ radius: Size) -> CIImage? {
         
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        
-        var rendered = try AreaMinKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius])
-        
-        if !extent.isInfinite {
-            rendered = rendered.cropped(to: extent)
+        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) {
+            
+            let areaMin = CIFilter.morphologyRectangleMinimum()
+            areaMin.width = Float(radius.width)
+            areaMin.height = Float(radius.height)
+            areaMin.inputImage = self
+            
+            return areaMin.outputImage
+            
+        } else {
+            
+            let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+            
+            guard var rendered = try? AreaMinKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius]) else { return nil }
+            
+            if !extent.isInfinite {
+                rendered = rendered.cropped(to: extent)
+            }
+            
+            return rendered
         }
-        
-        return rendered
     }
 }
 
@@ -116,17 +128,29 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
-    open func areaMax(_ radius: Size) throws -> CIImage {
+    open func areaMax(_ radius: Size) -> CIImage? {
         
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        
-        var rendered = try AreaMaxKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius])
-        
-        if !extent.isInfinite {
-            rendered = rendered.cropped(to: extent)
+        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) {
+            
+            let areaMax = CIFilter.morphologyRectangleMaximum()
+            areaMax.width = Float(radius.width)
+            areaMax.height = Float(radius.height)
+            areaMax.inputImage = self
+            
+            return areaMax.outputImage
+            
+        } else {
+            
+            let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+            
+            guard var rendered = try? AreaMaxKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius]) else { return nil }
+            
+            if !extent.isInfinite {
+                rendered = rendered.cropped(to: extent)
+            }
+            
+            return rendered
         }
-        
-        return rendered
     }
 }
 
