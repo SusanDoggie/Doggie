@@ -262,7 +262,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
         
         result.removeLast(result.count - n_width * height)
         
-        return Self(width: n_width, height: height, pixels: result, resamplingAlgorithm: self.resamplingAlgorithm)
+        return Self(width: n_width, height: height, resamplingAlgorithm: self.resamplingAlgorithm, pixels: result)
     }
     
     @inlinable
@@ -313,7 +313,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
         
         result.removeLast(result.count - width * n_height)
         
-        return Self(width: width, height: n_height, pixels: result, resamplingAlgorithm: self.resamplingAlgorithm)
+        return Self(width: width, height: n_height, resamplingAlgorithm: self.resamplingAlgorithm, pixels: result)
     }
 }
 
@@ -333,7 +333,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
         switch (filter_width, filter_height) {
         case (1, 1):
             let k = filter[0]
-            result = Self(width: width, height: height, pixels: k == 1 ? pixels : pixels.map { $0 * k }, resamplingAlgorithm: resamplingAlgorithm)
+            result = Self(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, pixels: k == 1 ? pixels : pixels.map { $0 * k })
         case (1, _):
             switch algorithm {
             case .direct: result = _direct_convolution_vertical(filter)
@@ -370,7 +370,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
         switch (horizontal_filter.count, vertical_filter.count) {
         case (1, 1):
             let k = horizontal_filter[0] * vertical_filter[0]
-            result = Self(width: width, height: height, pixels: k == 1 ? pixels : pixels.map { $0 * k }, resamplingAlgorithm: resamplingAlgorithm)
+            result = Self(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, pixels: k == 1 ? pixels : pixels.map { $0 * k })
         case (1, _):
             let k = horizontal_filter[0]
             switch algorithm {

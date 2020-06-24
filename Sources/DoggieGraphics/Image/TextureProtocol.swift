@@ -62,7 +62,7 @@ extension _TextureProtocolImplement {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
         let pixels = MappedBuffer(repeating: pixel, count: width * height, fileBacked: fileBacked)
-        self.init(width: width, height: height, pixels: pixels, resamplingAlgorithm: resamplingAlgorithm)
+        self.init(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, pixels: pixels)
     }
 }
 
@@ -101,7 +101,7 @@ extension _TextureProtocolImplement {
         
         if pixels.isEmpty {
             
-            var texture = Self(width: height, height: width, pixels: [], resamplingAlgorithm: resamplingAlgorithm)
+            var texture = Self(width: height, height: width, resamplingAlgorithm: resamplingAlgorithm, pixels: [])
             
             texture.horizontalWrappingMode = self.horizontalWrappingMode
             texture.verticalWrappingMode = self.verticalWrappingMode
@@ -112,7 +112,7 @@ extension _TextureProtocolImplement {
         var copy = pixels
         pixels.withUnsafeBufferPointer { source in copy.withUnsafeMutableBufferPointer { destination in Transpose(width, height, source.baseAddress!, 1, destination.baseAddress!, 1) } }
         
-        var texture = Self(width: height, height: width, pixels: copy, resamplingAlgorithm: resamplingAlgorithm)
+        var texture = Self(width: height, height: width, resamplingAlgorithm: resamplingAlgorithm, pixels: copy)
         
         texture.horizontalWrappingMode = self.horizontalWrappingMode
         texture.verticalWrappingMode = self.verticalWrappingMode
