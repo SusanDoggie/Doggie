@@ -25,6 +25,35 @@
 
 #if canImport(CoreGraphics)
 
+extension CGBitmapInfo {
+    
+    public var byteOrder16Host: CGBitmapInfo {
+        
+        #if _endian(big)
+        
+        return .byteOrder16Big
+        
+        #else
+        
+        return .byteOrder16Little
+        
+        #endif
+    }
+    
+    public var byteOrder32Host: CGBitmapInfo {
+        
+        #if _endian(big)
+        
+        return .byteOrder32Big
+        
+        #else
+        
+        return .byteOrder32Little
+        
+        #endif
+    }
+}
+
 extension CGImage {
     
     public func fileBacked() -> CGImage? {
@@ -64,16 +93,14 @@ extension CGImage {
     
     public static func create(width: Int, height: Int, command: (CGContext) -> Void) -> CGImage? {
         
-        let byteOrder = 42.bigEndian == 42 ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
-        let bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+        let bitmapInfo = CGBitmapInfo.byteOrder32Host.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
         
         return create(width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: bitmapInfo, command: command)
     }
     
     public static func create(width: Int, height: Int, space: ColorSpace<RGBColorModel>, command: (CGContext) -> Void) -> CGImage? {
         
-        let byteOrder = 42.bigEndian == 42 ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
-        let bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+        let bitmapInfo = CGBitmapInfo.byteOrder32Host.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
         
         guard let cgColorSpace = space.cgColorSpace else { return nil }
         
@@ -104,8 +131,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
             self.bitsPerComponent = 8
             
-            let byteOrder = CGBitmapInfo.byteOrder16Big
-            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder16Big.rawValue | CGImageAlphaInfo.last.rawValue
             
             self.pixels = pixels.data
             
@@ -114,8 +140,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
             self.bitsPerComponent = 16
             
-            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
-            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder16Host.rawValue | CGImageAlphaInfo.last.rawValue
             
             self.pixels = pixels.data
             
@@ -124,8 +149,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
             self.bitsPerComponent = 8
             
-            let byteOrder = CGBitmapInfo.byteOrder32Big
-            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.first.rawValue
             
             self.pixels = pixels.data
             
@@ -134,8 +158,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
             self.bitsPerComponent = 8
             
-            let byteOrder = CGBitmapInfo.byteOrder32Big
-            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.last.rawValue
             
             self.pixels = pixels.data
             
@@ -144,8 +167,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
             self.bitsPerComponent = 8
             
-            let byteOrder = CGBitmapInfo.byteOrder32Little
-            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.last.rawValue
             
             self.pixels = pixels.data
             
@@ -154,8 +176,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
             self.bitsPerComponent = 8
             
-            let byteOrder = CGBitmapInfo.byteOrder32Little
-            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.first.rawValue
             
             self.pixels = pixels.data
             
@@ -164,8 +185,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
             self.bitsPerComponent = 16
             
-            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
-            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.first.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder16Host.rawValue | CGImageAlphaInfo.first.rawValue
             
             self.pixels = pixels.data
             
@@ -174,8 +194,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
             self.bitsPerComponent = 16
             
-            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder16Big : CGBitmapInfo.byteOrder16Little
-            self.bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.last.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder16Host.rawValue | CGImageAlphaInfo.last.rawValue
             
             self.pixels = pixels.data
             
@@ -184,8 +203,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
             self.bitsPerComponent = 32
             
-            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
-            self.bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder32Host.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
             
             self.pixels = pixels.data
             
@@ -194,8 +212,7 @@ private struct CGImageData {
             self.bytesPerPixel = MemoryLayout<Float32ColorPixel<RawPixel.Model>>.stride
             self.bitsPerComponent = 32
             
-            let byteOrder = bitsPerComponent.bigEndian == bitsPerComponent ? CGBitmapInfo.byteOrder32Big : CGBitmapInfo.byteOrder32Little
-            self.bitmapInfo = byteOrder.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
+            self.bitmapInfo = CGBitmapInfo.byteOrder32Host.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
             
             self.pixels = pixels.map(Float32ColorPixel<RawPixel.Model>.init).data
         }

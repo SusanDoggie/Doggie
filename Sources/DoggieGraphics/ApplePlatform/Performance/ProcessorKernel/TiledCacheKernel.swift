@@ -247,8 +247,7 @@ extension TiledCacheKernel.Info {
             
             for (block, buffer) in buffers {
                 
-                let byteOrder = CGBitmapInfo.byteOrder32Little
-                let bitmapInfo = byteOrder.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
+                let bitmapInfo = CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue
                 
                 guard let providerRef = CGDataProvider(data: buffer.data as CFData) else { continue }
                 
