@@ -33,20 +33,13 @@ public struct ARGB64ColorPixel: _RGBColorPixel {
     
     @inlinable
     @inline(__always)
-    public init() {
-        self.a = 0
-        self.r = 0
-        self.g = 0
-        self.b = 0
-    }
-    @inlinable
-    @inline(__always)
     public init(red: UInt16, green: UInt16, blue: UInt16, opacity: UInt16 = 0xFFFF) {
         self.a = opacity
         self.r = red
         self.g = green
         self.b = blue
     }
+    
     @inlinable
     @inline(__always)
     public init(_ hex: UInt64) {

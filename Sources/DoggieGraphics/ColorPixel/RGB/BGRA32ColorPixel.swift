@@ -33,14 +33,6 @@ public struct BGRA32ColorPixel: _RGBColorPixel {
     
     @inlinable
     @inline(__always)
-    public init() {
-        self.r = 0
-        self.g = 0
-        self.b = 0
-        self.a = 0
-    }
-    @inlinable
-    @inline(__always)
     public init(red: UInt8, green: UInt8, blue: UInt8, opacity: UInt8 = 0xFF) {
         self.r = red
         self.g = green

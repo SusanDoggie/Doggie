@@ -63,6 +63,12 @@ extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
     @inline(__always)
+    public init() {
+        self.init(white: 0, opacity: 0)
+    }
+    
+    @inlinable
+    @inline(__always)
     public init<C: _GrayColorPixel>(_ color: C) where C.Component == Component {
         self.init(white: color.w, opacity: color.a)
     }

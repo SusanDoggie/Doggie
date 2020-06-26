@@ -33,14 +33,6 @@ public struct RGBA64ColorPixel: _RGBColorPixel {
     
     @inlinable
     @inline(__always)
-    public init() {
-        self.r = 0
-        self.g = 0
-        self.b = 0
-        self.a = 0
-    }
-    @inlinable
-    @inline(__always)
     public init(red: UInt16, green: UInt16, blue: UInt16, opacity: UInt16 = 0xFFFF) {
         self.r = red
         self.g = green

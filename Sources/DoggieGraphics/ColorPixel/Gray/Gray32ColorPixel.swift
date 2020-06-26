@@ -31,12 +31,6 @@ public struct Gray32ColorPixel: _GrayColorPixel {
     
     @inlinable
     @inline(__always)
-    public init() {
-        self.w = 0
-        self.a = 0
-    }
-    @inlinable
-    @inline(__always)
     public init(white: UInt16, opacity: UInt16 = 0xFFFF) {
         self.w = white
         self.a = opacity

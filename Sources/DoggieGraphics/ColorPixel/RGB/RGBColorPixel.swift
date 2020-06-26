@@ -67,6 +67,12 @@ extension ColorPixel where Self: _RGBColorPixel {
     
     @inlinable
     @inline(__always)
+    public init() {
+        self.init(red: 0, green: 0, blue: 0, opacity: 0)
+    }
+    
+    @inlinable
+    @inline(__always)
     public init<C: _RGBColorPixel>(_ color: C) where C.Component == Component {
         self.init(red: color.r, green: color.g, blue: color.b, opacity: color.a)
     }
