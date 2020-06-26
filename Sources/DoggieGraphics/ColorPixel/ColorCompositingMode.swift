@@ -108,6 +108,10 @@ extension ColorPixel {
             let d_alpha = self.opacity
             let s_alpha = source.opacity
             
+            if d_alpha == 0 {
+                return source
+            }
+            
             let _source = source.color
             let _destination = self.color
             let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
@@ -119,14 +123,16 @@ extension ColorPixel {
             let d_alpha = self.opacity
             let s_alpha = source.opacity
             
-            let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-            
-            if r_alpha > 0 {
+            switch (d_alpha, s_alpha) {
+            case (0, _), (_, 1): return source
+            case (_, 0): return self
+            default:
+                
+                let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
+                
                 let _source = source.color
                 let _destination = self.color
                 return Self(color: compositingMode.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
-            } else {
-                return Self()
             }
             
         default:
@@ -162,6 +168,10 @@ extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGr
             let d_alpha = self._opacity
             let s_alpha = source._opacity
             
+            if d_alpha == 0 {
+                return source
+            }
+            
             let _source = source._color
             let _destination = self._color
             let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
@@ -173,14 +183,16 @@ extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGr
             let d_alpha = self._opacity
             let s_alpha = source._opacity
             
-            let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-            
-            if r_alpha > 0 {
+            switch (d_alpha, s_alpha) {
+            case (0, _), (_, 1): return source
+            case (_, 0): return self
+            default:
+                
+                let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
+                
                 let _source = source._color
                 let _destination = self._color
                 return Self(color: compositingMode.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
-            } else {
-                return Self()
             }
             
         default:

@@ -215,6 +215,9 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt8 {
     @inline(__always)
     public func blended(source: Self) -> Self {
         
+        guard self.a != 0 && source.a != 0xFF else { return source }
+        guard source.a != 0 else { return self }
+        
         let d_r = UInt32(self.r)
         let d_g = UInt32(self.g)
         let d_b = UInt32(self.b)
@@ -224,22 +227,17 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt8 {
         let s_b = UInt32(source.b)
         let s_a = UInt32(source.a)
         
-        let a = s_a + (((0xFF - s_a) * d_a) + 0x7F) / 0xFF
-        
-        if a == 0 {
-            
-            return Self()
-            
-        } else if d_a == 0xFF {
+        if d_a == 0xFF {
             
             let r = (s_a * s_r + (0xFF - s_a) * d_r + 0x7F) / 0xFF
             let g = (s_a * s_g + (0xFF - s_a) * d_g + 0x7F) / 0xFF
             let b = (s_a * s_b + (0xFF - s_a) * d_b + 0x7F) / 0xFF
             
-            return Self(red: UInt8(r), green: UInt8(g), blue: UInt8(b), opacity: UInt8(a))
+            return Self(red: UInt8(r), green: UInt8(g), blue: UInt8(b), opacity: 0xFF)
             
         } else {
             
+            let a = (0xFF * s_a + (0xFF - s_a) * d_a + 0x7F) / 0xFF
             let r = ((0xFF * s_a * s_r + (0xFF - s_a) * d_a * d_r) / a + 0x7F) / 0xFF
             let g = ((0xFF * s_a * s_g + (0xFF - s_a) * d_a * d_g) / a + 0x7F) / 0xFF
             let b = ((0xFF * s_a * s_b + (0xFF - s_a) * d_a * d_b) / a + 0x7F) / 0xFF
@@ -255,6 +253,9 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt16 {
     @inline(__always)
     public func blended(source: Self) -> Self {
         
+        guard self.a != 0 && source.a != 0xFFFF else { return source }
+        guard source.a != 0 else { return self }
+        
         let d_r = UInt64(self.r)
         let d_g = UInt64(self.g)
         let d_b = UInt64(self.b)
@@ -264,22 +265,17 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt16 {
         let s_b = UInt64(source.b)
         let s_a = UInt64(source.a)
         
-        let a = s_a + (((0xFFFF - s_a) * d_a) + 0x7FFF) / 0xFFFF
-        
-        if a == 0 {
-            
-            return Self()
-            
-        } else if d_a == 0xFFFF {
+        if d_a == 0xFFFF {
             
             let r = (s_a * s_r + (0xFFFF - s_a) * d_r + 0x7FFF) / 0xFFFF
             let g = (s_a * s_g + (0xFFFF - s_a) * d_g + 0x7FFF) / 0xFFFF
             let b = (s_a * s_b + (0xFFFF - s_a) * d_b + 0x7FFF) / 0xFFFF
             
-            return Self(red: UInt16(r), green: UInt16(g), blue: UInt16(b), opacity: UInt16(a))
+            return Self(red: UInt16(r), green: UInt16(g), blue: UInt16(b), opacity: 0xFFFF)
             
         } else {
             
+            let a = (0xFFFF * s_a + (0xFFFF - s_a) * d_a + 0x7FFF) / 0xFFFF
             let r = ((0xFFFF * s_a * s_r + (0xFFFF - s_a) * d_a * d_r) / a + 0x7FFF) / 0xFFFF
             let g = ((0xFFFF * s_a * s_g + (0xFFFF - s_a) * d_a * d_g) / a + 0x7FFF) / 0xFFFF
             let b = ((0xFFFF * s_a * s_b + (0xFFFF - s_a) * d_a * d_b) / a + 0x7FFF) / 0xFFFF

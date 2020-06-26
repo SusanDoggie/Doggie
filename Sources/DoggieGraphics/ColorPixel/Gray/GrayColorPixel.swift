@@ -190,25 +190,23 @@ extension ColorPixel where Self: _GrayColorPixel, Component == UInt8 {
     @inline(__always)
     public func blended(source: Self) -> Self {
         
+        guard self.a != 0 && source.a != 0xFF else { return source }
+        guard source.a != 0 else { return self }
+        
         let d_w = UInt32(self.w)
         let d_a = UInt32(self.a)
         let s_w = UInt32(source.w)
         let s_a = UInt32(source.a)
         
-        let a = s_a + (((0xFF - s_a) * d_a) + 0x7F) / 0xFF
-        
-        if a == 0 {
-            
-            return Self()
-            
-        } else if d_a == 0xFF {
+        if d_a == 0xFF {
             
             let w = (s_a * s_w + (0xFF - s_a) * d_w + 0x7F) / 0xFF
             
-            return Self(white: UInt8(w), opacity: UInt8(a))
+            return Self(white: UInt8(w), opacity: 0xFF)
             
         } else {
             
+            let a = (0xFF * s_a + (0xFF - s_a) * d_a + 0x7F) / 0xFF
             let w = ((0xFF * s_a * s_w + (0xFF - s_a) * d_a * d_w) / a + 0x7F) / 0xFF
             
             return Self(white: UInt8(w), opacity: UInt8(a))
@@ -222,25 +220,23 @@ extension ColorPixel where Self: _GrayColorPixel, Component == UInt16 {
     @inline(__always)
     public func blended(source: Self) -> Self {
         
+        guard self.a != 0 && source.a != 0xFFFF else { return source }
+        guard source.a != 0 else { return self }
+        
         let d_w = UInt64(self.w)
         let d_a = UInt64(self.a)
         let s_w = UInt64(source.w)
         let s_a = UInt64(source.a)
         
-        let a = s_a + (((0xFFFF - s_a) * d_a) + 0x7FFF) / 0xFFFF
-        
-        if a == 0 {
-            
-            return Self()
-            
-        } else if d_a == 0xFFFF {
+        if d_a == 0xFFFF {
             
             let w = (s_a * s_w + (0xFFFF - s_a) * d_w + 0x7FFF) / 0xFFFF
             
-            return Self(white: UInt16(w), opacity: UInt16(a))
+            return Self(white: UInt16(w), opacity: 0xFFFF)
             
         } else {
             
+            let a = (0xFFFF * s_a + (0xFFFF - s_a) * d_a + 0x7FFF) / 0xFFFF
             let w = ((0xFFFF * s_a * s_w + (0xFFFF - s_a) * d_a * d_w) / a + 0x7FFF) / 0xFFFF
             
             return Self(white: UInt16(w), opacity: UInt16(a))
