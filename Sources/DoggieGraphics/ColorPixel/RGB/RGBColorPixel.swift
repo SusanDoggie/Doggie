@@ -215,8 +215,12 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt8 {
     @inline(__always)
     public func blended(source: Self) -> Self {
         
-        guard self.a != 0 && source.a != 0xFF else { return source }
-        guard source.a != 0 else { return self }
+        switch (self.a, source.a) {
+        case (0, 0): return Self()
+        case (0, _), (_, 0xFF): return source
+        case (_, 0): return self
+        default: break
+        }
         
         let d_r = UInt32(self.r)
         let d_g = UInt32(self.g)
@@ -253,8 +257,12 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt16 {
     @inline(__always)
     public func blended(source: Self) -> Self {
         
-        guard self.a != 0 && source.a != 0xFFFF else { return source }
-        guard source.a != 0 else { return self }
+        switch (self.a, source.a) {
+        case (0, 0): return Self()
+        case (0, _), (_, 0xFFFF): return source
+        case (_, 0): return self
+        default: break
+        }
         
         let d_r = UInt64(self.r)
         let d_g = UInt64(self.g)

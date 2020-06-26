@@ -108,9 +108,10 @@ extension ColorPixel {
             let d_alpha = self.opacity
             let s_alpha = source.opacity
             
-            switch d_alpha {
-            case 0: return source
-            case 1:
+            switch (d_alpha, s_alpha) {
+            case (0, 0): return Self()
+            case (0, _): return source
+            case (1, _):
                 
                 let _source = source.color
                 let _destination = self.color
@@ -133,6 +134,7 @@ extension ColorPixel {
             let s_alpha = source.opacity
             
             switch (d_alpha, s_alpha) {
+            case (0, 0): return Self()
             case (0, _), (_, 1): return source
             case (_, 0): return self
             case (1, _):
@@ -183,9 +185,10 @@ extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGr
             let d_alpha = self._opacity
             let s_alpha = source._opacity
             
-            switch d_alpha {
-            case 0: return source
-            case 1:
+            switch (d_alpha, s_alpha) {
+            case (0, 0): return Self()
+            case (0, _): return source
+            case (1, _):
                 
                 let _source = source._color
                 let _destination = self._color
@@ -208,6 +211,7 @@ extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGr
             let s_alpha = source._opacity
             
             switch (d_alpha, s_alpha) {
+            case (0, 0): return Self()
             case (0, _), (_, 1): return source
             case (_, 0): return self
             case (1, _):
