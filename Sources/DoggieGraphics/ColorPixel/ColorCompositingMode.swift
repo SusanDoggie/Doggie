@@ -108,15 +108,24 @@ extension ColorPixel {
             let d_alpha = self.opacity
             let s_alpha = source.opacity
             
-            if d_alpha == 0 {
-                return source
+            switch d_alpha {
+            case 0: return source
+            case 1:
+                
+                let _source = source.color
+                let _destination = self.color
+                let blended = _destination.blended(source: _source, blendMode: blendMode)
+                
+                return Self(color: blended, opacity: s_alpha)
+                
+            default:
+                
+                let _source = source.color
+                let _destination = self.color
+                let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
+                
+                return Self(color: blended, opacity: s_alpha)
             }
-            
-            let _source = source.color
-            let _destination = self.color
-            let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
-            
-            return Self(color: blended, opacity: s_alpha)
             
         case (_, .normal):
             
@@ -126,6 +135,12 @@ extension ColorPixel {
             switch (d_alpha, s_alpha) {
             case (0, _), (_, 1): return source
             case (_, 0): return self
+            case (1, _):
+                
+                let _source = source.color
+                let _destination = self.color
+                return Self(color: compositingMode.mix(s_alpha * _source, s_alpha, _destination, 1), opacity: 1)
+                
             default:
                 
                 let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
@@ -168,15 +183,24 @@ extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGr
             let d_alpha = self._opacity
             let s_alpha = source._opacity
             
-            if d_alpha == 0 {
-                return source
+            switch d_alpha {
+            case 0: return source
+            case 1:
+                
+                let _source = source._color
+                let _destination = self._color
+                let blended = _destination.blended(source: _source, blendMode: blendMode)
+                
+                return Self(color: blended, opacity: s_alpha)
+                
+            default:
+                
+                let _source = source._color
+                let _destination = self._color
+                let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
+                
+                return Self(color: blended, opacity: s_alpha)
             }
-            
-            let _source = source._color
-            let _destination = self._color
-            let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
-            
-            return Self(color: blended, opacity: s_alpha)
             
         case (_, .normal):
             
@@ -186,6 +210,12 @@ extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGr
             switch (d_alpha, s_alpha) {
             case (0, _), (_, 1): return source
             case (_, 0): return self
+            case (1, _):
+                
+                let _source = source._color
+                let _destination = self._color
+                return Self(color: compositingMode.mix(s_alpha * _source, s_alpha, _destination, 1), opacity: 1)
+                
             default:
                 
                 let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
