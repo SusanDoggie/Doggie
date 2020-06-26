@@ -27,7 +27,7 @@
 
 extension CGBitmapInfo {
     
-    public var byteOrder16Host: CGBitmapInfo {
+    public static var byteOrder16Host: CGBitmapInfo {
         
         #if _endian(big)
         
@@ -40,7 +40,7 @@ extension CGBitmapInfo {
         #endif
     }
     
-    public var byteOrder32Host: CGBitmapInfo {
+    public static var byteOrder32Host: CGBitmapInfo {
         
         #if _endian(big)
         
