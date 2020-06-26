@@ -127,18 +127,17 @@ extension BinaryInteger {
 
 @inlinable
 @inline(__always)
+public func _mul_div<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ y: T, _ z: T) -> T {
+    guard y != z else { return x }
+    let (quotient, remainder) = z.dividingFullWidth(x.multipliedFullWidth(by: y))
+    let (_remainder, overflow) = remainder.multipliedReportingOverflow(by: 2)
+    return !overflow && _remainder < z ? quotient : quotient + 1
+}
+
+@inlinable
+@inline(__always)
 public func _mul_div<T: FixedWidthInteger & UnsignedInteger, R: FixedWidthInteger & UnsignedInteger>(_ x: T, _ y: R, _ z: T) -> R {
-    
-    guard y != z else { return R(x) }
-    
-    @inline(__always)
-    func __mul_div<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ y: T, _ z: T) -> T {
-        let (quotient, remainder) = z.dividingFullWidth(x.multipliedFullWidth(by: y))
-        let (_remainder, overflow) = remainder.multipliedReportingOverflow(by: 2)
-        return !overflow && _remainder < z ? quotient : quotient + 1
-    }
-    
-    return T.bitWidth > R.bitWidth ? R(__mul_div(x, T(y), z)) : __mul_div(R(x), y, R(z))
+    return T.bitWidth < R.bitWidth ? _mul_div(R(x), y, R(z)) : R(_mul_div(x, T(y), z))
 }
 
 @inlinable
