@@ -241,7 +241,7 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt8 {
             
         } else {
             
-            let a = s_a + _mul_div(0xFF - s_a, d_a, 0xFF)
+            let a = s_a + ((0xFF - s_a) * d_a + 0x7F) / 0xFF
             let r = ((0xFF * s_a * s_r + (0xFF - s_a) * d_a * d_r) / a + 0x7F) / 0xFF
             let g = ((0xFF * s_a * s_g + (0xFF - s_a) * d_a * d_g) / a + 0x7F) / 0xFF
             let b = ((0xFF * s_a * s_b + (0xFF - s_a) * d_a * d_b) / a + 0x7F) / 0xFF
@@ -283,7 +283,7 @@ extension ColorPixel where Self: _RGBColorPixel, Component == UInt16 {
             
         } else {
             
-            let a = s_a + _mul_div(0xFFFF - s_a, d_a, 0xFFFF)
+            let a = s_a + ((0xFFFF - s_a) * d_a + 0x7FFF) / 0xFFFF
             let r = ((0xFFFF * s_a * s_r + (0xFFFF - s_a) * d_a * d_r) / a + 0x7FFF) / 0xFFFF
             let g = ((0xFFFF * s_a * s_g + (0xFFFF - s_a) * d_a * d_g) / a + 0x7FFF) / 0xFFFF
             let b = ((0xFFFF * s_a * s_b + (0xFFFF - s_a) * d_a * d_b) / a + 0x7FFF) / 0xFFFF
