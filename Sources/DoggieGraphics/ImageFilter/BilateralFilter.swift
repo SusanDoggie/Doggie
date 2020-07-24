@@ -51,7 +51,8 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _
     @inline(__always)
     func dot(_ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>) -> Float {
         let d = c0 - c1
-        return d._color.reduce(d._opacity * d._opacity) { $0 + $1 * $1 }
+        let e = d._opacity * d._opacity
+        return d._color.reduce(e) { fma($1, $1, $0) }
     }
     
     let _r0 = Int(ceil(6 * spatial.width)) >> 1
@@ -147,7 +148,8 @@ public func BilateralFilter<Pixel: _FloatComponentPixel>(_ texture: Texture<Pixe
     @inline(__always)
     func dot(_ c0: Pixel, _ c1: Pixel) -> Pixel.Scalar {
         let d = c0 - c1
-        return d._color.reduce(d._opacity * d._opacity) { $0 + $1 * $1 }
+        let e = d._opacity * d._opacity
+        return d._color.reduce(e) { fma($1, $1, $0) }
     }
     
     let _r0 = Int(ceil(6 * spatial.width)) >> 1
