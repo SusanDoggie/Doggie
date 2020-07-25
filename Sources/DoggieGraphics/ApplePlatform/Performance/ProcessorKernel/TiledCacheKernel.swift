@@ -157,11 +157,8 @@ extension TiledCacheKernel.Info {
         var need_to_render: [Block] = []
         var blocks: [(Block, (MTLTexture, Int, Int))] = []
         
-        let _minX = minX / blockSize * blockSize
-        let _minY = minY / blockSize * blockSize - blockSize
-        
-        for y in stride(from: _minY, to: maxY, by: blockSize) {
-            for x in stride(from: _minX, to: maxX, by: blockSize) {
+        for y in stride(from: minY / blockSize * blockSize - blockSize, to: maxY, by: blockSize) {
+            for x in stride(from: minX / blockSize * blockSize, to: maxX, by: blockSize) {
                 
                 let block = Block(x: x, y: y, width: blockSize, height: blockSize)
                 
@@ -207,37 +204,34 @@ extension TiledCacheKernel.Info {
         
         if !need_to_render.isEmpty {
             
-            let textures: [(Block, MTLTexture)] = autoreleasepool {
+            let textures: [(Block, MTLTexture)] = need_to_render.compactMap { block in
                 
-                need_to_render.compactMap { block in
-                    
-                    let extent = Rect(x: block.minX, y: block.minY, width: block.width, height: block.height)
-                    
-                    let buffer = MappedBuffer<UInt8>(repeating: 0, count: block.width * block.height * 4, fileBacked: true)
-                    
-                    let descriptor = MTLTextureDescriptor.texture2DDescriptor(
-                        pixelFormat: .bgra8Unorm,
-                        width: block.width,
-                        height: block.height,
-                        mipmapped: false)
-                    descriptor.usage = .shaderWrite
-                    
-                    guard let texture = commandBuffer.device.makeTexture(buffer, descriptor: descriptor, bytesPerRow: block.width * 4) else { return nil }
-                    
-                    renderer.render(image, to: texture, commandBuffer: commandBuffer, bounds: CGRect(extent), colorSpace: workingColorSpace)
-                    
-                    #if os(macOS) || targetEnvironment(macCatalyst)
-                    
-                    if texture.storageMode == .managed {
-                        let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder()
-                        blitCommandEncoder?.synchronize(resource: texture)
-                        blitCommandEncoder?.endEncoding()
-                    }
-                    
-                    #endif
-                    
-                    return (block, texture)
+                let extent = Rect(x: block.minX, y: block.minY, width: block.width, height: block.height)
+                
+                let buffer = MappedBuffer<UInt8>(repeating: 0, count: block.width * block.height * 4, fileBacked: true)
+                
+                let descriptor = MTLTextureDescriptor.texture2DDescriptor(
+                    pixelFormat: .bgra8Unorm,
+                    width: block.width,
+                    height: block.height,
+                    mipmapped: false)
+                descriptor.usage = .shaderWrite
+                
+                guard let texture = commandBuffer.device.makeTexture(buffer, descriptor: descriptor, bytesPerRow: block.width * 4) else { return nil }
+                
+                renderer.render(image, to: texture, commandBuffer: commandBuffer, bounds: CGRect(extent), colorSpace: workingColorSpace)
+                
+                #if os(macOS) || targetEnvironment(macCatalyst)
+                
+                if texture.storageMode == .managed {
+                    let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder()
+                    blitCommandEncoder?.synchronize(resource: texture)
+                    blitCommandEncoder?.endEncoding()
                 }
+                
+                #endif
+                
+                return (block, texture)
             }
             
             for (block, texture) in textures {
@@ -265,15 +259,10 @@ extension TiledCacheKernel.Info {
             
             for (block, (texture, offset_x, offset_y)) in blocks {
                 
-                let block_minX = block.minX - minX
-                let block_minY = block.minY - minY
-                let block_maxX = block.maxX - minX
-                let block_maxY = block.maxY - minY
-                
-                let _minX = max(0, block_minX)
-                let _minY = max(0, block_minY)
-                let _maxX = min(maxX - minX, block_maxX)
-                let _maxY = min(maxY - minY, block_maxY)
+                let _minX = max(block.minX, minX)
+                let _minY = max(block.minY, minY)
+                let _maxX = min(block.maxX, maxX)
+                let _maxY = min(block.maxY, maxY)
                 
                 let width = _maxX - _minX
                 let height = _maxY - _minY
@@ -284,12 +273,12 @@ extension TiledCacheKernel.Info {
                     from: texture,
                     sourceSlice: 0,
                     sourceLevel: 0,
-                    sourceOrigin: MTLOrigin(x: offset_x, y: offset_y + block.height - height, z: 0),
+                    sourceOrigin: MTLOrigin(x: offset_x + _minX - block.minX, y: offset_y + _minY - block.minY, z: 0),
                     sourceSize: MTLSize(width: width, height: height, depth: 1),
                     to: output,
                     destinationSlice: 0,
                     destinationLevel: 0,
-                    destinationOrigin: MTLOrigin(x: _minX, y: _minY, z: 0)
+                    destinationOrigin: MTLOrigin(x: _minX - minX, y: _minY - minY, z: 0)
                 )
             }
             
