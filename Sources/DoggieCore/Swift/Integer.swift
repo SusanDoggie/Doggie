@@ -125,6 +125,35 @@ extension BinaryInteger {
     }
 }
 
+extension BinaryInteger {
+    
+    @inlinable
+    @inline(__always)
+    public func roundedTowardZero(toMultipleOf m: Self) -> Self {
+        return self - (self % m)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func roundedAwayFromZero(toMultipleOf m: Self) -> Self {
+        let x = self.roundedTowardZero(toMultipleOf: m)
+        if x == self { return x }
+        return (m.signum() == self.signum()) ? (x + m) : (x - m)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func roundedDown(toMultipleOf m: Self) -> Self {
+        return self < 0 ? self.roundedAwayFromZero(toMultipleOf: m) : self.roundedTowardZero(toMultipleOf: m)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func roundedUp(toMultipleOf m: Self) -> Self {
+        return self >= 0 ? self.roundedAwayFromZero(toMultipleOf: m) : self.roundedTowardZero(toMultipleOf: m)
+    }
+}
+
 @inlinable
 @inline(__always)
 public func _mul_div<T: FixedWidthInteger & UnsignedInteger>(_ x: T, _ y: T, _ z: T) -> T {

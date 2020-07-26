@@ -157,8 +157,8 @@ extension TiledCacheKernel.Info {
         var need_to_render: [Block] = []
         var blocks: [(Block, (MTLTexture, Int, Int))] = []
         
-        for y in stride(from: minY / blockSize * blockSize - blockSize, to: maxY, by: blockSize) {
-            for x in stride(from: minX / blockSize * blockSize, to: maxX, by: blockSize) {
+        for y in stride(from: minY.roundedDown(toMultipleOf: blockSize), to: maxY, by: blockSize) {
+            for x in stride(from: minX.roundedDown(toMultipleOf: blockSize), to: maxX, by: blockSize) {
                 
                 let block = Block(x: x, y: y, width: blockSize, height: blockSize)
                 
