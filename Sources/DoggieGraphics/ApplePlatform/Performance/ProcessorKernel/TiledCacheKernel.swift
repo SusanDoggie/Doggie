@@ -104,15 +104,30 @@ extension TiledCacheKernel.Info {
             self.maxX = maxX
             self.maxY = maxY
         }
-        
-        var width: Int {
-            return maxX - minX
-        }
-        
-        var height: Int {
-            return maxY - minY
-        }
     }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension TiledCacheKernel.Info.Block {
+    
+    fileprivate var width: Int {
+        return maxX - minX
+    }
+    
+    fileprivate var height: Int {
+        return maxY - minY
+    }
+    
+    fileprivate func contains(_ rect: Self) -> Bool {
+        return minX...maxX ~= rect.minX
+            && minX...maxX ~= rect.maxX
+            && minY...maxY ~= rect.minY
+            && minY...maxY ~= rect.maxY
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension TiledCacheKernel.Info {
     
     class Cache {
         
@@ -120,14 +135,18 @@ extension TiledCacheKernel.Info {
         
         var pool = WeakDictionary<MTLCommandQueue, CIContextPool>()
         
-        var table: [Block: (MTLTexture, Int, Int)] = [:]
+        var _blocks: [Block: MTLTexture] = [:]
         
-        subscript(block: Block) -> (MTLTexture, Int, Int)? {
+        var blocks: [Block: MTLTexture] {
+            return lck.synchronized { _blocks }
+        }
+        
+        subscript(block: Block) -> MTLTexture? {
             get {
-                return lck.synchronized { table[block] }
+                return lck.synchronized { _blocks[block] }
             }
             set {
-                lck.synchronized { table[block] = newValue }
+                lck.synchronized { _blocks[block] = newValue }
             }
         }
     }
@@ -154,16 +173,18 @@ extension TiledCacheKernel.Info {
         guard let renderer = self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: true, workingFormat: workingFormat) else { return }
         let workingColorSpace = renderer.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
         
+        let cached_blocks = cache.blocks
+        
         var need_to_render: [Block] = []
-        var blocks: [(Block, (MTLTexture, Int, Int))] = []
+        var blocks: [Block: MTLTexture] = [:]
         
         for y in stride(from: minY.roundedDown(toMultipleOf: blockSize), to: maxY, by: blockSize) {
             for x in stride(from: minX.roundedDown(toMultipleOf: blockSize), to: maxX, by: blockSize) {
                 
                 let block = Block(x: x, y: y, width: blockSize, height: blockSize)
                 
-                if let texture = cache[block] {
-                    blocks.append((block, texture))
+                if let (block, texture) = cached_blocks.first(where: { $0.key.contains(block) }) {
+                    blocks[block] = texture
                 } else {
                     need_to_render.append(block)
                 }
@@ -171,8 +192,10 @@ extension TiledCacheKernel.Info {
         }
         
         do {
+            
             var _need_to_render: [Block] = need_to_render.reversed()
             need_to_render = []
+            
             while let block = _need_to_render.popLast() {
                 
                 if let index = need_to_render.firstIndex(where: { $0.maxX == block.minX && $0.minY == block.minY && $0.maxY == block.maxY }), block.maxX - need_to_render[index].minX <= maxBlockSize {
@@ -181,14 +204,17 @@ extension TiledCacheKernel.Info {
                     need_to_render.append(Block(minX: block2.minX, minY: block.minY, maxX: block.maxX, maxY: block.maxY))
                     
                 } else {
+                    
                     need_to_render.append(block)
                 }
             }
         }
         
         do {
+            
             var _need_to_render: [Block] = need_to_render.reversed()
             need_to_render = []
+            
             while let block = _need_to_render.popLast() {
                 
                 if let index = need_to_render.firstIndex(where: { $0.maxY == block.minY && $0.minX == block.minX && $0.maxX == block.maxX }), block.maxY - need_to_render[index].minY <= maxBlockSize {
@@ -197,6 +223,7 @@ extension TiledCacheKernel.Info {
                     need_to_render.append(Block(minX: block.minX, minY: block2.minY, maxX: block.maxX, maxY: block.maxY))
                     
                 } else {
+                    
                     need_to_render.append(block)
                 }
             }
@@ -235,20 +262,13 @@ extension TiledCacheKernel.Info {
             }
             
             for (block, texture) in textures {
-                blocks.append((block, (texture, 0, 0)))
+                blocks[block] = texture
             }
             
             commandBuffer.addCompletedHandler { _ in
                 
                 for (block, texture) in textures {
-                    
-                    for y in stride(from: block.minY, to: block.maxY, by: self.blockSize) {
-                        for x in stride(from: block.minX, to: block.maxX, by: self.blockSize) {
-                            
-                            let _block = Block(x: x, y: y, width: self.blockSize, height: self.blockSize)
-                            self.cache[_block] = (texture, x - block.minX, y - block.minY)
-                        }
-                    }
+                    self.cache[block] = texture
                 }
             }
         }
@@ -257,7 +277,7 @@ extension TiledCacheKernel.Info {
             
             guard let blitCommandEncoder = commandBuffer.makeBlitCommandEncoder() else { return }
             
-            for (block, (texture, offset_x, offset_y)) in blocks {
+            for (block, texture) in blocks {
                 
                 let _minX = max(block.minX, minX)
                 let _minY = max(block.minY, minY)
@@ -273,7 +293,7 @@ extension TiledCacheKernel.Info {
                     from: texture,
                     sourceSlice: 0,
                     sourceLevel: 0,
-                    sourceOrigin: MTLOrigin(x: offset_x + _minX - block.minX, y: offset_y + _minY - block.minY, z: 0),
+                    sourceOrigin: MTLOrigin(x: _minX - block.minX, y: _minY - block.minY, z: 0),
                     sourceSize: MTLSize(width: width, height: height, depth: 1),
                     to: output,
                     destinationSlice: 0,
