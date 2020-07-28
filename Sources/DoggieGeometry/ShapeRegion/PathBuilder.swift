@@ -316,7 +316,14 @@ extension Shape.Component {
     }
     
     private func _breakLoop(_ points: [(InterscetionTable.Split, InterscetionTable.Split)], reference: Double) -> ShapeRegion {
-        guard !points.isEmpty else { return ShapeRegion(solid: ShapeRegion.Solid(solid: self)) }
+        
+        if points.isEmpty {
+            
+            let copy = Shape.Component(start: start, closed: isClosed, segments: segments)
+            
+            return ShapeRegion(solid: ShapeRegion.Solid(solid: copy))
+        }
+        
         return ShapeRegion(solids: self.breakLoop(points, reference: reference))
     }
     
