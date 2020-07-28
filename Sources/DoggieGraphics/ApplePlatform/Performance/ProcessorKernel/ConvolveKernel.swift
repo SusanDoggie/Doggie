@@ -34,6 +34,14 @@ extension CIImage {
             return .BGRA8
         }
         
+        override class var outputFormat: CIFormat {
+            return .BGRA8
+        }
+        
+        override class var synchronizeInputs: Bool {
+            return false
+        }
+        
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
             guard let orderX = arguments?["orderX"] as? Int else { return outputRect }
             guard let orderY = arguments?["orderY"] as? Int else { return outputRect }

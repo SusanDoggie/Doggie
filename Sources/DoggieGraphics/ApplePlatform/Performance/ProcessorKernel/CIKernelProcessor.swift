@@ -113,6 +113,10 @@ private class CIKernelProcessor: CIImageProcessorKernel {
         var pool = WeakDictionary<MTLCommandQueue, CIContextPool>()
     }
     
+    override class var synchronizeInputs: Bool {
+        return false
+    }
+    
     override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
         guard let info = arguments?["info"] as? Info else { return outputRect }
         return info.roiCallback(input, outputRect)

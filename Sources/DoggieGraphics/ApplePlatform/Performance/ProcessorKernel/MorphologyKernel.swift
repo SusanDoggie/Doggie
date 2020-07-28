@@ -38,6 +38,10 @@ extension CIImage {
             return .BGRA8
         }
         
+        override class var synchronizeInputs: Bool {
+            return false
+        }
+        
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
             guard let radius = arguments?["radius"] as? Size else { return outputRect }
             let insetX = -ceil(abs(radius.width))
@@ -98,6 +102,14 @@ extension CIImage {
         
         override class func formatForInput(at input: Int32) -> CIFormat {
             return .BGRA8
+        }
+        
+        override class var outputFormat: CIFormat {
+            return .BGRA8
+        }
+        
+        override class var synchronizeInputs: Bool {
+            return false
         }
         
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
