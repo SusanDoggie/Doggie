@@ -28,9 +28,9 @@
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension CIKernel {
     
-    open func process(extent: CGRect, roiCallback callback: @escaping CIKernelROICallback = { _, rect in rect }, arguments: [Any], colorSpace: ColorSpace<RGBColorModel>? = nil, matchToWorkingSpace: Bool = true) -> CIImage? {
+    open func process(extent: CGRect, roiCallback callback: @escaping CIKernelROICallback = { _, rect in rect }, arguments: [Any], colorSpace: ColorSpace<RGBColorModel>? = nil) -> CIImage? {
         
-        return try? self._process(extent: extent, roiCallback: callback, arguments: arguments, colorSpace: colorSpace, matchToWorkingSpace: matchToWorkingSpace) {
+        return try? self._process(extent: extent, roiCallback: callback, arguments: arguments, colorSpace: colorSpace) {
             
             self.apply(extent: $0, roiCallback: callback, arguments: $1)
         }
@@ -40,9 +40,9 @@ extension CIKernel {
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension CIWarpKernel {
     
-    open func process(extent: CGRect, roiCallback callback: @escaping CIKernelROICallback = { _, rect in rect }, image: CIImage, arguments: [Any], colorSpace: ColorSpace<RGBColorModel>? = nil, matchToWorkingSpace: Bool = true) -> CIImage? {
+    open func process(extent: CGRect, roiCallback callback: @escaping CIKernelROICallback = { _, rect in rect }, image: CIImage, arguments: [Any], colorSpace: ColorSpace<RGBColorModel>? = nil) -> CIImage? {
         
-        return try? self._process(extent: extent, roiCallback: callback, arguments: [image] + arguments, colorSpace: colorSpace, matchToWorkingSpace: matchToWorkingSpace) {
+        return try? self._process(extent: extent, roiCallback: callback, arguments: [image] + arguments, colorSpace: colorSpace) {
             
             self.apply(extent: $0, roiCallback: callback, image: $1[0] as! CIImage, arguments: Array($1.dropFirst()))
         }
@@ -52,9 +52,9 @@ extension CIWarpKernel {
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension CIColorKernel {
     
-    open func process(extent: CGRect, arguments: [Any], colorSpace: ColorSpace<RGBColorModel>? = nil, matchToWorkingSpace: Bool = true) -> CIImage? {
+    open func process(extent: CGRect, arguments: [Any], colorSpace: ColorSpace<RGBColorModel>? = nil) -> CIImage? {
         
-        return try? self._process(extent: extent, roiCallback: { _, rect in rect }, arguments: arguments, colorSpace: colorSpace, matchToWorkingSpace: matchToWorkingSpace) {
+        return try? self._process(extent: extent, roiCallback: { _, rect in rect }, arguments: arguments, colorSpace: colorSpace) {
             
             self.apply(extent: $0, arguments: $1)
         }
@@ -64,7 +64,7 @@ extension CIColorKernel {
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension CIKernel {
     
-    fileprivate func _process(extent: CGRect, roiCallback: @escaping CIKernelROICallback, arguments: [Any], colorSpace: ColorSpace<RGBColorModel>?, matchToWorkingSpace: Bool, kernel: @escaping (CGRect, [Any]) -> CIImage?) throws -> CIImage {
+    fileprivate func _process(extent: CGRect, roiCallback: @escaping CIKernelROICallback, arguments: [Any], colorSpace: ColorSpace<RGBColorModel>?, kernel: @escaping (CGRect, [Any]) -> CIImage?) throws -> CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
@@ -85,7 +85,7 @@ extension CIKernel {
             rendered = rendered.cropped(to: extent)
         }
         
-        return matchToWorkingSpace ? colorSpace?.cgColorSpace.flatMap { rendered.matchedToWorkingSpace(from: $0) } ?? rendered : rendered
+        return colorSpace?.cgColorSpace.flatMap { rendered.matchedToWorkingSpace(from: $0) } ?? rendered
     }
 }
 

@@ -28,7 +28,7 @@
 extension CIImage {
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func insertingIntermediate(blockSize: Int, maxBlockSize: Int, colorSpace: ColorSpace<RGBColorModel>? = nil, matchToWorkingSpace: Bool = true) throws -> CIImage {
+    open func insertingIntermediate(blockSize: Int, maxBlockSize: Int, colorSpace: ColorSpace<RGBColorModel>? = nil) throws -> CIImage {
         
         var image = self
         
@@ -45,7 +45,7 @@ extension CIImage {
             rendered = rendered.cropped(to: extent)
         }
         
-        return matchToWorkingSpace ? colorSpace?.cgColorSpace.flatMap { rendered.matchedToWorkingSpace(from: $0) } ?? rendered : rendered
+        return colorSpace?.cgColorSpace.flatMap { rendered.matchedToWorkingSpace(from: $0) } ?? rendered
     }
 }
 
