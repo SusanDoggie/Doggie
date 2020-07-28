@@ -191,7 +191,7 @@ extension TiledCacheKernel.Info {
             }
         }
         
-        do {
+        if blockSize < maxBlockSize {
             
             var _need_to_render: [Block] = need_to_render.reversed()
             need_to_render = []
@@ -210,7 +210,7 @@ extension TiledCacheKernel.Info {
             }
         }
         
-        do {
+        if blockSize < maxBlockSize {
             
             var _need_to_render: [Block] = need_to_render.reversed()
             need_to_render = []
