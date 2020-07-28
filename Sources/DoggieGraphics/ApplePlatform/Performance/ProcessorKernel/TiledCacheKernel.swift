@@ -28,7 +28,7 @@
 extension CIImage {
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func insertingIntermediate(blockSize: Int, maxBlockSize: Int, colorSpace: ColorSpace<RGBColorModel>?, matchToWorkingSpace: Bool = true) throws -> CIImage {
+    open func insertingIntermediate(blockSize: Int, maxBlockSize: Int, colorSpace: ColorSpace<RGBColorModel>? = nil, matchToWorkingSpace: Bool = true) throws -> CIImage {
         
         var image = self
         
@@ -151,7 +151,7 @@ extension TiledCacheKernel.Info {
         }
     }
     
-    func make_context(commandQueue: MTLCommandQueue, outputPremultiplied: Bool, workingFormat: CIFormat) -> CIContext? {
+    func make_context(commandQueue: MTLCommandQueue, workingFormat: CIFormat) -> CIContext? {
         
         cache.lck.lock()
         defer { cache.lck.unlock() }
@@ -160,7 +160,7 @@ extension TiledCacheKernel.Info {
             cache.pool[commandQueue] = CIContextPool(commandQueue: commandQueue)
         }
         
-        return cache.pool[commandQueue]?.makeContext(colorSpace: colorSpace, outputPremultiplied: outputPremultiplied, workingFormat: workingFormat)
+        return cache.pool[commandQueue]?.makeContext(colorSpace: colorSpace, outputPremultiplied: true, workingFormat: workingFormat)
     }
     
     func render(to output: MTLTexture, commandBuffer: MTLCommandBuffer, bounds: Rect, workingFormat: CIFormat) {
@@ -170,7 +170,7 @@ extension TiledCacheKernel.Info {
         guard let maxX = Int(exactly: ceil(bounds.maxX)) else { return }
         guard let maxY = Int(exactly: ceil(bounds.maxY)) else { return }
         
-        guard let renderer = self.make_context(commandQueue: commandBuffer.commandQueue, outputPremultiplied: true, workingFormat: workingFormat) else { return }
+        guard let renderer = self.make_context(commandQueue: commandBuffer.commandQueue, workingFormat: workingFormat) else { return }
         let workingColorSpace = renderer.workingColorSpace ?? CGColorSpaceCreateDeviceRGB()
         
         let cached_blocks = cache.blocks
