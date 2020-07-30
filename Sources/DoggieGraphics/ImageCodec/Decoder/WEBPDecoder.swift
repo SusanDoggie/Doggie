@@ -67,28 +67,43 @@ extension WEBPDecoder {
         let delay: Int32
     }
     
+    class WEBPData {
+        
+        var mem = WebPData()
+        
+        init?(bytes: UnsafeRawBufferPointer) {
+            
+            guard let baseAddress = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return nil }
+            
+            var data = WebPData(bytes: baseAddress, size: bytes.count)
+            guard WebPDataCopy(&data, &self.mem) != 0 else { return nil }
+        }
+        
+        deinit {
+            WebPDataClear(&mem)
+        }
+    }
+    
     class Decoder {
         
         let decoder: OpaquePointer
         let anim_info: WebPAnimInfo
         
-        var data = WebPData()
+        var data: WEBPData
         
         var frames: [Frame] = []
         
         init?(bytes: UnsafeRawBufferPointer) {
-            
-            guard let baseAddress = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return nil }
             
             var options = WebPAnimDecoderOptions()
             WebPAnimDecoderOptionsInit(&options)
             
             options.color_mode = MODE_RGBA
             
-            var data = WebPData(bytes: baseAddress, size: bytes.count)
-            guard WebPDataCopy(&data, &self.data) != 0 else { return nil }
+            guard let data = WEBPData(bytes: bytes) else { return nil }
+            self.data = data
             
-            guard let decoder = WebPAnimDecoderNew(&self.data, &options) else { return nil }
+            guard let decoder = WebPAnimDecoderNew(&self.data.mem, &options) else { return nil }
             self.decoder = decoder
             
             var anim_info = WebPAnimInfo()
@@ -98,7 +113,6 @@ extension WEBPDecoder {
         
         deinit {
             WebPAnimDecoderDelete(decoder)
-            WebPDataClear(&data)
         }
         
         func read_frame(index: Int, colorSpace: ColorSpace<RGBColorModel>, fileBacked: Bool) -> Frame {

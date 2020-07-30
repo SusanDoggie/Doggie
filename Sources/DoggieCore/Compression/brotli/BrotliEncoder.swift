@@ -25,18 +25,27 @@
 
 public class BrotliEncoder: CompressionCodec {
     
-    private let stream: OpaquePointer
-    
-    public init(quality: Quality = .default, windowBits: WindowBits = .default, mode: Mode = .generic) throws {
-        guard let stream = BrotliEncoderCreateInstance(nil, nil, nil) else { throw Error.unknown }
-        guard BrotliEncoderSetParameter(stream, BROTLI_PARAM_QUALITY, quality.rawValue) == BROTLI_TRUE else { throw Error.invalidParameter }
-        guard BrotliEncoderSetParameter(stream, BROTLI_PARAM_LGWIN, windowBits.rawValue) == BROTLI_TRUE else { throw Error.invalidParameter }
-        guard BrotliEncoderSetParameter(stream, BROTLI_PARAM_MODE, mode.rawValue) == BROTLI_TRUE else { throw Error.invalidParameter }
-        self.stream = stream
+    private class Stream {
+        
+        let ptr: OpaquePointer
+        
+        init() throws {
+            guard let stream = BrotliEncoderCreateInstance(nil, nil, nil) else { throw Error.unknown }
+            self.ptr = stream
+        }
+        
+        deinit {
+            BrotliEncoderDestroyInstance(ptr)
+        }
     }
     
-    deinit {
-        BrotliEncoderDestroyInstance(stream)
+    private let stream: Stream
+    
+    public init(quality: Quality = .default, windowBits: WindowBits = .default, mode: Mode = .generic) throws {
+        self.stream = try Stream()
+        guard BrotliEncoderSetParameter(stream.ptr, BROTLI_PARAM_QUALITY, quality.rawValue) == BROTLI_TRUE else { throw Error.invalidParameter }
+        guard BrotliEncoderSetParameter(stream.ptr, BROTLI_PARAM_LGWIN, windowBits.rawValue) == BROTLI_TRUE else { throw Error.invalidParameter }
+        guard BrotliEncoderSetParameter(stream.ptr, BROTLI_PARAM_MODE, mode.rawValue) == BROTLI_TRUE else { throw Error.invalidParameter }
     }
 }
 
@@ -66,13 +75,13 @@ extension BrotliEncoder {
                 var next_out = buf.baseAddress
                 var avail_out = 4096
                 
-                let status = BrotliEncoderCompressStream(stream, op, &avail_in, &next_in, &avail_out, &next_out, nil)
+                let status = BrotliEncoderCompressStream(stream.ptr, op, &avail_in, &next_in, &avail_out, &next_out, nil)
                 
                 guard status == BROTLI_TRUE else { throw Error.unknown }
                 
                 callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - avail_out)))
                 
-            } while avail_in != 0 || BrotliEncoderHasMoreOutput(stream) == BROTLI_TRUE
+            } while avail_in != 0 || BrotliEncoderHasMoreOutput(stream.ptr) == BROTLI_TRUE
         }
     }
     
