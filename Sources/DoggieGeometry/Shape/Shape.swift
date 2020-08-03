@@ -94,6 +94,54 @@ public struct Shape: RandomAccessCollection, MutableCollection, ExpressibleByArr
         self.components = Array(components)
         self.makeContiguousBuffer()
     }
+}
+
+extension Shape: Hashable {
+    
+    @inlinable
+    public static func == (lhs: Shape, rhs: Shape) -> Bool {
+        return lhs.transform == rhs.transform && (lhs.components.isStorageEqual(rhs.components) || lhs.components == rhs.components)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func isStorageEqual(_ other: Shape) -> Bool {
+        return self.transform == other.transform && self.components.isStorageEqual(other.components)
+    }
+    
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(transform)
+        hasher.combine(components)
+    }
+}
+
+extension Shape.Segment: Hashable {
+    
+}
+
+extension Shape.Component: Hashable {
+    
+    @inlinable
+    public static func == (lhs: Shape.Component, rhs: Shape.Component) -> Bool {
+        return lhs.start == rhs.start && lhs.isClosed == rhs.isClosed && (lhs.segments.isStorageEqual(rhs.segments) || lhs.segments == rhs.segments)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func isStorageEqual(_ other: Shape.Component) -> Bool {
+        return self.start == other.start && self.isClosed == other.isClosed && self.segments.isStorageEqual(other.segments)
+    }
+    
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(start)
+        hasher.combine(isClosed)
+        hasher.combine(segments)
+    }
+}
+
+extension Shape {
     
     @inlinable
     public var center: Point {
