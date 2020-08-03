@@ -35,23 +35,32 @@ public enum DataPackType: Hashable {
     case uuid
     case array
     case dictionary
-    case unknown(UInt8)
 }
 
 @frozen
 public struct DataPack {
     
     @usableFromInline
+    enum Base {
+        case null
+        case boolean(Bool)
+        case string(String)
+        case signed(Int64)
+        case unsigned(UInt64)
+        case number(Double)
+        case binary(Data)
+        case uuid(UUID)
+        case array([DataPack])
+        case undecoded_array(UndecodedArray)
+        case dictionary([String: DataPack])
+    }
+    
+    @usableFromInline
     let base: Base
     
     @inlinable
-    init(_ base: Base) {
-        self.base = base.dictionary.map { .dictionary($0) } ?? base
-    }
-    
-    @inlinable
     public init(decode data: Data) {
-        self.init(.undecoded(UndecodedObject(data: data)))
+        self.init(decode: data, xref: data, stack: [])
     }
     
     @inlinable
@@ -175,18 +184,18 @@ extension DataPack: CustomStringConvertible {
     
     @inlinable
     public var description: String {
-        switch type {
+        switch self.base {
         case .null: return "nil"
-        case .boolean: return "\(boolValue!)"
-        case .string: return "\"\(string!.escaped(asASCII: false))\""
-        case .signed: return "\(int64Value!)"
-        case .unsigned: return "\(uint64Value!)"
-        case .number: return "\(doubleValue!)"
-        case .binary: return "\(binary!)"
-        case .uuid: return "\(uuid!)"
-        case .array: return "\(array!)"
-        case .dictionary: return "\(dictionary!)"
-        case .unknown: return "unknown"
+        case let .boolean(value): return "\(value)"
+        case let .string(value): return "\"\(value.escaped(asASCII: false))\""
+        case let .signed(value): return "\(value)"
+        case let .unsigned(value): return "\(value)"
+        case let .number(value): return "\(value)"
+        case let .binary(value): return "\(value)"
+        case let .uuid(value): return "\(value)"
+        case let .array(value): return "\(value)"
+        case let .undecoded_array(value): return "\(Array(value))"
+        case let .dictionary(value): return "\(value)"
         }
     }
 }
@@ -195,17 +204,20 @@ extension DataPack: Hashable {
     
     @inlinable
     public static func == (lhs: DataPack, rhs: DataPack) -> Bool {
-        switch (lhs.type, rhs.type) {
+        switch (lhs.base, rhs.base) {
         case (.null, .null): return true
-        case (.boolean, .boolean): return lhs.boolValue == rhs.boolValue
-        case (.string, .string): return lhs.string == rhs.string
-        case (.signed, .signed): return lhs.int64Value == rhs.int64Value
-        case (.unsigned, .unsigned): return lhs.uint64Value == rhs.uint64Value
-        case (.number, .number): return lhs.doubleValue == rhs.doubleValue
-        case (.binary, .binary): return lhs.binary == rhs.binary
-        case (.uuid, .uuid): return lhs.uuid == rhs.uuid
-        case (.array, .array): return lhs.array == rhs.array
-        case (.dictionary, .dictionary): return lhs.dictionary == rhs.dictionary
+        case let (.boolean(lhs), .boolean(rhs)): return lhs == rhs
+        case let (.string(lhs), .string(rhs)): return lhs == rhs
+        case let (.signed(lhs), .signed(rhs)): return lhs == rhs
+        case let (.unsigned(lhs), .unsigned(rhs)): return lhs == rhs
+        case let (.number(lhs), .number(rhs)): return lhs == rhs
+        case let (.binary(lhs), .binary(rhs)): return lhs == rhs
+        case let (.uuid(lhs), .uuid(rhs)): return lhs == rhs
+        case let (.array(lhs), .array(rhs)): return lhs == rhs
+        case let (.array(lhs), .undecoded_array(rhs)): return lhs == Array(rhs)
+        case let (.undecoded_array(lhs), .array(rhs)): return Array(lhs) == rhs
+        case let (.undecoded_array(lhs), .undecoded_array(rhs)): return Array(lhs) == Array(rhs)
+        case let (.dictionary(lhs), .dictionary(rhs)): return lhs == rhs
         default: return false
         }
     }
@@ -213,17 +225,125 @@ extension DataPack: Hashable {
     @inlinable
     public func hash(into hasher: inout Hasher) {
         hasher.combine(type)
-        switch type {
-        case .boolean: hasher.combine(boolValue!)
-        case .string: hasher.combine(string!)
-        case .signed: hasher.combine(int64Value!)
-        case .unsigned: hasher.combine(uint64Value!)
-        case .number: hasher.combine(doubleValue!)
-        case .binary: hasher.combine(binary!)
-        case .uuid: hasher.combine(uuid!)
-        case .array: hasher.combine(array!)
-        case .dictionary: hasher.combine(dictionary!)
+        switch self.base {
+        case let .boolean(value): hasher.combine(value)
+        case let .string(value): hasher.combine(value)
+        case let .signed(value): hasher.combine(value)
+        case let .unsigned(value): hasher.combine(value)
+        case let .number(value): hasher.combine(value)
+        case let .binary(value): hasher.combine(value)
+        case let .uuid(value): hasher.combine(value)
+        case let .array(value): hasher.combine(value)
+        case let .undecoded_array(value): hasher.combine(Array(value))
+        case let .dictionary(value): hasher.combine(value)
         default: break
+        }
+    }
+}
+
+extension DataPack {
+    
+    @inlinable
+    init(decode data: Data, xref: Data, stack: Set<Int>) {
+        
+        let type = data.first
+        let data = data.dropFirst()
+        
+        switch type {
+        case 0x3F: self.base = .null
+        case 0x66: self.base = .boolean(false)
+        case 0x74: self.base = .boolean(true)
+        case 0x69:
+            
+            switch data.count {
+            case 1: self.base = .signed(Int64(data.load(as: Int8.self)))
+            case 2: self.base = .signed(Int64(Int16(bigEndian: data.load(as: Int16.self))))
+            case 4: self.base = .signed(Int64(Int32(bigEndian: data.load(as: Int32.self))))
+            case 8: self.base = .signed(Int64(bigEndian: data.load(as: Int64.self)))
+            default: self.base = .null
+            }
+            
+        case 0x75:
+            
+            switch data.count {
+            case 1: self.base = .unsigned(UInt64(data.load(as: UInt8.self)))
+            case 2: self.base = .unsigned(UInt64(UInt16(bigEndian: data.load(as: UInt16.self))))
+            case 4: self.base = .unsigned(UInt64(UInt32(bigEndian: data.load(as: UInt32.self))))
+            case 8: self.base = .unsigned(UInt64(bigEndian: data.load(as: UInt64.self)))
+            default: self.base = .null
+            }
+            
+        case 0x6E:
+            
+            switch data.count {
+            case 4: self.base = .number(Double(Float(bitPattern: UInt32(bigEndian: data.load(as: UInt32.self)))))
+            case 8: self.base = .number(Double(bitPattern: UInt64(bigEndian: data.load(as: UInt64.self))))
+            default: self.base = .null
+            }
+            
+        case 0x73:
+            
+            if let string = String(bytes: data, encoding: .utf8) {
+                
+                self.base = .string(string)
+                
+            } else {
+                
+                self.base = .null
+            }
+            
+        case 0x62:
+            
+            self.base = .binary(data)
+            
+        case 0x67:
+            
+            if data.count == 16 {
+                
+                self.base = .uuid(UUID(uuid: data.load(as: uuid_t.self)))
+                
+            } else {
+                
+                self.base = .null
+            }
+            
+        case 0x61:
+            
+            self.base = .undecoded_array(UndecodedArray(data: data, xref: xref, stack: stack))
+            
+        case 0x64:
+            
+            let keyValuePairs = UndecodedKeyValuePairs(data: data, xref: xref, stack: stack)
+            self.base = .dictionary(Dictionary(keyValuePairs.lazy.compactMap({ $0 })) { lhs, _ in lhs })
+            
+        case 0x78:
+            
+            if data.count == 16 {
+                
+                let range = data.load(as: (UInt64, UInt64).self)
+                
+                let startIndex = Int(UInt64(bigEndian: range.0))
+                let endIndex = Int(UInt64(bigEndian: range.1))
+                
+                if !stack.contains(startIndex) {
+                    
+                    var stack = stack
+                    stack.insert(startIndex)
+                    
+                    self = DataPack(decode: xref.dropFirst(startIndex).prefix(endIndex - startIndex), xref: xref, stack: stack)
+                    return
+                    
+                } else {
+                    
+                    self.base = .null
+                }
+                
+            } else {
+                
+                self.base = .null
+            }
+            
+        default: self.base = .null
         }
     }
 }
@@ -233,8 +353,138 @@ extension DataPack {
     @inlinable
     public func encode() -> Data {
         var result = MappedBuffer<UInt8>()
-        base.encode(to: &result)
+        var xref: [DataPack: (Int, Int)] = [:]
+        self.encode(to: &result, base_offset: 0, xref: &xref)
         return result.data
+    }
+    
+    @inlinable
+    func encode(to data: inout MappedBuffer<UInt8>, base_offset: Int, xref: inout [DataPack: (Int, Int)]) {
+        
+        if let (startIndex, endIndex) = xref[self] {
+            
+            data.append(0x78)
+            data.encode(BEUInt64(startIndex))
+            data.encode(BEUInt64(endIndex))
+            
+            return
+        }
+        
+        let startIndex = data.count + base_offset
+        
+        switch self.base {
+        
+        case let .boolean(value):
+            
+            if value {
+                data.append(0x74)
+            } else {
+                data.append(0x66)
+            }
+            
+        case let .string(value):
+            
+            data.append(0x73)
+            data.append(utf8: value)
+            
+            if value.count > 16 {
+                xref[self] = (startIndex, data.count + base_offset)
+            }
+            
+        case let .signed(value):
+            
+            data.append(0x69)
+            if let value = Int8(exactly: value) {
+                data.encode(value)
+            } else if let value = Int16(exactly: value) {
+                data.encode(BEInt16(value))
+            } else if let value = Int32(exactly: value) {
+                data.encode(BEInt32(value))
+            } else {
+                data.encode(BEInt64(value))
+            }
+            
+        case let .unsigned(value):
+            
+            data.append(0x75)
+            if let value = UInt8(exactly: value) {
+                data.encode(value)
+            } else if let value = UInt16(exactly: value) {
+                data.encode(BEUInt16(value))
+            } else if let value = UInt32(exactly: value) {
+                data.encode(BEUInt32(value))
+            } else {
+                data.encode(BEUInt64(value))
+            }
+            
+        case let .number(value):
+            
+            data.append(0x6E)
+            data.encode(BEUInt64(value.bitPattern))
+            
+        case let .binary(value):
+            
+            data.append(0x62)
+            data.append(contentsOf: value)
+            
+            if value.count > 16 {
+                xref[self] = (startIndex, data.count + base_offset)
+            }
+            
+        case let .uuid(value):
+            
+            data.append(0x67)
+            withUnsafeBytes(of: value.uuid) { data.append(contentsOf: $0) }
+            
+            xref[self] = (startIndex, data.count + base_offset)
+            
+        case let .array(value):
+            
+            data.append(0x61)
+            data.encode(BEUInt64(value.count))
+            data.encode(0 as BEUInt64)
+            var body = MappedBuffer<UInt8>()
+            for item in value {
+                item.encode(to: &body, base_offset: startIndex + (value.count + 1) << 3 + 9, xref: &xref)
+                data.encode(BEUInt64(body.count))
+            }
+            data.append(contentsOf: body)
+            
+            xref[self] = (startIndex, data.count + base_offset)
+            
+        case let .undecoded_array(value):
+            
+            data.append(0x61)
+            data.encode(BEUInt64(value.count))
+            data.encode(0 as BEUInt64)
+            var body = MappedBuffer<UInt8>()
+            for item in value {
+                item.encode(to: &body, base_offset: startIndex + (value.count + 1) << 3 + 9, xref: &xref)
+                data.encode(BEUInt64(body.count))
+            }
+            data.append(contentsOf: body)
+            
+            xref[self] = (startIndex, data.count + base_offset)
+            
+        case let .dictionary(value):
+            
+            data.append(0x64)
+            data.encode(BEUInt64(value.count))
+            data.encode(0 as BEUInt64)
+            data.encode(0 as BEUInt64)
+            var body = MappedBuffer<UInt8>()
+            for (key, item) in value {
+                body.append(contentsOf: key._utf8_data)
+                data.encode(BEUInt64(body.count))
+                item.encode(to: &body, base_offset: startIndex + (value.count + 1) << 4 + 9, xref: &xref)
+                data.encode(BEUInt64(body.count))
+            }
+            data.append(contentsOf: body)
+            
+            xref[self] = (startIndex, data.count + base_offset)
+            
+        default: data.append(0x3F)
+        }
     }
 }
 
@@ -242,14 +492,17 @@ extension DataPack {
     
     @inlinable
     public var type: DataPackType {
-        return base.type
-    }
-    
-    @inlinable
-    public var isUnknownType: Bool {
-        switch type {
-        case .unknown: return true
-        default: return false
+        switch self.base {
+        case .null: return .null
+        case .boolean: return .boolean
+        case .string: return .string
+        case .signed: return .signed
+        case .unsigned: return .unsigned
+        case .number: return .number
+        case .binary: return .binary
+        case .uuid: return .uuid
+        case .array, .undecoded_array: return .array
+        case .dictionary: return .dictionary
         }
     }
     
@@ -316,375 +569,183 @@ extension DataPack {
 
 extension DataPack {
     
-    @usableFromInline
-    enum Base {
-        case null
-        case boolean(Bool)
-        case string(String)
-        case signed(Int64)
-        case unsigned(UInt64)
-        case number(Double)
-        case binary(Data)
-        case uuid(UUID)
-        case array([DataPack])
-        case dictionary([String: DataPack])
-        case undecoded(UndecodedObject)
-    }
-}
-
-extension DataPack.Base {
-    
-    @inlinable
-    var type: DataPackType {
-        switch self {
-        case .null: return .null
-        case .boolean: return .boolean
-        case .string: return .string
-        case .signed: return .signed
-        case .unsigned: return .unsigned
-        case .number: return .number
-        case .binary: return .binary
-        case .uuid: return .uuid
-        case .array: return .array
-        case .dictionary: return .dictionary
-        case let .undecoded(value): return value.type
-        }
-    }
-    
-    @inlinable
-    var boolValue: Bool? {
-        switch self {
-        case let .boolean(value): return value
-        case let .undecoded(value): return value.boolValue
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var int64Value: Int64? {
-        switch self {
-        case let .signed(value): return value
-        case let .undecoded(value): return value.int64Value
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var uint64Value: UInt64? {
-        switch self {
-        case let .unsigned(value): return value
-        case let .undecoded(value): return value.uint64Value
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var doubleValue: Double? {
-        switch self {
-        case let .number(value): return value
-        case let .undecoded(value): return value.doubleValue
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var string: String? {
-        switch self {
-        case let .string(value): return value
-        case let .undecoded(value): return value.string
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var binary: Data? {
-        switch self {
-        case let .binary(value): return value
-        case let .undecoded(value): return value.binary
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var uuid: UUID? {
-        switch self {
-        case let .uuid(value): return value
-        case let .undecoded(value): return value.uuid
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var array: [DataPack]? {
-        switch self {
-        case let .array(value): return value
-        case let .undecoded(value): return value.array
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var dictionary: [String: DataPack]? {
-        switch self {
-        case let .dictionary(value): return value
-        case let .undecoded(value): return value.dictionary
-        default: return nil
-        }
-    }
-}
-
-extension DataPack.Base {
-    
-    @inlinable
-    func encode(to data: inout MappedBuffer<UInt8>) {
-        switch self {
-        case .null: data.append(0x3F)
-        case let .boolean(value):
-            
-            if value {
-                data.append(0x74)
-            } else {
-                data.append(0x66)
-            }
-            
-        case let .string(value):
-            
-            data.append(0x73)
-            data.append(utf8: value)
-            
-        case let .signed(value):
-            
-            data.append(0x69)
-            if let value = Int8(exactly: value) {
-                data.encode(value)
-            } else if let value = Int16(exactly: value) {
-                data.encode(BEInt16(value))
-            } else if let value = Int32(exactly: value) {
-                data.encode(BEInt32(value))
-            } else {
-                data.encode(BEInt64(value))
-            }
-            
-        case let .unsigned(value):
-            
-            data.append(0x75)
-            if let value = UInt8(exactly: value) {
-                data.encode(value)
-            } else if let value = UInt16(exactly: value) {
-                data.encode(BEUInt16(value))
-            } else if let value = UInt32(exactly: value) {
-                data.encode(BEUInt32(value))
-            } else {
-                data.encode(BEUInt64(value))
-            }
-            
-        case let .number(value):
-            
-            data.append(0x6E)
-            data.encode(BEUInt64(value.bitPattern))
-            
-        case let .binary(value):
-            
-            data.append(0x62)
-            data.append(contentsOf: value)
-            
-        case let .uuid(value):
-            
-            data.append(0x67)
-            withUnsafeBytes(of: value.uuid) { data.append(contentsOf: $0) }
-            
-        case let .array(array):
-            
-            data.append(0x61)
-            data.encode(BEUInt64(array.count))
-            data.encode(0 as BEUInt64)
-            var body = MappedBuffer<UInt8>()
-            for item in array {
-                item.base.encode(to: &body)
-                data.encode(BEUInt64(body.count))
-            }
-            data.append(contentsOf: body)
-            
-        case let .dictionary(dictionary):
-            
-            data.append(0x64)
-            data.encode(BEUInt64(dictionary.count))
-            data.encode(0 as BEUInt64)
-            data.encode(0 as BEUInt64)
-            var body = MappedBuffer<UInt8>()
-            for (key, value) in dictionary {
-                body.append(contentsOf: key._utf8_data)
-                data.encode(BEUInt64(body.count))
-                value.base.encode(to: &body)
-                data.encode(BEUInt64(body.count))
-            }
-            data.append(contentsOf: body)
-            
-        case let .undecoded(value): value.encode(to: &data)
-        }
-    }
-}
-
-extension DataPack {
-    
     @inlinable
     public var boolValue: Bool? {
-        return base.boolValue
+        switch self.base {
+        case let .boolean(value): return value
+        default: return nil
+        }
     }
     
     @inlinable
     public var int8Value: Int8? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { Int8(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { Int8(exactly: $0) }
-        case .number: return base.doubleValue.flatMap { Int8(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return Int8(exactly: value)
+        case let .unsigned(value): return Int8(exactly: value)
+        case let .number(value): return Int8(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var uint8Value: UInt8? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { UInt8(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { UInt8(exactly: $0) }
-        case .number: return base.doubleValue.flatMap { UInt8(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return UInt8(exactly: value)
+        case let .unsigned(value): return UInt8(exactly: value)
+        case let .number(value): return UInt8(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var int16Value: Int16? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { Int16(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { Int16(exactly: $0) }
-        case .number: return base.doubleValue.flatMap { Int16(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return Int16(exactly: value)
+        case let .unsigned(value): return Int16(exactly: value)
+        case let .number(value): return Int16(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var uint16Value: UInt16? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { UInt16(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { UInt16(exactly: $0) }
-        case .number: return base.doubleValue.flatMap { UInt16(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return UInt16(exactly: value)
+        case let .unsigned(value): return UInt16(exactly: value)
+        case let .number(value): return UInt16(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var int32Value: Int32? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { Int32(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { Int32(exactly: $0) }
-        case .number: return base.doubleValue.flatMap { Int32(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return Int32(exactly: value)
+        case let .unsigned(value): return Int32(exactly: value)
+        case let .number(value): return Int32(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var uint32Value: UInt32? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { UInt32(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { UInt32(exactly: $0) }
-        case .number: return base.doubleValue.flatMap { UInt32(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return UInt32(exactly: value)
+        case let .unsigned(value): return UInt32(exactly: value)
+        case let .number(value): return UInt32(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var int64Value: Int64? {
-        switch type {
-        case .signed: return base.int64Value
-        case .unsigned: return base.uint64Value.flatMap { Int64(exactly: $0) }
-        case .number: return base.doubleValue.flatMap { Int64(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return value
+        case let .unsigned(value): return Int64(exactly: value)
+        case let .number(value): return Int64(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var uint64Value: UInt64? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { UInt64(exactly: $0) }
-        case .unsigned: return base.uint64Value
-        case .number: return base.doubleValue.flatMap { UInt64(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return UInt64(exactly: value)
+        case let .unsigned(value): return value
+        case let .number(value): return UInt64(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var intValue: Int? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { Int(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { Int(exactly: $0) }
-        case .number: return base.doubleValue.flatMap { Int(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return Int(exactly: value)
+        case let .unsigned(value): return Int(exactly: value)
+        case let .number(value): return Int(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var uintValue: UInt? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { UInt(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { UInt(exactly: $0) }
-        case .number: return base.doubleValue.flatMap { UInt(exactly: $0) }
+        switch self.base {
+        case let .signed(value): return UInt(exactly: value)
+        case let .unsigned(value): return UInt(exactly: value)
+        case let .number(value): return UInt(exactly: value)
         default: return nil
         }
     }
     
     @inlinable
     public var floatValue: Float? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { Float(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { Float(exactly: $0) }
-        case .number: return base.doubleValue.map { Float($0) }
+        switch self.base {
+        case let .signed(value): return Float(exactly: value)
+        case let .unsigned(value): return Float(exactly: value)
+        case let .number(value): return Float(value)
         default: return nil
         }
     }
     
     @inlinable
     public var doubleValue: Double? {
-        switch type {
-        case .signed: return base.int64Value.flatMap { Double(exactly: $0) }
-        case .unsigned: return base.uint64Value.flatMap { Double(exactly: $0) }
-        case .number: return base.doubleValue
+        switch self.base {
+        case let .signed(value): return Double(exactly: value)
+        case let .unsigned(value): return Double(exactly: value)
+        case let .number(value): return value
         default: return nil
         }
     }
     
     @inlinable
     public var decimalValue: Decimal? {
-        switch type {
-        case .signed: return base.int64Value.map { Decimal($0) }
-        case .unsigned: return base.uint64Value.map { Decimal($0) }
-        case .number: return base.doubleValue.flatMap { Int64(exactly: $0) }.map { Decimal($0) }
+        switch self.base {
+        case let .signed(value): return Decimal(value)
+        case let .unsigned(value): return Decimal(value)
+        case let .number(value): return Int64(exactly: value).map { Decimal($0) }
         default: return nil
         }
     }
     
     @inlinable
     public var string: String? {
-        return base.string
+        switch self.base {
+        case let .string(value): return value
+        default: return nil
+        }
     }
     
     @inlinable
     public var binary: Data? {
-        return base.binary
+        switch self.base {
+        case let .binary(value): return value
+        default: return nil
+        }
     }
     
     @inlinable
     public var uuid: UUID? {
-        return base.uuid
+        switch self.base {
+        case let .uuid(value): return value
+        default: return nil
+        }
     }
     
     @inlinable
     public var array: [DataPack]? {
-        return base.array
+        switch self.base {
+        case let .array(value): return value
+        case let .undecoded_array(value): return Array(value)
+        default: return nil
+        }
     }
     
     @inlinable
     public var dictionary: [String: DataPack]? {
-        return base.dictionary
+        switch self.base {
+        case let .dictionary(value): return value
+        default: return nil
+        }
     }
 }
 
@@ -692,126 +753,46 @@ extension DataPack {
     
     @frozen
     @usableFromInline
-    struct UndecodedObject {
+    struct UndecodedArray: RandomAccessCollection {
         
         @usableFromInline
-        let type: DataPackType
+        typealias Indices = Range<Int>
+        
+        @usableFromInline
+        typealias Index = Int
         
         @usableFromInline
         let data: Data
         
+        @usableFromInline
+        let xref: Data
+        
+        @usableFromInline
+        let stack: Set<Int>
+        
         @inlinable
-        init(data: Data) {
-            if let type = data.first {
-                switch type {
-                case 0x3F: self.type = .null
-                case 0x66, 0x74: self.type = .boolean
-                case 0x69: self.type = .signed
-                case 0x75: self.type = .unsigned
-                case 0x6E: self.type = .number
-                case 0x73: self.type = .string
-                case 0x62: self.type = .binary
-                case 0x67: self.type = .uuid
-                case 0x61: self.type = .array
-                case 0x64: self.type = .dictionary
-                default: self.type = .unknown(type)
-                }
-            } else {
-                self.type = .null
-            }
-            self.data = type == .boolean ? data : data.dropFirst()
+        init(data: Data, xref: Data, stack: Set<Int>) {
+            self.data = data
+            self.xref = xref
+            self.stack = stack
         }
     }
 }
 
-extension DataPack.UndecodedObject {
+extension DataPack.UndecodedArray {
     
     @inlinable
-    var boolValue: Bool? {
-        guard let value = data.first else { return nil }
-        switch value {
-        case 0x66: return false
-        case 0x74: return true
-        default: return nil
-        }
+    var startIndex: Int {
+        return 0
     }
     
     @inlinable
-    var int64Value: Int64? {
-        guard type == .signed else { return nil }
-        switch data.count {
-        case 1: return Int64(data.load(as: Int8.self))
-        case 2: return Int64(Int16(bigEndian: data.load(as: Int16.self)))
-        case 4: return Int64(Int32(bigEndian: data.load(as: Int32.self)))
-        case 8: return Int64(bigEndian: data.load(as: Int64.self))
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var uint64Value: UInt64? {
-        guard type == .unsigned else { return nil }
-        switch data.count {
-        case 1: return UInt64(data.load(as: UInt8.self))
-        case 2: return UInt64(UInt16(bigEndian: data.load(as: UInt16.self)))
-        case 4: return UInt64(UInt32(bigEndian: data.load(as: UInt32.self)))
-        case 8: return UInt64(bigEndian: data.load(as: UInt64.self))
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var doubleValue: Double? {
-        guard data.count == 8 && type == .number else { return nil }
-        return Double(bitPattern: UInt64(bigEndian: data.load(as: UInt64.self)))
-    }
-    
-    @inlinable
-    var string: String? {
-        guard type == .string else { return nil }
-        return String(bytes: data, encoding: .utf8)
-    }
-    
-    @inlinable
-    var binary: Data? {
-        switch type {
-        case .binary: return data
-        case .unknown: return data
-        default: return nil
-        }
-    }
-    
-    @inlinable
-    var uuid: UUID? {
-        guard data.count == 16 && type == .uuid else { return nil }
-        return UUID(uuid: data.load(as: uuid_t.self))
-    }
-    
-    @inlinable
-    var array: [DataPack]? {
-        guard type == .array else { return nil }
-        return (0..<count).map { self[$0] }
-    }
-    
-    @inlinable
-    var dictionary: [String: DataPack]? {
-        guard type == .dictionary else { return nil }
-        return Dictionary((0..<count).lazy.compactMap { self[keyValuePairs: $0] }) { lhs, _ in lhs }
-    }
-}
-
-extension DataPack.UndecodedObject {
-    
-    @inlinable
-    var count: Int {
-        guard data.count >= 8 && (type == .array || type == .dictionary) else { return 0 }
+    var endIndex: Int {
         return Int(UInt64(bigEndian: data.prefix(8).load(as: UInt64.self)))
     }
     
     @inlinable
     subscript(index: Int) -> DataPack {
-        
-        guard type == .array else { return nil }
         
         let count = self.count
         let table_size = (count + 1) << 3
@@ -821,18 +802,59 @@ extension DataPack.UndecodedObject {
         
         let offsets = data.prefix(table_size).typed(as: UInt64.self)
         
-        let from = Int(UInt64(bigEndian: offsets[index]))
-        let to = Int(UInt64(bigEndian: offsets[index + 1]))
+        let startIndex = Int(UInt64(bigEndian: offsets[index]))
+        let endIndex = Int(UInt64(bigEndian: offsets[index + 1]))
         
-        guard to > from && data.count >= table_size + to else { return nil }
+        guard endIndex > startIndex && data.count >= table_size + endIndex else { return nil }
         
-        return DataPack(decode: data.dropFirst(table_size).dropFirst(from).prefix(to - from))
+        return DataPack(decode: data.dropFirst(table_size).dropFirst(startIndex).prefix(endIndex - startIndex), xref: xref, stack: stack)
+    }
+}
+
+extension DataPack {
+    
+    @frozen
+    @usableFromInline
+    struct UndecodedKeyValuePairs: RandomAccessCollection {
+        
+        @usableFromInline
+        typealias Indices = Range<Int>
+        
+        @usableFromInline
+        typealias Index = Int
+        
+        @usableFromInline
+        let data: Data
+        
+        @usableFromInline
+        let xref: Data
+        
+        @usableFromInline
+        let stack: Set<Int>
+        
+        @inlinable
+        init(data: Data, xref: Data, stack: Set<Int>) {
+            self.data = data
+            self.xref = xref
+            self.stack = stack
+        }
+    }
+}
+
+extension DataPack.UndecodedKeyValuePairs {
+    
+    @inlinable
+    var startIndex: Int {
+        return 0
     }
     
     @inlinable
-    subscript(keyValuePairs index: Int) -> (String, DataPack)? {
-        
-        guard type == .dictionary else { return nil }
+    var endIndex: Int {
+        return Int(UInt64(bigEndian: data.prefix(8).load(as: UInt64.self)))
+    }
+    
+    @inlinable
+    subscript(index: Int) -> (String, DataPack)? {
         
         let count = self.count
         let table_size = (count + 1) << 4
@@ -841,40 +863,20 @@ extension DataPack.UndecodedObject {
         guard data.count > table_size else { return nil }
         
         let offsets = data.prefix(table_size).typed(as: (UInt64, UInt64).self)
-        let from = Int(UInt64(bigEndian: offsets[index].1))
         
-        let offset_0 = Int(UInt64(bigEndian: offsets[index + 1].0))
-        let offset_1 = Int(UInt64(bigEndian: offsets[index + 1].1))
+        let startIndex = Int(UInt64(bigEndian: offsets[index].1))
+        let splitIndex = Int(UInt64(bigEndian: offsets[index + 1].0))
+        let endIndex = Int(UInt64(bigEndian: offsets[index + 1].1))
         
-        guard offset_0 > from && offset_1 > offset_0 && data.count >= table_size + offset_1 else { return nil }
+        guard splitIndex > startIndex && endIndex > splitIndex && data.count >= table_size + endIndex else { return nil }
         
-        let _key = data.dropFirst(table_size).dropFirst(from).prefix(offset_0 - from)
-        let _value = data.dropFirst(table_size).dropFirst(offset_0).prefix(offset_1 - offset_0)
+        let _key = data.dropFirst(table_size).dropFirst(startIndex).prefix(splitIndex - startIndex)
+        let _value = data.dropFirst(table_size).dropFirst(splitIndex).prefix(endIndex - splitIndex)
         
         guard let key = String(bytes: _key, encoding: .utf8) else { return nil }
         
-        let value = DataPack(decode: _value)
+        let value = DataPack(decode: _value, xref: xref, stack: stack)
         return value.isNil ? nil : (key, value)
-    }
-}
-
-extension DataPack.UndecodedObject {
-    
-    @inlinable
-    func encode(to data: inout MappedBuffer<UInt8>) {
-        switch type {
-        case .null: data.append(0x3F)
-        case .boolean: break
-        case .string: data.append(0x73)
-        case .signed: data.append(0x69)
-        case .unsigned: data.append(0x75)
-        case .number: data.append(0x6E)
-        case .binary: data.append(0x62)
-        case .uuid: data.append(0x67)
-        case .array: data.append(0x61)
-        default: return
-        }
-        data.append(contentsOf: self.data)
     }
 }
 
@@ -882,9 +884,9 @@ extension DataPack {
     
     @inlinable
     public var count: Int {
-        switch base {
-        case let .undecoded(value): return value.count
+        switch self.base {
         case let .array(value): return value.count
+        case let .undecoded_array(value): return value.count
         case let .dictionary(value): return value.count
         default: fatalError("Not an array or object.")
         }
@@ -894,23 +896,14 @@ extension DataPack {
     public subscript(index: Int) -> DataPack {
         get {
             guard 0..<count ~= index else { return nil }
-            switch base {
-            case let .undecoded(value): return value[index]
+            switch self.base {
             case let .array(value): return value[index]
+            case let .undecoded_array(value): return value[index]
             default: return nil
             }
         }
         set {
-            switch base {
-            case let .undecoded(value):
-                
-                guard var array = value.array else { fatalError("Not an array.") }
-                if index >= array.count {
-                    array.append(contentsOf: repeatElement(nil, count: index - array.count + 1))
-                }
-                array[index] = newValue
-                self = DataPack(array)
-                
+            switch self.base {
             case var .array(value):
                 
                 if index >= value.count {
@@ -918,6 +911,15 @@ extension DataPack {
                 }
                 value[index] = newValue
                 self = DataPack(value)
+                
+            case let .undecoded_array(value):
+                
+                var array = Array(value)
+                if index >= array.count {
+                    array.append(contentsOf: repeatElement(nil, count: index - array.count + 1))
+                }
+                array[index] = newValue
+                self = DataPack(array)
                 
             default: fatalError("Not an array.")
             }
@@ -969,64 +971,64 @@ extension DataPack: Encodable {
     @inlinable
     public func encode(to encoder: Encoder) throws {
         
-        switch self.type {
+        switch self.base {
         case .null:
             
             var container = encoder.singleValueContainer()
             try container.encodeNil()
             
-        case .boolean:
+        case let .boolean(value):
             
             var container = encoder.singleValueContainer()
-            try container.encode(self.boolValue!)
+            try container.encode(value)
             
-        case .string:
-            
-            var container = encoder.singleValueContainer()
-            try container.encode(self.string!)
-            
-        case .signed:
+        case let .string(value):
             
             var container = encoder.singleValueContainer()
-            try container.encode(self.int64Value!)
+            try container.encode(value)
             
-        case .unsigned:
-            
-            var container = encoder.singleValueContainer()
-            try container.encode(self.uint64Value!)
-            
-        case .number:
+        case let .signed(value):
             
             var container = encoder.singleValueContainer()
-            try container.encode(self.doubleValue!)
+            try container.encode(value)
             
-        case .binary:
-            
-            var container = encoder.singleValueContainer()
-            try container.encode(self.binary!)
-            
-        case .uuid:
+        case let .unsigned(value):
             
             var container = encoder.singleValueContainer()
-            try container.encode(self.uuid!)
+            try container.encode(value)
             
-        case .array:
+        case let .number(value):
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(value)
+            
+        case let .binary(value):
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(value)
+            
+        case let .uuid(value):
+            
+            var container = encoder.singleValueContainer()
+            try container.encode(value)
+            
+        case let .array(value):
             
             var container = encoder.unkeyedContainer()
-            try container.encode(contentsOf: self.array!)
+            try container.encode(contentsOf: value)
             
-        case .dictionary:
+        case let .undecoded_array(value):
+            
+            var container = encoder.unkeyedContainer()
+            try container.encode(contentsOf: value)
+            
+        case let .dictionary(value):
             
             var container = encoder.container(keyedBy: CodingKey.self)
             
-            for (key, value) in self.dictionary! {
+            for (key, value) in value {
                 try container.encode(value, forKey: CodingKey(stringValue: key))
             }
-            
-        default:
-            
-            var container = encoder.singleValueContainer()
-            try container.encodeNil()
         }
     }
 }
