@@ -367,17 +367,17 @@ extension DataPack {
             data.encode(BEUInt64(startIndex))
             data.encode(BEUInt64(endIndex))
             
-            return
-        }
-        
-        let startIndex = data.count + base_offset
-        
-        self.base.encode(to: &data, base_offset: base_offset, xref: &xref)
-        
-        let endIndex = data.count + base_offset
-        
-        if endIndex - startIndex > 17 {
-            xref[self] = (startIndex, endIndex)
+        } else {
+            
+            let startIndex = data.count + base_offset
+            
+            self.base.encode(to: &data, base_offset: base_offset, xref: &xref)
+            
+            let endIndex = data.count + base_offset
+            
+            if endIndex - startIndex > 17 {
+                xref[self] = (startIndex, endIndex)
+            }
         }
     }
 }
@@ -386,6 +386,8 @@ extension DataPack.Base {
     
     @inlinable
     func encode(to data: inout MappedBuffer<UInt8>, base_offset: Int, xref: inout [DataPack: (Int, Int)]) {
+        
+        let startIndex = data.count + base_offset
         
         switch self {
         
