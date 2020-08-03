@@ -387,7 +387,7 @@ extension DataPack {
             data.append(0x73)
             data.append(utf8: value)
             
-            if value.count > 16 {
+            if value.utf8.count > 16 {
                 xref[self] = (startIndex, data.count + base_offset)
             }
             
@@ -435,8 +435,6 @@ extension DataPack {
             
             data.append(0x67)
             withUnsafeBytes(of: value.uuid) { data.append(contentsOf: $0) }
-            
-            xref[self] = (startIndex, data.count + base_offset)
             
         case let .array(value):
             
