@@ -372,7 +372,22 @@ extension DataPack {
         
         let startIndex = data.count + base_offset
         
-        switch self.base {
+        self.base.encode(to: &data, base_offset: base_offset, xref: &xref)
+        
+        let endIndex = data.count + base_offset
+        
+        if endIndex - startIndex > 17 {
+            xref[self] = (startIndex, endIndex)
+        }
+    }
+}
+
+extension DataPack.Base {
+    
+    @inlinable
+    func encode(to data: inout MappedBuffer<UInt8>, base_offset: Int, xref: inout [DataPack: (Int, Int)]) {
+        
+        switch self {
         
         case let .boolean(value):
             
@@ -386,10 +401,6 @@ extension DataPack {
             
             data.append(0x73)
             data.append(utf8: value)
-            
-            if value.utf8.count > 16 {
-                xref[self] = (startIndex, data.count + base_offset)
-            }
             
         case let .signed(value):
             
@@ -427,10 +438,6 @@ extension DataPack {
             data.append(0x62)
             data.append(contentsOf: value)
             
-            if value.count > 16 {
-                xref[self] = (startIndex, data.count + base_offset)
-            }
-            
         case let .uuid(value):
             
             data.append(0x67)
@@ -448,8 +455,6 @@ extension DataPack {
             }
             data.append(contentsOf: body)
             
-            xref[self] = (startIndex, data.count + base_offset)
-            
         case let .undecoded_array(value):
             
             data.append(0x61)
@@ -461,8 +466,6 @@ extension DataPack {
                 data.encode(BEUInt64(body.count))
             }
             data.append(contentsOf: body)
-            
-            xref[self] = (startIndex, data.count + base_offset)
             
         case let .dictionary(value):
             
@@ -478,8 +481,6 @@ extension DataPack {
                 data.encode(BEUInt64(body.count))
             }
             data.append(contentsOf: body)
-            
-            xref[self] = (startIndex, data.count + base_offset)
             
         default: data.append(0x3F)
         }
