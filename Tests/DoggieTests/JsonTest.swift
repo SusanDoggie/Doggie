@@ -85,7 +85,7 @@ class JsonTest: XCTestCase {
             XCTAssertTrue(json["spouse"].isNil)
             
         } catch let error {
-            XCTFail("XML parser error: \(error)")
+            XCTFail("Json parser error: \(error)")
         }
     }
     
