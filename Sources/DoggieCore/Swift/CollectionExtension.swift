@@ -145,10 +145,10 @@ extension MutableCollection {
     
     @inlinable
     public mutating func mutateEach(body: (inout Element) throws -> Void) rethrows {
-        var i = self.startIndex
-        while i != self.endIndex {
+        var idx = self.startIndex
+        while idx != self.endIndex {
             try body(&self[idx])
-            i = self.index(after: i)
+            idx = self.index(after: idx)
         }
     }
 }
