@@ -72,8 +72,10 @@ func _fast_decode_alpha_first<T: FixedWidthInteger, P: _FloatComponentPixel>(_ b
 
 @inlinable
 @inline(__always)
-func _fast_decode_alpha_first<P: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _ decode: (P.Scalar) -> P.Scalar) -> Image<P>? {
+func _fast_decode_alpha_first<P: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _: P.Scalar.Type) -> Image<P>? where P.Scalar: RawBitPattern {
     
-    return _fast_decode_alpha_first(bitmaps, .float, endianness, info, false, P.Scalar.self, decode)
+    switch endianness {
+    case .big: return _fast_decode_alpha_first(bitmaps, .float, endianness, info, false, P.Scalar.self) { P.Scalar(bitPattern: P.Scalar.BitPattern(bigEndian: $0.bitPattern)) }
+    case .little: return _fast_decode_alpha_first(bitmaps, .float, endianness, info, false, P.Scalar.self) { P.Scalar(bitPattern: P.Scalar.BitPattern(littleEndian: $0.bitPattern)) }
+    }
 }
-        

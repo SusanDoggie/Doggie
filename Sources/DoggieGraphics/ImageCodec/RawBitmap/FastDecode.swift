@@ -869,12 +869,12 @@ extension ColorSpace {
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .big, info, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .big, info, Float.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .little, info, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .little, info, Float.self) {
                 
                 return image
             }
@@ -891,12 +891,12 @@ extension ColorSpace {
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .big, info, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .big, info, Double.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .little, info, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .little, info, Double.self) {
                 
                 return image
             }
@@ -957,22 +957,22 @@ extension ColorSpace {
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .big, info, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .big, info, Float.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .little, info, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .little, info, Float.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .big, info, { Float(bitPattern: UInt32(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .big, info, Float.self) {
                 
                 return image
             }
             
-            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .little, info, { Float(bitPattern: UInt32(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float32ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .little, info, Float.self) {
                 
                 return image
             }
@@ -999,22 +999,22 @@ extension ColorSpace {
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .big, info, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .big, info, Double.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .little, info, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .little, info, Double.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .big, info, { Double(bitPattern: UInt64(bigEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .big, info, Double.self) {
                 
                 return image
             }
             
-            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .little, info, { Double(bitPattern: UInt64(littleEndian: $0.bitPattern)) }) {
+            if let image: Image<Float64ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .little, info, Double.self) {
                 
                 return image
             }
