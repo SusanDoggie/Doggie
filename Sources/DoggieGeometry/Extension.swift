@@ -43,6 +43,19 @@ extension Int: Multiplicative {
     
 }
 
+#if swift(>=5.3)
+
+@available(macOS, unavailable)
+@available(macCatalyst, unavailable)
+@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+extension Float16: ScalarProtocol {
+    
+    public typealias Scalar = Float16
+    
+}
+
+#endif
+
 extension Float: ScalarProtocol {
     
     public typealias Scalar = Float

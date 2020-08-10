@@ -298,7 +298,6 @@ extension ImageRep {
         
         switch storageType {
         case .bmp: Encoder = BMPEncoder.self
-        case .gif: Encoder = GIFEncoder.self
         case .jpeg: Encoder = JPEGEncoder.self
         case .png: Encoder = PNGEncoder.self
         case .tiff: Encoder = TIFFEncoder.self

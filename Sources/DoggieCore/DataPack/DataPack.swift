@@ -433,7 +433,11 @@ extension DataPack.Base {
         case let .number(value):
             
             data.append(0x6E)
-            data.encode(BEUInt64(value.bitPattern))
+            if let value = Float(exactly: value) {
+                data.encode(BEUInt32(value.bitPattern))
+            } else {
+                data.encode(BEUInt64(value.bitPattern))
+            }
             
         case let .binary(value):
             
