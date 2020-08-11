@@ -35,6 +35,50 @@ extension Image {
     }
 }
 
+#if swift(>=5.3)
+
+@usableFromInline
+@available(macOS, unavailable)
+@available(macCatalyst, unavailable)
+@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+protocol _Float16SlowDecodeImageProtocol {
+    
+    func _slow_create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], is_opaque: Bool, premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol?
+}
+
+@available(macOS, unavailable)
+@available(macCatalyst, unavailable)
+@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+extension ColorSpace: _Float16SlowDecodeImageProtocol where Model: _Float16ColorModelProtocol {
+    
+    @inlinable
+    @inline(__always)
+    func _slow_create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], is_opaque: Bool, premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol? {
+        
+        if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 10 || ($0.bitRange.count == 16 && $0.format == .float) } }) {
+            
+            var image = Image<Float16ColorPixel<Model>>(width: width, height: height, resolution: resolution, colorSpace: self, fileBacked: fileBacked)
+            
+            for bitmap in bitmaps {
+                for (channel_idx, channel) in bitmap.channels.enumerated() {
+                    switch (bitmap.bitsPerPixel % 8, bitmap.endianness, channel.bitRange.lowerBound % 8, channel.bitRange.count, channel.format) {
+                    case (0, .big, 0, 8, .unsigned): image._decode_aligned_channel(bitmap, channel_idx, is_opaque, UInt8.self, Float16.self)
+                    case (0, .big, 0, 8, .signed): image._decode_aligned_channel(bitmap, channel_idx, is_opaque, Int8.self, Float16.self)
+                    case (0, .big, 0, 16, .float): image._decode_aligned_channel(bitmap, channel_idx, is_opaque, Float16.self, Float16.self)
+                    default: image._decode_float_channel(bitmap, channel_idx, is_opaque, Float16.self)
+                    }
+                }
+            }
+            
+            return premultiplied ? image.unpremultiplied() : image
+        }
+        
+        return nil
+    }
+}
+
+#endif
+
 extension ColorSpace {
     
     @inlinable
@@ -104,6 +148,17 @@ extension ColorSpace {
             
         default: break
         }
+        
+        #if swift(>=5.3) && !os(macOS) && !(os(iOS) && targetEnvironment(macCatalyst))
+        
+        if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *),
+           let colorSpace = self as? _Float16SlowDecodeImageProtocol,
+           let image = colorSpace._slow_create_image(width: width, height: height, resolution: resolution, bitmaps: bitmaps, is_opaque: is_opaque, premultiplied: premultiplied, fileBacked: fileBacked) {
+            
+            return image
+        }
+        
+        #endif
         
         if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 23 || ($0.bitRange.count == 32 && $0.format == .float) } }) {
             

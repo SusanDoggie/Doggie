@@ -64,6 +64,92 @@ struct _fast_decode_info<Model: ColorModel> {
     }
 }
 
+#if swift(>=5.3)
+
+@usableFromInline
+@available(macOS, unavailable)
+@available(macCatalyst, unavailable)
+@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+protocol _Float16FastDecodeImageProtocol {
+    
+    func _fast_create_image<M>(_ bitsPerPixel: Int, _ numberOfComponents: Int, _ bitmaps: [RawBitmap], _ info: _fast_decode_info<M>) -> AnyImageBaseProtocol?
+}
+
+@available(macOS, unavailable)
+@available(macCatalyst, unavailable)
+@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+extension ColorSpace: _Float16FastDecodeImageProtocol where Model: _Float16ColorModelProtocol {
+    
+    @inlinable
+    @inline(__always)
+    func _fast_create_image<M>(_ bitsPerPixel: Int, _ numberOfComponents: Int, _ bitmaps: [RawBitmap], _ info: _fast_decode_info<M>) -> AnyImageBaseProtocol? {
+        
+        let info = info as! _fast_decode_info<Model>
+        
+        switch bitsPerPixel {
+        
+        case 8 * numberOfComponents:
+            
+            if let image: Image<Float16ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .big, info, UInt8.self) {
+                
+                return image
+            }
+            
+        case 16 * numberOfComponents:
+            
+            if let image: Image<Float16ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .big, info, Float16.self) {
+                
+                return image
+            }
+            
+            if let image: Image<Float16ColorPixel<Model>> = _fast_decode_alpha_none(bitmaps, .little, info, Float16.self) {
+                
+                return image
+            }
+            
+        case 8 * numberOfComponents + 8:
+            
+            if let image: Image<Float16ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .big, info, UInt8.self) {
+                
+                return image
+            }
+            
+            if let image: Image<Float16ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .big, info, UInt8.self) {
+                
+                return image
+            }
+            
+        case 16 * numberOfComponents + 16:
+            
+            if let image: Image<Float16ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .big, info, Float16.self) {
+                
+                return image
+            }
+            
+            if let image: Image<Float16ColorPixel<Model>> = _fast_decode_alpha_first(bitmaps, .little, info, Float16.self) {
+                
+                return image
+            }
+            
+            if let image: Image<Float16ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .big, info, Float16.self) {
+                
+                return image
+            }
+            
+            if let image: Image<Float16ColorPixel<Model>> = _fast_decode_alpha_last(bitmaps, .little, info, Float16.self) {
+                
+                return image
+            }
+            
+        default: break
+        }
+        
+        return nil
+    }
+}
+
+#endif
+
 extension ColorSpace {
     
     @inlinable
@@ -835,6 +921,17 @@ extension ColorSpace {
             premultiplied: premultiplied,
             fileBacked: fileBacked
         )
+        
+        #if swift(>=5.3) && !os(macOS) && !(os(iOS) && targetEnvironment(macCatalyst))
+        
+        if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *),
+           let colorSpace = self as? _Float16FastDecodeImageProtocol,
+           let image = colorSpace._fast_create_image(bitsPerPixel, numberOfComponents, bitmaps, info) {
+            
+            return image
+        }
+        
+        #endif
         
         switch bitsPerPixel {
             
