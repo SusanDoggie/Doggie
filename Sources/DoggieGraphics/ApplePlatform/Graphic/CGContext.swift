@@ -95,7 +95,7 @@ extension CGContext {
         let height = self.height
         let transform = self.ctm
         
-        guard let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: space, bitmapInfo: 0) else { return }
+        guard let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: colorSpace, bitmapInfo: 0) else { return }
         
         maskContext.setFillColor(gray: 0, alpha: 1)
         maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
