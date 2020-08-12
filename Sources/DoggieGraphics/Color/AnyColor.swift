@@ -124,6 +124,16 @@ extension AnyColor {
 extension AnyColor {
     
     @inlinable
+    public init(colorSpace: DoggieGraphics.ColorSpace<LabColorModel> = .default, lightness: Double, a: Double, b: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: LabColorModel(lightness: lightness, a: a, b: b), opacity: opacity)
+    }
+    
+    @inlinable
+    public init(colorSpace: DoggieGraphics.ColorSpace<LuvColorModel> = .default, lightness: Double, u: Double, v: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: LuvColorModel(lightness: lightness, u: u, v: v), opacity: opacity)
+    }
+    
+    @inlinable
     public init(colorSpace: DoggieGraphics.ColorSpace<GrayColorModel> = .default, white: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
     }

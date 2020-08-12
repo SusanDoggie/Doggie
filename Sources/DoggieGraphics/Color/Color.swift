@@ -93,6 +93,56 @@ extension Color where Model == LabColorModel {
     public init(colorSpace: DoggieGraphics.ColorSpace<Model> = .default, lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: LabColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
     }
+    
+    @inlinable
+    public var lightness: Double {
+        get {
+            return color.lightness
+        }
+        set {
+            color.lightness = newValue
+        }
+    }
+    
+    @inlinable
+    public var a: Double {
+        get {
+            return color.a
+        }
+        set {
+            color.a = newValue
+        }
+    }
+    
+    @inlinable
+    public var b: Double {
+        get {
+            return color.b
+        }
+        set {
+            color.b = newValue
+        }
+    }
+    
+    @inlinable
+    public var chroma: Double {
+        get {
+            return color.chroma
+        }
+        set {
+            color.chroma = newValue
+        }
+    }
+    
+    @inlinable
+    public var hue: Double {
+        get {
+            return color.hue
+        }
+        set {
+            color.hue = newValue
+        }
+    }
 }
 
 extension Color where Model == LuvColorModel {
@@ -106,6 +156,56 @@ extension Color where Model == LuvColorModel {
     public init(colorSpace: DoggieGraphics.ColorSpace<Model> = .default, lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: LuvColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
     }
+    
+    @inlinable
+    public var lightness: Double {
+        get {
+            return color.lightness
+        }
+        set {
+            color.lightness = newValue
+        }
+    }
+    
+    @inlinable
+    public var u: Double {
+        get {
+            return color.u
+        }
+        set {
+            color.u = newValue
+        }
+    }
+    
+    @inlinable
+    public var v: Double {
+        get {
+            return color.v
+        }
+        set {
+            color.v = newValue
+        }
+    }
+    
+    @inlinable
+    public var chroma: Double {
+        get {
+            return color.chroma
+        }
+        set {
+            color.chroma = newValue
+        }
+    }
+    
+    @inlinable
+    public var hue: Double {
+        get {
+            return color.hue
+        }
+        set {
+            color.hue = newValue
+        }
+    }
 }
 
 extension Color where Model == GrayColorModel {
@@ -113,6 +213,16 @@ extension Color where Model == GrayColorModel {
     @inlinable
     public init(colorSpace: DoggieGraphics.ColorSpace<Model> = .default, white: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: GrayColorModel(white: white), opacity: opacity)
+    }
+    
+    @inlinable
+    public var white: Double {
+        get {
+            return color.white
+        }
+        set {
+            color.white = newValue
+        }
     }
 }
 
@@ -127,38 +237,6 @@ extension Color where Model == RGBColorModel {
     public init(colorSpace: DoggieGraphics.ColorSpace<Model> = .default, hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.init(colorSpace: colorSpace, color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
     }
-}
-
-extension Color where Model == CMYColorModel {
-    
-    @inlinable
-    public init(colorSpace: DoggieGraphics.ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
-        self.init(colorSpace: colorSpace, color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
-    }
-}
-
-extension Color where Model == CMYKColorModel {
-    
-    @inlinable
-    public init(colorSpace: DoggieGraphics.ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
-        self.init(colorSpace: colorSpace, color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
-    }
-}
-
-extension Color where Model == GrayColorModel {
-    
-    @inlinable
-    public var white: Double {
-        get {
-            return color.white
-        }
-        set {
-            color.white = newValue
-        }
-    }
-}
-
-extension Color where Model == RGBColorModel {
     
     @inlinable
     public var red: Double {
@@ -189,9 +267,6 @@ extension Color where Model == RGBColorModel {
             color.blue = newValue
         }
     }
-}
-
-extension Color where Model == RGBColorModel {
     
     @inlinable
     public var hue: Double {
@@ -227,6 +302,11 @@ extension Color where Model == RGBColorModel {
 extension Color where Model == CMYColorModel {
     
     @inlinable
+    public init(colorSpace: DoggieGraphics.ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
+    }
+    
+    @inlinable
     public var cyan: Double {
         get {
             return color.cyan
@@ -258,6 +338,11 @@ extension Color where Model == CMYColorModel {
 }
 
 extension Color where Model == CMYKColorModel {
+    
+    @inlinable
+    public init(colorSpace: DoggieGraphics.ColorSpace<Model>, cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
+        self.init(colorSpace: colorSpace, color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
+    }
     
     @inlinable
     public var cyan: Double {
