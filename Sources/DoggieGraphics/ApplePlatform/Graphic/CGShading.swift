@@ -55,16 +55,34 @@ public func CGFunctionCreate(
     return CGFunction(info: info, domainDimension: domainDimension, domain: domain, rangeDimension: rangeDimension, range: range, callbacks: [callback])
 }
 
-public func CGShadingCreate(axialSpace space: CGColorSpace, start: CGPoint, end: CGPoint, extendStart: Bool, extendEnd: Bool, callbacks: @escaping (UnsafePointer<CGFloat>, UnsafeMutablePointer<CGFloat>) -> Void) -> CGShading? {
+public func CGShadingCreate(axialSpace space: CGColorSpace, start: CGPoint, end: CGPoint, extendStart: Bool, extendEnd: Bool, callbacks: @escaping (CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void) -> CGShading? {
     
-    guard let function = CGFunctionCreate(version: 0, domainDimension: 1, domain: [0, 1], rangeDimension: space.numberOfComponents + 1, range: nil, callbacks: callbacks) else { return nil }
+    let rangeDimension = space.numberOfComponents + 1
+    
+    guard let function = CGFunctionCreate(
+        version: 0,
+        domainDimension: 1,
+        domain: [0, 1],
+        rangeDimension: rangeDimension,
+        range: nil,
+        callbacks: { callbacks($0.pointee, UnsafeMutableBufferPointer(start: $1, count: rangeDimension)) }
+        ) else { return nil }
     
     return CGShading(axialSpace: space, start: start, end: end, function: function, extendStart: extendStart, extendEnd: extendEnd)
 }
 
-public func CGShadingCreate(radialSpace space: CGColorSpace, start: CGPoint, startRadius: CGFloat, end: CGPoint, endRadius: CGFloat, extendStart: Bool, extendEnd: Bool, callbacks: @escaping (UnsafePointer<CGFloat>, UnsafeMutablePointer<CGFloat>) -> Void) -> CGShading? {
+public func CGShadingCreate(radialSpace space: CGColorSpace, start: CGPoint, startRadius: CGFloat, end: CGPoint, endRadius: CGFloat, extendStart: Bool, extendEnd: Bool, callbacks: @escaping (CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void) -> CGShading? {
     
-    guard let function = CGFunctionCreate(version: 0, domainDimension: 1, domain: [0, 1], rangeDimension: space.numberOfComponents + 1, range: nil, callbacks: callbacks) else { return nil }
+    let rangeDimension = space.numberOfComponents + 1
+    
+    guard let function = CGFunctionCreate(
+        version: 0,
+        domainDimension: 1,
+        domain: [0, 1],
+        rangeDimension: rangeDimension,
+        range: nil,
+        callbacks: { callbacks($0.pointee, UnsafeMutableBufferPointer(start: $1, count: rangeDimension)) }
+        ) else { return nil }
     
     return CGShading(radialSpace: space, start: start, startRadius: startRadius, end: end, endRadius: endRadius, function: function, extendStart: extendStart, extendEnd: extendEnd)
 }
