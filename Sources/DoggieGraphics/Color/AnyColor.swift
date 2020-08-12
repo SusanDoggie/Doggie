@@ -88,8 +88,23 @@ public struct AnyColor: ColorProtocol, Hashable {
     }
     
     @inlinable
-    public var base: Any {
-        return _base
+    public init<S: Sequence>(colorSpace: AnyColorSpace, components: S, opacity: Double = 1) where S.Element == Double {
+        self._base = colorSpace._base._create_color(components: components, opacity: opacity)
+    }
+    
+    @inlinable
+    public init<P: ColorPixel>(colorSpace: DoggieGraphics.ColorSpace<P.Model>, color: P) {
+        self._base = Color(colorSpace: colorSpace, color: color)
+    }
+    
+    @inlinable
+    public init<Model>(colorSpace: DoggieGraphics.ColorSpace<Model>, color: Model, opacity: Double = 1) {
+        self._base = Color(colorSpace: colorSpace, color: color, opacity: opacity)
+    }
+    
+    @inlinable
+    public init<Model>(_ color: Color<Model>) {
+        self._base = color
     }
 }
 
@@ -103,34 +118,6 @@ extension AnyColor {
     @inlinable
     public static func ==(lhs: AnyColor, rhs: AnyColor) -> Bool {
         return lhs._base.isEqual(rhs._base)
-    }
-}
-
-extension AnyColor {
-    
-    @inlinable
-    public init<S: Sequence>(colorSpace: AnyColorSpace, components: S, opacity: Double = 1) where S.Element == Double {
-        self.init(base: colorSpace._base._create_color(components: components, opacity: opacity))
-    }
-    
-    @inlinable
-    public init<P: ColorPixel>(colorSpace: DoggieGraphics.ColorSpace<P.Model>, color: P) {
-        self.init(Color(colorSpace: colorSpace, color: color))
-    }
-    
-    @inlinable
-    public init<Model>(colorSpace: DoggieGraphics.ColorSpace<Model>, color: Model, opacity: Double = 1) {
-        self.init(Color(colorSpace: colorSpace, color: color, opacity: opacity))
-    }
-    
-    @inlinable
-    public init<Model>(_ color: Color<Model>) {
-        self._base = color
-    }
-    
-    @inlinable
-    public init(_ color: AnyColor) {
-        self = color
     }
 }
 
@@ -163,6 +150,11 @@ extension AnyColor {
 }
 
 extension AnyColor {
+    
+    @inlinable
+    public var base: Any {
+        return _base
+    }
     
     @inlinable
     public var colorSpace: AnyColorSpace {

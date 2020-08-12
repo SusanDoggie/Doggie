@@ -119,8 +119,8 @@ public struct AnyColorSpace: ColorSpaceProtocol, Hashable {
     }
     
     @inlinable
-    public var base: Any {
-        return _base
+    public init<Model>(_ colorSpace: ColorSpace<Model>) {
+        self._base = colorSpace
     }
 }
 
@@ -145,17 +145,9 @@ extension AnyColorSpace {
 extension AnyColorSpace {
     
     @inlinable
-    public init<Model>(_ colorSpace: ColorSpace<Model>) {
-        self._base = colorSpace
+    public var base: Any {
+        return _base
     }
-    
-    @inlinable
-    public init(_ colorSpace: AnyColorSpace) {
-        self = colorSpace
-    }
-}
-
-extension AnyColorSpace {
     
     @inlinable
     public var model: _ColorModel.Type {
