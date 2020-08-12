@@ -111,7 +111,7 @@ extension ImageContext: PDFRendererContextProtocol {
 extension PDFContext: PDFRendererContextProtocol {
     
     fileprivate var _colorspace: AnyColorSpace {
-        return AnyColorSpace(self.colorSpace)
+        return self.colorSpace
     }
 }
 
