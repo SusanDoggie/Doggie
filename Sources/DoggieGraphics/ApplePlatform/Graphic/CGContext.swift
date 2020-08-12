@@ -90,7 +90,24 @@ extension CGContext {
     }
     
     open func clipToDrawing(colorSpace: CGColorSpace = CGColorSpaceCreateDeviceGray(), body: (CGContext) throws -> Void) rethrows {
-        try CGContextClipToDrawing(self, colorSpace: colorSpace, command: body)
+        
+        let width = self.width
+        let height = self.height
+        let transform = self.ctm
+        
+        guard let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: space, bitmapInfo: 0) else { return }
+        
+        maskContext.setFillColor(gray: 0, alpha: 1)
+        maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        maskContext.concatenate(transform)
+        
+        try body(maskContext)
+        
+        guard let alphaMask = maskContext.makeImage()?.copy(colorSpace: CGColorSpaceCreateDeviceGray()) else { return }
+        
+        self.concatenate(transform.inverted())
+        self.clip(to: CGRect(x: 0, y: 0, width: width, height: height), mask: alphaMask)
+        self.concatenate(transform)
     }
     
     open func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>, colorSpace: AnyColorSpace) {
@@ -137,27 +154,6 @@ extension CGContext {
         
         self.drawRadialGradient(gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
     }
-}
-
-public func CGContextClipToDrawing(_ context: CGContext, colorSpace space: CGColorSpace = CGColorSpaceCreateDeviceGray(), command: (CGContext) throws -> Void) rethrows {
-    
-    let width = context.width
-    let height = context.height
-    let transform = context.ctm
-    
-    guard let maskContext = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width, space: space, bitmapInfo: 0) else { return }
-    
-    maskContext.setFillColor(gray: 0, alpha: 1)
-    maskContext.fill(CGRect(x: 0, y: 0, width: width, height: height))
-    maskContext.concatenate(transform)
-    
-    try command(maskContext)
-    
-    guard let alphaMask = maskContext.makeImage()?.copy(colorSpace: CGColorSpaceCreateDeviceGray()) else { return }
-    
-    context.concatenate(transform.inverted())
-    context.clip(to: CGRect(x: 0, y: 0, width: width, height: height), mask: alphaMask)
-    context.concatenate(transform)
 }
 
 #endif
