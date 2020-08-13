@@ -87,5 +87,38 @@ public func CGShadingCreate(radialSpace space: CGColorSpace, start: CGPoint, sta
     return CGShading(radialSpace: space, start: start, startRadius: startRadius, end: end, endRadius: endRadius, function: function, extendStart: extendStart, extendEnd: extendEnd)
 }
 
+extension CGContext {
+    
+    open func drawLinearGradient<C>(colorSpace: CGColorSpace, start: Point, end: Point, options: CGGradientDrawingOptions, callbacks: @escaping (CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void) {
+        
+        guard let shading = CGShadingCreate(
+            axialSpace: colorSpace,
+            start: start,
+            end: end,
+            extendStart: options.contains(.drawsBeforeStartLocation),
+            extendEnd: options.contains(.drawsAfterEndLocation),
+            callbacks: callbacks
+            ) else { return }
+        
+        self.drawShading(shading)
+    }
+    
+    open func drawRadialGradient<C>(colorSpace: CGColorSpace, start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions, callbacks: @escaping (CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void) {
+        
+        guard let shading = CGShadingCreate(
+            radialSpace: colorSpace,
+            start: start,
+            startRadius: startRadius,
+            end: end,
+            endRadius: endRadius,
+            extendStart: options.contains(.drawsBeforeStartLocation),
+            extendEnd: options.contains(.drawsAfterEndLocation),
+            callbacks: callbacks
+            ) else { return }
+        
+        self.drawShading(shading)
+    }
+}
+
 #endif
 
