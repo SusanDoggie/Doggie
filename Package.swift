@@ -79,9 +79,14 @@ let package = Package(
         .target(
             name: "libjpeg",
             dependencies: [],
+            path: "./",
+            sources: [
+                "Sources/libjpeg",
+            ],
+            publicHeadersPath: "Sources/libjpeg/include",
             cSettings: [
-                .headerSearchPath("include/libjpeg"),
-                .unsafeFlags(["-I\(project_dir)/dependencies/libjpeg-turbo"]),
+                .headerSearchPath("dependencies/libjpeg-turbo"),
+                .headerSearchPath("Sources/libjpeg/include/libjpeg"),
             ]
         ),
         .target(name: "DoggieCore", dependencies: [
