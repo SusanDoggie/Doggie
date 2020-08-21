@@ -63,5 +63,79 @@ extension AnyColor {
     }
 }
 
+#if canImport(UIKit)
+
+extension CGColor {
+    
+    public class var clear: CGColor { return UIColor.clear.cgColor }
+    
+    public class var black: CGColor { return UIColor.black.cgColor }
+    
+    public class var blue: CGColor { return UIColor.blue.cgColor }
+    
+    public class var brown: CGColor { return UIColor.brown.cgColor }
+    
+    public class var cyan: CGColor { return UIColor.cyan.cgColor }
+    
+    public class var darkGray: CGColor { return UIColor.darkGray.cgColor }
+    
+    public class var gray: CGColor { return UIColor.gray.cgColor }
+    
+    public class var green: CGColor { return UIColor.green.cgColor }
+    
+    public class var lightGray: CGColor { return UIColor.lightGray.cgColor }
+    
+    public class var magenta: CGColor { return UIColor.magenta.cgColor }
+    
+    public class var orange: CGColor { return UIColor.orange.cgColor }
+    
+    public class var purple: CGColor { return UIColor.purple.cgColor }
+    
+    public class var red: CGColor { return UIColor.red.cgColor }
+    
+    public class var white: CGColor { return UIColor.white.cgColor }
+    
+    public class var yellow: CGColor { return UIColor.yellow.cgColor }
+    
+}
+
+#elseif canImport(AppKit)
+
+extension CGColor {
+    
+    public class var clear: CGColor { return NSColor.clear.cgColor }
+    
+    public class var black: CGColor { return NSColor.black.cgColor }
+    
+    public class var blue: CGColor { return NSColor.blue.cgColor }
+    
+    public class var brown: CGColor { return NSColor.brown.cgColor }
+    
+    public class var cyan: CGColor { return NSColor.cyan.cgColor }
+    
+    public class var darkGray: CGColor { return NSColor.darkGray.cgColor }
+    
+    public class var gray: CGColor { return NSColor.gray.cgColor }
+    class var 
+    public class var green: CGColor { return NSColor.green.cgColor }
+    
+    public class var lightGray: CGColor { return NSColor.lightGray.cgColor }
+    
+    public class var magenta: CGColor { return NSColor.magenta.cgColor }
+    
+    public class var orange: CGColor { return NSColor.orange.cgColor }
+    
+    public class var purple: CGColor { return NSColor.purple.cgColor }
+    
+    public class var red: CGColor { return NSColor.red.cgColor }
+    
+    public class var white: CGColor { return NSColor.white.cgColor }
+    
+    public class var yellow: CGColor { return NSColor.yellow.cgColor }
+    
+}
+
+#endif
+
 #endif
 

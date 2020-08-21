@@ -72,20 +72,49 @@ extension CGImage {
 
 extension CGImage {
     
-    public static func create(width: Int, height: Int, bitsPerComponent: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32, command: (CGContext) -> Void) -> CGImage? {
+    public static func create(
+        width: Int,
+        height: Int,
+        bitsPerComponent: Int,
+        bytesPerRow: Int,
+        space: CGColorSpace,
+        bitmapInfo: UInt32,
+        command: (CGContext) -> Void) -> CGImage? {
+        
         guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: space, bitmapInfo: bitmapInfo) else { return nil }
+        
         command(context)
+        
         return context.makeImage()
     }
     
-    public static func create(_ buffer: UnsafeRawPointer, width: Int, height: Int, bitsPerComponent: Int, bitsPerPixel: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32, shouldInterpolate: Bool = true, intent: CGColorRenderingIntent = .defaultIntent) -> CGImage? {
-        guard let providerRef = CGDataProvider(data: Data(bytes: buffer, count: bytesPerRow * height) as CFData) else { return nil }
-        return CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bitsPerPixel, bytesPerRow: bytesPerRow, space: space, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), provider: providerRef, decode: nil, shouldInterpolate: shouldInterpolate, intent: intent)
-    }
-    
-    public func copy(to buffer: UnsafeMutableRawPointer, bitsPerComponent: Int, bytesPerRow: Int, space: CGColorSpace, bitmapInfo: UInt32) {
-        guard let context = CGContext(data: buffer, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: space, bitmapInfo: bitmapInfo) else { return }
-        context.draw(self, in: CGRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(height)))
+    public static func create(
+        width: Int,
+        height: Int,
+        bitsPerComponent: Int,
+        bitsPerPixel: Int,
+        bytesPerRow: Int,
+        space: CGColorSpace,
+        bitmapInfo: CGBitmapInfo,
+        data: Data,
+        decode: UnsafePointer<CGFloat>? = nil,
+        shouldInterpolate: Bool = true,
+        intent: CGColorRenderingIntent = .defaultIntent) -> CGImage? {
+        
+        guard let providerRef = CGDataProvider(data: data as CFData) else { return nil }
+        
+        return CGImage(
+            width: width,
+            height: height,
+            bitsPerComponent: bitsPerComponent,
+            bitsPerPixel: bitsPerPixel,
+            bytesPerRow: bytesPerRow,
+            space: space,
+            bitmapInfo: bitmapInfo,
+            provider: providerRef,
+            decode: decode,
+            shouldInterpolate: shouldInterpolate,
+            intent: intent)
     }
 }
 
@@ -108,6 +137,24 @@ extension CGImage {
     }
 }
 
+#if swift(>=5.3)
+
+@available(macOS, unavailable)
+@available(macCatalyst, unavailable)
+@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+protocol _Float16CGImageDataProtocol {
+    
+}
+
+@available(macOS, unavailable)
+@available(macCatalyst, unavailable)
+@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+extension MappedBuffer: _Float16CGImageDataProtocol where Element: _Float16ColorModelProtocol {
+    
+}
+
+#endif
+
 private struct CGImageData {
     
     let width: Int
@@ -124,8 +171,24 @@ private struct CGImageData {
         self.width = width
         self.height = height
         
-        switch pixels {
+        #if swift(>=5.3) && !os(macOS) && !(os(iOS) && targetEnvironment(macCatalyst))
+        
+        if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *), pixels is _Float16CGImageDataProtocol {
             
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 16
+            
+            self.bitmapInfo = CGBitmapInfo.byteOrder16Host.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            self.pixels = pixels.data
+            
+            return
+        }
+        
+        #endif
+        
+        switch pixels {
+        
         case is MappedBuffer<Gray16ColorPixel>:
             
             self.bytesPerPixel = MemoryLayout<RawPixel>.stride
@@ -219,8 +282,7 @@ private struct CGImageData {
     }
     
     func cgImage(colorSpace: CGColorSpace) -> CGImage? {
-        guard let providerRef = CGDataProvider(data: self.pixels as CFData) else { return nil }
-        return CGImage(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bytesPerPixel << 3, bytesPerRow: bytesPerPixel * width, space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), provider: providerRef, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
+        return CGImage.create(width: width, height: height, bitsPerComponent: bitsPerComponent, bitsPerPixel: bytesPerPixel << 3, bytesPerRow: bytesPerPixel * width, space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), data: self.pixels, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
     }
 }
 
@@ -374,14 +436,64 @@ extension AnyImage {
 
 extension CGImage {
     
-    public func createCGImage(bitsPerComponent: Int,
-                              bitsPerPixel: Int,
-                              bytesPerRow: Int,
-                              space: CGColorSpace,
-                              bitmapInfo: CGBitmapInfo,
-                              decode: UnsafePointer<CGFloat>?,
-                              shouldInterpolate: Bool,
-                              intent: CGColorRenderingIntent) -> CGImage? {
+    public func colorAt(x: Int, y: Int) -> CGColor? {
+        
+        guard 0..<width ~= x && 0..<height ~= y else { return nil }
+        
+        guard let cropped = self.cropping(to: CGRect(x: x, y: y, width: 1, height: 1)) else { return nil }
+        guard let colorSpace = cropped.colorSpace else { return nil }
+        
+        let numberOfComponents = colorSpace.numberOfComponents + 1
+        let bitmapInfo = CGBitmapInfo.floatComponents.rawValue | CGBitmapInfo.byteOrder32Host.rawValue | CGImageAlphaInfo.last.rawValue
+        
+        var color: [Float] = Array(repeating: 0, count: numberOfComponents)
+        
+        cropped.copy(to: &color, bitsPerComponent: 32, bitsPerPixel: 32 * numberOfComponents, bytesPerRow: 4 * numberOfComponents, space: colorSpace, bitmapInfo: CGBitmapInfo(rawValue: bitmapInfo), decode: decode, intent: renderingIntent)
+        
+        return CGColor(colorSpace: colorSpace, components: color.map { CGFloat($0) })
+    }
+}
+
+extension CGImage {
+    
+    public func copy(
+        to buffer: UnsafeMutableRawPointer,
+        bitsPerComponent: Int,
+        bitsPerPixel: Int,
+        bytesPerRow: Int,
+        space: CGColorSpace,
+        bitmapInfo: CGBitmapInfo,
+        decode: UnsafePointer<CGFloat>? = nil,
+        intent: CGColorRenderingIntent = .defaultIntent) {
+        
+        var format = vImage_CGImageFormat(
+            bitsPerComponent: UInt32(bitsPerComponent),
+            bitsPerPixel: UInt32(bitsPerPixel),
+            colorSpace: .passUnretained(space),
+            bitmapInfo: bitmapInfo,
+            version: 0,
+            decode: decode,
+            renderingIntent: intent
+        )
+        
+        let flags = vImage_Flags(kvImagePrintDiagnosticsToConsole | kvImageNoAllocate)
+        
+        var buffer = vImage_Buffer(data: buffer, height: vImagePixelCount(height), width: vImagePixelCount(width), rowBytes: bytesPerRow)
+        
+        vImageBuffer_InitWithCGImage(&buffer, &format, nil, self, flags)
+    }
+}
+
+extension CGImage {
+    
+    public func createCGImage(
+        bitsPerComponent: Int,
+        bitsPerPixel: Int,
+        bytesPerRow: Int,
+        space: CGColorSpace,
+        bitmapInfo: CGBitmapInfo,
+        decode: UnsafePointer<CGFloat>? = nil,
+        intent: CGColorRenderingIntent = .defaultIntent) -> CGImage? {
         
         var format = vImage_CGImageFormat(
             bitsPerComponent: UInt32(bitsPerComponent),

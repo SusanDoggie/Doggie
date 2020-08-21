@@ -120,7 +120,6 @@ extension WEBPAnimatedEncoder {
                     space: colorSpace ?? CGColorSpaceCreateDeviceRGB(),
                     bitmapInfo: bitmapInfo,
                     decode: image.decode,
-                    shouldInterpolate: image.shouldInterpolate,
                     intent: image.renderingIntent
                     ) else { return nil }
                 
