@@ -116,7 +116,7 @@ extension CGColor {
     public class var darkGray: CGColor { return NSColor.darkGray.cgColor }
     
     public class var gray: CGColor { return NSColor.gray.cgColor }
-    class var 
+    
     public class var green: CGColor { return NSColor.green.cgColor }
     
     public class var lightGray: CGColor { return NSColor.lightGray.cgColor }
