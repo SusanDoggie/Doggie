@@ -1281,7 +1281,7 @@ extension SVGContext {
         let id = new_name(type)
         var _filter = SDXMLElement(name: "filter", attributes: ["id": id])
         
-        visibleBound = effect.visibleBound(visibleBound).union(visibleBound)
+        visibleBound = effect.visibleBound(visibleBound, objectBound).union(visibleBound)
         
         if objectBound.width != 0 && objectBound.height != 0 {
             
