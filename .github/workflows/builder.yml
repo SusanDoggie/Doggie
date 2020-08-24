@@ -105,22 +105,6 @@ jobs:
       uses: SusanDoggie/swift-action@master
       with:
         action: test
-  swift_5_1:
-    name: ${{ matrix.image }}
-    container:
-      image: docker://swift:${{ matrix.image }}
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image: [5.1-xenial, 5.1-bionic]
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: recursive
-    - name: Build
-      uses: SusanDoggie/swift-action@master
-      with:
-        action: build
   ubuntu_swift_nightly:
     name: ${{ matrix.image }}
     container:
