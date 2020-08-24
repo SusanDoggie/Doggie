@@ -30,14 +30,30 @@ public class SVGTurbulenceKernel: CIImageProcessorKernel {
     
     public struct Info {
         
-        var type: SVGTurbulenceType
-        var seed: Int
-        var transform: SDTransform
-        var baseFreq: Size
-        var stitchTile: Rect
-        var numOctaves: Int
-        var isStitchTile: Bool
+        public var type: SVGTurbulenceType
+        public var seed: Int
+        public var transform: SDTransform
+        public var baseFreq: Size
+        public var stitchTile: Rect
+        public var numOctaves: Int
+        public var isStitchTile: Bool
         
+        public init(type: SVGTurbulenceType,
+                    seed: Int,
+                    transform: SDTransform,
+                    baseFreq: Size,
+                    stitchTile: Rect,
+                    numOctaves: Int,
+                    isStitchTile: Bool) {
+            
+            self.type = type
+            self.seed = seed
+            self.transform = transform
+            self.baseFreq = baseFreq
+            self.stitchTile = stitchTile
+            self.numOctaves = numOctaves
+            self.isStitchTile = isStitchTile
+        }
     }
     
     public class func apply(withExtent extent: CGRect, info: SVGTurbulenceKernel.Info) throws -> CIImage {
