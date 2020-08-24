@@ -27,6 +27,8 @@ extension PNGDecoder {
     
     class Frame {
         
+        let lck = SDLock()
+        
         let prev_frame: Frame?
         
         let chunks: [PNGChunk]
@@ -250,6 +252,9 @@ extension PNGDecoder.Frame: ImageRepBase {
     }
     
     var _image: AnyImage {
+        
+        self.lck.lock()
+        defer { self.lck.unlock() }
         
         if let decoded = self.decoded { return decoded }
         

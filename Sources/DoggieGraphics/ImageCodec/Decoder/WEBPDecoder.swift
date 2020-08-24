@@ -86,6 +86,8 @@ extension WEBPDecoder {
     
     class Decoder {
         
+        let lck = SDLock()
+        
         let decoder: OpaquePointer
         let anim_info: WebPAnimInfo
         
@@ -118,6 +120,9 @@ extension WEBPDecoder {
         func read_frame(index: Int, colorSpace: ColorSpace<RGBColorModel>, fileBacked: Bool) -> Frame {
             
             guard index < anim_info.frame_count else { fatalError("Index out of range.") }
+            
+            self.lck.lock()
+            defer { self.lck.unlock() }
             
             while index >= frames.count {
                 
