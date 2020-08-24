@@ -27,7 +27,7 @@
 
 @_exported import zlib_c
 
-@_exported import brotli_c
+@_exported import brotli
 
 #if canImport(FoundationXML)
 

@@ -24,10 +24,7 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
 import PackageDescription
-
-let project_dir = "\(#file)".dropLast("/Package.swift".count)
 
 let package = Package(
     name: "Doggie",
@@ -37,61 +34,20 @@ let package = Package(
         .library(name: "DoggieGraphics", targets: ["DoggieGraphics"]),
         .library(name: "Doggie", targets: ["Doggie"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/SusanDoggie/brotli.git", .branch("master")),
+        .package(url: "https://github.com/SusanDoggie/libwebp.git", .branch("master")),
+        .package(url: "https://github.com/SusanDoggie/libjpeg.git", .branch("master")),
+    ],
     targets: [
         .target(
             name: "zlib_c",
             dependencies: [],
             linkerSettings: [.linkedLibrary("z")]
         ),
-        .target(
-            name: "brotli_c",
-            dependencies: [],
-            path: "./dependencies/brotli/c",
-            exclude: [
-                "common/dictionary.bin",
-                "common/dictionary.bin.br",
-            ],
-            sources: [
-                "common",
-                "dec",
-                "enc",
-                "include",
-            ]
-        ),
-        .target(
-            name: "libwebp",
-            dependencies: [],
-            path: "./dependencies/libwebp",
-            exclude: {
-                guard var files = try? FileManager.default.subpathsOfDirectory(atPath: "\(project_dir)/dependencies/libwebp/src") else { return [] }
-                files = files.filter { $0.contains(".") && !$0.hasSuffix(".h") && !$0.hasSuffix(".c") }
-                files = files.map { "src/\($0)" }
-                return files
-            }(),
-            sources: [
-                "src",
-            ],
-            publicHeadersPath: "src/webp",
-            cSettings: [
-                .headerSearchPath("./"),
-            ]
-        ),
-        .target(
-            name: "libjpeg",
-            dependencies: [],
-            path: "./",
-            sources: [
-                "Sources/libjpeg",
-            ],
-            publicHeadersPath: "Sources/libjpeg/include",
-            cSettings: [
-                .headerSearchPath("dependencies/libjpeg-turbo"),
-                .headerSearchPath("Sources/libjpeg/include/libjpeg"),
-            ]
-        ),
         .target(name: "DoggieCore", dependencies: [
             "zlib_c",
-            "brotli_c",
+            "brotli",
         ]),
         .target(name: "DoggieGeometry", dependencies: [
             "DoggieCore",
