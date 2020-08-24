@@ -106,8 +106,25 @@ extension SVGEffect {
 
 extension SVGEffect {
     
-    public func visibleBound(_ bound: Rect) -> Rect {
-        return self.apply(bound) { $1.region ?? $1.visibleBound($2) ?? bound } ?? bound
+    public func visibleBound(_ bound: Rect, _ objectBound: Rect) -> Rect {
+        
+        return self.apply(bound) { (_, primitive, list) -> Rect in
+            
+            guard let region = primitive.region else { return primitive.visibleBound(list) ?? list.values.reduce(bound) { $0.union($1) } }
+            
+            switch primitive.regionUnit {
+            case .userSpaceOnUse: return region
+            case .objectBoundingBox:
+                
+                let x = region.minX * objectBound.width + objectBound.minX
+                let y = region.minY * objectBound.height + objectBound.minY
+                let width = region.width * objectBound.width
+                let height = region.height * objectBound.height
+                
+                return Rect(x: x, y: y, width: width, height: height)
+            }
+            
+        } ?? bound
     }
 }
 
