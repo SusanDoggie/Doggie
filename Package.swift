@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.3
 //
 //  Package.swift
 //
@@ -45,26 +45,44 @@ let package = Package(
             dependencies: [],
             linkerSettings: [.linkedLibrary("z")]
         ),
-        .target(name: "DoggieCore", dependencies: [
-            "zlib_c",
-            "brotli",
-        ]),
-        .target(name: "DoggieGeometry", dependencies: [
-            "DoggieCore",
-        ]),
-        .target(name: "DoggieGraphics", dependencies: [
-            "DoggieCore",
-            "DoggieGeometry",
-            "libwebp",
-            "libjpeg",
-        ]),
-        .target(name: "Doggie", dependencies: [
-            "DoggieCore",
-            "DoggieGeometry",
-            "DoggieGraphics",
-        ]),
-        .testTarget(name: "DoggieTests", dependencies: [
-            "Doggie",
-        ]),
+        .target(
+            name: "DoggieCore",
+            dependencies: [
+                "zlib_c",
+                "brotli",
+            ]
+        ),
+        .target(
+            name: "DoggieGeometry",
+            dependencies: [
+                "DoggieCore",
+            ]
+        ),
+        .target(
+            name: "DoggieGraphics",
+            dependencies: [
+                "DoggieCore",
+                "DoggieGeometry",
+                "libwebp",
+                "libjpeg",
+            ]
+        ),
+        .target(
+            name: "Doggie",
+            dependencies: [
+                "DoggieCore",
+                "DoggieGeometry",
+                "DoggieGraphics",
+            ]
+        ),
+        .testTarget(
+            name: "DoggieTests",
+            dependencies: [
+                "Doggie",
+            ],
+            resources: [
+                .copy("images"),
+            ]
+        ),
     ]
 )

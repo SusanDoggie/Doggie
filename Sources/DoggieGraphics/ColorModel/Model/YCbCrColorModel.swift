@@ -114,8 +114,6 @@ extension YCbCrColorModel {
     }
 }
 
-#if swift(>=5.3)
-
 @available(macOS, unavailable)
 @available(macCatalyst, unavailable)
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
@@ -124,8 +122,6 @@ extension YCbCrColorModel: _Float16ColorModelProtocol {
     public typealias Float16Components = FloatComponents<Float16>
     
 }
-
-#endif
 
 extension YCbCrColorModel {
     

@@ -1,5 +1,5 @@
 //
-//  RawBitPattern.swift
+//  ShaderLoader.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,26 +23,33 @@
 //  THE SOFTWARE.
 //
 
-public protocol RawBitPattern {
+#if canImport(CoreImage)
+
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
+extension CIImageProcessorKernel {
     
-    associatedtype BitPattern: FixedWidthInteger
+    private static let lck = SDLock()
+    private static var pipeline: WeakDictionary<MTLDevice, [String: MTLComputePipelineState]> = WeakDictionary()
     
-    var bitPattern: BitPattern { get }
-    
-    init(bitPattern: BitPattern)
+    static func make_pipeline(_ device: MTLDevice, _ name: String) -> MTLComputePipelineState? {
+        
+        lck.lock()
+        defer { lck.unlock() }
+        
+        if let _pipeline = pipeline[device]?[name] {
+            
+            return _pipeline
+            
+        } else {
+            
+            guard let library = try? device.makeDefaultLibrary(bundle: Bundle.module) else { return nil }
+            guard let function = library.makeFunction(name: name) else { return nil }
+            guard let _pipeline = try? device.makeComputePipelineState(function: function) else { return nil }
+            
+            pipeline[device, default: [:]][name] = _pipeline
+            return _pipeline
+        }
+    }
 }
 
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension Float16: RawBitPattern {
-    
-}
-
-extension Float: RawBitPattern {
-    
-}
-
-extension Double: RawBitPattern {
-    
-}
+#endif

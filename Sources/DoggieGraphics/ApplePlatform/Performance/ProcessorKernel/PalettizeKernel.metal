@@ -1,5 +1,5 @@
 //
-//  RawBitPattern.swift
+//  PalettizeKernel.metal
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,26 +23,32 @@
 //  THE SOFTWARE.
 //
 
-public protocol RawBitPattern {
-    
-    associatedtype BitPattern: FixedWidthInteger
-    
-    var bitPattern: BitPattern { get }
-    
-    init(bitPattern: BitPattern)
-}
+#include <metal_stdlib>
+using namespace metal;
 
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension Float16: RawBitPattern {
+kernel void palettize(texture2d<float, access::read> image [[texture(0)]],
+                      texture2d<float, access::read> palette [[texture(1)]],
+                      texture2d<float, access::write> output [[texture(2)]],
+                      uint2 gid [[thread_position_in_grid]]) {
     
-}
-
-extension Float: RawBitPattern {
+    if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-}
-
-extension Double: RawBitPattern {
+    float4 color = image.read(gid);
     
+    int i = 0;
+    float d = 0;
+    
+    int palette_length = palette.get_width();
+    
+    for (int j = 0; j < palette_length; ++j) {
+        
+        float _d = distance(color, palette.read(uint2(j, 0)));
+        
+        if (j == 0 || _d < d) {
+            i = j;
+            d = _d;
+        }
+    }
+    
+    output.write(palette.read(uint2(i, 0)), gid);
 }

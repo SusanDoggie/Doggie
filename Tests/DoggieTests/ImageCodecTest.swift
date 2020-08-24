@@ -28,7 +28,7 @@ import XCTest
 
 class ImageCodecTest: XCTestCase {
     
-    let images_dir = URL(fileURLWithPath: #file).deletingLastPathComponent().appendingPathComponent("images")
+    let images_dir = Bundle.module.resourceURL!.appendingPathComponent("images")
     
     func testRGBA32Big() {
         

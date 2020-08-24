@@ -64,8 +64,6 @@ struct _fast_decode_info<Model: ColorModel> {
     }
 }
 
-#if swift(>=5.3)
-
 @usableFromInline
 @available(macOS, unavailable)
 @available(macCatalyst, unavailable)
@@ -147,8 +145,6 @@ extension ColorSpace: _Float16FastDecodeImageProtocol where Model: _Float16Color
         return nil
     }
 }
-
-#endif
 
 extension ColorSpace {
     
@@ -922,7 +918,7 @@ extension ColorSpace {
             fileBacked: fileBacked
         )
         
-        #if swift(>=5.3) && !os(macOS) && !(os(iOS) && targetEnvironment(macCatalyst))
+        #if !os(macOS) && !(os(iOS) && targetEnvironment(macCatalyst))
         
         if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *),
            let colorSpace = self as? _Float16FastDecodeImageProtocol,

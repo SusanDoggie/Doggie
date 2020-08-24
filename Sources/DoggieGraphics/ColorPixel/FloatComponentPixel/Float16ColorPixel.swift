@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-#if swift(>=5.3)
-
 @frozen
 @available(macOS, unavailable)
 @available(macCatalyst, unavailable)
@@ -74,5 +72,3 @@ public struct Float16ColorPixel<Model: _Float16ColorModelProtocol>: _FloatCompon
     }
     
 }
-
-#endif

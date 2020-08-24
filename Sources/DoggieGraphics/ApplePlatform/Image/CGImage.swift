@@ -137,8 +137,6 @@ extension CGImage {
     }
 }
 
-#if swift(>=5.3)
-
 @available(macOS, unavailable)
 @available(macCatalyst, unavailable)
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
@@ -152,8 +150,6 @@ protocol _Float16CGImageDataProtocol {
 extension MappedBuffer: _Float16CGImageDataProtocol where Element: _Float16ColorModelProtocol {
     
 }
-
-#endif
 
 private struct CGImageData {
     
@@ -171,7 +167,7 @@ private struct CGImageData {
         self.width = width
         self.height = height
         
-        #if swift(>=5.3) && !os(macOS) && !(os(iOS) && targetEnvironment(macCatalyst))
+        #if !os(macOS) && !(os(iOS) && targetEnvironment(macCatalyst))
         
         if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *), pixels is _Float16CGImageDataProtocol {
             

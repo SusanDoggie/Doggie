@@ -1,0 +1,164 @@
+//
+//  SVGTurbulenceKernel.swift
+//
+//  The MIT License
+//  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
+
+#if canImport(CoreImage)
+
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
+public class SVGTurbulenceKernel: CIImageProcessorKernel {
+    
+    public struct Info {
+        
+        var type: SVGTurbulenceType
+        var seed: Int
+        var transform: SDTransform
+        var baseFreq: Size
+        var stitchTile: Rect
+        var numOctaves: Int
+        var isStitchTile: Bool
+        
+    }
+    
+    public class func apply(withExtent extent: CGRect, info: SVGTurbulenceKernel.Info) throws -> CIImage {
+        return try self.apply(withExtent: extent, inputs: nil, arguments: ["info": info])
+    }
+    
+    public override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
+        
+        guard let commandBuffer = output.metalCommandBuffer else { return }
+        guard let texture = output.metalTexture else { return }
+        guard var info = arguments?["info"] as? SVGTurbulenceKernel.Info else { return }
+        
+        info.transform = SDTransform.translate(x: output.region.minX, y: output.region.minY) * SDTransform.reflectY(output.region.midY) * info.transform
+        
+        let device = commandBuffer.device
+        guard let buffers = svg_noise_generator(info.seed, device) else { return }
+        
+        guard let pipeline = SVGTurbulenceKernel.make_pipeline(device, "svg_turbulence") else { return }
+        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
+        
+        encoder.setComputePipelineState(pipeline)
+        
+        struct Info {
+            
+            var transform: (Float, Float, Float, Float, Float, Float)
+            var baseFreq: (Float, Float)
+            var stitchTile: (Float, Float, Float, Float)
+            var numOctaves: Int32
+            var fractalSum: Int32
+            var isStitchTile: Int32
+            var padding: Int32
+            
+            init(_ info: SVGTurbulenceKernel.Info) {
+                self.transform = (
+                    Float(info.transform.a),
+                    Float(info.transform.d),
+                    Float(info.transform.b),
+                    Float(info.transform.e),
+                    Float(info.transform.c),
+                    Float(info.transform.f)
+                )
+                self.baseFreq = (Float(info.baseFreq.width), Float(info.baseFreq.height))
+                self.stitchTile = (Float(info.stitchTile.minX), Float(info.stitchTile.minY), Float(info.stitchTile.width), Float(info.stitchTile.height))
+                self.numOctaves = Int32(info.numOctaves)
+                self.fractalSum = info.type == .fractalNoise ? 1 : 0
+                self.isStitchTile = info.isStitchTile ? 1 : 0
+                self.padding = 0
+            }
+        }
+        
+        encoder.setBuffer(buffers.0, offset: 0, index: 0)
+        encoder.setBuffer(buffers.1, offset: 0, index: 1)
+        withUnsafeBytes(of: Info(info)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
+        encoder.setTexture(texture, index: 3)
+        
+        let group_width = max(1, pipeline.threadExecutionWidth)
+        let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)
+        
+        let threadsPerThreadgroup = MTLSize(width: group_width, height: group_height, depth: 1)
+        let threadgroupsPerGrid = MTLSize(width: (texture.width + group_width - 1) / group_width, height: (texture.height + group_height - 1) / group_height, depth: 1)
+        
+        encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+        encoder.endEncoding()
+    }
+}
+
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
+extension SVGTurbulenceKernel {
+    
+    private static let cache_lck = SDLock()
+    private static var cache: [SVGNoiseGeneratorBuffer] = []
+    
+    private static func svg_noise_generator(_ seed: Int, _ device: MTLDevice) -> (MTLBuffer, MTLBuffer)? {
+        
+        cache_lck.lock()
+        defer { cache_lck.unlock() }
+        
+        if let index = cache.firstIndex(where: { $0.seed == seed && $0.device === device }) {
+            
+            let noise = cache.remove(at: index)
+            cache.append(noise)
+            
+            return (noise.uLatticeSelector, noise.fGradient)
+            
+        } else {
+            
+            guard let noise = SVGNoiseGeneratorBuffer(seed, device) else { return nil }
+            cache.append(noise)
+            
+            while cache.count > 10 {
+                cache.removeFirst()
+            }
+            
+            return (noise.uLatticeSelector, noise.fGradient)
+        }
+    }
+    
+    private struct SVGNoiseGeneratorBuffer {
+        
+        let seed: Int
+        let device: MTLDevice
+        
+        let uLatticeSelector: MTLBuffer
+        let fGradient: MTLBuffer
+        
+        init?(_ seed: Int, _ device: MTLDevice) {
+            
+            self.seed = seed
+            self.device = device
+            
+            let noise = SVGNoiseGenerator(seed)
+            let uLatticeSelector = noise.uLatticeSelector.map { Int32($0) }
+            let fGradient = noise.fGradient.map { (Float($0.x), Float($0.y)) }
+            
+            guard let _uLatticeSelector = uLatticeSelector.withUnsafeBytes({ device.makeBuffer(bytes: $0.baseAddress!, length: $0.count) }) else { return nil }
+            guard let _fGradient = fGradient.withUnsafeBytes({ device.makeBuffer(bytes: $0.baseAddress!, length: $0.count) }) else { return nil }
+            
+            self.uLatticeSelector = _uLatticeSelector
+            self.fGradient = _fGradient
+        }
+    }
+}
+
+#endif
