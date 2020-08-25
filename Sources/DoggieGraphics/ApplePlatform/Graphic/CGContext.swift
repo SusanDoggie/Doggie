@@ -112,6 +112,11 @@ extension CGContext {
     
     open func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>, colorSpace: AnyColorSpace) {
         
+        let boundary = shape.originalBoundary
+        guard !boundary.isEmpty else { return }
+        
+        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
+        
         self.beginTransparencyLayer()
         
         self.addPath(shape)
@@ -119,9 +124,6 @@ extension CGContext {
         case .nonZero: self.clip(using: .winding)
         case .evenOdd: self.clip(using: .evenOdd)
         }
-        
-        let boundary = shape.originalBoundary
-        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
         
         self.concatenate(transform)
         

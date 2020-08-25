@@ -198,13 +198,21 @@ extension DrawableContext {
     
     @inlinable
     public func draw<Image: ImageProtocol>(image: Image, in rect: Rect) {
+        
+        guard !rect.isEmpty else { return }
+        
         let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
+        
         self.draw(image: image, transform: transform)
     }
     
     @inlinable
     public func draw(image: ImageRep, in rect: Rect) {
+        
+        guard !rect.isEmpty else { return }
+        
         let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
+        
         self.draw(image: image, transform: transform)
     }
 }
@@ -214,12 +222,14 @@ extension DrawableContext {
     @inlinable
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
         
+        let boundary = shape.originalBoundary
+        guard !boundary.isEmpty else { return }
+        
+        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
+        
         self.beginTransparencyLayer()
         
         self.clip(shape: shape, winding: winding)
-        
-        let boundary = shape.originalBoundary
-        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
         
         self.concatenate(transform)
         
