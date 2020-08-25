@@ -30,6 +30,8 @@ extension CIImage {
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     open func insertingIntermediate(blockSize: Int, maxBlockSize: Int, colorSpace: ColorSpace<RGBColorModel>? = nil) throws -> CIImage {
         
+        if extent.isEmpty { return self }
+        
         var image = self
         
         if #available(macOS 10.14, iOS 12.0, tvOS 12.0, *) {

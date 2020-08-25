@@ -71,6 +71,8 @@ extension CIImage {
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     open func areaMin(_ radius: Size) -> CIImage? {
         
+        if extent.isEmpty { return self }
+        
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) {
             
             let areaMin = CIFilter.morphologyRectangleMinimum()
@@ -141,6 +143,8 @@ extension CIImage {
     
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     open func areaMax(_ radius: Size) -> CIImage? {
+        
+        if extent.isEmpty { return self }
         
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) {
             

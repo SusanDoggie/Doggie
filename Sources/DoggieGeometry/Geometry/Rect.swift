@@ -446,7 +446,7 @@ extension Rect {
     @inline(__always)
     public func applying(_ transform: SDTransform) -> Rect? {
         
-        if self.isNull || self.isInfinite { return self }
+        if self.isNull || self.isInfinite { return nil }
         
         let minX = self.minX
         let maxX = self.maxX

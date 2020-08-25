@@ -70,6 +70,8 @@ extension CIImage {
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func gaussianBlur(sigma: Double) -> CIImage {
         
+        if extent.isEmpty { return self }
+        
         #if canImport(MetalPerformanceShaders)
         
         if #available(macOS 10.13, *) {
