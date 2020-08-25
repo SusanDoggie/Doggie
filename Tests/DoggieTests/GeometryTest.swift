@@ -58,14 +58,14 @@ class GeometryTest: XCTestCase {
         
         XCTAssertEqual(rect.standardized, .infinite)
         
-        XCTAssertEqual(rect.minX, -.infinite)
-        XCTAssertEqual(rect.minY, -.infinite)
+        XCTAssertEqual(rect.minX, -.infinity)
+        XCTAssertEqual(rect.minY, -.infinity)
         
-        XCTAssertEqual(rect.maxX, .infinite)
-        XCTAssertEqual(rect.maxY, .infinite)
+        XCTAssertEqual(rect.maxX, .infinity)
+        XCTAssertEqual(rect.maxY, .infinity)
         
-        XCTAssertEqual(rect.width, .infinite)
-        XCTAssertEqual(rect.height, .infinite)
+        XCTAssertEqual(rect.width, .infinity)
+        XCTAssertEqual(rect.height, .infinity)
         
         XCTAssertTrue(rect.contains(Point(x: 0, y: 10.1)))
         XCTAssertTrue(rect.contains(Rect(x: 0, y: 3.4, width: -10, height: 20.2)))
