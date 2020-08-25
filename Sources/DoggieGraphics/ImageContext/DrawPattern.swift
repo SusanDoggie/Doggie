@@ -29,8 +29,7 @@ extension ImageContext {
     @inline(__always)
     func draw_pattern(bound: Rect, xStep: Double, yStep: Double, callback: (ImageContext) -> Void) {
         
-        let transform = self.transform.inverse
-        let frame = Rect.bound(Rect(x: 0, y: 0, width: width, height: height).points.map { $0 * transform })
+        let frame = Rect(x: 0, y: 0, width: width, height: height)._applying(self.transform.inverse)
         
         let minX = Int(((frame.minX - bound.minX) / xStep).rounded(.down))
         let maxX = Int(((frame.maxX - bound.minX) / xStep).rounded(.up))

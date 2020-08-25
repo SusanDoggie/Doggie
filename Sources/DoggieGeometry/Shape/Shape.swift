@@ -188,12 +188,6 @@ extension Shape {
             return cache.originalBoundary!
         }
     }
-    
-    @inlinable
-    public var frame: [Point] {
-        let _transform = self.transform
-        return originalBoundary.points.map { $0 * _transform }
-    }
 }
 
 extension MutableCollection where Element == Shape.Component {

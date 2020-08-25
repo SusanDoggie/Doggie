@@ -480,6 +480,13 @@ extension Rect {
         
         return nil
     }
+    
+    @inlinable
+    @inline(__always)
+    public func _applying(_ transform: SDTransform) -> Rect {
+        if self.isNull || self.isInfinite { return self }
+        return Rect.bound(self.points.map { $0 * transform })
+    }
 }
 
 @inlinable

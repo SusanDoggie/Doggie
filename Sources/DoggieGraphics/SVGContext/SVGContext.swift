@@ -476,11 +476,11 @@ extension SVGContext {
         if self.effect.output != nil && _objectBound.width != 0 && _objectBound.height != 0 {
             
             let _transform = self.transform.inverse
-            var _visibleBound = Rect.bound(visibleBound.points.map { $0 * _transform })
+            var _visibleBound = visibleBound._applying(_transform)
             
             if let filter = self._effect_element("FILTER", self.effect, &_visibleBound, (objectBound * _transform).boundary) {
                 
-                visibleBound = Rect.bound(_visibleBound.points.map { $0 * transform })
+                visibleBound = _visibleBound._applying(self.transform)
                 
                 element.setAttribute(for: "transform", value: (object_transform * _transform).attributeStr())
                 element = SDXMLElement(name: "g", elements: [element])
@@ -577,10 +577,14 @@ extension SVGContext {
     }
     
     private func append(_ newElement: SDXMLElement, _ visibleBound: Rect, _ objectBound: Shape, _ clip_object: Bool, _ object_transform: SDTransform) {
-        guard !self.transform.determinant.almostZero() else { return }
+        
+        guard !self.transform.determinant.almostZero() && !visibleBound.isEmpty else { return }
+        
         var newElement = newElement
         var visibleBound = visibleBound
+        
         self.apply_style(&newElement, &visibleBound, objectBound, clip_object, object_transform)
+        
         self.current_layer.state.elements.append(newElement)
         self.current_layer.state.visibleBound = self.current_layer.state.visibleBound.map { $0.union(visibleBound) } ?? visibleBound
         self.current_layer.state.objectBound = self.current_layer.state.objectBound.map { $0.identity + objectBound.identity } ?? objectBound
