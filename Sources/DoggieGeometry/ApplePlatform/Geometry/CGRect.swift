@@ -28,13 +28,19 @@ extension CGRect {
     @inlinable
     @inline(__always)
     public init(_ r: Rect) {
-        self.init(origin: CGPoint(r.origin), size: CGSize(r.size))
+        if r.isNull {
+            self = .null
+        } else if r.isInfinite {
+            self = .infinite
+        } else {
+            self.init(origin: CGPoint(r.origin), size: CGSize(r.size))
+        }
     }
     
     @inlinable
     @inline(__always)
     public init(origin: Point, size: Size) {
-        self.init(origin: CGPoint(origin), size: CGSize(size))
+        self.init(Rect(origin: origin, size: size))
     }
     
     @inlinable
@@ -54,13 +60,19 @@ extension Rect {
     @inlinable
     @inline(__always)
     public init(_ r: CGRect) {
-        self.init(origin: Point(r.origin), size: Size(r.size))
+        if r.isNull {
+            self = .null
+        } else if r.isInfinite {
+            self = .infinite
+        } else {
+            self.init(origin: Point(r.origin), size: Size(r.size))
+        }
     }
     
     @inlinable
     @inline(__always)
     public init(origin: CGPoint, size: CGSize) {
-        self.init(origin: Point(origin), size: Size(size))
+        self.init(CGRect(origin: origin, size: size))
     }
 }
 
