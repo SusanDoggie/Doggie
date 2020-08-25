@@ -485,19 +485,16 @@ extension ColorSpace {
 extension ICCColorSpace {
     
     @inlinable
-    @inline(__always)
     func _convertToLinear(_ color: Model) -> Model {
         return a2b.convertToLinear(color)
     }
     
     @inlinable
-    @inline(__always)
     func _convertFromLinear(_ color: Model) -> Model {
         return b2a.convertFromLinear(color)
     }
     
     @inlinable
-    @inline(__always)
     func _convertLinearToConnection(_ color: Model) -> Connection.Model {
         
         switch a2b {
@@ -516,13 +513,11 @@ extension ICCColorSpace {
     }
     
     @inlinable
-    @inline(__always)
     func _convertLinearFromConnection(_ color: Connection.Model) -> Model {
         return b2a.convertLinearFromConnection(color)
     }
     
     @inlinable
-    @inline(__always)
     func convertToLinear(_ color: Model) -> Model {
         
         var color = color.normalized()
@@ -541,7 +536,6 @@ extension ICCColorSpace {
     }
     
     @inlinable
-    @inline(__always)
     func convertFromLinear(_ color: Model) -> Model {
         
         var color = color.normalized()
@@ -560,7 +554,6 @@ extension ICCColorSpace {
     }
     
     @inlinable
-    @inline(__always)
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
         
         var color = color.normalized()
@@ -581,7 +574,6 @@ extension ICCColorSpace {
     }
     
     @inlinable
-    @inline(__always)
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)
@@ -602,7 +594,6 @@ extension ICCColorSpace {
     }
     
     @inlinable
-    @inline(__always)
     func convertToXYZ(_ color: Model) -> XYZColorModel {
         
         var color = color.normalized()
@@ -623,7 +614,6 @@ extension ICCColorSpace {
     }
     
     @inlinable
-    @inline(__always)
     func convertFromXYZ(_ color: XYZColorModel) -> Model {
         
         var color = self.connection.convertFromXYZ(color * chromaticAdaptationMatrix)

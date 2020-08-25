@@ -65,7 +65,6 @@ public protocol RawPixelProtocol: Hashable {
 extension RawPixelProtocol {
     
     @inlinable
-    @inline(__always)
     public mutating func setOrientation(_ orientation: ImageOrientation) {
         
         switch orientation {
@@ -126,7 +125,6 @@ extension RawPixelProtocol {
 extension RawPixelProtocol {
     
     @inlinable
-    @inline(__always)
     public func verticalFlipped() -> Self {
         var copy = self
         copy.setOrientation(.downMirrored)
@@ -134,7 +132,6 @@ extension RawPixelProtocol {
     }
     
     @inlinable
-    @inline(__always)
     public func horizontalFlipped() -> Self {
         var copy = self
         copy.setOrientation(.upMirrored)
@@ -145,13 +142,11 @@ extension RawPixelProtocol {
 extension RawPixelProtocol {
     
     @inlinable
-    @inline(__always)
     public func withUnsafeTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         return try withUnsafeBufferPointer { try $0.withUnsafeTypePunnedBufferPointer(to: T.self, body) }
     }
     
     @inlinable
-    @inline(__always)
     public mutating func withUnsafeMutableTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
         return try withUnsafeMutableBufferPointer { try $0.withUnsafeMutableTypePunnedBufferPointer(to: T.self, body) }
     }

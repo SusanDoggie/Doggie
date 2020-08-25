@@ -29,19 +29,16 @@ private struct PathDataScanner<I: IteratorProtocol>: IteratorProtocol, Sequence 
     var current: String!
     
     @inlinable
-    @inline(__always)
     init(_ iterator: I) {
         self.iterator = iterator
     }
     
     @inlinable
-    @inline(__always)
     init<S : Sequence>(_ sequence: S) where S.Iterator == I {
         self.iterator = sequence.makeIterator()
     }
     
     @inlinable
-    @inline(__always)
     @discardableResult
     mutating func next() -> String? {
         current = iterator.next()
@@ -58,8 +55,6 @@ extension Shape {
         
         var command: String?
     }
-    
-    @inline(__always)
     private func toDouble(_ str: String?) throws -> Double {
         
         if str != nil, let val = Double(str!) {
@@ -67,8 +62,6 @@ extension Shape {
         }
         throw ParserError(command: str)
     }
-    
-    @inline(__always)
     private func toInt(_ str: String?) throws -> Int {
         
         if str != nil, let val = Int(str!) {
@@ -342,8 +335,6 @@ extension Shape {
         self.makeContiguousBuffer()
     }
 }
-
-@inline(__always)
 private func getDataString(_ x: [Double]) -> String {
     var str = ""
     for _x in x.map({ "\(Decimal($0).rounded(scale: 9))" }) {
@@ -354,8 +345,6 @@ private func getDataString(_ x: [Double]) -> String {
     }
     return str
 }
-
-@inline(__always)
 private func getPathDataString(_ command: Character?, _ x: Double ...) -> String {
     var result = ""
     command?.write(to: &result)
@@ -426,8 +415,6 @@ extension Shape.Component {
 }
 
 extension Shape.Segment {
-    
-    @inline(__always)
     fileprivate func isSmooth(_ p: Point, _ relative: Point, _ lastControl: Point?) -> Bool {
         
         if let lastControl = lastControl {

@@ -376,8 +376,6 @@ extension Shape.BezierSegment {
     
     @inlinable
     public func intersect(_ other: Shape.BezierSegment) -> [(Double, Double)]? {
-        
-        @inline(__always)
         func _filter(_ lhs: Double?, _ rhs: Double?) -> (Double, Double)? {
             if let lhs = lhs, let rhs = rhs {
                 return (lhs, rhs)

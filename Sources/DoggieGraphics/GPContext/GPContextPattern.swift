@@ -42,7 +42,6 @@ extension GPContext {
         public var callback: (GPContext) -> Void
         
         @inlinable
-        @inline(__always)
         public init(bound: Rect, xStep: Double, yStep: Double, callback: @escaping (GPContext) -> Void) {
             self.bound = bound
             self.xStep = xStep

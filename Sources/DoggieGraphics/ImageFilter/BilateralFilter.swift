@@ -24,31 +24,25 @@
 //
 
 @inlinable
-@inline(__always)
 public func BilateralFilter<Pixel>(_ image: Image<Pixel>, _ spatial: Double, _ range: Double) -> Image<Pixel> {
     return Image(texture: BilateralFilter(Texture(image: image), spatial, range), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
-@inline(__always)
 public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Double, _ range: Double) -> Texture<Pixel> {
     return BilateralFilter(texture, Size(width: spatial, height: spatial), range)
 }
 
 @inlinable
-@inline(__always)
 public func BilateralFilter<Pixel>(_ image: Image<Pixel>, _ spatial: Size, _ range: Double) -> Image<Pixel> {
     return Image(texture: BilateralFilter(Texture(image: image), spatial, range), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
-@inline(__always)
 public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _ range: Double) -> Texture<Pixel> {
     
     precondition(spatial.width > 0 || spatial.height > 0, "spatial is less than or equal to zero.")
     precondition(range > 0, "range is less than or equal to zero.")
-    
-    @inline(__always)
     func dot(_ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>) -> Float {
         let d = c0 - c1
         let e = d._opacity * d._opacity
@@ -121,31 +115,25 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _
 }
 
 @inlinable
-@inline(__always)
 public func BilateralFilter<Pixel: _FloatComponentPixel>(_ image: Image<Pixel>, _ spatial: Pixel.Scalar, _ range: Pixel.Scalar) -> Image<Pixel> where Pixel.Scalar: FloatingMathProtocol {
     return Image(texture: BilateralFilter(Texture(image: image), spatial, range), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
-@inline(__always)
 public func BilateralFilter<Pixel: _FloatComponentPixel>(_ texture: Texture<Pixel>, _ spatial: Pixel.Scalar, _ range: Pixel.Scalar) -> Texture<Pixel> where Pixel.Scalar: FloatingMathProtocol {
     return BilateralFilter(texture, Size(width: Double(spatial), height: Double(spatial)), Double(range))
 }
 
 @inlinable
-@inline(__always)
 public func BilateralFilter<Pixel: _FloatComponentPixel>(_ image: Image<Pixel>, _ spatial: Size, _ range: Double) -> Image<Pixel> where Pixel.Scalar: FloatingMathProtocol {
     return Image(texture: BilateralFilter(Texture(image: image), spatial, range), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
-@inline(__always)
 public func BilateralFilter<Pixel: _FloatComponentPixel>(_ texture: Texture<Pixel>, _ spatial: Size, _ range: Double) -> Texture<Pixel> where Pixel.Scalar: FloatingMathProtocol {
     
     precondition(spatial.width > 0 || spatial.height > 0, "spatial is less than or equal to zero.")
     precondition(range > 0, "range is less than or equal to zero.")
-    
-    @inline(__always)
     func dot(_ c0: Pixel, _ c1: Pixel) -> Pixel.Scalar {
         let d = c0 - c1
         let e = d._opacity * d._opacity

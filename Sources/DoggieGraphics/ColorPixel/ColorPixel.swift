@@ -57,7 +57,6 @@ public protocol ColorPixel: Hashable {
 extension ColorPixel where Self: ScalarMultiplicative {
     
     @inlinable
-    @inline(__always)
     public static var zero: Self {
         return Self()
     }
@@ -66,13 +65,11 @@ extension ColorPixel where Self: ScalarMultiplicative {
 extension ColorPixel {
     
     @inlinable
-    @inline(__always)
     public init(_ color: Color<Model>) {
         self.init(color: color.color, opacity: color.opacity)
     }
     
     @inlinable
-    @inline(__always)
     public init<C: ColorPixel>(_ color: C) where Model == C.Model {
         self.init(color: color.color, opacity: color.opacity)
     }
@@ -81,7 +78,6 @@ extension ColorPixel {
 extension ColorPixel {
     
     @inlinable
-    @inline(__always)
     public init() {
         self.init(color: Model(), opacity: 0)
     }
@@ -90,7 +86,6 @@ extension ColorPixel {
 extension ColorPixel {
     
     @inlinable
-    @inline(__always)
     public func with(opacity: Double) -> Self {
         var c = self
         c.opacity = opacity
@@ -101,13 +96,11 @@ extension ColorPixel {
 extension ColorPixel {
     
     @inlinable
-    @inline(__always)
     public func premultiplied() -> Self {
         return Self(color: color * opacity, opacity: opacity)
     }
     
     @inlinable
-    @inline(__always)
     public func unpremultiplied() -> Self {
         guard opacity != 0 else { return self }
         return Self(color: color / opacity, opacity: opacity)
@@ -117,13 +110,11 @@ extension ColorPixel {
 extension ColorPixel {
     
     @inlinable
-    @inline(__always)
     public static var bitsPerPixel: Int {
         return MemoryLayout<Self>.stride << 3
     }
     
     @inlinable
-    @inline(__always)
     public var bitsPerPixel: Int {
         return Self.bitsPerPixel
     }
@@ -132,13 +123,11 @@ extension ColorPixel {
 extension ColorPixel {
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return Model.numberOfComponents + 1
     }
     
     @inlinable
-    @inline(__always)
     public var numberOfComponents: Int {
         return Self.numberOfComponents
     }
@@ -147,7 +136,6 @@ extension ColorPixel {
 extension ColorPixel {
     
     @inlinable
-    @inline(__always)
     public func component(_ index: Int) -> Double {
         if index < Model.numberOfComponents {
             return color[index]
@@ -159,7 +147,6 @@ extension ColorPixel {
     }
     
     @inlinable
-    @inline(__always)
     public mutating func setComponent(_ index: Int, _ value: Double) {
         if index < Model.numberOfComponents {
             color[index] = value
@@ -174,7 +161,6 @@ extension ColorPixel {
 extension ColorPixel {
     
     @inlinable
-    @inline(__always)
     public var isOpaque: Bool {
         return opacity >= 1
     }
@@ -183,43 +169,36 @@ extension ColorPixel {
 extension ColorPixel {
     
     @inlinable
-    @inline(__always)
     public mutating func blend(source: Self) {
         self = self.blended(source: source)
     }
     
     @inlinable
-    @inline(__always)
     public mutating func blend<C: ColorPixel>(source: C) where C.Model == Model {
         self = self.blended(source: source)
     }
     
     @inlinable
-    @inline(__always)
     public mutating func blend(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
         self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
     
     @inlinable
-    @inline(__always)
     public mutating func blend<C: ColorPixel>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) where C.Model == Model {
         self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
     
     @inlinable
-    @inline(__always)
     public func blended(source: Self) -> Self {
         return blended(source: source, compositingMode: .default, blendMode: .default)
     }
     
     @inlinable
-    @inline(__always)
     public func blended<C: ColorPixel>(source: C) -> Self where C.Model == Model {
         return blended(source: Self(source))
     }
     
     @inlinable
-    @inline(__always)
     public func blended<C: ColorPixel>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self where C.Model == Model {
         return blended(source: Self(source), compositingMode: compositingMode, blendMode: blendMode)
     }
@@ -228,19 +207,16 @@ extension ColorPixel {
 extension ColorPixel where Model == XYZColorModel {
     
     @inlinable
-    @inline(__always)
     public init(x: Double, y: Double, z: Double, opacity: Double = 1) {
         self.init(color: XYZColorModel(x: x, y: y, z: z), opacity: opacity)
     }
     
     @inlinable
-    @inline(__always)
     public init(luminance: Double, point: Point, opacity: Double = 1) {
         self.init(color: XYZColorModel(luminance: luminance, point: point), opacity: opacity)
     }
     
     @inlinable
-    @inline(__always)
     public init(luminance: Double, x: Double, y: Double, opacity: Double = 1) {
         self.init(color: XYZColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
     }
@@ -249,13 +225,11 @@ extension ColorPixel where Model == XYZColorModel {
 extension ColorPixel where Model == YxyColorModel {
     
     @inlinable
-    @inline(__always)
     public init(luminance: Double, point: Point, opacity: Double = 1) {
         self.init(color: YxyColorModel(luminance: luminance, point: point), opacity: opacity)
     }
     
     @inlinable
-    @inline(__always)
     public init(luminance: Double, x: Double, y: Double, opacity: Double = 1) {
         self.init(color: YxyColorModel(luminance: luminance, x: x, y: y), opacity: opacity)
     }
@@ -264,13 +238,11 @@ extension ColorPixel where Model == YxyColorModel {
 extension ColorPixel where Model == LabColorModel {
     
     @inlinable
-    @inline(__always)
     public init(lightness: Double, a: Double, b: Double, opacity: Double = 1) {
         self.init(color: LabColorModel(lightness: lightness, a: a, b: b), opacity: opacity)
     }
     
     @inlinable
-    @inline(__always)
     public init(lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
         self.init(color: LabColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
     }
@@ -279,13 +251,11 @@ extension ColorPixel where Model == LabColorModel {
 extension ColorPixel where Model == LuvColorModel {
     
     @inlinable
-    @inline(__always)
     public init(lightness: Double, u: Double, v: Double, opacity: Double = 1) {
         self.init(color: LuvColorModel(lightness: lightness, u: u, v: v), opacity: opacity)
     }
     
     @inlinable
-    @inline(__always)
     public init(lightness: Double, chroma: Double, hue: Double, opacity: Double = 1) {
         self.init(color: LuvColorModel(lightness: lightness, chroma: chroma, hue: hue), opacity: opacity)
     }
@@ -294,7 +264,6 @@ extension ColorPixel where Model == LuvColorModel {
 extension ColorPixel where Model == GrayColorModel {
     
     @inlinable
-    @inline(__always)
     public init(white: Double, opacity: Double = 1) {
         self.init(color: GrayColorModel(white: white), opacity: opacity)
     }
@@ -303,13 +272,11 @@ extension ColorPixel where Model == GrayColorModel {
 extension ColorPixel where Model == RGBColorModel {
     
     @inlinable
-    @inline(__always)
     public init(red: Double, green: Double, blue: Double, opacity: Double = 1) {
         self.init(color: RGBColorModel(red: red, green: green, blue: blue), opacity: opacity)
     }
     
     @inlinable
-    @inline(__always)
     public init(hue: Double, saturation: Double, brightness: Double, opacity: Double = 1) {
         self.init(color: RGBColorModel(hue: hue, saturation: saturation, brightness: brightness), opacity: opacity)
     }
@@ -318,7 +285,6 @@ extension ColorPixel where Model == RGBColorModel {
 extension ColorPixel where Model == CMYColorModel {
     
     @inlinable
-    @inline(__always)
     public init(cyan: Double, magenta: Double, yellow: Double, opacity: Double = 1) {
         self.init(color: CMYColorModel(cyan: cyan, magenta: magenta, yellow: yellow), opacity: opacity)
     }
@@ -327,7 +293,6 @@ extension ColorPixel where Model == CMYColorModel {
 extension ColorPixel where Model == CMYKColorModel {
     
     @inlinable
-    @inline(__always)
     public init(cyan: Double, magenta: Double, yellow: Double, black: Double, opacity: Double = 1) {
         self.init(color: CMYKColorModel(cyan: cyan, magenta: magenta, yellow: yellow, black: black), opacity: opacity)
     }
@@ -336,7 +301,6 @@ extension ColorPixel where Model == CMYKColorModel {
 extension ColorPixel where Model == GrayColorModel {
     
     @inlinable
-    @inline(__always)
     public var white: Double {
         get {
             return color.white
@@ -350,7 +314,6 @@ extension ColorPixel where Model == GrayColorModel {
 extension ColorPixel where Model == RGBColorModel {
     
     @inlinable
-    @inline(__always)
     public var red: Double {
         get {
             return color.red
@@ -361,7 +324,6 @@ extension ColorPixel where Model == RGBColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var green: Double {
         get {
             return color.green
@@ -372,7 +334,6 @@ extension ColorPixel where Model == RGBColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var blue: Double {
         get {
             return color.blue
@@ -386,7 +347,6 @@ extension ColorPixel where Model == RGBColorModel {
 extension ColorPixel where Model == RGBColorModel {
     
     @inlinable
-    @inline(__always)
     public var hue: Double {
         get {
             return color.hue
@@ -397,7 +357,6 @@ extension ColorPixel where Model == RGBColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var saturation: Double {
         get {
             return color.saturation
@@ -408,7 +367,6 @@ extension ColorPixel where Model == RGBColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var brightness: Double {
         get {
             return color.brightness
@@ -422,7 +380,6 @@ extension ColorPixel where Model == RGBColorModel {
 extension ColorPixel where Model == CMYColorModel {
     
     @inlinable
-    @inline(__always)
     public var cyan: Double {
         get {
             return color.cyan
@@ -433,7 +390,6 @@ extension ColorPixel where Model == CMYColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var magenta: Double {
         get {
             return color.magenta
@@ -444,7 +400,6 @@ extension ColorPixel where Model == CMYColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var yellow: Double {
         get {
             return color.yellow
@@ -458,7 +413,6 @@ extension ColorPixel where Model == CMYColorModel {
 extension ColorPixel where Model == CMYKColorModel {
     
     @inlinable
-    @inline(__always)
     public var cyan: Double {
         get {
             return color.cyan
@@ -469,7 +423,6 @@ extension ColorPixel where Model == CMYKColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var magenta: Double {
         get {
             return color.magenta
@@ -480,7 +433,6 @@ extension ColorPixel where Model == CMYKColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var yellow: Double {
         get {
             return color.yellow
@@ -491,7 +443,6 @@ extension ColorPixel where Model == CMYKColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var black: Double {
         get {
             return color.black

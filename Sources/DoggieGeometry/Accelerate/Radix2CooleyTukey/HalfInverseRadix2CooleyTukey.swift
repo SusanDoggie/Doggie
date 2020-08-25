@@ -24,7 +24,6 @@
 //
 
 @inlinable
-@inline(__always)
 public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) where T: FloatingMathProtocol {
     
     switch log2n {
@@ -113,7 +112,6 @@ public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _
     }
 }
 @inlinable
-@inline(__always)
 public func HalfInverseRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ buffer: UnsafeMutablePointer<T>, _ stride: Int) where T: FloatingMathProtocol {
     HalfInverseRadix2CooleyTukey(log2n, buffer, buffer + stride, stride << 1, buffer, stride)
 }

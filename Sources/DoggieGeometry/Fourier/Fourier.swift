@@ -26,7 +26,6 @@
 // MARK: Fourier
 
 @inlinable
-@inline(__always)
 public func Fourier(_ buffer: [Double], _ result: inout [Complex]) {
     switch buffer.count {
     case 0:
@@ -46,7 +45,6 @@ public func Fourier(_ buffer: [Double], _ result: inout [Complex]) {
     }
 }
 @inlinable
-@inline(__always)
 public func Fourier(_ buffer: [Complex], _ result: inout [Complex]) {
     switch buffer.count {
     case 0, 1:
@@ -64,7 +62,6 @@ public func Fourier(_ buffer: [Complex], _ result: inout [Complex]) {
     }
 }
 @inlinable
-@inline(__always)
 public func InverseFourier(_ buffer: [Double], _ result: inout [Complex]) {
     switch buffer.count {
     case 0:
@@ -84,7 +81,6 @@ public func InverseFourier(_ buffer: [Double], _ result: inout [Complex]) {
     }
 }
 @inlinable
-@inline(__always)
 public func InverseFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     switch buffer.count {
     case 0, 1:
@@ -102,7 +98,6 @@ public func InverseFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     }
 }
 @inlinable
-@inline(__always)
 public func BluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     
     if kernel.count != count {
@@ -128,7 +123,6 @@ public func BluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     }
 }
 @inlinable
-@inline(__always)
 public func InverseBluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     
     if kernel.count != count {
@@ -154,7 +148,6 @@ public func InverseBluesteinKernel(_ count: Int, _ kernel: inout [Complex]) {
     }
 }
 @inlinable
-@inline(__always)
 public func Bluestein(_ buffer: [Double], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     BluesteinKernel(buffer.count, &_kernel)
@@ -175,7 +168,6 @@ public func Bluestein(_ buffer: [Double], _ result: inout [Complex]) {
     vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
 }
 @inlinable
-@inline(__always)
 public func Bluestein(_ buffer: [Complex], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     BluesteinKernel(buffer.count, &_kernel)
@@ -196,7 +188,6 @@ public func Bluestein(_ buffer: [Complex], _ result: inout [Complex]) {
     vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
 }
 @inlinable
-@inline(__always)
 public func InverseBluestein(_ buffer: [Double], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     InverseBluesteinKernel(buffer.count, &_kernel)
@@ -217,7 +208,6 @@ public func InverseBluestein(_ buffer: [Double], _ result: inout [Complex]) {
     vec_op(buffer.count, result, 1, &result, 1) { $0 * _sqrt }
 }
 @inlinable
-@inline(__always)
 public func InverseBluestein(_ buffer: [Complex], _ result: inout [Complex]) {
     var _kernel: [Complex] = []
     InverseBluesteinKernel(buffer.count, &_kernel)
@@ -241,7 +231,6 @@ public func InverseBluestein(_ buffer: [Complex], _ result: inout [Complex]) {
 // MARK: Radix-2 Cooley-Tukey
 
 @inlinable
-@inline(__always)
 public func Radix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
     switch buffer.count {
     case 0:
@@ -258,7 +247,6 @@ public func Radix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
     }
 }
 @inlinable
-@inline(__always)
 public func InverseRadix2CooleyTukey(_ buffer: [Double], _ result: inout [Complex]) {
     switch buffer.count {
     case 0:
@@ -278,17 +266,14 @@ public func InverseRadix2CooleyTukey(_ buffer: [Double], _ result: inout [Comple
 // MARK: Convolution
 
 @inlinable
-@inline(__always)
 public func Convolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     FFTConvolve(signal, kernel, &result)
 }
 @inlinable
-@inline(__always)
 public func Convolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     FFTConvolve(signal, kernel, &result)
 }
 @inlinable
-@inline(__always)
 public func CircularConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     if signal.isEmpty || kernel.isEmpty {
         result.removeAll(keepingCapacity: true)
@@ -321,7 +306,6 @@ public func CircularConvolve(_ signal: [Double], _ kernel: [Double], _ result: i
     }
 }
 @inlinable
-@inline(__always)
 public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     if signal.isEmpty || kernel.isEmpty {
         result.removeAll(keepingCapacity: true)
@@ -354,7 +338,6 @@ public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex], _ result:
     }
 }
 @inlinable
-@inline(__always)
 public func NegacyclicConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     Convolve(signal, kernel, &result)
     let count = signal.count
@@ -364,7 +347,6 @@ public func NegacyclicConvolve(_ signal: [Double], _ kernel: [Double], _ result:
     result.removeSubrange(signal.count..<result.count)
 }
 @inlinable
-@inline(__always)
 public func NegacyclicConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     Convolve(signal, kernel, &result)
     let count = signal.count
@@ -376,7 +358,6 @@ public func NegacyclicConvolve(_ signal: [Complex], _ kernel: [Complex], _ resul
 }
 
 @inlinable
-@inline(__always)
 public func FFTConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     
     let convolve_length = signal.count + kernel.count - 1
@@ -393,7 +374,6 @@ public func FFTConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout 
     result.replace(with: buffer.prefix(convolve_length))
 }
 @inlinable
-@inline(__always)
 public func FFTConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     
     let convolve_length = signal.count + kernel.count - 1
@@ -410,7 +390,6 @@ public func FFTConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inou
     result.replace(with: buffer.prefix(convolve_length))
 }
 @inlinable
-@inline(__always)
 public func OverlapConvolve(signal: [Double], kernel: [Double], _ overlap: inout [Double], _ result: inout [Double]) {
     FFTConvolve(signal, kernel, &result)
     let count = min(result.count, overlap.count)
@@ -419,7 +398,6 @@ public func OverlapConvolve(signal: [Double], kernel: [Double], _ overlap: inout
     result.removeSubrange(signal.count..<result.count)
 }
 @inlinable
-@inline(__always)
 public func OverlapConvolve(signal: [Complex], kernel: [Complex], _ overlap: inout [Complex], _ result: inout [Complex]) {
     FFTConvolve(signal, kernel, &result)
     let count = min(result.count, overlap.count)
@@ -431,7 +409,6 @@ public func OverlapConvolve(signal: [Complex], kernel: [Complex], _ overlap: ino
 // MARK: Discrete function
 
 @inlinable
-@inline(__always)
 public func DiscreteFourier(_ buffer: [Double], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
@@ -447,7 +424,6 @@ public func DiscreteFourier(_ buffer: [Double], _ result: inout [Complex]) {
     }
 }
 @inlinable
-@inline(__always)
 public func DiscreteFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
@@ -463,7 +439,6 @@ public func DiscreteFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     }
 }
 @inlinable
-@inline(__always)
 public func InverseDiscreteFourier(_ buffer: [Double], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
@@ -479,7 +454,6 @@ public func InverseDiscreteFourier(_ buffer: [Double], _ result: inout [Complex]
     }
 }
 @inlinable
-@inline(__always)
 public func InverseDiscreteFourier(_ buffer: [Complex], _ result: inout [Complex]) {
     if result.count != buffer.count {
         result.replace(with: repeatElement(Complex(0), count: buffer.count))
@@ -495,7 +469,6 @@ public func InverseDiscreteFourier(_ buffer: [Complex], _ result: inout [Complex
     }
 }
 @inlinable
-@inline(__always)
 public func DirectConvolve(_ signal: [Double], _ kernel: [Double], _ result: inout [Double]) {
     let size = signal.count + kernel.count - 1
     if result.count != size {
@@ -504,7 +477,6 @@ public func DirectConvolve(_ signal: [Double], _ kernel: [Double], _ result: ino
     DirectConvolve(signal.count, signal, 1, kernel.count, kernel, 1, &result, 1)
 }
 @inlinable
-@inline(__always)
 public func DirectConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: inout [Complex]) {
     let size = signal.count + kernel.count - 1
     if result.count != size {
@@ -516,7 +488,6 @@ public func DirectConvolve(_ signal: [Complex], _ kernel: [Complex], _ result: i
 // MARK: Other Transform
 
 @inlinable
-@inline(__always)
 public func DCTII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Double](repeating: 0, count: N)
@@ -537,7 +508,6 @@ public func DCTII(_ buffer: [Double], _ result: inout [Double]) {
     }
 }
 @inlinable
-@inline(__always)
 public func DCTIII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Complex](repeating: Complex(0), count: N)
@@ -558,7 +528,6 @@ public func DCTIII(_ buffer: [Double], _ result: inout [Double]) {
     }
 }
 @inlinable
-@inline(__always)
 public func DCTIV(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Double](repeating: 0, count: N)
@@ -583,7 +552,6 @@ public func DCTIV(_ buffer: [Double], _ result: inout [Double]) {
     }
 }
 @inlinable
-@inline(__always)
 public func DSTII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Double](repeating: 0, count: N)
@@ -609,7 +577,6 @@ public func DSTII(_ buffer: [Double], _ result: inout [Double]) {
     result[N - 1] = (_temp[N - 1] * Complex(magnitude: 1, phase: -0.5 * .pi)).imag
 }
 @inlinable
-@inline(__always)
 public func DSTIII(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Complex](repeating: Complex(0), count: N)
@@ -635,7 +602,6 @@ public func DSTIII(_ buffer: [Double], _ result: inout [Double]) {
     }
 }
 @inlinable
-@inline(__always)
 public func DSTIV(_ buffer: [Double], _ result: inout [Double]) {
     let N = buffer.count
     var temp = [Double](repeating: 0, count: N)
@@ -663,7 +629,6 @@ public func DSTIV(_ buffer: [Double], _ result: inout [Double]) {
 // MARK: Signal Processing
 
 @inlinable
-@inline(__always)
 public func Resampling(_ count: Int, _ buffer: inout [Double]) {
     var _freq = Fourier(buffer)
     if count > _freq.count {
@@ -693,112 +658,96 @@ public func Resampling(_ count: Int, _ buffer: inout [Double]) {
 
 
 @inlinable
-@inline(__always)
 public func DiscreteFourier(_ buffer: [Double]) -> [Complex] {
     var result: [Complex] = []
     DiscreteFourier(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func DiscreteFourier(_ buffer: [Complex]) -> [Complex] {
     var result: [Complex] = []
     DiscreteFourier(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func InverseDiscreteFourier(_ buffer: [Double]) -> [Complex] {
     var result: [Complex] = []
     InverseDiscreteFourier(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func InverseDiscreteFourier(_ buffer: [Complex]) -> [Complex] {
     var result: [Complex] = []
     InverseDiscreteFourier(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func Fourier(_ buffer: [Double]) -> [Complex] {
     var result: [Complex] = []
     Fourier(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func Fourier(_ buffer: [Complex]) -> [Complex] {
     var result: [Complex] = []
     Fourier(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func InverseFourier(_ buffer: [Double]) -> [Complex] {
     var result: [Complex] = []
     InverseFourier(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func InverseFourier(_ buffer: [Complex]) -> [Complex] {
     var result: [Complex] = []
     InverseFourier(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func Convolve(_ signal: [Double], _ kernel: [Double]) -> [Double] {
     var result = [Double]()
     Convolve(signal, kernel, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func Convolve(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = [Complex]()
     Convolve(signal, kernel, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func CircularConvolve(_ signal: [Double], _ kernel: [Double]) -> [Double] {
     var result = [Double]()
     CircularConvolve(signal, kernel, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = [Complex]()
     CircularConvolve(signal, kernel, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func NegacyclicConvolve(_ signal: [Double], _ kernel: [Double]) -> [Double] {
     var result = [Double]()
     NegacyclicConvolve(signal, kernel, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func NegacyclicConvolve(_ signal: [Complex], _ kernel: [Complex]) -> [Complex] {
     var result = [Complex]()
     NegacyclicConvolve(signal, kernel, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func OverlapConvolve(signal: [Double], kernel: [Double], _ overlap: inout [Double]) -> [Double] {
     var result = [Double]()
     OverlapConvolve(signal: signal, kernel: kernel, &overlap, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func OverlapConvolve(signal: [Complex], kernel: [Complex], _ overlap: inout [Complex]) -> [Complex] {
     var result = [Complex]()
     OverlapConvolve(signal: signal, kernel: kernel, &overlap, &result)
@@ -806,42 +755,36 @@ public func OverlapConvolve(signal: [Complex], kernel: [Complex], _ overlap: ino
 }
 
 @inlinable
-@inline(__always)
 public func DCTII(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DCTII(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func DCTIII(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DCTIII(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func DCTIV(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DCTIV(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func DSTII(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DSTII(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func DSTIII(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DSTIII(buffer, &result)
     return result
 }
 @inlinable
-@inline(__always)
 public func DSTIV(_ buffer: [Double]) -> [Double] {
     var result = [Double]()
     DSTIV(buffer, &result)

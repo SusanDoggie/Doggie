@@ -46,7 +46,6 @@ struct _fast_decode_info<Model: ColorModel> {
     let fileBacked: Bool
     
     @inlinable
-    @inline(__always)
     init(
         width: Int,
         height: Int,
@@ -79,7 +78,6 @@ protocol _Float16FastDecodeImageProtocol {
 extension ColorSpace: _Float16FastDecodeImageProtocol where Model: _Float16ColorModelProtocol {
     
     @inlinable
-    @inline(__always)
     func _fast_create_image<M>(_ bitsPerPixel: Int, _ numberOfComponents: Int, _ bitmaps: [RawBitmap], _ info: _fast_decode_info<M>) -> AnyImageBaseProtocol? {
         
         let info = info as! _fast_decode_info<Model>
@@ -149,7 +147,6 @@ extension ColorSpace: _Float16FastDecodeImageProtocol where Model: _Float16Color
 extension ColorSpace {
     
     @inlinable
-    @inline(__always)
     func _fast_create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol? {
         
         guard !bitmaps.isEmpty else { return nil }

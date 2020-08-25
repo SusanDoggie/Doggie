@@ -38,7 +38,6 @@ public struct CubicBezierTriangularPatch<Element: ScalarMultiplicative>: Equatab
     public var m003: Element
     
     @inlinable
-    @inline(__always)
     public init(_ m300: Element, _ m210: Element, _ m120: Element, _ m030: Element,
                 _ m201: Element, _ m111: Element, _ m021: Element,
                 _ m102: Element, _ m012: Element,
@@ -63,7 +62,6 @@ extension CubicBezierTriangularPatch: Hashable where Element: Hashable {
 extension CubicBezierTriangularPatch {
     
     @inlinable
-    @inline(__always)
     public func eval(_ u: Double, _ v: Double) -> Element {
         
         let w = 1 - u - v
@@ -93,7 +91,6 @@ extension CubicBezierTriangularPatch {
 extension CubicBezierTriangularPatch where Element == Vector {
     
     @inlinable
-    @inline(__always)
     public func normal(_ u: Double, _ v: Double) -> Element {
         
         let w = 1 - u - v
@@ -127,7 +124,6 @@ extension CubicBezierTriangularPatch where Element == Vector {
 }
 
 @inlinable
-@inline(__always)
 public func * (lhs: CubicBezierTriangularPatch<Point>, rhs: SDTransform) -> CubicBezierTriangularPatch<Point> {
     return CubicBezierTriangularPatch(lhs.m300 * rhs, lhs.m210 * rhs, lhs.m120 * rhs, lhs.m030 * rhs,
                                       lhs.m201 * rhs, lhs.m111 * rhs, lhs.m021 * rhs,
@@ -135,12 +131,10 @@ public func * (lhs: CubicBezierTriangularPatch<Point>, rhs: SDTransform) -> Cubi
                                       lhs.m003 * rhs)
 }
 @inlinable
-@inline(__always)
 public func *= (lhs: inout CubicBezierTriangularPatch<Point>, rhs: SDTransform) {
     lhs = lhs * rhs
 }
 @inlinable
-@inline(__always)
 public func * (lhs: CubicBezierTriangularPatch<Vector>, rhs: Matrix) -> CubicBezierTriangularPatch<Vector> {
     return CubicBezierTriangularPatch(lhs.m300 * rhs, lhs.m210 * rhs, lhs.m120 * rhs, lhs.m030 * rhs,
                                       lhs.m201 * rhs, lhs.m111 * rhs, lhs.m021 * rhs,
@@ -148,7 +142,6 @@ public func * (lhs: CubicBezierTriangularPatch<Vector>, rhs: Matrix) -> CubicBez
                                       lhs.m003 * rhs)
 }
 @inlinable
-@inline(__always)
 public func *= (lhs: inout CubicBezierTriangularPatch<Vector>, rhs: Matrix) {
     lhs = lhs * rhs
 }

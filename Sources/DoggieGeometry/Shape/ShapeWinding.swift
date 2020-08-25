@@ -33,7 +33,6 @@ extension Shape {
 }
 
 @inlinable
-@inline(__always)
 public func * (lhs: Shape.RenderOperation, rhs: SDTransform) -> Shape.RenderOperation {
     switch lhs {
     case let .triangle(p0, p1, p2): return .triangle(p0 * rhs, p1 * rhs, p2 * rhs)
@@ -43,12 +42,9 @@ public func * (lhs: Shape.RenderOperation, rhs: SDTransform) -> Shape.RenderOper
 }
 
 @inlinable
-@inline(__always)
 public func *= (lhs: inout Shape.RenderOperation, rhs: SDTransform) {
     lhs = lhs * rhs
 }
-
-@inline(__always)
 private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) throws -> Void) rethrows {
     
     let (q1, q2, q3) = CubicBezier(p0, p1, p2, p3)._polynomial
@@ -60,8 +56,6 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
     let discr = 3 * d2 * d2 - 4 * d1 * d3
     
     let area = CubicBezier(p0, p1, p2, p3).area + LineSegment(p3, p0).area
-    
-    @inline(__always)
     func draw(_ k0: Vector, _ k1: Vector, _ k2: Vector, _ k3: Vector, operation: (Shape.RenderOperation) throws -> Void) rethrows {
         
         var v0 = k0
@@ -186,8 +180,6 @@ private func _cubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operatio
 extension Shape.Component {
     
     public func render(_ operation: (Shape.RenderOperation) throws -> Void) rethrows {
-        
-        @inline(__always)
         func drawCubic(_ p0: Point, _ p1: Point, _ p2: Point, _ p3: Point, operation: (Shape.RenderOperation) throws -> Void) rethrows {
             
             let bezier = CubicBezier(p0, p1, p2, p3)

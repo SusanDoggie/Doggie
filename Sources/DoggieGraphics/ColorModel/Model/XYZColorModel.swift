@@ -31,13 +31,11 @@ public struct XYZColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         switch i {
@@ -51,7 +49,6 @@ public struct XYZColorModel: ColorModel {
     public var z: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.x = 0
         self.y = 0
@@ -59,7 +56,6 @@ public struct XYZColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(x: Double, y: Double, z: Double) {
         self.x = x
         self.y = y
@@ -67,13 +63,11 @@ public struct XYZColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(luminance: Double, point: Point) {
         self.init(luminance: luminance, x: point.x, y: point.y)
     }
     
     @inlinable
-    @inline(__always)
     public init(luminance: Double, x: Double, y: Double) {
         if y == 0 {
             self.x = 0
@@ -101,7 +95,6 @@ public struct XYZColorModel: ColorModel {
 extension XYZColorModel {
     
     @inlinable
-    @inline(__always)
     public init(_ Yxy: YxyColorModel) {
         self.init(luminance: Yxy.luminance, x: Yxy.x, y: Yxy.y)
     }
@@ -110,7 +103,6 @@ extension XYZColorModel {
 extension XYZColorModel {
     
     @inlinable
-    @inline(__always)
     public var luminance: Double {
         get {
             return y
@@ -121,7 +113,6 @@ extension XYZColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var point: Point {
         get {
             return Point(x: x, y: y) / (x + y + z)
@@ -135,7 +126,6 @@ extension XYZColorModel {
 extension XYZColorModel {
     
     @inlinable
-    @inline(__always)
     public static var black: XYZColorModel {
         return XYZColorModel()
     }
@@ -144,13 +134,11 @@ extension XYZColorModel {
 extension XYZColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> XYZColorModel {
         return XYZColorModel(x: x / 2, y: y, z: z / 2)
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> XYZColorModel {
         return XYZColorModel(x: x * 2, y: y, z: z * 2)
     }
@@ -159,13 +147,11 @@ extension XYZColorModel {
 extension XYZColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> XYZColorModel {
         return XYZColorModel(x: transform(x), y: transform(y), z: transform(z))
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, x)
@@ -175,7 +161,6 @@ extension XYZColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: XYZColorModel, _ transform: (Double, Double) -> Double) -> XYZColorModel {
         return XYZColorModel(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
     }
@@ -200,7 +185,6 @@ extension XYZColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }
@@ -208,15 +192,11 @@ extension XYZColorModel {
         public var x: Scalar
         public var y: Scalar
         public var z: Scalar
-        
-        @inline(__always)
         public init() {
             self.x = 0
             self.y = 0
             self.z = 0
         }
-        
-        @inline(__always)
         public init(x: Scalar, y: Scalar, z: Scalar) {
             self.x = x
             self.y = y
@@ -224,7 +204,6 @@ extension XYZColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: XYZColorModel) {
             self.x = Scalar(color.x)
             self.y = Scalar(color.y)
@@ -232,7 +211,6 @@ extension XYZColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.x = Scalar(components.x)
             self.y = Scalar(components.y)
@@ -250,7 +228,6 @@ extension XYZColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: XYZColorModel {
             get {
                 return XYZColorModel(x: Double(x), y: Double(y), z: Double(z))
@@ -265,13 +242,11 @@ extension XYZColorModel {
 extension XYZColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> XYZColorModel.FloatComponents<Scalar> {
         return XYZColorModel.FloatComponents(x: transform(x), y: transform(y), z: transform(z))
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, x)
@@ -281,19 +256,16 @@ extension XYZColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: XYZColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> XYZColorModel.FloatComponents<Scalar> {
         return XYZColorModel.FloatComponents(x: transform(self.x, other.x), y: transform(self.y, other.y), z: transform(self.z, other.z))
     }
 }
 
 @inlinable
-@inline(__always)
 public func * (lhs: XYZColorModel, rhs: Matrix) -> XYZColorModel {
     return XYZColorModel(x: lhs.x * rhs.a + lhs.y * rhs.b + lhs.z * rhs.c + rhs.d, y: lhs.x * rhs.e + lhs.y * rhs.f + lhs.z * rhs.g + rhs.h, z: lhs.x * rhs.i + lhs.y * rhs.j + lhs.z * rhs.k + rhs.l)
 }
 @inlinable
-@inline(__always)
 public func *= (lhs: inout XYZColorModel, rhs: Matrix) {
     lhs = lhs * rhs
 }

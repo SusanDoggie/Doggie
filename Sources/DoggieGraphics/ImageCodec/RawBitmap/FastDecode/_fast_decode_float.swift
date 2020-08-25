@@ -26,7 +26,6 @@
 extension Image where Pixel: _FloatComponentPixel {
     
     @inlinable
-    @inline(__always)
     mutating func _fast_decode_float<T>(_ bitmaps: [RawBitmap], _ is_opaque: Bool, _ should_denormalized: Bool, _ premultiplied: Bool, _: T.Type, callback: (UnsafeMutablePointer<Pixel.Scalar>, UnsafePointer<T>) -> Void) {
         
         let numberOfComponents = is_opaque ? Pixel.numberOfComponents - 1 : Pixel.numberOfComponents

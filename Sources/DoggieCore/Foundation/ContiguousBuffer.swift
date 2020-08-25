@@ -36,7 +36,6 @@ public protocol ContiguousMutableBuffer: ContiguousBuffer, MutableCollection {
 extension ContiguousBuffer {
     
     @inlinable
-    @inline(__always)
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Element>) throws -> R ) rethrows -> R {
         return try withContiguousStorageIfAvailable(body)!
     }
@@ -45,7 +44,6 @@ extension ContiguousBuffer {
 extension ContiguousMutableBuffer {
     
     @inlinable
-    @inline(__always)
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Element>) throws -> R) rethrows -> R {
         return try withContiguousMutableStorageIfAvailable(body)!
     }

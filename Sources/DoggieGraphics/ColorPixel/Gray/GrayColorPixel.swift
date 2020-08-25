@@ -31,7 +31,6 @@ public protocol _GrayColorPixelConvertible {
 extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
-    @inline(__always)
     public init<C: ColorPixel>(_ color: C) where Model == C.Model {
         if let color = color as? _GrayColorPixelConvertible {
             self = color._convert(Self.self)
@@ -41,7 +40,6 @@ extension ColorPixel where Self: _GrayColorPixel {
     }
     
     @inlinable
-    @inline(__always)
     public func _convert<Pixel: _GrayColorPixel>(_: Pixel.Type) -> Pixel {
         return Pixel(color: self)
     }
@@ -62,19 +60,16 @@ public protocol _GrayColorPixel: ColorPixel, _GrayColorPixelConvertible where Mo
 extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
-    @inline(__always)
     public init() {
         self.init(white: 0, opacity: 0)
     }
     
     @inlinable
-    @inline(__always)
     public init<C: _GrayColorPixel>(_ color: C) where C.Component == Component {
         self.init(white: color.w, opacity: color.a)
     }
     
     @inlinable
-    @inline(__always)
     init<C: _GrayColorPixel>(color: C) {
         
         let w = _mul_div(color.w, Component.max, C.Component.max)
@@ -84,13 +79,11 @@ extension ColorPixel where Self: _GrayColorPixel {
     }
     
     @inlinable
-    @inline(__always)
     public init<C: _GrayColorPixel>(_ color: C) {
         self.init(color: color)
     }
     
     @inlinable
-    @inline(__always)
     public init(color: GrayColorModel, opacity: Double = 1) {
         
         let w = Component((color.white * Double(Component.max)).clamped(to: 0...Double(Component.max)).rounded())
@@ -103,13 +96,11 @@ extension ColorPixel where Self: _GrayColorPixel {
 extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
-    @inline(__always)
     public static var bitsPerComponent: Int {
         return MemoryLayout<Component>.stride << 3
     }
     
     @inlinable
-    @inline(__always)
     public var bitsPerComponent: Int {
         return Self.bitsPerComponent
     }
@@ -118,13 +109,11 @@ extension ColorPixel where Self: _GrayColorPixel {
 extension ColorPixel where Self: _GrayColorPixel {
     
     @inlinable
-    @inline(__always)
     var _max: Double {
         return Double(Component.max)
     }
     
     @inlinable
-    @inline(__always)
     public func component(_ index: Int) -> Double {
         switch index {
         case 0: return Double(w) / _max
@@ -134,7 +123,6 @@ extension ColorPixel where Self: _GrayColorPixel {
     }
     
     @inlinable
-    @inline(__always)
     public mutating func setComponent(_ index: Int, _ value: Double) {
         switch index {
         case 0: self.w = Component((value * _max).clamped(to: 0..._max).rounded())
@@ -144,7 +132,6 @@ extension ColorPixel where Self: _GrayColorPixel {
     }
     
     @inlinable
-    @inline(__always)
     public var color: GrayColorModel {
         get {
             return GrayColorModel(white: Double(w) / _max)
@@ -154,7 +141,6 @@ extension ColorPixel where Self: _GrayColorPixel {
         }
     }
     @inlinable
-    @inline(__always)
     public var opacity: Double {
         get {
             return Double(a) / _max
@@ -165,20 +151,17 @@ extension ColorPixel where Self: _GrayColorPixel {
     }
     
     @inlinable
-    @inline(__always)
     public func premultiplied() -> Self {
         return Self(white: _mul_div(w, a, Component.max), opacity: a)
     }
     
     @inlinable
-    @inline(__always)
     public func unpremultiplied() -> Self {
         guard a != 0 else { return self }
         return Self(white: _mul_div(w, Component.max, a), opacity: a)
     }
     
     @inlinable
-    @inline(__always)
     public var isOpaque: Bool {
         return a == Component.max
     }
@@ -187,7 +170,6 @@ extension ColorPixel where Self: _GrayColorPixel {
 extension ColorPixel where Self: _GrayColorPixel, Component == UInt8 {
     
     @inlinable
-    @inline(__always)
     public func blended(source: Self) -> Self {
         
         switch (self.a, source.a) {
@@ -221,7 +203,6 @@ extension ColorPixel where Self: _GrayColorPixel, Component == UInt8 {
 extension ColorPixel where Self: _GrayColorPixel, Component == UInt16 {
     
     @inlinable
-    @inline(__always)
     public func blended(source: Self) -> Self {
         
         switch (self.a, source.a) {

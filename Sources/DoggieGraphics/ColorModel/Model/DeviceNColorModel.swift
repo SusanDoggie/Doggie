@@ -31,13 +31,11 @@ public struct Device2ColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 2
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -47,14 +45,12 @@ public struct Device2ColorModel: ColorModel {
     public var component_1: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double) {
         self.component_0 = component_0
         self.component_1 = component_1
@@ -74,13 +70,11 @@ public struct Device2ColorModel: ColorModel {
 extension Device2ColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> Device2ColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> Device2ColorModel {
         return self
     }
@@ -89,7 +83,6 @@ extension Device2ColorModel {
 extension Device2ColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device2ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -97,7 +90,6 @@ extension Device2ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -106,7 +98,6 @@ extension Device2ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device2ColorModel, _ transform: (Double, Double) -> Double) -> Device2ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -122,13 +113,11 @@ public struct Device3ColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -139,7 +128,6 @@ public struct Device3ColorModel: ColorModel {
     public var component_2: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -147,7 +135,6 @@ public struct Device3ColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double) {
         self.component_0 = component_0
         self.component_1 = component_1
@@ -168,13 +155,11 @@ public struct Device3ColorModel: ColorModel {
 extension Device3ColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> Device3ColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> Device3ColorModel {
         return self
     }
@@ -183,7 +168,6 @@ extension Device3ColorModel {
 extension Device3ColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device3ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -192,7 +176,6 @@ extension Device3ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -202,7 +185,6 @@ extension Device3ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device3ColorModel, _ transform: (Double, Double) -> Double) -> Device3ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -219,13 +201,11 @@ public struct Device4ColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 4
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -237,7 +217,6 @@ public struct Device4ColorModel: ColorModel {
     public var component_3: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -246,7 +225,6 @@ public struct Device4ColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double, _ component_3: Double) {
         self.component_0 = component_0
         self.component_1 = component_1
@@ -268,13 +246,11 @@ public struct Device4ColorModel: ColorModel {
 extension Device4ColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> Device4ColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> Device4ColorModel {
         return self
     }
@@ -283,7 +259,6 @@ extension Device4ColorModel {
 extension Device4ColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device4ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -293,7 +268,6 @@ extension Device4ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -304,7 +278,6 @@ extension Device4ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device4ColorModel, _ transform: (Double, Double) -> Double) -> Device4ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -322,13 +295,11 @@ public struct Device5ColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 5
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -341,7 +312,6 @@ public struct Device5ColorModel: ColorModel {
     public var component_4: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -351,7 +321,6 @@ public struct Device5ColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double) {
         self.component_0 = component_0
@@ -375,13 +344,11 @@ public struct Device5ColorModel: ColorModel {
 extension Device5ColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> Device5ColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> Device5ColorModel {
         return self
     }
@@ -390,7 +357,6 @@ extension Device5ColorModel {
 extension Device5ColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device5ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -404,7 +370,6 @@ extension Device5ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -416,7 +381,6 @@ extension Device5ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device5ColorModel, _ transform: (Double, Double) -> Double) -> Device5ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -438,13 +402,11 @@ public struct Device6ColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 6
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -458,7 +420,6 @@ public struct Device6ColorModel: ColorModel {
     public var component_5: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -469,7 +430,6 @@ public struct Device6ColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double) {
         self.component_0 = component_0
@@ -494,13 +454,11 @@ public struct Device6ColorModel: ColorModel {
 extension Device6ColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> Device6ColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> Device6ColorModel {
         return self
     }
@@ -509,7 +467,6 @@ extension Device6ColorModel {
 extension Device6ColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device6ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -524,7 +481,6 @@ extension Device6ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -537,7 +493,6 @@ extension Device6ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device6ColorModel, _ transform: (Double, Double) -> Double) -> Device6ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -560,13 +515,11 @@ public struct Device7ColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 7
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -581,7 +534,6 @@ public struct Device7ColorModel: ColorModel {
     public var component_6: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -593,7 +545,6 @@ public struct Device7ColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double) {
@@ -620,13 +571,11 @@ public struct Device7ColorModel: ColorModel {
 extension Device7ColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> Device7ColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> Device7ColorModel {
         return self
     }
@@ -635,7 +584,6 @@ extension Device7ColorModel {
 extension Device7ColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device7ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -652,7 +600,6 @@ extension Device7ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -666,7 +613,6 @@ extension Device7ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device7ColorModel, _ transform: (Double, Double) -> Double) -> Device7ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -691,13 +637,11 @@ public struct Device8ColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 8
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -713,7 +657,6 @@ public struct Device8ColorModel: ColorModel {
     public var component_7: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -726,7 +669,6 @@ public struct Device8ColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double) {
@@ -754,13 +696,11 @@ public struct Device8ColorModel: ColorModel {
 extension Device8ColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> Device8ColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> Device8ColorModel {
         return self
     }
@@ -769,7 +709,6 @@ extension Device8ColorModel {
 extension Device8ColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device8ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -787,7 +726,6 @@ extension Device8ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -802,7 +740,6 @@ extension Device8ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device8ColorModel, _ transform: (Double, Double) -> Double) -> Device8ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -828,13 +765,11 @@ public struct Device9ColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 9
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -851,7 +786,6 @@ public struct Device9ColorModel: ColorModel {
     public var component_8: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -865,7 +799,6 @@ public struct Device9ColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double) {
@@ -894,13 +827,11 @@ public struct Device9ColorModel: ColorModel {
 extension Device9ColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> Device9ColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> Device9ColorModel {
         return self
     }
@@ -909,7 +840,6 @@ extension Device9ColorModel {
 extension Device9ColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Device9ColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -928,7 +858,6 @@ extension Device9ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -944,7 +873,6 @@ extension Device9ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device9ColorModel, _ transform: (Double, Double) -> Double) -> Device9ColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -971,13 +899,11 @@ public struct DeviceAColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 10
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -995,7 +921,6 @@ public struct DeviceAColorModel: ColorModel {
     public var component_9: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1010,7 +935,6 @@ public struct DeviceAColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1041,13 +965,11 @@ public struct DeviceAColorModel: ColorModel {
 extension DeviceAColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> DeviceAColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> DeviceAColorModel {
         return self
     }
@@ -1056,7 +978,6 @@ extension DeviceAColorModel {
 extension DeviceAColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceAColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1077,7 +998,6 @@ extension DeviceAColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1094,7 +1014,6 @@ extension DeviceAColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceAColorModel, _ transform: (Double, Double) -> Double) -> DeviceAColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1123,13 +1042,11 @@ public struct DeviceBColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 11
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1148,7 +1065,6 @@ public struct DeviceBColorModel: ColorModel {
     public var component_10: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1164,7 +1080,6 @@ public struct DeviceBColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1196,13 +1111,11 @@ public struct DeviceBColorModel: ColorModel {
 extension DeviceBColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> DeviceBColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> DeviceBColorModel {
         return self
     }
@@ -1211,7 +1124,6 @@ extension DeviceBColorModel {
 extension DeviceBColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceBColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1233,7 +1145,6 @@ extension DeviceBColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1251,7 +1162,6 @@ extension DeviceBColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceBColorModel, _ transform: (Double, Double) -> Double) -> DeviceBColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1281,13 +1191,11 @@ public struct DeviceCColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 12
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1307,7 +1215,6 @@ public struct DeviceCColorModel: ColorModel {
     public var component_11: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1324,7 +1231,6 @@ public struct DeviceCColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1357,13 +1263,11 @@ public struct DeviceCColorModel: ColorModel {
 extension DeviceCColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> DeviceCColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> DeviceCColorModel {
         return self
     }
@@ -1372,7 +1276,6 @@ extension DeviceCColorModel {
 extension DeviceCColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceCColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1395,7 +1298,6 @@ extension DeviceCColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1414,7 +1316,6 @@ extension DeviceCColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceCColorModel, _ transform: (Double, Double) -> Double) -> DeviceCColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1445,13 +1346,11 @@ public struct DeviceDColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 13
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1472,7 +1371,6 @@ public struct DeviceDColorModel: ColorModel {
     public var component_12: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1490,7 +1388,6 @@ public struct DeviceDColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1525,13 +1422,11 @@ public struct DeviceDColorModel: ColorModel {
 extension DeviceDColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> DeviceDColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> DeviceDColorModel {
         return self
     }
@@ -1540,7 +1435,6 @@ extension DeviceDColorModel {
 extension DeviceDColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceDColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1565,7 +1459,6 @@ extension DeviceDColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1585,7 +1478,6 @@ extension DeviceDColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceDColorModel, _ transform: (Double, Double) -> Double) -> DeviceDColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1618,13 +1510,11 @@ public struct DeviceEColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 14
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1646,7 +1536,6 @@ public struct DeviceEColorModel: ColorModel {
     public var component_13: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1665,7 +1554,6 @@ public struct DeviceEColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1701,13 +1589,11 @@ public struct DeviceEColorModel: ColorModel {
 extension DeviceEColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> DeviceEColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> DeviceEColorModel {
         return self
     }
@@ -1716,7 +1602,6 @@ extension DeviceEColorModel {
 extension DeviceEColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceEColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1742,7 +1627,6 @@ extension DeviceEColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1763,7 +1647,6 @@ extension DeviceEColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceEColorModel, _ transform: (Double, Double) -> Double) -> DeviceEColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1797,13 +1680,11 @@ public struct DeviceFColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 15
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -1826,7 +1707,6 @@ public struct DeviceFColorModel: ColorModel {
     public var component_14: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.component_0 = 0
         self.component_1 = 0
@@ -1846,7 +1726,6 @@ public struct DeviceFColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(_ component_0: Double, _ component_1: Double, _ component_2: Double,
                 _ component_3: Double, _ component_4: Double, _ component_5: Double,
                 _ component_6: Double, _ component_7: Double, _ component_8: Double,
@@ -1883,13 +1762,11 @@ public struct DeviceFColorModel: ColorModel {
 extension DeviceFColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> DeviceFColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> DeviceFColorModel {
         return self
     }
@@ -1898,7 +1775,6 @@ extension DeviceFColorModel {
 extension DeviceFColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> DeviceFColorModel {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -1925,7 +1801,6 @@ extension DeviceFColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -1947,7 +1822,6 @@ extension DeviceFColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceFColorModel, _ transform: (Double, Double) -> Double) -> DeviceFColorModel {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -1986,35 +1860,28 @@ extension Device2ColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 2
         }
         
         public var component_0: Scalar
         public var component_1: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: Device2ColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -2031,7 +1898,6 @@ extension Device2ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: Device2ColorModel {
             get {
                 return Device2ColorModel(Double(component_0), Double(component_1))
@@ -2046,7 +1912,6 @@ extension Device2ColorModel {
 extension Device2ColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> Device2ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2054,7 +1919,6 @@ extension Device2ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2063,7 +1927,6 @@ extension Device2ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device2ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device2ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2090,7 +1953,6 @@ extension Device3ColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }
@@ -2098,15 +1960,11 @@ extension Device3ColorModel {
         public var component_0: Scalar
         public var component_1: Scalar
         public var component_2: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
             self.component_2 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
@@ -2114,7 +1972,6 @@ extension Device3ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: Device3ColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -2122,7 +1979,6 @@ extension Device3ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -2140,7 +1996,6 @@ extension Device3ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: Device3ColorModel {
             get {
                 return Device3ColorModel(Double(component_0), Double(component_1), Double(component_2))
@@ -2155,7 +2010,6 @@ extension Device3ColorModel {
 extension Device3ColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> Device3ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2164,7 +2018,6 @@ extension Device3ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2174,7 +2027,6 @@ extension Device3ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device3ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device3ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2202,7 +2054,6 @@ extension Device4ColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 4
         }
@@ -2211,16 +2062,12 @@ extension Device4ColorModel {
         public var component_1: Scalar
         public var component_2: Scalar
         public var component_3: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
             self.component_2 = 0
             self.component_3 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar, _ component_3: Scalar) {
             self.component_0 = component_0
             self.component_1 = component_1
@@ -2229,7 +2076,6 @@ extension Device4ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: Device4ColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -2238,7 +2084,6 @@ extension Device4ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -2257,7 +2102,6 @@ extension Device4ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: Device4ColorModel {
             get {
                 return Device4ColorModel(Double(component_0), Double(component_1), Double(component_2), Double(component_3))
@@ -2272,7 +2116,6 @@ extension Device4ColorModel {
 extension Device4ColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> Device4ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2282,7 +2125,6 @@ extension Device4ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2293,7 +2135,6 @@ extension Device4ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device4ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device4ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2322,7 +2163,6 @@ extension Device5ColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 5
         }
@@ -2332,8 +2172,6 @@ extension Device5ColorModel {
         public var component_2: Scalar
         public var component_3: Scalar
         public var component_4: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -2341,8 +2179,6 @@ extension Device5ColorModel {
             self.component_3 = 0
             self.component_4 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar) {
             self.component_0 = component_0
@@ -2353,7 +2189,6 @@ extension Device5ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: Device5ColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -2363,7 +2198,6 @@ extension Device5ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -2383,7 +2217,6 @@ extension Device5ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: Device5ColorModel {
             get {
                 return Device5ColorModel(
@@ -2401,7 +2234,6 @@ extension Device5ColorModel {
 extension Device5ColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> Device5ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2415,7 +2247,6 @@ extension Device5ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2427,7 +2258,6 @@ extension Device5ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device5ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device5ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2460,7 +2290,6 @@ extension Device6ColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 6
         }
@@ -2471,8 +2300,6 @@ extension Device6ColorModel {
         public var component_3: Scalar
         public var component_4: Scalar
         public var component_5: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -2481,8 +2308,6 @@ extension Device6ColorModel {
             self.component_4 = 0
             self.component_5 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar) {
             self.component_0 = component_0
@@ -2494,7 +2319,6 @@ extension Device6ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: Device6ColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -2505,7 +2329,6 @@ extension Device6ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -2526,7 +2349,6 @@ extension Device6ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: Device6ColorModel {
             get {
                 return Device6ColorModel(
@@ -2544,7 +2366,6 @@ extension Device6ColorModel {
 extension Device6ColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> Device6ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2559,7 +2380,6 @@ extension Device6ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2572,7 +2392,6 @@ extension Device6ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device6ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device6ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2606,7 +2425,6 @@ extension Device7ColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 7
         }
@@ -2618,8 +2436,6 @@ extension Device7ColorModel {
         public var component_4: Scalar
         public var component_5: Scalar
         public var component_6: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -2629,8 +2445,6 @@ extension Device7ColorModel {
             self.component_5 = 0
             self.component_6 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
                     _ component_6: Scalar) {
@@ -2644,7 +2458,6 @@ extension Device7ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: Device7ColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -2656,7 +2469,6 @@ extension Device7ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -2678,7 +2490,6 @@ extension Device7ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: Device7ColorModel {
             get {
                 return Device7ColorModel(
@@ -2697,7 +2508,6 @@ extension Device7ColorModel {
 extension Device7ColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> Device7ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2714,7 +2524,6 @@ extension Device7ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2728,7 +2537,6 @@ extension Device7ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device7ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device7ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2764,7 +2572,6 @@ extension Device8ColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 8
         }
@@ -2777,8 +2584,6 @@ extension Device8ColorModel {
         public var component_5: Scalar
         public var component_6: Scalar
         public var component_7: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -2789,8 +2594,6 @@ extension Device8ColorModel {
             self.component_6 = 0
             self.component_7 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
                     _ component_6: Scalar, _ component_7: Scalar) {
@@ -2805,7 +2608,6 @@ extension Device8ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: Device8ColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -2818,7 +2620,6 @@ extension Device8ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -2841,7 +2642,6 @@ extension Device8ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: Device8ColorModel {
             get {
                 return Device8ColorModel(
@@ -2860,7 +2660,6 @@ extension Device8ColorModel {
 extension Device8ColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> Device8ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -2878,7 +2677,6 @@ extension Device8ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -2893,7 +2691,6 @@ extension Device8ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device8ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device8ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -2930,7 +2727,6 @@ extension Device9ColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 9
         }
@@ -2944,8 +2740,6 @@ extension Device9ColorModel {
         public var component_6: Scalar
         public var component_7: Scalar
         public var component_8: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -2957,8 +2751,6 @@ extension Device9ColorModel {
             self.component_7 = 0
             self.component_8 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
                     _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar) {
@@ -2974,7 +2766,6 @@ extension Device9ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: Device9ColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -2988,7 +2779,6 @@ extension Device9ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -3012,7 +2802,6 @@ extension Device9ColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: Device9ColorModel {
             get {
                 return Device9ColorModel(
@@ -3031,7 +2820,6 @@ extension Device9ColorModel {
 extension Device9ColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> Device9ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3050,7 +2838,6 @@ extension Device9ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3066,7 +2853,6 @@ extension Device9ColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Device9ColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> Device9ColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -3104,7 +2890,6 @@ extension DeviceAColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 10
         }
@@ -3119,8 +2904,6 @@ extension DeviceAColorModel {
         public var component_7: Scalar
         public var component_8: Scalar
         public var component_9: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3133,8 +2916,6 @@ extension DeviceAColorModel {
             self.component_8 = 0
             self.component_9 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
                     _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
@@ -3152,7 +2933,6 @@ extension DeviceAColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: DeviceAColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -3167,7 +2947,6 @@ extension DeviceAColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -3192,7 +2971,6 @@ extension DeviceAColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: DeviceAColorModel {
             get {
                 return DeviceAColorModel(
@@ -3212,7 +2990,6 @@ extension DeviceAColorModel {
 extension DeviceAColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> DeviceAColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3233,7 +3010,6 @@ extension DeviceAColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3250,7 +3026,6 @@ extension DeviceAColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceAColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceAColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -3290,7 +3065,6 @@ extension DeviceBColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 11
         }
@@ -3306,8 +3080,6 @@ extension DeviceBColorModel {
         public var component_8: Scalar
         public var component_9: Scalar
         public var component_10: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3321,8 +3093,6 @@ extension DeviceBColorModel {
             self.component_9 = 0
             self.component_10 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
                     _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
@@ -3341,7 +3111,6 @@ extension DeviceBColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: DeviceBColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -3357,7 +3126,6 @@ extension DeviceBColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -3383,7 +3151,6 @@ extension DeviceBColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: DeviceBColorModel {
             get {
                 return DeviceBColorModel(
@@ -3403,7 +3170,6 @@ extension DeviceBColorModel {
 extension DeviceBColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> DeviceBColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3425,7 +3191,6 @@ extension DeviceBColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3443,7 +3208,6 @@ extension DeviceBColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceBColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceBColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -3484,7 +3248,6 @@ extension DeviceCColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 12
         }
@@ -3501,8 +3264,6 @@ extension DeviceCColorModel {
         public var component_9: Scalar
         public var component_10: Scalar
         public var component_11: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3517,8 +3278,6 @@ extension DeviceCColorModel {
             self.component_10 = 0
             self.component_11 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
                     _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
@@ -3538,7 +3297,6 @@ extension DeviceCColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: DeviceCColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -3555,7 +3313,6 @@ extension DeviceCColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -3582,7 +3339,6 @@ extension DeviceCColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: DeviceCColorModel {
             get {
                 return DeviceCColorModel(
@@ -3602,7 +3358,6 @@ extension DeviceCColorModel {
 extension DeviceCColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> DeviceCColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3625,7 +3380,6 @@ extension DeviceCColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3644,7 +3398,6 @@ extension DeviceCColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceCColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceCColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -3686,7 +3439,6 @@ extension DeviceDColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 13
         }
@@ -3704,8 +3456,6 @@ extension DeviceDColorModel {
         public var component_10: Scalar
         public var component_11: Scalar
         public var component_12: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3721,8 +3471,6 @@ extension DeviceDColorModel {
             self.component_11 = 0
             self.component_12 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
                     _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
@@ -3744,7 +3492,6 @@ extension DeviceDColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: DeviceDColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -3762,7 +3509,6 @@ extension DeviceDColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -3790,7 +3536,6 @@ extension DeviceDColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: DeviceDColorModel {
             get {
                 return DeviceDColorModel(
@@ -3811,7 +3556,6 @@ extension DeviceDColorModel {
 extension DeviceDColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> DeviceDColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -3836,7 +3580,6 @@ extension DeviceDColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -3856,7 +3599,6 @@ extension DeviceDColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceDColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceDColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -3900,7 +3642,6 @@ extension DeviceEColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 14
         }
@@ -3919,8 +3660,6 @@ extension DeviceEColorModel {
         public var component_11: Scalar
         public var component_12: Scalar
         public var component_13: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -3937,8 +3676,6 @@ extension DeviceEColorModel {
             self.component_12 = 0
             self.component_13 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
                     _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
@@ -3961,7 +3698,6 @@ extension DeviceEColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: DeviceEColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -3980,7 +3716,6 @@ extension DeviceEColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -4009,7 +3744,6 @@ extension DeviceEColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: DeviceEColorModel {
             get {
                 return DeviceEColorModel(
@@ -4030,7 +3764,6 @@ extension DeviceEColorModel {
 extension DeviceEColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> DeviceEColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -4056,7 +3789,6 @@ extension DeviceEColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -4077,7 +3809,6 @@ extension DeviceEColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceEColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceEColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)
@@ -4122,7 +3853,6 @@ extension DeviceFColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 15
         }
@@ -4142,8 +3872,6 @@ extension DeviceFColorModel {
         public var component_12: Scalar
         public var component_13: Scalar
         public var component_14: Scalar
-        
-        @inline(__always)
         public init() {
             self.component_0 = 0
             self.component_1 = 0
@@ -4161,8 +3889,6 @@ extension DeviceFColorModel {
             self.component_13 = 0
             self.component_14 = 0
         }
-        
-        @inline(__always)
         public init(_ component_0: Scalar, _ component_1: Scalar, _ component_2: Scalar,
                     _ component_3: Scalar, _ component_4: Scalar, _ component_5: Scalar,
                     _ component_6: Scalar, _ component_7: Scalar, _ component_8: Scalar,
@@ -4186,7 +3912,6 @@ extension DeviceFColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: DeviceFColorModel) {
             self.component_0 = Scalar(color.component_0)
             self.component_1 = Scalar(color.component_1)
@@ -4206,7 +3931,6 @@ extension DeviceFColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.component_0 = Scalar(components.component_0)
             self.component_1 = Scalar(components.component_1)
@@ -4236,7 +3960,6 @@ extension DeviceFColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: DeviceFColorModel {
             get {
                 return DeviceFColorModel(
@@ -4257,7 +3980,6 @@ extension DeviceFColorModel {
 extension DeviceFColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> DeviceFColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0)
         let component_1 = transform(self.component_1)
@@ -4284,7 +4006,6 @@ extension DeviceFColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, component_0)
@@ -4306,7 +4027,6 @@ extension DeviceFColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: DeviceFColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> DeviceFColorModel.FloatComponents<Scalar> {
         let component_0 = transform(self.component_0, other.component_0)
         let component_1 = transform(self.component_1, other.component_1)

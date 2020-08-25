@@ -24,7 +24,6 @@
 //
 
 @inlinable
-@inline(__always)
 public func vec_op<T1, T2>(_ count: Int,
                            _ input: UnsafePointer<T1>, _ in_stride: Int,
                            _ output: UnsafeMutablePointer<T2>, _ out_stride: Int,
@@ -41,7 +40,6 @@ public func vec_op<T1, T2>(_ count: Int,
 }
 
 @inlinable
-@inline(__always)
 public func vec_op<T1, T2, T3>(_ count: Int,
                                _ a: UnsafePointer<T1>, _ a_stride: Int,
                                _ b: UnsafePointer<T2>, _ b_stride: Int,
@@ -61,7 +59,6 @@ public func vec_op<T1, T2, T3>(_ count: Int,
 }
 
 @inlinable
-@inline(__always)
 public func vec_op<T1, T2, T3, T4>(_ count: Int,
                                    _ a: UnsafePointer<T1>, _ a_stride: Int,
                                    _ b: UnsafePointer<T2>, _ b_stride: Int,
@@ -84,7 +81,6 @@ public func vec_op<T1, T2, T3, T4>(_ count: Int,
 }
 
 @inlinable
-@inline(__always)
 public func Dot<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left_stride: Int, _ right: UnsafePointer<T>, _ right_stride: Int) -> T {
     
     var left = left
@@ -100,7 +96,6 @@ public func Dot<T: FloatingPoint>(_ count: Int, _ left: UnsafePointer<T>, _ left
 }
 
 @inlinable
-@inline(__always)
 public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var signal = signal
@@ -131,7 +126,6 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
     }
 }
 @inlinable
-@inline(__always)
 public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ residue: UnsafeMutablePointer<T>, _ residue_stride: Int) {
     
     var signal = signal
@@ -185,7 +179,6 @@ public func Deconvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePo
 }
 
 @inlinable
-@inline(__always)
 public func MatrixElimination<T: FloatingPoint>(_ column: Int, _ row: Int, _ matrix: UnsafeMutablePointer<T>, _ stride_row: Int, _ stride_col: Int) -> Bool {
     
     let row_offset = stride_row * stride_col * column

@@ -31,13 +31,11 @@ public struct YxyColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -48,7 +46,6 @@ public struct YxyColorModel: ColorModel {
     public var y: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.luminance = 0
         self.x = 0
@@ -56,13 +53,11 @@ public struct YxyColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(luminance: Double, point: Point) {
         self.init(luminance: luminance, x: point.x, y: point.y)
     }
     
     @inlinable
-    @inline(__always)
     public init(luminance: Double, x: Double, y: Double) {
         self.luminance = luminance
         self.x = x
@@ -94,7 +89,6 @@ extension YxyColorModel {
 extension YxyColorModel {
     
     @inlinable
-    @inline(__always)
     public var point: Point {
         get {
             return Point(x: x, y: y)
@@ -109,7 +103,6 @@ extension YxyColorModel {
 extension YxyColorModel {
     
     @inlinable
-    @inline(__always)
     public static var black: YxyColorModel {
         return YxyColorModel()
     }
@@ -118,13 +111,11 @@ extension YxyColorModel {
 extension YxyColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> YxyColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> YxyColorModel {
         return self
     }
@@ -133,13 +124,11 @@ extension YxyColorModel {
 extension YxyColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> YxyColorModel {
         return YxyColorModel(luminance: transform(luminance), x: transform(x), y: transform(y))
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, luminance)
@@ -149,7 +138,6 @@ extension YxyColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: YxyColorModel, _ transform: (Double, Double) -> Double) -> YxyColorModel {
         return YxyColorModel(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
@@ -174,7 +162,6 @@ extension YxyColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }
@@ -182,15 +169,11 @@ extension YxyColorModel {
         public var luminance: Scalar
         public var x: Scalar
         public var y: Scalar
-        
-        @inline(__always)
         public init() {
             self.luminance = 0
             self.x = 0
             self.y = 0
         }
-        
-        @inline(__always)
         public init(luminance: Scalar, x: Scalar, y: Scalar) {
             self.luminance = luminance
             self.x = x
@@ -198,7 +181,6 @@ extension YxyColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: YxyColorModel) {
             self.luminance = Scalar(color.luminance)
             self.x = Scalar(color.x)
@@ -206,7 +188,6 @@ extension YxyColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.luminance = Scalar(components.luminance)
             self.x = Scalar(components.x)
@@ -224,7 +205,6 @@ extension YxyColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: YxyColorModel {
             get {
                 return YxyColorModel(luminance: Double(luminance), x: Double(x), y: Double(y))
@@ -239,13 +219,11 @@ extension YxyColorModel {
 extension YxyColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> YxyColorModel.FloatComponents<Scalar> {
         return YxyColorModel.FloatComponents(luminance: transform(luminance), x: transform(x), y: transform(y))
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, luminance)
@@ -255,7 +233,6 @@ extension YxyColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: YxyColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> YxyColorModel.FloatComponents<Scalar> {
         return YxyColorModel.FloatComponents(luminance: transform(self.luminance, other.luminance), x: transform(self.x, other.x), y: transform(self.y, other.y))
     }

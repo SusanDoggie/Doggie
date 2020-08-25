@@ -111,25 +111,21 @@ public struct Degree2Roots: Sequence, IteratorProtocol {
     public var values: (Double?, Double?)
     
     @inlinable
-    @inline(__always)
     public init() {
         self.values = (nil, nil)
     }
     
     @inlinable
-    @inline(__always)
     public init(_ a: Double) {
         self.values = (a, nil)
     }
     
     @inlinable
-    @inline(__always)
     public init(_ a: Double, _ b: Double) {
         self.values = (a, b)
     }
     
     @inlinable
-    @inline(__always)
     public mutating func next() -> Double? {
         let first = values.0
         values = (values.1, nil)
@@ -138,7 +134,6 @@ public struct Degree2Roots: Sequence, IteratorProtocol {
 }
 
 @inlinable
-@inline(__always)
 public func degree2roots(_ b: Double, _ c: Double) -> Degree2Roots {
     if b.almostZero() {
         if c < 0 {
@@ -163,7 +158,6 @@ public func degree2roots(_ b: Double, _ c: Double) -> Degree2Roots {
 }
 
 @inlinable
-@inline(__always)
 public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, (Double, Double)) {
     if d.almostZero() {
         return (0, (b, c))
@@ -199,7 +193,6 @@ public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, 
 }
 
 @inlinable
-@inline(__always)
 public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero() {
         let z = Array(degree2roots(b, c))
@@ -231,7 +224,6 @@ public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
 }
 
 @inlinable
-@inline(__always)
 public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> [Double] {
     
     if e.almostZero() {
@@ -301,13 +293,11 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
 // MARK: Interpolation
 
 @inlinable
-@inline(__always)
 public func LinearInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T {
     return a + t * (b - a)
 }
 
 @inlinable
-@inline(__always)
 public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T where T.Scalar: FloatingMathProtocol {
     let u = 1 - T.Scalar.cos(t * T.Scalar.pi)
     let v = 0.5 * u
@@ -315,7 +305,6 @@ public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ 
 }
 
 @inlinable
-@inline(__always)
 public func CubicInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T) -> T {
     let t2 = t * t
     let m0 = d - c - a + b
@@ -329,7 +318,6 @@ public func CubicInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b
 }
 
 @inlinable
-@inline(__always)
 public func HermiteInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T, _ c: T, _ d: T, _ s: T.Scalar, _ e: T.Scalar) -> T {
     let t2 = t * t
     let t3 = t2 * t

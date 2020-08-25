@@ -32,7 +32,6 @@ public struct ABGR32ColorPixel: _RGBColorPixel {
     public var r: UInt8
     
     @inlinable
-    @inline(__always)
     public init(red: UInt8, green: UInt8, blue: UInt8, opacity: UInt8 = 0xFF) {
         self.r = red
         self.g = green

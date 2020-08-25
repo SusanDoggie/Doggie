@@ -30,14 +30,12 @@ public struct Rational: Comparable, Hashable {
     public let denominator: Int64
     
     @inlinable
-    @inline(__always)
     public init<T: BinaryInteger>(_ numerator: T) {
         self.numerator = Int64(numerator)
         self.denominator = 1
     }
     
     @inlinable
-    @inline(__always)
     public init<T: UnsignedInteger>(_ numerator: T, _ denominator: T) {
         
         if numerator == 0 || denominator == 0 || numerator == 1 || denominator == 1 {
@@ -55,7 +53,6 @@ public struct Rational: Comparable, Hashable {
     }
     
     @inlinable
-    @inline(__always)
     public init<T: SignedInteger>(_ numerator: T, _ denominator: T) {
         
         if numerator == 0 || denominator == 0 || numerator == 1 || denominator == 1 {
@@ -78,7 +75,6 @@ public struct Rational: Comparable, Hashable {
     }
     
     @inlinable
-    @inline(__always)
     public init<T: BinaryFloatingPoint>(_ value: T) {
         
         if value.isZero {
@@ -104,13 +100,11 @@ public struct Rational: Comparable, Hashable {
 extension Rational: ExpressibleByFloatLiteral {
     
     @inlinable
-    @inline(__always)
     public init(integerLiteral value: Int64) {
         self.init(value)
     }
     
     @inlinable
-    @inline(__always)
     public init(floatLiteral value: Double) {
         self.init(value)
     }
@@ -119,7 +113,6 @@ extension Rational: ExpressibleByFloatLiteral {
 extension Rational: CustomStringConvertible {
     
     @inlinable
-    @inline(__always)
     public var description: String {
         return "\(doubleValue)"
     }
@@ -128,7 +121,6 @@ extension Rational: CustomStringConvertible {
 extension Rational: SignedNumeric {
     
     @inlinable
-    @inline(__always)
     public init?<T>(exactly source: T) where T: BinaryInteger {
         guard let value = Int64(exactly: source) else { return nil }
         self.init(value)
@@ -137,13 +129,11 @@ extension Rational: SignedNumeric {
     public typealias Magnitude = Rational
     
     @inlinable
-    @inline(__always)
     public static func abs(_ x: Rational) -> Rational {
         return x.magnitude
     }
     
     @inlinable
-    @inline(__always)
     public var magnitude: Rational {
         return Rational(Swift.abs(numerator), denominator)
     }
@@ -152,13 +142,11 @@ extension Rational: SignedNumeric {
 extension Rational {
     
     @inlinable
-    @inline(__always)
     public var floatValue: Float {
         return Float(doubleValue)
     }
     
     @inlinable
-    @inline(__always)
     public var doubleValue: Double {
         return Double(numerator) / Double(denominator)
     }
@@ -167,13 +155,11 @@ extension Rational {
 extension Rational {
     
     @inlinable
-    @inline(__always)
     public func distance(to other: Rational) -> Rational {
         return other - self
     }
     
     @inlinable
-    @inline(__always)
     public func advanced(by n: Rational) -> Rational {
         return self + n
     }
@@ -184,14 +170,12 @@ extension Rational: ScalarProtocol {
     public typealias Scalar = Rational
     
     @inlinable
-    @inline(__always)
     public init() {
         self.init(0)
     }
 }
 
 @inlinable
-@inline(__always)
 func _common_denom(_ lhs: Rational, _ rhs: Rational) -> (Int64, Int64, Int64) {
     let denom = gcd(lhs.denominator, rhs.denominator)
     let d1 = lhs.denominator / denom
@@ -200,70 +184,59 @@ func _common_denom(_ lhs: Rational, _ rhs: Rational) -> (Int64, Int64, Int64) {
 }
 
 @inlinable
-@inline(__always)
 public func <(lhs: Rational, rhs: Rational) -> Bool {
     let (n1, n2, _) = _common_denom(lhs, rhs)
     return n1 < n2
 }
 
 @inlinable
-@inline(__always)
 public prefix func +(x: Rational) -> Rational {
     return x
 }
 
 @inlinable
-@inline(__always)
 public prefix func -(x: Rational) -> Rational {
     return Rational(-x.numerator, x.denominator)
 }
 
 @inlinable
-@inline(__always)
 public func +(lhs: Rational, rhs: Rational) -> Rational {
     let (n1, n2, denom) = _common_denom(lhs, rhs)
     return Rational(n1 + n2, denom)
 }
 
 @inlinable
-@inline(__always)
 public func -(lhs: Rational, rhs: Rational) -> Rational {
     let (n1, n2, denom) = _common_denom(lhs, rhs)
     return Rational(n1 - n2, denom)
 }
 
 @inlinable
-@inline(__always)
 public func *(lhs: Rational, rhs: Rational) -> Rational {
     return Rational(lhs.numerator * rhs.numerator, lhs.denominator * rhs.denominator)
 }
 
 @inlinable
-@inline(__always)
 public func /(lhs: Rational, rhs: Rational) -> Rational {
     return Rational(lhs.numerator * rhs.denominator, lhs.denominator * rhs.numerator)
 }
 
 @inlinable
-@inline(__always)
 public func +=(lhs: inout Rational, rhs: Rational) {
     lhs = lhs + rhs
 }
 
 @inlinable
-@inline(__always)
 public func -=(lhs: inout Rational, rhs: Rational) {
     lhs = lhs - rhs
 }
 
 @inlinable
-@inline(__always)
 public func *=(lhs: inout Rational, rhs: Rational) {
     lhs = lhs * rhs
 }
 
 @inlinable
-@inline(__always)
 public func /=(lhs: inout Rational, rhs: Rational) {
     lhs = lhs / rhs
 }

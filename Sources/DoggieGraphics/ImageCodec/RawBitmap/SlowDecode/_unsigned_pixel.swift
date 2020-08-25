@@ -26,7 +26,6 @@
 extension Image {
     
     @inlinable
-    @inline(__always)
     mutating func _decode_unsigned_pixel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ is_opaque: Bool, _: T.Type) {
         
         if bitmap.bitsPerPixel % 8 == 0 && bitmap.endianness == .big && bitmap.channels.allSatisfy({ $0.bitRange.lowerBound % 8 == 0 && $0.bitRange.count == T.bitWidth }) {
@@ -46,7 +45,6 @@ extension Image {
 extension Image {
     
     @inlinable
-    @inline(__always)
     mutating func _decode_unsigned_aligned_pixel<T: FixedWidthInteger & UnsignedInteger>(_ bitmap: RawBitmap, _ is_opaque: Bool, _: T.Type) {
         
         let width = self.width
