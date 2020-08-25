@@ -341,7 +341,7 @@ extension Rect {
     @inlinable
     @inline(__always)
     public func contains(_ point: Point) -> Bool {
-        return !self.isEmpty && minX...maxX ~= point.x && minY...maxY ~= point.y
+        return self.isEmpty ? false : minX...maxX ~= point.x && minY...maxY ~= point.y
     }
     
     @inlinable
