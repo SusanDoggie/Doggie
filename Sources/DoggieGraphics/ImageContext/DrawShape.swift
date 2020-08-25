@@ -40,6 +40,8 @@ extension ImageContext {
         
         let (bound, stencil) = self._stencil(shape: shape)
         
+        guard !bound.isNull else { return }
+        
         guard var _min_x = Int(exactly: floor(bound.minX)) else { return }
         guard var _min_y = Int(exactly: floor(bound.minY)) else { return }
         guard var _max_x = Int(exactly: ceil(bound.maxX)) else { return }

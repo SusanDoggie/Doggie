@@ -181,7 +181,7 @@ extension Shape {
     public var originalBoundary: Rect {
         return cache.lck.synchronized {
             if cache.originalBoundary == nil {
-                cache.originalBoundary = self.components.lazy.map { $0.boundary }.reduce { $0.union($1) } ?? Rect()
+                cache.originalBoundary = self.components.reduce(.null) { $0.union($1.boundary) }
             }
             return cache.originalBoundary!
         }

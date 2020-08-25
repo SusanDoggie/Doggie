@@ -120,12 +120,12 @@ extension Shape {
         precondition(stencil.count == width * height, "incorrect size of stencil.")
         
         if stencil.isEmpty {
-            return Rect()
+            return .null
         }
         
         let transform = self.transform
         
-        var bound: Rect?
+        var bound = Rect.null
         
         stencil.withUnsafeMutableBufferPointer { stencil in
             
@@ -138,14 +138,14 @@ extension Shape {
                 _render(_op, width: width, height: height, stencil: ptr)
                 
                 switch _op {
-                case let .triangle(p0, p1, p2): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
-                case let .quadratic(p0, p1, p2): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
-                case let .cubic(p0, p1, p2, _, _, _): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
+                case let .triangle(p0, p1, p2): bound = bound.union(Rect.bound([p0, p1, p2]))
+                case let .quadratic(p0, p1, p2): bound = bound.union(Rect.bound([p0, p1, p2]))
+                case let .cubic(p0, p1, p2, _, _, _): bound = bound.union(Rect.bound([p0, p1, p2]))
                 }
             }
         }
         
-        return bound ?? Rect()
+        return bound
     }
 }
 
