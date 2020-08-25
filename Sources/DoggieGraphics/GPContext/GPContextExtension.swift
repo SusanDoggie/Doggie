@@ -151,7 +151,11 @@ extension GPContext {
 extension GPContext {
     
     public func draw(image: CGImage, in rect: Rect) {
+        
+        guard !rect.isEmpty else { return }
+        
         let transform = SDTransform.scale(x: rect.width / Double(image.width), y: rect.height / Double(image.height)) * SDTransform.translate(x: rect.minX, y: rect.minY)
+        
         self.draw(image: image, transform: transform)
     }
     
@@ -233,12 +237,14 @@ extension GPContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>, colorSpace: ColorSpace<RGBColorModel>) {
         
+        let boundary = shape.originalBoundary
+        guard !boundary.isEmpty else { return }
+        
+        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
+        
         self.beginTransparencyLayer()
         
         self.clip(shape: shape, winding: winding)
-        
-        let boundary = shape.originalBoundary
-        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
         
         self.concatenate(transform)
         

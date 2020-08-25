@@ -26,6 +26,7 @@
 extension ImageContext {
     
     @inlinable
+    @inline(__always)
     func clip(shape: Shape, winding: (Int16) -> Bool) {
         
         self.clearClipBuffer(with: 0)
@@ -41,6 +42,8 @@ extension ImageContext {
         guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
         
         let (bound, stencil) = self._stencil(shape: shape)
+        
+        guard !bound.isEmpty else { return }
         
         guard var _min_x = Int(exactly: floor(bound.minX)) else { return }
         guard var _min_y = Int(exactly: floor(bound.minY)) else { return }
@@ -148,6 +151,7 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
+    @inline(__always)
     public func clip(shape: Shape, winding: Shape.WindingRule) {
         
         switch winding {

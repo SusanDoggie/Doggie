@@ -29,6 +29,7 @@ public struct TypedData<T>: RandomAccessCollection {
     public var data: Data
     
     @inlinable
+    @inline(__always)
     public init(data: Data) {
         self.data = data
     }
@@ -37,16 +38,19 @@ public struct TypedData<T>: RandomAccessCollection {
 extension TypedData {
     
     @inlinable
+    @inline(__always)
     public var startIndex: Int {
         return 0
     }
     
     @inlinable
+    @inline(__always)
     public var endIndex: Int {
         return data.count / MemoryLayout<T>.stride
     }
     
     @inlinable
+    @inline(__always)
     public subscript(position: Int) -> T {
         assert(self.indices ~= position, "Index out of range.")
         return data.load(fromByteOffset: position * MemoryLayout<T>.stride, as: T.self)
@@ -56,6 +60,7 @@ extension TypedData {
 extension Data {
     
     @inlinable
+    @inline(__always)
     public func typed<T>(as: T.Type) -> TypedData<T> {
         return TypedData(data: self)
     }

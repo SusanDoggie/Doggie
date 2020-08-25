@@ -51,7 +51,7 @@ public struct ShapeRegion {
     init<S : Sequence>(solids: S) where S.Element == ShapeRegion.Solid {
         let solids = Array(solids)
         self.solids = solids
-        self.boundary = solids.first.map { solids.dropFirst().reduce($0.boundary) { $0.union($1.boundary) } } ?? Rect()
+        self.boundary = solids.reduce(.null) { $0.union($1.boundary) }
     }
     
     @frozen

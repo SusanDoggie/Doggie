@@ -39,6 +39,7 @@ protocol RasterizeBufferProtocol {
 extension RasterizeBufferProtocol {
     
     @inlinable
+    @inline(__always)
     func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Vector, Point, Self) -> Void) {
         
         let det = (p1.y - p2.y) * (p0.x - p2.x) + (p2.x - p1.x) * (p0.y - p2.y)
@@ -63,19 +64,24 @@ extension RasterizeBufferProtocol {
     }
     
     @inlinable
+    @inline(__always)
     func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Point, Self) -> Void) {
         self._rasterize(p0, p1, p2) { x, y, buf in operation(Point(x: x, y: y), buf) }
     }
     
     @inlinable
+    @inline(__always)
     func rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Self) -> Void) {
         self._rasterize(p0, p1, p2) { _, _, buf in operation(buf) }
     }
     
     @inlinable
+    @inline(__always)
     func _rasterize(_ p0: Point, _ p1: Point, _ p2: Point, operation: (Int, Int, Self) -> Void) {
         
         guard Rect.bound([p0, p1, p2]).isIntersect(Rect(x: 0, y: 0, width: Double(width), height: Double(height))) else { return }
+        
+        @inline(__always)
         func scan(_ p0: Point, _ p1: Point, _ y: Double) -> (Double, Double)? {
             let d = p1.y - p0.y
             if d.almostZero() {
@@ -85,6 +91,8 @@ extension RasterizeBufferProtocol {
             let r = (p0.x * p1.y - p1.x * p0.y) / d
             return (q * y + r, q)
         }
+        
+        @inline(__always)
         func intRange(_ min: Double, _ max: Double, _ bound: Range<Int>) -> Range<Int> {
             
             let _min = min.rounded(.up)
@@ -107,6 +115,8 @@ extension RasterizeBufferProtocol {
         sort(&q0, &q1, &q2) { $0.y < $1.y }
         
         guard let (mid_x, _) = scan(q0, q2, q1.y) else { return }
+        
+        @inline(__always)
         func _drawLoop(_ s0: Point, _ s1: Point, operation: (Int, Int, Self) -> Void) {
             
             let y_range = intRange(s0.y, s1.y, 0..<height)

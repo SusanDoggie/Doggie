@@ -24,6 +24,7 @@
 //
 
 @inlinable
+@inline(__always)
 func cooleytukey_forward_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input
@@ -112,6 +113,7 @@ func cooleytukey_forward_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ 
 }
 
 @inlinable
+@inline(__always)
 func cooleytukey_forward_8<T: BinaryFloatingPoint>(_ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_stride: Int, _ in_count: (Int, Int), _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var in_real = in_real
@@ -238,6 +240,7 @@ func cooleytukey_forward_8<T: BinaryFloatingPoint>(_ in_real: UnsafePointer<T>, 
 }
 
 @inlinable
+@inline(__always)
 func cooleytukey_inverse_8<T: BinaryFloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var input = input

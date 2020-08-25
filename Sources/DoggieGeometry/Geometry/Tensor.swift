@@ -39,6 +39,7 @@ public protocol Tensor: MapReduceArithmetic, RandomAccessCollection, MutableColl
 extension Tensor {
     
     @inlinable
+    @inline(__always)
     public static var zero: Self {
         return Self()
     }
@@ -47,21 +48,25 @@ extension Tensor {
 extension Tensor {
     
     @inlinable
+    @inline(__always)
     public var numberOfComponents: Int {
         return Self.numberOfComponents
     }
     
     @inlinable
+    @inline(__always)
     public var count: Int {
         return Self.numberOfComponents
     }
     
     @inlinable
+    @inline(__always)
     public var startIndex: Int {
         return 0
     }
     
     @inlinable
+    @inline(__always)
     public var endIndex: Int {
         return Self.numberOfComponents
     }
@@ -70,6 +75,7 @@ extension Tensor {
 extension Tensor {
     
     @inlinable
+    @inline(__always)
     public var magnitude: Scalar {
         get {
             return self.reduce { fma($1, $1, $0) }?.squareRoot() ?? 0
@@ -82,23 +88,27 @@ extension Tensor {
     }
     
     @inlinable
+    @inline(__always)
     public var unit: Self {
         let m = self.magnitude
         return m == 0 ? Self() : self / m
     }
     
     @inlinable
+    @inline(__always)
     public func distance(to: Self) -> Scalar {
         return (to - self).magnitude
     }
 }
 
 @inlinable
+@inline(__always)
 public func abs<T: Tensor>(_ x: T) -> T.Scalar {
     return x.magnitude
 }
 
 @inlinable
+@inline(__always)
 public func dot<T: Tensor>(_ lhs: T, _ rhs: T) -> T.Scalar {
     return lhs.combined(rhs) { $0 * $1 }.reduce { $0 + $1 } ?? 0
 }

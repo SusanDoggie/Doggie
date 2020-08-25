@@ -24,21 +24,25 @@
 //
 
 @inlinable
+@inline(__always)
 public func ColorSeparation<Pixel>(_ image: Image<Pixel>, _ palette: [Pixel]) -> Image<Pixel> {
     return Image(texture: ColorSeparation(Texture(image: image), palette), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
+@inline(__always)
 public func ColorSeparation<Pixel>(_ texture: Texture<Pixel>, _ palette: [Pixel]) -> Texture<Pixel> {
     return palette.map(Float32ColorPixel.init).withUnsafeBufferPointer { palette in texture.map { pixel in Pixel(palette.min { Float32ColorPixel(pixel).distance(to: $0) }!) } }
 }
 
 @inlinable
+@inline(__always)
 public func ColorSeparation<Pixel: _FloatComponentPixel>(_ image: Image<Pixel>, _ palette: [Pixel]) -> Image<Pixel> where Pixel.Scalar: FloatingMathProtocol {
     return Image(texture: ColorSeparation(Texture(image: image), palette), resolution: image.resolution, colorSpace: image.colorSpace)
 }
 
 @inlinable
+@inline(__always)
 public func ColorSeparation<Pixel: _FloatComponentPixel>(_ texture: Texture<Pixel>, _ palette: [Pixel]) -> Texture<Pixel> where Pixel.Scalar: FloatingMathProtocol {
     return palette.withUnsafeBufferPointer { palette in texture.map { pixel in palette.min { pixel.distance(to: $0) }! } }
 }

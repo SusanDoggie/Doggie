@@ -124,6 +124,7 @@ extension SVGNoiseGenerator {
         var wrapY: Int
         
         @inlinable
+        @inline(__always)
         init() {
             self.width = 0
             self.height = 0
@@ -133,16 +134,19 @@ extension SVGNoiseGenerator {
     }
     
     @inlinable
+    @inline(__always)
     static func s_curve(_ t: Double) -> Double {
         return t * t * (3.0 - 2.0 * t)
     }
     
     @inlinable
+    @inline(__always)
     static func lerp(_ t: Double, _ a: Double, _ b: Double) -> Double {
         return a + t * (b - a)
     }
     
     @inlinable
+    @inline(__always)
     func noise2(_ uLatticeSelector: UnsafePointer<Int>, _ fGradient: UnsafePointer<Point>, _ point: Point, _ stitch: StitchInfo?) -> Double {
         
         var bx0, bx1, by0, by1, b00, b10, b01, b11: Int
@@ -204,6 +208,7 @@ extension SVGNoiseGenerator {
     }
     
     @inlinable
+    @inline(__always)
     func _turbulence(_ uLatticeSelector: UnsafeBufferPointer<Int>, _ fGradient: UnsafeBufferPointer<Point>, _ channel: Int, _ point: Point, _ baseFreqX: Double, _ baseFreqY: Double, _ numOctaves: Int, _ fractalSum: Bool, _ stitchTile: Rect?) -> Double {
         
         var stitch = StitchInfo()
@@ -275,6 +280,7 @@ extension SVGNoiseGenerator {
     }
     
     @inlinable
+    @inline(__always)
     public func turbulence(_ channel: Int, _ point: Point, _ baseFreqX: Double, _ baseFreqY: Double, _ numOctaves: Int, _ fractalSum: Bool, _ stitchTile: Rect?) -> Double {
         return uLatticeSelector.withUnsafeBufferPointer { uLatticeSelector in fGradient.withUnsafeBufferPointer { fGradient in self._turbulence(uLatticeSelector, fGradient, channel, point, baseFreqX, baseFreqY, numOctaves, fractalSum, stitchTile) } }
     }

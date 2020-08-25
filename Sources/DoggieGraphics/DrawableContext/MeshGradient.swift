@@ -45,6 +45,7 @@ public struct MeshGradient<Color: ColorProtocol> {
     public var opacity: Double = 1
     
     @inlinable
+    @inline(__always)
     public init(type: MeshGradientPatchType, column: Int, row: Int, points: [Point], colors: [Color]) {
         self.type = type
         self.row = row
@@ -57,6 +58,7 @@ public struct MeshGradient<Color: ColorProtocol> {
 extension MeshGradient where Color == AnyColor {
     
     @inlinable
+    @inline(__always)
     public init<M>(_ gradient: MeshGradient<DoggieGraphics.Color<M>>) {
         self.init(type: gradient.type, column: gradient.column, row: gradient.row, points: gradient.points, colors: gradient.colors.map(AnyColor.init))
         self.transform = gradient.transform
@@ -67,6 +69,7 @@ extension MeshGradient where Color == AnyColor {
 extension MeshGradient {
     
     @inlinable
+    @inline(__always)
     public init?(type: MeshGradientPatchType, column: Int, row: Int, patches: [CubicBezierPatch<Point>], colors: [(Color, Color, Color, Color)]) {
         
         var _points: [Point] = []
@@ -124,6 +127,7 @@ extension MeshGradient: Hashable where Color: Hashable {
 extension MeshGradient {
     
     @inlinable
+    @inline(__always)
     public func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent = .default) -> MeshGradient<DoggieGraphics.Color<Model>> {
         var gradient = MeshGradient<DoggieGraphics.Color<Model>>(type: self.type, column: self.column, row: self.row, points: self.points, colors: self.colors.map { $0.convert(to: colorSpace, intent: intent) })
         gradient.transform = self.transform
@@ -132,6 +136,7 @@ extension MeshGradient {
     }
     
     @inlinable
+    @inline(__always)
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> MeshGradient<AnyColor> {
         var gradient = MeshGradient<AnyColor>(type: self.type, column: self.column, row: self.row, points: self.points, colors: self.colors.map { $0.convert(to: colorSpace, intent: intent) })
         gradient.transform = self.transform
@@ -143,6 +148,7 @@ extension MeshGradient {
 extension MeshGradient {
     
     @inlinable
+    @inline(__always)
     public var patches: [CubicBezierPatch<Point>] {
         
         var result: [CubicBezierPatch<Point>] = []
@@ -187,6 +193,7 @@ extension MeshGradient {
     }
     
     @inlinable
+    @inline(__always)
     public var patch_colors: [(Color, Color, Color, Color)] {
         
         var result: [(Color, Color, Color, Color)] = []

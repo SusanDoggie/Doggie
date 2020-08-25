@@ -30,11 +30,13 @@ public struct GrayColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
+    @inline(__always)
     public static var numberOfComponents: Int {
         return 1
     }
     
     @inlinable
+    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -43,6 +45,7 @@ public struct GrayColorModel: ColorModel {
     public var white: Double
     
     @inlinable
+    @inline(__always)
     public init(white: Double) {
         self.white = white
     }
@@ -61,6 +64,7 @@ public struct GrayColorModel: ColorModel {
 extension GrayColorModel {
     
     @inlinable
+    @inline(__always)
     public init() {
         self.white = 0
     }
@@ -69,11 +73,13 @@ extension GrayColorModel {
 extension GrayColorModel {
     
     @inlinable
+    @inline(__always)
     public static var black: GrayColorModel {
         return GrayColorModel()
     }
     
     @inlinable
+    @inline(__always)
     public static var white: GrayColorModel {
         return GrayColorModel(white: 1)
     }
@@ -82,11 +88,13 @@ extension GrayColorModel {
 extension GrayColorModel {
     
     @inlinable
+    @inline(__always)
     public func normalized() -> GrayColorModel {
         return self
     }
     
     @inlinable
+    @inline(__always)
     public func denormalized() -> GrayColorModel {
         return self
     }
@@ -95,11 +103,13 @@ extension GrayColorModel {
 extension GrayColorModel {
     
     @inlinable
+    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: transform(white))
     }
     
     @inlinable
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, white)
@@ -107,6 +117,7 @@ extension GrayColorModel {
     }
     
     @inlinable
+    @inline(__always)
     public func combined(_ other: GrayColorModel, _ transform: (Double, Double) -> Double) -> GrayColorModel {
         return GrayColorModel(white: transform(self.white, other.white))
     }
@@ -130,24 +141,31 @@ extension GrayColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
+        @inline(__always)
         public static var numberOfComponents: Int {
             return 1
         }
         
         public var white: Scalar
+        
+        @inline(__always)
         public init() {
             self.white = 0
         }
+        
+        @inline(__always)
         public init(white: Scalar) {
             self.white = white
         }
         
         @inlinable
+        @inline(__always)
         public init(_ color: GrayColorModel) {
             self.white = Scalar(color.white)
         }
         
         @inlinable
+        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.white = Scalar(components.white)
         }
@@ -163,6 +181,7 @@ extension GrayColorModel {
         }
         
         @inlinable
+        @inline(__always)
         public var model: GrayColorModel {
             get {
                 return GrayColorModel(white: Double(white))
@@ -177,11 +196,13 @@ extension GrayColorModel {
 extension GrayColorModel.FloatComponents {
     
     @inlinable
+    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> GrayColorModel.FloatComponents<Scalar> {
         return GrayColorModel.FloatComponents(white: transform(white))
     }
     
     @inlinable
+    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, white)
@@ -189,6 +210,7 @@ extension GrayColorModel.FloatComponents {
     }
     
     @inlinable
+    @inline(__always)
     public func combined(_ other: GrayColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> GrayColorModel.FloatComponents<Scalar> {
         return GrayColorModel.FloatComponents(white: transform(self.white, other.white))
     }

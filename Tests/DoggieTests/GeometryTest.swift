@@ -77,11 +77,11 @@ class GeometryTest: XCTestCase {
         let r1 = Rect.null
         let r2 = Rect(x: 0, y: -1, width: 60, height: 90)
         
-        XCTAssertEqual(r1.union(r2), .null)
-        XCTAssertEqual(r2.union(r1), .null)
+        XCTAssertEqual(r1.union(r2), r2)
+        XCTAssertEqual(r2.union(r1), r2)
         
-        XCTAssertEqual(r1.union(.infinite), .null)
-        XCTAssertEqual(Rect.infinite.union(r1), .null)
+        XCTAssertEqual(r1.union(.infinite), .infinite)
+        XCTAssertEqual(Rect.infinite.union(r1), .infinite)
     }
     
     func testRectInfiniteUnion() {

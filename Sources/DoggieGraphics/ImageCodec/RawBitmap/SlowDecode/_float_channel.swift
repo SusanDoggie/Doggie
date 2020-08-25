@@ -26,6 +26,7 @@
 extension Image {
     
     @inlinable
+    @inline(__always)
     mutating func _decode_float_channel<T: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type) {
         
         let width = self.width
@@ -45,12 +46,16 @@ extension Image {
         
         let _base = (1 as UInt64) << (channel.bitRange.count - 1)
         let _mask = ((1 as UInt64) << channel.bitRange.count) &- 1
+        
+        @inline(__always)
         func read_pixel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
             switch bitmap.endianness {
             case .big: return offset == 0 ? source[i] : (source[i] << offset) | (source[i + 1] >> (8 - offset))
             case .little: return source[bytesPerPixel - i - 1]
             }
         }
+        
+        @inline(__always)
         func read_channel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int, _ bits_count: Int) -> UInt8 {
             switch channel.endianness {
             case .big: return channelBitsShift + bits_count <= 8 ? read_pixel(source, offset, i + channelBytesOffset) << channelBitsShift : (read_pixel(source, offset, i + channelBytesOffset) << channelBitsShift) | (read_pixel(source, offset, i + 1 + channelBytesOffset) >> (8 - channelBitsShift))

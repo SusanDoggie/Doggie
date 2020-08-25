@@ -24,6 +24,7 @@
 //
 
 @inlinable
+@inline(__always)
 func half_cooleytukey_forward_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>) {
     
     var input = input
@@ -38,6 +39,7 @@ func half_cooleytukey_forward_2<T: FloatingPoint>(_ input: UnsafePointer<T>, _ i
 }
 
 @inlinable
+@inline(__always)
 func half_cooleytukey_inverse_2<T: FloatingPoint>(_ in_real: UnsafePointer<T>, _ in_imag: UnsafePointer<T>, _ in_count: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     var output = output

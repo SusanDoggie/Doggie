@@ -63,6 +63,7 @@ public enum ColorCompositingMode: CaseIterable {
 extension ColorCompositingMode {
     
     @inlinable
+    @inline(__always)
     public static var `default`: ColorCompositingMode {
         return .sourceOver
     }
@@ -71,6 +72,7 @@ extension ColorCompositingMode {
 extension ColorCompositingMode {
     
     @inlinable
+    @inline(__always)
     func mix<T: ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
         
         switch self {
@@ -95,6 +97,7 @@ extension ColorCompositingMode {
 extension ColorPixel {
     
     @inlinable
+    @inline(__always)
     public func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self {
         
         switch (compositingMode, blendMode) {
@@ -171,6 +174,7 @@ extension ColorPixel {
 extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGraphics.ColorComponents {
     
     @inlinable
+    @inline(__always)
     public func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self {
         
         switch (compositingMode, blendMode) {

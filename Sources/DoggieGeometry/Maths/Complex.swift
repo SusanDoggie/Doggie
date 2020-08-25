@@ -30,26 +30,31 @@ public struct Complex: Hashable {
     public var imag: Double
     
     @inlinable
+    @inline(__always)
     public init() {
         self.real = 0
         self.imag = 0
     }
     @inlinable
+    @inline(__always)
     public init(_ real: Double) {
         self.real = real
         self.imag = 0
     }
     @inlinable
+    @inline(__always)
     public init(real: Double, imag: Double) {
         self.real = real
         self.imag = imag
     }
     @inlinable
+    @inline(__always)
     public init(_ real: Int) {
         self.real = Double(real)
         self.imag = 0
     }
     @inlinable
+    @inline(__always)
     public init(real: Int, imag: Int) {
         self.real = Double(real)
         self.imag = Double(imag)
@@ -59,6 +64,7 @@ public struct Complex: Hashable {
 extension Complex {
     
     @inlinable
+    @inline(__always)
     public var conjugate: Complex {
         return Complex(real: real, imag: -imag)
     }
@@ -67,12 +73,14 @@ extension Complex {
 extension Complex {
     
     @inlinable
+    @inline(__always)
     public init(magnitude: Double, phase: Double) {
         self.real = magnitude * cos(phase)
         self.imag = magnitude * sin(phase)
     }
     
     @inlinable
+    @inline(__always)
     public var magnitude: Double {
         get {
             return hypot(real, imag)
@@ -83,6 +91,7 @@ extension Complex {
     }
     
     @inlinable
+    @inline(__always)
     public var phase: Double {
         get {
             return atan2(imag, real)
@@ -96,6 +105,7 @@ extension Complex {
 extension Complex: CustomStringConvertible {
     
     @inlinable
+    @inline(__always)
     public var description: String {
         
         var print = ""
@@ -128,6 +138,7 @@ extension Complex: CustomStringConvertible {
 extension Complex: Codable {
     
     @inlinable
+    @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         self.real = try container.decode(Double.self)
@@ -135,6 +146,7 @@ extension Complex: Codable {
     }
     
     @inlinable
+    @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(real)
@@ -147,48 +159,58 @@ extension Complex: Multiplicative, ScalarMultiplicative {
     public typealias Scalar = Double
     
     @inlinable
+    @inline(__always)
     public static var zero: Complex {
         return Complex()
     }
 }
 
 @inlinable
+@inline(__always)
 public func norm(_ value: Complex) -> Double {
     return value.real * value.real + value.imag * value.imag
 }
 @inlinable
+@inline(__always)
 public func sgn(_ value: Complex) -> Complex {
     return value / value.magnitude
 }
 @inlinable
+@inline(__always)
 public func conj(_ value: Complex) -> Complex {
     return Complex(real: value.real, imag: -value.imag)
 }
 
 @inlinable
+@inline(__always)
 public func exp(_ value: Complex) -> Complex {
     return exp(value.real) * cis(value.imag)
 }
 @inlinable
+@inline(__always)
 public func cis(_ theta: Double) -> Complex {
     return Complex(real: cos(theta), imag: sin(theta))
 }
 
 @inlinable
+@inline(__always)
 public func cocis(_ theta: Double) -> Complex {
     return Complex(real: sin(theta), imag: cos(theta))
 }
 
 @inlinable
+@inline(__always)
 public func sin(_ x: Complex) -> Complex {
     return Complex(real: sin(x.real) * cosh(x.imag), imag: cos(x.real) * sinh(x.imag))
 }
 @inlinable
+@inline(__always)
 public func cos(_ x: Complex) -> Complex {
     return Complex(real: cos(x.real) * cosh(x.imag), imag: -sin(x.real) * sinh(x.imag))
 }
 
 @inlinable
+@inline(__always)
 public func tan(_ x: Complex) -> Complex {
     let _real = x.real * 2
     let _imag = x.imag * 2
@@ -197,6 +219,7 @@ public func tan(_ x: Complex) -> Complex {
 }
 
 @inlinable
+@inline(__always)
 public func cot(_ x: Complex) -> Complex {
     let _real = x.real * 2
     let _imag = x.imag * 2
@@ -205,28 +228,33 @@ public func cot(_ x: Complex) -> Complex {
 }
 
 @inlinable
+@inline(__always)
 public func sec(_ x: Complex) -> Complex {
     let d = cos(x.real * 2) + cosh(x.imag * 2)
     return Complex(real: 2 * cos(x.real) * cosh(x.imag) / d, imag: 2 * sin(x.real) * sinh(x.imag) / d)
 }
 
 @inlinable
+@inline(__always)
 public func csc(_ x: Complex) -> Complex {
     let d = cos(x.real * 2) - cosh(x.imag * 2)
     return Complex(real: -2 * sin(x.real) * cosh(x.imag) / d, imag: 2 * cos(x.real) * sinh(x.imag) / d)
 }
 
 @inlinable
+@inline(__always)
 public func sinh(_ x: Complex) -> Complex {
     return Complex(real: sinh(x.real) * cos(x.imag), imag: cosh(x.real) * sin(x.imag))
 }
 
 @inlinable
+@inline(__always)
 public func cosh(_ x: Complex) -> Complex {
     return Complex(real: cosh(x.real) * cos(x.imag), imag: sinh(x.real) * sin(x.imag))
 }
 
 @inlinable
+@inline(__always)
 public func tanh(_ x: Complex) -> Complex {
     let _real = x.real * 2
     let _imag = x.imag * 2
@@ -235,63 +263,75 @@ public func tanh(_ x: Complex) -> Complex {
 }
 
 @inlinable
+@inline(__always)
 public func asin(_ x: Complex) -> Complex {
     let z = asinh(Complex(real: x.imag, imag: -x.real))
     return Complex(real: -z.imag, imag: z.real)
 }
 
 @inlinable
+@inline(__always)
 public func acos(_ x: Complex) -> Complex {
     return 0.5 * .pi - asin(x)
 }
 
 @inlinable
+@inline(__always)
 public func atan(_ x: Complex) -> Complex {
     let z = atanh(Complex(real: -x.imag, imag: x.real))
     return Complex(real: z.imag, imag: -z.real)
 }
 
 @inlinable
+@inline(__always)
 public func asec(_ x: Complex) -> Complex {
     return 0.5 * .pi - acsc(x)
 }
 
 @inlinable
+@inline(__always)
 public func acsc(_ x: Complex) -> Complex {
     return asin(1 / x)
 }
 
 @inlinable
+@inline(__always)
 public func acot(_ x: Complex) -> Complex {
     return atan(1 / x)
 }
 
 @inlinable
+@inline(__always)
 public func asinh(_ x: Complex) -> Complex {
     return log(x + sqrt(x * x + 1))
 }
 
 @inlinable
+@inline(__always)
 public func acosh(_ x: Complex) -> Complex {
     return log(x + sqrt(x * x - 1))
 }
 
 @inlinable
+@inline(__always)
 public func atanh(_ x: Complex) -> Complex {
     return (log(1 + x) - log(1 - x)) * 0.5
 }
 
 @inlinable
+@inline(__always)
 public func log(_ c: Complex) -> Complex {
     return Complex(real: log(c.magnitude), imag: c.phase)
 }
 
 @inlinable
+@inline(__always)
 public func log10(_ c: Complex) -> Complex {
     return log(c) / M_LN10
 }
 
 @inlinable
+@inline(__always)
 public func pow(_ a: Complex, _ b: Complex) -> Complex {
     let _norm = norm(a)
     let _arg = a.phase
@@ -299,63 +339,77 @@ public func pow(_ a: Complex, _ b: Complex) -> Complex {
 }
 
 @inlinable
+@inline(__always)
 public func pow(_ c: Complex, _ n: Double) -> Complex {
     return pow(norm(c), 0.5 * n) * cis(c.phase * n)
 }
 
 @inlinable
+@inline(__always)
 public func sqrt(_ c: Complex) -> Complex {
     return sqrt(c.magnitude) * cis(0.5 * c.phase)
 }
 
 @inlinable
+@inline(__always)
 public func cbrt(_ c: Complex) -> Complex {
     return cbrt(c.magnitude) * cis(c.phase / 3)
 }
 
 @inlinable
+@inline(__always)
 public func +(lhs: Complex, rhs: Double) -> Complex {
     return Complex(real: lhs.real + rhs, imag: lhs.imag)
 }
 @inlinable
+@inline(__always)
 public func -(lhs: Complex, rhs: Double) -> Complex {
     return Complex(real: lhs.real - rhs, imag: lhs.imag)
 }
 @inlinable
+@inline(__always)
 public func +(lhs: Double, rhs: Complex) -> Complex {
     return Complex(real: lhs + rhs.real, imag: rhs.imag)
 }
 @inlinable
+@inline(__always)
 public func -(lhs: Double, rhs: Complex) -> Complex {
     return Complex(real: lhs - rhs.real, imag: -rhs.imag)
 }
 @inlinable
+@inline(__always)
 public func +(lhs: Complex, rhs: Complex) -> Complex {
     return Complex(real: lhs.real + rhs.real, imag: lhs.imag + rhs.imag)
 }
 @inlinable
+@inline(__always)
 public func -(lhs: Complex, rhs: Complex) -> Complex {
     return Complex(real: lhs.real - rhs.real, imag: lhs.imag - rhs.imag)
 }
 @inlinable
+@inline(__always)
 public func *(lhs: Complex, rhs: Double) -> Complex {
     return Complex(real: lhs.real * rhs, imag: lhs.imag * rhs)
 }
 @inlinable
+@inline(__always)
 public func *(lhs: Double, rhs: Complex) -> Complex {
     return Complex(real: lhs * rhs.real, imag: lhs * rhs.imag)
 }
 @inlinable
+@inline(__always)
 public func *(lhs: Complex, rhs: Complex) -> Complex {
     let _real = lhs.real * rhs.real - lhs.imag * rhs.imag
     let _imag = lhs.real * rhs.imag + lhs.imag * rhs.real
     return Complex(real: _real, imag: _imag)
 }
 @inlinable
+@inline(__always)
 public func /(lhs: Complex, rhs: Double) -> Complex {
     return Complex(real: lhs.real / rhs, imag: lhs.imag / rhs)
 }
 @inlinable
+@inline(__always)
 public func /(lhs: Double, rhs: Complex) -> Complex {
     let _norm = norm(rhs)
     let _real = lhs * rhs.real / _norm
@@ -363,6 +417,7 @@ public func /(lhs: Double, rhs: Complex) -> Complex {
     return Complex(real: _real, imag: _imag)
 }
 @inlinable
+@inline(__always)
 public func /(lhs: Complex, rhs: Complex) -> Complex {
     let _norm = norm(rhs)
     let _real = lhs.real * rhs.real + lhs.imag * rhs.imag
@@ -370,42 +425,51 @@ public func /(lhs: Complex, rhs: Complex) -> Complex {
     return Complex(real: _real / _norm, imag: _imag / _norm)
 }
 @inlinable
+@inline(__always)
 public prefix func + (value: Complex) -> Complex {
     return value
 }
 @inlinable
+@inline(__always)
 public prefix func -(value: Complex) -> Complex {
     return Complex(real: -value.real, imag: -value.imag)
 }
 @inlinable
+@inline(__always)
 public func +=(lhs: inout Complex, rhs: Double) {
     lhs.real += rhs
 }
 @inlinable
+@inline(__always)
 public func -=(lhs: inout Complex, rhs: Double) {
     lhs.real -= rhs
 }
 @inlinable
+@inline(__always)
 public func *=(lhs: inout Complex, rhs: Double) {
     lhs.real *= rhs
     lhs.imag *= rhs
 }
 @inlinable
+@inline(__always)
 public func /=(lhs: inout Complex, rhs: Double) {
     lhs.real /= rhs
     lhs.imag /= rhs
 }
 @inlinable
+@inline(__always)
 public func +=(lhs: inout Complex, rhs: Complex) {
     lhs.real += rhs.real
     lhs.imag += rhs.imag
 }
 @inlinable
+@inline(__always)
 public func -=(lhs: inout Complex, rhs: Complex) {
     lhs.real -= rhs.real
     lhs.imag -= rhs.imag
 }
 @inlinable
+@inline(__always)
 public func *=(lhs: inout Complex, rhs: Complex) {
     let _real = lhs.real * rhs.real - lhs.imag * rhs.imag
     let _imag = lhs.real * rhs.imag + lhs.imag * rhs.real
@@ -413,6 +477,7 @@ public func *=(lhs: inout Complex, rhs: Complex) {
     lhs.imag = _imag
 }
 @inlinable
+@inline(__always)
 public func /=(lhs: inout Complex, rhs: Complex) {
     let _norm = norm(rhs)
     let _real = lhs.real * rhs.real + lhs.imag * rhs.imag
@@ -421,26 +486,32 @@ public func /=(lhs: inout Complex, rhs: Complex) {
     lhs.imag = _imag / _norm
 }
 @inlinable
+@inline(__always)
 public func ==(lhs: Double, rhs: Complex) -> Bool {
     return lhs == rhs.real && rhs.imag == 0.0
 }
 @inlinable
+@inline(__always)
 public func !=(lhs: Double, rhs: Complex) -> Bool {
     return lhs != rhs.real || rhs.imag != 0.0
 }
 @inlinable
+@inline(__always)
 public func ==(lhs: Complex, rhs: Double) -> Bool {
     return lhs.real == rhs && lhs.imag == 0.0
 }
 @inlinable
+@inline(__always)
 public func !=(lhs: Complex, rhs: Double) -> Bool {
     return lhs.real != rhs || lhs.imag != 0.0
 }
 @inlinable
+@inline(__always)
 public func ==(lhs: Complex, rhs: Complex) -> Bool {
     return lhs.real == rhs.real && lhs.imag == rhs.imag
 }
 @inlinable
+@inline(__always)
 public func !=(lhs: Complex, rhs: Complex) -> Bool {
     return lhs.real != rhs.real || lhs.imag != rhs.imag
 }

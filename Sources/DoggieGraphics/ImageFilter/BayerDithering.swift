@@ -24,6 +24,7 @@
 //
 
 @inlinable
+@inline(__always)
 public func _bayer_dithering<T: FixedWidthInteger & UnsignedInteger>(_ n: T, _ x: T, _ y: T) -> T {
     precondition(n.isPower2, "n is not power of 2.")
     let _n = n - 1

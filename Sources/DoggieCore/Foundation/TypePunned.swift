@@ -24,6 +24,7 @@
 //
 
 @inlinable
+@inline(__always)
 public func withUnsafeTypePunnedPointer<T, U, R>(of value: T, to: U.Type, do body: (UnsafePointer<U>) throws -> R) rethrows -> R {
     
     return try withUnsafePointer(to: value) {
@@ -37,6 +38,7 @@ public func withUnsafeTypePunnedPointer<T, U, R>(of value: T, to: U.Type, do bod
 }
 
 @inlinable
+@inline(__always)
 public func withUnsafeMutableTypePunnedPointer<T, U, R>(of value: inout T, to: U.Type, do body: (UnsafeMutablePointer<U>) throws -> R) rethrows -> R {
     
     return try withUnsafeMutablePointer(to: &value) {
@@ -52,6 +54,7 @@ public func withUnsafeMutableTypePunnedPointer<T, U, R>(of value: inout T, to: U
 extension UnsafeBufferPointer {
     
     @inlinable
+    @inline(__always)
     public func withUnsafeTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         
         precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
@@ -67,6 +70,7 @@ extension UnsafeBufferPointer {
 extension UnsafeMutableBufferPointer {
     
     @inlinable
+    @inline(__always)
     public mutating func withUnsafeMutableTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
         
         precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
@@ -98,6 +102,7 @@ extension UnsafeMutableBufferPointer {
 extension ContiguousBuffer {
     
     @inlinable
+    @inline(__always)
     public func withUnsafeTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         return try withUnsafeBufferPointer { try $0.withUnsafeTypePunnedBufferPointer(to: T.self, body) }
     }
@@ -107,6 +112,7 @@ extension ContiguousBuffer {
 extension ContiguousMutableBuffer {
     
     @inlinable
+    @inline(__always)
     public mutating func withUnsafeMutableTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
         return try withUnsafeMutableBufferPointer { try $0.withUnsafeMutableTypePunnedBufferPointer(to: T.self, body) }
     }

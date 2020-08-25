@@ -26,12 +26,14 @@
 extension ImageContext {
     
     @inlinable
+    @inline(__always)
     public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         let color = color.convert(to: colorSpace, intent: renderingIntent)
         self.draw(shape: shape, winding: winding, color: color.color, opacity: color.opacity)
     }
     
     @inlinable
+    @inline(__always)
     public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
         self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color, opacity: opacity)
     }
@@ -40,26 +42,32 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
+    @inline(__always)
     public func draw(rect: Rect, color: Pixel.Model, opacity: Double = 1) {
         self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color, opacity: opacity)
     }
     @inlinable
+    @inline(__always)
     public func draw(roundedRect rect: Rect, radius: Radius, color: Pixel.Model, opacity: Double = 1) {
         self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, color: color, opacity: opacity)
     }
     @inlinable
+    @inline(__always)
     public func draw(ellipseIn rect: Rect, color: Pixel.Model, opacity: Double = 1) {
         self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color, opacity: opacity)
     }
     @inlinable
+    @inline(__always)
     public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
         self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, color: color, opacity: opacity)
     }
     @inlinable
+    @inline(__always)
     public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
         self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, color: color, opacity: opacity)
     }
     @inlinable
+    @inline(__always)
     public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
         self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color, opacity: opacity)
     }
@@ -68,6 +76,7 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
+    @inline(__always)
     public func draw<Image: ImageProtocol>(image: Image, transform: SDTransform) {
         self.draw(texture: Texture<Float32ColorPixel<Pixel.Model>>(image: image.convert(to: colorSpace, intent: renderingIntent), resamplingAlgorithm: resamplingAlgorithm), transform: transform)
     }

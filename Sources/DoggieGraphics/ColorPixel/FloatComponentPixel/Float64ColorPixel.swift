@@ -35,6 +35,7 @@ public struct Float64ColorPixel<Model: ColorModel>: _FloatComponentPixel {
     public var opacity: Double
     
     @inlinable
+    @inline(__always)
     public init(color: Model, opacity: Double = 1) {
         self.color = color
         self.opacity = opacity
@@ -44,6 +45,7 @@ public struct Float64ColorPixel<Model: ColorModel>: _FloatComponentPixel {
 extension Float64ColorPixel {
     
     @inlinable
+    @inline(__always)
     public var _color: Model {
         get {
             return color
@@ -54,6 +56,7 @@ extension Float64ColorPixel {
     }
     
     @inlinable
+    @inline(__always)
     public var _opacity: Double {
         get {
             return opacity

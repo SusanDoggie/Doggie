@@ -24,12 +24,14 @@
 //
 
 @inlinable
+@inline(__always)
 public func Collinear(_ p0: Point, _ p1: Point, _ p2: Point) -> Bool {
     let d = p0.x * (p1.y - p2.y) + p1.x * (p2.y - p0.y) + p2.x * (p0.y - p1.y)
     return d.almostZero()
 }
 
 @inlinable
+@inline(__always)
 public func CircleInside(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> Bool? {
     
     func det(_ x0: Double, _ y0: Double, _ z0: Double,
@@ -54,6 +56,7 @@ public func CircleInside(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> B
 }
 
 @inlinable
+@inline(__always)
 public func Barycentric(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> Vector? {
     
     let det = (p1.y - p2.y) * (p0.x - p2.x) + (p2.x - p1.x) * (p0.y - p2.y)
@@ -69,6 +72,7 @@ public func Barycentric(_ p0: Point, _ p1: Point, _ p2: Point, _ q: Point) -> Ve
 }
 
 @inlinable
+@inline(__always)
 public func inTriangle(_ p0: Point, _ p1: Point, _ p2: Point, _ position: Point) -> Bool {
     
     var q0 = p0

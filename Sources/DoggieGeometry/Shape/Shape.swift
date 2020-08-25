@@ -104,6 +104,7 @@ extension Shape: Hashable {
     }
     
     @inlinable
+    @inline(__always)
     public func isStorageEqual(_ other: Shape) -> Bool {
         return self.transform == other.transform && self.components.isStorageEqual(other.components)
     }
@@ -127,6 +128,7 @@ extension Shape.Component: Hashable {
     }
     
     @inlinable
+    @inline(__always)
     public func isStorageEqual(_ other: Shape.Component) -> Bool {
         return self.start == other.start && self.isClosed == other.isClosed && self.segments.isStorageEqual(other.segments)
     }
@@ -181,7 +183,7 @@ extension Shape {
     public var originalBoundary: Rect {
         return cache.lck.synchronized {
             if cache.originalBoundary == nil {
-                cache.originalBoundary = self.components.lazy.map { $0.boundary }.reduce { $0.union($1) } ?? Rect()
+                cache.originalBoundary = self.components.reduce(.null) { $0.union($1.boundary) }
             }
             return cache.originalBoundary!
         }
@@ -894,6 +896,8 @@ extension Shape.Component {
         
         let start = self.end
         let end = p1
+        
+        @inline(__always)
         func arcDetails() -> (Point, Radius) {
             let centers = EllipseCenter(radius, rotate, start, end)
             if centers.isEmpty {

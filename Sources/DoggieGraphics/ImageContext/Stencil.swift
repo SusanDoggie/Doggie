@@ -37,6 +37,7 @@ struct ShapeRasterizeBuffer: RasterizeBufferProtocol {
     var height: Int
     
     @inlinable
+    @inline(__always)
     init(stencil: UnsafeMutablePointer<Int16>, width: Int, height: Int) {
         self.stencil = stencil
         self.width = width
@@ -44,17 +45,20 @@ struct ShapeRasterizeBuffer: RasterizeBufferProtocol {
     }
     
     @inlinable
+    @inline(__always)
     static func + (lhs: ShapeRasterizeBuffer, rhs: Int) -> ShapeRasterizeBuffer {
         return ShapeRasterizeBuffer(stencil: lhs.stencil + rhs, width: lhs.width, height: lhs.height)
     }
     
     @inlinable
+    @inline(__always)
     static func += (lhs: inout ShapeRasterizeBuffer, rhs: Int) {
         lhs.stencil += rhs
     }
 }
 
 @inlinable
+@inline(__always)
 func _render(_ op: Shape.RenderOperation, width: Int, height: Int, stencil: UnsafeMutablePointer<Int16>) {
     
     let rasterizer = ShapeRasterizeBuffer(stencil: stencil, width: width, height: height)
@@ -115,17 +119,18 @@ func _render(_ op: Shape.RenderOperation, width: Int, height: Int, stencil: Unsa
 extension Shape {
     
     @inlinable
+    @inline(__always)
     func raster(width: Int, height: Int, stencil: inout MappedBuffer<Int16>) -> Rect {
         
         precondition(stencil.count == width * height, "incorrect size of stencil.")
         
         if stencil.isEmpty {
-            return Rect()
+            return .null
         }
         
         let transform = self.transform
         
-        var bound: Rect?
+        var bound = Rect.null
         
         stencil.withUnsafeMutableBufferPointer { stencil in
             
@@ -138,20 +143,21 @@ extension Shape {
                 _render(_op, width: width, height: height, stencil: ptr)
                 
                 switch _op {
-                case let .triangle(p0, p1, p2): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
-                case let .quadratic(p0, p1, p2): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
-                case let .cubic(p0, p1, p2, _, _, _): bound = bound?.union(Rect.bound([p0, p1, p2])) ?? Rect.bound([p0, p1, p2])
+                case let .triangle(p0, p1, p2): bound = bound.union(Rect.bound([p0, p1, p2]))
+                case let .quadratic(p0, p1, p2): bound = bound.union(Rect.bound([p0, p1, p2]))
+                case let .cubic(p0, p1, p2, _, _, _): bound = bound.union(Rect.bound([p0, p1, p2]))
                 }
             }
         }
         
-        return bound ?? Rect()
+        return bound
     }
 }
 
 extension ImageContext {
     
     @inlinable
+    @inline(__always)
     func _stencil(shape: Shape) -> (Rect, MappedBuffer<Int16>) {
         
         let transform = shape.transform * self.transform
