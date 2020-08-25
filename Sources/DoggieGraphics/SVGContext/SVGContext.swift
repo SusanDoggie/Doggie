@@ -1274,6 +1274,48 @@ extension SVGContext {
     }
 }
 
+extension SVGEffectElement {
+    
+    fileprivate func visibleBound(_ sources: [SVGEffect.Source: Rect], _ objectBound: Rect) -> Rect? {
+        
+        guard let region = self.region else { return self.visibleBound(sources) }
+        
+        switch regionUnit {
+        case .userSpaceOnUse: return region
+        case .objectBoundingBox:
+            
+            let x = region.minX * objectBound.width + objectBound.minX
+            let y = region.minY * objectBound.height + objectBound.minY
+            let width = region.width * objectBound.width
+            let height = region.height * objectBound.height
+            
+            return Rect(x: x, y: y, width: width, height: height)
+        }
+    }
+}
+
+extension SVGEffect {
+    
+    fileprivate func accumulatedBound(_ bound: Rect, _ objectBound: Rect) -> Rect {
+        
+        var accumulated = bound
+        
+        return self.apply(bound) { (uuid, primitive, list) -> Rect in
+            
+            let destination_region = primitive.visibleBound(list, objectBound)
+            
+            accumulated = destination_region?.union(accumulated) ?? accumulated
+            
+            return destination_region ?? bound
+            
+        }?.union(accumulated) ?? accumulated
+    }
+    
+    fileprivate func visibleBound(_ bound: Rect, _ objectBound: Rect) -> Rect {
+        return self.apply(bound) { $1.visibleBound($2, objectBound) ?? bound } ?? bound
+    }
+}
+
 extension SVGContext {
     
     private func _effect_element(_ type: String, _ effect: SVGEffect, _ visibleBound: inout Rect, _ objectBound: Rect) -> String? {
@@ -1281,14 +1323,15 @@ extension SVGContext {
         let id = new_name(type)
         var _filter = SDXMLElement(name: "filter", attributes: ["id": id])
         
+        let accumulatedBound = effect.accumulatedBound(visibleBound, objectBound).union(visibleBound)
         visibleBound = effect.visibleBound(visibleBound, objectBound).union(visibleBound)
         
         if objectBound.width != 0 && objectBound.height != 0 {
             
-            let x = 100 * (visibleBound.minX - objectBound.minX) / objectBound.width
-            let y = 100 * (visibleBound.minY - objectBound.minY) / objectBound.height
-            let width = 100 * visibleBound.width / objectBound.width
-            let height = 100 * visibleBound.height / objectBound.height
+            let x = 100 * (accumulatedBound.minX - objectBound.minX) / objectBound.width
+            let y = 100 * (accumulatedBound.minY - objectBound.minY) / objectBound.height
+            let width = 100 * accumulatedBound.width / objectBound.width
+            let height = 100 * accumulatedBound.height / objectBound.height
             
             let _x = floor(x)
             let _y = floor(y)
