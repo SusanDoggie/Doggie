@@ -73,7 +73,7 @@ extension CIImage {
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     open func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int) throws -> CIImage {
         
-        if extent.isEmpty { return self }
+        if extent.isEmpty { return .empty() }
         
         guard orderX > 0 && orderY > 0 && orderX * orderY == matrix.count else { return self }
         
