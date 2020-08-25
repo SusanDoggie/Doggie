@@ -184,10 +184,12 @@ extension Rect {
     }
     @inlinable
     public var maxX: Double {
+        if self.isInfinite { return .infinity }
         return size.width < 0 ? origin.x : origin.x + size.width
     }
     @inlinable
     public var maxY: Double {
+        if self.isInfinite { return .infinity }
         return size.height < 0 ? origin.y : origin.y + size.height
     }
     @inlinable
