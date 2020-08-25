@@ -37,6 +37,7 @@ public struct Pattern {
     public var callback: (DrawableContext) -> Void
     
     @inlinable
+    @inline(__always)
     public init(bound: Rect, xStep: Double, yStep: Double, callback: @escaping (DrawableContext) -> Void) {
         self.bound = bound
         self.xStep = xStep

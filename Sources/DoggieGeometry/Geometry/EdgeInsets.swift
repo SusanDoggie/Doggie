@@ -35,6 +35,7 @@ public struct EdgeInsets: Hashable {
     public var bottom: Double
     
     @inlinable
+    @inline(__always)
     public init(top: Double = 0, left: Double = 0, right: Double = 0, bottom: Double = 0) {
         self.top = top
         self.left = left
@@ -46,6 +47,7 @@ public struct EdgeInsets: Hashable {
 extension Rect {
     
     @inlinable
+    @inline(__always)
     public func inset(by insets: EdgeInsets) -> Rect {
         return Rect(x: minX + insets.left, y: minY + insets.top, width: width - insets.left - insets.right, height: height - insets.top - insets.bottom)
     }

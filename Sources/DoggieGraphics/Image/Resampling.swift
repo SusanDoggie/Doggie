@@ -37,6 +37,7 @@ public enum ResamplingAlgorithm: Hashable {
 extension ResamplingAlgorithm {
     
     @inlinable
+    @inline(__always)
     public static var `default`: ResamplingAlgorithm {
         return .linear
     }
@@ -55,6 +56,7 @@ protocol _ResamplingImplement {
 extension _ResamplingImplement {
     
     @inlinable
+    @inline(__always)
     public func pixel(_ point: Point) -> Pixel {
         
         switch resamplingAlgorithm {
@@ -66,6 +68,8 @@ extension _ResamplingImplement {
             
             let s = Pixel.Scalar(s)
             let e = Pixel.Scalar(e)
+            
+            @inline(__always)
             func _kernel(_ t: Pixel.Scalar, _ a: Pixel, _ b: Pixel, _ c: Pixel, _ d: Pixel) -> Pixel {
                 return HermiteInterpolate(t, a, b, c, d, s, e)
             }
@@ -89,6 +93,8 @@ extension _ResamplingImplement {
             let b2 = Pixel.Scalar(_b2)
             let c2 = Pixel.Scalar(_c2)
             let d2 = Pixel.Scalar(_d2)
+            
+            @inline(__always)
             func _kernel(_ x: Pixel.Scalar) -> Pixel.Scalar {
                 if x < 1 {
                     let u = a1 * x + b1
@@ -106,6 +112,8 @@ extension _ResamplingImplement {
             
         case .lanczos(0): return read_source(Int(floor(point.x)), Int(floor(point.y)))
         case .lanczos(1):
+            
+            @inline(__always)
             func _kernel(_ x: Pixel.Scalar) -> Pixel.Scalar {
                 if x == 0 {
                     return 1
@@ -123,6 +131,8 @@ extension _ResamplingImplement {
         case let .lanczos(a):
             
             let a = Pixel.Scalar(a)
+            
+            @inline(__always)
             func _kernel(_ x: Pixel.Scalar) -> Pixel.Scalar {
                 if x == 0 {
                     return 1
@@ -145,6 +155,7 @@ extension _ResamplingImplement {
 extension _ResamplingImplement {
     
     @inlinable
+    @inline(__always)
     func convolve(point: Point, kernel_size: Int, kernel: (Pixel.Scalar) -> Pixel.Scalar) -> Pixel {
         
         var pixel = Pixel.zero
@@ -171,6 +182,7 @@ extension _ResamplingImplement {
     }
     
     @inlinable
+    @inline(__always)
     func sampling2(point: Point, sampler: (Pixel.Scalar, Pixel, Pixel) -> Pixel) -> Pixel {
         
         let _i = floor(point.x)
@@ -192,6 +204,7 @@ extension _ResamplingImplement {
     }
     
     @inlinable
+    @inline(__always)
     func sampling4(point: Point, sampler: (Pixel.Scalar, Pixel, Pixel, Pixel, Pixel) -> Pixel) -> Pixel {
         
         let _i = floor(point.x)

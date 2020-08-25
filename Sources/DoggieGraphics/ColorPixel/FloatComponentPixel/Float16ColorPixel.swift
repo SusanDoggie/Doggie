@@ -38,18 +38,21 @@ public struct Float16ColorPixel<Model: _Float16ColorModelProtocol>: _FloatCompon
     public var _opacity: Float16
     
     @inlinable
+    @inline(__always)
     public init(color: Model, opacity: Double = 1) {
         self._color = Model.Float16Components(color)
         self._opacity = Float16(opacity)
     }
     
     @inlinable
+    @inline(__always)
     public init(color: Model.Float16Components, opacity: Float16 = 1) {
         self._color = color
         self._opacity = opacity
     }
     
     @inlinable
+    @inline(__always)
     public var color: Model {
         get {
             return _color.model
@@ -60,6 +63,7 @@ public struct Float16ColorPixel<Model: _Float16ColorModelProtocol>: _FloatCompon
     }
     
     @inlinable
+    @inline(__always)
     public var opacity: Double {
         get {
             return Double(_opacity)

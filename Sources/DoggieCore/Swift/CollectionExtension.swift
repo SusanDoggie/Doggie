@@ -353,6 +353,7 @@ extension BidirectionalCollection where Self: MutableCollection, Element: Compar
 extension Sequence {
     
     @inlinable
+    @inline(__always)
     public func isStorageEqual<S: Sequence>(_ other: S) -> Bool where Element == S.Element {
         return self.withContiguousStorageIfAvailable { lhs in other.withContiguousStorageIfAvailable { rhs in lhs.count == rhs.count && lhs.baseAddress == rhs.baseAddress } ?? false } ?? false
     }

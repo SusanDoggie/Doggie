@@ -26,6 +26,7 @@
 extension ImageContext {
     
     @inlinable
+    @inline(__always)
     func draw(shape: Shape, color: Float32ColorPixel<Pixel.Model>, winding: (Int16) -> Bool) {
         
         guard shape.contains(where: { !$0.isEmpty }) else { return }
@@ -218,6 +219,7 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
+    @inline(__always)
     public func draw(shape: Shape, winding: Shape.WindingRule, color: Pixel.Model, opacity: Double = 1) {
         switch winding {
         case .nonZero: self.draw(shape: shape, color: Float32ColorPixel(color: color, opacity: opacity)) { $0 != 0 }

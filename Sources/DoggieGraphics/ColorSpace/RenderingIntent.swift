@@ -33,6 +33,7 @@ public enum RenderingIntent: CaseIterable {
 extension RenderingIntent {
     
     @inlinable
+    @inline(__always)
     public static var `default`: RenderingIntent {
         return .perceptual
     }

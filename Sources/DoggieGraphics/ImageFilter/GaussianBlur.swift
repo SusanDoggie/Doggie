@@ -24,6 +24,7 @@
 //
 
 @inlinable
+@inline(__always)
 public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] where T: FloatingMathProtocol {
     
     precondition(sd > 0, "sd is less than or equal to zero.")
@@ -39,6 +40,7 @@ public func GaussianBlurFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] where T: 
 }
 
 @inlinable
+@inline(__always)
 public func GaussianBlur<Image: _ImageConvolutionProtocol>(_ image: Image, _ sd: Image._ConvolutionFilterScalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image where Image._ConvolutionFilterScalar: FloatingMathProtocol {
     let filter = GaussianBlurFilter(sd)
     return image.convolution(horizontal: filter, vertical: filter, algorithm: algorithm)

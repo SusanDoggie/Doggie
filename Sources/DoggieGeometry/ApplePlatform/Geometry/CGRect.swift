@@ -26,6 +26,7 @@
 extension CGRect {
     
     @inlinable
+    @inline(__always)
     public init(_ r: Rect) {
         if r.isNull {
             self = .null
@@ -37,15 +38,18 @@ extension CGRect {
     }
     
     @inlinable
+    @inline(__always)
     public init(origin: Point, size: Size) {
         self.init(Rect(origin: origin, size: size))
     }
     
     @inlinable
+    @inline(__always)
     public init<T: BinaryInteger>(x: T, y: T, width: T, height: T) {
         self.init(x: CGFloat(x), y: CGFloat(y), width: CGFloat(width), height: CGFloat(height))
     }
     @inlinable
+    @inline(__always)
     public init<T: BinaryFloatingPoint>(x: T, y: T, width: T, height: T) {
         self.init(x: CGFloat(x), y: CGFloat(y), width: CGFloat(width), height: CGFloat(height))
     }
@@ -54,6 +58,7 @@ extension CGRect {
 extension Rect {
     
     @inlinable
+    @inline(__always)
     public init(_ r: CGRect) {
         if r.isNull {
             self = .null
@@ -65,6 +70,7 @@ extension Rect {
     }
     
     @inlinable
+    @inline(__always)
     public init(origin: CGPoint, size: CGSize) {
         self.init(CGRect(origin: origin, size: size))
     }
@@ -73,31 +79,37 @@ extension Rect {
 extension CGRect {
     
     @inlinable
+    @inline(__always)
     public var center: CGPoint {
         return CGPoint(x: midX, y: midY)
     }
 }
 
 @inlinable
+@inline(__always)
 public func *(lhs: CGFloat, rhs: CGRect) -> CGRect {
     return CGRect(origin: lhs * rhs.origin, size: lhs * rhs.size)
 }
 @inlinable
+@inline(__always)
 public func *(lhs: CGRect, rhs: CGFloat) -> CGRect {
     return CGRect(origin: lhs.origin * rhs, size: lhs.size * rhs)
 }
 
 @inlinable
+@inline(__always)
 public func /(lhs: CGRect, rhs: CGFloat) -> CGRect {
     return CGRect(origin: lhs.origin / rhs, size: lhs.size / rhs)
 }
 
 @inlinable
+@inline(__always)
 public func *= (lhs: inout CGRect, rhs: CGFloat) {
     lhs.origin *= rhs
     lhs.size *= rhs
 }
 @inlinable
+@inline(__always)
 public func /= (lhs: inout CGRect, rhs: CGFloat) {
     lhs.origin /= rhs
     lhs.size /= rhs

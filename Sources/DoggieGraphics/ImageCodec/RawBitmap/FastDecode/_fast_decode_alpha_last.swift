@@ -24,6 +24,7 @@
 //
 
 @inlinable
+@inline(__always)
 func _fast_decode_alpha_last<T, P: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ format: RawBitmap.Format, _ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _ should_denormalized: Bool, _: T.Type, _ decode: (T) -> P.Scalar) -> Image<P>? {
     
     let channels = bitmaps[0].channels.sorted { $0.bitRange.lowerBound }
@@ -58,6 +59,7 @@ func _fast_decode_alpha_last<T, P: _FloatComponentPixel>(_ bitmaps: [RawBitmap],
 }
 
 @inlinable
+@inline(__always)
 func _fast_decode_alpha_last<T: FixedWidthInteger, P: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _: T.Type) -> Image<P>? {
     
     switch endianness {
@@ -67,6 +69,7 @@ func _fast_decode_alpha_last<T: FixedWidthInteger, P: _FloatComponentPixel>(_ bi
 }
 
 @inlinable
+@inline(__always)
 func _fast_decode_alpha_last<P: _FloatComponentPixel>(_ bitmaps: [RawBitmap], _ endianness: RawBitmap.Endianness, _ info: _fast_decode_info<P.Model>, _: P.Scalar.Type) -> Image<P>? where P.Scalar: RawBitPattern {
     
     switch endianness {

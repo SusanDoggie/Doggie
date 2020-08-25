@@ -26,6 +26,7 @@
 extension Image {
     
     @inlinable
+    @inline(__always)
     static func _denormalized<T: BinaryFloatingPoint>(_ channel_index: Int, _ value: T) -> T {
         guard channel_index < Pixel.Model.numberOfComponents else { return value }
         let range = Pixel.Model.rangeOfComponent(channel_index)
@@ -51,6 +52,7 @@ protocol _Float16SlowDecodeImageProtocol {
 extension ColorSpace: _Float16SlowDecodeImageProtocol where Model: _Float16ColorModelProtocol {
     
     @inlinable
+    @inline(__always)
     func _slow_create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], is_opaque: Bool, premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol? {
         
         if bitmaps.allSatisfy({ $0.channels.allSatisfy { $0.bitRange.count <= 10 || ($0.bitRange.count == 16 && $0.format == .float) } }) {
@@ -80,6 +82,7 @@ extension ColorSpace: _Float16SlowDecodeImageProtocol where Model: _Float16Color
 extension ColorSpace {
     
     @inlinable
+    @inline(__always)
     func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol {
         
         if let image = _fast_create_image(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked) {

@@ -26,14 +26,17 @@
 extension CGPoint {
     
     @inlinable
+    @inline(__always)
     public init(_ p: Point) {
         self.init(x: CGFloat(p.x), y: CGFloat(p.y))
     }
     @inlinable
+    @inline(__always)
     public init<T: BinaryInteger>(x: T, y: T) {
         self.init(x: CGFloat(x), y: CGFloat(y))
     }
     @inlinable
+    @inline(__always)
     public init<T: BinaryFloatingPoint>(x: T, y: T) {
         self.init(x: CGFloat(x), y: CGFloat(y))
     }
@@ -42,6 +45,7 @@ extension CGPoint {
 extension Point {
     
     @inlinable
+    @inline(__always)
     public init(_ p: CGPoint) {
         self.init(x: p.x, y: p.y)
     }
@@ -50,11 +54,13 @@ extension Point {
 extension CGPoint {
     
     @inlinable
+    @inline(__always)
     public init(magnitude: CGFloat, phase: CGFloat) {
         self.init(x: magnitude * cos(phase), y: magnitude * sin(phase))
     }
     
     @inlinable
+    @inline(__always)
     public var phase: CGFloat {
         get {
             return atan2(y, x)
@@ -65,6 +71,7 @@ extension CGPoint {
     }
     
     @inlinable
+    @inline(__always)
     public var magnitude: CGFloat {
         get {
             return hypot(x, y)
@@ -78,68 +85,82 @@ extension CGPoint {
 extension CGPoint {
     
     @inlinable
+    @inline(__always)
     public func offset(dx: CGFloat, dy: CGFloat) -> CGPoint {
         return CGPoint(x: self.x + dx, y: self.y + dy)
     }
 }
 
 @inlinable
+@inline(__always)
 public func dot(_ lhs: CGPoint, _ rhs: CGPoint) -> CGFloat {
     return lhs.x * rhs.x + lhs.y * rhs.y
 }
 
 @inlinable
+@inline(__always)
 public func cross(_ lhs: CGPoint, _ rhs: CGPoint) -> CGFloat {
     return lhs.x * rhs.y - lhs.y * rhs.x
 }
 
 @inlinable
+@inline(__always)
 public prefix func +(val: CGPoint) -> CGPoint {
     return val
 }
 @inlinable
+@inline(__always)
 public prefix func -(val: CGPoint) -> CGPoint {
     return CGPoint(x: -val.x, y: -val.y)
 }
 @inlinable
+@inline(__always)
 public func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
     return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 @inlinable
+@inline(__always)
 public func -(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
     return CGPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
 }
 
 @inlinable
+@inline(__always)
 public func *(lhs: CGFloat, rhs: CGPoint) -> CGPoint {
     return CGPoint(x: lhs * rhs.x, y: lhs * rhs.y)
 }
 @inlinable
+@inline(__always)
 public func *(lhs: CGPoint, rhs: CGFloat) -> CGPoint {
     return CGPoint(x: lhs.x * rhs, y: lhs.y * rhs)
 }
 
 @inlinable
+@inline(__always)
 public func /(lhs: CGPoint, rhs: CGFloat) -> CGPoint {
     return CGPoint(x: lhs.x / rhs, y: lhs.y / rhs)
 }
 
 @inlinable
+@inline(__always)
 public func *= (lhs: inout CGPoint, rhs: CGFloat) {
     lhs.x *= rhs
     lhs.y *= rhs
 }
 @inlinable
+@inline(__always)
 public func /= (lhs: inout CGPoint, rhs: CGFloat) {
     lhs.x /= rhs
     lhs.y /= rhs
 }
 @inlinable
+@inline(__always)
 public func += (lhs: inout CGPoint, rhs: CGPoint) {
     lhs.x += rhs.x
     lhs.y += rhs.y
 }
 @inlinable
+@inline(__always)
 public func -= (lhs: inout CGPoint, rhs: CGPoint) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y

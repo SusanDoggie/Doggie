@@ -24,6 +24,7 @@
 //
 
 @inlinable
+@inline(__always)
 public func DirectConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     let size = signal_count + kernel_count - 1
@@ -46,6 +47,7 @@ public func DirectConvolve<T: FloatingPoint>(_ signal_count: Int, _ signal: Unsa
 }
 
 @inlinable
+@inline(__always)
 public func DirectConvolve(_ signal_count: Int, _ signal: UnsafePointer<Complex>, _ signal_stride: Int, _ kernel_count: Int, _ kernel: UnsafePointer<Complex>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<Complex>, _ out_stride: Int) {
     
     let size = signal_count + kernel_count - 1
@@ -68,6 +70,7 @@ public func DirectConvolve(_ signal_count: Int, _ signal: UnsafePointer<Complex>
 }
 
 @inlinable
+@inline(__always)
 public func DirectConvolve2D<T: FloatingPoint>(_ signal_count: (Int, Int), _ signal: UnsafePointer<T>, _ signal_stride: Int, _ kernel_count: (Int, Int), _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ output: UnsafeMutablePointer<T>, _ out_stride: Int) {
     
     let width = signal_count.0 + kernel_count.0 - 1

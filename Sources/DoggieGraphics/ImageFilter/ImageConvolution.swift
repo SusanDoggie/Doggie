@@ -26,6 +26,7 @@
 extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol {
     
     @inlinable
+    @inline(__always)
     func _direct_convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int) -> Self {
         
         let width = self.width
@@ -61,6 +62,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
     }
     
     @inlinable
+    @inline(__always)
     func _direct_convolution_horizontal(_ filter: [RawPixel.Scalar]) -> Self {
         
         let width = self.width
@@ -105,6 +107,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
     }
     
     @inlinable
+    @inline(__always)
     func _direct_convolution_vertical(_ filter: [RawPixel.Scalar]) -> Self {
         
         let width = self.width
@@ -141,6 +144,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
 extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol {
     
     @inlinable
+    @inline(__always)
     func _cooleyTukey_convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int) -> Self {
         
         let width = self.width
@@ -201,6 +205,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
     }
     
     @inlinable
+    @inline(__always)
     func _cooleyTukey_convolution_horizontal(_ filter: [RawPixel.Scalar]) -> Self {
         
         let width = self.width
@@ -261,6 +266,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
     }
     
     @inlinable
+    @inline(__always)
     func _cooleyTukey_convolution_vertical(_ filter: [RawPixel.Scalar]) -> Self {
         
         let width = self.width
@@ -314,6 +320,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
 extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol {
     
     @inlinable
+    @inline(__always)
     func _convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int, algorithm: ImageConvolutionAlgorithm) -> Self {
         
         precondition(filter_width > 0, "nonpositive filter_width is not allowed.")
@@ -351,6 +358,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
     }
     
     @inlinable
+    @inline(__always)
     func _convolution(horizontal horizontal_filter: [RawPixel.Scalar], vertical vertical_filter: [RawPixel.Scalar], algorithm: ImageConvolutionAlgorithm) -> Self {
         
         precondition(!horizontal_filter.isEmpty, "horizontal_filter is empty.")
@@ -403,11 +411,13 @@ extension StencilTexture: _ImageConvolutionProtocol {
     public typealias _ConvolutionFilterScalar = RawPixel.Scalar
     
     @inlinable
+    @inline(__always)
     public func convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int, algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture {
         return self._convolution(filter, filter_width, filter_height, algorithm: algorithm)
     }
     
     @inlinable
+    @inline(__always)
     public func convolution(horizontal horizontal_filter: [RawPixel.Scalar], vertical vertical_filter: [RawPixel.Scalar], algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> StencilTexture {
         return self._convolution(horizontal: horizontal_filter, vertical: vertical_filter, algorithm: algorithm)
     }
@@ -418,11 +428,13 @@ extension Texture: _ImageConvolutionProtocol where RawPixel: _FloatComponentPixe
     public typealias _ConvolutionFilterScalar = RawPixel.Scalar
     
     @inlinable
+    @inline(__always)
     public func convolution(_ filter: [RawPixel.Scalar], _ filter_width: Int, _ filter_height: Int, algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture {
         return self._convolution(filter, filter_width, filter_height, algorithm: algorithm)
     }
     
     @inlinable
+    @inline(__always)
     public func convolution(horizontal horizontal_filter: [RawPixel.Scalar], vertical vertical_filter: [RawPixel.Scalar], algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Texture {
         return self._convolution(horizontal: horizontal_filter, vertical: vertical_filter, algorithm: algorithm)
     }
@@ -433,11 +445,13 @@ extension Image: _ImageConvolutionProtocol where Pixel: _FloatComponentPixel, Pi
     public typealias _ConvolutionFilterScalar = Pixel.Scalar
     
     @inlinable
+    @inline(__always)
     public func convolution(_ filter: [Pixel.Scalar], _ filter_width: Int, _ filter_height: Int, algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image {
         return Image(texture: Texture(image: self).convolution(filter, filter_width, filter_height, algorithm: algorithm), resolution: self.resolution, colorSpace: self.colorSpace)
     }
     
     @inlinable
+    @inline(__always)
     public func convolution(horizontal horizontal_filter: [Pixel.Scalar], vertical vertical_filter: [Pixel.Scalar], algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image {
         return Image(texture: Texture(image: self).convolution(horizontal: horizontal_filter, vertical: vertical_filter, algorithm: algorithm), resolution: self.resolution, colorSpace: self.colorSpace)
     }

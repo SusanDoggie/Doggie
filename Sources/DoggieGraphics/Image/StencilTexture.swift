@@ -43,11 +43,13 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     var _pixels: MappedBuffer<T>
     
     @inlinable
+    @inline(__always)
     public var pixels: MappedBuffer<T> {
         return _pixels
     }
     
     @inlinable
+    @inline(__always)
     public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixels: MappedBuffer<T>) {
         precondition(_isPOD(T.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
@@ -60,6 +62,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     }
     
     @inlinable
+    @inline(__always)
     public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm = .default, pixel: T = 0, fileBacked: Bool = false) {
         precondition(_isPOD(T.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
@@ -71,6 +74,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     }
     
     @inlinable
+    @inline(__always)
     public init<P>(texture: StencilTexture<P>) {
         precondition(_isPOD(T.self), "invalid pixel type.")
         self.width = texture.width
@@ -82,6 +86,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
     }
     
     @inlinable
+    @inline(__always)
     public init<P>(texture: Texture<P>) {
         precondition(_isPOD(T.self), "invalid pixel type.")
         self.width = texture.width
@@ -96,6 +101,7 @@ public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: S
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     public init<P>(image: Image<P>, resamplingAlgorithm: ResamplingAlgorithm = .default) {
         self.init(width: image.width, height: image.height, resamplingAlgorithm: resamplingAlgorithm, pixels: image.pixels.map { T($0.opacity) })
     }
@@ -104,6 +110,7 @@ extension StencilTexture {
 extension Image where Pixel: ScalarMultiplicative, Pixel.Scalar: BinaryFloatingPoint, Pixel.Scalar: FloatingMathProtocol {
     
     @inlinable
+    @inline(__always)
     public init(texture: StencilTexture<Pixel.Scalar>, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, background: Pixel, foreground: Pixel) {
         self.init(width: texture.width, height: texture.height, resolution: resolution, colorSpace: colorSpace, pixels: texture.pixels.map { LinearInterpolate($0, background, foreground) })
     }
@@ -112,6 +119,7 @@ extension Image where Pixel: ScalarMultiplicative, Pixel.Scalar: BinaryFloatingP
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     public func hash(into hasher: inout Hasher) {
         hasher.combine(width)
         hasher.combine(height)
@@ -126,11 +134,13 @@ extension StencilTexture {
     }
     
     @inlinable
+    @inline(__always)
     public static func ==(lhs: StencilTexture, rhs: StencilTexture) -> Bool {
         return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resamplingAlgorithm == rhs.resamplingAlgorithm && lhs.horizontalWrappingMode == rhs.horizontalWrappingMode && lhs.verticalWrappingMode == rhs.verticalWrappingMode && lhs.pixels == rhs.pixels
     }
     
     @inlinable
+    @inline(__always)
     public func isStorageEqual(_ other: StencilTexture) -> Bool {
         return self.width == other.width && self.height == other.height && self.resamplingAlgorithm == other.resamplingAlgorithm && self.horizontalWrappingMode == other.horizontalWrappingMode && self.verticalWrappingMode == other.verticalWrappingMode && self.pixels.isStorageEqual(other.pixels)
     }
@@ -139,6 +149,7 @@ extension StencilTexture {
 extension StencilTexture: CustomStringConvertible {
     
     @inlinable
+    @inline(__always)
     public var description: String {
         return "StencilTexture(width: \(width), height: \(height))"
     }
@@ -147,6 +158,7 @@ extension StencilTexture: CustomStringConvertible {
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     public var numberOfComponents: Int {
         return 1
     }
@@ -155,6 +167,7 @@ extension StencilTexture {
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     public var fileBacked: Bool {
         get {
             return pixels.fileBacked
@@ -183,24 +196,28 @@ extension StencilTexture {
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBufferPointer(body)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
         
         return try _pixels.withUnsafeMutableBufferPointer(body)
     }
     
     @inlinable
+    @inline(__always)
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         
         return try pixels.withUnsafeBytes(body)
     }
     
     @inlinable
+    @inline(__always)
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         
         return try _pixels.withUnsafeMutableBytes(body)
@@ -214,6 +231,7 @@ extension StencilTexture: _TextureProtocolImplement {
 extension StencilTexture: _ResamplingImplement {
     
     @inlinable
+    @inline(__always)
     func read_source(_ x: Int, _ y: Int) -> T {
         
         guard width != 0 && height != 0 else { return 0 }

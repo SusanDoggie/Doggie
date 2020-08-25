@@ -35,6 +35,7 @@ public protocol SignatureProtocol: RawRepresentable, Hashable, ExpressibleByInte
 extension SignatureProtocol {
     
     @inlinable
+    @inline(__always)
     public init<S: SignatureProtocol>(_ signature: S) where S.Bytes == Bytes {
         self.init(rawValue: signature.rawValue)
     }
@@ -43,17 +44,20 @@ extension SignatureProtocol {
 extension SignatureProtocol {
     
     @inlinable
+    @inline(__always)
     public init(integerLiteral value: Bytes.IntegerLiteralType) {
         self.init(rawValue: Bytes(integerLiteral: value))
     }
     
     @inlinable
+    @inline(__always)
     public init(stringLiteral value: StaticString) {
         assert(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
         self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
     }
     
     @inlinable
+    @inline(__always)
     public var description: String {
         return String(self)
     }
@@ -62,6 +66,7 @@ extension SignatureProtocol {
 extension String {
     
     @inlinable
+    @inline(__always)
     public init<S: SignatureProtocol>(_ signature: S) {
         self = withUnsafeBytes(of: signature.rawValue.bigEndian) { String(bytes: $0, encoding: .ascii) ?? "" }
     }
@@ -70,6 +75,7 @@ extension String {
 extension SignatureProtocol where Bytes: ByteOutputStreamable {
     
     @inlinable
+    @inline(__always)
     public func write<Target: ByteOutputStream>(to stream: inout Target) {
         stream.encode(rawValue)
     }
@@ -78,6 +84,7 @@ extension SignatureProtocol where Bytes: ByteOutputStreamable {
 extension SignatureProtocol where Bytes: ByteDecodable {
     
     @inlinable
+    @inline(__always)
     public init(from data: inout Data) throws {
         self.init(rawValue: try Bytes(from: &data))
     }
@@ -89,6 +96,7 @@ public struct Signature<Bytes: FixedWidthInteger & ByteCodable>: SignatureProtoc
     public var rawValue: Bytes
     
     @inlinable
+    @inline(__always)
     public init(rawValue: Bytes) {
         self.rawValue = rawValue
     }

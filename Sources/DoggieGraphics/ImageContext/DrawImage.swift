@@ -26,6 +26,7 @@
 extension ImageContext {
     
     @inlinable
+    @inline(__always)
     public func draw<T>(stencil: StencilTexture<T>, transform: SDTransform, color: Pixel.Model) {
         
         let width = self.width
@@ -83,6 +84,7 @@ extension ImageContext {
     }
     
     @inlinable
+    @inline(__always)
     public func draw<P>(texture: Texture<P>, transform: SDTransform) where P.Model == Pixel.Model {
         
         let width = self.width
@@ -143,6 +145,7 @@ extension ImageContext {
 extension StencilTexture {
     
     @inlinable
+    @inline(__always)
     func withUnsafeStencilTexture<R>(_ body: (_UnsafeStencilTexture<T>) throws -> R) rethrows -> R {
         
         let width = self.width
@@ -158,6 +161,7 @@ extension StencilTexture {
 extension Texture {
     
     @inlinable
+    @inline(__always)
     func withUnsafeTexture<R>(_ body: (_UnsafeTexture<Texture>) throws -> R) rethrows -> R {
         
         let width = self.width
@@ -198,6 +202,7 @@ struct _UnsafeStencilTexture<T: BinaryFloatingPoint>: _ResamplingImplement where
     let verticalWrappingMode: WrappingMode
     
     @inlinable
+    @inline(__always)
     init(_ pixels: UnsafeBufferPointer<T>, width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, horizontalWrappingMode: WrappingMode, verticalWrappingMode: WrappingMode) {
         self.pixels = pixels
         self.width = width
@@ -208,6 +213,7 @@ struct _UnsafeStencilTexture<T: BinaryFloatingPoint>: _ResamplingImplement where
     }
     
     @inlinable
+    @inline(__always)
     func read_source(_ x: Int, _ y: Int) -> T {
         
         guard width != 0 && height != 0 else { return 0 }
@@ -248,6 +254,7 @@ struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement whe
     let verticalWrappingMode: WrappingMode
     
     @inlinable
+    @inline(__always)
     init(_ pixels: UnsafeBufferPointer<RawPixel>, width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, horizontalWrappingMode: WrappingMode, verticalWrappingMode: WrappingMode) {
         self.pixels = pixels
         self.width = width
@@ -258,6 +265,7 @@ struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement whe
     }
     
     @inlinable
+    @inline(__always)
     func read_source(_ x: Int, _ y: Int) -> Float32ColorPixel<RawPixel.Model> {
         
         guard width != 0 && height != 0 else { return Float32ColorPixel() }

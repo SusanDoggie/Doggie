@@ -63,11 +63,13 @@ public enum SVGTurbulenceType: CaseIterable {
 }
 
 @inlinable
+@inline(__always)
 public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ type: SVGTurbulenceType, _ stitchTile: Rect?, _ transform: SDTransform, _ seed: Int, _ baseFrequency: Double, _ numOctaves: Int, _ fileBacked: Bool = false) -> Image<T> where T.Model == RGBColorModel {
     return Image(texture: SVGTurbulence(width, height, type, stitchTile, transform, seed, baseFrequency, numOctaves, fileBacked), colorSpace: ColorSpace<RGBColorModel>.sRGB.linearTone)
 }
 
 @inlinable
+@inline(__always)
 public func SVGTurbulence<T>(_ width: Int, _ height: Int, _ type: SVGTurbulenceType, _ stitchTile: Rect?, _ transform: SDTransform, _ seed: Int, _ baseFrequency: Double, _ numOctaves: Int, _ fileBacked: Bool = false) -> Texture<T> where T.Model == RGBColorModel {
     
     var result = Texture<T>(width: width, height: height, fileBacked: fileBacked)

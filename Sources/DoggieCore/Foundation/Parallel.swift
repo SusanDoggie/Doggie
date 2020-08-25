@@ -26,6 +26,7 @@
 extension DispatchQueue {
     
     @inlinable
+    @inline(__always)
     public class func concurrentPerform(iterations: Int, threads: Int, execute work: (Int) -> Void) {
         concurrentPerform(iterations: threads) { stride(from: $0, to: iterations, by: threads).forEach(work) }
     }
@@ -41,6 +42,7 @@ extension RandomAccessCollection {
     ///   exit from the current call to `body`, not any outer scope, and won't
     ///   skip subsequent calls.
     @inlinable
+    @inline(__always)
     public func parallelEach(body: (Element) -> Void) {
         DispatchQueue.concurrentPerform(iterations: self.count) { body(self[self.index(startIndex, offsetBy: $0)]) }
     }
@@ -55,6 +57,7 @@ extension RandomAccessCollection {
     ///
     /// - Parameter threads: Number of threads at the same time.
     @inlinable
+    @inline(__always)
     public func parallelEach(threads: Int, body: (Element) -> Void) {
         DispatchQueue.concurrentPerform(iterations: self.count, threads: threads) { body(self[self.index(startIndex, offsetBy: $0)]) }
     }

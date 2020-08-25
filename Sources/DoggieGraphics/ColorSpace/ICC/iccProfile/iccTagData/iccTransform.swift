@@ -47,6 +47,7 @@ struct iccMonochromeTransform: iccTransform {
     var curve: iccCurve
     
     @inlinable
+    @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -58,6 +59,7 @@ struct iccMonochromeTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -69,6 +71,7 @@ struct iccMonochromeTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertToLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -79,6 +82,7 @@ struct iccMonochromeTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertFromLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -89,6 +93,7 @@ struct iccMonochromeTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearToConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
         var result = PCSColor()
@@ -99,6 +104,7 @@ struct iccMonochromeTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearFromConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
         var result = Model()
@@ -120,6 +126,7 @@ struct iccMatrixTransform: iccTransform {
     var curve: (iccCurve, iccCurve, iccCurve)
     
     @inlinable
+    @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -131,6 +138,7 @@ struct iccMatrixTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -142,6 +150,7 @@ struct iccMatrixTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertToLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -154,6 +163,7 @@ struct iccMatrixTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertFromLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -166,6 +176,7 @@ struct iccMatrixTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearToConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
         var result = PCSColor()
@@ -180,6 +191,7 @@ struct iccMatrixTransform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearFromConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
         var result = Model()
@@ -212,6 +224,7 @@ struct iccLUT0Transform: iccTransform {
     var output: OneDimensionalLUT
     
     @inlinable
+    @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -223,6 +236,7 @@ struct iccLUT0Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -234,6 +248,7 @@ struct iccLUT0Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertToLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -244,6 +259,7 @@ struct iccLUT0Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertFromLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -254,6 +270,7 @@ struct iccLUT0Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearToConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
         var result = PCSColor()
@@ -270,6 +287,7 @@ struct iccLUT0Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearFromConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
         var result = Model()
@@ -295,6 +313,7 @@ struct iccLUT1Transform: iccTransform {
     var curve: (iccCurve, iccCurve, iccCurve)
     
     @inlinable
+    @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -305,6 +324,7 @@ struct iccLUT1Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -315,6 +335,7 @@ struct iccLUT1Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertToLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -327,6 +348,7 @@ struct iccLUT1Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertFromLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -339,6 +361,7 @@ struct iccLUT1Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearToConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
         var result = PCSColor()
@@ -351,6 +374,7 @@ struct iccLUT1Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearFromConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
         var result = Model()
@@ -377,6 +401,7 @@ struct iccLUT2Transform: iccTransform {
     var M: (iccCurve, iccCurve, iccCurve)
     
     @inlinable
+    @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -387,6 +412,7 @@ struct iccLUT2Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -397,6 +423,7 @@ struct iccLUT2Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertToLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -409,6 +436,7 @@ struct iccLUT2Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertFromLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -421,6 +449,7 @@ struct iccLUT2Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearToConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
         var result = PCSColor()
@@ -439,6 +468,7 @@ struct iccLUT2Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearFromConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
         var result = Model()
@@ -472,6 +502,7 @@ struct iccLUT3Transform: iccTransform {
     var A: [iccCurve]
     
     @inlinable
+    @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -482,6 +513,7 @@ struct iccLUT3Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -492,6 +524,7 @@ struct iccLUT3Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertToLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -504,6 +537,7 @@ struct iccLUT3Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertFromLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -516,6 +550,7 @@ struct iccLUT3Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearToConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
         var result = PCSColor()
@@ -530,6 +565,7 @@ struct iccLUT3Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearFromConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
         var result = Model()
@@ -565,6 +601,7 @@ struct iccLUT4Transform: iccTransform {
     var A: [iccCurve]
     
     @inlinable
+    @inline(__always)
     func normalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -575,6 +612,7 @@ struct iccLUT4Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func denormalize(_ xyz: XYZColorModel) -> XYZColorModel {
         
         var color = xyz
@@ -585,6 +623,7 @@ struct iccLUT4Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertToLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -597,6 +636,7 @@ struct iccLUT4Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertFromLinear<Model: ColorModel>(_ color: Model) -> Model {
         
         var result = Model()
@@ -609,6 +649,7 @@ struct iccLUT4Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearToConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: Model) -> PCSColor {
         
         var result = PCSColor()
@@ -629,6 +670,7 @@ struct iccLUT4Transform: iccTransform {
     }
     
     @inlinable
+    @inline(__always)
     func convertLinearFromConnection<Model: ColorModel, PCSColor: PCSColorModel>(_ color: PCSColor) -> Model {
         
         var result = Model()
