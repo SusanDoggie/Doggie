@@ -74,8 +74,8 @@ public struct SVGBlendEffect: SVGEffectElement {
     }
     
     public func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect? {
-        guard let source = sources[self.source] else { return nil }
-        guard let source2 = sources[self.source2] else { return nil }
+        let source = sources[self.source] ?? .null
+        let source2 = sources[self.source2] ?? .null
         return source.union(source2)
     }
 }
