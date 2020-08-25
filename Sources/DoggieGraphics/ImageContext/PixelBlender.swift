@@ -43,7 +43,6 @@ struct ImageContextPixelBlender<P: ColorPixel> {
     let blendMode: ColorBlendMode
     
     @inlinable
-    @inline(__always)
     init(destination: UnsafeMutablePointer<P>, clip: UnsafePointer<Float>?, opacity: Double, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) {
         self.destination = destination
         self.clip = clip
@@ -53,20 +52,17 @@ struct ImageContextPixelBlender<P: ColorPixel> {
     }
     
     @inlinable
-    @inline(__always)
     static func + (lhs: ImageContextPixelBlender, rhs: Int) -> ImageContextPixelBlender {
         return ImageContextPixelBlender(destination: lhs.destination + rhs, clip: lhs.clip.map { $0 + rhs }, opacity: lhs.opacity, compositingMode: lhs.compositingMode, blendMode: lhs.blendMode)
     }
     
     @inlinable
-    @inline(__always)
     static func += (lhs: inout ImageContextPixelBlender, rhs: Int) {
         lhs.destination += rhs
         lhs.clip = lhs.clip.map { $0 + rhs }
     }
     
     @inlinable
-    @inline(__always)
     func draw<C: ColorPixel>(color: () -> C?) where C.Model == P.Model {
         
         if compositingMode == .default && blendMode == .default {
@@ -99,7 +95,6 @@ struct ImageContextPixelBlender<P: ColorPixel> {
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     func _withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
         let opacity = self.opacity
@@ -120,7 +115,6 @@ extension ImageContext {
     }
     
     @inlinable
-    @inline(__always)
     func withUnsafePixelBlender(_ body: (ImageContextPixelBlender<Pixel>) -> Void) {
         
         let opacity = self.opacity

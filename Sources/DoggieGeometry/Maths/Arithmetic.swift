@@ -70,13 +70,11 @@ public protocol MapReduceArithmetic: ScalarMultiplicative, Collection where Elem
 extension Collection where Self: MapReduceArithmetic {
     
     @inlinable
-    @inline(__always)
     public func reduce(_ nextPartialResult: (Element, Element) -> Element) -> Element? {
         return self.reduce(nil) { partial, current in partial.map { nextPartialResult($0, current) } ?? current }
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, Element) -> Result) -> Result {
         return self.reduce(into: initialResult) { $0 = nextPartialResult($0, $1) }
     }
@@ -85,62 +83,51 @@ extension Collection where Self: MapReduceArithmetic {
 extension MapReduceArithmetic {
     
     @inlinable
-    @inline(__always)
     public static prefix func + (val: Self) -> Self {
         return val
     }
     
     @inlinable
-    @inline(__always)
     public static prefix func - (val: Self) -> Self {
         return val.map { -$0 }
     }
     
     @inlinable
-    @inline(__always)
     public static func + (lhs: Self, rhs: Self) -> Self {
         return lhs.combined(rhs) { $0 + $1 }
     }
     @inlinable
-    @inline(__always)
     public static func - (lhs: Self, rhs: Self) -> Self {
         return lhs.combined(rhs) { $0 - $1 }
     }
     
     @inlinable
-    @inline(__always)
     public static func += (lhs: inout Self, rhs: Self) {
         lhs = lhs + rhs
     }
     
     @inlinable
-    @inline(__always)
     public static func -= (lhs: inout Self, rhs: Self) {
         lhs = lhs - rhs
     }
     
     @inlinable
-    @inline(__always)
     public static func * (lhs: Element.Scalar, rhs: Self) -> Self {
         return rhs.map { lhs * $0 }
     }
     @inlinable
-    @inline(__always)
     public static func * (lhs: Self, rhs: Element.Scalar) -> Self {
         return lhs.map { $0 * rhs }
     }
     @inlinable
-    @inline(__always)
     public static func / (lhs: Self, rhs: Element.Scalar) -> Self {
         return lhs.map { $0 / rhs }
     }
     @inlinable
-    @inline(__always)
     public static func *= (lhs: inout Self, rhs: Element.Scalar) {
         lhs = lhs * rhs
     }
     @inlinable
-    @inline(__always)
     public static func /= (lhs: inout Self, rhs: Element.Scalar) {
         lhs = lhs / rhs
     }
@@ -149,13 +136,11 @@ extension MapReduceArithmetic {
 extension MapReduceArithmetic where Element == Point {
     
     @inlinable
-    @inline(__always)
     public static func * (lhs: Self, rhs: SDTransform) -> Self {
         return lhs.map { $0 * rhs }
     }
     
     @inlinable
-    @inline(__always)
     public static func *= (lhs: inout Self, rhs: SDTransform) {
         lhs = lhs * rhs
     }
@@ -164,13 +149,11 @@ extension MapReduceArithmetic where Element == Point {
 extension MapReduceArithmetic where Element == Vector {
     
     @inlinable
-    @inline(__always)
     public static func * (lhs: Self, rhs: Matrix) -> Self {
         return lhs.map { $0 * rhs }
     }
     
     @inlinable
-    @inline(__always)
     public static func *= (lhs: inout Self, rhs: Matrix) {
         lhs = lhs * rhs
     }

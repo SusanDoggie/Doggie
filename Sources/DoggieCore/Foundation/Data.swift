@@ -26,7 +26,6 @@
 extension Data {
     
     @inlinable
-    @inline(__always)
     public func fileBacked() -> Data {
         return self.withUnsafeBytes { MappedBuffer(bytes: $0, fileBacked: true).data }
     }
@@ -35,7 +34,6 @@ extension Data {
 extension Data {
     
     @inlinable
-    @inline(__always)
     public func load<T>(fromByteOffset offset: Int = 0, as type: T.Type) -> T {
         assert(offset >= 0, "Data.load with negative offset")
         assert(offset + MemoryLayout<T>.stride <= self.count, "Data.load out of bounds")
@@ -43,7 +41,6 @@ extension Data {
     }
     
     @inlinable
-    @inline(__always)
     public func withUnsafeBufferPointer<T, R>(as type: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         return try self.withUnsafeBytes { try body($0.bindMemory(to: T.self)) }
     }
@@ -52,7 +49,6 @@ extension Data {
 extension Data {
     
     @inlinable
-    @inline(__always)
     public mutating func append(utf8 str: String) {
         let count = str.utf8.count
         str.utf8CString.withUnsafeBufferPointer { self.append(UnsafeBufferPointer(rebasing: $0.prefix(count))) }
@@ -62,7 +58,6 @@ extension Data {
 extension RangeReplaceableCollection where Element == UInt8 {
     
     @inlinable
-    @inline(__always)
     public mutating func append(utf8 str: String) {
         let count = str.utf8.count
         str.utf8CString.withUnsafeBufferPointer { self.append(contentsOf: UnsafeRawBufferPointer(UnsafeBufferPointer(rebasing: $0.prefix(count)))) }
@@ -72,7 +67,6 @@ extension RangeReplaceableCollection where Element == UInt8 {
 extension String {
     
     @inlinable
-    @inline(__always)
     public var _utf8_data: Data {
         let count = self.utf8.count
         return self.utf8CString.withUnsafeBufferPointer { Data(buffer: UnsafeBufferPointer(rebasing: $0.prefix(count))) }

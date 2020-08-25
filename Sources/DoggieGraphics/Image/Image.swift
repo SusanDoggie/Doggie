@@ -41,7 +41,6 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
     var _pixels: MappedBuffer<Pixel>
     
     @inlinable
-    @inline(__always)
     public var pixels: MappedBuffer<Pixel> {
         return _pixels
     }
@@ -50,7 +49,6 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
     var cache = ImageCache()
     
     @inlinable
-    @inline(__always)
     public init(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, pixels: MappedBuffer<Pixel>) {
         precondition(_isPOD(Pixel.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
@@ -64,7 +62,6 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
     }
     
     @inlinable
-    @inline(__always)
     public init(width: Int, height: Int, resolution: Resolution = .default, colorSpace: ColorSpace<Pixel.Model>, pixel: Pixel = Pixel(), fileBacked: Bool = false) {
         precondition(_isPOD(Pixel.self), "invalid pixel type.")
         precondition(width >= 0, "negative width is not allowed.")
@@ -77,7 +74,6 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
     }
     
     @inlinable
-    @inline(__always)
     public init<P>(_ image: Image<P>) where P.Model == Pixel.Model {
         precondition(_isPOD(Pixel.self), "invalid pixel type.")
         self.width = image.width
@@ -88,7 +84,6 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
     }
     
     @inlinable
-    @inline(__always)
     public init<P>(image: Image<P>, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
         
         precondition(_isPOD(Pixel.self), "invalid pixel type.")
@@ -127,14 +122,12 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
 extension Image where Pixel: _GrayColorPixel {
     
     @inlinable
-    @inline(__always)
     public init<P: _GrayColorPixel>(_ image: Image<P>) {
         let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
         self.init(width: image.width, height: image.height, resolution: image.resolution, colorSpace: image.colorSpace, pixels: pixels)
     }
     
     @inlinable
-    @inline(__always)
     public init<P: _GrayColorPixel>(_ image: Image<P>) where P.Component == Pixel.Component {
         let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
         self.init(width: image.width, height: image.height, resolution: image.resolution, colorSpace: image.colorSpace, pixels: pixels)
@@ -144,14 +137,12 @@ extension Image where Pixel: _GrayColorPixel {
 extension Image where Pixel: _RGBColorPixel {
     
     @inlinable
-    @inline(__always)
     public init<P: _RGBColorPixel>(_ image: Image<P>) {
         let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
         self.init(width: image.width, height: image.height, resolution: image.resolution, colorSpace: image.colorSpace, pixels: pixels)
     }
     
     @inlinable
-    @inline(__always)
     public init<P: _RGBColorPixel>(_ image: Image<P>) where P.Component == Pixel.Component {
         let pixels = image.pixels as? MappedBuffer<Pixel> ?? image.pixels.map(Pixel.init)
         self.init(width: image.width, height: image.height, resolution: image.resolution, colorSpace: image.colorSpace, pixels: pixels)
@@ -231,7 +222,6 @@ extension ImageCache {
 extension Image {
     
     @inlinable
-    @inline(__always)
     public func hash(into hasher: inout Hasher) {
         hasher.combine(width)
         hasher.combine(height)
@@ -245,13 +235,11 @@ extension Image {
     }
     
     @inlinable
-    @inline(__always)
     public static func ==(lhs: Image, rhs: Image) -> Bool {
         return lhs.width == rhs.width && lhs.height == rhs.height && lhs.resolution == rhs.resolution && lhs.colorSpace == rhs.colorSpace && lhs.pixels == rhs.pixels
     }
     
     @inlinable
-    @inline(__always)
     public func isStorageEqual(_ other: Image) -> Bool {
         return self.width == other.width && self.height == other.height && self.resolution == other.resolution && self.colorSpace.isStorageEqual(other.colorSpace) && self.pixels.isStorageEqual(other.pixels)
     }
@@ -260,7 +248,6 @@ extension Image {
 extension Image: CustomStringConvertible {
     
     @inlinable
-    @inline(__always)
     public var description: String {
         return "Image<\(Pixel.self)>(width: \(width), height: \(height), colorSpace: \(colorSpace), resolution: \(resolution))"
     }
@@ -269,7 +256,6 @@ extension Image: CustomStringConvertible {
 extension Image {
     
     @inlinable
-    @inline(__always)
     public var numberOfComponents: Int {
         return Pixel.numberOfComponents
     }
@@ -278,7 +264,6 @@ extension Image {
 extension Image {
     
     @inlinable
-    @inline(__always)
     public var fileBacked: Bool {
         get {
             return pixels.fileBacked
@@ -307,21 +292,18 @@ extension Image {
 extension Image {
     
     @inlinable
-    @inline(__always)
     public func color(x: Int, y: Int) -> DoggieGraphics.Color<Pixel.Model> {
         precondition(0..<width ~= x && 0..<height ~= y)
         return Color(colorSpace: colorSpace, color: pixels[width * y + x])
     }
     
     @inlinable
-    @inline(__always)
     public func color(x: Int, y: Int) -> AnyColor {
         precondition(0..<width ~= x && 0..<height ~= y)
         return AnyColor(colorSpace: colorSpace, color: pixels[width * y + x])
     }
     
     @inlinable
-    @inline(__always)
     public mutating func setColor<C: ColorProtocol>(x: Int, y: Int, color: C) {
         cache = ImageCache()
         precondition(0..<width ~= x && 0..<height ~= y)
@@ -345,13 +327,11 @@ extension Image {
 extension Image {
     
     @inlinable
-    @inline(__always)
     public func linearTone() -> Image {
         return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace.linearTone, pixels: pixels.map(colorSpace.convertToLinear))
     }
     
     @inlinable
-    @inline(__always)
     public mutating func setWhiteBalance(_ white: Point) {
         
         cache = ImageCache()
@@ -446,7 +426,6 @@ extension Image {
 extension Image {
     
     @inlinable
-    @inline(__always)
     public func map<P>(_ transform: (Pixel) throws -> P) rethrows -> Image<P> where P.Model == Pixel.Model {
         return try Image<P>(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixels: pixels.map(transform))
     }
@@ -455,13 +434,11 @@ extension Image {
 extension Image {
     
     @inlinable
-    @inline(__always)
     public func premultiplied() -> Image {
         return self.map { $0.premultiplied() }
     }
     
     @inlinable
-    @inline(__always)
     public func unpremultiplied() -> Image {
         return self.map { $0.unpremultiplied() }
     }
@@ -470,7 +447,6 @@ extension Image {
 extension Image {
     
     @inlinable
-    @inline(__always)
     public func transposed() -> Image {
         if pixels.isEmpty {
             return Image(width: height, height: width, resolution: Resolution(horizontal: resolution.vertical, vertical: resolution.horizontal, unit: resolution.unit), colorSpace: colorSpace, pixels: [])
@@ -484,26 +460,22 @@ extension Image {
 extension Image {
     
     @inlinable
-    @inline(__always)
     public func withUnsafeBufferPointer<R>(_ body: (UnsafeBufferPointer<Pixel>) throws -> R) rethrows -> R {
         return try pixels.withUnsafeBufferPointer(body)
     }
     
     @inlinable
-    @inline(__always)
     public mutating func withUnsafeMutableBufferPointer<R>(_ body: (inout UnsafeMutableBufferPointer<Pixel>) throws -> R) rethrows -> R {
         cache = ImageCache()
         return try _pixels.withUnsafeMutableBufferPointer(body)
     }
     
     @inlinable
-    @inline(__always)
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         return try pixels.withUnsafeBytes(body)
     }
     
     @inlinable
-    @inline(__always)
     public mutating func withUnsafeMutableBytes<R>(_ body: (UnsafeMutableRawBufferPointer) throws -> R) rethrows -> R {
         cache = ImageCache()
         return try _pixels.withUnsafeMutableBytes(body)

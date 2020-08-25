@@ -30,32 +30,27 @@ public struct Size: Hashable {
     public var height: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.width = 0
         self.height = 0
     }
     
     @inlinable
-    @inline(__always)
     public init(width: Int, height: Int) {
         self.width = Double(width)
         self.height = Double(height)
     }
     @inlinable
-    @inline(__always)
     public init(width: Double, height: Double) {
         self.width = width
         self.height = height
     }
     @inlinable
-    @inline(__always)
     public init<T: BinaryInteger>(width: T, height: T) {
         self.width = Double(width)
         self.height = Double(height)
     }
     @inlinable
-    @inline(__always)
     public init<T: BinaryFloatingPoint>(width: T, height: T) {
         self.width = Double(width)
         self.height = Double(height)
@@ -65,7 +60,6 @@ public struct Size: Hashable {
 extension Size: CustomStringConvertible {
     
     @inlinable
-    @inline(__always)
     public var description: String {
         return "Size(width: \(width), height: \(height))"
     }
@@ -74,7 +68,6 @@ extension Size: CustomStringConvertible {
 extension Size: Codable {
     
     @inlinable
-    @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         self.width = try container.decode(Double.self)
@@ -82,7 +75,6 @@ extension Size: Codable {
     }
     
     @inlinable
-    @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(width)
@@ -93,7 +85,6 @@ extension Size: Codable {
 extension Size {
     
     @inlinable
-    @inline(__always)
     public func aspectFit(_ bound: Size) -> Size {
         let u = width * bound.height
         let v = bound.width * height
@@ -105,7 +96,6 @@ extension Size {
     }
     
     @inlinable
-    @inline(__always)
     public func aspectFill(_ bound: Size) -> Size {
         let u = width * bound.height
         let v = bound.width * height
@@ -122,70 +112,58 @@ extension Size: ScalarMultiplicative {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var zero: Size {
         return Size()
     }
 }
 
 @inlinable
-@inline(__always)
 public prefix func +(val: Size) -> Size {
     return val
 }
 @inlinable
-@inline(__always)
 public prefix func -(val: Size) -> Size {
     return Size(width: -val.width, height: -val.height)
 }
 @inlinable
-@inline(__always)
 public func +(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
 }
 @inlinable
-@inline(__always)
 public func -(lhs: Size, rhs: Size) -> Size {
     return Size(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 }
 
 @inlinable
-@inline(__always)
 public func *(lhs: Double, rhs: Size) -> Size {
     return Size(width: lhs * rhs.width, height: lhs * rhs.height)
 }
 @inlinable
-@inline(__always)
 public func *(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width * rhs, height: lhs.height * rhs)
 }
 
 @inlinable
-@inline(__always)
 public func /(lhs: Size, rhs: Double) -> Size {
     return Size(width: lhs.width / rhs, height: lhs.height / rhs)
 }
 
 @inlinable
-@inline(__always)
 public func *= (lhs: inout Size, rhs: Double) {
     lhs.width *= rhs
     lhs.height *= rhs
 }
 @inlinable
-@inline(__always)
 public func /= (lhs: inout Size, rhs: Double) {
     lhs.width /= rhs
     lhs.height /= rhs
 }
 @inlinable
-@inline(__always)
 public func += (lhs: inout Size, rhs: Size) {
     lhs.width += rhs.width
     lhs.height += rhs.height
 }
 @inlinable
-@inline(__always)
 public func -= (lhs: inout Size, rhs: Size) {
     lhs.width -= rhs.width
     lhs.height -= rhs.height

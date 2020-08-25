@@ -55,7 +55,6 @@ extension ColorBlendMode {
 extension ColorBlendMode {
     
     @inlinable
-    @inline(__always)
     public static var `default`: ColorBlendMode {
         return .normal
     }
@@ -110,13 +109,11 @@ extension ColorBlendMode {
 extension ColorModel {
     
     @inlinable
-    @inline(__always)
     public mutating func blend(source: Self, blendMode: ColorBlendMode = .default) {
         self = self.blended(source: source, blendMode: blendMode)
     }
     
     @inlinable
-    @inline(__always)
     public func blended(source: Self, blendMode: ColorBlendMode = .default) -> Self {
         return blendMode.rawValue.blend(self, source)
     }
@@ -125,13 +122,11 @@ extension ColorModel {
 extension ColorComponents {
     
     @inlinable
-    @inline(__always)
     public mutating func blend(source: Self, blendMode: ColorBlendMode = .default) {
         self = self.blended(source: source, blendMode: blendMode)
     }
     
     @inlinable
-    @inline(__always)
     public func blended(source: Self, blendMode: ColorBlendMode = .default) -> Self {
         return blendMode.rawValue.blend(self, source)
     }

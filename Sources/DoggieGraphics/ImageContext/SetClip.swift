@@ -26,7 +26,6 @@
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     func clip(shape: Shape, winding: (Int16) -> Bool) {
         
         self.clearClipBuffer(with: 0)
@@ -149,7 +148,6 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     public func clip(shape: Shape, winding: Shape.WindingRule) {
         
         switch winding {

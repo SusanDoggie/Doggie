@@ -26,7 +26,6 @@
 extension Image {
     
     @inlinable
-    @inline(__always)
     mutating func _decode_aligned_channel<T: BinaryFloatingPoint & RawBitPattern, R: BinaryFloatingPoint>(_ bitmap: RawBitmap, _ channel_idx: Int, _ is_opaque: Bool, _: T.Type, _ : R.Type) {
         
         let width = self.width

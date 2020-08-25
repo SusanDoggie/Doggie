@@ -26,7 +26,6 @@
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     func draw_pattern(bound: Rect, xStep: Double, yStep: Double, callback: (ImageContext) -> Void) {
         
         let transform = self.transform.inverse
@@ -51,7 +50,6 @@ extension ImageContext {
     }
     
     @inlinable
-    @inline(__always)
     public func drawPattern(_ pattern: Pattern) {
         
         guard self.width != 0 && self.height != 0 && !self.transform.determinant.almostZero() else { return }

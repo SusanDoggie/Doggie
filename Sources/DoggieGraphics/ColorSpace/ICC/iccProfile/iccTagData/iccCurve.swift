@@ -355,8 +355,6 @@ extension iccCurve {
     
     @inlinable
     func eval(_ x: Double) -> Double {
-        
-        @inline(__always)
         func exteneded(_ x: Double, _ gamma: (Double) -> Double) -> Double {
             return x.sign == .plus ? gamma(x) : -gamma(-x)
         }

@@ -30,32 +30,27 @@ public struct Point: Hashable {
     public var y: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.x = 0
         self.y = 0
     }
     
     @inlinable
-    @inline(__always)
     public init(x: Int, y: Int) {
         self.x = Double(x)
         self.y = Double(y)
     }
     @inlinable
-    @inline(__always)
     public init(x: Double, y: Double) {
         self.x = x
         self.y = y
     }
     @inlinable
-    @inline(__always)
     public init<T: BinaryInteger>(x: T, y: T) {
         self.x = Double(x)
         self.y = Double(y)
     }
     @inlinable
-    @inline(__always)
     public init<T: BinaryFloatingPoint>(x: T, y: T) {
         self.x = Double(x)
         self.y = Double(y)
@@ -65,14 +60,12 @@ public struct Point: Hashable {
 extension Point {
     
     @inlinable
-    @inline(__always)
     public init(magnitude: Double, phase: Double) {
         self.x = magnitude * cos(phase)
         self.y = magnitude * sin(phase)
     }
     
     @inlinable
-    @inline(__always)
     public var phase: Double {
         get {
             return atan2(y, x)
@@ -83,7 +76,6 @@ extension Point {
     }
     
     @inlinable
-    @inline(__always)
     public var magnitude: Double {
         get {
             return hypot(x, y)
@@ -97,7 +89,6 @@ extension Point {
 extension Point {
     
     @inlinable
-    @inline(__always)
     public func offset(dx: Double, dy: Double) -> Point {
         return Point(x: self.x + dx, y: self.y + dy)
     }
@@ -106,7 +97,6 @@ extension Point {
 extension Point: CustomStringConvertible {
     
     @inlinable
-    @inline(__always)
     public var description: String {
         return "Point(x: \(x), y: \(y))"
     }
@@ -115,7 +105,6 @@ extension Point: CustomStringConvertible {
 extension Point: Codable {
     
     @inlinable
-    @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         self.x = try container.decode(Double.self)
@@ -123,7 +112,6 @@ extension Point: Codable {
     }
     
     @inlinable
-    @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(x)
@@ -138,13 +126,11 @@ extension Point: Tensor {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 2
     }
     
     @inlinable
-    @inline(__always)
     public subscript(position: Int) -> Double {
         get {
             return withUnsafeTypePunnedPointer(of: self, to: Double.self) { $0[position] }
@@ -155,19 +141,16 @@ extension Point: Tensor {
     }
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> Point {
         return Point(x: transform(x), y: transform(y))
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: Point, _ transform: (Double, Double) -> Double) -> Point {
         return Point(x: transform(self.x, other.x), y: transform(self.y, other.y))
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, x)
@@ -177,75 +160,62 @@ extension Point: Tensor {
 }
 
 @inlinable
-@inline(__always)
 public func dot(_ lhs: Point, _ rhs: Point) -> Double {
     return lhs.x * rhs.x + lhs.y * rhs.y
 }
 
 @inlinable
-@inline(__always)
 public func cross(_ lhs: Point, _ rhs: Point) -> Double {
     return lhs.x * rhs.y - lhs.y * rhs.x
 }
 
 @inlinable
-@inline(__always)
 public prefix func +(val: Point) -> Point {
     return val
 }
 @inlinable
-@inline(__always)
 public prefix func -(val: Point) -> Point {
     return Point(x: -val.x, y: -val.y)
 }
 @inlinable
-@inline(__always)
 public func +(lhs: Point, rhs: Point) -> Point {
     return Point(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
 }
 @inlinable
-@inline(__always)
 public func -(lhs: Point, rhs: Point) -> Point {
     return Point(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
 }
 
 @inlinable
-@inline(__always)
 public func *(lhs: Double, rhs: Point) -> Point {
     return Point(x: lhs * rhs.x, y: lhs * rhs.y)
 }
 @inlinable
-@inline(__always)
 public func *(lhs: Point, rhs: Double) -> Point {
     return Point(x: lhs.x * rhs, y: lhs.y * rhs)
 }
 
 @inlinable
-@inline(__always)
 public func /(lhs: Point, rhs: Double) -> Point {
     return Point(x: lhs.x / rhs, y: lhs.y / rhs)
 }
 
 @inlinable
-@inline(__always)
 public func *= (lhs: inout Point, rhs: Double) {
     lhs.x *= rhs
     lhs.y *= rhs
 }
 @inlinable
-@inline(__always)
 public func /= (lhs: inout Point, rhs: Double) {
     lhs.x /= rhs
     lhs.y /= rhs
 }
 @inlinable
-@inline(__always)
 public func += (lhs: inout Point, rhs: Point) {
     lhs.x += rhs.x
     lhs.y += rhs.y
 }
 @inlinable
-@inline(__always)
 public func -= (lhs: inout Point, rhs: Point) {
     lhs.x -= rhs.x
     lhs.y -= rhs.y

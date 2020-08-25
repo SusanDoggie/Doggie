@@ -30,40 +30,34 @@ public struct Rect: Hashable {
     public var size: Size
     
     @inlinable
-    @inline(__always)
     public init() {
         self.origin = Point()
         self.size = Size()
     }
     
     @inlinable
-    @inline(__always)
     public init(origin: Point, size: Size) {
         self.origin = origin
         self.size = size
     }
     
     @inlinable
-    @inline(__always)
     public init(x: Int, y: Int, width: Int, height: Int) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
     @inlinable
-    @inline(__always)
     public init(x: Double, y: Double, width: Double, height: Double) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
     
     @inlinable
-    @inline(__always)
     public init<T: BinaryInteger>(x: T, y: T, width: T, height: T) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
     }
     @inlinable
-    @inline(__always)
     public init<T: BinaryFloatingPoint>(x: T, y: T, width: T, height: T) {
         self.origin = Point(x: x, y: y)
         self.size = Size(width: width, height: height)
@@ -73,7 +67,6 @@ public struct Rect: Hashable {
 extension Rect: CustomStringConvertible {
     
     @inlinable
-    @inline(__always)
     public var description: String {
         return "Rect(x: \(origin.x), y: \(origin.y), width: \(size.width), height: \(size.height))"
     }
@@ -82,7 +75,6 @@ extension Rect: CustomStringConvertible {
 extension Rect: Codable {
     
     @inlinable
-    @inline(__always)
     public init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
         self.origin = try container.decode(Point.self)
@@ -90,7 +82,6 @@ extension Rect: Codable {
     }
     
     @inlinable
-    @inline(__always)
     public func encode(to encoder: Encoder) throws {
         var container = encoder.unkeyedContainer()
         try container.encode(origin)
@@ -101,7 +92,6 @@ extension Rect: Codable {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public static func ==(lhs: Rect, rhs: Rect) -> Bool {
         
         if lhs.isNull && rhs.isNull { return true }
@@ -114,7 +104,6 @@ extension Rect {
     }
     
     @inlinable
-    @inline(__always)
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.isNull)
         hasher.combine(self.isInfinite)
@@ -129,31 +118,26 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public static var null: Rect {
         return Rect(x: .infinity, y: .infinity, width: 0, height: 0)
     }
     
     @inlinable
-    @inline(__always)
     public static var infinite: Rect {
         return Rect(x: -.infinity, y: -.infinity, width: .infinity, height: .infinity)
     }
     
     @inlinable
-    @inline(__always)
     public var isEmpty: Bool {
         return self.isNull || self.size.width == 0 || self.size.height == 0
     }
     
     @inlinable
-    @inline(__always)
     public var isInfinite: Bool {
         return self == .infinite
     }
     
     @inlinable
-    @inline(__always)
     public var isNull: Bool {
         return self.origin.x == .infinity || self.origin.y == .infinity
     }
@@ -162,7 +146,6 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public var width: Double {
         get {
             return abs(size.width)
@@ -173,7 +156,6 @@ extension Rect {
     }
     
     @inlinable
-    @inline(__always)
     public var height: Double {
         get {
             return abs(size.height)
@@ -187,27 +169,22 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public var minX: Double {
         return size.width < 0 ? origin.x + size.width : origin.x
     }
     @inlinable
-    @inline(__always)
     public var minY: Double {
         return size.height < 0 ? origin.y + size.height : origin.y
     }
     @inlinable
-    @inline(__always)
     public var maxX: Double {
         return size.width < 0 ? origin.x : origin.x + size.width
     }
     @inlinable
-    @inline(__always)
     public var maxY: Double {
         return size.height < 0 ? origin.y : origin.y + size.height
     }
     @inlinable
-    @inline(__always)
     public var midX: Double {
         get {
             return 0.5 * size.width + origin.x
@@ -217,7 +194,6 @@ extension Rect {
         }
     }
     @inlinable
-    @inline(__always)
     public var midY: Double {
         get {
             return 0.5 * size.height + origin.y
@@ -227,7 +203,6 @@ extension Rect {
         }
     }
     @inlinable
-    @inline(__always)
     public var center: Point {
         get {
             return Point(x: midX, y: midY)
@@ -242,13 +217,11 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public var standardized: Rect {
         return self.isNull || self.isInfinite ? self : Rect(x: minX, y: minY, width: width, height: height)
     }
     
     @inlinable
-    @inline(__always)
     public var integral: Rect {
         
         if self.isNull || self.isInfinite { return self }
@@ -265,7 +238,6 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public func aspectFit(bound: Rect) -> Rect {
         if self.isNull || self.isInfinite || bound.isNull || bound.isInfinite { return .null }
         var rect = Rect(origin: Point(), size: size.aspectFit(bound.size))
@@ -274,7 +246,6 @@ extension Rect {
     }
     
     @inlinable
-    @inline(__always)
     public func aspectFill(bound: Rect) -> Rect {
         if self.isNull || self.isInfinite || bound.isNull || bound.isInfinite { return .null }
         var rect = Rect(origin: Point(), size: size.aspectFill(bound.size))
@@ -286,7 +257,6 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public var points: [Point] {
         let minX = self.minX
         let maxX = self.maxX
@@ -300,7 +270,6 @@ extension Rect {
     }
     
     @inlinable
-    @inline(__always)
     public static func bound<S: Sequence>(_ points: S) -> Rect where S.Element == Point {
         
         var flag = false
@@ -331,13 +300,11 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public func contains(_ point: Point) -> Bool {
         return self.isNull || self.isEmpty ? false : minX...maxX ~= point.x && minY...maxY ~= point.y
     }
     
     @inlinable
-    @inline(__always)
     public func contains(_ rect: Rect) -> Bool {
         return self.union(rect) == self
     }
@@ -346,7 +313,6 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public func union(_ other: Rect) -> Rect {
         
         if self.isNull {
@@ -366,7 +332,6 @@ extension Rect {
     }
     
     @inlinable
-    @inline(__always)
     public func union<S: Sequence>(_ others: S) -> Rect where S.Element == Rect {
         return others.reduce(self) { $0.union($1) }
     }
@@ -375,7 +340,6 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public func isIntersect(_ other: Rect) -> Bool {
         if self.isNull || other.isNull { return false }
         if self.isInfinite || other.isInfinite { return true }
@@ -383,7 +347,6 @@ extension Rect {
     }
     
     @inlinable
-    @inline(__always)
     public func intersect(_ other: Rect) -> Rect {
         
         if !self.isIntersect(other) { return .null }
@@ -403,7 +366,6 @@ extension Rect {
     }
     
     @inlinable
-    @inline(__always)
     public func intersect<S: Sequence>(_ others: S) -> Rect where S.Element == Rect {
         return others.reduce(self) { $0.intersect($1) }
     }
@@ -412,7 +374,6 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public func inset(dx: Double, dy: Double) -> Rect {
         
         if self.isNull || self.isInfinite { return self }
@@ -426,7 +387,6 @@ extension Rect {
     }
     
     @inlinable
-    @inline(__always)
     public func offset(dx: Double, dy: Double) -> Rect {
         return self.isNull || self.isInfinite ? self : Rect(x: minX + dx, y: minY + dy, width: width, height: height)
     }
@@ -435,7 +395,6 @@ extension Rect {
 extension Rect {
     
     @inlinable
-    @inline(__always)
     public func applying(_ transform: SDTransform) -> Rect? {
         
         if self.isNull || self.isInfinite { return self }
@@ -475,30 +434,25 @@ extension Rect {
 }
 
 @inlinable
-@inline(__always)
 public func *(lhs: Double, rhs: Rect) -> Rect {
     return Rect(origin: lhs * rhs.origin, size: lhs * rhs.size)
 }
 @inlinable
-@inline(__always)
 public func *(lhs: Rect, rhs: Double) -> Rect {
     return Rect(origin: lhs.origin * rhs, size: lhs.size * rhs)
 }
 
 @inlinable
-@inline(__always)
 public func /(lhs: Rect, rhs: Double) -> Rect {
     return Rect(origin: lhs.origin / rhs, size: lhs.size / rhs)
 }
 
 @inlinable
-@inline(__always)
 public func *= (lhs: inout Rect, rhs: Double) {
     lhs.origin *= rhs
     lhs.size *= rhs
 }
 @inlinable
-@inline(__always)
 public func /= (lhs: inout Rect, rhs: Double) {
     lhs.origin /= rhs
     lhs.size /= rhs

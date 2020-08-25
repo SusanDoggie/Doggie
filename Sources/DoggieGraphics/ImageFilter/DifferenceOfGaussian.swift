@@ -24,7 +24,6 @@
 //
 
 @inlinable
-@inline(__always)
 public func DifferenceOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T, _ k: T) -> [T] where T: FloatingMathProtocol {
     
     precondition(sd > 0, "sd is less than or equal to zero.")
@@ -48,7 +47,6 @@ public func DifferenceOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T, _ k: T) 
 }
 
 @inlinable
-@inline(__always)
 public func DifferenceOfGaussian<Image: _ImageConvolutionProtocol>(_ image: Image, _ sd: Image._ConvolutionFilterScalar, _ k: Image._ConvolutionFilterScalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image where Image._ConvolutionFilterScalar: FloatingMathProtocol {
     let filter = DifferenceOfGaussianFilter(sd, k)
     let size = Int(isqrt(UInt(filter.count)))

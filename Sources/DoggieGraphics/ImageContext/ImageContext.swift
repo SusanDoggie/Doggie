@@ -190,7 +190,6 @@ extension ImageContext {
     }
     
     @inlinable
-    @inline(__always)
     public func clearClipBuffer(with value: Double = 1) {
         
         if value == 1 {
@@ -430,7 +429,6 @@ extension ImageContext {
     }
     
     @inlinable
-    @inline(__always)
     public func clearRenderDepthBuffer(with value: Double = 1) {
         
         if value == 1 {
@@ -501,7 +499,6 @@ extension ImageContext {
     }
     
     @inlinable
-    @inline(__always)
     public func endTransparencyLayer() {
         
         guard let next = self.next else { return }
@@ -548,13 +545,11 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     public func clipToDrawing(body: (DrawableContext) throws -> Void) rethrows {
         try self.clipToDrawing { (context: ImageContext<Float32ColorPixel<GrayColorModel>>) in try body(context) }
     }
     
     @inlinable
-    @inline(__always)
     public func clipToDrawing<P>(colorSpace: ColorSpace<GrayColorModel> = .genericGamma22Gray, body: (ImageContext<P>) throws -> Void) rethrows where P.Model == GrayColorModel {
         
         let width = self.width

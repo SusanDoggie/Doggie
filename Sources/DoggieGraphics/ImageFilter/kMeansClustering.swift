@@ -24,13 +24,11 @@
 //
 
 @inlinable
-@inline(__always)
 public func kMeansClustering<Pixel>(_ image: Image<Pixel>, _ resultingImageColor: Bool, _ color: inout [Pixel]) {
     kMeansClustering(Texture(image: image), resultingImageColor, &color)
 }
 
 @inlinable
-@inline(__always)
 public func kMeansClustering<Pixel>(_ texture: Texture<Pixel>, _ resultingImageColor: Bool, _ color: inout [Pixel]) {
     
     let _color = color.map(Float32ColorPixel.init)
@@ -67,13 +65,11 @@ public func kMeansClustering<Pixel>(_ texture: Texture<Pixel>, _ resultingImageC
 }
 
 @inlinable
-@inline(__always)
 public func kMeansClustering<Pixel: _FloatComponentPixel>(_ image: Image<Pixel>, _ resultingImageColor: Bool, _ color: inout [Pixel]) where Pixel.Scalar: FloatingMathProtocol {
     kMeansClustering(Texture(image: image), resultingImageColor, &color)
 }
 
 @inlinable
-@inline(__always)
 public func kMeansClustering<Pixel: _FloatComponentPixel>(_ texture: Texture<Pixel>, _ resultingImageColor: Bool, _ color: inout [Pixel]) where Pixel.Scalar: FloatingMathProtocol {
     
     var means: [(Pixel, Int)] = Array(repeating: (Pixel(), 0), count: color.count)

@@ -34,7 +34,6 @@ public protocol ColorBlendKernel {
 extension ColorBlendKernel {
     
     @inlinable
-    @inline(__always)
     public static func blend<C: ColorComponents>(_ destination: C, _ source: C) -> C {
         return C(self.blend(destination.model, source.model))
     }
@@ -49,13 +48,11 @@ public protocol ElementwiseColorBlendKernel: ColorBlendKernel {
 extension ColorBlendKernel where Self: ElementwiseColorBlendKernel {
     
     @inlinable
-    @inline(__always)
     public static func blend<C: ColorModel>(_ destination: C, _ source: C) -> C {
         return destination.combined(source, self.blend)
     }
     
     @inlinable
-    @inline(__always)
     public static func blend<C: ColorComponents>(_ destination: C, _ source: C) -> C {
         return destination.combined(source, self.blend)
     }
@@ -69,7 +66,6 @@ extension ColorBlendMode {
     struct NormalBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return source
         }
@@ -80,7 +76,6 @@ extension ColorBlendMode {
     struct MultiplyBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return destination * source
         }
@@ -91,7 +86,6 @@ extension ColorBlendMode {
     struct ScreenBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return destination + source - destination * source
         }
@@ -102,7 +96,6 @@ extension ColorBlendMode {
     struct OverlayBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             
             if destination < 0.5 {
@@ -119,7 +112,6 @@ extension ColorBlendMode {
     struct DarkenBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return min(destination, source)
         }
@@ -130,7 +122,6 @@ extension ColorBlendMode {
     struct LightenBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return max(destination, source)
         }
@@ -141,7 +132,6 @@ extension ColorBlendMode {
     struct ColorDodgeBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return source < 1 ? min(1, destination / (1 - source)) : 1
         }
@@ -152,7 +142,6 @@ extension ColorBlendMode {
     struct ColorBurnBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return source > 0 ? 1 - min(1, (1 - destination) / source) : 0
         }
@@ -163,7 +152,6 @@ extension ColorBlendMode {
     struct SoftLightBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             
             let db: T
@@ -190,7 +178,6 @@ extension ColorBlendMode {
     struct HardLightBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return OverlayBlendKernel.blend(source, destination)
         }
@@ -201,7 +188,6 @@ extension ColorBlendMode {
     struct DifferenceBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return abs(destination - source)
         }
@@ -212,7 +198,6 @@ extension ColorBlendMode {
     struct ExclusionBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return destination + source - 2 * destination * source
         }
@@ -223,7 +208,6 @@ extension ColorBlendMode {
     struct PlusDarkerBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             let u = 1 - destination
             let v = 1 - source
@@ -236,7 +220,6 @@ extension ColorBlendMode {
     struct PlusLighterBlendKernel: ElementwiseColorBlendKernel {
         
         @inlinable
-        @inline(__always)
         static func blend<T: BinaryFloatingPoint>(_ destination: T, _ source: T) -> T {
             return min(1, destination + source)
         }

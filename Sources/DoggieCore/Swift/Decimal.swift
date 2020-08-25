@@ -26,19 +26,16 @@
 extension Decimal {
     
     @inlinable
-    @inline(__always)
     public init<Source: BinaryFloatingPoint>(_ value: Source) {
         self.init(Double(value))
     }
     
     @inlinable
-    @inline(__always)
     public var doubleValue: Double {
         return NSDecimalNumber(decimal: self).doubleValue
     }
     
     @inlinable
-    @inline(__always)
     public func rounded(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
         var x = self
         var result = Decimal()
@@ -47,13 +44,11 @@ extension Decimal {
     }
     
     @inlinable
-    @inline(__always)
     public mutating func round(scale: Int = 0, roundingMode: NSDecimalNumber.RoundingMode = .plain) {
         self = self.rounded(scale: scale, roundingMode: roundingMode)
     }
     
     @inlinable
-    @inline(__always)
     public func raising(toPower power: Int, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
         var x = self
         var result = Decimal()
@@ -62,7 +57,6 @@ extension Decimal {
     }
     
     @inlinable
-    @inline(__always)
     public func multiplying(byPowerOf10 power: Int16, roundingMode: NSDecimalNumber.RoundingMode = .plain) -> Decimal {
         var x = self
         var result = Decimal()

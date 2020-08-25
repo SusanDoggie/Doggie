@@ -34,13 +34,11 @@ struct Fixed8Number<BitPattern: FixedWidthInteger & ByteCodable>: BinaryFixedPoi
     var bitPattern: BitPattern
     
     @inlinable
-    @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
     
     @inlinable
-    @inline(__always)
     static var fractionBitCount: Int {
         return 8
     }
@@ -61,13 +59,11 @@ struct Fixed14Number<BitPattern: FixedWidthInteger & ByteCodable>: BinaryFixedPo
     var bitPattern: BitPattern
     
     @inlinable
-    @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
     
     @inlinable
-    @inline(__always)
     static var fractionBitCount: Int {
         return 14
     }
@@ -88,13 +84,11 @@ struct Fixed16Number<BitPattern: FixedWidthInteger & ByteCodable>: BinaryFixedPo
     var bitPattern: BitPattern
     
     @inlinable
-    @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
     
     @inlinable
-    @inline(__always)
     static var fractionBitCount: Int {
         return 16
     }
@@ -115,13 +109,11 @@ struct Fixed30Number<BitPattern: FixedWidthInteger & ByteCodable>: BinaryFixedPo
     var bitPattern: BitPattern
     
     @inlinable
-    @inline(__always)
     init(bitPattern: BitPattern) {
         self.bitPattern = bitPattern
     }
     
     @inlinable
-    @inline(__always)
     static var fractionBitCount: Int {
         return 30
     }

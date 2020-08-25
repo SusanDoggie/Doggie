@@ -26,7 +26,6 @@
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     func _shading<P: ColorPixel>(_ shader: (Point) -> P?) where Pixel.Model == P.Model {
         
         let width = self.width
@@ -50,7 +49,6 @@ extension ImageContext {
     }
     
     @inlinable
-    @inline(__always)
     func _shading<P: ColorPixel>(startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, mapping: (Point) -> Double?, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         let startColor = shading(0)
@@ -95,7 +93,6 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     public func axialShading<P: ColorPixel>(start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         guard !start.almostEqual(end) else { return }
@@ -116,7 +113,6 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     public func radialShading<P: ColorPixel>(start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode, shading: (Double) -> P) where Pixel.Model == P.Model {
         
         guard !start.almostEqual(end) || !startRadius.almostEqual(endRadius) else { return }
@@ -131,8 +127,6 @@ extension ImageContext {
             let a = p1.x * p1.x + p1.y * p1.y - r1 * r1
             let b = 2 * (p0.x * p1.x + p0.y * p1.y - r0 * r1)
             let c = p0.x * p0.x + p0.y * p0.y - r0 * r0
-            
-            @inline(__always)
             func _filter(_ t: Double) -> Bool {
                 return r0 + t * r1 >= 0 && (t >= 0 || startSpread != .none) && (t <= 1 || endSpread != .none)
             }
@@ -164,7 +158,6 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
         let colorSpace = self.colorSpace
@@ -209,7 +202,6 @@ extension ImageContext {
 extension ImageContext {
     
     @inlinable
-    @inline(__always)
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
         let colorSpace = self.colorSpace

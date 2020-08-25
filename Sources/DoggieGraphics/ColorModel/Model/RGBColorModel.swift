@@ -31,13 +31,11 @@ public struct RGBColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -48,7 +46,6 @@ public struct RGBColorModel: ColorModel {
     public var blue: Double
     
     @inlinable
-    @inline(__always)
     public init() {
         self.red = 0
         self.green = 0
@@ -56,7 +53,6 @@ public struct RGBColorModel: ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public init(red: Double, green: Double, blue: Double) {
         self.red = red
         self.green = green
@@ -77,49 +73,41 @@ public struct RGBColorModel: ColorModel {
 extension RGBColorModel {
     
     @inlinable
-    @inline(__always)
     public static var black: RGBColorModel {
         return RGBColorModel()
     }
     
     @inlinable
-    @inline(__always)
     public static var white: RGBColorModel {
         return RGBColorModel(red: 1, green: 1, blue: 1)
     }
     
     @inlinable
-    @inline(__always)
     public static var red: RGBColorModel {
         return RGBColorModel(red: 1, green: 0, blue: 0)
     }
     
     @inlinable
-    @inline(__always)
     public static var green: RGBColorModel {
         return RGBColorModel(red: 0, green: 1, blue: 0)
     }
     
     @inlinable
-    @inline(__always)
     public static var blue: RGBColorModel {
         return RGBColorModel(red: 0, green: 0, blue: 1)
     }
     
     @inlinable
-    @inline(__always)
     public static var cyan: RGBColorModel {
         return RGBColorModel(red: 0, green: 1, blue: 1)
     }
     
     @inlinable
-    @inline(__always)
     public static var magenta: RGBColorModel {
         return RGBColorModel(red: 1, green: 0, blue: 1)
     }
     
     @inlinable
-    @inline(__always)
     public static var yellow: RGBColorModel {
         return RGBColorModel(red: 1, green: 1, blue: 0)
     }
@@ -128,7 +116,6 @@ extension RGBColorModel {
 extension RGBColorModel {
     
     @inlinable
-    @inline(__always)
     public init?<S: StringProtocol>(_ hex: S) {
         
         if hex.hasPrefix("#") {
@@ -185,7 +172,6 @@ extension RGBColorModel {
 extension RGBColorModel {
     
     @inlinable
-    @inline(__always)
     public init(hue: Double, saturation: Double, brightness: Double) {
         let _hue = positive_mod(hue, 1) * 6
         let __hue = Int(_hue)
@@ -225,7 +211,6 @@ extension RGBColorModel {
 extension RGBColorModel {
     
     @inlinable
-    @inline(__always)
     public var hue: Double {
         get {
             let _max = Swift.max(red, green, blue)
@@ -249,7 +234,6 @@ extension RGBColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var saturation: Double {
         get {
             let _max = Swift.max(red, green, blue)
@@ -262,7 +246,6 @@ extension RGBColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public var brightness: Double {
         get {
             return Swift.max(red, green, blue)
@@ -276,13 +259,11 @@ extension RGBColorModel {
 extension RGBColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> RGBColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> RGBColorModel {
         return self
     }
@@ -291,13 +272,11 @@ extension RGBColorModel {
 extension RGBColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> RGBColorModel {
         return RGBColorModel(red: transform(red), green: transform(green), blue: transform(blue))
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, red)
@@ -307,7 +286,6 @@ extension RGBColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: RGBColorModel, _ transform: (Double, Double) -> Double) -> RGBColorModel {
         return RGBColorModel(red: transform(self.red, other.red), green: transform(self.green, other.green), blue: transform(self.blue, other.blue))
     }
@@ -336,7 +314,6 @@ extension RGBColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }
@@ -344,15 +321,11 @@ extension RGBColorModel {
         public var red: Scalar
         public var green: Scalar
         public var blue: Scalar
-        
-        @inline(__always)
         public init() {
             self.red = 0
             self.green = 0
             self.blue = 0
         }
-        
-        @inline(__always)
         public init(red: Scalar, green: Scalar, blue: Scalar) {
             self.red = red
             self.green = green
@@ -360,7 +333,6 @@ extension RGBColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: RGBColorModel) {
             self.red = Scalar(color.red)
             self.green = Scalar(color.green)
@@ -368,7 +340,6 @@ extension RGBColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.red = Scalar(components.red)
             self.green = Scalar(components.green)
@@ -386,7 +357,6 @@ extension RGBColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: RGBColorModel {
             get {
                 return RGBColorModel(red: Double(red), green: Double(green), blue: Double(blue))
@@ -401,13 +371,11 @@ extension RGBColorModel {
 extension RGBColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> RGBColorModel.FloatComponents<Scalar> {
         return RGBColorModel.FloatComponents(red: transform(red), green: transform(green), blue: transform(blue))
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, red)
@@ -417,7 +385,6 @@ extension RGBColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: RGBColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> RGBColorModel.FloatComponents<Scalar> {
         return RGBColorModel.FloatComponents(red: transform(self.red, other.red), green: transform(self.green, other.green), blue: transform(self.blue, other.blue))
     }

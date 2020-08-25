@@ -33,21 +33,18 @@ public struct Float32ColorPixel<Model: ColorModel>: _FloatComponentPixel {
     public var _opacity: Float
     
     @inlinable
-    @inline(__always)
     public init(color: Model, opacity: Double = 1) {
         self._color = Model.Float32Components(color)
         self._opacity = Float(opacity)
     }
     
     @inlinable
-    @inline(__always)
     public init(color: Model.Float32Components, opacity: Float = 1) {
         self._color = color
         self._opacity = opacity
     }
     
     @inlinable
-    @inline(__always)
     public var color: Model {
         get {
             return _color.model
@@ -58,7 +55,6 @@ public struct Float32ColorPixel<Model: ColorModel>: _FloatComponentPixel {
     }
     
     @inlinable
-    @inline(__always)
     public var opacity: Double {
         get {
             return Double(_opacity)

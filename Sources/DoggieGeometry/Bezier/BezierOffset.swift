@@ -24,7 +24,6 @@
 //
 
 @inlinable
-@inline(__always)
 public func _phase_diff(_ lhs: Double, _ rhs: Double, _ minus_signed: Bool) -> Double {
     var diff = (lhs - rhs).truncatingRemainder(dividingBy: 2 * .pi)
     while diff < -.pi { diff += 2 * .pi }
@@ -36,7 +35,6 @@ public func _phase_diff(_ lhs: Double, _ rhs: Double, _ minus_signed: Bool) -> D
 }
 
 @inlinable
-@inline(__always)
 public func _phase_diff(_ lhs: Point, _ rhs: Point, _ minus_signed: Bool) -> Double {
     return _phase_diff(lhs.phase, rhs.phase, minus_signed)
 }

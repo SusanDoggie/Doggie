@@ -57,7 +57,6 @@ protocol _TextureProtocolImplement: TextureProtocol {
 extension _TextureProtocolImplement {
     
     @inlinable
-    @inline(__always)
     public init(width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, pixel: RawPixel, fileBacked: Bool) {
         precondition(width >= 0, "negative width is not allowed.")
         precondition(height >= 0, "negative height is not allowed.")
@@ -69,7 +68,6 @@ extension _TextureProtocolImplement {
 extension _TextureProtocolImplement {
     
     @inlinable
-    @inline(__always)
     public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> Texture<P> {
         
         var texture = try Texture<P>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, pixels: pixels.map(transform))
@@ -81,7 +79,6 @@ extension _TextureProtocolImplement {
     }
     
     @inlinable
-    @inline(__always)
     public func map<P>(_ transform: (RawPixel) throws -> P) rethrows -> StencilTexture<P> {
         
         var texture = try StencilTexture<P>(width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, pixels: pixels.map(transform))
@@ -96,7 +93,6 @@ extension _TextureProtocolImplement {
 extension _TextureProtocolImplement {
     
     @inlinable
-    @inline(__always)
     public func transposed() -> Self {
         
         if pixels.isEmpty {
@@ -124,7 +120,6 @@ extension _TextureProtocolImplement {
 extension WrappingMode {
     
     @inlinable
-    @inline(__always)
     func addressing(_ x: Int, _ upperbound: Int) -> (Bool, Int) {
         switch self {
         case .none: return 0..<upperbound ~= x ? (true, x) : (false, x.clamped(to: 0..<upperbound))

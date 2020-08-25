@@ -69,7 +69,6 @@ public protocol ColorComponents: Hashable, Tensor {
 extension ColorModel {
     
     @inlinable
-    @inline(__always)
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         return Self.rangeOfComponent(i)
     }
@@ -78,7 +77,6 @@ extension ColorModel {
 extension ColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> Self {
         var color = self
         for i in 0..<Self.numberOfComponents {
@@ -90,7 +88,6 @@ extension ColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> Self {
         var color = self
         for i in 0..<Self.numberOfComponents {
@@ -105,13 +102,11 @@ extension ColorModel {
 extension ColorModel {
     
     @inlinable
-    @inline(__always)
     public init<T: ColorComponents>(_ components: T) where T.Model == Self {
         self = components.model
     }
     
     @inlinable
-    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -130,7 +125,6 @@ extension ColorModel {
 extension _Float16ColorModelProtocol {
     
     @inlinable
-    @inline(__always)
     public var float16Components: Float16Components {
         get {
             return Float16Components(self)

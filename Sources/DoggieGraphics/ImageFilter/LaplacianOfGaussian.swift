@@ -24,7 +24,6 @@
 //
 
 @inlinable
-@inline(__always)
 public func LaplacianOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] where T: FloatingMathProtocol {
     
     precondition(sd > 0, "sd is less than or equal to zero.")
@@ -46,7 +45,6 @@ public func LaplacianOfGaussianFilter<T: BinaryFloatingPoint>(_ sd: T) -> [T] wh
 }
 
 @inlinable
-@inline(__always)
 public func LaplacianOfGaussian<Image: _ImageConvolutionProtocol>(_ image: Image, _ sd: Image._ConvolutionFilterScalar, _ algorithm: ImageConvolutionAlgorithm = .cooleyTukey) -> Image where Image._ConvolutionFilterScalar: FloatingMathProtocol {
     let filter = LaplacianOfGaussianFilter(sd)
     let size = Int(isqrt(UInt(filter.count)))

@@ -24,13 +24,11 @@
 //
 
 @inlinable
-@inline(__always)
 public func DisplacementMap<S, T>(_ source: Image<S>, _ displacement: Image<T>, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Double) -> Image<S> {
     return Image(texture: DisplacementMap(Texture(image: source), Texture(image: displacement), xChannelSelector, yChannelSelector, scale), resolution: displacement.resolution, colorSpace: source.colorSpace)
 }
 
 @inlinable
-@inline(__always)
 public func DisplacementMap<S, T>(_ texture: Texture<S>, _ displacement: Texture<T>, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Double) -> Texture<S> {
     
     let width = displacement.width

@@ -26,17 +26,14 @@
 extension CGSize {
     
     @inlinable
-    @inline(__always)
     public init(_ s: Size) {
         self.init(width: CGFloat(s.width), height: CGFloat(s.height))
     }
     @inlinable
-    @inline(__always)
     public init<T: BinaryInteger>(width: T, height: T) {
         self.init(width: CGFloat(width), height: CGFloat(height))
     }
     @inlinable
-    @inline(__always)
     public init<T: BinaryFloatingPoint>(width: T, height: T) {
         self.init(width: CGFloat(width), height: CGFloat(height))
     }
@@ -45,70 +42,58 @@ extension CGSize {
 extension Size {
     
     @inlinable
-    @inline(__always)
     public init(_ s: CGSize) {
         self.init(width: s.width, height: s.height)
     }
 }
 
 @inlinable
-@inline(__always)
 public prefix func +(val: CGSize) -> CGSize {
     return val
 }
 @inlinable
-@inline(__always)
 public prefix func -(val: CGSize) -> CGSize {
     return CGSize(width: -val.width, height: -val.height)
 }
 @inlinable
-@inline(__always)
 public func +(lhs: CGSize, rhs: CGSize) -> CGSize {
     return CGSize(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
 }
 @inlinable
-@inline(__always)
 public func -(lhs: CGSize, rhs: CGSize) -> CGSize {
     return CGSize(width: lhs.width - rhs.width, height: lhs.height - rhs.height)
 }
 
 @inlinable
-@inline(__always)
 public func *(lhs: CGFloat, rhs: CGSize) -> CGSize {
     return CGSize(width: lhs * rhs.width, height: lhs * rhs.height)
 }
 @inlinable
-@inline(__always)
 public func *(lhs: CGSize, rhs: CGFloat) -> CGSize {
     return CGSize(width: lhs.width * rhs, height: lhs.height * rhs)
 }
 
 @inlinable
-@inline(__always)
 public func /(lhs: CGSize, rhs: CGFloat) -> CGSize {
     return CGSize(width: lhs.width / rhs, height: lhs.height / rhs)
 }
 
 @inlinable
-@inline(__always)
 public func *= (lhs: inout CGSize, rhs: CGFloat) {
     lhs.width *= rhs
     lhs.height *= rhs
 }
 @inlinable
-@inline(__always)
 public func /= (lhs: inout CGSize, rhs: CGFloat) {
     lhs.width /= rhs
     lhs.height /= rhs
 }
 @inlinable
-@inline(__always)
 public func += (lhs: inout CGSize, rhs: CGSize) {
     lhs.width += rhs.width
     lhs.height += rhs.height
 }
 @inlinable
-@inline(__always)
 public func -= (lhs: inout CGSize, rhs: CGSize) {
     lhs.width -= rhs.width
     lhs.height -= rhs.height

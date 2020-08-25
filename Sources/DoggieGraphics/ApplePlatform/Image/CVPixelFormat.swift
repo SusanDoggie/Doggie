@@ -38,13 +38,11 @@ public struct CVPixelFormat: RawRepresentable, Hashable, ExpressibleByIntegerLit
 extension CVPixelFormat {
     
     @inlinable
-    @inline(__always)
     public init(integerLiteral value: OSType) {
         self.init(rawValue: value)
     }
     
     @inlinable
-    @inline(__always)
     public init(stringLiteral value: StaticString) {
         assert(value.utf8CodeUnitCount == OSType.bitWidth >> 3)
         self.init(rawValue: value.utf8Start.withMemoryRebound(to: OSType.self, capacity: 1) { OSType(bigEndian: $0.pointee) })

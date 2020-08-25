@@ -31,13 +31,11 @@ public struct CMYColorModel: ColorModel {
     public typealias Scalar = Double
     
     @inlinable
-    @inline(__always)
     public static var numberOfComponents: Int {
         return 3
     }
     
     @inlinable
-    @inline(__always)
     public static func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
         precondition(0..<numberOfComponents ~= i, "Index out of range.")
         return 0...1
@@ -48,7 +46,6 @@ public struct CMYColorModel: ColorModel {
     public var yellow: Double
     
     @inlinable
-    @inline(__always)
     public init(cyan: Double, magenta: Double, yellow: Double) {
         self.cyan = cyan
         self.magenta = magenta
@@ -69,7 +66,6 @@ public struct CMYColorModel: ColorModel {
 extension CMYColorModel {
     
     @inlinable
-    @inline(__always)
     public init() {
         self.cyan = 0
         self.magenta = 0
@@ -105,49 +101,41 @@ extension CMYColorModel {
 extension CMYColorModel {
     
     @inlinable
-    @inline(__always)
     public static var black: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 1, yellow: 1)
     }
     
     @inlinable
-    @inline(__always)
     public static var white: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 0, yellow: 0)
     }
     
     @inlinable
-    @inline(__always)
     public static var red: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 1, yellow: 1)
     }
     
     @inlinable
-    @inline(__always)
     public static var green: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 0, yellow: 1)
     }
     
     @inlinable
-    @inline(__always)
     public static var blue: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 1, yellow: 0)
     }
     
     @inlinable
-    @inline(__always)
     public static var cyan: CMYColorModel {
         return CMYColorModel(cyan: 1, magenta: 0, yellow: 0)
     }
     
     @inlinable
-    @inline(__always)
     public static var magenta: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 1, yellow: 0)
     }
     
     @inlinable
-    @inline(__always)
     public static var yellow: CMYColorModel {
         return CMYColorModel(cyan: 0, magenta: 0, yellow: 1)
     }
@@ -156,13 +144,11 @@ extension CMYColorModel {
 extension CMYColorModel {
     
     @inlinable
-    @inline(__always)
     public func normalized() -> CMYColorModel {
         return self
     }
     
     @inlinable
-    @inline(__always)
     public func denormalized() -> CMYColorModel {
         return self
     }
@@ -171,13 +157,11 @@ extension CMYColorModel {
 extension CMYColorModel {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Double) -> Double) -> CMYColorModel {
         return CMYColorModel(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Double) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, cyan)
@@ -187,7 +171,6 @@ extension CMYColorModel {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: CMYColorModel, _ transform: (Double, Double) -> Double) -> CMYColorModel {
         return CMYColorModel(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
     }
@@ -216,7 +199,6 @@ extension CMYColorModel {
         public typealias Indices = Range<Int>
         
         @inlinable
-        @inline(__always)
         public static var numberOfComponents: Int {
             return 3
         }
@@ -224,15 +206,11 @@ extension CMYColorModel {
         public var cyan: Scalar
         public var magenta: Scalar
         public var yellow: Scalar
-        
-        @inline(__always)
         public init() {
             self.cyan = 0
             self.magenta = 0
             self.yellow = 0
         }
-        
-        @inline(__always)
         public init(cyan: Scalar, magenta: Scalar, yellow: Scalar) {
             self.cyan = cyan
             self.magenta = magenta
@@ -240,7 +218,6 @@ extension CMYColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init(_ color: CMYColorModel) {
             self.cyan = Scalar(color.cyan)
             self.magenta = Scalar(color.magenta)
@@ -248,7 +225,6 @@ extension CMYColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public init<T>(_ components: FloatComponents<T>) {
             self.cyan = Scalar(components.cyan)
             self.magenta = Scalar(components.magenta)
@@ -266,7 +242,6 @@ extension CMYColorModel {
         }
         
         @inlinable
-        @inline(__always)
         public var model: CMYColorModel {
             get {
                 return CMYColorModel(cyan: Double(cyan), magenta: Double(magenta), yellow: Double(yellow))
@@ -281,13 +256,11 @@ extension CMYColorModel {
 extension CMYColorModel.FloatComponents {
     
     @inlinable
-    @inline(__always)
     public func map(_ transform: (Scalar) -> Scalar) -> CMYColorModel.FloatComponents<Scalar> {
         return CMYColorModel.FloatComponents(cyan: transform(cyan), magenta: transform(magenta), yellow: transform(yellow))
     }
     
     @inlinable
-    @inline(__always)
     public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (inout Result, Scalar) -> Void) -> Result {
         var accumulator = initialResult
         updateAccumulatingResult(&accumulator, cyan)
@@ -297,7 +270,6 @@ extension CMYColorModel.FloatComponents {
     }
     
     @inlinable
-    @inline(__always)
     public func combined(_ other: CMYColorModel.FloatComponents<Scalar>, _ transform: (Scalar, Scalar) -> Scalar) -> CMYColorModel.FloatComponents<Scalar> {
         return CMYColorModel.FloatComponents(cyan: transform(self.cyan, other.cyan), magenta: transform(self.magenta, other.magenta), yellow: transform(self.yellow, other.yellow))
     }
