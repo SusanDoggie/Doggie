@@ -57,6 +57,9 @@ public class SVGTurbulenceKernel: CIImageProcessorKernel {
     }
     
     public class func apply(withExtent extent: CGRect, info: SVGTurbulenceKernel.Info) throws -> CIImage {
+        
+        if extent.isEmpty { return .empty() }
+        
         return try self.apply(withExtent: extent, inputs: nil, arguments: ["info": info])
     }
     

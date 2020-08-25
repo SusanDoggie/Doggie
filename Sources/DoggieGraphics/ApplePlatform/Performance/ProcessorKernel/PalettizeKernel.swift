@@ -76,11 +76,15 @@ extension CIImage {
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func palettize(palette: CIImage) throws -> CIImage {
         
+        if extent.isEmpty { return .empty() }
+        
         return try PalettizeKernel.apply(withExtent: self.extent, inputs: [self, palette], arguments: ["palette_extent": palette.extent])
     }
     
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func palettize<C: Collection>(palette: C) throws -> CIImage where C.Element: ColorPixel, C.Element.Model == RGBColorModel {
+        
+        if extent.isEmpty { return .empty() }
         
         let _palette = CIImage(
             bitmapData: MappedBuffer(palette).map { Float32ColorPixel($0).premultiplied() }.data,
