@@ -102,6 +102,67 @@ extension Rect {
     
     @inlinable
     @inline(__always)
+    public static func ==(lhs: Rect, rhs: Rect) -> Bool {
+        
+        if lhs.isNull && rhs.isNull { return true }
+        if lhs.isInfinite && rhs.isInfinite { return true }
+        
+        let r1 = lhs.standardized
+        let r2 = rhs.standardized
+        
+        return r1.origin == r2.origin && r1.size == r2.size
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.isNull)
+        hasher.combine(self.isInfinite)
+        if !self.isNull && !self.isInfinite {
+            let rect = self.standardized
+            hasher.combine(rect.origin)
+            hasher.combine(rect.size)
+        }
+    }
+}
+
+extension Rect {
+    
+    @inlinable
+    @inline(__always)
+    public static var null: Rect {
+        return Rect(x: .infinity, y: .infinity, width: 0, height: 0)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static var infinite: Rect {
+        return Rect(x: -.infinity, y: -.infinity, width: .infinity, height: .infinity)
+    }
+    
+    @inlinable
+    @inline(__always)
+    public var isEmpty: Bool {
+        return self.isNull || self.size.width == 0 || self.size.height == 0
+    }
+    
+    @inlinable
+    @inline(__always)
+    public var isInfinite: Bool {
+        return self == .infinite
+    }
+    
+    @inlinable
+    @inline(__always)
+    public var isNull: Bool {
+        return self.origin.x == .infinity || self.origin.y == .infinity
+    }
+}
+
+extension Rect {
+    
+    @inlinable
+    @inline(__always)
     public var width: Double {
         get {
             return abs(size.width)
@@ -183,16 +244,20 @@ extension Rect {
     @inlinable
     @inline(__always)
     public var standardized: Rect {
-        return Rect(x: minX, y: minY, width: width, height: height)
+        return self.isNull || self.isInfinite ? self : Rect(x: minX, y: minY, width: width, height: height)
     }
     
     @inlinable
     @inline(__always)
     public var integral: Rect {
+        
+        if self.isNull || self.isInfinite { return self }
+        
         let minX = floor(self.minX)
         let minY = floor(self.minY)
         let maxX = ceil(self.maxX)
         let maxY = ceil(self.maxY)
+        
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
 }
@@ -202,6 +267,7 @@ extension Rect {
     @inlinable
     @inline(__always)
     public func aspectFit(bound: Rect) -> Rect {
+        if self.isNull || self.isInfinite || bound.isNull || bound.isInfinite { return .null }
         var rect = Rect(origin: Point(), size: size.aspectFit(bound.size))
         rect.center = bound.center
         return rect
@@ -210,6 +276,7 @@ extension Rect {
     @inlinable
     @inline(__always)
     public func aspectFill(bound: Rect) -> Rect {
+        if self.isNull || self.isInfinite || bound.isNull || bound.isInfinite { return .null }
         var rect = Rect(origin: Point(), size: size.aspectFill(bound.size))
         rect.center = bound.center
         return rect
@@ -236,6 +303,7 @@ extension Rect {
     @inline(__always)
     public static func bound<S: Sequence>(_ points: S) -> Rect where S.Element == Point {
         
+        var flag = false
         var minX = 0.0
         var maxX = 0.0
         var minY = 0.0
@@ -243,6 +311,7 @@ extension Rect {
         
         for (i, p) in points.enumerated() {
             if i == 0 {
+                flag = true
                 minX = p.x
                 maxX = p.x
                 minY = p.y
@@ -254,7 +323,23 @@ extension Rect {
                 maxY = max(maxY, p.y)
             }
         }
-        return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+        
+        return flag ? Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY) : .null
+    }
+}
+
+extension Rect {
+    
+    @inlinable
+    @inline(__always)
+    public func contains(_ point: Point) -> Bool {
+        return self.isNull || self.isEmpty ? false : minX...maxX ~= point.x && minY...maxY ~= point.y
+    }
+    
+    @inlinable
+    @inline(__always)
+    public func contains(_ rect: Rect) -> Bool {
+        return self.union(rect) == self
     }
 }
 
@@ -263,47 +348,87 @@ extension Rect {
     @inlinable
     @inline(__always)
     public func union(_ other: Rect) -> Rect {
+        
+        if self.isNull {
+            return other
+        } else if other.isNull {
+            return self
+        }
+        
+        if self.isInfinite || other.isInfinite { return .infinite }
+        
         let minX = min(self.minX, other.minX)
         let minY = min(self.minY, other.minY)
         let maxX = max(self.maxX, other.maxX)
         let maxY = max(self.maxY, other.maxY)
+        
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }
+    
+    @inlinable
+    @inline(__always)
+    public func union<S: Sequence>(_ others: S) -> Rect where S.Element == Rect {
+        return others.reduce(self) { $0.union($1) }
+    }
+}
+
+extension Rect {
+    
+    @inlinable
+    @inline(__always)
+    public func isIntersect(_ other: Rect) -> Bool {
+        if self.isNull || other.isNull { return false }
+        if self.isInfinite || other.isInfinite { return true }
+        return self.minX < other.maxX && self.maxX > other.minX && self.minY < other.maxY && self.maxY > other.minY
+    }
+    
     @inlinable
     @inline(__always)
     public func intersect(_ other: Rect) -> Rect {
+        
+        if !self.isIntersect(other) { return .null }
+        
+        if self.isInfinite {
+            return other
+        } else if other.isInfinite {
+            return self
+        }
+        
         let minX = max(self.minX, other.minX)
         let minY = max(self.minY, other.minY)
-        let _width = max(0, min(self.maxX, other.maxX) - minX)
-        let _height = max(0, min(self.maxY, other.maxY) - minY)
-        return Rect(x: minX, y: minY, width: _width, height: _height)
+        let width = max(0, min(self.maxX, other.maxX) - minX)
+        let height = max(0, min(self.maxY, other.maxY) - minY)
+        
+        return Rect(x: minX, y: minY, width: width, height: height)
     }
+    
+    @inlinable
+    @inline(__always)
+    public func intersect<S: Sequence>(_ others: S) -> Rect where S.Element == Rect {
+        return others.reduce(self) { $0.intersect($1) }
+    }
+}
+
+extension Rect {
+    
     @inlinable
     @inline(__always)
     public func inset(dx: Double, dy: Double) -> Rect {
-        return Rect(x: minX + dx, y: minY + dy, width: width - 2 * dx, height: height - 2 * dy)
+        
+        if self.isNull || self.isInfinite { return self }
+        
+        let minX = self.minX + dx
+        let minY = self.minY + dy
+        let width = self.width - 2 * dx
+        let height = self.height - 2 * dy
+        
+        return width < 0 || height < 0 ? .null : Rect(x: minX, y: minY, width: width, height: height)
     }
+    
     @inlinable
     @inline(__always)
     public func offset(dx: Double, dy: Double) -> Rect {
-        return Rect(x: minX + dx, y: minY + dy, width: width, height: height)
-    }
-    @inlinable
-    @inline(__always)
-    public func contains(_ point: Point) -> Bool {
-        return minX...maxX ~= point.x && minY...maxY ~= point.y
-    }
-    @inlinable
-    @inline(__always)
-    public func contains(_ rect: Rect) -> Bool {
-        let a = Point(x: rect.minX, y: rect.minY)
-        let b = Point(x: rect.maxX, y: rect.maxY)
-        return self.contains(a) && self.contains(b)
-    }
-    @inlinable
-    @inline(__always)
-    public func isIntersect(_ rect: Rect) -> Bool {
-        return self.minX < rect.maxX && self.maxX > rect.minX && self.minY < rect.maxY && self.maxY > rect.minY
+        return self.isNull || self.isInfinite ? self : Rect(x: minX + dx, y: minY + dy, width: width, height: height)
     }
 }
 
@@ -312,6 +437,8 @@ extension Rect {
     @inlinable
     @inline(__always)
     public func applying(_ transform: SDTransform) -> Rect? {
+        
+        if self.isNull || self.isInfinite { return self }
         
         let minX = self.minX
         let maxX = self.maxX

@@ -93,11 +93,6 @@ public struct AnyColor: ColorProtocol, Hashable {
     }
     
     @inlinable
-    public init<P: ColorPixel>(colorSpace: DoggieGraphics.ColorSpace<P.Model>, color: P) {
-        self._base = Color(colorSpace: colorSpace, color: color)
-    }
-    
-    @inlinable
     public init<Model>(colorSpace: DoggieGraphics.ColorSpace<Model>, color: Model, opacity: Double = 1) {
         self._base = Color(colorSpace: colorSpace, color: color, opacity: opacity)
     }
@@ -105,6 +100,14 @@ public struct AnyColor: ColorProtocol, Hashable {
     @inlinable
     public init<Model>(_ color: Color<Model>) {
         self._base = color
+    }
+}
+
+extension AnyColor {
+    
+    @inlinable
+    public init<P: ColorPixel>(colorSpace: DoggieGraphics.ColorSpace<P.Model>, color: P) {
+        self.init(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
     }
 }
 
