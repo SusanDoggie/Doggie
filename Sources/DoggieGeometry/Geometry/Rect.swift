@@ -129,17 +129,23 @@ extension Rect {
     
     @inlinable
     public var isEmpty: Bool {
-        return self.isNull || self.size.width == 0 || self.size.height == 0
+        return self.isNull
+            || self.size.width == 0
+            || self.size.height == 0
     }
     
     @inlinable
     public var isInfinite: Bool {
-        return self == .infinite
+        return self.origin.x == -.infinity
+            && self.origin.y == -.infinity
+            && self.size.width == .infinity
+            && self.size.height == .infinity
     }
     
     @inlinable
     public var isNull: Bool {
-        return self.origin.x == .infinity || self.origin.y == .infinity
+        return self.origin.x == .infinity
+            || self.origin.y == .infinity
     }
 }
 
