@@ -625,3 +625,10 @@ extension Json {
         return String(data: data, encoding: String.Encoding.utf8)
     }
 }
+
+@inlinable
+@inline(__always)
+public func ??(optional: Json?, defaultValue: @autoclosure () throws -> Json?) rethrows -> Json {
+    let optional = optional ?? nil
+    return optional.isNil ? try defaultValue() ?? nil : optional
+}
