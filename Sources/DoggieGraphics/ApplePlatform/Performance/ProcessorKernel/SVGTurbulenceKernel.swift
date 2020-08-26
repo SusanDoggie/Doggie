@@ -60,7 +60,15 @@ public class SVGTurbulenceKernel: CIImageProcessorKernel {
         
         if extent.isEmpty { return .empty() }
         
-        return try self.apply(withExtent: extent, inputs: nil, arguments: ["info": info])
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        
+        var rendered = try self.apply(withExtent: _extent, inputs: nil, arguments: ["info": info])
+        
+        if !extent.isInfinite {
+            rendered = rendered.cropped(to: extent)
+        }
+        
+        return rendered
     }
     
     public override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
