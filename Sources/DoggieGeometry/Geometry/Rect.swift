@@ -296,14 +296,20 @@ extension Rect {
     @inlinable
     @inline(__always)
     public var points: [Point] {
+        
+        precondition(!self.isNull, "rect is null.")
+        precondition(!self.isInfinite, "rect is infinite.")
+        
         let minX = self.minX
         let maxX = self.maxX
         let minY = self.minY
         let maxY = self.maxY
+        
         let a = Point(x: maxX, y: minY)
         let b = Point(x: maxX, y: maxY)
         let c = Point(x: minX, y: maxY)
         let d = Point(x: minX, y: minY)
+        
         return [a, b, c, d]
     }
     
