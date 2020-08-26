@@ -1282,7 +1282,7 @@ extension SVGEffectElement {
     
     fileprivate func visibleBound(_ sources: [SVGEffect.Source: Rect], _ objectBound: Rect) -> Rect? {
         
-        guard let region = self.region else { return self.visibleBound(sources) }
+        guard !region.isNull else { return self.visibleBound(sources) }
         
         switch regionUnit {
         case .userSpaceOnUse: return region
@@ -1355,18 +1355,18 @@ extension SVGContext {
             var element = primitive.xml_element
             element.setAttribute(for: "result", value: uuid.uuidString)
             
-            if let region = primitive.region {
+            if !primitive.region.isNull {
                 switch primitive.regionUnit {
                 case .userSpaceOnUse:
-                    element.setAttribute(for: "x", value: "\(Decimal(region.minX).rounded(scale: 9))")
-                    element.setAttribute(for: "y", value: "\(Decimal(region.minY).rounded(scale: 9))")
-                    element.setAttribute(for: "width", value: "\(Decimal(region.width).rounded(scale: 9))")
-                    element.setAttribute(for: "height", value: "\(Decimal(region.height).rounded(scale: 9))")
+                    element.setAttribute(for: "x", value: "\(Decimal(primitive.region.minX).rounded(scale: 9))")
+                    element.setAttribute(for: "y", value: "\(Decimal(primitive.region.minY).rounded(scale: 9))")
+                    element.setAttribute(for: "width", value: "\(Decimal(primitive.region.width).rounded(scale: 9))")
+                    element.setAttribute(for: "height", value: "\(Decimal(primitive.region.height).rounded(scale: 9))")
                 case .objectBoundingBox:
-                    element.setAttribute(for: "x", value: "\(Decimal(region.minX * objectBound.width + objectBound.minX).rounded(scale: 9))")
-                    element.setAttribute(for: "y", value: "\(Decimal(region.minY * objectBound.height + objectBound.minY).rounded(scale: 9))")
-                    element.setAttribute(for: "width", value: "\(Decimal(region.width * objectBound.width).rounded(scale: 9))")
-                    element.setAttribute(for: "height", value: "\(Decimal(region.height * objectBound.height).rounded(scale: 9))")
+                    element.setAttribute(for: "x", value: "\(Decimal(primitive.region.minX * objectBound.width + objectBound.minX).rounded(scale: 9))")
+                    element.setAttribute(for: "y", value: "\(Decimal(primitive.region.minY * objectBound.height + objectBound.minY).rounded(scale: 9))")
+                    element.setAttribute(for: "width", value: "\(Decimal(primitive.region.width * objectBound.width).rounded(scale: 9))")
+                    element.setAttribute(for: "height", value: "\(Decimal(primitive.region.height * objectBound.height).rounded(scale: 9))")
                 }
             }
             
@@ -1377,18 +1377,18 @@ extension SVGContext {
             
             var element = primitive.xml_element
             
-            if let region = primitive.region {
+            if !primitive.region.isNull {
                 switch primitive.regionUnit {
                 case .userSpaceOnUse:
-                    element.setAttribute(for: "x", value: "\(Decimal(region.minX).rounded(scale: 9))")
-                    element.setAttribute(for: "y", value: "\(Decimal(region.minY).rounded(scale: 9))")
-                    element.setAttribute(for: "width", value: "\(Decimal(region.width).rounded(scale: 9))")
-                    element.setAttribute(for: "height", value: "\(Decimal(region.height).rounded(scale: 9))")
+                    element.setAttribute(for: "x", value: "\(Decimal(primitive.region.minX).rounded(scale: 9))")
+                    element.setAttribute(for: "y", value: "\(Decimal(primitive.region.minY).rounded(scale: 9))")
+                    element.setAttribute(for: "width", value: "\(Decimal(primitive.region.width).rounded(scale: 9))")
+                    element.setAttribute(for: "height", value: "\(Decimal(primitive.region.height).rounded(scale: 9))")
                 case .objectBoundingBox:
-                    element.setAttribute(for: "x", value: "\(Decimal(region.minX * objectBound.width + objectBound.minX).rounded(scale: 9))")
-                    element.setAttribute(for: "y", value: "\(Decimal(region.minY * objectBound.height + objectBound.minY).rounded(scale: 9))")
-                    element.setAttribute(for: "width", value: "\(Decimal(region.width * objectBound.width).rounded(scale: 9))")
-                    element.setAttribute(for: "height", value: "\(Decimal(region.height * objectBound.height).rounded(scale: 9))")
+                    element.setAttribute(for: "x", value: "\(Decimal(primitive.region.minX * objectBound.width + objectBound.minX).rounded(scale: 9))")
+                    element.setAttribute(for: "y", value: "\(Decimal(primitive.region.minY * objectBound.height + objectBound.minY).rounded(scale: 9))")
+                    element.setAttribute(for: "width", value: "\(Decimal(primitive.region.width * objectBound.width).rounded(scale: 9))")
+                    element.setAttribute(for: "height", value: "\(Decimal(primitive.region.height * objectBound.height).rounded(scale: 9))")
                 }
             }
             

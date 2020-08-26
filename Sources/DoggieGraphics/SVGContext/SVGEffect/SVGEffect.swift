@@ -84,7 +84,7 @@ extension SVGEffect {
 
 public protocol SVGEffectElement {
     
-    var region: Rect? { get set }
+    var region: Rect { get set }
     
     var regionUnit: SVGEffect.RegionUnit { get set }
     

@@ -25,7 +25,7 @@
 
 public struct SVGImageEffect: SVGEffectElement {
     
-    public var region: Rect?
+    public var region: Rect = .null
     
     public var regionUnit: SVGEffect.RegionUnit = .objectBoundingBox
     
@@ -38,6 +38,10 @@ public struct SVGImageEffect: SVGEffectElement {
     }
     
     public init(viewBox: Rect, callback: @escaping (DrawableContext) -> Void) {
+        
+        precondition(!viewBox.isNull, "viewBox is null.")
+        precondition(!viewBox.isInfinite, "viewBox is infinite.")
+        
         self.viewBox = viewBox
         self.callback = callback
     }

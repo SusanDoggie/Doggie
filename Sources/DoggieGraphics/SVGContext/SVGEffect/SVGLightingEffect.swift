@@ -88,7 +88,7 @@ extension SVGLightingEffect {
 
 public struct SVGDiffuseLightingEffect: SVGLightingEffect {
     
-    public var region: Rect?
+    public var region: Rect = .null
     
     public var regionUnit: SVGEffect.RegionUnit = .objectBoundingBox
     
@@ -112,7 +112,7 @@ public struct SVGDiffuseLightingEffect: SVGLightingEffect {
 
 public struct SVGSpecularLightingEffect: SVGLightingEffect {
     
-    public var region: Rect?
+    public var region: Rect = .null
     
     public var regionUnit: SVGEffect.RegionUnit = .objectBoundingBox
     
