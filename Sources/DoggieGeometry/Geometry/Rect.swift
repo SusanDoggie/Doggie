@@ -160,9 +160,9 @@ extension Rect {
     @inlinable
     @inline(__always)
     public var isNull: Bool {
-        return self.origin.x == .infinity || self.origin.x.isNan
-            || self.origin.y == .infinity || self.origin.y.isNan
-            || self.size.width.isNan || self.size.height.isNan
+        return self.origin.x == .infinity || self.origin.x.isNaN
+            || self.origin.y == .infinity || self.origin.y.isNaN
+            || self.size.width.isNaN || self.size.height.isNaN
     }
 }
 
