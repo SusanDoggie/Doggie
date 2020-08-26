@@ -628,7 +628,14 @@ extension Json {
 
 @inlinable
 @inline(__always)
-public func ??(optional: Json?, defaultValue: @autoclosure () throws -> Json?) rethrows -> Json {
+public func ??(optional: Json?, defaultValue: @autoclosure () throws -> Json) rethrows -> Json {
     let optional = optional ?? nil
-    return optional.isNil ? try defaultValue() ?? nil : optional
+    return optional.isNil ? try defaultValue() : optional
+}
+
+@inlinable
+@inline(__always)
+public func ??(optional: Json?, defaultValue: @autoclosure () throws -> Json?) rethrows -> Json? {
+    let optional = optional ?? nil
+    return optional.isNil ? try defaultValue() : optional
 }
