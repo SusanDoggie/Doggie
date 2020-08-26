@@ -94,6 +94,18 @@ extension PDFContext {
         private weak var global: Page?
         
         init(media: Rect, crop: Rect, bleed: Rect, trim: Rect, margin: Rect, colorSpace: AnyColorSpace) {
+            
+            precondition(!media.isNull, "media is null.")
+            precondition(!media.isInfinite, "media is infinite.")
+            precondition(!crop.isNull, "crop is null.")
+            precondition(!crop.isInfinite, "crop is infinite.")
+            precondition(!bleed.isNull, "bleed is null.")
+            precondition(!bleed.isInfinite, "bleed is infinite.")
+            precondition(!trim.isNull, "trim is null.")
+            precondition(!trim.isInfinite, "trim is infinite.")
+            precondition(!margin.isNull, "margin is null.")
+            precondition(!margin.isInfinite, "margin is infinite.")
+            
             self.media = media
             self.crop = crop
             self.bleed = bleed

@@ -700,12 +700,18 @@ extension Shape.Component {
     
     @inlinable
     public init(rect: Rect) {
+        precondition(!rect.isNull, "rect is null.")
+        precondition(!rect.isInfinite, "rect is infinite.")
         let points = rect.points
         self.init(start: points[0], closed: true, segments: [.line(points[1]), .line(points[2]), .line(points[3])])
     }
     
     @inlinable
     public init(roundedRect rect: Rect, radius: Radius) {
+        
+        precondition(!rect.isNull, "rect is null.")
+        precondition(!rect.isInfinite, "rect is infinite.")
+        
         let x_radius = Swift.min(0.5 * rect.width, abs(radius.x))
         let y_radius = Swift.min(0.5 * rect.height, abs(radius.y))
         let transform = SDTransform.scale(x: x_radius, y: y_radius) * SDTransform.translate(x: x_radius + rect.minX, y: y_radius + rect.minY)
@@ -724,11 +730,16 @@ extension Shape.Component {
             .cubic(bezier_circle[7] * t3, bezier_circle[8] * t3, bezier_circle[9] * t3), .line(bezier_circle[9] * t4),
             .cubic(bezier_circle[10] * t4, bezier_circle[11] * t4, bezier_circle[12] * t4)
         ]
+        
         self.init(start: bezier_circle[0] * t1, closed: true, segments: segments)
     }
     
     @inlinable
     public init(ellipseIn rect: Rect) {
+        
+        precondition(!rect.isNull, "rect is null.")
+        precondition(!rect.isInfinite, "rect is infinite.")
+        
         let transform = SDTransform.scale(x: 0.5 * rect.width, y: 0.5 * rect.height) * SDTransform.translate(x: rect.midX, y: rect.midY)
         let segments: [Shape.Segment] = [
             .cubic(bezier_circle[1] * transform, bezier_circle[2] * transform, bezier_circle[3] * transform),
@@ -736,6 +747,7 @@ extension Shape.Component {
             .cubic(bezier_circle[7] * transform, bezier_circle[8] * transform, bezier_circle[9] * transform),
             .cubic(bezier_circle[10] * transform, bezier_circle[11] * transform, bezier_circle[12] * transform)
         ]
+        
         self.init(start: bezier_circle[0] * transform, closed: true, segments: segments)
     }
     
@@ -761,17 +773,29 @@ extension Shape {
     
     @inlinable
     public init(rect: Rect) {
-        self = [Component(rect: rect)]
+        if rect.isNull || rect.isInfinite {
+            self.init()
+        } else {
+            self = [Component(rect: rect)]
+        }
     }
     
     @inlinable
     public init(roundedRect rect: Rect, radius: Radius) {
-        self = [Component(roundedRect: rect, radius: radius)]
+        if rect.isNull || rect.isInfinite {
+            self.init()
+        } else {
+            self = [Component(roundedRect: rect, radius: radius)]
+        }
     }
     
     @inlinable
     public init(ellipseIn rect: Rect) {
-        self = [Component(ellipseIn: rect)]
+        if rect.isNull || rect.isInfinite {
+            self.init()
+        } else {
+            self = [Component(ellipseIn: rect)]
+        }
     }
     
     @inlinable

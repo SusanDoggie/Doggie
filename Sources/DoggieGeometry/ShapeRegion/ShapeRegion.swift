@@ -281,7 +281,7 @@ extension ShapeRegion {
     
     @inlinable
     public init(rect: Rect) {
-        if rect.width.almostZero() || rect.height.almostZero() {
+        if rect.isNull || rect.isInfinite || rect.width.almostZero() || rect.height.almostZero() {
             self.init()
         } else {
             self.init(solid: ShapeRegion.Solid(solid: Shape.Component(rect: rect)))
@@ -290,7 +290,7 @@ extension ShapeRegion {
     
     @inlinable
     public init(roundedRect rect: Rect, radius: Radius) {
-        if rect.width.almostZero() || rect.height.almostZero() {
+        if rect.isNull || rect.isInfinite || rect.width.almostZero() || rect.height.almostZero() {
             self.init()
         } else {
             self.init(solid: ShapeRegion.Solid(solid: Shape.Component(roundedRect: rect, radius: radius)))
@@ -299,7 +299,7 @@ extension ShapeRegion {
     
     @inlinable
     public init(ellipseIn rect: Rect) {
-        if rect.width.almostZero() || rect.height.almostZero() {
+        if rect.isNull || rect.isInfinite || rect.width.almostZero() || rect.height.almostZero() {
             self.init()
         } else {
             self.init(solid: ShapeRegion.Solid(solid: Shape.Component(ellipseIn: rect)))
