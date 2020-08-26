@@ -518,3 +518,10 @@ public func /= (lhs: inout Rect, rhs: Double) {
     lhs.origin /= rhs
     lhs.size /= rhs
 }
+
+@inlinable
+@inline(__always)
+public func ??(optional: Rect?, defaultValue: @autoclosure () throws -> Rect?) rethrows -> Rect {
+    let optional = optional ?? .null
+    return optional.isNull ? try defaultValue() ?? .null : optional
+}
