@@ -68,11 +68,11 @@ public protocol SVGLightingEffect: SVGEffectElement {
     
     var source: SVGEffect.Source { get set }
     
-    var light: [SVGLightSource] { get set }
+    var surfaceScale: Double { get set }
     
     var color: RGBColorModel { get set }
     
-    var surfaceScale: Double { get set }
+    var light: [SVGLightSource] { get set }
 }
 
 extension SVGLightingEffect {
@@ -94,12 +94,12 @@ public struct SVGDiffuseLightingEffect: SVGLightingEffect {
     
     public var source: SVGEffect.Source
     
-    public var light: [SVGLightSource]
+    public var surfaceScale: Double
+    public var diffuseConstant: Double
     
     public var color: RGBColorModel
     
-    public var surfaceScale: Double
-    public var diffuseConstant: Double
+    public var light: [SVGLightSource]
     
     public init(source: SVGEffect.Source = .source, surfaceScale: Double = 1, diffuseConstant: Double = 1, color: RGBColorModel = .white, light: [SVGLightSource] = []) {
         self.source = source
@@ -118,13 +118,13 @@ public struct SVGSpecularLightingEffect: SVGLightingEffect {
     
     public var source: SVGEffect.Source
     
-    public var light: [SVGLightSource]
-    
-    public var color: RGBColorModel
-    
     public var surfaceScale: Double
     public var specularConstant: Double
     public var specularExponent: Double
+    
+    public var color: RGBColorModel
+    
+    public var light: [SVGLightSource]
     
     public init(source: SVGEffect.Source = .source, surfaceScale: Double = 1, specularConstant: Double = 1, specularExponent: Double = 1, color: RGBColorModel = .white, light: [SVGLightSource] = []) {
         self.source = source
