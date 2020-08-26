@@ -296,14 +296,20 @@ extension Rect {
     @inlinable
     @inline(__always)
     public var points: [Point] {
+        
+        precondition(!self.isNull, "rect is null.")
+        precondition(!self.isInfinite, "rect is infinite.")
+        
         let minX = self.minX
         let maxX = self.maxX
         let minY = self.minY
         let maxY = self.maxY
+        
         let a = Point(x: maxX, y: minY)
         let b = Point(x: maxX, y: maxY)
         let c = Point(x: minX, y: maxY)
         let d = Point(x: minX, y: minY)
+        
         return [a, b, c, d]
     }
     
@@ -492,29 +498,30 @@ extension Rect {
 @inlinable
 @inline(__always)
 public func *(lhs: Double, rhs: Rect) -> Rect {
+    if rhs.isNull || rhs.isInfinite { return .null }
     return Rect(origin: lhs * rhs.origin, size: lhs * rhs.size)
 }
 @inlinable
 @inline(__always)
 public func *(lhs: Rect, rhs: Double) -> Rect {
+    if lhs.isNull || lhs.isInfinite { return .null }
     return Rect(origin: lhs.origin * rhs, size: lhs.size * rhs)
 }
 
 @inlinable
 @inline(__always)
 public func /(lhs: Rect, rhs: Double) -> Rect {
+    if lhs.isNull || lhs.isInfinite { return .null }
     return Rect(origin: lhs.origin / rhs, size: lhs.size / rhs)
 }
 
 @inlinable
 @inline(__always)
 public func *= (lhs: inout Rect, rhs: Double) {
-    lhs.origin *= rhs
-    lhs.size *= rhs
+    lhs = lhs * rhs
 }
 @inlinable
 @inline(__always)
 public func /= (lhs: inout Rect, rhs: Double) {
-    lhs.origin /= rhs
-    lhs.size /= rhs
+    lhs = lhs / rhs
 }

@@ -88,29 +88,30 @@ extension CGRect {
 @inlinable
 @inline(__always)
 public func *(lhs: CGFloat, rhs: CGRect) -> CGRect {
+    if rhs.isNull || rhs.isInfinite { return .null }
     return CGRect(origin: lhs * rhs.origin, size: lhs * rhs.size)
 }
 @inlinable
 @inline(__always)
 public func *(lhs: CGRect, rhs: CGFloat) -> CGRect {
+    if lhs.isNull || lhs.isInfinite { return .null }
     return CGRect(origin: lhs.origin * rhs, size: lhs.size * rhs)
 }
 
 @inlinable
 @inline(__always)
 public func /(lhs: CGRect, rhs: CGFloat) -> CGRect {
+    if lhs.isNull || lhs.isInfinite { return .null }
     return CGRect(origin: lhs.origin / rhs, size: lhs.size / rhs)
 }
 
 @inlinable
 @inline(__always)
 public func *= (lhs: inout CGRect, rhs: CGFloat) {
-    lhs.origin *= rhs
-    lhs.size *= rhs
+    lhs = lhs * rhs
 }
 @inlinable
 @inline(__always)
 public func /= (lhs: inout CGRect, rhs: CGFloat) {
-    lhs.origin /= rhs
-    lhs.size /= rhs
+    lhs = lhs / rhs
 }
