@@ -1040,7 +1040,14 @@ extension DataPack: Encodable {
 
 @inlinable
 @inline(__always)
-public func ??(optional: DataPack?, defaultValue: @autoclosure () throws -> DataPack?) rethrows -> DataPack {
+public func ??(optional: DataPack?, defaultValue: @autoclosure () throws -> DataPack) rethrows -> DataPack {
     let optional = optional ?? nil
-    return optional.isNil ? try defaultValue() ?? nil : optional
+    return optional.isNil ? try defaultValue() : optional
+}
+
+@inlinable
+@inline(__always)
+public func ??(optional: DataPack?, defaultValue: @autoclosure () throws -> DataPack?) rethrows -> DataPack? {
+    let optional = optional ?? nil
+    return optional.isNil ? try defaultValue() : optional
 }
