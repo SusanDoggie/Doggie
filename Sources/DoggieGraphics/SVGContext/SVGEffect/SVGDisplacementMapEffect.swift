@@ -51,9 +51,7 @@ public struct SVGDisplacementMapEffect: SVGEffectElement {
     
     public func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect? {
         guard var source = sources[self.source] else { return nil }
-        source.width += ceil(abs(0.5 * scale))
-        source.height += ceil(abs(0.5 * scale))
-        let inset = -ceil(abs(0.25 * self.scale))
+        let inset = -ceil(abs(0.5 * self.scale))
         return source.inset(dx: inset, dy: inset)
     }
 }
