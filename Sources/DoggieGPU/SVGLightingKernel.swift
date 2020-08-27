@@ -296,6 +296,8 @@ extension CIImage {
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func diffuseLighting(_ lighting: SVGDiffuseLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) throws -> CIImage {
         
+        if extent.isEmpty { return .empty() }
+        
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
         var rendered = try SVGDiffuseLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale])
@@ -395,6 +397,8 @@ extension CIImage {
     
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func specularLighting(_ lighting: SVGSpecularLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) throws -> CIImage {
+        
+        if extent.isEmpty { return .empty() }
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         

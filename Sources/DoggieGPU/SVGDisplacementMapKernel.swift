@@ -110,6 +110,8 @@ extension CIImage {
         
         var extent = self.extent
         
+        if extent.isEmpty { return .empty() }
+        
         if !extent.isInfinite {
             extent = extent.insetBy(dx: CGFloat(-ceil(abs(0.5 * scale.width))), dy: CGFloat(-ceil(abs(0.5 * scale.height))))
         }
