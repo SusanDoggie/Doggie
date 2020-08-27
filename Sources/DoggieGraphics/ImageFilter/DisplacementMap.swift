@@ -25,13 +25,13 @@
 
 @inlinable
 @inline(__always)
-public func DisplacementMap<S, T>(_ source: Image<S>, _ displacement: Image<T>, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Double) -> Image<S> {
+public func DisplacementMap<S, T>(_ source: Image<S>, _ displacement: Image<T>, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Size) -> Image<S> {
     return Image(texture: DisplacementMap(Texture(image: source), Texture(image: displacement), xChannelSelector, yChannelSelector, scale), resolution: displacement.resolution, colorSpace: source.colorSpace)
 }
 
 @inlinable
 @inline(__always)
-public func DisplacementMap<S, T>(_ texture: Texture<S>, _ displacement: Texture<T>, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Double) -> Texture<S> {
+public func DisplacementMap<S, T>(_ texture: Texture<S>, _ displacement: Texture<T>, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Size) -> Texture<S> {
     
     let width = displacement.width
     let height = displacement.height
@@ -53,8 +53,8 @@ public func DisplacementMap<S, T>(_ texture: Texture<S>, _ displacement: Texture
                     
                     let d = displacement.pointee
                     
-                    let _x = Double(x) + scale * (d.component(xChannelSelector) - 0.5)
-                    let _y = Double(y) + scale * (d.component(yChannelSelector) - 0.5)
+                    let _x = Double(x) + scale.width * (d.component(xChannelSelector) - 0.5)
+                    let _y = Double(y) + scale.height * (d.component(yChannelSelector) - 0.5)
                     
                     result.pointee = S(texture.pixel(Point(x: _x, y: _y)))
                     
