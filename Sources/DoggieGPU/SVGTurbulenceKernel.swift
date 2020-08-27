@@ -63,6 +63,59 @@ extension SVGTurbulenceKernel {
     
     private class ProcessorKernel: CIImageProcessorKernel {
         
+        static let cache_lck = SDLock()
+        static var cache: [SVGNoiseGeneratorBuffer] = []
+        
+        static func svg_noise_generator(_ seed: Int, _ device: MTLDevice) -> (MTLBuffer, MTLBuffer)? {
+            
+            cache_lck.lock()
+            defer { cache_lck.unlock() }
+            
+            if let index = cache.firstIndex(where: { $0.seed == seed && $0.device === device }) {
+                
+                let noise = cache.remove(at: index)
+                cache.append(noise)
+                
+                return (noise.uLatticeSelector, noise.fGradient)
+                
+            } else {
+                
+                guard let noise = SVGNoiseGeneratorBuffer(seed, device) else { return nil }
+                cache.append(noise)
+                
+                while cache.count > 10 {
+                    cache.removeFirst()
+                }
+                
+                return (noise.uLatticeSelector, noise.fGradient)
+            }
+        }
+        
+        struct SVGNoiseGeneratorBuffer {
+            
+            let seed: Int
+            let device: MTLDevice
+            
+            let uLatticeSelector: MTLBuffer
+            let fGradient: MTLBuffer
+            
+            init?(_ seed: Int, _ device: MTLDevice) {
+                
+                self.seed = seed
+                self.device = device
+                
+                let noise = SVGNoiseGenerator(seed)
+                let uLatticeSelector = noise.uLatticeSelector.map { Int32($0) }
+                let fGradient = noise.fGradient.map { (Float($0.x), Float($0.y)) }
+                
+                guard let _uLatticeSelector = uLatticeSelector.withUnsafeBytes({ device.makeBuffer(bytes: $0.baseAddress!, length: $0.count) }) else { return nil }
+                guard let _fGradient = fGradient.withUnsafeBytes({ device.makeBuffer(bytes: $0.baseAddress!, length: $0.count) }) else { return nil }
+                
+                self.uLatticeSelector = _uLatticeSelector
+                self.fGradient = _fGradient
+            }
+        }
+        
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
@@ -74,7 +127,7 @@ extension SVGTurbulenceKernel {
             let device = commandBuffer.device
             guard let buffers = svg_noise_generator(info.seed, device) else { return }
             
-            guard let pipeline = SVGTurbulenceKernel.make_pipeline(device, "svg_turbulence") else { return }
+            guard let pipeline = self.make_pipeline(device, "svg_turbulence") else { return }
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
             
             encoder.setComputePipelineState(pipeline)
@@ -120,63 +173,6 @@ extension SVGTurbulenceKernel {
             
             encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
             encoder.endEncoding()
-        }
-    }
-}
-
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-extension SVGTurbulenceKernel.ProcessorKernel {
-    
-    private static let cache_lck = SDLock()
-    private static var cache: [SVGNoiseGeneratorBuffer] = []
-    
-    private static func svg_noise_generator(_ seed: Int, _ device: MTLDevice) -> (MTLBuffer, MTLBuffer)? {
-        
-        cache_lck.lock()
-        defer { cache_lck.unlock() }
-        
-        if let index = cache.firstIndex(where: { $0.seed == seed && $0.device === device }) {
-            
-            let noise = cache.remove(at: index)
-            cache.append(noise)
-            
-            return (noise.uLatticeSelector, noise.fGradient)
-            
-        } else {
-            
-            guard let noise = SVGNoiseGeneratorBuffer(seed, device) else { return nil }
-            cache.append(noise)
-            
-            while cache.count > 10 {
-                cache.removeFirst()
-            }
-            
-            return (noise.uLatticeSelector, noise.fGradient)
-        }
-    }
-    
-    private struct SVGNoiseGeneratorBuffer {
-        
-        let seed: Int
-        let device: MTLDevice
-        
-        let uLatticeSelector: MTLBuffer
-        let fGradient: MTLBuffer
-        
-        init?(_ seed: Int, _ device: MTLDevice) {
-            
-            self.seed = seed
-            self.device = device
-            
-            let noise = SVGNoiseGenerator(seed)
-            let uLatticeSelector = noise.uLatticeSelector.map { Int32($0) }
-            let fGradient = noise.fGradient.map { (Float($0.x), Float($0.y)) }
-            
-            guard let _uLatticeSelector = uLatticeSelector.withUnsafeBytes({ device.makeBuffer(bytes: $0.baseAddress!, length: $0.count) }) else { return nil }
-            guard let _fGradient = fGradient.withUnsafeBytes({ device.makeBuffer(bytes: $0.baseAddress!, length: $0.count) }) else { return nil }
-            
-            self.uLatticeSelector = _uLatticeSelector
-            self.fGradient = _fGradient
         }
     }
 }
