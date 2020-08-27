@@ -30,8 +30,10 @@ let package = Package(
     name: "Doggie",
     products: [
         .library(name: "DoggieCore", targets: ["DoggieCore"]),
+        .library(name: "DoggieMath", targets: ["DoggieMath"]),
         .library(name: "DoggieGeometry", targets: ["DoggieGeometry"]),
         .library(name: "DoggieGraphics", targets: ["DoggieGraphics"]),
+        .library(name: "DoggieGPU", targets: ["DoggieGPU"]),
         .library(name: "Doggie", targets: ["Doggie"]),
     ],
     dependencies: [
@@ -76,12 +78,19 @@ let package = Package(
             ]
         ),
         .target(
+            name: "DoggieGPU",
+            dependencies: [
+                "DoggieGraphics",
+            ]
+        ),
+        .target(
             name: "Doggie",
             dependencies: [
                 "DoggieCore",
                 "DoggieMath",
                 "DoggieGeometry",
                 "DoggieGraphics",
+                "DoggieGPU",
             ]
         ),
         .testTarget(

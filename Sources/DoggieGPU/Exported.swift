@@ -23,12 +23,4 @@
 //  THE SOFTWARE.
 //
 
-@_exported import DoggieCore
-
-@_exported import DoggieMath
-
-@_exported import DoggieGeometry
-
 @_exported import DoggieGraphics
-
-@_exported import DoggieGPU
