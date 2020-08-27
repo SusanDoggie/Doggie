@@ -26,113 +26,106 @@
 #if canImport(CoreImage)
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
-public class SVGTurbulenceKernel: CIImageProcessorKernel {
+public struct SVGTurbulenceKernel {
     
-    public struct Info {
-        
-        public var type: SVGTurbulenceType
-        public var seed: Int
-        public var transform: SDTransform
-        public var baseFreq: Size
-        public var stitchTile: Rect
-        public var numOctaves: Int
-        public var isStitchTile: Bool
-        
-        public init(type: SVGTurbulenceType,
-                    seed: Int,
-                    transform: SDTransform,
-                    baseFreq: Size,
-                    stitchTile: Rect,
-                    numOctaves: Int,
-                    isStitchTile: Bool) {
-            
-            self.type = type
-            self.seed = seed
-            self.transform = transform
-            self.baseFreq = baseFreq
-            self.stitchTile = stitchTile
-            self.numOctaves = numOctaves
-            self.isStitchTile = isStitchTile
-        }
-    }
+    public var type: SVGTurbulenceType
+    public var seed: Int
+    public var transform: SDTransform
+    public var baseFreq: Size
+    public var stitchTile: Rect
+    public var numOctaves: Int
+    public var isStitchTile: Bool
     
-    public class func apply(withExtent extent: CGRect, info: SVGTurbulenceKernel.Info) throws -> CIImage {
+    public init(type: SVGTurbulenceType,
+                seed: Int,
+                transform: SDTransform,
+                baseFreq: Size,
+                stitchTile: Rect,
+                numOctaves: Int,
+                isStitchTile: Bool) {
         
-        if extent.isEmpty { return .empty() }
-        
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        
-        var rendered = try self.apply(withExtent: _extent, inputs: nil, arguments: ["info": info])
-        
-        if !extent.isInfinite {
-            rendered = rendered.cropped(to: extent)
-        }
-        
-        return rendered
-    }
-    
-    public override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
-        
-        guard let commandBuffer = output.metalCommandBuffer else { return }
-        guard let texture = output.metalTexture else { return }
-        guard var info = arguments?["info"] as? SVGTurbulenceKernel.Info else { return }
-        
-        info.transform = SDTransform.translate(x: output.region.minX, y: output.region.minY) * SDTransform.reflectY(output.region.midY) * info.transform
-        
-        let device = commandBuffer.device
-        guard let buffers = svg_noise_generator(info.seed, device) else { return }
-        
-        guard let pipeline = SVGTurbulenceKernel.make_pipeline(device, "svg_turbulence") else { return }
-        guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
-        
-        encoder.setComputePipelineState(pipeline)
-        
-        struct Info {
-            
-            var transform: (Float, Float, Float, Float, Float, Float)
-            var baseFreq: (Float, Float)
-            var stitchTile: (Float, Float, Float, Float)
-            var numOctaves: Int32
-            var fractalSum: Int32
-            var isStitchTile: Int32
-            var padding: Int32
-            
-            init(_ info: SVGTurbulenceKernel.Info) {
-                self.transform = (
-                    Float(info.transform.a),
-                    Float(info.transform.d),
-                    Float(info.transform.b),
-                    Float(info.transform.e),
-                    Float(info.transform.c),
-                    Float(info.transform.f)
-                )
-                self.baseFreq = (Float(info.baseFreq.width), Float(info.baseFreq.height))
-                self.stitchTile = (Float(info.stitchTile.minX), Float(info.stitchTile.minY), Float(info.stitchTile.width), Float(info.stitchTile.height))
-                self.numOctaves = Int32(info.numOctaves)
-                self.fractalSum = info.type == .fractalNoise ? 1 : 0
-                self.isStitchTile = info.isStitchTile ? 1 : 0
-                self.padding = 0
-            }
-        }
-        
-        encoder.setBuffer(buffers.0, offset: 0, index: 0)
-        encoder.setBuffer(buffers.1, offset: 0, index: 1)
-        withUnsafeBytes(of: Info(info)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
-        encoder.setTexture(texture, index: 3)
-        
-        let group_width = max(1, pipeline.threadExecutionWidth)
-        let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)
-        
-        let threadsPerThreadgroup = MTLSize(width: group_width, height: group_height, depth: 1)
-        let threadgroupsPerGrid = MTLSize(width: (texture.width + group_width - 1) / group_width, height: (texture.height + group_height - 1) / group_height, depth: 1)
-        
-        encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
-        encoder.endEncoding()
+        self.type = type
+        self.seed = seed
+        self.transform = transform
+        self.baseFreq = baseFreq
+        self.stitchTile = stitchTile
+        self.numOctaves = numOctaves
+        self.isStitchTile = isStitchTile
     }
 }
 
 @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension SVGTurbulenceKernel {
+    
+    public var image: CIImage? {
+        return try? ProcessorKernel.apply(withExtent: .infinite, inputs: nil, arguments: ["info": self])
+    }
+    
+    private class ProcessorKernel: CIImageProcessorKernel {
+        
+        override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
+            
+            guard let commandBuffer = output.metalCommandBuffer else { return }
+            guard let texture = output.metalTexture else { return }
+            guard var info = arguments?["info"] as? SVGTurbulenceKernel else { return }
+            
+            info.transform = SDTransform.translate(x: output.region.minX, y: output.region.minY) * SDTransform.reflectY(output.region.midY) * info.transform
+            
+            let device = commandBuffer.device
+            guard let buffers = svg_noise_generator(info.seed, device) else { return }
+            
+            guard let pipeline = SVGTurbulenceKernel.make_pipeline(device, "svg_turbulence") else { return }
+            guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
+            
+            encoder.setComputePipelineState(pipeline)
+            
+            struct Info {
+                
+                var transform: (Float, Float, Float, Float, Float, Float)
+                var baseFreq: (Float, Float)
+                var stitchTile: (Float, Float, Float, Float)
+                var numOctaves: Int32
+                var fractalSum: Int32
+                var isStitchTile: Int32
+                var padding: Int32
+                
+                init(_ info: SVGTurbulenceKernel) {
+                    self.transform = (
+                        Float(info.transform.a),
+                        Float(info.transform.d),
+                        Float(info.transform.b),
+                        Float(info.transform.e),
+                        Float(info.transform.c),
+                        Float(info.transform.f)
+                    )
+                    self.baseFreq = (Float(info.baseFreq.width), Float(info.baseFreq.height))
+                    self.stitchTile = (Float(info.stitchTile.minX), Float(info.stitchTile.minY), Float(info.stitchTile.width), Float(info.stitchTile.height))
+                    self.numOctaves = Int32(info.numOctaves)
+                    self.fractalSum = info.type == .fractalNoise ? 1 : 0
+                    self.isStitchTile = info.isStitchTile ? 1 : 0
+                    self.padding = 0
+                }
+            }
+            
+            encoder.setBuffer(buffers.0, offset: 0, index: 0)
+            encoder.setBuffer(buffers.1, offset: 0, index: 1)
+            withUnsafeBytes(of: Info(info)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
+            encoder.setTexture(texture, index: 3)
+            
+            let group_width = max(1, pipeline.threadExecutionWidth)
+            let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)
+            
+            let threadsPerThreadgroup = MTLSize(width: group_width, height: group_height, depth: 1)
+            let threadgroupsPerGrid = MTLSize(width: (texture.width + group_width - 1) / group_width, height: (texture.height + group_height - 1) / group_height, depth: 1)
+            
+            encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
+            encoder.endEncoding()
+        }
+    }
+}
+
+@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
+extension SVGTurbulenceKernel.ProcessorKernel {
     
     private static let cache_lck = SDLock()
     private static var cache: [SVGNoiseGeneratorBuffer] = []
