@@ -1,5 +1,5 @@
 //
-//  Exported.swift
+//  Arithmetic.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -23,6 +23,32 @@
 //  THE SOFTWARE.
 //
 
-@_exported import DoggieCore
+extension MapReduceArithmetic where Element == Point {
+    
+    @inlinable
+    @inline(__always)
+    public static func * (lhs: Self, rhs: SDTransform) -> Self {
+        return lhs.map { $0 * rhs }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func *= (lhs: inout Self, rhs: SDTransform) {
+        lhs = lhs * rhs
+    }
+}
 
-@_exported import DoggieMath
+extension MapReduceArithmetic where Element == Vector {
+    
+    @inlinable
+    @inline(__always)
+    public static func * (lhs: Self, rhs: Matrix) -> Self {
+        return lhs.map { $0 * rhs }
+    }
+    
+    @inlinable
+    @inline(__always)
+    public static func *= (lhs: inout Self, rhs: Matrix) {
+        lhs = lhs * rhs
+    }
+}

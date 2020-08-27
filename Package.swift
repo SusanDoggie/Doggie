@@ -53,15 +53,23 @@ let package = Package(
             ]
         ),
         .target(
+            name: "DoggieMath",
+            dependencies: [
+                "DoggieCore",
+            ]
+        ),
+        .target(
             name: "DoggieGeometry",
             dependencies: [
                 "DoggieCore",
+                "DoggieMath",
             ]
         ),
         .target(
             name: "DoggieGraphics",
             dependencies: [
                 "DoggieCore",
+                "DoggieMath",
                 "DoggieGeometry",
                 "libwebp",
                 "libjpeg",
@@ -71,6 +79,7 @@ let package = Package(
             name: "Doggie",
             dependencies: [
                 "DoggieCore",
+                "DoggieMath",
                 "DoggieGeometry",
                 "DoggieGraphics",
             ]

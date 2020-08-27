@@ -29,6 +29,12 @@
 
 #endif
 
+#if canImport(CoreGraphics)
+
+@_exported import CoreGraphics
+
+#endif
+
 #if canImport(Metal)
 
 @_exported import Metal

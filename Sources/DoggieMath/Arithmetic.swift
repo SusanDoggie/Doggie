@@ -145,33 +145,3 @@ extension MapReduceArithmetic {
         lhs = lhs / rhs
     }
 }
-
-extension MapReduceArithmetic where Element == Point {
-    
-    @inlinable
-    @inline(__always)
-    public static func * (lhs: Self, rhs: SDTransform) -> Self {
-        return lhs.map { $0 * rhs }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public static func *= (lhs: inout Self, rhs: SDTransform) {
-        lhs = lhs * rhs
-    }
-}
-
-extension MapReduceArithmetic where Element == Vector {
-    
-    @inlinable
-    @inline(__always)
-    public static func * (lhs: Self, rhs: Matrix) -> Self {
-        return lhs.map { $0 * rhs }
-    }
-    
-    @inlinable
-    @inline(__always)
-    public static func *= (lhs: inout Self, rhs: Matrix) {
-        lhs = lhs * rhs
-    }
-}

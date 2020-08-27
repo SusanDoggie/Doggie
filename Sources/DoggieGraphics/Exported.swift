@@ -25,6 +25,8 @@
 
 @_exported import DoggieCore
 
+@_exported import DoggieMath
+
 @_exported import DoggieGeometry
 
 @_exported import libwebp
