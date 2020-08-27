@@ -29,25 +29,39 @@
 extension CIImageProcessorKernel {
     
     private static let lck = SDLock()
-    private static var pipeline: WeakDictionary<MTLDevice, [String: MTLComputePipelineState]> = WeakDictionary()
+    private static var pipelines: WeakDictionary<MTLDevice, [String: [MTLFunctionConstantValues?: MTLComputePipelineState]]> = WeakDictionary()
     
-    static func make_pipeline(_ device: MTLDevice, _ name: String) -> MTLComputePipelineState? {
+    static func make_pipeline(_ device: MTLDevice, _ name: String, _ constantValues: MTLFunctionConstantValues? = nil) -> MTLComputePipelineState? {
         
         lck.lock()
         defer { lck.unlock() }
         
-        if let _pipeline = pipeline[device]?[name] {
+        if let pipeline = pipelines[device]?[name]?[constantValues] {
             
-            return _pipeline
+            return pipeline
             
         } else {
             
             guard let library = try? device.makeDefaultLibrary(bundle: Bundle.module) else { return nil }
-            guard let function = library.makeFunction(name: name) else { return nil }
-            guard let _pipeline = try? device.makeComputePipelineState(function: function) else { return nil }
             
-            pipeline[device, default: [:]][name] = _pipeline
-            return _pipeline
+            let function: MTLFunction
+            
+            if let constantValues = constantValues {
+                
+                guard let _function = try? library.makeFunction(name: name, constantValues: constantValues) else { return nil }
+                function = _function
+                
+            } else {
+                
+                guard let _function = library.makeFunction(name: name) else { return nil }
+                function = _function
+            }
+            
+            guard let pipeline = try? device.makeComputePipelineState(function: function) else { return nil }
+            
+            pipelines[device, default: [:]][name, default: [:]][constantValues] = pipeline
+            return pipeline
+            
         }
     }
 }

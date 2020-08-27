@@ -30,14 +30,6 @@ extension CIImage {
     @available(macOS 10.13, iOS 10.0, tvOS 10.0, *)
     private class ConvolveKernel: CIImageProcessorKernel {
         
-        override class func formatForInput(at input: Int32) -> CIFormat {
-            return .BGRA8
-        }
-        
-        override class var outputFormat: CIFormat {
-            return .BGRA8
-        }
-        
         override class var synchronizeInputs: Bool {
             return false
         }
