@@ -401,20 +401,43 @@ extension Rect {
     @inline(__always)
     public func intersect(_ other: Rect) -> Rect {
         
-        if !self.isIntersect(other) { return .null }
+        if self.isNull || other.isNull { return .null }
         
-        if self.isInfinite {
-            return other
-        } else if other.isInfinite {
-            return self
+        let rect1 = self.standardized
+        let rect2 = other.standardized
+        
+        let rect1SpanH = rect1.minX...rect1.maxX
+        let rect1SpanV = rect1.minY...rect1.maxY
+        
+        let rect2SpanH = rect2.minX...rect2.maxX
+        let rect2SpanV = rect2.minY...rect2.maxY
+        
+        if !rect1SpanH.overlaps(rect2SpanH) || !rect1SpanV.overlaps(rect2SpanV) {
+            return .null
         }
         
-        let minX = max(self.minX, other.minX)
-        let minY = max(self.minY, other.minY)
-        let width = max(0, min(self.maxX, other.maxX) - minX)
-        let height = max(0, min(self.maxY, other.maxY) - minY)
+        let overlapH = rect1SpanH.clamped(to: rect2SpanH)
+        let overlapV = rect1SpanV.clamped(to: rect2SpanV)
         
-        return Rect(x: minX, y: minY, width: width, height: height)
+        let width: Double
+        if overlapH == rect1SpanH {
+            width = rect1.width
+        } else if overlapH == rect2SpanH {
+            width = rect2.width
+        } else {
+            width = overlapH.upperBound - overlapH.lowerBound
+        }
+        
+        let height: Double
+        if overlapV == rect1SpanV {
+            height = rect1.height
+        } else if overlapV == rect2SpanV {
+            height = rect2.height
+        } else {
+            height = overlapV.upperBound - overlapV.lowerBound
+        }
+        
+        return Rect(x: overlapH.lowerBound, y: overlapV.lowerBound, width: width, height: height)
     }
     
     @inlinable

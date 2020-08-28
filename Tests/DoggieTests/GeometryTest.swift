@@ -106,6 +106,7 @@ class GeometryTest: XCTestCase {
         XCTAssertEqual(r2.intersect(r1), .null)
         
         XCTAssertFalse(r1.isIntersect(.null))
+        XCTAssertEqual(r1.intersect(.null), .null)
         XCTAssertFalse(r1.isIntersect(.infinite))
         
         XCTAssertEqual(r1.intersect(.infinite), .null)
@@ -117,6 +118,9 @@ class GeometryTest: XCTestCase {
         
         let r1 = Rect.infinite
         let r2 = Rect(x: 0, y: -1, width: 60, height: 90)
+        
+        XCTAssertTrue(r1.isIntersect(r1))
+        XCTAssertEqual(r1.intersect(r1), r1)
         
         XCTAssertTrue(r1.isIntersect(r2))
         XCTAssertTrue(r2.isIntersect(r1))
