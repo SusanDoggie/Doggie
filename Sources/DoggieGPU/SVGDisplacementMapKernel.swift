@@ -29,28 +29,6 @@ extension CIImage {
     
     private class SVGDisplacementMapKernel: CIImageProcessorKernel {
         
-        struct Selector: Hashable {
-            
-            var x: Int
-            var y: Int
-        }
-        
-        static let pipeline_constants: [Selector: MTLFunctionConstantValues] = {
-            
-            var pipeline_constants: [Selector: MTLFunctionConstantValues] = [:]
-            
-            for y in 0...3 {
-                for x in 0...3 {
-                    let constants = MTLFunctionConstantValues()
-                    withUnsafePointer(to: Int32(x)) { constants.setConstantValue($0, type: .int, index: 0) }
-                    withUnsafePointer(to: Int32(y)) { constants.setConstantValue($0, type: .int, index: 1) }
-                    pipeline_constants[Selector(x: x, y: y)] = constants
-                }
-            }
-            
-            return pipeline_constants
-        }()
-        
         override class var synchronizeInputs: Bool {
             return false
         }
@@ -74,10 +52,11 @@ extension CIImage {
             guard let displacement_region = inputs?[1].region else { return }
             guard let output_texture = output.metalTexture else { return }
             guard let scale = arguments?["scale"] as? Size else { return }
-            guard let selector = arguments?["selector"] as? Selector else { return }
+            guard let x_selector = arguments?["x_selector"] as? String else { return }
+            guard let y_selector = arguments?["y_selector"] as? String else { return }
             
             guard let constants = pipeline_constants[selector] else { return }
-            guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map", constants) else { return }
+            guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map_\(x_selector)\(y_selector)", constants) else { return }
             
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
             
@@ -106,7 +85,24 @@ extension CIImage {
     @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func displacementMap(_ displacement: CIImage, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Size) -> CIImage? {
         
-        guard 0...3 ~= xChannelSelector && 0...3 ~= yChannelSelector else { return nil }
+        let x_selector: String
+        let y_selector: String
+        
+        switch xChannelSelector {
+        case 0: x_selector = "R"
+        case 1: x_selector = "G"
+        case 2: x_selector = "B"
+        case 3: x_selector = "A"
+        default: return nil
+        }
+        
+        switch yChannelSelector {
+        case 0: y_selector = "R"
+        case 1: y_selector = "G"
+        case 2: y_selector = "B"
+        case 3: y_selector = "A"
+        default: return nil
+        }
         
         var extent = self.extent
         
@@ -120,7 +116,7 @@ extension CIImage {
         
         let selector = SVGDisplacementMapKernel.Selector(x: xChannelSelector, y: yChannelSelector)
         
-        var rendered = try? SVGDisplacementMapKernel.apply(withExtent: _extent, inputs: [self, displacement], arguments: ["selector": selector, "scale": scale])
+        var rendered = try? SVGDisplacementMapKernel.apply(withExtent: _extent, inputs: [self, displacement], arguments: ["scale": scale, "x_selector": x_selector, "y_selector": y_selector])
         
         if !extent.isInfinite {
             rendered = rendered?.cropped(to: extent)

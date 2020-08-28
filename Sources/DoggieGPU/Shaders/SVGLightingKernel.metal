@@ -97,7 +97,7 @@ struct SpecularLightInfo {
         
         const float3 _color = pow(dot(surface_unit, normalize(light + float3(0, 0, 1))), specularExponent) * color.xyz;
         
-        return half4(source.x + _color.x, source.y + _color.y, source.z + _color.z, source.w + max3(_color.x, _color.y, _color.x));
+        return half4(source.x + _color.x, source.y + _color.y, source.z + _color.z, source.w + max(_color.x, max(_color.y, _color.x)));
     }
 };
 
