@@ -56,7 +56,6 @@ extension CIImage {
             guard let x_selector = arguments?["x_selector"] as? String else { return }
             guard let y_selector = arguments?["y_selector"] as? String else { return }
             
-            guard let constants = pipeline_constants[selector] else { return }
             guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map_\(x_selector)\(y_selector)", constants) else { return }
             
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
