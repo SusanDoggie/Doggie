@@ -74,9 +74,7 @@ public struct SVGBlendEffect: SVGEffectElement {
     }
     
     public func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect? {
-        let source = sources[self.source] ?? .null
-        let source2 = sources[self.source2] ?? .null
-        return source.union(source2)
+        return self.sources.lazy.compactMap { sources[$0] }.reduce { $0.union($1) }
     }
 }
 
