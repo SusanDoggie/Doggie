@@ -88,6 +88,8 @@ extension CIImage {
         default: return nil
         }
         
+        let displacement = displacement.unpremultiplyingAlpha()
+        
         var extent = self.extent.intersection(displacement.extent)
         
         if extent.isEmpty { return .empty() }

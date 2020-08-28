@@ -27,6 +27,8 @@
 #include <metal_math>
 using namespace metal;
 
+constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);
+
 #define svg_displacement_map(XCHANNEL, YCHANNEL, XCHANNELSELECTOR, YCHANNELSELECTOR)                                \
 kernel void svg_displacement_map_##XCHANNEL##YCHANNEL(texture2d<half, access::sample> source [[texture(0)]],        \
                                                       texture2d<half, access::read> displacement [[texture(1)]],    \
@@ -43,8 +45,6 @@ kernel void svg_displacement_map_##XCHANNEL##YCHANNEL(texture2d<half, access::sa
                                                                                                                     \
     const float x = (float)gid.x + _x * scale[0];                                                                   \
     const float y = (float)gid.y - _y * scale[1];                                                                   \
-                                                                                                                    \
-    constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);                         \
                                                                                                                     \
     const half4 color = source.sample(input_sampler, float2(x, y));                                                 \
                                                                                                                     \
