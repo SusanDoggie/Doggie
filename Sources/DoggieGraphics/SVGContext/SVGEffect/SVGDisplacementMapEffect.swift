@@ -50,15 +50,8 @@ public struct SVGDisplacementMapEffect: SVGEffectElement {
     }
     
     public func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect? {
-        
-        let source = sources[self.source] ?? .infinite
-        let displacement = sources[self.displacement] ?? .infinite
-        
-        let intersect = source.intersect(displacement)
-        if intersect.isInfinite { return nil }
-        
         let inset = -ceil(abs(0.5 * self.scale))
-        return intersect.inset(dx: inset, dy: inset)
+        return self.sources.lazy.compactMap { sources[$0] }.reduce { $0.intersect($1) }?.inset(dx: inset, dy: inset)
     }
 }
 
