@@ -79,11 +79,11 @@ struct DiffuseLightInfo {
     packed_float4 color;
     float unit_scale;
     
-    half4 lighting(half4 source, float4 color, float3 surface_unit, float3 light) const {
+    half4 lighting(half4 source, half4 color, float3 surface_unit, float3 light) const {
         
         const float diffuse = dot(surface_unit, light);
         
-        return half4(source.x + diffuse * color.x, source.y + diffuse * color.y, source.z + diffuse * color.z, 1);
+        return half4(source.xyz + diffuse * color.xyz, 1);
     }
 };
 
@@ -93,11 +93,14 @@ struct SpecularLightInfo {
     float unit_scale;
     float specularExponent;
     
-    half4 lighting(half4 source, float4 color, float3 surface_unit, float3 light) const {
+    half4 lighting(half4 source, half4 color, float3 surface_unit, float3 light) const {
         
-        const float3 _color = pow(dot(surface_unit, normalize(light + float3(0, 0, 1))), specularExponent) * color.xyz;
+        const float3 E = float3(0, 0, 1);
+        const float3 H = normalize(light + E);
         
-        return half4(source.x + _color.x, source.y + _color.y, source.z + _color.z, source.w + max(_color.x, max(_color.y, _color.x)));
+        const half3 _color = pow(dot(surface_unit, H), specularExponent) * color.xyz;
+        
+        return source + half4(_color, max(_color.x, max(_color.y, _color.x)));
     }
 };
 
@@ -187,7 +190,7 @@ half4 svg_lighting(half4 norm_map,
     
     const float4 color = light_source_info.color(light_color, light);
     
-    return lighting_info.lighting(source, color, surface_unit, light);
+    return lighting_info.lighting(source, (half4)color, surface_unit, light);
 }
 
 kernel void svg_diffuse_distant_light(texture2d<half, access::read> norm_map_texture [[texture(0)]],
