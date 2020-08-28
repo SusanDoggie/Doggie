@@ -34,23 +34,11 @@ extension CIImage {
             return false
         }
         
-        override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
-            
-            guard input != 0 else { return outputRect }
-            guard let scale = arguments?["scale"] as? Size else { return outputRect }
-            
-            let scale_x = CGFloat(abs(scale.width))
-            let scale_y = CGFloat(abs(scale.height))
-            
-            return outputRect.insetBy(dx: -0.5 * scale_x, dy: -0.5 * scale_y)
-        }
-        
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let source = inputs?[0].metalTexture else { return }
             guard let displacement = inputs?[1].metalTexture else { return }
-            guard let displacement_region = inputs?[1].region else { return }
             guard let output_texture = output.metalTexture else { return }
             guard let scale = arguments?["scale"] as? Size else { return }
             guard let x_selector = arguments?["x_selector"] as? String else { return }
@@ -60,16 +48,12 @@ extension CIImage {
             
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
             
-            let offset_x = output.region.minX - displacement_region.minX
-            let offset_y = output.region.minY - displacement_region.minY
-            
             encoder.setComputePipelineState(pipeline)
             
             encoder.setTexture(source, index: 0)
             encoder.setTexture(displacement, index: 1)
             encoder.setTexture(output_texture , index: 2)
             withUnsafeBytes(of: (Float(scale.width), Float(scale.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
-            withUnsafeBytes(of: (Float(offset_x), Float(offset_y))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
             
             let group_width = max(1, pipeline.threadExecutionWidth)
             let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)
@@ -104,7 +88,7 @@ extension CIImage {
         default: return nil
         }
         
-        var extent = self.extent
+        var extent = self.extent.intersection(displacement.extent)
         
         if extent.isEmpty { return .empty() }
         
