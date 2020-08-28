@@ -27,6 +27,7 @@
 
 extension CIImage {
     
+    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     private class SVGDisplacementMapKernel: CIImageProcessorKernel {
         
         override class var synchronizeInputs: Bool {
@@ -113,8 +114,6 @@ extension CIImage {
         }
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        
-        let selector = SVGDisplacementMapKernel.Selector(x: xChannelSelector, y: yChannelSelector)
         
         var rendered = try? SVGDisplacementMapKernel.apply(withExtent: _extent, inputs: [self, displacement], arguments: ["scale": scale, "x_selector": x_selector, "y_selector": y_selector])
         
