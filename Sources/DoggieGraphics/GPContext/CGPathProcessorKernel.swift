@@ -46,7 +46,7 @@ final class CGPathProcessorKernel: CIImageProcessorKernel {
     
     class func apply(withExtent extent: CGRect, path: CGPath, rule: CGPathFillRule, shouldAntialias: Bool) throws -> CIImage {
         let image = try self.apply(withExtent: extent, inputs: nil, arguments: ["info": Info(path: path, rule: rule, shouldAntialias: shouldAntialias)])
-        return image.applyingFilter("CIMaximumComponent", parameters: [:])
+        return image.maximumComponent()
     }
     
     override class var outputFormat: CIFormat {

@@ -266,7 +266,7 @@ extension GPContext {
         var image = image
         
         if let clip = current_layer.state.clip {
-            image = image.applyingFilter("CIBlendWithMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: clip])
+            image = image.blendWithMask(backgroundImage: .empty(), maskImage: clip)
         }
         
         var blended: GPContextBase
@@ -296,7 +296,7 @@ extension GPContext {
         
         if opacity < 1 {
             let mask = CIImage(color: CIColor(red: 1, green: 1, blue: 1, alpha: CGFloat(opacity)))
-            image = image.applyingFilter("CIBlendWithAlphaMask", parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: mask])
+            image = image.blendWithAlphaMask(backgroundImage: .empty(), maskImage: mask)
         }
         
         self.blend_layer(image)
@@ -311,10 +311,8 @@ extension GPContext {
         guard opacity > 0 else { return }
         guard let color = opacity < 1 ? color.copy(alpha: color.alpha * CGFloat(opacity)) : color else { return }
         
-        let filter = alpha_mask ? "CIBlendWithAlphaMask" : "CIBlendWithMask"
-        
         let _color = CIImage(color: CIColor(cgColor: color))
-        let image = _color.applyingFilter(filter, parameters: [kCIInputBackgroundImageKey: CIImage.empty(), kCIInputMaskImageKey: mask])
+        let image = alpha_mask ? _color.blendWithAlphaMask(backgroundImage: .empty(), maskImage: mask) : _color.blendWithMask(backgroundImage: .empty(), maskImage: mask)
         
         self.blend_layer(GPContextBase(width: width, height: height, _image: image))
     }
@@ -499,7 +497,7 @@ extension GPContext {
         
         if _clip.state.isDirty {
             
-            let clip = _clip._image.applyingFilter("CIColorMonochrome", parameters: [kCIInputColorKey: CIColor.white])
+            let clip = _clip._image.colorMonochrome(color: .white)
             
             current_layer.state.clip = clip.composited(over: GPContext.black).image._insertingIntermediate()
             
