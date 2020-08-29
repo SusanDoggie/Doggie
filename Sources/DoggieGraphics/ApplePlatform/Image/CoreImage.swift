@@ -39,7 +39,7 @@ extension CIImage {
             filter.sharpness = sharpness
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -49,7 +49,7 @@ extension CIImage {
             filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -65,7 +65,7 @@ extension CIImage {
             filter.radius = radius
             filter.intensity = intensity
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -75,7 +75,7 @@ extension CIImage {
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -93,7 +93,7 @@ extension CIImage {
             filter.width = width
             filter.sharpness = sharpness
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -104,7 +104,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -128,7 +128,7 @@ extension CIImage {
             filter.setValue(grayComponentReplacement, forKey: "inputGCR")
             filter.setValue(underColorRemoval, forKey: "inputUCR")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -142,7 +142,7 @@ extension CIImage {
             filter.setValue(grayComponentReplacement, forKey: "inputGCR")
             filter.setValue(underColorRemoval, forKey: "inputUCR")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -162,7 +162,7 @@ extension CIImage {
             filter.width = width
             filter.sharpness = sharpness
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -174,7 +174,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -194,7 +194,7 @@ extension CIImage {
             filter.width = width
             filter.sharpness = sharpness
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -206,7 +206,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -226,7 +226,7 @@ extension CIImage {
             filter.width = width
             filter.sharpness = sharpness
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -238,7 +238,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -258,7 +258,7 @@ extension CIImage {
             filter.setValue(b, forKey: "inputB")
             filter.setValue(c, forKey: "inputC")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -270,7 +270,7 @@ extension CIImage {
             filter.setValue(b, forKey: "inputB")
             filter.setValue(c, forKey: "inputC")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -288,7 +288,7 @@ extension CIImage {
             filter.spatialSigma = spatialSigma
             filter.lumaSigma = lumaSigma
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -299,7 +299,7 @@ extension CIImage {
             filter.setValue(spatialSigma, forKey: "inputSpatialSigma")
             filter.setValue(lumaSigma, forKey: "inputLumaSigma")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -311,7 +311,7 @@ extension CIImage {
         filter.setValue(self, forKey: kCIInputImageKey)
         filter.focalLength = focalLength
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
@@ -322,7 +322,7 @@ extension CIImage {
         filter.setValue(self, forKey: kCIInputImageKey)
         filter.focalLength = focalLength
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
@@ -333,7 +333,7 @@ extension CIImage {
         filter.setValue(self, forKey: kCIInputImageKey)
         filter.focalLength = focalLength
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.4, iOS 6.0, tvOS 6.0, *)
@@ -348,7 +348,7 @@ extension CIImage {
             filter.scale = scale
             filter.aspectRatio = aspectRatio
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -358,7 +358,7 @@ extension CIImage {
             filter.setValue(scale, forKey: kCIInputScaleKey)
             filter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -380,7 +380,7 @@ extension CIImage {
             filter.bottomLeft = bottomLeft
             filter.crop = crop
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -393,7 +393,7 @@ extension CIImage {
             filter.setValue(CIVector(cgPoint: bottomLeft), forKey: "inputBottomLeft")
             filter.setValue(crop, forKey: "inputCrop")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -411,7 +411,7 @@ extension CIImage {
         filter.yaw = yaw
         filter.roll = roll
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.4, iOS 6.0, tvOS 6.0, *)
@@ -430,7 +430,7 @@ extension CIImage {
             filter.bottomRight = bottomRight
             filter.bottomLeft = bottomLeft
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -442,7 +442,7 @@ extension CIImage {
             filter.setValue(CIVector(cgPoint: bottomRight), forKey: "inputBottomRight")
             filter.setValue(CIVector(cgPoint: bottomLeft), forKey: "inputBottomLeft")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -464,7 +464,7 @@ extension CIImage {
             filter.bottomRight = bottomRight
             filter.bottomLeft = bottomLeft
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -477,7 +477,7 @@ extension CIImage {
             filter.setValue(CIVector(cgPoint: bottomRight), forKey: "inputBottomRight")
             filter.setValue(CIVector(cgPoint: bottomLeft), forKey: "inputBottomLeft")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -491,7 +491,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.angle = angle
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -500,7 +500,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(angle, forKey: kCIInputAngleKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -522,7 +522,7 @@ extension CIImage {
             filter.foldShadowAmount = foldShadowAmount
             filter.time = time
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -535,7 +535,7 @@ extension CIImage {
             filter.setValue(foldShadowAmount, forKey: "inputFoldShadowAmount")
             filter.setValue(time, forKey: kCIInputTimeKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -557,7 +557,7 @@ extension CIImage {
             filter.barOffset = barOffset
             filter.time = time
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -570,7 +570,7 @@ extension CIImage {
             filter.setValue(barOffset, forKey: "inputBarOffset")
             filter.setValue(time, forKey: kCIInputTimeKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -596,7 +596,7 @@ extension CIImage {
             filter.width = width
             filter.opacity = opacity
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -611,7 +611,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(opacity, forKey: "inputOpacity")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -635,7 +635,7 @@ extension CIImage {
             filter.shadowDensity = shadowDensity
             filter.shadowOffset = shadowOffset
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -649,7 +649,7 @@ extension CIImage {
             filter.setValue(shadowDensity, forKey: "inputShadowDensity")
             filter.setValue(shadowOffset, forKey: "inputShadowOffset")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -665,7 +665,7 @@ extension CIImage {
             filter.targetImage = targetImage
             filter.time = time
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -675,7 +675,7 @@ extension CIImage {
             filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
             filter.setValue(time, forKey: kCIInputTimeKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -705,7 +705,7 @@ extension CIImage {
             filter.striationContrast = striationContrast
             filter.fadeThreshold = fadeThreshold
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -722,7 +722,7 @@ extension CIImage {
             filter.setValue(striationContrast, forKey: "inputStriationContrast")
             filter.setValue(fadeThreshold, forKey: "inputFadeThreshold")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -746,7 +746,7 @@ extension CIImage {
             filter.radius = radius
             filter.compression = compression
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -760,7 +760,7 @@ extension CIImage {
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             filter.setValue(compression, forKey: "inputCompression")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -786,7 +786,7 @@ extension CIImage {
             filter.angle = angle
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -801,7 +801,7 @@ extension CIImage {
             filter.setValue(angle, forKey: kCIInputAngleKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -831,7 +831,7 @@ extension CIImage {
             filter.shadowAmount = shadowAmount
             filter.shadowExtent = shadowExtent
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -848,7 +848,7 @@ extension CIImage {
             filter.setValue(shadowAmount, forKey: "inputShadowAmount")
             filter.setValue(CIVector(cgRect: shadowExtent), forKey: "inputShadowExtent")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -874,7 +874,7 @@ extension CIImage {
             filter.width = width
             filter.scale = scale
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -889,7 +889,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(scale, forKey: kCIInputScaleKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -915,7 +915,7 @@ extension CIImage {
             filter.width = width
             filter.opacity = opacity
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -930,7 +930,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(opacity, forKey: "inputOpacity")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -946,7 +946,7 @@ extension CIImage {
             filter.minComponents = minComponents
             filter.maxComponents = maxComponents
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -956,7 +956,7 @@ extension CIImage {
             filter.setValue(minComponents, forKey: "inputMinComponents")
             filter.setValue(maxComponents, forKey: "inputMaxComponents")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -974,7 +974,7 @@ extension CIImage {
             filter.brightness = brightness
             filter.contrast = contrast
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -985,7 +985,7 @@ extension CIImage {
             filter.setValue(brightness, forKey: kCIInputBrightnessKey)
             filter.setValue(contrast, forKey: kCIInputContrastKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1007,7 +1007,7 @@ extension CIImage {
             filter.aVector = aVector
             filter.biasVector = biasVector
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1020,7 +1020,7 @@ extension CIImage {
             filter.setValue(aVector, forKey: "inputAVector")
             filter.setValue(biasVector, forKey: "inputBiasVector")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1040,7 +1040,7 @@ extension CIImage {
             filter.blueCoefficients = blueCoefficients
             filter.alphaCoefficients = alphaCoefficients
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1052,7 +1052,7 @@ extension CIImage {
             filter.setValue(blueCoefficients, forKey: "inputBlueCoefficients")
             filter.setValue(alphaCoefficients, forKey: "inputAlphaCoefficients")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1076,7 +1076,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.ev = ev
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1085,7 +1085,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(ev, forKey: kCIInputEVKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1099,7 +1099,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.power = power
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1108,7 +1108,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(power, forKey: "inputPower")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1122,7 +1122,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.angle = angle
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1131,7 +1131,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(angle, forKey: kCIInputAngleKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1157,7 +1157,7 @@ extension CIImage {
             filter.neutral = neutral
             filter.targetNeutral = targetNeutral
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1167,7 +1167,7 @@ extension CIImage {
             filter.setValue(neutral, forKey: "inputNeutral")
             filter.setValue(targetNeutral, forKey: "inputTargetNeutral")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1189,7 +1189,7 @@ extension CIImage {
             filter.point3 = point3
             filter.point4 = point4
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1202,7 +1202,7 @@ extension CIImage {
             filter.setValue(CIVector(cgPoint: point3), forKey: "inputPoint3")
             filter.setValue(CIVector(cgPoint: point4), forKey: "inputPoint4")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1216,7 +1216,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.amount = amount
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1225,7 +1225,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(amount, forKey: "inputAmount")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1239,7 +1239,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.color = color
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1248,7 +1248,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(color, forKey: kCIInputColorKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1266,7 +1266,7 @@ extension CIImage {
             filter.greenCoefficients = greenCoefficients
             filter.blueCoefficients = blueCoefficients
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1277,7 +1277,7 @@ extension CIImage {
             filter.setValue(greenCoefficients, forKey: "inputGreenCoefficients")
             filter.setValue(blueCoefficients, forKey: "inputBlueCoefficients")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1296,7 +1296,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.gradientImage = gradientImage
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1305,7 +1305,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(gradientImage, forKey: kCIInputGradientImageKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1321,7 +1321,7 @@ extension CIImage {
             filter.color = color
             filter.intensity = intensity
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1331,7 +1331,7 @@ extension CIImage {
             filter.setValue(color, forKey: kCIInputColorKey)
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1345,7 +1345,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.levels = levels
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1354,7 +1354,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(levels, forKey: "inputLevels")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1368,7 +1368,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.intensity = intensity
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1377,7 +1377,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1389,7 +1389,7 @@ extension CIImage {
         filter.setValue(self, forKey: kCIInputImageKey)
         filter.amount = amount
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.4, iOS 5.0, tvOS 5.0, *)
@@ -1404,7 +1404,7 @@ extension CIImage {
             filter.color0 = color0
             filter.color1 = color1
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1414,7 +1414,7 @@ extension CIImage {
             filter.setValue(color0, forKey: "inputColor0")
             filter.setValue(color1, forKey: "inputColor1")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1428,7 +1428,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.image2 = image2
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1437,7 +1437,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(image2, forKey: "inputImage2")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1466,7 +1466,7 @@ extension CIImage {
         filter.paletteImage = paletteImage
         filter.perceptual = perceptual
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
@@ -1479,7 +1479,7 @@ extension CIImage {
         filter.paletteImage = paletteImage
         filter.perceptual = perceptual
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.9, iOS 7.0, tvOS 7.0, *)
@@ -1532,7 +1532,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.intensity = intensity
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1541,7 +1541,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1562,7 +1562,7 @@ extension CIImage {
             filter.intensity = intensity
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1572,7 +1572,7 @@ extension CIImage {
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1592,7 +1592,7 @@ extension CIImage {
             filter.intensity = intensity
             filter.falloff = falloff
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1604,7 +1604,7 @@ extension CIImage {
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
             filter.setValue(falloff, forKey: "inputFalloff")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1623,7 +1623,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.transform = transform
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1642,7 +1642,7 @@ extension CIImage {
             
             #endif
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1656,7 +1656,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.transform = transform
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1676,7 +1676,7 @@ extension CIImage {
             #endif
             
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1694,7 +1694,7 @@ extension CIImage {
             filter.angle = angle
             filter.width = width
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1705,7 +1705,7 @@ extension CIImage {
             filter.setValue(angle, forKey: kCIInputAngleKey)
             filter.setValue(width, forKey: kCIInputWidthKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1725,7 +1725,7 @@ extension CIImage {
             filter.width = width
             filter.acuteAngle = acuteAngle
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1737,7 +1737,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(acuteAngle, forKey: "inputAcuteAngle")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1755,7 +1755,7 @@ extension CIImage {
             filter.angle = angle
             filter.width = width
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1766,7 +1766,7 @@ extension CIImage {
             filter.setValue(angle, forKey: kCIInputAngleKey)
             filter.setValue(width, forKey: kCIInputWidthKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1786,7 +1786,7 @@ extension CIImage {
             filter.width = width
             filter.acuteAngle = acuteAngle
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1798,7 +1798,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(acuteAngle, forKey: "inputAcuteAngle")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1816,7 +1816,7 @@ extension CIImage {
             filter.angle = angle
             filter.width = width
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1827,7 +1827,7 @@ extension CIImage {
             filter.setValue(angle, forKey: kCIInputAngleKey)
             filter.setValue(width, forKey: kCIInputWidthKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1845,7 +1845,7 @@ extension CIImage {
             filter.center = center
             filter.angle = angle
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1856,7 +1856,7 @@ extension CIImage {
             filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
             filter.setValue(angle, forKey: kCIInputAngleKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1876,7 +1876,7 @@ extension CIImage {
             filter.angle = angle
             filter.width = width
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1888,7 +1888,7 @@ extension CIImage {
             filter.setValue(angle, forKey: kCIInputAngleKey)
             filter.setValue(width, forKey: kCIInputWidthKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1908,7 +1908,7 @@ extension CIImage {
             filter.acuteAngle = acuteAngle
             filter.width = width
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1920,7 +1920,7 @@ extension CIImage {
             filter.setValue(acuteAngle, forKey: "inputAcuteAngle")
             filter.setValue(width, forKey: kCIInputWidthKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1940,7 +1940,7 @@ extension CIImage {
             filter.bottomRight = bottomRight
             filter.bottomLeft = bottomLeft
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1952,7 +1952,7 @@ extension CIImage {
             filter.setValue(CIVector(cgPoint: bottomRight), forKey: "inputBottomRight")
             filter.setValue(CIVector(cgPoint: bottomLeft), forKey: "inputBottomLeft")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1970,7 +1970,7 @@ extension CIImage {
             filter.angle = angle
             filter.width = width
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -1981,7 +1981,7 @@ extension CIImage {
             filter.setValue(angle, forKey: kCIInputAngleKey)
             filter.setValue(width, forKey: kCIInputWidthKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -1999,7 +1999,7 @@ extension CIImage {
             filter.angle = angle
             filter.width = width
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2010,7 +2010,7 @@ extension CIImage {
             filter.setValue(angle, forKey: kCIInputAngleKey)
             filter.setValue(width, forKey: kCIInputWidthKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2030,7 +2030,7 @@ extension CIImage {
             filter.rotation = rotation
             filter.decay = decay
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2042,7 +2042,7 @@ extension CIImage {
             filter.setValue(rotation, forKey: "inputRotation")
             filter.setValue(decay, forKey: "inputDecay")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2060,7 +2060,7 @@ extension CIImage {
             filter.angle = angle
             filter.width = width
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2071,7 +2071,7 @@ extension CIImage {
             filter.setValue(angle, forKey: kCIInputAngleKey)
             filter.setValue(width, forKey: kCIInputWidthKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2089,7 +2089,7 @@ extension CIImage {
             filter.angle = angle
             filter.width = width
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2100,7 +2100,7 @@ extension CIImage {
             filter.setValue(angle, forKey: kCIInputAngleKey)
             filter.setValue(width, forKey: kCIInputWidthKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2116,7 +2116,7 @@ extension CIImage {
             filter.backgroundImage = backgroundImage
             filter.maskImage = maskImage
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2126,7 +2126,7 @@ extension CIImage {
             filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
             filter.setValue(maskImage, forKey: kCIInputMaskImageKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2142,7 +2142,7 @@ extension CIImage {
             filter.backgroundImage = backgroundImage
             filter.maskImage = maskImage
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2152,7 +2152,7 @@ extension CIImage {
             filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
             filter.setValue(maskImage, forKey: kCIInputMaskImageKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2168,7 +2168,7 @@ extension CIImage {
             filter.backgroundImage = backgroundImage
             filter.maskImage = maskImage
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2178,7 +2178,7 @@ extension CIImage {
             filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
             filter.setValue(maskImage, forKey: kCIInputMaskImageKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2194,7 +2194,7 @@ extension CIImage {
             filter.backgroundImage = backgroundImage
             filter.maskImage = maskImage
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2204,7 +2204,7 @@ extension CIImage {
             filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
             filter.setValue(maskImage, forKey: kCIInputMaskImageKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2220,7 +2220,7 @@ extension CIImage {
             filter.radius = radius
             filter.intensity = intensity
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2230,7 +2230,7 @@ extension CIImage {
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2251,7 +2251,7 @@ extension CIImage {
             filter.radius = radius
             filter.center = center
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2261,7 +2261,7 @@ extension CIImage {
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2285,7 +2285,7 @@ extension CIImage {
             filter.unsharpMaskIntensity = unsharpMaskIntensity
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2299,7 +2299,7 @@ extension CIImage {
             filter.setValue(unsharpMaskIntensity, forKey: "inputUnsharpMaskIntensity")
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2313,7 +2313,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.intensity = intensity
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2322,7 +2322,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2336,7 +2336,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2345,7 +2345,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2356,7 +2356,7 @@ extension CIImage {
         
         filter.setValue(self, forKey: kCIInputImageKey)
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.4, iOS 6.0, tvOS 6.0, *)
@@ -2371,7 +2371,7 @@ extension CIImage {
             filter.radius = radius
             filter.intensity = intensity
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2381,7 +2381,7 @@ extension CIImage {
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             filter.setValue(intensity, forKey: kCIInputIntensityKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2395,7 +2395,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2404,7 +2404,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2420,7 +2420,7 @@ extension CIImage {
             filter.center = center
             filter.scale = scale
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2430,7 +2430,7 @@ extension CIImage {
             filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
             filter.setValue(scale, forKey: kCIInputScaleKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2448,7 +2448,7 @@ extension CIImage {
             filter.shadowAmount = shadowAmount
             filter.highlightAmount = highlightAmount
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2459,7 +2459,7 @@ extension CIImage {
             filter.setValue(shadowAmount, forKey: "inputShadowAmount")
             filter.setValue(highlightAmount, forKey: "inputHighlightAmount")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2481,7 +2481,7 @@ extension CIImage {
             filter.threshold = threshold
             filter.contrast = contrast
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2494,7 +2494,7 @@ extension CIImage {
             filter.setValue(threshold, forKey: "inputThreshold")
             filter.setValue(contrast, forKey: kCIInputContrastKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2510,7 +2510,7 @@ extension CIImage {
             filter.backgroundImage = backgroundImage
             filter.amount = amount
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2520,7 +2520,7 @@ extension CIImage {
             filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
             filter.setValue(amount, forKey: "inputAmount")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2536,7 +2536,7 @@ extension CIImage {
             filter.center = center
             filter.scale = scale
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2546,7 +2546,7 @@ extension CIImage {
             filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
             filter.setValue(scale, forKey: kCIInputScaleKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2562,7 +2562,7 @@ extension CIImage {
             filter.radius = radius
             filter.center = center
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2572,7 +2572,7 @@ extension CIImage {
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2593,7 +2593,7 @@ extension CIImage {
             filter.shadingImage = shadingImage
             filter.scale = scale
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2603,7 +2603,7 @@ extension CIImage {
             filter.setValue(shadingImage, forKey: kCIInputShadingImageKey)
             filter.setValue(scale, forKey: kCIInputScaleKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2639,7 +2639,7 @@ extension CIImage {
             filter.closeness3 = closeness3
             filter.contrast3 = contrast3
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2659,7 +2659,7 @@ extension CIImage {
             filter.setValue(closeness3, forKey: "inputCloseness3")
             filter.setValue(contrast3, forKey: "inputContrast3")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2681,7 +2681,7 @@ extension CIImage {
             filter.concentration = concentration
             filter.color = color
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2694,7 +2694,7 @@ extension CIImage {
             filter.setValue(concentration, forKey: "inputConcentration")
             filter.setValue(color, forKey: kCIInputColorKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2714,7 +2714,7 @@ extension CIImage {
             filter.ringSize = ringSize
             filter.softness = softness
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2726,7 +2726,7 @@ extension CIImage {
             filter.setValue(ringSize, forKey: "inputRingSize")
             filter.setValue(softness, forKey: "inputSoftness")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2740,7 +2740,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2749,7 +2749,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2763,7 +2763,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2772,7 +2772,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2786,7 +2786,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2795,7 +2795,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2811,7 +2811,7 @@ extension CIImage {
             filter.mask = mask
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2821,7 +2821,7 @@ extension CIImage {
             filter.setValue(mask, forKey: "inputMask")
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2840,7 +2840,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2849,7 +2849,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2863,7 +2863,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2872,7 +2872,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2886,7 +2886,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2895,7 +2895,7 @@ extension CIImage {
             filter.setValue(self, forKey: kCIInputImageKey)
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2909,7 +2909,7 @@ extension CIImage {
         filter.width = width
         filter.height = height
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
@@ -2922,7 +2922,7 @@ extension CIImage {
         filter.width = width
         filter.height = height
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.4, iOS 8.3, tvOS 8.3, *)
@@ -2937,7 +2937,7 @@ extension CIImage {
             filter.radius = radius
             filter.angle = angle
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2947,7 +2947,7 @@ extension CIImage {
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             filter.setValue(angle, forKey: kCIInputAngleKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2963,7 +2963,7 @@ extension CIImage {
             filter.noiseLevel = noiseLevel
             filter.sharpness = sharpness
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2973,7 +2973,7 @@ extension CIImage {
             filter.setValue(noiseLevel, forKey: "inputNoiseLevel")
             filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -2989,7 +2989,7 @@ extension CIImage {
             filter.center = center
             filter.amount = amount
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -2999,7 +2999,7 @@ extension CIImage {
             filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
             filter.setValue(amount, forKey: "inputAmount")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3022,7 +3022,7 @@ extension CIImage {
             filter.color1 = color1
             filter.radius = radius
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3033,7 +3033,7 @@ extension CIImage {
             filter.setValue(color1, forKey: "inputColor1")
             filter.setValue(radius, forKey: kCIInputRadiusKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3054,7 +3054,7 @@ extension CIImage {
             filter.dither = dither
             filter.colorSpace = colorSpace
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3066,7 +3066,7 @@ extension CIImage {
             filter.setValue(dither, forKey: "inputDither")
             filter.setValue(colorSpace, forKey: "inputColorSpace")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3085,7 +3085,7 @@ extension CIImage {
             filter.color0 = color0
             filter.color1 = color1
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3096,7 +3096,7 @@ extension CIImage {
             filter.setValue(color0, forKey: "inputColor0")
             filter.setValue(color1, forKey: "inputColor1")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3117,7 +3117,7 @@ extension CIImage {
             filter.color0 = color0
             filter.color1 = color1
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3129,7 +3129,7 @@ extension CIImage {
             filter.setValue(color0, forKey: "inputColor0")
             filter.setValue(color1, forKey: "inputColor1")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3148,7 +3148,7 @@ extension CIImage {
             filter.color0 = color0
             filter.color1 = color1
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3159,7 +3159,7 @@ extension CIImage {
             filter.setValue(color0, forKey: "inputColor0")
             filter.setValue(color1, forKey: "inputColor1")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3174,7 +3174,7 @@ extension CIImage {
         filter.radius = radius
         filter.color = color
         
-        return filter.outputImage
+        return filter.outputImage ?? .empty()
     }
     
     @available(macOS 10.4, iOS 6.0, tvOS 6.0, *)
@@ -3200,7 +3200,7 @@ extension CIImage {
             filter.crossWidth = crossWidth
             filter.epsilon = epsilon
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3215,7 +3215,7 @@ extension CIImage {
             filter.setValue(crossWidth, forKey: "inputCrossWidth")
             filter.setValue(epsilon, forKey: "inputEpsilon")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3236,7 +3236,7 @@ extension CIImage {
             filter.width = width
             filter.sharpness = sharpness
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3248,7 +3248,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3273,7 +3273,7 @@ extension CIImage {
             filter.striationContrast = striationContrast
             filter.time = time
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3287,7 +3287,7 @@ extension CIImage {
             filter.setValue(striationContrast, forKey: "inputStriationContrast")
             filter.setValue(time, forKey: kCIInputTimeKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3311,7 +3311,7 @@ extension CIImage {
             }
             filter.compactStyle = compact ? 1 : 0
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3322,7 +3322,7 @@ extension CIImage {
             filter.setValue(layers, forKey: "inputLayers")
             filter.setValue(compact, forKey: "inputCompactStyle")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3349,7 +3349,7 @@ extension CIImage {
             filter.message = data
             filter.correctionLevel = level.rawValue
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3358,7 +3358,7 @@ extension CIImage {
             filter.setValue(data, forKey: "inputMessage")
             filter.setValue(level.rawValue, forKey: "inputCorrectionLevel")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3377,7 +3377,7 @@ extension CIImage {
             filter.quietSpace = quietSpace
             filter.barcodeHeight = barcodeHeight
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3387,7 +3387,7 @@ extension CIImage {
             filter.setValue(quietSpace, forKey: "inputQuietSpace")
             filter.setValue(barcodeHeight, forKey: "inputBarcodeHeight")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3408,7 +3408,7 @@ extension CIImage {
             filter.width = width
             filter.sharpness = sharpness
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3420,7 +3420,7 @@ extension CIImage {
             filter.setValue(width, forKey: kCIInputWidthKey)
             filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3447,7 +3447,7 @@ extension CIImage {
             filter.striationContrast = striationContrast
             filter.time = time
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3462,7 +3462,7 @@ extension CIImage {
             filter.setValue(striationContrast, forKey: "inputStriationContrast")
             filter.setValue(time, forKey: kCIInputTimeKey)
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3500,7 +3500,7 @@ extension CIImage {
             filter.correctionLevel = correctionLevel
             filter.alwaysSpecifyCompaction = alwaysSpecifyCompaction
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
@@ -3519,7 +3519,7 @@ extension CIImage {
             filter.setValue(correctionLevel, forKey: "inputCorrectionLevel")
             filter.setValue(alwaysSpecifyCompaction, forKey: "inputAlwaysSpecifyCompaction")
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
@@ -3530,13 +3530,13 @@ extension CIImage {
             
             let filter = CIFilter.randomGenerator()
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
             
         } else {
             
             guard let filter = CIFilter(name: "CIRandomGenerator") else { return nil }
             
-            return filter.outputImage
+            return filter.outputImage ?? .empty()
         }
     }
     
