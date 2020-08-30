@@ -172,6 +172,8 @@ extension CIImage {
         let filter = CIFilter.keystoneCorrectionCombined()
         
         filter.setValue(self, forKey: "inputImage")
+        filter.focalLength = focalLength
+        
         return filter.outputImage ?? .empty()
     }
     
@@ -181,6 +183,8 @@ extension CIImage {
         let filter = CIFilter.keystoneCorrectionHorizontal()
         
         filter.setValue(self, forKey: "inputImage")
+        filter.focalLength = focalLength
+        
         return filter.outputImage ?? .empty()
     }
     
@@ -190,6 +194,8 @@ extension CIImage {
         let filter = CIFilter.keystoneCorrectionVertical()
         
         filter.setValue(self, forKey: "inputImage")
+        filter.focalLength = focalLength
+        
         return filter.outputImage ?? .empty()
     }
     
@@ -232,6 +238,11 @@ extension CIImage {
         let filter = CIFilter.perspectiveRotate()
         
         filter.setValue(self, forKey: "inputImage")
+        filter.focalLength = focalLength
+        filter.pitch = pitch
+        filter.yaw = yaw
+        filter.roll = roll
+        
         return filter.outputImage ?? .empty()
     }
     
@@ -735,6 +746,8 @@ extension CIImage {
         let filter = CIFilter.documentEnhancer()
         
         filter.setValue(self, forKey: "inputImage")
+        filter.amount = amount
+        
         return filter.outputImage ?? .empty()
     }
     
@@ -780,6 +793,9 @@ extension CIImage {
         let filter = CIFilter.paletteCentroid()
         
         filter.setValue(self, forKey: "inputImage")
+        filter.paletteImage = paletteImage
+        filter.perceptual = perceptual
+        
         return filter.outputImage ?? .empty()
     }
     
@@ -790,6 +806,9 @@ extension CIImage {
         let filter = CIFilter.palettize()
         
         filter.setValue(self, forKey: "inputImage")
+        filter.paletteImage = paletteImage
+        filter.perceptual = perceptual
+        
         return filter.outputImage ?? .empty()
     }
     
@@ -1542,6 +1561,9 @@ extension CIImage {
         let filter = CIFilter.morphologyRectangleMaximum()
         
         filter.setValue(self, forKey: "inputImage")
+        filter.width = width
+        filter.height = height
+        
         return filter.outputImage ?? .empty()
     }
     
@@ -1552,6 +1574,9 @@ extension CIImage {
         let filter = CIFilter.morphologyRectangleMinimum()
         
         filter.setValue(self, forKey: "inputImage")
+        filter.width = width
+        filter.height = height
+        
         return filter.outputImage ?? .empty()
     }
     
@@ -1684,6 +1709,11 @@ extension CIImage {
                                               color: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1)) -> CIImage {
         
         let filter = CIFilter.roundedRectangleGenerator()
+        
+        filter.extent = extent
+        filter.radius = radius
+        filter.color = color
+        
         return filter.outputImage ?? .empty()
     }
     
