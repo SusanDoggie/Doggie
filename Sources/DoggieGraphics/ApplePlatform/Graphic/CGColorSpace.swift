@@ -31,14 +31,14 @@ extension ColorSpace {
     
     private var _cgColorSpace: CGColorSpace? {
         
-        if #available(macOS 10.5, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
+        if #available(iOS 9.0, *) {
             switch AnyColorSpace(self) {
             case AnyColorSpace.sRGB: return CGColorSpace(name: CGColorSpace.sRGB)
             default: break
             }
         }
         
-        if #available(macOS 10.6, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
+        if #available(iOS 9.0, *) {
             switch AnyColorSpace(self) {
             case AnyColorSpace.genericGamma22Gray: return CGColorSpace(name: CGColorSpace.genericGrayGamma2_2)
             default: break
@@ -104,7 +104,7 @@ extension AnyColorSpace {
     
     private static func _init(cgColorSpace: CGColorSpace) -> AnyColorSpace? {
         
-        if #available(macOS 10.6, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
+        if #available(iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
             switch cgColorSpace.name {
             case CGColorSpace.genericGrayGamma2_2: return AnyColorSpace.genericGamma22Gray
             case CGColorSpace.sRGB: return AnyColorSpace.sRGB

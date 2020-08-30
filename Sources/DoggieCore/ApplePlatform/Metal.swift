@@ -25,7 +25,7 @@
 
 #if canImport(Metal)
 
-@available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
+@available(macOS 10.11, *)
 extension MTLDevice {
     
     public func makeBuffer<T>(_ buffer: MappedBuffer<T>, options: MTLResourceOptions = []) -> MTLBuffer? {
@@ -36,7 +36,7 @@ extension MTLDevice {
     }
 }
 
-@available(macOS 10.11, iOS 8.0, tvOS 9.0, *)
+@available(macOS 10.11, *)
 extension MTLComputeCommandEncoder {
     
     public func setBuffer<T>(_ buffer: MappedBuffer<T>, offset: Int, index: Int) {
