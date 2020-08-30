@@ -35,20 +35,24 @@ public struct SVGDropShadowEffect: SVGEffectElement {
     
     public var stdDeviation: Size
     
+    public var color: AnyColor
+    
     public var sources: [SVGEffect.Source] {
         return [source]
     }
     
-    public init(source: SVGEffect.Source = .source, offset: Size = Size(), stdDeviation: Double) {
+    public init(source: SVGEffect.Source = .source, offset: Size = Size(), stdDeviation: Double, color: AnyColor = .black) {
         self.source = source
         self.offset = offset
         self.stdDeviation = Size(width: stdDeviation, height: stdDeviation)
+        self.color = color
     }
     
-    public init(source: SVGEffect.Source = .source, offset: Size = Size(), stdDeviation: Size = Size()) {
+    public init(source: SVGEffect.Source = .source, offset: Size = Size(), stdDeviation: Size = Size(), color: AnyColor = .black) {
         self.source = source
         self.offset = offset
         self.stdDeviation = stdDeviation
+        self.color = color
     }
     
     public func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect? {
@@ -60,17 +64,33 @@ public struct SVGDropShadowEffect: SVGEffectElement {
 
 extension SVGDropShadowEffect {
     
+    private func create_color<C: ColorProtocol>(_ color: C) -> String {
+        
+        let color = color.convert(to: ColorSpace.sRGB, intent: .default)
+        
+        let red = UInt8((color.red * 255).clamped(to: 0...255).rounded())
+        let green = UInt8((color.green * 255).clamped(to: 0...255).rounded())
+        let blue = UInt8((color.blue * 255).clamped(to: 0...255).rounded())
+        
+        return "rgb(\(red),\(green),\(blue))"
+    }
+    
     public var xml_element: SDXMLElement {
         
         var filter = SDXMLElement(name: "feDropShadow", attributes: [
             "dx": "\(Decimal(offset.width).rounded(scale: 9))",
             "dy": "\(Decimal(offset.height).rounded(scale: 9))",
+            "flood-color": create_color(color),
         ])
         
         if stdDeviation.width == stdDeviation.height {
             filter.setAttribute(for: "stdDeviation", value: "\(Decimal(stdDeviation.width).rounded(scale: 9))")
         } else {
             filter.setAttribute(for: "stdDeviation", value: "\(Decimal(stdDeviation.width).rounded(scale: 9)) \(Decimal(stdDeviation.height).rounded(scale: 9))")
+        }
+        
+        if self.color.opacity < 1 {
+            filter.setAttribute(for: "flood-opacity", value: "\(Decimal(self.color.opacity).rounded(scale: 9))")
         }
         
         switch self.source {
