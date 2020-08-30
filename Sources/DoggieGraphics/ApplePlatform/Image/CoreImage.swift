@@ -1752,8 +1752,9 @@ extension CIImage {
     open class func AztecCodeGenerator(message: String,
                                        correction level: Float = 23,
                                        layers: Float? = nil,
-                                       compact: Bool = false,
-                                       encoding: String.Encoding = String.Encoding.isoLatin1) -> CIImage {
+                                       compact: Bool = false) -> CIImage {
+        
+        guard let data = message.data(using: .isoLatin1) else { return .empty() }
         
         guard let filter = CIFilter(name: "CIAztecCodeGenerator") else { return .empty() }
         
@@ -1774,10 +1775,9 @@ extension CIImage {
     }
     
     open class func QRCodeGenerator(message: String,
-                                    correction level: QRCorrectionLevel = .medium,
-                                    encoding: String.Encoding = String.Encoding.utf8) -> CIImage {
+                                    correction level: QRCorrectionLevel = .medium) -> CIImage {
         
-        guard let data = message.data(using: encoding) else { return .empty() }
+        guard let data = message.data(using: .isoLatin1) else { return .empty() }
         
         guard let filter = CIFilter(name: "CIQRCodeGenerator") else { return .empty() }
         
@@ -1791,7 +1791,7 @@ extension CIImage {
                                             quietSpace: Float = 7,
                                             barcodeHeight: Float = 32) -> CIImage {
         
-        guard let data = message.data(using: String.Encoding.ascii) else { return .empty() }
+        guard let data = message.data(using: .ascii) else { return .empty() }
         
         guard let filter = CIFilter(name: "CICode128BarcodeGenerator") else { return .empty() }
         
@@ -1855,10 +1855,9 @@ extension CIImage {
                                            compactionMode: Float,
                                            compactStyle: Float,
                                            correctionLevel: Float,
-                                           alwaysSpecifyCompaction: Float,
-                                           encoding: String.Encoding = String.Encoding.isoLatin1) -> CIImage {
+                                           alwaysSpecifyCompaction: Float) -> CIImage {
         
-        guard let data = message.data(using: String.Encoding.ascii) else { return .empty() }
+        guard let data = message.data(using: .isoLatin1) else { return .empty() }
         
         guard let filter = CIFilter(name: "CIPDF417BarcodeGenerator") else { return .empty() }
         
