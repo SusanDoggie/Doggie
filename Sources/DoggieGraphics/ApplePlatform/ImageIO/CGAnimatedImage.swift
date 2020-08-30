@@ -78,7 +78,7 @@ extension CGAnimatedImage {
                 _typed_properties[kCGImagePropertyPNGInterlaceType] = 1
             }
             
-            if #available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *) {
+            if #available(macOS 10.11, iOS 9.0, *) {
                 var filter = IMAGEIO_PNG_FILTER_NONE
                 filter |= IMAGEIO_PNG_FILTER_SUB
                 filter |= IMAGEIO_PNG_FILTER_UP
