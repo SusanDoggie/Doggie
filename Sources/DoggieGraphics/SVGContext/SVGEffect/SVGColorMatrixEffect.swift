@@ -70,7 +70,7 @@ extension SVGColorMatrixEffect {
         
         let s = saturate.saturate
         
-        self.init(source: luminanceToAlpha.source,
+        self.init(source: saturate.source,
                   red:   (0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0, 0),
                   green: (0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s, 0, 0),
                   blue:  (0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s, 0, 0),
@@ -82,7 +82,7 @@ extension SVGColorMatrixEffect {
         let _sin = sin(hueRotate.angle)
         let _cos = cos(hueRotate.angle)
         
-        self.init(source: luminanceToAlpha.source,
+        self.init(source: hueRotate.source,
                   red:   (0.213 + _cos * 0.787 - _sin * 0.213, 0.715 - _cos * 0.715 - _sin * 0.715, 0.072 - _cos * 0.072 + _sin * 0.928, 0, 0),
                   green: (0.213 - _cos * 0.213 + _sin * 0.143, 0.715 + _cos * 0.285 + _sin * 0.140, 0.072 - _cos * 0.072 - _sin * 0.283, 0, 0),
                   blue:  (0.213 - _cos * 0.213 - _sin * 0.787, 0.715 - _cos * 0.715 + _sin * 0.715, 0.072 + _cos * 0.928 + _sin * 0.072, 0, 0),
