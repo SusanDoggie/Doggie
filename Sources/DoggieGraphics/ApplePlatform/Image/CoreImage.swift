@@ -32,9 +32,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CISharpenLuminance") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(sharpness, forKey: "inputSharpness")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -44,9 +44,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIUnsharpMask") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
-        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
+        filter.setValue(intensity, forKey: "inputIntensity")
         
         return filter.outputImage ?? .empty()
     }
@@ -57,10 +57,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CICircularScreen") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
-        filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(width, forKey: "inputWidth")
+        filter.setValue(sharpness, forKey: "inputSharpness")
         
         return filter.outputImage ?? .empty()
     }
@@ -75,11 +75,11 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CICMYKHalftone") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(width, forKey: "inputWidth")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(sharpness, forKey: "inputSharpness")
         filter.setValue(grayComponentReplacement, forKey: "inputGCR")
         filter.setValue(underColorRemoval, forKey: "inputUCR")
         
@@ -93,11 +93,11 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIDotScreen") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
-        filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
+        filter.setValue(sharpness, forKey: "inputSharpness")
         
         return filter.outputImage ?? .empty()
     }
@@ -109,11 +109,11 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIHatchedScreen") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
-        filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
+        filter.setValue(sharpness, forKey: "inputSharpness")
         
         return filter.outputImage ?? .empty()
     }
@@ -125,11 +125,11 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CILineScreen") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
-        filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
+        filter.setValue(sharpness, forKey: "inputSharpness")
         
         return filter.outputImage ?? .empty()
     }
@@ -142,9 +142,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIBicubicScaleTransform") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(scale, forKey: kCIInputScaleKey)
-        filter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(scale, forKey: "inputScale")
+        filter.setValue(aspectRatio, forKey: "inputAspectRatio")
         filter.setValue(b, forKey: "inputB")
         filter.setValue(c, forKey: "inputC")
         
@@ -158,7 +158,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIEdgePreserveUpsampleFilter") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(smallImage, forKey: "inputSmallImage")
         filter.setValue(spatialSigma, forKey: "inputSpatialSigma")
         filter.setValue(lumaSigma, forKey: "inputLumaSigma")
@@ -171,7 +171,7 @@ extension CIImage {
         
         let filter = CIFilter.keystoneCorrectionCombined()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         return filter.outputImage ?? .empty()
     }
     
@@ -180,7 +180,7 @@ extension CIImage {
         
         let filter = CIFilter.keystoneCorrectionHorizontal()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         return filter.outputImage ?? .empty()
     }
     
@@ -189,7 +189,7 @@ extension CIImage {
         
         let filter = CIFilter.keystoneCorrectionVertical()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         return filter.outputImage ?? .empty()
     }
     
@@ -198,14 +198,13 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CILanczosScaleTransform") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(scale, forKey: kCIInputScaleKey)
-        filter.setValue(aspectRatio, forKey: kCIInputAspectRatioKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(scale, forKey: "inputScale")
+        filter.setValue(aspectRatio, forKey: "inputAspectRatio")
         
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.10, *)
     open func perspectiveCorrection(topLeft: CGPoint = CGPoint(x: 118, y: 484),
                                     topRight: CGPoint = CGPoint(x: 646, y: 507),
                                     bottomRight: CGPoint = CGPoint(x: 548, y: 140),
@@ -214,7 +213,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIPerspectiveCorrection") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(CIVector(cgPoint: topLeft), forKey: "inputTopLeft")
         filter.setValue(CIVector(cgPoint: topRight), forKey: "inputTopRight")
         filter.setValue(CIVector(cgPoint: bottomRight), forKey: "inputBottomRight")
@@ -232,7 +231,7 @@ extension CIImage {
         
         let filter = CIFilter.perspectiveRotate()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         return filter.outputImage ?? .empty()
     }
     
@@ -243,7 +242,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIPerspectiveTransform") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(CIVector(cgPoint: topLeft), forKey: "inputTopLeft")
         filter.setValue(CIVector(cgPoint: topRight), forKey: "inputTopRight")
         filter.setValue(CIVector(cgPoint: bottomRight), forKey: "inputBottomRight")
@@ -260,8 +259,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIPerspectiveTransformWithExtent") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgRect: extent), forKey: kCIInputExtentKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgRect: extent), forKey: "inputExtent")
         filter.setValue(CIVector(cgPoint: topLeft), forKey: "inputTopLeft")
         filter.setValue(CIVector(cgPoint: topRight), forKey: "inputTopRight")
         filter.setValue(CIVector(cgPoint: bottomRight), forKey: "inputBottomRight")
@@ -274,13 +273,12 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIStraightenFilter") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(angle, forKey: "inputAngle")
         
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.10, *)
     open func accordionFoldTransition(targetImage: CIImage,
                                       bottomHeight: Float = 0,
                                       numberOfFolds: Float = 3,
@@ -289,12 +287,12 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIAccordionFoldTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
         filter.setValue(bottomHeight, forKey: "inputBottomHeight")
         filter.setValue(numberOfFolds, forKey: "inputNumberOfFolds")
         filter.setValue(foldShadowAmount, forKey: "inputFoldShadowAmount")
-        filter.setValue(time, forKey: kCIInputTimeKey)
+        filter.setValue(time, forKey: "inputTime")
         
         return filter.outputImage ?? .empty()
     }
@@ -307,12 +305,12 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIBarsSwipeTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         filter.setValue(barOffset, forKey: "inputBarOffset")
-        filter.setValue(time, forKey: kCIInputTimeKey)
+        filter.setValue(time, forKey: "inputTime")
         
         return filter.outputImage ?? .empty()
     }
@@ -327,13 +325,13 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CICopyMachineTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
-        filter.setValue(CIVector(cgRect: extent), forKey: kCIInputExtentKey)
-        filter.setValue(color, forKey: kCIInputColorKey)
-        filter.setValue(time, forKey: kCIInputTimeKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
+        filter.setValue(CIVector(cgRect: extent), forKey: "inputExtent")
+        filter.setValue(color, forKey: "inputColor")
+        filter.setValue(time, forKey: "inputTime")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         filter.setValue(opacity, forKey: "inputOpacity")
         
         return filter.outputImage ?? .empty()
@@ -348,10 +346,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIDisintegrateWithMaskTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
-        filter.setValue(maskImage, forKey: kCIInputMaskImageKey)
-        filter.setValue(time, forKey: kCIInputTimeKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
+        filter.setValue(maskImage, forKey: "inputMaskImage")
+        filter.setValue(time, forKey: "inputTime")
         filter.setValue(shadowRadius, forKey: "inputShadowRadius")
         filter.setValue(shadowDensity, forKey: "inputShadowDensity")
         filter.setValue(shadowOffset, forKey: "inputShadowOffset")
@@ -364,9 +362,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIDissolveTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
-        filter.setValue(time, forKey: kCIInputTimeKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
+        filter.setValue(time, forKey: "inputTime")
         
         return filter.outputImage ?? .empty()
     }
@@ -383,12 +381,12 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIFlashTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(CIVector(cgRect: extent), forKey: kCIInputExtentKey)
-        filter.setValue(color, forKey: kCIInputColorKey)
-        filter.setValue(time, forKey: kCIInputTimeKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(CIVector(cgRect: extent), forKey: "inputExtent")
+        filter.setValue(color, forKey: "inputColor")
+        filter.setValue(time, forKey: "inputTime")
         filter.setValue(maxStriationRadius, forKey: "inputMaxStriationRadius")
         filter.setValue(striationStrength, forKey: "inputStriationStrength")
         filter.setValue(striationContrast, forKey: "inputStriationContrast")
@@ -406,12 +404,12 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIModTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(time, forKey: kCIInputTimeKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(time, forKey: "inputTime")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(radius, forKey: "inputRadius")
         filter.setValue(compression, forKey: "inputCompression")
         
         return filter.outputImage ?? .empty()
@@ -428,14 +426,14 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIPageCurlTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
         filter.setValue(backsideImage, forKey: "inputBacksideImage")
-        filter.setValue(shadingImage, forKey: kCIInputShadingImageKey)
-        filter.setValue(CIVector(cgRect: extent), forKey: kCIInputExtentKey)
-        filter.setValue(time, forKey: kCIInputTimeKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(shadingImage, forKey: "inputShadingImage")
+        filter.setValue(CIVector(cgRect: extent), forKey: "inputExtent")
+        filter.setValue(time, forKey: "inputTime")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -453,13 +451,13 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIPageCurlWithShadowTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
         filter.setValue(backsideImage, forKey: "inputBacksideImage")
-        filter.setValue(CIVector(cgRect: extent), forKey: kCIInputExtentKey)
-        filter.setValue(time, forKey: kCIInputTimeKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(CIVector(cgRect: extent), forKey: "inputExtent")
+        filter.setValue(time, forKey: "inputTime")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(radius, forKey: "inputRadius")
         filter.setValue(shadowSize, forKey: "inputShadowSize")
         filter.setValue(shadowAmount, forKey: "inputShadowAmount")
         filter.setValue(CIVector(cgRect: shadowExtent), forKey: "inputShadowExtent")
@@ -478,14 +476,14 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIRippleTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
-        filter.setValue(shadingImage, forKey: kCIInputShadingImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(CIVector(cgRect: extent), forKey: kCIInputExtentKey)
-        filter.setValue(time, forKey: kCIInputTimeKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
-        filter.setValue(scale, forKey: kCIInputScaleKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
+        filter.setValue(shadingImage, forKey: "inputShadingImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(CIVector(cgRect: extent), forKey: "inputExtent")
+        filter.setValue(time, forKey: "inputTime")
+        filter.setValue(width, forKey: "inputWidth")
+        filter.setValue(scale, forKey: "inputScale")
         
         return filter.outputImage ?? .empty()
     }
@@ -500,13 +498,13 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CISwipeTransition") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(targetImage, forKey: kCIInputTargetImageKey)
-        filter.setValue(CIVector(cgRect: extent), forKey: kCIInputExtentKey)
-        filter.setValue(color, forKey: kCIInputColorKey)
-        filter.setValue(time, forKey: kCIInputTimeKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(targetImage, forKey: "inputTargetImage")
+        filter.setValue(CIVector(cgRect: extent), forKey: "inputExtent")
+        filter.setValue(color, forKey: "inputColor")
+        filter.setValue(time, forKey: "inputTime")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         filter.setValue(opacity, forKey: "inputOpacity")
         
         return filter.outputImage ?? .empty()
@@ -517,7 +515,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIColorClamp") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(minComponents, forKey: "inputMinComponents")
         filter.setValue(maxComponents, forKey: "inputMaxComponents")
         
@@ -530,10 +528,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIColorControls") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(saturation, forKey: kCIInputSaturationKey)
-        filter.setValue(brightness, forKey: kCIInputBrightnessKey)
-        filter.setValue(contrast, forKey: kCIInputContrastKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(saturation, forKey: "inputSaturation")
+        filter.setValue(brightness, forKey: "inputBrightness")
+        filter.setValue(contrast, forKey: "inputContrast")
         
         return filter.outputImage ?? .empty()
     }
@@ -546,7 +544,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIColorMatrix") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(rVector, forKey: "inputRVector")
         filter.setValue(gVector, forKey: "inputGVector")
         filter.setValue(bVector, forKey: "inputBVector")
@@ -563,7 +561,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIColorPolynomial") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(redCoefficients, forKey: "inputRedCoefficients")
         filter.setValue(greenCoefficients, forKey: "inputGreenCoefficients")
         filter.setValue(blueCoefficients, forKey: "inputBlueCoefficients")
@@ -586,8 +584,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIExposureAdjust") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(ev, forKey: kCIInputEVKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(ev, forKey: "inputEV")
         
         return filter.outputImage ?? .empty()
     }
@@ -596,7 +594,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIGammaAdjust") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(power, forKey: "inputPower")
         
         return filter.outputImage ?? .empty()
@@ -606,18 +604,16 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIHueAdjust") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(angle, forKey: "inputAngle")
         
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.10, *)
     open func linearToSRGBToneCurve() -> CIImage {
         return self.applyingFilter("CILinearToSRGBToneCurve", parameters: [:])
     }
     
-    @available(macOS 10.10, *)
     open func sRGBToneCurveToLinear() -> CIImage {
         return self.applyingFilter("CISRGBToneCurveToLinear", parameters: [:])
     }
@@ -627,7 +623,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CITemperatureAndTint") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(neutral, forKey: "inputNeutral")
         filter.setValue(targetNeutral, forKey: "inputTargetNeutral")
         
@@ -642,7 +638,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIToneCurve") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(CIVector(cgPoint: point0), forKey: "inputPoint0")
         filter.setValue(CIVector(cgPoint: point1), forKey: "inputPoint1")
         filter.setValue(CIVector(cgPoint: point2), forKey: "inputPoint2")
@@ -656,7 +652,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIVibrance") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(amount, forKey: "inputAmount")
         
         return filter.outputImage ?? .empty()
@@ -666,8 +662,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIWhitePointAdjust") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(color, forKey: kCIInputColorKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(color, forKey: "inputColor")
         
         return filter.outputImage ?? .empty()
     }
@@ -678,7 +674,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIColorCrossPolynomial") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(redCoefficients, forKey: "inputRedCoefficients")
         filter.setValue(greenCoefficients, forKey: "inputGreenCoefficients")
         filter.setValue(blueCoefficients, forKey: "inputBlueCoefficients")
@@ -694,8 +690,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIColorMap") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(gradientImage, forKey: kCIInputGradientImageKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(gradientImage, forKey: "inputGradientImage")
         
         return filter.outputImage ?? .empty()
     }
@@ -705,9 +701,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIColorMonochrome") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(color, forKey: kCIInputColorKey)
-        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(color, forKey: "inputColor")
+        filter.setValue(intensity, forKey: "inputIntensity")
         
         return filter.outputImage ?? .empty()
     }
@@ -716,7 +712,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIColorPosterize") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(levels, forKey: "inputLevels")
         
         return filter.outputImage ?? .empty()
@@ -727,8 +723,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIDither") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(intensity, forKey: "inputIntensity")
         
         return filter.outputImage ?? .empty()
     }
@@ -738,7 +734,7 @@ extension CIImage {
         
         let filter = CIFilter.documentEnhancer()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         return filter.outputImage ?? .empty()
     }
     
@@ -747,7 +743,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIFalseColor") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(color0, forKey: "inputColor0")
         filter.setValue(color1, forKey: "inputColor1")
         
@@ -759,7 +755,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CILabDeltaE") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(image2, forKey: "inputImage2")
         
         return filter.outputImage ?? .empty()
@@ -783,7 +779,7 @@ extension CIImage {
         
         let filter = CIFilter.paletteCentroid()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         return filter.outputImage ?? .empty()
     }
     
@@ -793,7 +789,7 @@ extension CIImage {
         
         let filter = CIFilter.palettize()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         return filter.outputImage ?? .empty()
     }
     
@@ -833,8 +829,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CISepiaTone") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(intensity, forKey: "inputIntensity")
         
         return filter.outputImage ?? .empty()
     }
@@ -849,9 +845,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIVignette") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(intensity, forKey: kCIInputIntensityKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(intensity, forKey: "inputIntensity")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -863,10 +859,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIVignetteEffect") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
-        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(radius, forKey: "inputRadius")
+        filter.setValue(intensity, forKey: "inputIntensity")
         filter.setValue(falloff, forKey: "inputFalloff")
         
         return filter.outputImage ?? .empty()
@@ -881,16 +877,16 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIAffineClamp") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         
         #if os(macOS)
         
         let _transform = AffineTransform(m11: transform.a, m12: transform.b, m21: transform.c, m22: transform.d, tX: transform.tx, tY: transform.ty)
-        filter.setValue(_transform as NSAffineTransform, forKey: kCIInputTransformKey)
+        filter.setValue(_transform as NSAffineTransform, forKey: "inputTransform")
         
         #else
         
-        filter.setValue(NSValue(cgAffineTransform: transform), forKey: kCIInputTransformKey)
+        filter.setValue(NSValue(cgAffineTransform: transform), forKey: "inputTransform")
         
         #endif
         
@@ -901,16 +897,16 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIAffineTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         
         #if os(macOS)
         
         let _transform = AffineTransform(m11: transform.a, m12: transform.b, m21: transform.c, m22: transform.d, tX: transform.tx, tY: transform.ty)
-        filter.setValue(_transform as NSAffineTransform, forKey: kCIInputTransformKey)
+        filter.setValue(_transform as NSAffineTransform, forKey: "inputTransform")
         
         #else
         
-        filter.setValue(NSValue(cgAffineTransform: transform), forKey: kCIInputTransformKey)
+        filter.setValue(NSValue(cgAffineTransform: transform), forKey: "inputTransform")
         
         #endif
         
@@ -924,10 +920,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIEightfoldReflectedTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         
         return filter.outputImage ?? .empty()
     }
@@ -939,10 +935,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIFourfoldReflectedTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         filter.setValue(acuteAngle, forKey: "inputAcuteAngle")
         
         return filter.outputImage ?? .empty()
@@ -954,10 +950,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIFourfoldRotatedTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         
         return filter.outputImage ?? .empty()
     }
@@ -969,10 +965,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIFourfoldTranslatedTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         filter.setValue(acuteAngle, forKey: "inputAcuteAngle")
         
         return filter.outputImage ?? .empty()
@@ -984,10 +980,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIGlideReflectedTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         
         return filter.outputImage ?? .empty()
     }
@@ -999,10 +995,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIKaleidoscope") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(count, forKey: "inputCount")
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
         
         return filter.outputImage ?? .empty()
     }
@@ -1015,11 +1011,11 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIOpTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(scale, forKey: kCIInputScaleKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(scale, forKey: "inputScale")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         
         return filter.outputImage ?? .empty()
     }
@@ -1032,11 +1028,11 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIParallelogramTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
         filter.setValue(acuteAngle, forKey: "inputAcuteAngle")
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(width, forKey: "inputWidth")
         
         return filter.outputImage ?? .empty()
     }
@@ -1048,7 +1044,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIPerspectiveTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(CIVector(cgPoint: topLeft), forKey: "inputTopLeft")
         filter.setValue(CIVector(cgPoint: topRight), forKey: "inputTopRight")
         filter.setValue(CIVector(cgPoint: bottomRight), forKey: "inputBottomRight")
@@ -1063,10 +1059,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CISixfoldReflectedTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         
         return filter.outputImage ?? .empty()
     }
@@ -1077,15 +1073,14 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CISixfoldRotatedTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.10, *)
     open func triangleKaleidoscope(point: CGPoint = CGPoint(x: 150, y: 150),
                                    size: Float = 700,
                                    rotation: Float = 5.924285296593801,
@@ -1093,7 +1088,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CITriangleKaleidoscope") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(CIVector(cgPoint: point), forKey: "inputPoint")
         filter.setValue(size, forKey: "inputSize")
         filter.setValue(rotation, forKey: "inputRotation")
@@ -1109,10 +1104,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CITriangleTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         
         return filter.outputImage ?? .empty()
     }
@@ -1123,10 +1118,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CITwelvefoldReflectedTile") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
-        filter.setValue(width, forKey: kCIInputWidthKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(angle, forKey: "inputAngle")
+        filter.setValue(width, forKey: "inputWidth")
         
         return filter.outputImage ?? .empty()
     }
@@ -1136,9 +1131,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIBlendWithAlphaMask") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
-        filter.setValue(maskImage, forKey: kCIInputMaskImageKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(backgroundImage, forKey: "inputBackgroundImage")
+        filter.setValue(maskImage, forKey: "inputMaskImage")
         
         return filter.outputImage ?? .empty()
     }
@@ -1149,9 +1144,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIBlendWithBlueMask") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
-        filter.setValue(maskImage, forKey: kCIInputMaskImageKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(backgroundImage, forKey: "inputBackgroundImage")
+        filter.setValue(maskImage, forKey: "inputMaskImage")
         
         return filter.outputImage ?? .empty()
     }
@@ -1161,9 +1156,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIBlendWithMask") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
-        filter.setValue(maskImage, forKey: kCIInputMaskImageKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(backgroundImage, forKey: "inputBackgroundImage")
+        filter.setValue(maskImage, forKey: "inputMaskImage")
         
         return filter.outputImage ?? .empty()
     }
@@ -1174,9 +1169,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIBlendWithRedMask") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
-        filter.setValue(maskImage, forKey: kCIInputMaskImageKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(backgroundImage, forKey: "inputBackgroundImage")
+        filter.setValue(maskImage, forKey: "inputMaskImage")
         
         return filter.outputImage ?? .empty()
     }
@@ -1186,9 +1181,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIBloom") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
-        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
+        filter.setValue(intensity, forKey: "inputIntensity")
         
         return filter.outputImage ?? .empty()
     }
@@ -1204,9 +1199,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CICrystallize") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
         
         return filter.outputImage ?? .empty()
     }
@@ -1221,13 +1216,13 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIDepthOfField") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(CIVector(cgPoint: point0), forKey: "inputPoint0")
         filter.setValue(CIVector(cgPoint: point1), forKey: "inputPoint1")
-        filter.setValue(saturation, forKey: kCIInputSaturationKey)
+        filter.setValue(saturation, forKey: "inputSaturation")
         filter.setValue(unsharpMaskRadius, forKey: "inputUnsharpMaskRadius")
         filter.setValue(unsharpMaskIntensity, forKey: "inputUnsharpMaskIntensity")
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1237,8 +1232,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIEdges") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(intensity, forKey: "inputIntensity")
         
         return filter.outputImage ?? .empty()
     }
@@ -1248,8 +1243,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIEdgeWork") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1259,7 +1254,7 @@ extension CIImage {
         
         let filter = CIFilter.gaborGradients()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         
         return filter.outputImage ?? .empty()
     }
@@ -1269,9 +1264,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIGloom") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
-        filter.setValue(intensity, forKey: kCIInputIntensityKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
+        filter.setValue(intensity, forKey: "inputIntensity")
         
         return filter.outputImage ?? .empty()
     }
@@ -1281,8 +1276,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIHeightFieldFromMask") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1293,9 +1288,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIHexagonalPixellate") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(scale, forKey: kCIInputScaleKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(scale, forKey: "inputScale")
         
         return filter.outputImage ?? .empty()
     }
@@ -1306,8 +1301,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIHighlightShadowAdjust") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         filter.setValue(shadowAmount, forKey: "inputShadowAmount")
         filter.setValue(highlightAmount, forKey: "inputHighlightAmount")
         
@@ -1323,12 +1318,12 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CILineOverlay") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(nrNoiseLevel, forKey: "inputNRNoiseLevel")
         filter.setValue(nrSharpness, forKey: "inputNRSharpness")
         filter.setValue(edgeIntensity, forKey: "inputEdgeIntensity")
         filter.setValue(threshold, forKey: "inputThreshold")
-        filter.setValue(contrast, forKey: kCIInputContrastKey)
+        filter.setValue(contrast, forKey: "inputContrast")
         
         return filter.outputImage ?? .empty()
     }
@@ -1339,8 +1334,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIMix") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(backgroundImage, forKey: "inputBackgroundImage")
         filter.setValue(amount, forKey: "inputAmount")
         
         return filter.outputImage ?? .empty()
@@ -1351,9 +1346,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIPixellate") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(scale, forKey: kCIInputScaleKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(scale, forKey: "inputScale")
         
         return filter.outputImage ?? .empty()
     }
@@ -1364,9 +1359,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIPointillize") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
         
         return filter.outputImage ?? .empty()
     }
@@ -1382,9 +1377,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIShadedMaterial") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(shadingImage, forKey: kCIInputShadingImageKey)
-        filter.setValue(scale, forKey: kCIInputScaleKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(shadingImage, forKey: "inputShadingImage")
+        filter.setValue(scale, forKey: "inputScale")
         
         return filter.outputImage ?? .empty()
     }
@@ -1405,7 +1400,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CISpotColor") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(centerColor1, forKey: "inputCenterColor1")
         filter.setValue(replacementColor1, forKey: "inputReplacementColor1")
         filter.setValue(closeness1, forKey: "inputCloseness1")
@@ -1431,12 +1426,12 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CISpotLight") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(lightPosition, forKey: "inputLightPosition")
         filter.setValue(lightPointsAt, forKey: "inputLightPointsAt")
-        filter.setValue(brightness, forKey: kCIInputBrightnessKey)
+        filter.setValue(brightness, forKey: "inputBrightness")
         filter.setValue(concentration, forKey: "inputConcentration")
-        filter.setValue(color, forKey: kCIInputColorKey)
+        filter.setValue(color, forKey: "inputColor")
         
         return filter.outputImage ?? .empty()
     }
@@ -1449,8 +1444,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIBokehBlur") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         filter.setValue(ringAmount, forKey: "inputRingAmount")
         filter.setValue(ringSize, forKey: "inputRingSize")
         filter.setValue(softness, forKey: "inputSoftness")
@@ -1463,8 +1458,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIBoxBlur") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1474,8 +1469,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIDiscBlur") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1484,21 +1479,20 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIGaussianBlur") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.10, *)
     open func maskedVariableBlur(mask: CIImage,
                                  radius: Float = 5) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMaskedVariableBlur") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(mask, forKey: "inputMask")
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1513,8 +1507,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIMorphologyGradient") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1524,8 +1518,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIMorphologyMaximum") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1535,8 +1529,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIMorphologyMinimum") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1547,7 +1541,7 @@ extension CIImage {
         
         let filter = CIFilter.morphologyRectangleMaximum()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         return filter.outputImage ?? .empty()
     }
     
@@ -1557,7 +1551,7 @@ extension CIImage {
         
         let filter = CIFilter.morphologyRectangleMinimum()
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         return filter.outputImage ?? .empty()
     }
     
@@ -1567,9 +1561,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIMotionBlur") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
-        filter.setValue(angle, forKey: kCIInputAngleKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(radius, forKey: "inputRadius")
+        filter.setValue(angle, forKey: "inputAngle")
         
         return filter.outputImage ?? .empty()
     }
@@ -1580,9 +1574,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CINoiseReduction") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
+        filter.setValue(self, forKey: "inputImage")
         filter.setValue(noiseLevel, forKey: "inputNoiseLevel")
-        filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
+        filter.setValue(sharpness, forKey: "inputSharpness")
         
         return filter.outputImage ?? .empty()
     }
@@ -1593,8 +1587,8 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIZoomBlur") else { return .empty() }
         
-        filter.setValue(self, forKey: kCIInputImageKey)
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
+        filter.setValue(self, forKey: "inputImage")
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
         filter.setValue(amount, forKey: "inputAmount")
         
         return filter.outputImage ?? .empty()
@@ -1611,10 +1605,10 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIGaussianGradient") else { return .empty() }
         
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
         filter.setValue(color0, forKey: "inputColor0")
         filter.setValue(color1, forKey: "inputColor1")
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(radius, forKey: "inputRadius")
         
         return filter.outputImage ?? .empty()
     }
@@ -1629,7 +1623,7 @@ extension CIImage {
         guard let filter = CIFilter(name: "CIHueSaturationValueGradient") else { return .empty() }
         
         filter.setValue(value, forKey: "inputValue")
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(radius, forKey: "inputRadius")
         filter.setValue(softness, forKey: "inputSoftness")
         filter.setValue(dither, forKey: "inputDither")
         filter.setValue(colorSpace, forKey: "inputColorSpace")
@@ -1660,7 +1654,7 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIRadialGradient") else { return .empty() }
         
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
         filter.setValue(radius0, forKey: "inputRadius0")
         filter.setValue(radius1, forKey: "inputRadius1")
         filter.setValue(color0, forKey: "inputColor0")
@@ -1669,7 +1663,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.10, *)
     open class func SmoothLinearGradient(point0: CGPoint = CGPoint(x: 0, y: 0),
                                          point1: CGPoint = CGPoint(x: 200, y: 200),
                                          color0: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1),
@@ -1705,9 +1698,9 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIStarShineGenerator") else { return .empty() }
         
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(color, forKey: kCIInputColorKey)
-        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(color, forKey: "inputColor")
+        filter.setValue(radius, forKey: "inputRadius")
         filter.setValue(crossScale, forKey: "inputCrossScale")
         filter.setValue(crossAngle, forKey: "inputCrossAngle")
         filter.setValue(crossOpacity, forKey: "inputCrossOpacity")
@@ -1725,11 +1718,11 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CIStripesGenerator") else { return .empty() }
         
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
         filter.setValue(color0, forKey: "inputColor0")
         filter.setValue(color1, forKey: "inputColor1")
-        filter.setValue(width, forKey: kCIInputWidthKey)
-        filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
+        filter.setValue(width, forKey: "inputWidth")
+        filter.setValue(sharpness, forKey: "inputSharpness")
         
         return filter.outputImage ?? .empty()
     }
@@ -1745,18 +1738,17 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CISunbeamsGenerator") else { return .empty() }
         
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(color, forKey: kCIInputColorKey)
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(color, forKey: "inputColor")
         filter.setValue(sunRadius, forKey: "inputSunRadius")
         filter.setValue(maxStriationRadius, forKey: "inputMaxStriationRadius")
         filter.setValue(striationStrength, forKey: "inputStriationStrength")
         filter.setValue(striationContrast, forKey: "inputStriationContrast")
-        filter.setValue(time, forKey: kCIInputTimeKey)
+        filter.setValue(time, forKey: "inputTime")
         
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.10, *)
     open class func AztecCodeGenerator(message: String,
                                        correction level: Float = 23,
                                        layers: Float? = nil,
@@ -1795,7 +1787,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.10, *)
     open class func Code128BarcodeGenerator(message: String,
                                             quietSpace: Float = 7,
                                             barcodeHeight: Float = 32) -> CIImage {
@@ -1819,11 +1810,11 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CICheckerboardGenerator") else { return .empty() }
         
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
         filter.setValue(color0, forKey: "inputColor0")
         filter.setValue(color1, forKey: "inputColor1")
-        filter.setValue(width, forKey: kCIInputWidthKey)
-        filter.setValue(sharpness, forKey: kCIInputSharpnessKey)
+        filter.setValue(width, forKey: "inputWidth")
+        filter.setValue(sharpness, forKey: "inputSharpness")
         
         return filter.outputImage ?? .empty()
     }
@@ -1840,14 +1831,14 @@ extension CIImage {
         
         guard let filter = CIFilter(name: "CILenticularHaloGenerator") else { return .empty() }
         
-        filter.setValue(CIVector(cgPoint: center), forKey: kCIInputCenterKey)
-        filter.setValue(color, forKey: kCIInputColorKey)
+        filter.setValue(CIVector(cgPoint: center), forKey: "inputCenter")
+        filter.setValue(color, forKey: "inputColor")
         filter.setValue(haloRadius, forKey: "inputHaloRadius")
         filter.setValue(haloWidth, forKey: "inputHaloWidth")
         filter.setValue(haloOverlap, forKey: "inputHaloOverlap")
         filter.setValue(striationStrength, forKey: "inputStriationStrength")
         filter.setValue(striationContrast, forKey: "inputStriationContrast")
-        filter.setValue(time, forKey: kCIInputTimeKey)
+        filter.setValue(time, forKey: "inputTime")
         
         return filter.outputImage ?? .empty()
     }
