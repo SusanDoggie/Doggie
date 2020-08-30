@@ -66,6 +66,41 @@ extension SVGColorMatrixEffect {
 
 extension SVGColorMatrixEffect {
     
+    public init(_ saturate: SVGSaturateEffect) {
+        
+        let s = saturate.saturate
+        
+        self.init(source: luminanceToAlpha.source,
+                  red:   (0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s, 0, 0),
+                  green: (0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s, 0, 0),
+                  blue:  (0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s, 0, 0),
+                  alpha: (0, 0, 0, 1, 0))
+    }
+    
+    public init(_ hueRotate: SVGHueRotateEffect) {
+        
+        let _sin = sin(hueRotate.angle)
+        let _cos = cos(hueRotate.angle)
+        
+        self.init(source: luminanceToAlpha.source,
+                  red:   (0.213 + _cos * 0.787 - _sin * 0.213, 0.715 - _cos * 0.715 - _sin * 0.715, 0.072 - _cos * 0.072 + _sin * 0.928, 0, 0),
+                  green: (0.213 - _cos * 0.213 + _sin * 0.143, 0.715 + _cos * 0.285 + _sin * 0.140, 0.072 - _cos * 0.072 - _sin * 0.283, 0, 0),
+                  blue:  (0.213 - _cos * 0.213 - _sin * 0.787, 0.715 - _cos * 0.715 + _sin * 0.715, 0.072 + _cos * 0.928 + _sin * 0.072, 0, 0),
+                  alpha: (0, 0, 0, 1, 0))
+    }
+    
+    public init(_ luminanceToAlpha: SVGLuminanceToAlphaEffect) {
+        
+        self.init(source: luminanceToAlpha.source,
+                  red: (0, 0, 0, 0, 0),
+                  green: (0, 0, 0, 0, 0),
+                  blue: (0, 0, 0, 0, 0),
+                  alpha: (0.2125, 0.7154, 0.0721, 0, 0))
+    }
+}
+
+extension SVGColorMatrixEffect {
+    
     public var xml_element: SDXMLElement {
         
         let matrix = [
