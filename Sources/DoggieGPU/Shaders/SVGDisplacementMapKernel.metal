@@ -24,7 +24,6 @@
 //
 
 #include <metal_stdlib>
-#include <metal_math>
 using namespace metal;
 
 constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);
