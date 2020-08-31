@@ -59,7 +59,7 @@ extension CIImage {
             let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)
             
             let threadsPerThreadgroup = MTLSize(width: group_width, height: group_height, depth: 1)
-            let threadgroupsPerGrid = MTLSize(width: (output_texture .width + group_width - 1) / group_width, height: (output_texture.height + group_height - 1) / group_height, depth: 1)
+            let threadgroupsPerGrid = MTLSize(width: (output_texture.width + group_width - 1) / group_width, height: (output_texture.height + group_height - 1) / group_height, depth: 1)
             
             encoder.dispatchThreadgroups(threadgroupsPerGrid, threadsPerThreadgroup: threadsPerThreadgroup)
             encoder.endEncoding()
