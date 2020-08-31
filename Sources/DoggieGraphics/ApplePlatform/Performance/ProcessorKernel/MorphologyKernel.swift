@@ -52,7 +52,8 @@ extension CIImage {
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
-            guard let source = inputs?.first?.metalTexture else { return }
+            guard let source = inputs?[0].metalTexture else { return }
+            guard let source_region = inputs?[0].region else { return }
             guard let destination = output.metalTexture else { return }
             guard let radius = arguments?["radius"] as? Size else { return }
             
@@ -60,9 +61,8 @@ extension CIImage {
             let kernelHeight = Int(round(abs(radius.height))) << 1 + 1
             
             let kernel = MPSImageAreaMin(device: commandBuffer.device, kernelWidth: kernelWidth, kernelHeight: kernelHeight)
-            kernel.offset.x = Int(ceil(abs(radius.width)))
-            kernel.offset.y = Int(ceil(abs(radius.height)))
-            kernel.edgeMode = .clamp
+            kernel.offset.x = Int(output.region.minX - source_region.minX)
+            kernel.offset.y = Int(output.region.minY - source_region.minY)
             
             kernel.encode(commandBuffer: commandBuffer, sourceTexture: source, destinationTexture: destination)
         }
@@ -83,6 +83,8 @@ extension CIImage {
             return areaMin.outputImage
             
         } else {
+            
+            let extent = self.extent.insetBy(dx: CGFloat(-ceil(abs(radius.width))), dy: CGFloat(-ceil(abs(radius.height))))
             
             let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
             
@@ -124,8 +126,8 @@ extension CIImage {
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
-            guard let input = inputs?.first else { return }
-            guard let source = input.metalTexture else { return }
+            guard let source = inputs?[0].metalTexture else { return }
+            guard let source_region = inputs?[0].region else { return }
             guard let destination = output.metalTexture else { return }
             guard let radius = arguments?["radius"] as? Size else { return }
             
@@ -133,9 +135,8 @@ extension CIImage {
             let kernelHeight = Int(round(abs(radius.height))) << 1 + 1
             
             let kernel = MPSImageAreaMax(device: commandBuffer.device, kernelWidth: kernelWidth, kernelHeight: kernelHeight)
-            kernel.offset.x = Int(output.region.minX - input.region.minX)
-            kernel.offset.y = Int(output.region.minY - input.region.minY)
-            kernel.edgeMode = .clamp
+            kernel.offset.x = Int(output.region.minX - source_region.minX)
+            kernel.offset.y = Int(output.region.minY - source_region.minY)
             
             kernel.encode(commandBuffer: commandBuffer, sourceTexture: source, destinationTexture: destination)
         }
@@ -156,6 +157,8 @@ extension CIImage {
             return areaMax.outputImage
             
         } else {
+            
+            let extent = self.extent.insetBy(dx: CGFloat(-ceil(abs(radius.width))), dy: CGFloat(-ceil(abs(radius.height))))
             
             let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
             
