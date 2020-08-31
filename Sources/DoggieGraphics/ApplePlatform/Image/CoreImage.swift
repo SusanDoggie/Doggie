@@ -1494,16 +1494,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func gaussianBlur(radius: Float = 10) -> CIImage {
-        
-        guard let filter = CIFilter(name: "CIGaussianBlur") else { return .empty() }
-        
-        filter.setValue(self, forKey: "inputImage")
-        filter.setValue(radius, forKey: "inputRadius")
-        
-        return filter.outputImage ?? .empty()
-    }
-    
     open func maskedVariableBlur(mask: CIImage,
                                  radius: Float = 5) -> CIImage {
         
