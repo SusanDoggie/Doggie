@@ -28,24 +28,31 @@ using namespace metal;
 
 constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);
 
-#define svg_displacement_map(XCHANNEL, YCHANNEL, XCHANNELSELECTOR, YCHANNELSELECTOR)                                \
+template <int XSELECTOR, int YSELECTOR>
+half4 displacement_map(texture2d<half, access::sample> source, half4 d, uint2 coord, float2 scale) {
+    
+    const float _x = d[XSELECTOR] - 0.5;
+    const float _y = d[YSELECTOR] - 0.5;
+    
+    const float x = (float)coord.x + _x * scale[0];
+    const float y = (float)coord.y - _y * scale[1];
+    
+    return source.sample(input_sampler, float2(x, y));
+}
+
+#define svg_displacement_map(XCHANNEL, YCHANNEL, XSELECTOR, YSELECTOR)                                              \
 kernel void svg_displacement_map_##XCHANNEL##YCHANNEL(texture2d<half, access::sample> source [[texture(0)]],        \
                                                       texture2d<half, access::read> displacement [[texture(1)]],    \
                                                       texture2d<half, access::write> output [[texture(2)]],         \
-                                                      constant packed_float2 &scale [[buffer(3)]],                  \
+                                                      constant packed_uint2 &offset [[buffer(3)]],                  \
+                                                      constant packed_float2 &scale [[buffer(4)]],                  \
                                                       uint2 gid [[thread_position_in_grid]]) {                      \
                                                                                                                     \
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }                                    \
                                                                                                                     \
     const half4 d = displacement.read(gid);                                                                         \
                                                                                                                     \
-    const float _x = d[XCHANNELSELECTOR] - 0.5;                                                                     \
-    const float _y = d[YCHANNELSELECTOR] - 0.5;                                                                     \
-                                                                                                                    \
-    const float x = (float)gid.x + _x * scale[0];                                                                   \
-    const float y = (float)gid.y - _y * scale[1];                                                                   \
-                                                                                                                    \
-    const half4 color = source.sample(input_sampler, float2(x, y));                                                 \
+    const half4 color = displacement_map<XSELECTOR, YSELECTOR>(source, d, gid + offset, scale);                     \
                                                                                                                     \
     output.write(color, gid);                                                                                       \
 }

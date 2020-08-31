@@ -34,13 +34,24 @@ extension CIImage {
             return false
         }
         
+        override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
+            guard let spatial = arguments?["spatial"] as? Size else { return outputRect }
+            let insetX = -ceil(abs(spatial.width))
+            let insetY = -ceil(abs(spatial.height))
+            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
+        }
+        
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let source = inputs?[0].metalTexture else { return }
+            guard let source_region = inputs?[0].region else { return }
             guard let destination = output.metalTexture else { return }
             guard let spatial = arguments?["spatial"] as? Size else { return }
             guard let range = arguments?["range"] as? Double else { return }
+            
+            guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
+            guard let offset_y = UInt32(exactly: output.region.minY - source_region.minY) else { return }
             
             let device = commandBuffer.device
             
@@ -52,8 +63,9 @@ extension CIImage {
             
             encoder.setTexture(source, index: 0)
             encoder.setTexture(destination, index: 1)
-            withUnsafeBytes(of: (Float(spatial.width), Float(spatial.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
-            withUnsafeBytes(of: Float(range)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
+            withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
+            withUnsafeBytes(of: (Float(spatial.width), Float(spatial.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
+            withUnsafeBytes(of: Float(range)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
             
             let group_width = max(1, pipeline.threadExecutionWidth)
             let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)

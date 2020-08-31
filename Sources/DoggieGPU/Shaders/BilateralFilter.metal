@@ -28,8 +28,9 @@ using namespace metal;
 
 kernel void bilateral_filter(texture2d<half, access::read> input [[texture(0)]],
                              texture2d<half, access::write> output [[texture(1)]],
-                             constant packed_float2 &spatial [[buffer(2)]],
-                             constant float &range [[buffer(3)]],
+                             constant packed_uint2 &offset [[buffer(2)]],
+                             constant packed_float2 &spatial [[buffer(3)]],
+                             constant float &range [[buffer(4)]],
                              uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
@@ -44,18 +45,20 @@ kernel void bilateral_filter(texture2d<half, access::read> input [[texture(0)]],
     half4 s = 0;
     float t = 0;
     
-    const half4 p = input.read(gid);
+    const uint2 coord = gid + offset;
     
-    const int minX = max(0, (int)gid.x - r0);
-    const int minY = max(0, (int)gid.y - r1);
-    const int maxX = min((int)input.get_width(), (int)gid.x + r0 + 1);
-    const int maxY = min((int)input.get_height(), (int)gid.y + r1 + 1);
+    const half4 p = input.read(coord);
+    
+    const int minX = max(0, (int)coord.x - r0);
+    const int minY = max(0, (int)coord.y - r1);
+    const int maxX = min((int)input.get_width(), (int)coord.x + r0 + 1);
+    const int maxY = min((int)input.get_height(), (int)coord.y + r1 + 1);
     
     for (int y = minY; y < maxY; ++y) {
         for (int x = minX; x < maxX; ++x) {
             
-            const int _x = x - (int)gid.x;
-            const int _y = y - (int)gid.y;
+            const int _x = x - (int)coord.x;
+            const int _y = y - (int)coord.y;
             
             const half4 k = input.read(uint2(x, y));
             const float w = exp(c0 * _x * _x + c1 * _y * _y + c2 * distance_squared(p, k));

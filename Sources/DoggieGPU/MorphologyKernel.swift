@@ -34,10 +34,18 @@ extension CIImage {
             return false
         }
         
+        override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
+            guard let radius = arguments?["radius"] as? Size else { return outputRect }
+            let insetX = -ceil(abs(radius.width))
+            let insetY = -ceil(abs(radius.height))
+            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
+        }
+        
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let source = inputs?[0].metalTexture else { return }
+            guard let source_region = inputs?[0].region else { return }
             guard let destination = output.metalTexture else { return }
             guard let radius = arguments?["radius"] as? Size else { return }
             
@@ -45,6 +53,8 @@ extension CIImage {
             let kernelHeight = Int(round(abs(radius.height))) << 1 + 1
             
             let kernel = MPSImageAreaMin(device: commandBuffer.device, kernelWidth: kernelWidth, kernelHeight: kernelHeight)
+            kernel.offset.x = Int(output.region.minX - source_region.minX)
+            kernel.offset.y = Int(output.region.minY - source_region.minY)
             
             kernel.encode(commandBuffer: commandBuffer, sourceTexture: source, destinationTexture: destination)
         }
@@ -90,10 +100,18 @@ extension CIImage {
             return false
         }
         
+        override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
+            guard let radius = arguments?["radius"] as? Size else { return outputRect }
+            let insetX = -ceil(abs(radius.width))
+            let insetY = -ceil(abs(radius.height))
+            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
+        }
+        
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let source = inputs?[0].metalTexture else { return }
+            guard let source_region = inputs?[0].region else { return }
             guard let destination = output.metalTexture else { return }
             guard let radius = arguments?["radius"] as? Size else { return }
             
@@ -101,6 +119,8 @@ extension CIImage {
             let kernelHeight = Int(round(abs(radius.height))) << 1 + 1
             
             let kernel = MPSImageAreaMax(device: commandBuffer.device, kernelWidth: kernelWidth, kernelHeight: kernelHeight)
+            kernel.offset.x = Int(output.region.minX - source_region.minX)
+            kernel.offset.y = Int(output.region.minY - source_region.minY)
             
             kernel.encode(commandBuffer: commandBuffer, sourceTexture: source, destinationTexture: destination)
         }

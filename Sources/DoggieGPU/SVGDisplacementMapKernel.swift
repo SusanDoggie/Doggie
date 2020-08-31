@@ -34,15 +34,27 @@ extension CIImage {
             return false
         }
         
+        override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
+            guard input == 0 else { return outputRect }
+            guard let scale = arguments?["scale"] as? Size else { return outputRect }
+            let insetX = -ceil(abs(0.5 * scale.width))
+            let insetY = -ceil(abs(0.5 * scale.height))
+            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
+        }
+        
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let source = inputs?[0].metalTexture else { return }
+            guard let source_region = inputs?[0].region else { return }
             guard let displacement = inputs?[1].metalTexture else { return }
             guard let output_texture = output.metalTexture else { return }
             guard let scale = arguments?["scale"] as? Size else { return }
             guard let x_selector = arguments?["x_selector"] as? String else { return }
             guard let y_selector = arguments?["y_selector"] as? String else { return }
+            
+            guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
+            guard let offset_y = UInt32(exactly: output.region.minY - source_region.minY) else { return }
             
             guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map_\(x_selector)\(y_selector)") else { return }
             
@@ -53,7 +65,8 @@ extension CIImage {
             encoder.setTexture(source, index: 0)
             encoder.setTexture(displacement, index: 1)
             encoder.setTexture(output_texture , index: 2)
-            withUnsafeBytes(of: (Float(scale.width), Float(scale.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
+            withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
+            withUnsafeBytes(of: (Float(scale.width), Float(scale.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
             
             let group_width = max(1, pipeline.threadExecutionWidth)
             let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)
