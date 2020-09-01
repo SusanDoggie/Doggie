@@ -50,13 +50,12 @@ extension CIImage {
             guard let displacement = inputs?[1].metalTexture else { return }
             guard let output_texture = output.metalTexture else { return }
             guard let scale = arguments?["scale"] as? Size else { return }
-            guard let x_selector = arguments?["x_selector"] as? String else { return }
-            guard let y_selector = arguments?["y_selector"] as? String else { return }
+            guard let selector = arguments?["selector"] as? String else { return }
             
             guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
             guard let offset_y = UInt32(exactly: output.region.minY - source_region.minY) else { return }
             
-            guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map_\(x_selector)\(y_selector)") else { return }
+            guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map_\(selector)") else { return }
             
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
             
@@ -113,7 +112,7 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try? SVGDisplacementMapKernel.apply(withExtent: _extent, inputs: [self, displacement], arguments: ["scale": scale, "x_selector": x_selector, "y_selector": y_selector])
+        var rendered = try? SVGDisplacementMapKernel.apply(withExtent: _extent, inputs: [self, displacement], arguments: ["scale": scale, "selector": "\(x_selector)\(y_selector)"])
         
         if !extent.isInfinite {
             rendered = rendered?.cropped(to: extent)
