@@ -97,6 +97,10 @@ private class MeshGradientKernel: CIImageProcessorKernel {
         }
     }
     
+    override class var outputFormat: CIFormat {
+        return .BGRA8
+    }
+    
     override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
         
         guard let commandBuffer = output.metalCommandBuffer else { return }
@@ -118,8 +122,10 @@ private class MeshGradientKernel: CIImageProcessorKernel {
         
         encoder.setComputePipelineState(pipeline.tessellation_kernel)
         
-        let edge = Float(MeshGradientKernel.maxTessellationFactor)
-        let inside = Float(MeshGradientKernel.maxTessellationFactor)
+        let maxTessellationFactor = commandBuffer.device.maxTessellationFactor
+        
+        let edge = Float(maxTessellationFactor)
+        let inside = Float(maxTessellationFactor)
         let count = Int32(gradient.patches.count)
         
         withUnsafeBytes(of: edge) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 0) }
@@ -247,19 +253,6 @@ extension MeshGradientKernel.Gradient {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension MeshGradientKernel {
     
-    static var maxTessellationFactor: Int {
-        
-        #if os(macOS)
-        
-        return 64
-        
-        #else
-        
-        return 16
-        
-        #endif
-    }
-    
     struct Pipeline {
         
         let device: MTLDevice
@@ -325,7 +318,7 @@ extension MeshGradientKernel {
             pipelineDescriptor.tessellationFactorStepFunction = .constant
             pipelineDescriptor.tessellationOutputWindingOrder = .clockwise
             pipelineDescriptor.tessellationPartitionMode = .fractionalEven
-            pipelineDescriptor.maxTessellationFactor = MeshGradientKernel.maxTessellationFactor
+            pipelineDescriptor.maxTessellationFactor = device.maxTessellationFactor
             
             pipelineDescriptor.vertexFunction = tessellation_vertex_quad
             guard let render_pipeline = try? device.makeRenderPipelineState(descriptor: pipelineDescriptor) else { return nil }
