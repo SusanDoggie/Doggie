@@ -134,25 +134,18 @@ extension SVGTurbulenceKernel {
             
             struct Info {
                 
-                var transform: (Float, Float, Float, Float, Float, Float)
-                var baseFreq: (Float, Float)
-                var stitchTile: (Float, Float, Float, Float)
+                var transform: packed_float3x2
+                var baseFreq: packed_float2
+                var stitchTile: packed_float4
                 var numOctaves: Int32
                 var fractalSum: Int32
                 var isStitchTile: Int32
                 var padding: Int32
                 
                 init(_ info: SVGTurbulenceKernel) {
-                    self.transform = (
-                        Float(info.transform.a),
-                        Float(info.transform.d),
-                        Float(info.transform.b),
-                        Float(info.transform.e),
-                        Float(info.transform.c),
-                        Float(info.transform.f)
-                    )
-                    self.baseFreq = (Float(info.baseFreq.width), Float(info.baseFreq.height))
-                    self.stitchTile = (Float(info.stitchTile.minX), Float(info.stitchTile.minY), Float(info.stitchTile.width), Float(info.stitchTile.height))
+                    self.transform = packed_float3x2(info.transform)
+                    self.baseFreq = packed_float2(info.baseFreq)
+                    self.stitchTile = packed_float4(info.stitchTile)
                     self.numOctaves = Int32(info.numOctaves)
                     self.fractalSum = info.type == .fractalNoise ? 1 : 0
                     self.isStitchTile = info.isStitchTile ? 1 : 0

@@ -48,35 +48,4 @@ extension CIImage {
     }
 }
 
-extension CIVector {
-    
-    public convenience init<C: Collection>(_ values: C) where C.Element: BinaryFloatingPoint {
-        self.init(values: values.map { CGFloat($0) }, count: values.count)
-    }
-    
-    public convenience init<T: BinaryFloatingPoint>(_ values: T ...) {
-        self.init(values)
-    }
-    
-    public convenience init(_ point: Point) {
-        self.init(cgPoint: CGPoint(point))
-    }
-    
-    public convenience init(_ point: Vector) {
-        self.init(point.x, point.y, point.z)
-    }
-    
-    public convenience init(_ size: Size) {
-        self.init(size.width, size.height)
-    }
-    
-    public convenience init(_ rect: Rect) {
-        self.init(cgRect: CGRect(rect))
-    }
-    
-    public convenience init(_ transform: SDTransform) {
-        self.init(cgAffineTransform: CGAffineTransform(transform))
-    }
-}
-
 #endif

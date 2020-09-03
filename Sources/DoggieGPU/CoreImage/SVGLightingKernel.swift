@@ -43,35 +43,23 @@ extension CIImage {
         
         struct PointLightInfo {
             
-            var position: (Float, Float, Float)
+            var position: packed_float3
             
             init(_ light: SVGPointLight) {
-                self.position = (
-                    Float(light.location.x),
-                    Float(light.location.y),
-                    Float(light.location.z)
-                )
+                self.position = packed_float3(light.location)
             }
         }
         
         struct SpotLightInfo {
             
-            var position: (Float, Float, Float)
-            var direction: (Float, Float, Float)
+            var position: packed_float3
+            var direction: packed_float3
             var specularExponent: Float
             var limitingConeAngle: Float
             
             init(_ light: SVGSpotLight) {
-                self.position = (
-                    Float(light.location.x),
-                    Float(light.location.y),
-                    Float(light.location.z)
-                )
-                self.direction = (
-                    Float(light.direction.x - light.location.x),
-                    Float(light.direction.y - light.location.y),
-                    Float(light.direction.z - light.location.z)
-                )
+                self.position = packed_float3(light.location)
+                self.direction = packed_float3(light.direction - light.location)
                 self.specularExponent = Float(light.specularExponent)
                 self.limitingConeAngle = Float(light.limitingConeAngle)
             }
@@ -104,13 +92,13 @@ extension CIImage {
             
             struct Info {
                 
-                let offset: (Float, Float)
-                let unit: (Float, Float)
+                let offset: packed_float2
+                let unit: packed_float2
             }
             
             let info = Info(
-                offset: (Float(offset_x), Float(offset_y)),
-                unit: (Float(1 / unit.width), Float(1 / unit.height))
+                offset: packed_float2(Float(offset_x), Float(offset_y)),
+                unit: packed_float2(Float(1 / unit.width), Float(1 / unit.height))
             )
             
             encoder.setComputePipelineState(svg_normalmap)
@@ -165,8 +153,8 @@ extension CIImage {
                 
                 var light_source_info = PointLightInfo(light_source)
                 
-                light_source_info.position.0 -= Float(scale) * Float(output_region.minX)
-                light_source_info.position.1 -= Float(scale) * Float(output_region.minY)
+                light_source_info.position.x -= Float(scale) * Float(output_region.minX)
+                light_source_info.position.y -= Float(scale) * Float(output_region.minY)
                 
                 encoder.setComputePipelineState(point_lighting)
                 
@@ -183,8 +171,8 @@ extension CIImage {
                 
                 var light_source_info = SpotLightInfo(light_source)
                 
-                light_source_info.position.0 -= Float(scale) * Float(output_region.minX)
-                light_source_info.position.1 -= Float(scale) * Float(output_region.minY)
+                light_source_info.position.x -= Float(scale) * Float(output_region.minX)
+                light_source_info.position.y -= Float(scale) * Float(output_region.minY)
                 
                 encoder.setComputePipelineState(spot_lighting)
                 
@@ -237,11 +225,11 @@ extension CIImage {
         
         struct DiffuseLightInfo {
             
-            var color: (Float, Float, Float, Float)
+            var color: packed_float4
             var unit_scale: Float
             
             init(_ light: SVGDiffuseLighting, _ unit_scale: Double) {
-                self.color = (
+                self.color = packed_float4(
                     Float(light.color.red * light.diffuseConstant),
                     Float(light.color.green * light.diffuseConstant),
                     Float(light.color.blue * light.diffuseConstant),
@@ -337,12 +325,12 @@ extension CIImage {
         
         struct SpecularLightInfo {
             
-            var color: (Float, Float, Float, Float)
+            var color: packed_float4
             var unit_scale: Float
             var specularExponent: Float
             
             init(_ light: SVGSpecularLighting, _ unit_scale: Double) {
-                self.color = (
+                self.color = packed_float4(
                     Float(light.color.red * light.specularConstant),
                     Float(light.color.green * light.specularConstant),
                     Float(light.color.blue * light.specularConstant),
