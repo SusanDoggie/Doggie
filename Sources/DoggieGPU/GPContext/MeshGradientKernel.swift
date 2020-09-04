@@ -45,7 +45,7 @@ extension CubicBezierPatch where Element == Point {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func drawGradient<C>(colorSpace: ColorSpace<RGBColorModel>, mesh: MeshGradient<C>) {
+    public func drawGradient<C>(colorSpace: ColorSpace<RGBColorModel>, gradient mesh: MeshGradient<C>) {
         
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
         

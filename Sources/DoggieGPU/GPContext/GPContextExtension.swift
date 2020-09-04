@@ -235,7 +235,7 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>, colorSpace: ColorSpace<RGBColorModel>) {
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: ColorSpace<RGBColorModel>, gradient: Gradient<C>) {
         
         let boundary = shape.originalBoundary
         guard !boundary.isEmpty else { return }
@@ -258,6 +258,38 @@ extension GPContext {
         }
         
         self.endTransparencyLayer()
+    }
+    
+    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, colorSpace: ColorSpace<RGBColorModel>, gradient: Gradient<C>) {
+        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, colorSpace: colorSpace, gradient: gradient)
+    }
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
+extension GPContext {
+    
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: ColorSpace<RGBColorModel>, gradient: MeshGradient<C>) {
+        
+        let boundary = shape.originalBoundary
+        guard !boundary.isEmpty else { return }
+        
+        let transform = gradient.transform * SDTransform.scale(x: boundary.width, y: boundary.height) * SDTransform.translate(x: boundary.minX, y: boundary.minY) * shape.transform
+        
+        self.beginTransparencyLayer()
+        
+        self.clip(shape: shape, winding: winding)
+        
+        self.concatenate(transform)
+        
+        self.opacity = gradient.opacity
+        
+        self.drawGradient(colorSpace: colorSpace, gradient: gradient)
+        
+        self.endTransparencyLayer()
+    }
+    
+    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, colorSpace: ColorSpace<RGBColorModel>, gradient: MeshGradient<C>) {
+        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, colorSpace: colorSpace, gradient: gradient)
     }
 }
 
