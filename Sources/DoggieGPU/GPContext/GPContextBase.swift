@@ -62,47 +62,42 @@ extension GPContextBase {
     
     var image: CIImage {
         
-        var image = self._image
         let graphic_stack = self.graphic_stack
         
-        if let colorSpace = graphic_stack.first?.colorSpace {
+        guard let colorSpace = graphic_stack.first?.colorSpace else { return self._image ?? .empty() }
+        guard let _extent = graphic_stack.lazy.map({ $0.path.boundingBoxOfPath }).reduce({ $0.union($1) }) else { return self._image ?? .empty() }
+        
+        let extent = CGRect(self.extent).intersection(_extent).insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        
+        let layer = try? CGContextProcessorKernel.apply(withExtent: extent, colorSpace: colorSpace, transform: .identity, shouldAntialias: true) { context in
             
-            guard let _extent = graphic_stack.lazy.map({ $0.path.boundingBoxOfPath }).reduce({ $0.union($1) }) else { return image ?? .empty() }
+            var shouldAntialias = false
+            var color: CGColor?
+            var blendMode: CGBlendMode = .normal
             
-            let extent = CGRect(self.extent).intersection(_extent).insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-            guard let layer = try? CGContextProcessorKernel.apply(withExtent: extent, colorSpace: colorSpace, transform: .identity, shouldAntialias: true, callback: { context in
+            for item in graphic_stack {
                 
-                var shouldAntialias = false
-                var color: CGColor?
-                var blendMode: CGBlendMode = .normal
-                
-                for item in graphic_stack {
-                    
-                    if shouldAntialias != item.shouldAntialias {
-                        context.setShouldAntialias(item.shouldAntialias)
-                        shouldAntialias = item.shouldAntialias
-                    }
-                    
-                    if color?.components != item.color.components {
-                        context.setFillColor(item.color)
-                        color = item.color
-                    }
-                    
-                    if blendMode != item.blendMode {
-                        context.setBlendMode(item.blendMode)
-                        blendMode = item.blendMode
-                    }
-                    
-                    context.addPath(item.path)
-                    context.fillPath(using: item.rule)
+                if shouldAntialias != item.shouldAntialias {
+                    context.setShouldAntialias(item.shouldAntialias)
+                    shouldAntialias = item.shouldAntialias
                 }
                 
-            }) else { return image ?? .empty() }
-            
-            image = image.map { layer.composited(over: $0) } ?? layer
+                if color?.components != item.color.components {
+                    context.setFillColor(item.color)
+                    color = item.color
+                }
+                
+                if blendMode != item.blendMode {
+                    context.setBlendMode(item.blendMode)
+                    blendMode = item.blendMode
+                }
+                
+                context.addPath(item.path)
+                context.fillPath(using: item.rule)
+            }
         }
         
-        return image ?? .empty()
+        return self._image.flatMap { layer?.composited(over: $0) } ?? self._image ?? layer ?? .empty()
     }
 }
 

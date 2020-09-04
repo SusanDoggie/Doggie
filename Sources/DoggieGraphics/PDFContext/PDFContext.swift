@@ -308,8 +308,8 @@ extension PDFContext {
 
 extension PDFContext {
     
-    public func drawGradient<C>(_ mesh: MeshGradient<C>) {
-        current_page.drawGradient(mesh)
+    public func drawMeshGradient<C>(_ mesh: MeshGradient<C>) {
+        current_page.drawMeshGradient(mesh)
     }
 }
 

@@ -215,27 +215,49 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func drawLinearGradient<C>(colorSpace: ColorSpace<RGBColorModel>, stops: [GradientStop<C>], start: Point, end: Point, options: CGGradientDrawingOptions) {
+    public func drawLinearGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
-        guard let cgColorSpace = colorSpace.cgColorSpace else { return }
-        guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
-        
-        self.drawLinearGradient(colorSpace: cgColorSpace, gradient: gradient, start: CGPoint(start), end: CGPoint(end), options: options)
+        if let colorSpace = colorSpace.base as? ColorSpace<RGBColorModel>,
+           let cgColorSpace = colorSpace.cgColorSpace,
+           let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) {
+            
+            self.drawLinearGradient(colorSpace: cgColorSpace, gradient: gradient, start: CGPoint(start), end: CGPoint(end), options: options)
+            
+        } else {
+            
+            self.drawLayer(colorSpace: CGColorSpaceCreateDeviceRGB()) { context in
+                
+                context.setBlendMode(.copy)
+                
+                context.drawLinearGradient(colorSpace: colorSpace, stops: stops, start: start, end: end, options: options)
+            }
+        }
     }
     
-    public func drawRadialGradient<C>(colorSpace: ColorSpace<RGBColorModel>, stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
+    public func drawRadialGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
         
-        guard let cgColorSpace = colorSpace.cgColorSpace else { return }
-        guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
-        
-        self.drawRadialGradient(colorSpace: cgColorSpace, gradient: gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
+        if let colorSpace = colorSpace.base as? ColorSpace<RGBColorModel>,
+           let cgColorSpace = colorSpace.cgColorSpace,
+           let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) {
+            
+            self.drawRadialGradient(colorSpace: cgColorSpace, gradient: gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
+            
+        } else {
+            
+            self.drawLayer(colorSpace: CGColorSpaceCreateDeviceRGB()) { context in
+                
+                context.setBlendMode(.copy)
+                
+                context.drawRadialGradient(colorSpace: colorSpace, stops: stops, start: start, startRadius: startRadius, end: end, endRadius: endRadius, options: options)
+            }
+        }
     }
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: ColorSpace<RGBColorModel>, gradient: Gradient<C>) {
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: AnyColorSpace, gradient: Gradient<C>) {
         
         let boundary = shape.originalBoundary
         guard !boundary.isEmpty else { return }
@@ -260,7 +282,7 @@ extension GPContext {
         self.endTransparencyLayer()
     }
     
-    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, colorSpace: ColorSpace<RGBColorModel>, gradient: Gradient<C>) {
+    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, colorSpace: AnyColorSpace, gradient: Gradient<C>) {
         self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, colorSpace: colorSpace, gradient: gradient)
     }
 }
@@ -283,7 +305,7 @@ extension GPContext {
         
         self.opacity = gradient.opacity
         
-        self.drawGradient(colorSpace: colorSpace, gradient: gradient)
+        self.drawMeshGradient(colorSpace: colorSpace, mesh: gradient)
         
         self.endTransparencyLayer()
     }

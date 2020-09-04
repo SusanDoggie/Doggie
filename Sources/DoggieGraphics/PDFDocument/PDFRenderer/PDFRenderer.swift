@@ -914,9 +914,9 @@ extension PDFRenderer {
             }
             
             if isCoonsPatch {
-                context.drawGradient(MeshGradient(type: .coonsPatch, column: patches.count, row: 1, points: points, colors: colors))
+                context.drawMeshGradient(MeshGradient(type: .coonsPatch, column: patches.count, row: 1, points: points, colors: colors))
             } else {
-                context.drawGradient(MeshGradient(type: .tensorProduct, column: patches.count, row: 1, points: points, colors: colors))
+                context.drawMeshGradient(MeshGradient(type: .tensorProduct, column: patches.count, row: 1, points: points, colors: colors))
             }
         }
         

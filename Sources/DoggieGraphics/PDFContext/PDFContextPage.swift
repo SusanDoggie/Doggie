@@ -902,7 +902,7 @@ extension PDFContext.Page {
         case down
     }
     
-    public func drawGradient<C>(_ mesh: MeshGradient<C>) {
+    public func drawMeshGradient<C>(_ mesh: MeshGradient<C>) {
         
         guard !self.transform.determinant.almostZero() && !mesh.transform.determinant.almostZero() else { return }
         

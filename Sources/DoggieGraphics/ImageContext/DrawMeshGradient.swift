@@ -61,7 +61,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _drawGradient(_ rasterizer: ImageContextMeshGradientRasterizeBuffer<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>, _ c2: Float32ColorPixel<Pixel.Model>, _ c3: Float32ColorPixel<Pixel.Model>) {
+    func _drawMeshGradient(_ rasterizer: ImageContextMeshGradientRasterizeBuffer<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>, _ c2: Float32ColorPixel<Pixel.Model>, _ c3: Float32ColorPixel<Pixel.Model>) {
         
         let (p0, p1, p2, p3) = patch.split(0.5, 0.5)
         
@@ -95,7 +95,7 @@ extension ImageContext {
                 rasterizer.rasterize(patch.m03, patch.m33, patch.m30) { buf in buf.blender.draw { c8 } }
                 
             } else {
-                _drawGradient(rasterizer, patch, c0, c1, c2, c3)
+                _drawMeshGradient(rasterizer, patch, c0, c1, c2, c3)
             }
         }
         
@@ -108,7 +108,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func drawGradient<C>(_ mesh: MeshGradient<C>) {
+    public func drawMeshGradient<C>(_ mesh: MeshGradient<C>) {
         
         let width = self.width
         let height = self.height
@@ -135,7 +135,7 @@ extension ImageContext {
                 
                 let rasterizer = ImageContextMeshGradientRasterizeBuffer(blender: blender, width: width, height: height)
                 
-                _drawGradient(rasterizer, patch * transform, c0, c1, c2, c3)
+                _drawMeshGradient(rasterizer, patch * transform, c0, c1, c2, c3)
             }
         }
     }

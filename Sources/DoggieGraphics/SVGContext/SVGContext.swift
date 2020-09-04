@@ -1162,7 +1162,7 @@ extension SVGContext {
 
 extension SVGContext {
     
-    public func drawGradient<C>(_ mesh: MeshGradient<C>) {
+    public func drawMeshGradient<C>(_ mesh: MeshGradient<C>) {
         
     }
 }

@@ -110,7 +110,7 @@ extension CGContext {
         self.concatenate(transform)
     }
     
-    open func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>, colorSpace: AnyColorSpace) {
+    open func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: AnyColorSpace, gradient: Gradient<C>) {
         
         let boundary = shape.originalBoundary
         guard !boundary.isEmpty else { return }
@@ -139,22 +139,149 @@ extension CGContext {
         self.endTransparencyLayer()
     }
     
-    open func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<AnyColor>, colorSpace: AnyColorSpace) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, gradient: gradient, colorSpace: colorSpace)
+    open func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, colorSpace: AnyColorSpace, gradient: Gradient<AnyColor>) {
+        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, colorSpace: colorSpace, gradient: gradient)
     }
+}
+
+protocol CGGradientConvertibleProtocol {
+    
+    func gradient<C>(stops: [GradientStop<C>]) -> CGGradient?
+    
+    func shading_function<C>(colorSpace: CGColorSpace, stops: [GradientStop<C>]) -> ((CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void)?
+}
+
+extension ColorSpace: CGGradientConvertibleProtocol {
+    
+    func gradient<C>(stops: [GradientStop<C>]) -> CGGradient? {
+        switch self {
+        case is ColorSpace<GrayColorModel>: return CGGradientCreate(colorSpace: self, stops: stops)
+        case is ColorSpace<RGBColorModel>: return CGGradientCreate(colorSpace: self, stops: stops)
+        case is ColorSpace<CMYKColorModel>: return CGGradientCreate(colorSpace: self, stops: stops)
+        default: return nil
+        }
+    }
+    
+    func shading_function<C>(colorSpace: CGColorSpace, stops: [GradientStop<C>]) -> ((CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void)? {
+        
+        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { (Float($0.1.offset), Float32ColorPixel($0.1.color.convert(to: self, intent: .default))) }
+        
+        let interpolate: (Float) -> Color<Model>
+        
+        if stops.count == 1 {
+            
+            let color = stops[0].1
+            interpolate = { _ in Color(colorSpace: self, color: color) }
+            
+        } else {
+            
+            let first = stops.first!
+            let last = stops.last!
+            
+            interpolate = { t in
+                
+                if t <= first.0 {
+                    return Color(colorSpace: self, color: first.1)
+                }
+                if t >= last.0 {
+                    return Color(colorSpace: self, color: last.1)
+                }
+                
+                for (lhs, rhs) in zip(stops, stops.dropFirst()) where lhs.0 != rhs.0 && t >= lhs.0 && t <= rhs.0 {
+                    
+                    let s = (t - lhs.0) / (rhs.0 - lhs.0)
+                    return Color(colorSpace: self, color: lhs.1 * (1 - s) + rhs.1 * s)
+                }
+                
+                return Color(colorSpace: self, color: first.1)
+            }
+        }
+        
+        if let colorSpace = AnyColorSpace(cgColorSpace: colorSpace) {
+            
+            let numberOfComponents = colorSpace.numberOfComponents
+            
+            return { t, color in
+                
+                let c = interpolate(Float(t)).convert(to: colorSpace)
+                
+                for i in 0...numberOfComponents {
+                    color[i] = CGFloat(c.component(i))
+                }
+            }
+        }
+        
+        if interpolate(0).cgColor != nil {
+            
+            let numberOfComponents = colorSpace.numberOfComponents
+            
+            return { t, color in
+                
+                guard let c = interpolate(Float(t)).cgColor else { return }
+                guard let components = c.converted(to: colorSpace, intent: .defaultIntent, options: nil)?.components else { return }
+                
+                for i in 0...numberOfComponents {
+                    color[i] = components[i]
+                }
+            }
+        }
+        
+        return nil
+    }
+}
+
+extension CGContext {
     
     open func drawLinearGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
-        guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
+        guard let _colorSpace = colorSpace.base as? CGGradientConvertibleProtocol else { return }
+        guard !stops.isEmpty else { return }
         
-        self.drawLinearGradient(gradient, start: CGPoint(start), end: CGPoint(end), options: options)
+        if let gradient = _colorSpace.gradient(stops: stops) {
+            
+            self.drawLinearGradient(gradient, start: CGPoint(start), end: CGPoint(end), options: options)
+            
+            return
+        }
+        
+        let cgColorSpace: CGColorSpace
+        
+        switch colorSpace.base {
+        case is ColorSpace<GrayColorModel>: cgColorSpace = CGColorSpaceCreateDeviceGray()
+        case is ColorSpace<RGBColorModel>: cgColorSpace = CGColorSpaceCreateDeviceRGB()
+        case is ColorSpace<CMYKColorModel>: cgColorSpace = CGColorSpaceCreateDeviceCMYK()
+        default: cgColorSpace = CGColorSpaceCreateDeviceRGB()
+        }
+        
+        guard let function = _colorSpace.shading_function(colorSpace: cgColorSpace, stops: stops) else { return }
+        
+        self.drawLinearGradient(colorSpace: cgColorSpace, start: CGPoint(start), end: CGPoint(end), options: options, callbacks: function)
     }
     
     open func drawRadialGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
         
-        guard let gradient = CGGradientCreate(colorSpace: colorSpace, stops: stops) else { return }
+        guard let _colorSpace = colorSpace.base as? CGGradientConvertibleProtocol else { return }
+        guard !stops.isEmpty else { return }
         
-        self.drawRadialGradient(gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
+        if let gradient = _colorSpace.gradient(stops: stops) {
+            
+            self.drawRadialGradient(gradient, startCenter: CGPoint(start), startRadius: CGFloat(startRadius), endCenter: CGPoint(end), endRadius: CGFloat(endRadius), options: options)
+            
+            return
+        }
+        
+        let cgColorSpace: CGColorSpace
+        
+        switch colorSpace.base {
+        case is ColorSpace<GrayColorModel>: cgColorSpace = CGColorSpaceCreateDeviceGray()
+        case is ColorSpace<RGBColorModel>: cgColorSpace = CGColorSpaceCreateDeviceRGB()
+        case is ColorSpace<CMYKColorModel>: cgColorSpace = CGColorSpaceCreateDeviceCMYK()
+        default: cgColorSpace = CGColorSpaceCreateDeviceRGB()
+        }
+        
+        guard let function = _colorSpace.shading_function(colorSpace: cgColorSpace, stops: stops) else { return }
+        
+        self.drawRadialGradient(colorSpace: cgColorSpace, start: CGPoint(start), startRadius: CGFloat(startRadius), end: CGPoint(end), endRadius: CGFloat(endRadius), options: options, callbacks: function)
     }
 }
 

@@ -384,6 +384,13 @@ extension GPContext {
         
         guard !path.isEmpty && width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
         
+        var color = color
+        
+        if color.colorSpace?.model != .rgb {
+            guard let _color = color.converted(to: CGColorSpaceCreateDeviceRGB(), intent: .defaultIntent, options: nil) else { return }
+            color = _color
+        }
+        
         let path = path.transformed(by: self.transform)
         let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
         

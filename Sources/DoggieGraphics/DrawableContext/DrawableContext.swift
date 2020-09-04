@@ -79,7 +79,7 @@ public protocol DrawableContext: AnyObject {
     
     func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: MeshGradient<C>)
     
-    func drawGradient<C>(_ mesh: MeshGradient<C>)
+    func drawMeshGradient<C>(_ mesh: MeshGradient<C>)
     
     func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern)
     
@@ -330,7 +330,7 @@ extension DrawableContext {
         
         self.opacity = gradient.opacity
         
-        self.drawGradient(gradient)
+        self.drawMeshGradient(gradient)
         
         self.endTransparencyLayer()
     }
