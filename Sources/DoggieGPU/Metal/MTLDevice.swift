@@ -33,14 +33,35 @@ extension MTLDevice {
         
         #else
         
-        if #available(iOS 13, tvOS 13, *), self.supportsFamily(.apple5) {
+        if #available(iOS 13, tvOS 13, *) {
             
-            return 64
-            
-        } else {
-            
-            return 16
+            if self.supportsFamily(.apple5) {
+                
+                return 64
+                
+            } else {
+                
+                return 16
+            }
         }
+        
+        #if os(iOS)
+        
+        if #available(iOS 12, *) {
+            
+            if self.supportsFeatureSet(.iOS_GPUFamily5_v1) {
+                
+                return 64
+                
+            } else {
+                
+                return 16
+            }
+        }
+        
+        #endif
+        
+        return 16
         
         #endif
         
