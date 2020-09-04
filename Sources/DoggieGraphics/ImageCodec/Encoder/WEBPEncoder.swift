@@ -145,13 +145,7 @@ extension WEBPEncoder {
         
         let bytesPerRow = image.bytesPerRow
         
-        let iccData: Data?
-        
-        if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-            iccData = image.colorSpace?.copyICCData() as Data?
-        } else {
-            iccData = image.colorSpace?.iccData as Data?
-        }
+        let iccData = image.colorSpace?.copyICCData() as Data?
         
         guard let pixels = image.dataProvider?.data as Data? else { return nil }
         

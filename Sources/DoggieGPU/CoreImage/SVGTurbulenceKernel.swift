@@ -25,7 +25,6 @@
 
 #if canImport(CoreImage)
 
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 public struct SVGTurbulenceKernel {
     
     public var type: SVGTurbulenceType
@@ -54,7 +53,6 @@ public struct SVGTurbulenceKernel {
     }
 }
 
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension SVGTurbulenceKernel {
     
     public var image: CIImage? {

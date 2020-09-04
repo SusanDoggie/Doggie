@@ -65,7 +65,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func cmykHalftone(center: CGPoint = CGPoint(x: 150, y: 150),
                            width: Float = 6,
                            angle: Float = 0,
@@ -151,7 +150,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func edgePreserveUpsample(smallImage: CIImage,
                                    spatialSigma: Float = 3,
                                    lumaSigma: Float = 0.15) -> CIImage {
@@ -426,7 +424,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func pageCurlTransition(targetImage: CIImage,
                                  backsideImage: CIImage,
                                  shadingImage: CIImage,
@@ -449,7 +446,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func pageCurlWithShadowTransition(targetImage: CIImage,
                                            backsideImage: CIImage,
                                            extent: CGRect = CGRect(x: 0, y: 0, width: 0, height: 0),
@@ -476,7 +472,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func rippleTransition(targetImage: CIImage,
                                shadingImage: CIImage,
                                center: CGPoint = CGPoint(x: 150, y: 150),
@@ -854,7 +849,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.11, iOS 10.0, tvOS 10.0, *)
     open func thermal() -> CIImage {
         return self.applyingFilter("CIThermal", parameters: [:])
     }
@@ -887,7 +881,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.11, iOS 10.0, tvOS 10.0, *)
     open func xRay() -> CIImage {
         return self.applyingFilter("CIXRay", parameters: [:])
     }
@@ -1007,7 +1000,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func kaleidoscope(count: Int = 6,
                            center: CGPoint = CGPoint(x: 150, y: 150),
                            angle: Float = 0) -> CIImage {
@@ -1022,7 +1014,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func opTile(center: CGPoint = CGPoint(x: 150, y: 150),
                      scale: Float = 2.8,
                      angle: Float = 0,
@@ -1039,7 +1030,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func parallelogramTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                 angle: Float = 0,
                                 acuteAngle: Float = 1.570796326794897,
@@ -1116,7 +1106,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func triangleTile(center: CGPoint = CGPoint(x: 150, y: 150),
                            angle: Float = 0,
                            width: Float = 100) -> CIImage {
@@ -1207,12 +1196,10 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func comicEffect() -> CIImage {
         return self.applyingFilter("CIComicEffect", parameters: [:])
     }
     
-    @available(iOS 9.0, *)
     open func crystallize(radius: Float = 20,
                           center: CGPoint = CGPoint(x: 150, y: 150)) -> CIImage {
         
@@ -1225,7 +1212,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func depthOfField(point0: CGPoint = CGPoint(x: 0, y: 300),
                            point1: CGPoint = CGPoint(x: 300, y: 300),
                            saturation: Float = 1.5,
@@ -1246,7 +1232,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func edges(intensity: Float = 1) -> CIImage {
         
         guard let filter = CIFilter(name: "CIEdges") else { return .empty() }
@@ -1257,7 +1242,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func edgeWork(radius: Float = 3) -> CIImage {
         
         guard let filter = CIFilter(name: "CIEdgeWork") else { return .empty() }
@@ -1290,7 +1274,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func heightFieldFromMask(radius: Float = 10) -> CIImage {
         
         guard let filter = CIFilter(name: "CIHeightFieldFromMask") else { return .empty() }
@@ -1301,7 +1284,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func hexagonalPixellate(center: CGPoint = CGPoint(x: 150, y: 150),
                                  scale: Float = 8) -> CIImage {
         
@@ -1328,7 +1310,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func lineOverlay(nrNoiseLevel: Float = 0.07000000000000001,
                           nrSharpness: Float = 0.71,
                           edgeIntensity: Float = 1,
@@ -1372,7 +1353,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func pointillize(radius: Float = 20,
                           center: CGPoint = CGPoint(x: 150, y: 150)) -> CIImage {
         
@@ -1390,7 +1370,6 @@ extension CIImage {
         return self.applyingFilter("CISaliencyMapFilter", parameters: [:])
     }
     
-    @available(iOS 9.0, *)
     open func shadedMaterial(shadingImage: CIImage,
                              scale: Float = 10) -> CIImage {
         
@@ -1403,7 +1382,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func spotColor(centerColor1: CIColor = CIColor(red: 0.0784, green: 0.0627, blue: 0.0706, alpha: 1),
                         replacementColor1: CIColor = CIColor(red: 0.4392, green: 0.1922, blue: 0.1961, alpha: 1),
                         closeness1: Float = 0.22,
@@ -1436,7 +1414,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func spotLight(lightPosition: CIVector = CIVector(x: 400, y: 600, z: 150),
                         lightPointsAt: CIVector = CIVector(x: 200, y: 200, z: 0),
                         brightness: Float = 3,
@@ -1472,7 +1449,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func boxBlur(radius: Float = 10) -> CIImage {
         
         guard let filter = CIFilter(name: "CIBoxBlur") else { return .empty() }
@@ -1483,7 +1459,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func discBlur(radius: Float = 8) -> CIImage {
         
         guard let filter = CIFilter(name: "CIDiscBlur") else { return .empty() }
@@ -1506,7 +1481,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func median() -> CIImage {
         return self.applyingFilter("CIMedianFilter", parameters: [:])
     }
@@ -1570,7 +1544,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 8.3, tvOS 8.3, *)
     open func motionBlur(radius: Float = 20,
                          angle: Float = 0) -> CIImage {
         
@@ -1583,7 +1556,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open func noiseReduction(noiseLevel: Float = 0.02,
                              sharpness: Float = 0.4) -> CIImage {
         
@@ -1596,7 +1568,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 8.3, tvOS 8.3, *)
     open func zoomBlur(center: CGPoint = CGPoint(x: 150, y: 150),
                        amount: Float = 20) -> CIImage {
         
@@ -1628,7 +1599,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open class func HueSaturationValueGradient(value: Float = 1,
                                                radius: Float = 300,
                                                softness: Float = 1,
@@ -1747,7 +1717,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open class func SunbeamsGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
                                       color: CIColor = CIColor(red: 1, green: 0.5, blue: 0, alpha: 1),
                                       sunRadius: Float = 40,
@@ -1839,7 +1808,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(iOS 9.0, *)
     open class func LenticularHaloGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
                                             color: CIColor = CIColor(red: 1, green: 0.9, blue: 0.8, alpha: 1),
                                             haloRadius: Float = 70,
@@ -1863,7 +1831,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.11, iOS 9.0, *)
     open class func PDF417BarcodeGenerator(message: String,
                                            minWidth: Float,
                                            maxWidth: Float,

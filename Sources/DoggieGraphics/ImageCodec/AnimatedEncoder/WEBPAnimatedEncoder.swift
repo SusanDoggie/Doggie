@@ -90,13 +90,7 @@ extension WEBPAnimatedEncoder {
         var frames: [Frame] = []
         
         let colorSpace = first.image.colorSpace
-        let iccData: Data?
-        
-        if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-            iccData = colorSpace?.copyICCData() as Data?
-        } else {
-            iccData = colorSpace?.iccData as Data?
-        }
+        let iccData = colorSpace?.copyICCData() as Data?
         
         for frame in image.frames {
             

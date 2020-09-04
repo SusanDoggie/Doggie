@@ -81,17 +81,17 @@ extension CGImageRep {
                 _png_properties[kCGImagePropertyPNGInterlaceType] = 1
             }
             
-            if #available(macOS 10.11, iOS 9.0, *) {
-                let predictor = properties[.predictor] as? PNGPrediction ?? .all
-                var filter: Int32 = 0
-                if predictor.contains(.none) { filter |= IMAGEIO_PNG_FILTER_NONE }
-                if predictor.contains(.subtract) { filter |= IMAGEIO_PNG_FILTER_SUB }
-                if predictor.contains(.up) { filter |= IMAGEIO_PNG_FILTER_UP }
-                if predictor.contains(.average) { filter |= IMAGEIO_PNG_FILTER_AVG }
-                if predictor.contains(.paeth) { filter |= IMAGEIO_PNG_FILTER_PAETH }
-                _png_properties[kCGImagePropertyPNGCompressionFilter] = filter
-            }
+            let predictor = properties[.predictor] as? PNGPrediction ?? .all
             
+            var filter: Int32 = 0
+            
+            if predictor.contains(.none) { filter |= IMAGEIO_PNG_FILTER_NONE }
+            if predictor.contains(.subtract) { filter |= IMAGEIO_PNG_FILTER_SUB }
+            if predictor.contains(.up) { filter |= IMAGEIO_PNG_FILTER_UP }
+            if predictor.contains(.average) { filter |= IMAGEIO_PNG_FILTER_AVG }
+            if predictor.contains(.paeth) { filter |= IMAGEIO_PNG_FILTER_PAETH }
+            
+            _png_properties[kCGImagePropertyPNGCompressionFilter] = filter
             _properties[kCGImagePropertyPNGDictionary] = _png_properties
             
         case .tiff:

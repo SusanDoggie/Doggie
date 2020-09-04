@@ -27,7 +27,6 @@
 
 extension CIImage {
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     private class SVGDisplacementMapKernel: CIImageProcessorKernel {
         
         override class var synchronizeInputs: Bool {
@@ -78,7 +77,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func displacementMap(_ displacement: CIImage, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Size) -> CIImage? {
         
         let x_selector: String

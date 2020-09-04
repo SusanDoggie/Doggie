@@ -27,7 +27,6 @@
 
 extension CIImage {
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     private class kMeansClusteringKernel: CIImageProcessorKernel {
         
         override class var synchronizeInputs: Bool {
@@ -113,13 +112,11 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func kMeansClustering(palette: CIImage, passes: Int) throws -> CIImage {
         
         return try kMeansClusteringKernel.apply(withExtent: palette.extent, inputs: [self, palette], arguments: ["image_extent": self.extent, "palette_extent": palette.extent, "passes": passes])
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func kMeansClustering<C: Collection>(palette: C, passes: Int) throws -> CIImage where C.Element: ColorPixel, C.Element.Model == RGBColorModel {
         
         let _palette = CIImage(

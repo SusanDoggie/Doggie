@@ -27,7 +27,6 @@
 
 extension CIImage {
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     private class PalettizeKernel: CIImageProcessorKernel {
         
         override class var synchronizeInputs: Bool {
@@ -73,7 +72,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func palettize(palette: CIImage) throws -> CIImage {
         
         if extent.isEmpty { return .empty() }
@@ -81,7 +79,6 @@ extension CIImage {
         return try PalettizeKernel.apply(withExtent: self.extent, inputs: [self, palette], arguments: ["palette_extent": palette.extent])
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func palettize<C: Collection>(palette: C) throws -> CIImage where C.Element: ColorPixel, C.Element.Model == RGBColorModel {
         
         if extent.isEmpty { return .empty() }

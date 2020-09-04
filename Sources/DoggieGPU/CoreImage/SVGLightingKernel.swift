@@ -27,7 +27,6 @@
 
 extension CIImage {
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     private class SVGLightingKernel: CIImageProcessorKernel {
         
         struct DistantLightInfo {
@@ -202,7 +201,6 @@ extension CIImage {
 
 extension CIImage {
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     public struct SVGDiffuseLighting {
         
         public var surfaceScale: Double
@@ -220,7 +218,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     private class SVGDiffuseLightingKernel: SVGLightingKernel {
         
         struct DiffuseLightInfo {
@@ -281,7 +278,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func diffuseLighting(_ lighting: SVGDiffuseLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) throws -> CIImage {
         
         if extent.isEmpty { return .empty() }
@@ -300,7 +296,6 @@ extension CIImage {
 
 extension CIImage {
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     public struct SVGSpecularLighting {
         
         public var surfaceScale: Double
@@ -320,7 +315,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     private class SVGSpecularLightingKernel: SVGLightingKernel {
         
         struct SpecularLightInfo {
@@ -383,7 +377,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func specularLighting(_ lighting: SVGSpecularLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) throws -> CIImage {
         
         if extent.isEmpty { return .empty() }

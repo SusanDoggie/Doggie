@@ -28,6 +28,12 @@ import PackageDescription
 
 let package = Package(
     name: "Doggie",
+    platforms: [
+        .macOS(.v10_12),
+        .iOS(.v10),
+        .tvOS(.v10),
+        .watchOS(.v3),
+    ],
     products: [
         .library(name: "DoggieCore", targets: ["DoggieCore"]),
         .library(name: "DoggieMath", targets: ["DoggieMath"]),

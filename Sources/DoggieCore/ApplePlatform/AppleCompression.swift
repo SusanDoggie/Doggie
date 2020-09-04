@@ -25,7 +25,6 @@
 
 #if canImport(Compression)
 
-@available(macOS 10.11, iOS 9.0, *)
 public class AppleCompression: CompressionCodec {
     
     private var stream: compression_stream
@@ -52,7 +51,6 @@ public class AppleCompression: CompressionCodec {
     }
 }
 
-@available(macOS 10.11, iOS 9.0, *)
 extension AppleCompression {
     
     @frozen
@@ -61,7 +59,6 @@ extension AppleCompression {
     }
 }
 
-@available(macOS 10.11, iOS 9.0, *)
 extension AppleCompression {
     
     private static let empty = [UInt8](repeating: 0, count: 4096)

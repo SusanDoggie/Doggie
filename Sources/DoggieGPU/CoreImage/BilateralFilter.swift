@@ -27,7 +27,6 @@
 
 extension CIImage {
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     private class BilateralKernel: CIImageProcessorKernel {
         
         override class var synchronizeInputs: Bool {
@@ -78,7 +77,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
     open func bilateralFilter(_ spatial: Size, _ range: Double) throws -> CIImage {
         
         let extent = self.extent.insetBy(dx: CGFloat(-ceil(3 * abs(spatial.width))), dy: CGFloat(-ceil(3 * abs(spatial.height))))

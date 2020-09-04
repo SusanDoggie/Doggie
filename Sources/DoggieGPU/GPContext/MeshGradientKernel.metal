@@ -26,8 +26,6 @@
 #include <metal_stdlib>
 using namespace metal;
 
-#if __METAL_VERSION__ >= 120
-
 #pragma mark Structs
 
 struct DGMeshGradientColor {
@@ -127,5 +125,3 @@ vertex DGMeshGradientFunctionOutIn mesh_gradient_tessellation_vertex_quad(DGMesh
 fragment half4 mesh_gradient_tessellation_fragment(DGMeshGradientFunctionOutIn fragmentIn [[ stage_in ]]) {
     return fragmentIn.color;
 }
-
-#endif

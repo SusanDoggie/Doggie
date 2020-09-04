@@ -150,12 +150,12 @@ extension IOSurfaceRef {
         return IOSurfaceGetUseCount(self)
     }
     
-    @available(macOS 10.12, iOS 11.0, tvOS 11.0, *)
+    @available(iOS 11.0, tvOS 11.0, *)
     open var allowsPixelSizeCasting: Bool {
         return IOSurfaceAllowsPixelSizeCasting(self)
     }
     
-    @available(macOS 10.12, iOS 11.0, tvOS 11.0, *)
+    @available(iOS 11.0, tvOS 11.0, *)
     open func setPurgeable(_ newState: IOSurfacePurgeabilityState, oldState: UnsafeMutablePointer<IOSurfacePurgeabilityState>?) -> kern_return_t {
         return IOSurfaceSetPurgeable(self, newState.rawValue, UnsafeMutableRawPointer(oldState)?.assumingMemoryBound(to: UInt32.self))
     }

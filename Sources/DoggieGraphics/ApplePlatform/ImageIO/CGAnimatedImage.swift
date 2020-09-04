@@ -78,14 +78,13 @@ extension CGAnimatedImage {
                 _typed_properties[kCGImagePropertyPNGInterlaceType] = 1
             }
             
-            if #available(macOS 10.11, iOS 9.0, *) {
-                var filter = IMAGEIO_PNG_FILTER_NONE
-                filter |= IMAGEIO_PNG_FILTER_SUB
-                filter |= IMAGEIO_PNG_FILTER_UP
-                filter |= IMAGEIO_PNG_FILTER_AVG
-                filter |= IMAGEIO_PNG_FILTER_PAETH
-                _typed_properties[kCGImagePropertyPNGCompressionFilter] = filter
-            }
+            var filter = IMAGEIO_PNG_FILTER_NONE
+            filter |= IMAGEIO_PNG_FILTER_SUB
+            filter |= IMAGEIO_PNG_FILTER_UP
+            filter |= IMAGEIO_PNG_FILTER_AVG
+            filter |= IMAGEIO_PNG_FILTER_PAETH
+            
+            _typed_properties[kCGImagePropertyPNGCompressionFilter] = filter
             
         case .heic:
             

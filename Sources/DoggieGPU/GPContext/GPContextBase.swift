@@ -25,7 +25,6 @@
 
 #if canImport(CoreImage)
 
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 struct GPContextBase {
     
     let width: Int
@@ -37,7 +36,6 @@ struct GPContextBase {
     
 }
 
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension GPContextBase {
     
     struct GraphicInfo {
@@ -56,7 +54,6 @@ extension GPContextBase {
     }
 }
 
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension GPContextBase {
     
     var extent: Rect {
@@ -109,7 +106,6 @@ extension GPContextBase {
     }
 }
 
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension GPContextBase {
     
     func insertingIntermediate() -> GPContextBase {

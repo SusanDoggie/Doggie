@@ -31,7 +31,6 @@ extension NSImage {
         self.init(cgImage: image, size: NSZeroSize)
     }
     
-    @available(macOS 10.11, *)
     public convenience init(ciImage image: CoreImage.CIImage) {
         self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
     }

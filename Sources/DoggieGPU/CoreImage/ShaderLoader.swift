@@ -25,7 +25,6 @@
 
 #if canImport(CoreImage)
 
-@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)
 extension CIImageProcessorKernel {
     
     private static let lck = SDLock()
