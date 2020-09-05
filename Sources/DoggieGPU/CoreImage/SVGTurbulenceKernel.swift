@@ -61,6 +61,29 @@ extension SVGTurbulenceKernel {
     
     private class ProcessorKernel: CIImageProcessorKernel {
         
+        private static let lck = SDLock()
+        private static var function_constants: [SVGTurbulenceType: [Bool: [Int: MTLFunctionConstantValues]]] = [:]
+        
+        static func make_function_constant(_ type: SVGTurbulenceType, _ isStitchTile: Bool, _ numOctaves: Int) -> MTLFunctionConstantValues {
+            
+            lck.lock()
+            defer { lck.unlock() }
+            
+            if let constants = function_constants[type]?[isStitchTile]?[numOctaves] {
+                return constants
+            }
+            
+            let constants = MTLFunctionConstantValues()
+            
+            withUnsafeBytes(of: type == .fractalNoise) { constants.setConstantValue($0.baseAddress!, type: .bool, withName: "IS_FRACTAL_NOISE") }
+            withUnsafeBytes(of: isStitchTile) { constants.setConstantValue($0.baseAddress!, type: .bool, withName: "IS_STITCH_TILE") }
+            withUnsafeBytes(of: Int32(numOctaves)) { constants.setConstantValue($0.baseAddress!, type: .int, withName: "NUM_OCTAVES") }
+            
+            function_constants[type, default: [:]][isStitchTile, default: [:]][numOctaves] = constants
+            
+            return constants
+        }
+        
         static let cache_lck = SDLock()
         static var cache: [SVGNoiseGeneratorBuffer] = []
         
@@ -125,29 +148,22 @@ extension SVGTurbulenceKernel {
             let device = commandBuffer.device
             guard let buffers = svg_noise_generator(info.seed, device) else { return }
             
-            guard let pipeline = self.make_pipeline(device, "svg_turbulence") else { return }
+            let function_constant = self.make_function_constant(info.type, info.isStitchTile, info.numOctaves)
+            guard let pipeline = self.make_pipeline(device, "svg_turbulence", function_constant) else { return }
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
             
             encoder.setComputePipelineState(pipeline)
             
             struct Info {
                 
-                var transform: packed_float3x2
+                var transform: simd_float3x2
                 var baseFreq: packed_float2
                 var stitchTile: packed_float4
-                var numOctaves: Int32
-                var fractalSum: Int32
-                var isStitchTile: Int32
-                var padding: Int32
                 
                 init(_ info: SVGTurbulenceKernel) {
-                    self.transform = packed_float3x2(info.transform)
+                    self.transform = simd_float3x2(info.transform)
                     self.baseFreq = packed_float2(info.baseFreq)
                     self.stitchTile = packed_float4(info.stitchTile)
-                    self.numOctaves = Int32(info.numOctaves)
-                    self.fractalSum = info.type == .fractalNoise ? 1 : 0
-                    self.isStitchTile = info.isStitchTile ? 1 : 0
-                    self.padding = 0
                 }
             }
             

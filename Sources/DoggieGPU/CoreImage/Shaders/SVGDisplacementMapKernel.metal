@@ -28,48 +28,28 @@ using namespace metal;
 
 constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);
 
-template <int XSELECTOR, int YSELECTOR>
-half4 displacement_map(texture2d<half, access::sample> source, half4 d, uint2 coord, float2 scale) {
+constant int X_SELECTOR [[function_constant(0)]];
+constant int Y_SELECTOR [[function_constant(1)]];
+
+kernel void svg_displacement_map(texture2d<half, access::sample> source [[texture(0)]],
+                                 texture2d<half, access::read> displacement [[texture(1)]],
+                                 texture2d<half, access::write> output [[texture(2)]],
+                                 constant packed_uint2 &offset [[buffer(3)]],
+                                 constant packed_float2 &scale [[buffer(4)]],
+                                 uint2 gid [[thread_position_in_grid]]) {
     
-    const float _x = d[XSELECTOR] - 0.5;
-    const float _y = d[YSELECTOR] - 0.5;
+    if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
+    const half4 d = displacement.read(gid);
+    
+    const float _x = d[X_SELECTOR] - 0.5;
+    const float _y = d[Y_SELECTOR] - 0.5;
+    
+    const uint2 coord = gid + offset;
     const float x = (float)coord.x + _x * scale[0];
     const float y = (float)coord.y - _y * scale[1];
     
-    return source.sample(input_sampler, float2(x, y));
+    const half4 color = source.sample(input_sampler, float2(x, y));
+    
+    output.write(color, gid);
 }
-
-#define svg_displacement_map(XCHANNEL, YCHANNEL, XSELECTOR, YSELECTOR)                                              \
-kernel void svg_displacement_map_##XCHANNEL##YCHANNEL(texture2d<half, access::sample> source [[texture(0)]],        \
-                                                      texture2d<half, access::read> displacement [[texture(1)]],    \
-                                                      texture2d<half, access::write> output [[texture(2)]],         \
-                                                      constant packed_uint2 &offset [[buffer(3)]],                  \
-                                                      constant packed_float2 &scale [[buffer(4)]],                  \
-                                                      uint2 gid [[thread_position_in_grid]]) {                      \
-                                                                                                                    \
-    if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }                                    \
-                                                                                                                    \
-    const half4 d = displacement.read(gid);                                                                         \
-                                                                                                                    \
-    const half4 color = displacement_map<XSELECTOR, YSELECTOR>(source, d, gid + offset, scale);                     \
-                                                                                                                    \
-    output.write(color, gid);                                                                                       \
-}
-
-svg_displacement_map(R, R, 0, 0)
-svg_displacement_map(R, G, 0, 1)
-svg_displacement_map(R, B, 0, 2)
-svg_displacement_map(R, A, 0, 3)
-svg_displacement_map(G, R, 1, 0)
-svg_displacement_map(G, G, 1, 1)
-svg_displacement_map(G, B, 1, 2)
-svg_displacement_map(G, A, 1, 3)
-svg_displacement_map(B, R, 2, 0)
-svg_displacement_map(B, G, 2, 1)
-svg_displacement_map(B, B, 2, 2)
-svg_displacement_map(B, A, 2, 3)
-svg_displacement_map(A, R, 3, 0)
-svg_displacement_map(A, G, 3, 1)
-svg_displacement_map(A, B, 3, 2)
-svg_displacement_map(A, A, 3, 3)

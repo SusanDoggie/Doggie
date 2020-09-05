@@ -29,6 +29,30 @@ extension CIImage {
     
     private class SVGConvolveKernel: CIImageProcessorKernel {
         
+        private static let lck = SDLock()
+        private static var function_constants: [String: MTLFunctionConstantValues] = [:]
+        
+        static func make_function_constant(_ orderX: Int, _ orderY: Int) -> MTLFunctionConstantValues {
+            
+            lck.lock()
+            defer { lck.unlock() }
+            
+            let key = "\(orderX)_\(orderY)"
+            
+            if let constants = function_constants[key] {
+                return constants
+            }
+            
+            let constants = MTLFunctionConstantValues()
+            
+            withUnsafeBytes(of: Int32(orderX)) { constants.setConstantValue($0.baseAddress!, type: .int, withName: "ORDER_X") }
+            withUnsafeBytes(of: Int32(orderY)) { constants.setConstantValue($0.baseAddress!, type: .int, withName: "ORDER_Y") }
+            
+            function_constants[key] = constants
+            
+            return constants
+        }
+        
         override class var synchronizeInputs: Bool {
             return false
         }
@@ -65,7 +89,10 @@ extension CIImage {
             guard let preserveAlpha = arguments?["preserveAlpha"] as? Bool else { return }
             guard let unit = arguments?["unit"] as? Size else { return }
             
-            guard let pipeline = self.make_pipeline(commandBuffer.device, preserveAlpha ? "svg_convolve_\(edgeMode)_preserve_alpha" : "svg_convolve_\(edgeMode)") else { return }
+            let pipeline_name = preserveAlpha ? "svg_convolve_\(edgeMode)_preserve_alpha" : "svg_convolve_\(edgeMode)"
+            
+            let function_constant = self.make_function_constant(orderX, orderY)
+            guard let pipeline = self.make_pipeline(commandBuffer.device, pipeline_name, function_constant) else { return }
             
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
             
@@ -75,9 +102,8 @@ extension CIImage {
             encoder.setTexture(output_texture , index: 1)
             matrix.withUnsafeBytes { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
             withUnsafeBytes(of: Float(bias)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
-            withUnsafeBytes(of: (UInt32(orderX), UInt32(orderY))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
-            withUnsafeBytes(of: (Float(targetX), Float(targetY))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 5) }
-            withUnsafeBytes(of: (Float(unit.width), Float(unit.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 6) }
+            withUnsafeBytes(of: (Float(targetX), Float(targetY))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
+            withUnsafeBytes(of: (Float(unit.width), Float(unit.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 5) }
             
             let group_width = max(1, pipeline.threadExecutionWidth)
             let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)

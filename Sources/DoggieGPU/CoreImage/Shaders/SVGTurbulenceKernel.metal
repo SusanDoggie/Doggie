@@ -26,23 +26,15 @@
 #include <metal_stdlib>
 using namespace metal;
 
-struct StitchInfo {
-    
-    int width;
-    int height;
-    int wrapX;
-    int wrapY;
-};
+constant bool IS_FRACTAL_NOISE [[function_constant(0)]];
+constant bool IS_STITCH_TILE [[function_constant(1)]];
+constant int NUM_OCTAVES [[function_constant(2)]];
 
 struct TurbulenceInfo {
     
     float3x2 transform;
     packed_float2 baseFreq;
     packed_float4 stitchTile;
-    int numOctaves;
-    int fractalSum;
-    int isStitchTile;
-    int padding;
     
 };
 
@@ -57,8 +49,7 @@ float lerp(float t, float a, float b) {
 float noise2(constant int *uLatticeSelector,
              constant packed_float2 *fGradient,
              float2 point,
-             bool isStitchTile,
-             StitchInfo stitch) {
+             int4 stitch) {
     
     int bx0, bx1, by0, by1, b00, b10, b01, b11;
     float rx0, rx1, ry0, ry1, sx, sy, a, b, t, u, v;
@@ -75,18 +66,18 @@ float noise2(constant int *uLatticeSelector,
     ry0 = t - (int)t;
     ry1 = ry0 - 1.0;
     
-    if (isStitchTile) {
-        if (bx0 >= stitch.wrapX) {
-            bx0 -= stitch.width;
+    if (IS_STITCH_TILE) {
+        if (bx0 >= stitch[0]) {
+            bx0 -= stitch[2];
         }
-        if (bx1 >= stitch.wrapX) {
-            bx1 -= stitch.width;
+        if (bx1 >= stitch[0]) {
+            bx1 -= stitch[2];
         }
-        if (by0 >= stitch.wrapY) {
-            by0 -= stitch.height;
+        if (by0 >= stitch[1]) {
+            by0 -= stitch[3];
         }
-        if (by1 >= stitch.wrapY) {
-            by1 -= stitch.height;
+        if (by1 >= stitch[1]) {
+            by1 -= stitch[3];
         }
     }
     
@@ -124,9 +115,9 @@ float _turbulence(constant int *uLatticeSelector,
                   float2 point,
                   TurbulenceInfo info) {
     
-    StitchInfo stitch;
+    int4 stitch;
     
-    if (info.isStitchTile) {
+    if (IS_STITCH_TILE) {
         
         if (info.baseFreq[0] != 0.0) {
             float fLoFreq = floor(info.stitchTile[2] * info.baseFreq[0]) / info.stitchTile[2];
@@ -147,10 +138,10 @@ float _turbulence(constant int *uLatticeSelector,
             }
         }
         
-        stitch.width = info.stitchTile[2] * info.baseFreq[0] + 0.5;
-        stitch.wrapX = (info.stitchTile[0] * info.baseFreq[0] + 4096 + (float)stitch.width);
-        stitch.height = info.stitchTile[3] * info.baseFreq[1] + 0.5;
-        stitch.wrapY = (info.stitchTile[1] * info.baseFreq[1] + 4096 + (float)stitch.height);
+        stitch[2] = info.stitchTile[2] * info.baseFreq[0] + 0.5;
+        stitch[0] = (info.stitchTile[0] * info.baseFreq[0] + 4096 + (float)stitch[2]);
+        stitch[3] = info.stitchTile[3] * info.baseFreq[1] + 0.5;
+        stitch[1] = (info.stitchTile[1] * info.baseFreq[1] + 4096 + (float)stitch[3]);
     }
     
     float fSum = 0.0;
@@ -163,23 +154,23 @@ float _turbulence(constant int *uLatticeSelector,
     
     fGradient += channel * _BSize;
     
-    for (int i = 0; i < info.numOctaves; ++i) {
+    for (int i = 0; i < NUM_OCTAVES; ++i) {
         
-        if (info.fractalSum) {
-            fSum += noise2(uLatticeSelector, fGradient, point, info.isStitchTile, stitch) / ratio;
+        if (IS_FRACTAL_NOISE) {
+            fSum += noise2(uLatticeSelector, fGradient, point, stitch) / ratio;
         } else {
-            fSum += fabs(noise2(uLatticeSelector, fGradient, point, info.isStitchTile, stitch)) / ratio;
+            fSum += fabs(noise2(uLatticeSelector, fGradient, point, stitch)) / ratio;
         }
         
         point[0] *= 2;
         point[1] *= 2;
         ratio *= 2;
         
-        if (info.isStitchTile) {
-            stitch.width *= 2;
-            stitch.wrapX = 2 * stitch.wrapX - 0x1000;
-            stitch.height *= 2;
-            stitch.wrapY = 2 * stitch.wrapY - 0x1000;
+        if (IS_STITCH_TILE) {
+            stitch[2] *= 2;
+            stitch[0] = 2 * stitch[0] - 0x1000;
+            stitch[3] *= 2;
+            stitch[1] = 2 * stitch[1] - 0x1000;
         }
     }
     
@@ -197,7 +188,7 @@ kernel void svg_turbulence(constant int *uLatticeSelector [[buffer(0)]],
     float4 color;
     float2 point = info.transform * float3(gid[0], gid[1], 1);
     
-    if (info.fractalSum) {
+    if (IS_FRACTAL_NOISE) {
         color[0] = _turbulence(uLatticeSelector, fGradient, 0, point, info) * 0.5 + 0.5;
         color[1] = _turbulence(uLatticeSelector, fGradient, 1, point, info) * 0.5 + 0.5;
         color[2] = _turbulence(uLatticeSelector, fGradient, 2, point, info) * 0.5 + 0.5;

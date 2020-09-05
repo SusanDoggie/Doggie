@@ -28,26 +28,37 @@
 extension CIImageProcessorKernel {
     
     private static let lck = SDLock()
-    private static var pipelines: WeakDictionary<MTLDevice, [String: MTLComputePipelineState]> = WeakDictionary()
+    private static var libraries: WeakDictionary<MTLDevice, MTLLibrary> = WeakDictionary()
+    private static var pipelines: WeakDictionary<MTLDevice, [String: [MTLFunctionConstantValues?: MTLComputePipelineState]]> = WeakDictionary()
     
-    static func make_pipeline(_ device: MTLDevice, _ name: String) -> MTLComputePipelineState? {
+    static func make_pipeline(_ device: MTLDevice, _ name: String, _ constantValues: MTLFunctionConstantValues? = nil) -> MTLComputePipelineState? {
         
         lck.lock()
         defer { lck.unlock() }
         
-        if let pipeline = pipelines[device]?[name] {
+        guard let library = try? libraries[device] ?? device.makeDefaultLibrary(bundle: Bundle.module) else { return nil }
+        libraries[device] = library
+        
+        if let pipeline = pipelines[device]?[name]?[constantValues] {
             
             return pipeline
             
         } else {
             
-            guard let library = try? device.makeDefaultLibrary(bundle: Bundle.module) else { return nil }
-            guard let function = library.makeFunction(name: name) else { return nil }
+            let function: MTLFunction
+            
+            if let constantValues = constantValues {
+                guard let _function = try? library.makeFunction(name: name, constantValues: constantValues) else { return nil }
+                function = _function
+            } else {
+                guard let _function = library.makeFunction(name: name) else { return nil }
+                function = _function
+            }
+            
             guard let pipeline = try? device.makeComputePipelineState(function: function) else { return nil }
+            pipelines[device, default: [:]][name, default: [:]][constantValues] = pipeline
             
-            pipelines[device, default: [:]][name] = pipeline
             return pipeline
-            
         }
     }
 }

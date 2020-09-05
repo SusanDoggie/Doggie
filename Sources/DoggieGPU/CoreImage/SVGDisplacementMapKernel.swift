@@ -29,6 +29,32 @@ extension CIImage {
     
     private class SVGDisplacementMapKernel: CIImageProcessorKernel {
         
+        static let function_constants: [String: MTLFunctionConstantValues] = {
+            
+            var function_constants: [String: MTLFunctionConstantValues] = [:]
+            
+            let selector = [
+                ("R", 0),
+                ("G", 1),
+                ("B", 2),
+                ("A", 3)
+            ]
+            
+            for (y_selector, y) in selector {
+                for (x_selector, x) in selector {
+                    
+                    let constants = MTLFunctionConstantValues()
+                    
+                    withUnsafeBytes(of: Int32(x)) { constants.setConstantValue($0.baseAddress!, type: .int, withName: "X_SELECTOR") }
+                    withUnsafeBytes(of: Int32(y)) { constants.setConstantValue($0.baseAddress!, type: .int, withName: "Y_SELECTOR") }
+                    
+                    function_constants["\(x_selector)\(y_selector)"] = constants
+                }
+            }
+            
+            return function_constants
+        }()
+        
         override class var synchronizeInputs: Bool {
             return false
         }
@@ -54,7 +80,8 @@ extension CIImage {
             guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
             guard let offset_y = UInt32(exactly: output.region.minY - source_region.minY) else { return }
             
-            guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map_\(selector)") else { return }
+            guard let function_constant = self.function_constants[selector] else { return }
+            guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map", function_constant) else { return }
             
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
             
