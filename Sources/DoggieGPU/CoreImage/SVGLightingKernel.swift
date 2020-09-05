@@ -72,8 +72,8 @@ extension CIImage {
             
             let unit = arguments?["unit"] as? Size ?? Size(width: 1, height: 1)
             
-            let dx = abs(1 / unit.width)
-            let dy = abs(1 / unit.height)
+            let dx = abs(unit.width)
+            let dy = abs(unit.height)
             
             return outputRect.insetBy(dx: -CGFloat(ceil(dx)), dy: -CGFloat(ceil(dy)))
         }
@@ -89,22 +89,12 @@ extension CIImage {
             let offset_x = output_region.minX - input_region.minX
             let offset_y = output_region.minY - input_region.minY
             
-            struct Info {
-                
-                let offset: packed_float2
-                let unit: packed_float2
-            }
-            
-            let info = Info(
-                offset: packed_float2(Float(offset_x), Float(offset_y)),
-                unit: packed_float2(Float(1 / unit.width), Float(1 / unit.height))
-            )
-            
             encoder.setComputePipelineState(svg_normalmap)
             
             encoder.setTexture(input, index: 0)
             encoder.setTexture(output, index: 1)
-            withUnsafeBytes(of: info) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
+            withUnsafeBytes(of: (Float(offset_x), Float(offset_y))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
+            withUnsafeBytes(of: (Float(unit.width), Float(unit.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
             
             let group_width = max(1, svg_normalmap.threadExecutionWidth)
             let group_height = max(1, svg_normalmap.maxTotalThreadsPerThreadgroup / group_width)

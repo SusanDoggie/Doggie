@@ -26,31 +26,24 @@
 #include <metal_stdlib>
 using namespace metal;
 
-struct SVGNormalMapInfo {
-    
-    packed_float2 offset;
-    packed_float2 unit;
-    
-};
-
 kernel void svg_normal_map(texture2d<half, access::sample> input [[texture(0)]],
                            texture2d<half, access::write> output [[texture(1)]],
-                           constant SVGNormalMapInfo &info [[buffer(2)]],
+                           constant packed_float2 &offset [[buffer(2)]],
+                           constant packed_float2 &unit [[buffer(3)]],
                            uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const float2 coord = (float2)gid + info.offset;
-    const float2 unit = info.unit;
+    const float2 coord = (float2)gid + offset;
     
-    const float2 offset_0 = float2(-unit.x, unit.y);
-    const float2 offset_1 = float2(-unit.x, 0);
-    const float2 offset_2 = float2(-unit.x, -unit.y);
-    const float2 offset_3 = float2(0, unit.y);
-    const float2 offset_5 = float2(0, -unit.y);
-    const float2 offset_6 = float2(unit.x, unit.y);
-    const float2 offset_7 = float2(unit.x, 0);
-    const float2 offset_8 = float2(unit.x, -unit.y);
+    const float2 offset_0 = float2(-unit[0], unit[1]);
+    const float2 offset_1 = float2(-unit[0], 0);
+    const float2 offset_2 = float2(-unit[0], -unit[1]);
+    const float2 offset_3 = float2(0, unit[1]);
+    const float2 offset_5 = float2(0, -unit[1]);
+    const float2 offset_6 = float2(unit[0], unit[1]);
+    const float2 offset_7 = float2(unit[0], 0);
+    const float2 offset_8 = float2(unit[0], -unit[1]);
     
     constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);
     

@@ -48,7 +48,7 @@ public struct SVGComponentTransferEffect: SVGEffectElement {
         self.alpha = alpha
     }
     
-    public enum TransferFunction {
+    public enum TransferFunction: Hashable {
         
         case identity
         case table([Double])

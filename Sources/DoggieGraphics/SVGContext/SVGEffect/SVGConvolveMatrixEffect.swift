@@ -36,6 +36,8 @@ public struct SVGConvolveMatrixEffect: SVGEffectElement {
     public var bias: Double
     public var orderX: Int
     public var orderY: Int
+    public var targetX: Int
+    public var targetY: Int
     public var edgeMode: EdgeMode
     public var preserveAlpha: Bool
     
@@ -53,6 +55,8 @@ public struct SVGConvolveMatrixEffect: SVGEffectElement {
         self.bias = bias
         self.orderX = orderX
         self.orderY = orderY
+        self.targetX = orderX / 2
+        self.targetY = orderY / 2
         self.edgeMode = edgeMode
         self.preserveAlpha = preserveAlpha
     }
@@ -64,7 +68,13 @@ public struct SVGConvolveMatrixEffect: SVGEffectElement {
     }
     
     public func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect? {
-        return sources[source]?.inset(dx: -0.5 * Double(orderX + 1), dy: -0.5 * Double(orderY + 1))
+        guard let source = sources[source] else { return nil }
+        guard !preserveAlpha else { return source }
+        let minX = source.minX - Double(targetX)
+        let minY = source.minY - Double(targetY)
+        let width = source.width + Double(orderX - 1)
+        let height = source.height + Double(orderY - 1)
+        return Rect(x: minX, y: minY, width: width, height: height)
     }
 }
 
@@ -88,6 +98,12 @@ extension SVGConvolveMatrixEffect {
         }
         if bias != 0 {
             filter.setAttribute(for: "bias", value: "\(Decimal(bias).rounded(scale: 9))")
+        }
+        if targetX != orderX / 2 {
+            filter.setAttribute(for: "targetX", value: "\(targetX)")
+        }
+        if targetY != orderY / 2 {
+            filter.setAttribute(for: "targetY", value: "\(targetY)")
         }
         
         filter.setAttribute(for: "preserveAlpha", value: "\(preserveAlpha)")
