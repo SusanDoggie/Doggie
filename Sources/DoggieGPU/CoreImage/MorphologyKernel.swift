@@ -52,9 +52,12 @@ extension CIImage {
             let kernelWidth = Int(round(abs(radius.width))) << 1 + 1
             let kernelHeight = Int(round(abs(radius.height))) << 1 + 1
             
+            guard let offset_x = Int(exactly: output.region.minX - source_region.minX) else { return }
+            guard let offset_y = Int(exactly: source_region.maxY - output.region.maxY) else { return }
+            
             let kernel = MPSImageAreaMin(device: commandBuffer.device, kernelWidth: kernelWidth, kernelHeight: kernelHeight)
-            kernel.offset.x = Int(output.region.minX - source_region.minX)
-            kernel.offset.y = Int(output.region.minY - source_region.minY)
+            kernel.offset.x = offset_x
+            kernel.offset.y = offset_y
             
             kernel.encode(commandBuffer: commandBuffer, sourceTexture: source, destinationTexture: destination)
         }
@@ -118,9 +121,12 @@ extension CIImage {
             let kernelWidth = Int(round(abs(radius.width))) << 1 + 1
             let kernelHeight = Int(round(abs(radius.height))) << 1 + 1
             
+            guard let offset_x = Int(exactly: output.region.minX - source_region.minX) else { return }
+            guard let offset_y = Int(exactly: source_region.maxY - output.region.maxY) else { return }
+            
             let kernel = MPSImageAreaMax(device: commandBuffer.device, kernelWidth: kernelWidth, kernelHeight: kernelHeight)
-            kernel.offset.x = Int(output.region.minX - source_region.minX)
-            kernel.offset.y = Int(output.region.minY - source_region.minY)
+            kernel.offset.x = offset_x
+            kernel.offset.y = offset_y
             
             kernel.encode(commandBuffer: commandBuffer, sourceTexture: source, destinationTexture: destination)
         }

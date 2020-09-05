@@ -78,7 +78,7 @@ extension CIImage {
             guard let selector = arguments?["selector"] as? String else { return }
             
             guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
-            guard let offset_y = UInt32(exactly: output.region.minY - source_region.minY) else { return }
+            guard let offset_y = UInt32(exactly: source_region.maxY - output.region.maxY) else { return }
             
             guard let function_constant = self.function_constants[selector] else { return }
             guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map", function_constant) else { return }

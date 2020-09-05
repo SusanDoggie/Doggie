@@ -63,6 +63,9 @@ extension CIImage {
             guard let orderY = arguments?["orderY"] as? Int else { return outputRect }
             guard let targetX = arguments?["targetX"] as? Int else { return outputRect }
             guard let targetY = arguments?["targetY"] as? Int else { return outputRect }
+            guard let preserveAlpha = arguments?["preserveAlpha"] as? Bool else { return outputRect }
+            
+            guard input == 0 || !preserveAlpha else { return outputRect }
             
             let unit = arguments?["unit"] as? Size ?? Size(width: 1, height: 1)
             
@@ -78,18 +81,25 @@ extension CIImage {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let input_texture = inputs?[0].metalTexture else { return }
+            guard let source_region = inputs?[0].region else { return }
             guard let output_texture = output.metalTexture else { return }
             guard let matrix = arguments?["matrix"] as? [Float] else { return }
             guard let bias = arguments?["bias"] as? Double else { return }
             guard let orderX = arguments?["orderX"] as? Int else { return }
             guard let orderY = arguments?["orderY"] as? Int else { return }
-            guard let targetX = arguments?["targetX"] as? Int else { return }
-            guard let targetY = arguments?["targetY"] as? Int else { return }
-            guard let edgeMode = arguments?["edgeMode"] as? String else { return }
             guard let preserveAlpha = arguments?["preserveAlpha"] as? Bool else { return }
             guard let unit = arguments?["unit"] as? Size else { return }
             
-            let pipeline_name = preserveAlpha ? "svg_convolve_\(edgeMode)_preserve_alpha" : "svg_convolve_\(edgeMode)"
+            guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
+            guard let offset_y = UInt32(exactly: source_region.maxY - output.region.maxY) else { return }
+            
+            let pipeline_name: String
+            
+            if inputs?.count == 1 {
+                pipeline_name = preserveAlpha ? "svg_convolve_none_preserve_alpha" : "svg_convolve_none"
+            } else {
+                pipeline_name = preserveAlpha ? "svg_convolve_preserve_alpha" : "svg_convolve"
+            }
             
             let function_constant = self.make_function_constant(orderX, orderY)
             guard let pipeline = self.make_pipeline(commandBuffer.device, pipeline_name, function_constant) else { return }
@@ -99,11 +109,17 @@ extension CIImage {
             encoder.setComputePipelineState(pipeline)
             
             encoder.setTexture(input_texture, index: 0)
-            encoder.setTexture(output_texture , index: 1)
-            matrix.withUnsafeBytes { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
-            withUnsafeBytes(of: Float(bias)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
-            withUnsafeBytes(of: (Float(targetX), Float(targetY))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
+            encoder.setTexture(output_texture , index: 2)
+            matrix.withUnsafeBytes { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
+            withUnsafeBytes(of: Float(bias)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
             withUnsafeBytes(of: (Float(unit.width), Float(unit.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 5) }
+            
+            if inputs?.count == 2 {
+                encoder.setTexture(inputs?[1].metalTexture , index: 1)
+            }
+            if preserveAlpha != (inputs?.count == 2) {
+                withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 6) }
+            }
             
             let group_width = max(1, pipeline.threadExecutionWidth)
             let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)
@@ -121,6 +137,7 @@ extension CIImage {
         if extent.isEmpty { return .empty() }
         
         guard orderX > 0 && orderY > 0 && matrix.count == orderX * orderY else { return .empty() }
+        guard 0..<orderX ~= targetX && 0..<orderY ~= targetY else { return .empty() }
         
         let matrix = Array(matrix.chunked(by: orderX).reversed().joined())
         
@@ -136,15 +153,17 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        let edge_mode: String
+        let inputs: [CIImage]
         
         switch edgeMode {
-        case .duplicate: edge_mode = "duplicate"
-        case .wrap: edge_mode = "wrap"
-        case .none: edge_mode = "none"
+        case .duplicate: inputs = [self.clampedToExtent().unpremultiplyingAlpha(), self]
+        case .wrap: inputs = [self.affineTile().unpremultiplyingAlpha(), self]
+        case .none: inputs = [self.unpremultiplyingAlpha()]
         }
         
-        var rendered = try SVGConvolveKernel.apply(withExtent: _extent, inputs: [self], arguments: ["matrix": matrix.map { Float($0) }, "bias": bias, "orderX": orderX, "orderY": orderY, "targetX": targetX, "targetY": targetY, "edgeMode": edge_mode, "preserveAlpha": preserveAlpha, "unit": unit])
+        var rendered = try SVGConvolveKernel.apply(withExtent: _extent, inputs: inputs, arguments: ["matrix": matrix.map { Float($0) }, "bias": bias, "orderX": orderX, "orderY": orderY, "targetX": targetX, "targetY": targetY, "preserveAlpha": preserveAlpha, "unit": unit])
+        
+        rendered = rendered.premultiplyingAlpha()
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)

@@ -50,7 +50,7 @@ extension CIImage {
             guard let range = arguments?["range"] as? Double else { return }
             
             guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
-            guard let offset_y = UInt32(exactly: output.region.minY - source_region.minY) else { return }
+            guard let offset_y = UInt32(exactly: source_region.maxY - output.region.maxY) else { return }
             
             let device = commandBuffer.device
             
