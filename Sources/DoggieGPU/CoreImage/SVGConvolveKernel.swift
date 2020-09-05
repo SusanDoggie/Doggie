@@ -144,8 +144,8 @@ extension CIImage {
         var extent = self.extent
         
         if !extent.isInfinite && !preserveAlpha {
-            let minX = extent.minX - CGFloat(targetX) * CGFloat(unit.width)
-            let minY = extent.minY - CGFloat(targetY) * CGFloat(unit.height)
+            let minX = extent.minX - CGFloat(orderX - targetX - 1) * CGFloat(unit.width)
+            let minY = extent.minY - CGFloat(orderY - targetY - 1) * CGFloat(unit.height)
             let width = extent.width + CGFloat(orderX - 1) * CGFloat(unit.width)
             let height = extent.height + CGFloat(orderY - 1) * CGFloat(unit.height)
             extent = CGRect(x: minX, y: minY, width: width, height: height)

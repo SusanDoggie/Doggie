@@ -70,8 +70,8 @@ public struct SVGConvolveMatrixEffect: SVGEffectElement {
     public func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect? {
         guard let source = sources[source] else { return nil }
         guard !preserveAlpha else { return source }
-        let minX = source.minX - Double(targetX)
-        let minY = source.minY - Double(targetY)
+        let minX = source.minX - Double(orderX - targetX - 1)
+        let minY = source.minY - Double(orderY - targetY - 1)
         let width = source.width + Double(orderX - 1)
         let height = source.height + Double(orderY - 1)
         return Rect(x: minX, y: minY, width: width, height: height)
