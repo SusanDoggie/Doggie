@@ -117,7 +117,7 @@ extension CIImage {
             if inputs?.count == 2 {
                 encoder.setTexture(inputs?[1].metalTexture , index: 1)
             }
-            if preserveAlpha != (inputs?.count == 2) {
+            if pipeline_name == "svg_convolve_none_preserve_alpha" {
                 withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 6) }
             }
             
@@ -156,14 +156,12 @@ extension CIImage {
         let inputs: [CIImage]
         
         switch edgeMode {
-        case .duplicate: inputs = [self.clampedToExtent().unpremultiplyingAlpha(), self]
-        case .wrap: inputs = [self.affineTile().unpremultiplyingAlpha(), self]
-        case .none: inputs = [self.unpremultiplyingAlpha()]
+        case .duplicate: inputs = [self.clampedToExtent(), self]
+        case .wrap: inputs = [self.affineTile(), self]
+        case .none: inputs = [self]
         }
         
         var rendered = try SVGConvolveKernel.apply(withExtent: _extent, inputs: inputs, arguments: ["matrix": matrix.map { Float($0) }, "bias": bias, "orderX": orderX, "orderY": orderY, "targetX": targetX, "targetY": targetY, "preserveAlpha": preserveAlpha, "unit": unit])
-        
-        rendered = rendered.premultiplyingAlpha()
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)
