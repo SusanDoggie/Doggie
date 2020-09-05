@@ -150,7 +150,7 @@ extension CIImage {
             rendered = rendered.cropped(to: extent)
         }
         
-        return rendered.premultiplyingAlpha()
+        return rendered
     }
 }
 
