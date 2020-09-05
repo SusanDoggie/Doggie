@@ -139,12 +139,13 @@ kernel void svg_convolve_duplicate(texture2d<half, access::sample> input [[textu
     
     half4 sum = svg_convolve(input, svg_convolve_duplicate_sampler, matrix, (int2)order, (float2)unit, (float2)gid);
     
+    sum.w += bias;
+    
     const half _bias = (half)bias * sum.w;
     
     sum.x += _bias;
     sum.y += _bias;
     sum.z += _bias;
-    sum.w += bias;
     
     output.write(sum, gid);
 }
@@ -162,12 +163,13 @@ kernel void svg_convolve_wrap(texture2d<half, access::sample> input [[texture(0)
     
     half4 sum = svg_convolve_normalized(input, svg_convolve_wrap_sampler, matrix, (int2)order, (float2)unit, (float2)gid);
     
+    sum.w += bias;
+    
     const half _bias = (half)bias * sum.w;
     
     sum.x += _bias;
     sum.y += _bias;
     sum.z += _bias;
-    sum.w += bias;
     
     output.write(sum, gid);
 }
@@ -185,12 +187,13 @@ kernel void svg_convolve_none(texture2d<half, access::sample> input [[texture(0)
     
     half4 sum = svg_convolve(input, svg_convolve_none_sampler, matrix, (int2)order, (float2)unit, (float2)gid);
     
+    sum.w += bias;
+    
     const half _bias = (half)bias * sum.w;
     
     sum.x += _bias;
     sum.y += _bias;
     sum.z += _bias;
-    sum.w += bias;
     
     output.write(sum, gid);
 }
