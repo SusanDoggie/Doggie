@@ -129,6 +129,14 @@ extension NSItemProvider {
     }
 }
 
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
+extension NSItemProviderEncoder {
+    
+    fileprivate var itemProvider: NSItemProvider {
+        return NSItemProvider(object: self)
+    }
+}
+
 #endif
 
 #if canImport(UIKit)
@@ -169,8 +177,8 @@ extension UIDropSession {
 @available(iOS 11.0, *)
 extension UIPasteboard {
     
-    public func setObjects<Encoder: NSItemProviderEncoder>(_ objects: [Encoder], localOnly: Bool = false, expirationDate: Date? = nil) {
-        self.setItemProviders(objects.map { NSItemProvider(object: $0) }, localOnly: localOnly, expirationDate: expirationDate)
+    public func setObjects(_ objects: [NSItemProviderEncoder], localOnly: Bool = false, expirationDate: Date? = nil) {
+        self.setItemProviders(objects.map { $0.itemProvider }, localOnly: localOnly, expirationDate: expirationDate)
     }
 }
 
