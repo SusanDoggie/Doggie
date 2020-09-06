@@ -285,5 +285,16 @@ extension CGContext {
     }
 }
 
+#if canImport(CoreImage)
+
+extension CGContext {
+    
+    open func draw(_ image: CIImage, in inRect: CGRect, from fromRect: CGRect, options: [CIContextOption : Any]? = nil) {
+        let renderer = CIContext(cgContext: self, options: options)
+        renderer.draw(image, in: inRect, from: fromRect)
+    }
+}
+
 #endif
 
+#endif
