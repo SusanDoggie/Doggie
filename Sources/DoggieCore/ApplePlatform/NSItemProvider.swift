@@ -26,6 +26,14 @@
 #if canImport(ObjectiveC)
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
+public protocol NSItemProviderDecoder {
+    
+    static var readableTypeIdentifiersForItemProvider: [String] { get }
+    
+    static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> Self
+}
+
+@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 public protocol NSItemProviderEncoder {
     
     static var writableTypeIdentifiersForItemProvider: [String] { get }
@@ -56,31 +64,46 @@ extension NSItemProviderEncoder {
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
-final class _WritingWrapper<Encoder: NSItemProviderEncoder>: NSObject, NSItemProviderWriting {
+private final class _ItemProvider<Item>: NSObject, NSItemProviderReading, NSItemProviderWriting {
     
-    let encoder: Encoder
+    let item: Item
     
-    init(encoder: Encoder) {
-        self.encoder = encoder
+    init(item: Item) {
+        self.item = item
+    }
+    
+    static var readableTypeIdentifiersForItemProvider: [String] {
+        guard let Decoder = Item.self as? NSItemProviderDecoder.Type else { fatalError() }
+        return Decoder.readableTypeIdentifiersForItemProvider
     }
     
     static var writableTypeIdentifiersForItemProvider: [String] {
+        guard let Encoder = Item.self as? NSItemProviderEncoder.Type else { fatalError() }
         return Encoder.writableTypeIdentifiersForItemProvider
     }
     
+    static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> Self {
+        guard let Decoder = Item.self as? NSItemProviderDecoder.Type else { fatalError() }
+        return try Self(item: Decoder.object(withItemProviderData: data, typeIdentifier: typeIdentifier) as! Item)
+    }
+    
     var writableTypeIdentifiersForItemProvider: [String] {
+        guard let encoder = item as? NSItemProviderEncoder else { fatalError() }
         return encoder.writableTypeIdentifiersForItemProvider
     }
     
     static func itemProviderVisibilityForRepresentation(withTypeIdentifier typeIdentifier: String) -> NSItemProviderRepresentationVisibility {
+        guard let Encoder = Item.self as? NSItemProviderEncoder.Type else { fatalError() }
         return Encoder.itemProviderVisibilityForRepresentation(withTypeIdentifier: typeIdentifier)
     }
     
     func itemProviderVisibilityForRepresentation(withTypeIdentifier typeIdentifier: String) -> NSItemProviderRepresentationVisibility {
+        guard let encoder = item as? NSItemProviderEncoder else { fatalError() }
         return encoder.itemProviderVisibilityForRepresentation(withTypeIdentifier: typeIdentifier)
     }
     
     func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress? {
+        guard let encoder = item as? NSItemProviderEncoder else { fatalError() }
         return encoder.loadData(withTypeIdentifier: typeIdentifier, forItemProviderCompletionHandler: completionHandler)
     }
 }
@@ -89,41 +112,7 @@ final class _WritingWrapper<Encoder: NSItemProviderEncoder>: NSObject, NSItemPro
 extension NSItemProvider {
     
     public convenience init<Encoder: NSItemProviderEncoder>(object: Encoder) {
-        self.init(object: _WritingWrapper(encoder: object))
-    }
-}
-
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
-public protocol NSItemProviderDecoder {
-    
-    static var readableTypeIdentifiersForItemProvider: [String] { get }
-    
-    static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> Self
-}
-
-class _ItemProviderReadingImp: NSObject, NSItemProviderReading {
-    
-    class var readableTypeIdentifiersForItemProvider: [String] { return [] }
-    
-    required init(itemProviderData data: Data, typeIdentifier: String) throws { }
-    
-    static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> Self {
-        return try Self(itemProviderData: data, typeIdentifier: typeIdentifier)
-    }
-}
-
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
-final class _ReadingWrapper<Decoder: NSItemProviderDecoder>: _ItemProviderReadingImp {
-    
-    let decoder: Decoder
-    
-    required init(itemProviderData data: Data, typeIdentifier: String) throws {
-        self.decoder = try Decoder.object(withItemProviderData: data, typeIdentifier: typeIdentifier)
-        try super.init(itemProviderData: data, typeIdentifier: typeIdentifier)
-    }
-    
-    override class var readableTypeIdentifiersForItemProvider: [String] {
-        return Decoder.readableTypeIdentifiersForItemProvider
+        self.init(object: _ItemProvider(item: object))
     }
 }
 
@@ -131,18 +120,18 @@ final class _ReadingWrapper<Decoder: NSItemProviderDecoder>: _ItemProviderReadin
 extension NSItemProvider {
     
     public func canLoadObject<Decoder: NSItemProviderDecoder>(ofType aType: Decoder.Type) -> Bool {
-        return self.canLoadObject(ofClass: _ReadingWrapper<Decoder>.self)
+        return self.canLoadObject(ofClass: _ItemProvider<Decoder>.self)
     }
     
     @discardableResult
     public func loadObject<Decoder: NSItemProviderDecoder>(ofType aType: Decoder.Type, completionHandler: @escaping (Decoder?, Error?) -> Void) -> Progress {
-        return self.loadObject(ofClass: _ReadingWrapper<Decoder>.self) { completionHandler($0.flatMap { $0 as? _ReadingWrapper<Decoder> }.map { $0.decoder }, $1) }
+        return self.loadObject(ofClass: _ItemProvider<Decoder>.self) { completionHandler($0.flatMap { $0 as? _ItemProvider<Decoder> }.map { $0.item }, $1) }
     }
 }
 
 #endif
 
-#if os(iOS)
+#if canImport(UIKit)
 
 import UIKit
 
@@ -150,7 +139,7 @@ import UIKit
 extension UIDragDropSession {
     
     public func canLoadObjects<Decoder: NSItemProviderDecoder>(ofType aType: Decoder.Type) -> Bool {
-        return self.canLoadObjects(ofClass: _ReadingWrapper<Decoder>.self)
+        return self.canLoadObjects(ofClass: _ItemProvider<Decoder>.self)
     }
 }
 
@@ -159,7 +148,7 @@ extension UIDropSession {
     
     @discardableResult
     public func loadObjects<Decoder: NSItemProviderDecoder>(ofType aType: Decoder.Type, completion: @escaping ([Decoder]) -> Void) -> Progress {
-        return self.loadObjects(ofClass: _ReadingWrapper<Decoder>.self) { completion($0.lazy.compactMap { $0 as? _ReadingWrapper<Decoder> }.map { $0.decoder }) }
+        return self.loadObjects(ofClass: _ItemProvider<Decoder>.self) { completion($0.lazy.compactMap { $0 as? _ItemProvider<Decoder> }.map { $0.item }) }
     }
 }
 
@@ -175,11 +164,11 @@ extension UIPasteboard {
 extension UIPasteConfiguration {
     
     public convenience init<Decoder: NSItemProviderDecoder>(forAccepting aType: Decoder.Type) {
-        self.init(forAccepting: _ReadingWrapper<Decoder>.self)
+        self.init(forAccepting: _ItemProvider<Decoder>.self)
     }
     
     public func addTypeIdentifiers<Decoder: NSItemProviderDecoder>(forAccepting aType: Decoder.Type) {
-        self.addTypeIdentifiers(forAccepting: _ReadingWrapper<Decoder>.self)
+        self.addTypeIdentifiers(forAccepting: _ItemProvider<Decoder>.self)
     }
 }
 
