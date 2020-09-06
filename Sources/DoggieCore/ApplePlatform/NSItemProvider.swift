@@ -136,6 +136,20 @@ extension NSItemProvider {
 import UIKit
 
 @available(iOS 11.0, *)
+extension UIDragItem {
+    
+    public convenience init(object: NSItemProviderWriting) {
+        self.init(itemProvider: NSItemProvider(object: object))
+        self.localObject = object
+    }
+    
+    public convenience init<Encoder: NSItemProviderEncoder>(object: Encoder) {
+        self.init(itemProvider: NSItemProvider(object: object))
+        self.localObject = object
+    }
+}
+
+@available(iOS 11.0, *)
 extension UIDragDropSession {
     
     public func canLoadObjects<Decoder: NSItemProviderDecoder>(ofType aType: Decoder.Type) -> Bool {
