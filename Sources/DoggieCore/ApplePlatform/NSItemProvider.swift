@@ -169,7 +169,7 @@ extension UIDropSession {
 @available(iOS 11.0, *)
 extension UIPasteboard {
     
-    public func setObjects<Encoder: NSItemProviderEncoder>(_ objects: [Encoder], localOnly: Bool, expirationDate: Date?) {
+    public func setObjects<Encoder: NSItemProviderEncoder>(_ objects: [Encoder], localOnly: Bool = false, expirationDate: Date? = nil) {
         self.setItemProviders(objects.map { NSItemProvider(object: $0) }, localOnly: localOnly, expirationDate: expirationDate)
     }
 }
