@@ -47,21 +47,21 @@ kernel void svg_normal_map(texture2d<half, access::sample> input [[texture(0)]],
     
     constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);
     
-    float norm_x = -input.sample(input_sampler, coord + offset_0).w;
-    norm_x -= input.sample(input_sampler, coord + offset_3).w * 2;
-    norm_x -= input.sample(input_sampler, coord + offset_6).w;
-    norm_x += input.sample(input_sampler, coord + offset_2).w;
-    norm_x += input.sample(input_sampler, coord + offset_5).w * 2;
-    norm_x += input.sample(input_sampler, coord + offset_8).w;
+    float norm_x = -input.sample(input_sampler, coord + offset_0).a;
+    norm_x -= input.sample(input_sampler, coord + offset_3).a * 2;
+    norm_x -= input.sample(input_sampler, coord + offset_6).a;
+    norm_x += input.sample(input_sampler, coord + offset_2).a;
+    norm_x += input.sample(input_sampler, coord + offset_5).a * 2;
+    norm_x += input.sample(input_sampler, coord + offset_8).a;
     
-    float norm_y = -input.sample(input_sampler, coord + offset_0).w;
-    norm_y -= input.sample(input_sampler, coord + offset_1).w * 2;
-    norm_y -= input.sample(input_sampler, coord + offset_2).w;
-    norm_y += input.sample(input_sampler, coord + offset_6).w;
-    norm_y += input.sample(input_sampler, coord + offset_7).w * 2;
-    norm_y += input.sample(input_sampler, coord + offset_8).w;
+    float norm_y = -input.sample(input_sampler, coord + offset_0).a;
+    norm_y -= input.sample(input_sampler, coord + offset_1).a * 2;
+    norm_y -= input.sample(input_sampler, coord + offset_2).a;
+    norm_y += input.sample(input_sampler, coord + offset_6).a;
+    norm_y += input.sample(input_sampler, coord + offset_7).a * 2;
+    norm_y += input.sample(input_sampler, coord + offset_8).a;
     
-    const half4 color = half4(norm_x, norm_y, input.sample(input_sampler, coord).w, 1);
+    const half4 color = half4(norm_x, norm_y, input.sample(input_sampler, coord).a, 1);
     
     output.write(color, gid);
 }
@@ -75,7 +75,7 @@ struct DiffuseLightInfo {
         
         const float diffuse = dot(norm, light);
         
-        return half4(source.xyz + diffuse * color.xyz, 1);
+        return half4(source.rgb + diffuse * color.rgb, 1);
     }
 };
 
@@ -90,7 +90,7 @@ struct SpecularLightInfo {
         const float3 E = float3(0, 0, 1);
         const float3 H = normalize(light + E);
         
-        const half3 _color = pow(dot(norm, H), specularExponent) * color.xyz;
+        const half3 _color = pow(dot(norm, H), specularExponent) * color.rgb;
         
 #if defined(__HAVE_MAX3__)
         return source + half4(_color, max3(_color.x, _color.y, _color.x));
@@ -120,7 +120,7 @@ struct PointLightSourceInfo {
     packed_float3 position;
     
     float3 light(float4 color, half4 norm_map, float2 coord) const {
-        return normalize(position - float3(coord, color.w * norm_map.z));
+        return normalize(position - float3(coord, color.a * norm_map.z));
     }
     
     float4 color(float4 color, float3 light) const {
@@ -137,7 +137,7 @@ struct SpotLightSourceInfo {
     float limitingConeAngle;
     
     float3 light(float4 color, half4 norm_map, float2 coord) const {
-        return normalize(position - float3(coord, color.w * norm_map.z));
+        return normalize(position - float3(coord, color.a * norm_map.z));
     }
     
     float4 color(float4 color, float3 light) const {
@@ -148,9 +148,9 @@ struct SpotLightSourceInfo {
         if (ls > limit) {
             const float power = pow(ls, specularExponent);
             const float blur = min(1.0, (ls - limit) / 0.01);
-            color.xyz *= power * blur;
+            color.rgb *= power * blur;
         } else {
-            color.xyz = 0;
+            color.rgb = 0;
         }
         
         return color;
@@ -169,7 +169,7 @@ half4 svg_lighting(half4 norm_map,
     
     const float4 light_color = lighting_info.color;
     
-    const float3 norm = normalize(float3(-light_color.w * (float2)norm_map.xy, 1));
+    const float3 norm = normalize(float3(-light_color.a * (float2)norm_map.xy, 1));
     const float3 light = light_source_info.light(light_color, norm_map, coord);
     
     const float4 color = light_source_info.color(light_color, light);
