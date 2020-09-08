@@ -27,7 +27,6 @@
 
 extension CIImage {
     
-    @available(macOS 10.13, *)
     private class SVGComponentTransferKernel: CIImageProcessorKernel {
         
         enum TransferFunctionType: String, CaseIterable {
