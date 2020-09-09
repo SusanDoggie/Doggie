@@ -143,7 +143,7 @@ extension NSItemProviderEncoder {
 
 import UIKit
 
-@available(iOS 11.0, *)
+@available(iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 extension UIDragItem {
     
     public convenience init(object: NSItemProviderWriting) {
@@ -157,7 +157,7 @@ extension UIDragItem {
     }
 }
 
-@available(iOS 11.0, *)
+@available(iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 extension UIDragDropSession {
     
     public func canLoadObjects<Decoder: NSItemProviderDecoder>(ofType aType: Decoder.Type) -> Bool {
@@ -165,7 +165,7 @@ extension UIDragDropSession {
     }
 }
 
-@available(iOS 11.0, *)
+@available(iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 extension UIDropSession {
     
     @discardableResult
@@ -174,7 +174,7 @@ extension UIDropSession {
     }
 }
 
-@available(iOS 11.0, *)
+@available(iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 extension UIPasteboard {
     
     public func setObjects(_ objects: [NSItemProviderEncoder], localOnly: Bool = false, expirationDate: Date? = nil) {
@@ -182,7 +182,7 @@ extension UIPasteboard {
     }
 }
 
-@available(iOS 11.0, *)
+@available(iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 extension UIPasteConfiguration {
     
     public convenience init<Decoder: NSItemProviderDecoder>(forAccepting aType: Decoder.Type) {
