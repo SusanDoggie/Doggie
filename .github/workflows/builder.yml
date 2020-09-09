@@ -12,6 +12,9 @@ jobs:
             enable_codecov: true
             sdk: macosx
             destination: 'platform=macOS'
+          - name: macOS(Mac Catalyst)
+            sdk: macosx
+            destination: 'platform=macOS,variant=Mac Catalyst'
           - name: iOS
             sdk: iphonesimulator
             destination: 'platform=iOS Simulator,name=iPhone 11'
