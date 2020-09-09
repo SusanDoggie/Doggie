@@ -6,13 +6,13 @@ jobs:
     runs-on: macOS-latest
     strategy:
       matrix:
-        sdk: [macosx, iphonesimulator, appletvsimulator]
+        name: [macOS, macCatalyst, iOS, tvOS]
         include:
           - name: macOS
             enable_codecov: true
             sdk: macosx
             destination: 'platform=macOS'
-          - name: macOS(Mac Catalyst)
+          - name: macCatalyst
             sdk: macosx
             destination: 'platform=macOS,variant=Mac Catalyst'
           - name: iOS
