@@ -77,8 +77,8 @@ extension CIImage {
             guard let scale = arguments?["scale"] as? Size else { return }
             guard let selector = arguments?["selector"] as? String else { return }
             
-            guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
-            guard let offset_y = UInt32(exactly: source_region.maxY - output.region.maxY) else { return }
+            guard let offset_x = Int32(exactly: output.region.minX - source_region.minX) else { return }
+            guard let offset_y = Int32(exactly: source_region.maxY - output.region.maxY) else { return }
             
             guard let function_constant = self.function_constants[selector] else { return }
             guard let pipeline = self.make_pipeline(commandBuffer.device, "svg_displacement_map", function_constant) else { return }
@@ -90,7 +90,7 @@ extension CIImage {
             encoder.setTexture(source, index: 0)
             encoder.setTexture(displacement, index: 1)
             encoder.setTexture(output_texture , index: 2)
-            withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
+            withUnsafeBytes(of: (Float(offset_x), Float(offset_y))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
             withUnsafeBytes(of: (Float(scale.width), Float(scale.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
             
             let group_width = max(1, pipeline.threadExecutionWidth)

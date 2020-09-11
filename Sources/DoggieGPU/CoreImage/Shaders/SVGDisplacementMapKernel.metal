@@ -34,7 +34,7 @@ constant int Y_SELECTOR [[function_constant(1)]];
 kernel void svg_displacement_map(texture2d<half, access::sample> source [[texture(0)]],
                                  texture2d<half, access::read> displacement [[texture(1)]],
                                  texture2d<half, access::write> output [[texture(2)]],
-                                 constant packed_uint2 &offset [[buffer(3)]],
+                                 constant packed_float2 &offset [[buffer(3)]],
                                  constant packed_float2 &scale [[buffer(4)]],
                                  uint2 gid [[thread_position_in_grid]]) {
     
@@ -45,11 +45,11 @@ kernel void svg_displacement_map(texture2d<half, access::sample> source [[textur
     const float _x = d[X_SELECTOR] - 0.5;
     const float _y = d[Y_SELECTOR] - 0.5;
     
-    const uint2 coord = gid + offset;
-    const float x = (float)coord.x + _x * scale[0];
-    const float y = (float)coord.y - _y * scale[1];
+    float2 coord = (float2)gid + offset;
+    coord.x += _x * scale[0];
+    coord.y -= _y * scale[1];
     
-    const half4 color = source.sample(input_sampler, float2(x, y));
+    const half4 color = source.sample(input_sampler, coord);
     
     output.write(color, gid);
 }

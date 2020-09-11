@@ -86,8 +86,8 @@ extension CIImage {
             
             guard let svg_normalmap = self.make_pipeline(encoder.device, "svg_normal_map") else { return }
             
-            let offset_x = output_region.minX - input_region.minX
-            let offset_y = output_region.minY - input_region.minY
+            guard let offset_x = Int32(exactly: output_region.minX - input_region.minX) else { return }
+            guard let offset_y = Int32(exactly: input_region.maxY - output_region.maxY) else { return }
             
             encoder.setComputePipelineState(svg_normalmap)
             

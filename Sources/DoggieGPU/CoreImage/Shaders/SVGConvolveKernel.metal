@@ -72,7 +72,7 @@ kernel void svg_convolve_none_preserve_alpha(texture2d<half, access::sample> col
                                              constant float *matrix [[buffer(3)]],
                                              constant float &bias [[buffer(4)]],
                                              constant packed_float2 &unit [[buffer(5)]],
-                                             constant packed_uint2 &offset [[buffer(6)]],
+                                             constant packed_float2 &offset [[buffer(6)]],
                                              uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
@@ -96,7 +96,7 @@ kernel void svg_convolve_none_preserve_alpha(texture2d<half, access::sample> col
         }
     }
     
-    const half _alpha = color.sample(input_sampler, (float2)gid + (float2)offset).a;
+    const half _alpha = color.sample(input_sampler, (float2)gid + offset).a;
     
     output.write(premultiply(half4(sum + bias, _alpha)), gid);
 }

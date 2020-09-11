@@ -90,8 +90,8 @@ extension CIImage {
             guard let preserveAlpha = arguments?["preserveAlpha"] as? Bool else { return }
             guard let unit = arguments?["unit"] as? Size else { return }
             
-            guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
-            guard let offset_y = UInt32(exactly: source_region.maxY - output.region.maxY) else { return }
+            guard let offset_x = Int32(exactly: output.region.minX - source_region.minX) else { return }
+            guard let offset_y = Int32(exactly: source_region.maxY - output.region.maxY) else { return }
             
             let pipeline_name: String
             
@@ -118,7 +118,7 @@ extension CIImage {
                 encoder.setTexture(inputs?[1].metalTexture , index: 1)
             }
             if pipeline_name == "svg_convolve_none_preserve_alpha" {
-                withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 6) }
+                withUnsafeBytes(of: (Float(offset_x), Float(offset_y))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 6) }
             }
             
             let group_width = max(1, pipeline.threadExecutionWidth)
