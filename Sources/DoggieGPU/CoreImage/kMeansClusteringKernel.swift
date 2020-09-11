@@ -112,12 +112,14 @@ extension CIImage {
         }
     }
     
-    open func kMeansClustering(palette: CIImage, passes: Int) throws -> CIImage {
+    open func kMeansClustering(palette: CIImage, passes: Int) -> CIImage {
         
-        return try kMeansClusteringKernel.apply(withExtent: palette.extent, inputs: [self, palette], arguments: ["image_extent": self.extent, "palette_extent": palette.extent, "passes": passes])
+        let rendered = try? kMeansClusteringKernel.apply(withExtent: palette.extent, inputs: [self, palette], arguments: ["image_extent": self.extent, "palette_extent": palette.extent, "passes": passes])
+        
+        return rendered ?? .empty()
     }
     
-    open func kMeansClustering<C: Collection>(palette: C, passes: Int) throws -> CIImage where C.Element: ColorPixel, C.Element.Model == RGBColorModel {
+    open func kMeansClustering<C: Collection>(palette: C, passes: Int) -> CIImage where C.Element: ColorPixel, C.Element.Model == RGBColorModel {
         
         let _palette = CIImage(
             bitmapData: MappedBuffer(palette).map { Float32ColorPixel($0).premultiplied() }.data,
@@ -126,7 +128,7 @@ extension CIImage {
             format: .RGBAf,
             colorSpace: colorSpace)
         
-        return try kMeansClustering(palette: _palette, passes: passes)
+        return kMeansClustering(palette: _palette, passes: passes)
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  BilateralFilter.swift
+//  WrapTileKernel.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2020 Susan Cheng. All rights reserved.
@@ -27,17 +27,14 @@
 
 extension CIImage {
     
-    private class BilateralKernel: CIImageProcessorKernel {
+    private class WrapTileKernel: CIImageProcessorKernel {
         
         override class var synchronizeInputs: Bool {
             return false
         }
         
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
-            guard let spatial = arguments?["spatial"] as? Size else { return outputRect }
-            let insetX = -ceil(3 * abs(spatial.width))
-            let insetY = -ceil(3 * abs(spatial.height))
-            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
+            return arguments?["source_extent"] as? CGRect ?? outputRect
         }
         
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
@@ -46,15 +43,13 @@ extension CIImage {
             guard let source = inputs?[0].metalTexture else { return }
             guard let source_region = inputs?[0].region else { return }
             guard let destination = output.metalTexture else { return }
-            guard let spatial = arguments?["spatial"] as? Size else { return }
-            guard let range = arguments?["range"] as? Double else { return }
             
-            guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
-            guard let offset_y = UInt32(exactly: source_region.maxY - output.region.maxY) else { return }
+            let offset_x = Float(output.region.minX - source_region.minX)
+            let offset_y = Float(source_region.maxY - output.region.maxY)
             
             let device = commandBuffer.device
             
-            guard let pipeline = self.make_pipeline(device, "bilateral_filter") else { return }
+            guard let pipeline = self.make_pipeline(device, "wrap_tile") else { return }
             
             guard let encoder = commandBuffer.makeComputeCommandEncoder() else { return }
             
@@ -63,8 +58,6 @@ extension CIImage {
             encoder.setTexture(source, index: 0)
             encoder.setTexture(destination, index: 1)
             withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
-            withUnsafeBytes(of: (Float(spatial.width), Float(spatial.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
-            withUnsafeBytes(of: Float(range)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
             
             let group_width = max(1, pipeline.threadExecutionWidth)
             let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)
@@ -77,19 +70,12 @@ extension CIImage {
         }
     }
     
-    open func bilateralFilter(_ spatial: Size, _ range: Double) -> CIImage {
+    open func wrapTile() -> CIImage {
         
         if extent.isEmpty { return .empty() }
+        if extent.isInfinite { return self }
         
-        let extent = self.extent.insetBy(dx: CGFloat(-ceil(3 * abs(spatial.width))), dy: CGFloat(-ceil(3 * abs(spatial.height))))
-        
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        
-        var rendered = try? BilateralKernel.apply(withExtent: _extent, inputs: [self.unpremultiplyingAlpha()], arguments: ["spatial": spatial, "range": range]).premultiplyingAlpha()
-        
-        if !extent.isInfinite {
-            rendered = rendered?.cropped(to: extent)
-        }
+        let rendered = try? WrapTileKernel.apply(withExtent: .infinite, inputs: [self], arguments: ["source_extent": self.extent])
         
         return rendered ?? .empty()
     }

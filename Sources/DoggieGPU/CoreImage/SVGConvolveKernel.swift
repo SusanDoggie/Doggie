@@ -90,8 +90,8 @@ extension CIImage {
             guard let preserveAlpha = arguments?["preserveAlpha"] as? Bool else { return }
             guard let unit = arguments?["unit"] as? Size else { return }
             
-            guard let offset_x = Int32(exactly: output.region.minX - source_region.minX) else { return }
-            guard let offset_y = Int32(exactly: source_region.maxY - output.region.maxY) else { return }
+            let offset_x = Float(output.region.minX - source_region.minX)
+            let offset_y = Float(source_region.maxY - output.region.maxY)
             
             let pipeline_name: String
             
@@ -118,7 +118,7 @@ extension CIImage {
                 encoder.setTexture(inputs?[1].metalTexture , index: 1)
             }
             if pipeline_name == "svg_convolve_none_preserve_alpha" {
-                withUnsafeBytes(of: (Float(offset_x), Float(offset_y))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 6) }
+                withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 6) }
             }
             
             let group_width = max(1, pipeline.threadExecutionWidth)
@@ -132,7 +132,7 @@ extension CIImage {
         }
     }
     
-    open func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int, _ targetX: Int, _ targetY: Int, _ edgeMode: SVGConvolveMatrixEffect.EdgeMode, _ preserveAlpha: Bool, _ unit: Size = Size(width: 1, height: 1)) throws -> CIImage {
+    open func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int, _ targetX: Int, _ targetY: Int, _ edgeMode: SVGConvolveMatrixEffect.EdgeMode, _ preserveAlpha: Bool, _ unit: Size = Size(width: 1, height: 1)) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
@@ -157,17 +157,17 @@ extension CIImage {
         
         switch edgeMode {
         case .duplicate: inputs = [self.clampedToExtent(), self]
-        case .wrap: inputs = [self.affineTile(), self]
+        case .wrap: inputs = [self.wrapTile(), self]
         case .none: inputs = [self]
         }
         
-        var rendered = try SVGConvolveKernel.apply(withExtent: _extent, inputs: inputs, arguments: ["matrix": matrix.map { Float($0) }, "bias": bias, "orderX": orderX, "orderY": orderY, "targetX": targetX, "targetY": targetY, "preserveAlpha": preserveAlpha, "unit": unit])
+        var rendered = try? SVGConvolveKernel.apply(withExtent: _extent, inputs: inputs, arguments: ["matrix": matrix.map { Float($0) }, "bias": bias, "orderX": orderX, "orderY": orderY, "targetX": targetX, "targetY": targetY, "preserveAlpha": preserveAlpha, "unit": unit])
         
         if !extent.isInfinite {
-            rendered = rendered.cropped(to: extent)
+            rendered = rendered?.cropped(to: extent)
         }
         
-        return rendered
+        return rendered ?? .empty()
     }
 }
 

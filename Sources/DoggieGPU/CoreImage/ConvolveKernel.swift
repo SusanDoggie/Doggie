@@ -63,14 +63,14 @@ extension CIImage {
     }
     
     @available(macOS 10.13, *)
-    open func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int) throws -> CIImage {
+    open func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
         guard orderX > 0 && orderY > 0 && orderX * orderY == matrix.count else { return self }
         
         if orderX > 1 && orderY > 1, let (horizontal, vertical) = separate_convolution_filter(matrix, orderX, orderY) {
-            return try self.convolve(horizontal, 0, orderX, 1).convolve(vertical, bias, 1, orderY)
+            return self.convolve(horizontal, 0, orderX, 1).convolve(vertical, bias, 1, orderY)
         }
         
         let matrix = Array(matrix.chunked(by: orderX).lazy.map { $0.reversed() }.joined())
@@ -91,13 +91,13 @@ extension CIImage {
         let extent = self.extent.insetBy(dx: CGFloat(inset_x), dy: CGFloat(inset_y))
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try ConvolveKernel.apply(withExtent: _extent, inputs: [self], arguments: ["matrix": _matrix, "bias": bias, "orderX": _orderX, "orderY": _orderY])
+        var rendered = try? ConvolveKernel.apply(withExtent: _extent, inputs: [self], arguments: ["matrix": _matrix, "bias": bias, "orderX": _orderX, "orderY": _orderY])
         
         if !extent.isInfinite {
-            rendered = rendered.cropped(to: extent)
+            rendered = rendered?.cropped(to: extent)
         }
         
-        return rendered
+        return rendered ?? .empty()
     }
 }
 

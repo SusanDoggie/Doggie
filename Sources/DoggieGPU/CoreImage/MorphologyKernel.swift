@@ -64,7 +64,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, *)
-    open func areaMin(_ radius: Size) -> CIImage? {
+    open func areaMin(_ radius: Size) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
@@ -75,7 +75,7 @@ extension CIImage {
             areaMin.height = Float(abs(radius.height) * 2)
             areaMin.inputImage = self
             
-            return areaMin.outputImage
+            return areaMin.outputImage ?? .empty()
             
         } else {
             
@@ -85,13 +85,13 @@ extension CIImage {
             
             let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
             
-            guard var rendered = try? AreaMinKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius]) else { return nil }
+            var rendered = try? AreaMinKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius])
             
             if !extent.isInfinite {
-                rendered = rendered.cropped(to: extent)
+                rendered = rendered?.cropped(to: extent)
             }
             
-            return rendered
+            return rendered ?? .empty()
         }
     }
 }
@@ -135,7 +135,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, *)
-    open func areaMax(_ radius: Size) -> CIImage? {
+    open func areaMax(_ radius: Size) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
@@ -146,7 +146,7 @@ extension CIImage {
             areaMax.height = Float(abs(radius.height) * 2)
             areaMax.inputImage = self
             
-            return areaMax.outputImage
+            return areaMax.outputImage ?? .empty()
             
         } else {
             
@@ -154,13 +154,13 @@ extension CIImage {
             
             let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
             
-            guard var rendered = try? AreaMaxKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius]) else { return nil }
+            var rendered = try? AreaMaxKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius])
             
             if !extent.isInfinite {
-                rendered = rendered.cropped(to: extent)
+                rendered = rendered?.cropped(to: extent)
             }
             
-            return rendered
+            return rendered ?? .empty()
         }
     }
 }

@@ -72,14 +72,16 @@ extension CIImage {
         }
     }
     
-    open func palettize(palette: CIImage) throws -> CIImage {
+    open func palettize(palette: CIImage) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
-        return try PalettizeKernel.apply(withExtent: self.extent, inputs: [self, palette], arguments: ["palette_extent": palette.extent])
+        let rendered = try? PalettizeKernel.apply(withExtent: self.extent, inputs: [self, palette], arguments: ["palette_extent": palette.extent])
+        
+        return rendered ?? .empty()
     }
     
-    open func palettize<C: Collection>(palette: C) throws -> CIImage where C.Element: ColorPixel, C.Element.Model == RGBColorModel {
+    open func palettize<C: Collection>(palette: C) -> CIImage where C.Element: ColorPixel, C.Element.Model == RGBColorModel {
         
         if extent.isEmpty { return .empty() }
         
@@ -90,7 +92,7 @@ extension CIImage {
             format: .RGBAf,
             colorSpace: colorSpace)
         
-        return try palettize(palette: _palette)
+        return palettize(palette: _palette)
     }
 }
 

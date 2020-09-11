@@ -86,14 +86,14 @@ extension CIImage {
             
             guard let svg_normalmap = self.make_pipeline(encoder.device, "svg_normal_map") else { return }
             
-            guard let offset_x = Int32(exactly: output_region.minX - input_region.minX) else { return }
-            guard let offset_y = Int32(exactly: input_region.maxY - output_region.maxY) else { return }
+            let offset_x = Float(output_region.minX - input_region.minX)
+            let offset_y = Float(input_region.maxY - output_region.maxY)
             
             encoder.setComputePipelineState(svg_normalmap)
             
             encoder.setTexture(input, index: 0)
             encoder.setTexture(output, index: 1)
-            withUnsafeBytes(of: (Float(offset_x), Float(offset_y))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
+            withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
             withUnsafeBytes(of: (Float(unit.width), Float(unit.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
             
             let group_width = max(1, svg_normalmap.threadExecutionWidth)
@@ -268,19 +268,19 @@ extension CIImage {
         }
     }
     
-    open func diffuseLighting(_ lighting: SVGDiffuseLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) throws -> CIImage {
+    open func diffuseLighting(_ lighting: SVGDiffuseLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try SVGDiffuseLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale]).premultiplyingAlpha()
+        var rendered = try? SVGDiffuseLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale]).premultiplyingAlpha()
         
         if !extent.isInfinite {
-            rendered = rendered.cropped(to: extent)
+            rendered = rendered?.cropped(to: extent)
         }
         
-        return rendered
+        return rendered ?? .empty()
     }
 }
 
@@ -367,19 +367,19 @@ extension CIImage {
         }
     }
     
-    open func specularLighting(_ lighting: SVGSpecularLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) throws -> CIImage {
+    open func specularLighting(_ lighting: SVGSpecularLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try SVGSpecularLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale]).premultiplyingAlpha()
+        var rendered = try? SVGSpecularLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale]).premultiplyingAlpha()
         
         if !extent.isInfinite {
-            rendered = rendered.cropped(to: extent)
+            rendered = rendered?.cropped(to: extent)
         }
         
-        return rendered
+        return rendered ?? .empty()
     }
 }
 

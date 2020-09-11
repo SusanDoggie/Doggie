@@ -55,8 +55,9 @@ public struct SVGTurbulenceKernel {
 
 extension SVGTurbulenceKernel {
     
-    public var image: CIImage? {
-        return try? ProcessorKernel.apply(withExtent: .infinite, inputs: nil, arguments: ["info": self]).premultiplyingAlpha()
+    public var image: CIImage {
+        let image = try? ProcessorKernel.apply(withExtent: .infinite, inputs: nil, arguments: ["info": self]).premultiplyingAlpha()
+        return image ?? .empty()
     }
     
     private class ProcessorKernel: CIImageProcessorKernel {

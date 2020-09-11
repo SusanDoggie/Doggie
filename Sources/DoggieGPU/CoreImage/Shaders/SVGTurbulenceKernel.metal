@@ -55,12 +55,12 @@ float noise2(constant int *uLatticeSelector,
     float rx0, rx1, ry0, ry1, sx, sy, a, b, t, u, v;
     float2 q;
     
-    t = point[0] + 4096;
+    t = point.x + 4096;
     bx0 = (int)t;
     bx1 = bx0 + 1;
     rx0 = t - (int)t;
     rx1 = rx0 - 1.0;
-    t = point[1] + 4096;
+    t = point.y + 4096;
     by0 = (int)t;
     by1 = by0 + 1;
     ry0 = t - (int)t;
@@ -146,8 +146,8 @@ float _turbulence(constant int *uLatticeSelector,
     
     float fSum = 0.0;
     float ratio = 1.0;
-    point[0] *= info.baseFreq[0];
-    point[1] *= info.baseFreq[1];
+    point.x *= info.baseFreq[0];
+    point.y *= info.baseFreq[1];
     
     int BSize = 0x100;
     int _BSize = BSize + BSize + 2;
@@ -162,8 +162,8 @@ float _turbulence(constant int *uLatticeSelector,
             fSum += fabs(noise2(uLatticeSelector, fGradient, point, stitch)) / ratio;
         }
         
-        point[0] *= 2;
-        point[1] *= 2;
+        point.x *= 2;
+        point.y *= 2;
         ratio *= 2;
         
         if (IS_STITCH_TILE) {
@@ -186,7 +186,7 @@ kernel void svg_turbulence(constant int *uLatticeSelector [[buffer(0)]],
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
     float4 color;
-    float2 point = info.transform * float3(gid[0], gid[1], 1);
+    float2 point = info.transform * float3(gid.x, gid.y, 1);
     
     if (IS_FRACTAL_NOISE) {
         color[0] = _turbulence(uLatticeSelector, fGradient, 0, point, info) * 0.5 + 0.5;
