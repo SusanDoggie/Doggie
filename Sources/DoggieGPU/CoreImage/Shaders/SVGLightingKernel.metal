@@ -26,6 +26,8 @@
 #include <metal_stdlib>
 using namespace metal;
 
+constexpr sampler linear_sampler (coord::pixel, address::clamp_to_edge, filter::linear);
+
 kernel void svg_normal_map(texture2d<half, access::sample> input [[texture(0)]],
                            texture2d<half, access::write> output [[texture(1)]],
                            constant packed_float2 &offset [[buffer(2)]],
@@ -45,23 +47,21 @@ kernel void svg_normal_map(texture2d<half, access::sample> input [[texture(0)]],
     const float2 offset_7 = float2(unit[0], 0);
     const float2 offset_8 = float2(unit[0], -unit[1]);
     
-    constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);
+    float norm_x = -input.sample(linear_sampler, coord + offset_0).a;
+    norm_x -= input.sample(linear_sampler, coord + offset_3).a * 2;
+    norm_x -= input.sample(linear_sampler, coord + offset_6).a;
+    norm_x += input.sample(linear_sampler, coord + offset_2).a;
+    norm_x += input.sample(linear_sampler, coord + offset_5).a * 2;
+    norm_x += input.sample(linear_sampler, coord + offset_8).a;
     
-    float norm_x = -input.sample(input_sampler, coord + offset_0).a;
-    norm_x -= input.sample(input_sampler, coord + offset_3).a * 2;
-    norm_x -= input.sample(input_sampler, coord + offset_6).a;
-    norm_x += input.sample(input_sampler, coord + offset_2).a;
-    norm_x += input.sample(input_sampler, coord + offset_5).a * 2;
-    norm_x += input.sample(input_sampler, coord + offset_8).a;
+    float norm_y = -input.sample(linear_sampler, coord + offset_0).a;
+    norm_y -= input.sample(linear_sampler, coord + offset_1).a * 2;
+    norm_y -= input.sample(linear_sampler, coord + offset_2).a;
+    norm_y += input.sample(linear_sampler, coord + offset_6).a;
+    norm_y += input.sample(linear_sampler, coord + offset_7).a * 2;
+    norm_y += input.sample(linear_sampler, coord + offset_8).a;
     
-    float norm_y = -input.sample(input_sampler, coord + offset_0).a;
-    norm_y -= input.sample(input_sampler, coord + offset_1).a * 2;
-    norm_y -= input.sample(input_sampler, coord + offset_2).a;
-    norm_y += input.sample(input_sampler, coord + offset_6).a;
-    norm_y += input.sample(input_sampler, coord + offset_7).a * 2;
-    norm_y += input.sample(input_sampler, coord + offset_8).a;
-    
-    const half4 color = half4(norm_x, norm_y, input.sample(input_sampler, coord).a, 1);
+    const half4 color = half4(norm_x, norm_y, input.sample(linear_sampler, coord).a, 1);
     
     output.write(color, gid);
 }

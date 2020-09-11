@@ -26,7 +26,7 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);
+constexpr sampler linear_sampler (coord::pixel, address::clamp_to_edge, filter::linear);
 
 constant int ORDER_X [[function_constant(0)]];
 constant int ORDER_Y [[function_constant(1)]];
@@ -56,7 +56,7 @@ kernel void svg_convolve_none(texture2d<half, access::sample> color [[texture(0)
             
             const float2 coord = (float2)gid + float2(offset_x, offset_y);
             
-            const half4 sample = color.sample(input_sampler, coord);
+            const half4 sample = color.sample(linear_sampler, coord);
             
             sum += sample * matrix[ky * ORDER_X + kx];
         }
@@ -90,13 +90,13 @@ kernel void svg_convolve_none_preserve_alpha(texture2d<half, access::sample> col
             
             const float2 coord = (float2)gid + float2(offset_x, offset_y);
             
-            const half4 sample = color.sample(input_sampler, coord);
+            const half4 sample = color.sample(linear_sampler, coord);
             
             sum += unpremultiply(sample).rgb * matrix[ky * ORDER_X + kx];
         }
     }
     
-    const half _alpha = color.sample(input_sampler, (float2)gid + offset).a;
+    const half _alpha = color.sample(linear_sampler, (float2)gid + offset).a;
     
     output.write(premultiply(half4(sum + bias, _alpha)), gid);
 }
@@ -124,8 +124,8 @@ kernel void svg_convolve(texture2d<half, access::sample> color [[texture(0)]],
             
             const float2 coord = (float2)gid + float2(offset_x, offset_y);
             
-            const half4 sample = color.sample(input_sampler, coord);
-            const half4 _alpha = alpha.sample(input_sampler, coord);
+            const half4 sample = color.sample(linear_sampler, coord);
+            const half4 _alpha = alpha.sample(linear_sampler, coord);
             
             sum += half4(sample.rgb, _alpha.a) * matrix[ky * ORDER_X + kx];
         }
@@ -159,7 +159,7 @@ kernel void svg_convolve_preserve_alpha(texture2d<half, access::sample> color [[
             
             const float2 coord = (float2)gid + float2(offset_x, offset_y);
             
-            const half4 sample = color.sample(input_sampler, coord);
+            const half4 sample = color.sample(linear_sampler, coord);
             
             sum += unpremultiply(sample).rgb * matrix[ky * ORDER_X + kx];
         }

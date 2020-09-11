@@ -26,7 +26,7 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constexpr sampler input_sampler (coord::pixel, address::clamp_to_zero, filter::linear);
+constexpr sampler linear_sampler (coord::pixel, address::clamp_to_edge, filter::linear);
 
 constant int X_SELECTOR [[function_constant(0)]];
 constant int Y_SELECTOR [[function_constant(1)]];
@@ -49,7 +49,7 @@ kernel void svg_displacement_map(texture2d<half, access::sample> source [[textur
     coord.x += _x * scale[0];
     coord.y -= _y * scale[1];
     
-    const half4 color = source.sample(input_sampler, coord);
+    const half4 color = source.sample(linear_sampler, coord);
     
     output.write(color, gid);
 }
