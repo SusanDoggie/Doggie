@@ -70,12 +70,13 @@ extension CIImage {
         
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
             
+            guard let source_extent = arguments?["source_extent"] as? CGRect else { return outputRect }
             let unit = arguments?["unit"] as? Size ?? Size(width: 1, height: 1)
             
             let dx = abs(unit.width)
             let dy = abs(unit.height)
             
-            return outputRect.insetBy(dx: -CGFloat(ceil(dx)), dy: -CGFloat(ceil(dy)))
+            return outputRect.insetBy(dx: -CGFloat(ceil(dx)), dy: -CGFloat(ceil(dy))).intersection(source_extent)
         }
         
         override class var outputFormat: CIFormat {
@@ -274,7 +275,7 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try SVGDiffuseLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale])
+        var rendered = try SVGDiffuseLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["source_extent": self.extent, "lighting": lighting, "unit": unit, "scale": scale])
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)
@@ -373,7 +374,7 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try SVGSpecularLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale])
+        var rendered = try SVGSpecularLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["source_extent": self.extent, "lighting": lighting, "unit": unit, "scale": scale])
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)

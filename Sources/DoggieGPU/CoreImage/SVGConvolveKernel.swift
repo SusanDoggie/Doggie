@@ -59,6 +59,7 @@ extension CIImage {
         
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
             
+            guard let source_extent = arguments?["source_extent"] as? CGRect else { return outputRect }
             guard let orderX = arguments?["orderX"] as? Int else { return outputRect }
             guard let orderY = arguments?["orderY"] as? Int else { return outputRect }
             guard let targetX = arguments?["targetX"] as? Int else { return outputRect }
@@ -74,7 +75,7 @@ extension CIImage {
             let width = outputRect.width + CGFloat(orderX - 1) * CGFloat(unit.width)
             let height = outputRect.height + CGFloat(orderY - 1) * CGFloat(unit.height)
             
-            return CGRect(x: minX, y: minY, width: width, height: height)
+            return CGRect(x: minX, y: minY, width: width, height: height).intersection(source_extent)
         }
         
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
@@ -161,7 +162,7 @@ extension CIImage {
         case .none: inputs = [self]
         }
         
-        var rendered = try SVGConvolveKernel.apply(withExtent: _extent, inputs: inputs, arguments: ["matrix": matrix.map { Float($0) }, "bias": bias, "orderX": orderX, "orderY": orderY, "targetX": targetX, "targetY": targetY, "preserveAlpha": preserveAlpha, "unit": unit])
+        var rendered = try SVGConvolveKernel.apply(withExtent: _extent, inputs: inputs, arguments: ["source_extent": self.extent, "matrix": matrix.map { Float($0) }, "bias": bias, "orderX": orderX, "orderY": orderY, "targetX": targetX, "targetY": targetY, "preserveAlpha": preserveAlpha, "unit": unit])
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)

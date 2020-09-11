@@ -34,10 +34,11 @@ extension CIImage {
         }
         
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
+            guard let source_extent = arguments?["source_extent"] as? CGRect else { return outputRect }
             guard let spatial = arguments?["spatial"] as? Size else { return outputRect }
             let insetX = -ceil(3 * abs(spatial.width))
             let insetY = -ceil(3 * abs(spatial.height))
-            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
+            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY)).intersection(source_extent)
         }
         
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
@@ -83,7 +84,7 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try BilateralKernel.apply(withExtent: _extent, inputs: [self.unpremultiplyingAlpha()], arguments: ["spatial": spatial, "range": range])
+        var rendered = try BilateralKernel.apply(withExtent: _extent, inputs: [self.unpremultiplyingAlpha()], arguments: ["source_extent": self.extent, "spatial": spatial, "range": range])
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)

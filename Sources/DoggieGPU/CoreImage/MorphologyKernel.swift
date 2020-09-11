@@ -106,10 +106,11 @@ extension CIImage {
         }
         
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
+            guard let source_extent = arguments?["source_extent"] as? CGRect else { return outputRect }
             guard let radius = arguments?["radius"] as? Size else { return outputRect }
             let insetX = -ceil(abs(radius.width))
             let insetY = -ceil(abs(radius.height))
-            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
+            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY)).intersection(source_extent)
         }
         
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
@@ -154,7 +155,7 @@ extension CIImage {
             
             let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
             
-            guard var rendered = try? AreaMaxKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius]) else { return nil }
+            guard var rendered = try? AreaMaxKernel.apply(withExtent: _extent, inputs: [self], arguments: ["source_extent": self.extent, "radius": radius]) else { return nil }
             
             if !extent.isInfinite {
                 rendered = rendered.cropped(to: extent)
