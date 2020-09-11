@@ -274,13 +274,13 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try SVGDiffuseLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale])
+        var rendered = try SVGDiffuseLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale]).premultiplyingAlpha()
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)
         }
         
-        return rendered.premultiplyingAlpha()
+        return rendered
     }
 }
 
@@ -373,13 +373,13 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try SVGSpecularLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale])
+        var rendered = try SVGSpecularLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale]).premultiplyingAlpha()
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)
         }
         
-        return rendered.premultiplyingAlpha()
+        return rendered
     }
 }
 

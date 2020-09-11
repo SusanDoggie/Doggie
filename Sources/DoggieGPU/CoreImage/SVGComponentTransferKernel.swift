@@ -228,13 +228,13 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try SVGComponentTransferKernel.apply(withExtent: _extent, inputs: [self.unpremultiplyingAlpha()], arguments: ["red": red, "green": green, "blue": blue, "alpha": alpha])
+        var rendered = try SVGComponentTransferKernel.apply(withExtent: _extent, inputs: [self.unpremultiplyingAlpha()], arguments: ["red": red, "green": green, "blue": blue, "alpha": alpha]).premultiplyingAlpha()
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)
         }
         
-        return rendered.premultiplyingAlpha()
+        return rendered
     }
 }
 

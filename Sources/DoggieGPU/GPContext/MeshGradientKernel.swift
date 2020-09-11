@@ -59,9 +59,8 @@ extension GPContext {
         let gradient = MeshGradientKernel.Gradient(column: mesh.column, row: mesh.row, patches: patches, colors: colors)
         
         let extent = self.extent.inset(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
-        guard var image = try? MeshGradientKernel.apply(withExtent: CGRect(extent), inputs: nil, arguments: ["gradient": gradient]) else { return }
+        guard var image = try? MeshGradientKernel.apply(withExtent: CGRect(extent), inputs: nil, arguments: ["gradient": gradient]).premultiplyingAlpha() else { return }
         
-        image = image.premultiplyingAlpha()
         image = image.matchedToWorkingSpace(from: cgColorSpace) ?? image
         
         self.saveGraphicState()

@@ -83,13 +83,13 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try BilateralKernel.apply(withExtent: _extent, inputs: [self.unpremultiplyingAlpha()], arguments: ["spatial": spatial, "range": range])
+        var rendered = try BilateralKernel.apply(withExtent: _extent, inputs: [self.unpremultiplyingAlpha()], arguments: ["spatial": spatial, "range": range]).premultiplyingAlpha()
         
         if !extent.isInfinite {
             rendered = rendered.cropped(to: extent)
         }
         
-        return rendered.premultiplyingAlpha()
+        return rendered
     }
 }
 
