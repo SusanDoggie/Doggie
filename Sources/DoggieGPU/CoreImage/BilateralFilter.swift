@@ -49,8 +49,8 @@ extension CIImage {
             guard let spatial = arguments?["spatial"] as? Size else { return }
             guard let range = arguments?["range"] as? Double else { return }
             
-            guard let offset_x = Int32(exactly: output.region.minX - source_region.minX) else { return }
-            guard let offset_y = Int32(exactly: source_region.maxY - output.region.maxY) else { return }
+            guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
+            guard let offset_y = UInt32(exactly: source_region.maxY - output.region.maxY) else { return }
             
             let device = commandBuffer.device
             
@@ -62,7 +62,7 @@ extension CIImage {
             
             encoder.setTexture(source, index: 0)
             encoder.setTexture(destination, index: 1)
-            withUnsafeBytes(of: (Float(offset_x), Float(offset_y))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
+            withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
             withUnsafeBytes(of: (Float(spatial.width), Float(spatial.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
             withUnsafeBytes(of: Float(range)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
             
@@ -78,6 +78,8 @@ extension CIImage {
     }
     
     open func bilateralFilter(_ spatial: Size, _ range: Double) throws -> CIImage {
+        
+        if extent.isEmpty { return .empty() }
         
         let extent = self.extent.insetBy(dx: CGFloat(-ceil(3 * abs(spatial.width))), dy: CGFloat(-ceil(3 * abs(spatial.height))))
         

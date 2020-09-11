@@ -26,20 +26,21 @@
 #include <metal_stdlib>
 using namespace metal;
 
-constexpr sampler linear_sampler (coord::pixel, address::clamp_to_edge, filter::linear);
-
-kernel void bilateral_filter(texture2d<half, access::sample> input [[texture(0)]],
+kernel void bilateral_filter(texture2d<half, access::read> input [[texture(0)]],
                              texture2d<half, access::write> output [[texture(1)]],
-                             constant packed_float2 &offset [[buffer(2)]],
+                             constant packed_uint2 &offset [[buffer(2)]],
                              constant packed_float2 &spatial [[buffer(3)]],
                              constant float &range [[buffer(4)]],
                              uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const int r0 = (int)ceil(3 * abs(spatial[0]));
-    const int r1 = (int)ceil(3 * abs(spatial[1]));
+    const int orderX = input.get_width() - output.get_width();
+    const int orderY = input.get_height() - output.get_height();
     
+    const int _orderX = orderX / 2;
+    const int _orderY = orderY / 2;
+
     const float c0 = -0.5 / (spatial[0] * spatial[0]);
     const float c1 = -0.5 / (spatial[1] * spatial[1]);
     const float c2 = -0.5 / (range * range);
@@ -47,21 +48,15 @@ kernel void bilateral_filter(texture2d<half, access::sample> input [[texture(0)]
     half4 s = 0;
     float t = 0;
     
-    const float2 coord = (float2)gid + offset;
-    const half4 p = input.sample(linear_sampler, coord);
+    const half4 p = input.read(gid + offset);
     
-    const int minX = max(0, (int)coord.x - r0);
-    const int minY = max(0, (int)coord.y - r1);
-    const int maxX = min((int)input.get_width(), (int)coord.x + r0 + 1);
-    const int maxY = min((int)input.get_height(), (int)coord.y + r1 + 1);
-    
-    for (int y = minY; y < maxY; ++y) {
-        for (int x = minX; x < maxX; ++x) {
+    for (int y = 0; y < orderY; ++y) {
+        for (int x = 0; x < orderX; ++x) {
             
-            const float _x = (float)x - coord.x;
-            const float _y = (float)y - coord.y;
+            const int _x = x - _orderX;
+            const int _y = y - _orderY;
             
-            const half4 k = input.sample(linear_sampler, float2(x, y));
+            const half4 k = input.read(gid + uint2(x, y));
             const float w = exp(c0 * _x * _x + c1 * _y * _y + c2 * distance_squared(p, k));
             
             s += w * k;
