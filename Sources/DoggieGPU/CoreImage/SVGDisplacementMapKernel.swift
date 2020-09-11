@@ -61,11 +61,10 @@ extension CIImage {
         
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
             guard input == 0 else { return outputRect }
-            guard let source_extent = arguments?["source_extent"] as? CGRect else { return outputRect }
             guard let scale = arguments?["scale"] as? Size else { return outputRect }
             let insetX = -ceil(abs(0.5 * scale.width))
             let insetY = -ceil(abs(0.5 * scale.height))
-            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY)).intersection(source_extent)
+            return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
         }
         
         override class func process(with inputs: [CIImageProcessorInput]?, arguments: [String: Any]?, output: CIImageProcessorOutput) throws {
@@ -138,7 +137,7 @@ extension CIImage {
         
         let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
         
-        var rendered = try? SVGDisplacementMapKernel.apply(withExtent: _extent, inputs: [self, displacement], arguments: ["source_extent": self.extent, "scale": scale, "selector": "\(x_selector)\(y_selector)"])
+        var rendered = try? SVGDisplacementMapKernel.apply(withExtent: _extent, inputs: [self, displacement], arguments: ["scale": scale, "selector": "\(x_selector)\(y_selector)"])
         
         if !extent.isInfinite {
             rendered = rendered?.cropped(to: extent)
