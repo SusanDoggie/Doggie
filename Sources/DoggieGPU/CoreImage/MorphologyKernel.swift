@@ -79,7 +79,9 @@ extension CIImage {
             
         } else {
             
-            let extent = self.extent.insetBy(dx: CGFloat(-ceil(abs(radius.width))), dy: CGFloat(-ceil(abs(radius.height))))
+            let extent = self.extent.insetBy(dx: CGFloat(ceil(abs(radius.width))), dy: CGFloat(ceil(abs(radius.height))))
+            
+            if extent.isEmpty { return .empty() }
             
             let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
             

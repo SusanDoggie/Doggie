@@ -50,7 +50,10 @@ public struct SVGMorphologyEffect: SVGEffectElement {
     }
     
     public func visibleBound(_ sources: [SVGEffect.Source: Rect]) -> Rect? {
-        return sources[source]?.inset(dx: -ceil(abs(radius.width)), dy: -ceil(abs(radius.height)))
+        switch mode {
+        case .erode: return sources[source]?.inset(dx: ceil(abs(radius.width)), dy: ceil(abs(radius.height)))
+        case .dilate: return sources[source]?.inset(dx: -ceil(abs(radius.width)), dy: -ceil(abs(radius.height)))
+        }
     }
 }
 
