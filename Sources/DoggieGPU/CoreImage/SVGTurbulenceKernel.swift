@@ -55,9 +55,19 @@ public struct SVGTurbulenceKernel {
 
 extension SVGTurbulenceKernel {
     
-    public var image: CIImage {
-        let image = try? ProcessorKernel.apply(withExtent: .infinite, inputs: nil, arguments: ["info": self]).premultiplyingAlpha()
-        return image ?? .empty()
+    public func image(withExtent extent: CGRect = .infinite) -> CIImage {
+        
+        if extent.isEmpty { return .empty() }
+        
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        
+        var rendered = try? ProcessorKernel.apply(withExtent: _extent, inputs: nil, arguments: ["info": self]).premultiplyingAlpha()
+        
+        if !extent.isInfinite {
+            rendered = rendered?.cropped(to: extent)
+        }
+        
+        return rendered ?? .empty()
     }
     
     private class ProcessorKernel: CIImageProcessorKernel {
