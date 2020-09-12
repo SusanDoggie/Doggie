@@ -26,8 +26,8 @@
 #include <metal_stdlib>
 using namespace metal;
 
-kernel void bilateral_filter(texture2d<half, access::read> input [[texture(0)]],
-                             texture2d<half, access::write> output [[texture(1)]],
+kernel void bilateral_filter(texture2d<float, access::read> input [[texture(0)]],
+                             texture2d<float, access::write> output [[texture(1)]],
                              constant packed_uint2 &offset [[buffer(2)]],
                              constant float *weight_x [[buffer(3)]],
                              constant float *weight_y [[buffer(4)]],
@@ -41,15 +41,15 @@ kernel void bilateral_filter(texture2d<half, access::read> input [[texture(0)]],
     
     const float c2 = -0.5 / (range * range);
     
-    half4 s = 0;
+    float4 s = 0;
     float t = 0;
     
-    const half4 p = input.read(gid + offset);
+    const float4 p = input.read(gid + offset);
     
     for (int y = 0; y < orderY; ++y) {
         for (int x = 0; x < orderX; ++x) {
             
-            const half4 k = input.read(gid + uint2(x, y));
+            const float4 k = input.read(gid + uint2(x, y));
             const float w = weight_x[x] * weight_y[y] * exp(c2 * distance_squared(p, k));
             
             s += w * k;

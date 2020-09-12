@@ -31,11 +31,11 @@ constexpr sampler linear_sampler (coord::pixel, address::clamp_to_edge, filter::
 constant int ORDER_X [[function_constant(0)]];
 constant int ORDER_Y [[function_constant(1)]];
 
-half4 premultiply(half4 c) { return half4(c.rgb * c.a, c.a); }
-half4 unpremultiply(half4 c) { return c.a == 0 ? c : half4(c.rgb / c.a, c.a); }
+float4 premultiply(float4 c) { return float4(c.rgb * c.a, c.a); }
+float4 unpremultiply(float4 c) { return c.a == 0 ? c : float4(c.rgb / c.a, c.a); }
 
-kernel void svg_convolve_none(texture2d<half, access::sample> color [[texture(0)]],
-                              texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_convolve_none(texture2d<float, access::sample> color [[texture(0)]],
+                              texture2d<float, access::write> output [[texture(2)]],
                               constant float *matrix [[buffer(3)]],
                               constant float &bias [[buffer(4)]],
                               constant packed_float2 &unit [[buffer(5)]],
@@ -43,7 +43,7 @@ kernel void svg_convolve_none(texture2d<half, access::sample> color [[texture(0)
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    half4 sum = 0;
+    float4 sum = 0;
     
     for (int j = 0; j < ORDER_Y; ++j) {
         for (int i = 0; i < ORDER_X; ++i) {
@@ -56,19 +56,19 @@ kernel void svg_convolve_none(texture2d<half, access::sample> color [[texture(0)
             
             const float2 coord = (float2)gid + float2(offset_x, offset_y);
             
-            const half4 sample = color.sample(linear_sampler, coord);
+            const float4 sample = color.sample(linear_sampler, coord);
             
             sum += sample * matrix[ky * ORDER_X + kx];
         }
     }
     
-    const half _alpha = sum.a + bias;
+    const float _alpha = sum.a + bias;
     
-    output.write(half4(sum.rgb + bias * _alpha, _alpha), gid);
+    output.write(float4(sum.rgb + bias * _alpha, _alpha), gid);
 }
 
-kernel void svg_convolve_none_preserve_alpha(texture2d<half, access::sample> color [[texture(0)]],
-                                             texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_convolve_none_preserve_alpha(texture2d<float, access::sample> color [[texture(0)]],
+                                             texture2d<float, access::write> output [[texture(2)]],
                                              constant float *matrix [[buffer(3)]],
                                              constant float &bias [[buffer(4)]],
                                              constant packed_float2 &unit [[buffer(5)]],
@@ -77,7 +77,7 @@ kernel void svg_convolve_none_preserve_alpha(texture2d<half, access::sample> col
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    half3 sum = 0;
+    float3 sum = 0;
     
     for (int j = 0; j < ORDER_Y; ++j) {
         for (int i = 0; i < ORDER_X; ++i) {
@@ -90,20 +90,20 @@ kernel void svg_convolve_none_preserve_alpha(texture2d<half, access::sample> col
             
             const float2 coord = (float2)gid + float2(offset_x, offset_y);
             
-            const half4 sample = color.sample(linear_sampler, coord);
+            const float4 sample = color.sample(linear_sampler, coord);
             
             sum += unpremultiply(sample).rgb * matrix[ky * ORDER_X + kx];
         }
     }
     
-    const half _alpha = color.sample(linear_sampler, (float2)gid + offset).a;
+    const float _alpha = color.sample(linear_sampler, (float2)gid + offset).a;
     
-    output.write(premultiply(half4(sum + bias, _alpha)), gid);
+    output.write(premultiply(float4(sum + bias, _alpha)), gid);
 }
 
-kernel void svg_convolve(texture2d<half, access::sample> color [[texture(0)]],
-                         texture2d<half, access::sample> alpha [[texture(1)]],
-                         texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_convolve(texture2d<float, access::sample> color [[texture(0)]],
+                         texture2d<float, access::sample> alpha [[texture(1)]],
+                         texture2d<float, access::write> output [[texture(2)]],
                          constant float *matrix [[buffer(3)]],
                          constant float &bias [[buffer(4)]],
                          constant packed_float2 &unit [[buffer(5)]],
@@ -111,7 +111,7 @@ kernel void svg_convolve(texture2d<half, access::sample> color [[texture(0)]],
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    half4 sum = 0;
+    float4 sum = 0;
     
     for (int j = 0; j < ORDER_Y; ++j) {
         for (int i = 0; i < ORDER_X; ++i) {
@@ -124,21 +124,21 @@ kernel void svg_convolve(texture2d<half, access::sample> color [[texture(0)]],
             
             const float2 coord = (float2)gid + float2(offset_x, offset_y);
             
-            const half4 sample = color.sample(linear_sampler, coord);
-            const half4 _alpha = alpha.sample(linear_sampler, coord);
+            const float4 sample = color.sample(linear_sampler, coord);
+            const float4 _alpha = alpha.sample(linear_sampler, coord);
             
-            sum += half4(sample.rgb, _alpha.a) * matrix[ky * ORDER_X + kx];
+            sum += float4(sample.rgb, _alpha.a) * matrix[ky * ORDER_X + kx];
         }
     }
     
-    const half _alpha = sum.a + bias;
+    const float _alpha = sum.a + bias;
     
-    output.write(half4(sum.rgb + bias * _alpha, _alpha), gid);
+    output.write(float4(sum.rgb + bias * _alpha, _alpha), gid);
 }
 
-kernel void svg_convolve_preserve_alpha(texture2d<half, access::sample> color [[texture(0)]],
-                                        texture2d<half, access::read> alpha [[texture(1)]],
-                                        texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_convolve_preserve_alpha(texture2d<float, access::sample> color [[texture(0)]],
+                                        texture2d<float, access::read> alpha [[texture(1)]],
+                                        texture2d<float, access::write> output [[texture(2)]],
                                         constant float *matrix [[buffer(3)]],
                                         constant float &bias [[buffer(4)]],
                                         constant packed_float2 &unit [[buffer(5)]],
@@ -146,7 +146,7 @@ kernel void svg_convolve_preserve_alpha(texture2d<half, access::sample> color [[
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    half3 sum = 0;
+    float3 sum = 0;
     
     for (int j = 0; j < ORDER_Y; ++j) {
         for (int i = 0; i < ORDER_X; ++i) {
@@ -159,13 +159,13 @@ kernel void svg_convolve_preserve_alpha(texture2d<half, access::sample> color [[
             
             const float2 coord = (float2)gid + float2(offset_x, offset_y);
             
-            const half4 sample = color.sample(linear_sampler, coord);
+            const float4 sample = color.sample(linear_sampler, coord);
             
             sum += unpremultiply(sample).rgb * matrix[ky * ORDER_X + kx];
         }
     }
     
-    const half _alpha = alpha.read(gid).a;
+    const float _alpha = alpha.read(gid).a;
     
-    output.write(premultiply(half4(sum + bias, _alpha)), gid);
+    output.write(premultiply(float4(sum + bias, _alpha)), gid);
 }

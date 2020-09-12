@@ -84,7 +84,7 @@ kernel void k_means_clustering(constant float4 *table [[buffer(0)]],
             count += counter[idx];
         }
     }
-
+    
     if (count > 0) {
         palette.write(color / count, uint2(gid, 0));
     }

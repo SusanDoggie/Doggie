@@ -35,8 +35,8 @@ extension CIImage {
         
         override class func roi(forInput input: Int32, arguments: [String: Any]?, outputRect: CGRect) -> CGRect {
             guard let spatial = arguments?["spatial"] as? Size else { return outputRect }
-            let insetX = -ceil(3 * abs(spatial.width))
-            let insetY = -ceil(3 * abs(spatial.height))
+            let insetX = -ceil(1 * abs(spatial.width))
+            let insetY = -ceil(1 * abs(spatial.height))
             return outputRect.insetBy(dx: CGFloat(insetX), dy: CGFloat(insetY))
         }
         

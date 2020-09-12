@@ -28,8 +28,8 @@ using namespace metal;
 
 constexpr sampler linear_sampler (coord::pixel, address::clamp_to_edge, filter::linear);
 
-kernel void svg_normal_map(texture2d<half, access::sample> input [[texture(0)]],
-                           texture2d<half, access::write> output [[texture(1)]],
+kernel void svg_normal_map(texture2d<float, access::sample> input [[texture(0)]],
+                           texture2d<float, access::write> output [[texture(1)]],
                            constant packed_float2 &offset [[buffer(2)]],
                            constant packed_float2 &unit [[buffer(3)]],
                            uint2 gid [[thread_position_in_grid]]) {
@@ -61,7 +61,7 @@ kernel void svg_normal_map(texture2d<half, access::sample> input [[texture(0)]],
     norm_y += input.sample(linear_sampler, coord + offset_7).a * 2;
     norm_y += input.sample(linear_sampler, coord + offset_8).a;
     
-    const half4 color = half4(norm_x, norm_y, input.sample(linear_sampler, coord).a, 1);
+    const float4 color = float4(norm_x, norm_y, input.sample(linear_sampler, coord).a, 1);
     
     output.write(color, gid);
 }
@@ -71,11 +71,11 @@ struct DiffuseLightInfo {
     packed_float4 color;
     float unit_scale;
     
-    half4 lighting(half4 source, half4 color, float3 norm, float3 light) const {
+    float4 lighting(float4 source, float4 color, float3 norm, float3 light) const {
         
         const float diffuse = dot(norm, light);
         
-        return half4(source.rgb + diffuse * color.rgb, 1);
+        return float4(source.rgb + diffuse * color.rgb, 1);
     }
 };
 
@@ -85,17 +85,17 @@ struct SpecularLightInfo {
     float unit_scale;
     float specularExponent;
     
-    half4 lighting(half4 source, half4 color, float3 norm, float3 light) const {
+    float4 lighting(float4 source, float4 color, float3 norm, float3 light) const {
         
         const float3 E = float3(0, 0, 1);
         const float3 H = normalize(light + E);
         
-        const half3 _color = pow(dot(norm, H), specularExponent) * color.rgb;
+        const float3 _color = pow(dot(norm, H), specularExponent) * color.rgb;
         
 #if defined(__HAVE_MAX3__)
-        return source + half4(_color, max3(_color.x, _color.y, _color.x));
+        return source + float4(_color, max3(_color.x, _color.y, _color.x));
 #else
-        return source + half4(_color, max(_color.x, max(_color.y, _color.x)));
+        return source + float4(_color, max(_color.x, max(_color.y, _color.x)));
 #endif
     }
 };
@@ -105,7 +105,7 @@ struct DistantLightSourceInfo {
     float azimuth;
     float elevation;
     
-    float3 light(float4 color, half4 norm_map, float2 coord) const {
+    float3 light(float4 color, float4 norm_map, float2 coord) const {
         return float3(float2(cos(azimuth), sin(azimuth)) * cos(elevation), sin(elevation));
     }
     
@@ -119,7 +119,7 @@ struct PointLightSourceInfo {
     
     packed_float3 position;
     
-    float3 light(float4 color, half4 norm_map, float2 coord) const {
+    float3 light(float4 color, float4 norm_map, float2 coord) const {
         return normalize(position - float3(coord, color.a * norm_map.z));
     }
     
@@ -136,7 +136,7 @@ struct SpotLightSourceInfo {
     float specularExponent;
     float limitingConeAngle;
     
-    float3 light(float4 color, half4 norm_map, float2 coord) const {
+    float3 light(float4 color, float4 norm_map, float2 coord) const {
         return normalize(position - float3(coord, color.a * norm_map.z));
     }
     
@@ -159,11 +159,11 @@ struct SpotLightSourceInfo {
 };
 
 template <typename L, typename S>
-half4 svg_lighting(half4 norm_map,
-                   half4 source,
-                   const L lighting_info,
-                   const S light_source_info,
-                   uint2 gid) {
+float4 svg_lighting(float4 norm_map,
+                    float4 source,
+                    const L lighting_info,
+                    const S light_source_info,
+                    uint2 gid) {
     
     const float2 coord = lighting_info.unit_scale * (float2)gid;
     
@@ -174,213 +174,213 @@ half4 svg_lighting(half4 norm_map,
     
     const float4 color = light_source_info.color(light_color, light);
     
-    return lighting_info.lighting(source, (half4)color, norm, light);
+    return lighting_info.lighting(source, color, norm, light);
 }
 
-kernel void svg_diffuse_distant_light(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                      texture2d<half, access::write> output [[texture(1)]],
+kernel void svg_diffuse_distant_light(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                      texture2d<float, access::write> output [[texture(1)]],
                                       constant DiffuseLightInfo &lighting_info [[buffer(2)]],
                                       constant DistantLightSourceInfo &light_source_info [[buffer(3)]],
                                       uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
-kernel void svg_diffuse_point_light(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                    texture2d<half, access::write> output [[texture(1)]],
+kernel void svg_diffuse_point_light(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                    texture2d<float, access::write> output [[texture(1)]],
                                     constant DiffuseLightInfo &lighting_info [[buffer(2)]],
                                     constant PointLightSourceInfo &light_source_info [[buffer(3)]],
                                     uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
-kernel void svg_diffuse_spot_light(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                   texture2d<half, access::write> output [[texture(1)]],
+kernel void svg_diffuse_spot_light(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                   texture2d<float, access::write> output [[texture(1)]],
                                    constant DiffuseLightInfo &lighting_info [[buffer(2)]],
                                    constant SpotLightSourceInfo &light_source_info [[buffer(3)]],
                                    uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
 
-kernel void svg_specular_distant_light(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                       texture2d<half, access::write> output [[texture(1)]],
+kernel void svg_specular_distant_light(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                       texture2d<float, access::write> output [[texture(1)]],
                                        constant SpecularLightInfo &lighting_info [[buffer(2)]],
                                        constant DistantLightSourceInfo &light_source_info [[buffer(3)]],
                                        uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
-kernel void svg_specular_point_light(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                     texture2d<half, access::write> output [[texture(1)]],
+kernel void svg_specular_point_light(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                     texture2d<float, access::write> output [[texture(1)]],
                                      constant SpecularLightInfo &lighting_info [[buffer(2)]],
                                      constant PointLightSourceInfo &light_source_info [[buffer(3)]],
                                      uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
-kernel void svg_specular_spot_light(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                    texture2d<half, access::write> output [[texture(1)]],
+kernel void svg_specular_spot_light(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                    texture2d<float, access::write> output [[texture(1)]],
                                     constant SpecularLightInfo &lighting_info [[buffer(2)]],
                                     constant SpotLightSourceInfo &light_source_info [[buffer(3)]],
                                     uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, 0, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
 
-kernel void svg_diffuse_distant_light2(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                       texture2d<half, access::read> input [[texture(1)]],
-                                       texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_diffuse_distant_light2(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                       texture2d<float, access::read> input [[texture(1)]],
+                                       texture2d<float, access::write> output [[texture(2)]],
                                        constant DiffuseLightInfo &lighting_info [[buffer(3)]],
                                        constant DistantLightSourceInfo &light_source_info [[buffer(4)]],
                                        uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
-    const half4 source = input.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
+    const float4 source = input.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
-kernel void svg_diffuse_point_light2(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                     texture2d<half, access::read> input [[texture(1)]],
-                                     texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_diffuse_point_light2(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                     texture2d<float, access::read> input [[texture(1)]],
+                                     texture2d<float, access::write> output [[texture(2)]],
                                      constant DiffuseLightInfo &lighting_info [[buffer(3)]],
                                      constant PointLightSourceInfo &light_source_info [[buffer(4)]],
                                      uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
-    const half4 source = input.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
+    const float4 source = input.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
-kernel void svg_diffuse_spot_light2(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                    texture2d<half, access::read> input [[texture(1)]],
-                                    texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_diffuse_spot_light2(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                    texture2d<float, access::read> input [[texture(1)]],
+                                    texture2d<float, access::write> output [[texture(2)]],
                                     constant DiffuseLightInfo &lighting_info [[buffer(3)]],
                                     constant SpotLightSourceInfo &light_source_info [[buffer(4)]],
                                     uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
-    const half4 source = input.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
+    const float4 source = input.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
 
-kernel void svg_specular_distant_light2(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                        texture2d<half, access::read> input [[texture(1)]],
-                                        texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_specular_distant_light2(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                        texture2d<float, access::read> input [[texture(1)]],
+                                        texture2d<float, access::write> output [[texture(2)]],
                                         constant SpecularLightInfo &lighting_info [[buffer(3)]],
                                         constant DistantLightSourceInfo &light_source_info [[buffer(4)]],
                                         uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
-    const half4 source = input.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
+    const float4 source = input.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
-kernel void svg_specular_point_light2(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                      texture2d<half, access::read> input [[texture(1)]],
-                                      texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_specular_point_light2(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                      texture2d<float, access::read> input [[texture(1)]],
+                                      texture2d<float, access::write> output [[texture(2)]],
                                       constant SpecularLightInfo &lighting_info [[buffer(3)]],
                                       constant PointLightSourceInfo &light_source_info [[buffer(4)]],
                                       uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
-    const half4 source = input.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
+    const float4 source = input.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }
-kernel void svg_specular_spot_light2(texture2d<half, access::read> norm_map_texture [[texture(0)]],
-                                     texture2d<half, access::read> input [[texture(1)]],
-                                     texture2d<half, access::write> output [[texture(2)]],
+kernel void svg_specular_spot_light2(texture2d<float, access::read> norm_map_texture [[texture(0)]],
+                                     texture2d<float, access::read> input [[texture(1)]],
+                                     texture2d<float, access::write> output [[texture(2)]],
                                      constant SpecularLightInfo &lighting_info [[buffer(3)]],
                                      constant SpotLightSourceInfo &light_source_info [[buffer(4)]],
                                      uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    const half4 norm_map = norm_map_texture.read(gid);
-    const half4 source = input.read(gid);
+    const float4 norm_map = norm_map_texture.read(gid);
+    const float4 source = input.read(gid);
     
     const uint2 coord = uint2(gid.x, output.get_height() - gid.y - 1);
     
-    const half4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
+    const float4 result = svg_lighting(norm_map, source, lighting_info, light_source_info, coord);
     
     output.write(result, gid);
 }

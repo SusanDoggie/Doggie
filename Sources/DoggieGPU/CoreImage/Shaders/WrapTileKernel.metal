@@ -28,10 +28,10 @@ using namespace metal;
 
 constexpr sampler linear_sampler (address::repeat, filter::linear);
 
-kernel void wrap_tile(texture2d<half, access::sample> input [[texture(0)]],
-                        texture2d<half, access::write> output [[texture(1)]],
-                        constant packed_float2 &offset [[buffer(2)]],
-                        uint2 gid [[thread_position_in_grid]]) {
+kernel void wrap_tile(texture2d<float, access::sample> input [[texture(0)]],
+                      texture2d<float, access::write> output [[texture(1)]],
+                      constant packed_float2 &offset [[buffer(2)]],
+                      uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
@@ -39,7 +39,7 @@ kernel void wrap_tile(texture2d<half, access::sample> input [[texture(0)]],
     coord.x /= (float)input.get_width();
     coord.y /= (float)input.get_height();
     
-    const half4 color = input.sample(linear_sampler, coord);
+    const float4 color = input.sample(linear_sampler, coord);
     
     output.write(color, gid);
 }

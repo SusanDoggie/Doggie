@@ -41,11 +41,11 @@ constant bool has_green_channel_gamma [[function_constant(9)]];
 constant bool has_blue_channel_gamma [[function_constant(10)]];
 constant bool has_alpha_channel_gamma [[function_constant(11)]];
 
-half table_lookup(half c, int table_size, constant float *table) {
+float table_lookup(float c, int table_size, constant float *table) {
     
     const int n = table_size - 1;
     
-    const float _c = clamp((float)c, 0.0, 1.0) * (float)n;
+    const float _c = clamp(c, 0.0, 1.0) * (float)n;
     const int k = (int)trunc(_c);
     
     if (k < n) {
@@ -55,11 +55,11 @@ half table_lookup(half c, int table_size, constant float *table) {
     }
 }
 
-half discrete_table_lookup(half c, int table_size, constant float *table) {
+float discrete_table_lookup(float c, int table_size, constant float *table) {
     
     const int n = table_size - 1;
     
-    const float _c = clamp((float)c, 0.0, 1.0) * (float)n;
+    const float _c = clamp(c, 0.0, 1.0) * (float)n;
     const int k = (int)trunc(_c);
     
     if (k < n) {
@@ -69,12 +69,12 @@ half discrete_table_lookup(half c, int table_size, constant float *table) {
     }
 }
 
-half gamma_transfer(half c, float amplitude, float exponent, float offset) {
-    return amplitude * pow((float)c, exponent) + offset;
+float gamma_transfer(float c, float amplitude, float exponent, float offset) {
+    return amplitude * pow(c, exponent) + offset;
 }
 
-kernel void svg_component_transfer(texture2d<half, access::read> input [[texture(0)]],
-                                   texture2d<half, access::write> output [[texture(1)]],
+kernel void svg_component_transfer(texture2d<float, access::read> input [[texture(0)]],
+                                   texture2d<float, access::write> output [[texture(1)]],
                                    constant int &red_channel_table_size [[buffer(2), function_constant(has_red_channel_table)]],
                                    constant int &green_channel_table_size [[buffer(3), function_constant(has_green_channel_table)]],
                                    constant int &blue_channel_table_size [[buffer(4), function_constant(has_blue_channel_table)]],
@@ -91,7 +91,7 @@ kernel void svg_component_transfer(texture2d<half, access::read> input [[texture
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
     
-    half4 color = input.read(gid);
+    float4 color = input.read(gid);
     
     if (has_red_channel_table) {
         if (is_red_channel_discrete) {
