@@ -112,7 +112,7 @@ extension CIImage {
             encoder.setTexture(output_texture , index: 2)
             matrix.withUnsafeBytes { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
             withUnsafeBytes(of: Float(bias)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
-            withUnsafeBytes(of: (Float(unit.width), Float(unit.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 5) }
+            withUnsafeBytes(of: packed_float2(unit)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 5) }
             
             if inputs?.count == 2 {
                 encoder.setTexture(inputs?[1].metalTexture , index: 1)

@@ -142,9 +142,9 @@ extension SVGTurbulenceKernel {
             
             guard let commandBuffer = output.metalCommandBuffer else { return }
             guard let texture = output.metalTexture else { return }
-            guard var info = arguments?["info"] as? SVGTurbulenceKernel else { return }
+            guard let info = arguments?["info"] as? SVGTurbulenceKernel else { return }
             
-            info.transform = SDTransform.translate(x: output.region.minX, y: output.region.minY) * SDTransform.reflectY(output.region.midY) * info.transform
+            let transform = SDTransform.translate(x: output.region.minX, y: output.region.minY) * SDTransform.reflectY(output.region.midY) * info.transform.inverse
             
             let device = commandBuffer.device
             guard let buffers = svg_noise_generator(info.seed, device) else { return }
@@ -161,16 +161,17 @@ extension SVGTurbulenceKernel {
                 var baseFreq: packed_float2
                 var stitchTile: packed_float4
                 
-                init(_ info: SVGTurbulenceKernel) {
-                    self.transform = simd_float3x2(info.transform)
-                    self.baseFreq = packed_float2(info.baseFreq)
-                    self.stitchTile = packed_float4(info.stitchTile)
-                }
             }
+            
+            let _info = Info(
+                transform: simd_float3x2(transform),
+                baseFreq: packed_float2(info.baseFreq),
+                stitchTile: packed_float4(info.stitchTile)
+            )
             
             encoder.setBuffer(buffers.0, offset: 0, index: 0)
             encoder.setBuffer(buffers.1, offset: 0, index: 1)
-            withUnsafeBytes(of: Info(info)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
+            withUnsafeBytes(of: _info) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
             encoder.setTexture(texture, index: 3)
             
             let group_width = max(1, pipeline.threadExecutionWidth)

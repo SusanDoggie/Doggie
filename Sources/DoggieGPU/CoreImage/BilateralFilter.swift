@@ -63,7 +63,7 @@ extension CIImage {
             encoder.setTexture(source, index: 0)
             encoder.setTexture(destination, index: 1)
             withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
-            withUnsafeBytes(of: (Float(spatial.width), Float(spatial.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
+            withUnsafeBytes(of: packed_float2(spatial)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
             withUnsafeBytes(of: Float(range)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
             
             let group_width = max(1, pipeline.threadExecutionWidth)

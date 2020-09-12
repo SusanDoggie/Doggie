@@ -94,7 +94,7 @@ extension CIImage {
             encoder.setTexture(input, index: 0)
             encoder.setTexture(output, index: 1)
             withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
-            withUnsafeBytes(of: (Float(unit.width), Float(unit.height))) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
+            withUnsafeBytes(of: packed_float2(unit)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
             
             let group_width = max(1, svg_normalmap.threadExecutionWidth)
             let group_height = max(1, svg_normalmap.maxTotalThreadsPerThreadgroup / group_width)
