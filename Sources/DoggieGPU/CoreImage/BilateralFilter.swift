@@ -52,6 +52,14 @@ extension CIImage {
             guard let offset_x = UInt32(exactly: output.region.minX - source_region.minX) else { return }
             guard let offset_y = UInt32(exactly: source_region.maxY - output.region.maxY) else { return }
             
+            guard let range_x = Int(exactly: source_region.width - output.region.width) else { return }
+            guard let range_y = Int(exactly: source_region.height - output.region.height) else { return }
+            
+            let c0 = -0.5 / Float(spatial.width * spatial.width);
+            let c1 = -0.5 / Float(spatial.height * spatial.height);
+            let weight_x = (0..<range_x).map { $0 - Int(offset_x) }.map { exp(c0 * Float($0 * $0)) }
+            let weight_y = (0..<range_y).map { $0 - Int(offset_y) }.map { exp(c1 * Float($0 * $0)) }
+            
             let device = commandBuffer.device
             
             guard let pipeline = self.make_pipeline(device, "bilateral_filter") else { return }
@@ -63,8 +71,9 @@ extension CIImage {
             encoder.setTexture(source, index: 0)
             encoder.setTexture(destination, index: 1)
             withUnsafeBytes(of: (offset_x, offset_y)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 2) }
-            withUnsafeBytes(of: packed_float2(spatial)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
-            withUnsafeBytes(of: Float(range)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
+            weight_x.withUnsafeBytes { encoder.setBytes($0.baseAddress!, length: $0.count, index: 3) }
+            weight_y.withUnsafeBytes { encoder.setBytes($0.baseAddress!, length: $0.count, index: 4) }
+            withUnsafeBytes(of: Float(range)) { encoder.setBytes($0.baseAddress!, length: $0.count, index: 5) }
             
             let group_width = max(1, pipeline.threadExecutionWidth)
             let group_height = max(1, pipeline.maxTotalThreadsPerThreadgroup / group_width)

@@ -29,8 +29,9 @@ using namespace metal;
 kernel void bilateral_filter(texture2d<half, access::read> input [[texture(0)]],
                              texture2d<half, access::write> output [[texture(1)]],
                              constant packed_uint2 &offset [[buffer(2)]],
-                             constant packed_float2 &spatial [[buffer(3)]],
-                             constant float &range [[buffer(4)]],
+                             constant float *weight_x [[buffer(3)]],
+                             constant float *weight_y [[buffer(4)]],
+                             constant float &range [[buffer(5)]],
                              uint2 gid [[thread_position_in_grid]]) {
     
     if (gid.x >= output.get_width() || gid.y >= output.get_height()) { return; }
@@ -38,11 +39,6 @@ kernel void bilateral_filter(texture2d<half, access::read> input [[texture(0)]],
     const int orderX = input.get_width() - output.get_width();
     const int orderY = input.get_height() - output.get_height();
     
-    const int _orderX = orderX / 2;
-    const int _orderY = orderY / 2;
-
-    const float c0 = -0.5 / (spatial[0] * spatial[0]);
-    const float c1 = -0.5 / (spatial[1] * spatial[1]);
     const float c2 = -0.5 / (range * range);
     
     half4 s = 0;
@@ -53,11 +49,8 @@ kernel void bilateral_filter(texture2d<half, access::read> input [[texture(0)]],
     for (int y = 0; y < orderY; ++y) {
         for (int x = 0; x < orderX; ++x) {
             
-            const int _x = x - _orderX;
-            const int _y = y - _orderY;
-            
             const half4 k = input.read(gid + uint2(x, y));
-            const float w = exp(c0 * _x * _x + c1 * _y * _y + c2 * distance_squared(p, k));
+            const float w = weight_x[x] * weight_y[y] * exp(c2 * distance_squared(p, k));
             
             s += w * k;
             t += w;
