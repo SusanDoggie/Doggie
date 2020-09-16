@@ -42,8 +42,8 @@ public protocol ColorModel: _ColorModel, Hashable, Tensor where Scalar == Double
     func denormalized() -> Self
 }
 
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
+#if !os(macOS) && !targetEnvironment(macCatalyst)
+
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 public protocol _Float16ColorModelProtocol {
     
@@ -52,6 +52,8 @@ public protocol _Float16ColorModelProtocol {
     var float16Components: Float16Components { get set }
     
 }
+
+#endif
 
 public protocol ColorComponents: Hashable, Tensor {
     
@@ -118,8 +120,8 @@ extension ColorModel {
     }
 }
 
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
+#if !os(macOS) && !targetEnvironment(macCatalyst)
+
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 extension _Float16ColorModelProtocol {
     
@@ -134,3 +136,5 @@ extension _Float16ColorModelProtocol {
         }
     }
 }
+
+#endif

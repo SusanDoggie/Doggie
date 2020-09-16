@@ -64,17 +64,15 @@ struct _fast_decode_info<Model: ColorModel> {
     }
 }
 
+#if !os(macOS) && !targetEnvironment(macCatalyst)
+
 @usableFromInline
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 protocol _Float16FastDecodeImageProtocol {
     
     func _fast_create_image<M>(_ bitsPerPixel: Int, _ numberOfComponents: Int, _ bitmaps: [RawBitmap], _ info: _fast_decode_info<M>) -> AnyImageBaseProtocol?
 }
 
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 extension ColorSpace: _Float16FastDecodeImageProtocol where Model: _Float16ColorModelProtocol {
     
@@ -145,6 +143,8 @@ extension ColorSpace: _Float16FastDecodeImageProtocol where Model: _Float16Color
         return nil
     }
 }
+
+#endif
 
 extension ColorSpace {
     
@@ -918,7 +918,7 @@ extension ColorSpace {
             fileBacked: fileBacked
         )
         
-        #if !os(macOS) && !(os(iOS) && targetEnvironment(macCatalyst))
+        #if !os(macOS) && !targetEnvironment(macCatalyst)
         
         if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *),
            let colorSpace = self as? _Float16FastDecodeImageProtocol,

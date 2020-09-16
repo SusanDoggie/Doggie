@@ -35,17 +35,15 @@ extension Image {
     }
 }
 
+#if !os(macOS) && !targetEnvironment(macCatalyst)
+
 @usableFromInline
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 protocol _Float16SlowDecodeImageProtocol {
     
     func _slow_create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], is_opaque: Bool, premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol?
 }
 
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 extension ColorSpace: _Float16SlowDecodeImageProtocol where Model: _Float16ColorModelProtocol {
     
@@ -74,6 +72,8 @@ extension ColorSpace: _Float16SlowDecodeImageProtocol where Model: _Float16Color
         return nil
     }
 }
+
+#endif
 
 extension ColorSpace {
     
@@ -145,7 +145,7 @@ extension ColorSpace {
         default: break
         }
         
-        #if !os(macOS) && !(os(iOS) && targetEnvironment(macCatalyst))
+        #if !os(macOS) && !targetEnvironment(macCatalyst)
         
         if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *),
            let colorSpace = self as? _Float16SlowDecodeImageProtocol,

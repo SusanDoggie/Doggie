@@ -32,12 +32,14 @@ public protocol RawBitPattern {
     init(bitPattern: BitPattern)
 }
 
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
+#if !os(macOS) && !targetEnvironment(macCatalyst)
+
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 extension Float16: RawBitPattern {
     
 }
+
+#endif
 
 extension Float: RawBitPattern {
     

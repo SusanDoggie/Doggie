@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
+#if !os(macOS) && !targetEnvironment(macCatalyst)
+
 @frozen
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 public struct Float16ColorPixel<Model: _Float16ColorModelProtocol>: _FloatComponentPixel {
     
@@ -72,3 +72,5 @@ public struct Float16ColorPixel<Model: _Float16ColorModelProtocol>: _FloatCompon
     }
     
 }
+
+#endif

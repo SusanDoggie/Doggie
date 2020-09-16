@@ -145,14 +145,16 @@ extension LuvColorModel {
     }
 }
 
-@available(macOS, unavailable)
-@available(macCatalyst, unavailable)
+#if !os(macOS) && !targetEnvironment(macCatalyst)
+
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 extension LuvColorModel: _Float16ColorModelProtocol {
     
     public typealias Float16Components = FloatComponents<Float16>
     
 }
+
+#endif
 
 extension LuvColorModel {
     
