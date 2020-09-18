@@ -300,7 +300,7 @@ class ImageCodecTest: XCTestCase {
             withUnsafeBytes(of: blue.bitPattern.bigEndian) { data.append(contentsOf: $0) }
         }
         
-        let bitmap = RawBitmap(bitsPerPixel: 48, bytesPerRow: width * 12, endianness: .big, channels: [
+        let bitmap = RawBitmap(bitsPerPixel: 48, bytesPerRow: width * 6, endianness: .big, channels: [
             RawBitmap.Channel(index: 0, format: .float, endianness: .big, bitRange: 0..<16),
             RawBitmap.Channel(index: 1, format: .float, endianness: .big, bitRange: 16..<32),
             RawBitmap.Channel(index: 2, format: .float, endianness: .big, bitRange: 32..<48),
@@ -342,7 +342,7 @@ class ImageCodecTest: XCTestCase {
             withUnsafeBytes(of: blue.bitPattern.littleEndian) { data.append(contentsOf: $0) }
         }
         
-        let bitmap = RawBitmap(bitsPerPixel: 48, bytesPerRow: width * 12, endianness: .big, channels: [
+        let bitmap = RawBitmap(bitsPerPixel: 48, bytesPerRow: width * 6, endianness: .big, channels: [
             RawBitmap.Channel(index: 0, format: .float, endianness: .little, bitRange: 0..<16),
             RawBitmap.Channel(index: 1, format: .float, endianness: .little, bitRange: 16..<32),
             RawBitmap.Channel(index: 2, format: .float, endianness: .little, bitRange: 32..<48),
