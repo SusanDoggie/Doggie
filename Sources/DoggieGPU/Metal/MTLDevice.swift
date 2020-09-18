@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+#if canImport(Metal)
+
 extension MTLDevice {
     
     public var maxTessellationFactor: Int {
@@ -67,3 +69,5 @@ extension MTLDevice {
         
     }
 }
+
+#endif

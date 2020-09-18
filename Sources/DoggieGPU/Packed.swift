@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+#if canImport(Metal)
+
 struct Packed2<Scalar> {
     
     var x: Scalar
@@ -125,3 +127,5 @@ extension packed_float3x2 {
         )
     }
 }
+
+#endif

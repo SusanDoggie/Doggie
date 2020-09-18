@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+#if canImport(Metal)
+
 extension SIMD2 where Scalar: BinaryFloatingPoint {
     
     @_transparent
@@ -63,3 +65,5 @@ extension simd_float3x2 {
         ))
     }
 }
+
+#endif
