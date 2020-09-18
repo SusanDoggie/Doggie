@@ -280,6 +280,94 @@ class ImageCodecTest: XCTestCase {
         }
     }
     
+    #if !os(macOS) && !targetEnvironment(macCatalyst)
+    
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+    func testRGBFloat16Big() {
+        
+        let width = 256
+        let height = 256
+        let length = width * height
+        
+        var data = Data()
+        
+        for _ in 0..<length {
+            let red = Float16.random(in: 0...1)
+            let green = Float16.random(in: 0...1)
+            let blue = Float16.random(in: 0...1)
+            withUnsafeBytes(of: red.bitPattern.bigEndian) { data.append(contentsOf: $0) }
+            withUnsafeBytes(of: green.bitPattern.bigEndian) { data.append(contentsOf: $0) }
+            withUnsafeBytes(of: blue.bitPattern.bigEndian) { data.append(contentsOf: $0) }
+        }
+        
+        let bitmap = RawBitmap(bitsPerPixel: 48, bytesPerRow: width * 12, endianness: .big, channels: [
+            RawBitmap.Channel(index: 0, format: .float, endianness: .big, bitRange: 0..<16),
+            RawBitmap.Channel(index: 1, format: .float, endianness: .big, bitRange: 16..<32),
+            RawBitmap.Channel(index: 2, format: .float, endianness: .big, bitRange: 32..<48),
+        ], data: data)
+        
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float16ColorPixel<RGBColorModel>>
+        
+        XCTAssertNotNil(image)
+        
+        guard let pixels = image?.pixels else { return }
+        
+        var result = Data()
+        
+        for i in 0..<pixels.count {
+            withUnsafeBytes(of: pixels[i]._color.red.bitPattern.bigEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.green.bitPattern.bigEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.blue.bitPattern.bigEndian) { result.append(contentsOf: $0) }
+            XCTAssertEqual(1, pixels[i].opacity)
+        }
+        
+        XCTAssertEqual(data, result)
+    }
+    
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+    func testRGBFloat16Little() {
+        
+        let width = 256
+        let height = 256
+        let length = width * height
+        
+        var data = Data()
+        
+        for _ in 0..<length {
+            let red = Float16.random(in: 0...1)
+            let green = Float16.random(in: 0...1)
+            let blue = Float16.random(in: 0...1)
+            withUnsafeBytes(of: red.bitPattern.littleEndian) { data.append(contentsOf: $0) }
+            withUnsafeBytes(of: green.bitPattern.littleEndian) { data.append(contentsOf: $0) }
+            withUnsafeBytes(of: blue.bitPattern.littleEndian) { data.append(contentsOf: $0) }
+        }
+        
+        let bitmap = RawBitmap(bitsPerPixel: 48, bytesPerRow: width * 12, endianness: .big, channels: [
+            RawBitmap.Channel(index: 0, format: .float, endianness: .little, bitRange: 0..<16),
+            RawBitmap.Channel(index: 1, format: .float, endianness: .little, bitRange: 16..<32),
+            RawBitmap.Channel(index: 2, format: .float, endianness: .little, bitRange: 32..<48),
+        ], data: data)
+        
+        let image = AnyImage(width: width, height: height, colorSpace: AnyColorSpace.sRGB, bitmaps: [bitmap], premultiplied: false, fileBacked: false).base as? Image<Float16ColorPixel<RGBColorModel>>
+        
+        XCTAssertNotNil(image)
+        
+        guard let pixels = image?.pixels else { return }
+        
+        var result = Data()
+        
+        for i in 0..<pixels.count {
+            withUnsafeBytes(of: pixels[i]._color.red.bitPattern.littleEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.green.bitPattern.littleEndian) { result.append(contentsOf: $0) }
+            withUnsafeBytes(of: pixels[i]._color.blue.bitPattern.littleEndian) { result.append(contentsOf: $0) }
+            XCTAssertEqual(1, pixels[i].opacity)
+        }
+        
+        XCTAssertEqual(data, result)
+    }
+    
+    #endif
+    
     func testRGBFloat32Big() {
         
         let width = 256

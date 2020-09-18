@@ -91,12 +91,32 @@ extension RawBitmap {
         public let bitRange: Range<Int>
         
         public init(index: Int, format: Format, endianness: Endianness, bitRange: Range<Int>) {
+            
             if format == .float {
+                
+                #if !os(macOS) && !targetEnvironment(macCatalyst)
+                
+                if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *) {
+                    
+                    precondition(bitRange.count == 16 || bitRange.count == 32 || bitRange.count == 64, "Only supported Float16, Float32 or Float64.")
+                    
+                } else {
+                    
+                    precondition(bitRange.count == 32 || bitRange.count == 64, "Only supported Float32 or Float64.")
+                }
+                
+                #else
+                
                 precondition(bitRange.count == 32 || bitRange.count == 64, "Only supported Float32 or Float64.")
+                
+                #endif
+                
             }
+            
             if endianness == .little {
                 precondition(bitRange.count % 8 == 0, "Unsupported bitRange with little-endian.")
             }
+            
             self.index = index
             self.format = format
             self.endianness = bitRange.count == 8 ? .big : endianness

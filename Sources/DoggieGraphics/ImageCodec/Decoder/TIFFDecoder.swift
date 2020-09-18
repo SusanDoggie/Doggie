@@ -297,7 +297,24 @@ struct TIFFPage: ImageRepBase {
         }
         
         for (bits, format) in zip(self.bitsPerSample, self.sampleFormat) where format == 3 {
+            
+            #if !os(macOS) && !targetEnvironment(macCatalyst)
+            
+            if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *) {
+                
+                guard bits == 16 || bits == 32 || bits == 64 else { throw ImageRep.Error.InvalidFormat("Unsupported bits per sample.") }
+                
+            } else {
+                
+                guard bits == 32 || bits == 64 else { throw ImageRep.Error.InvalidFormat("Unsupported bits per sample.") }
+            }
+            
+            #else
+            
             guard bits == 32 || bits == 64 else { throw ImageRep.Error.InvalidFormat("Unsupported bits per sample.") }
+            
+            #endif
+            
         }
         
         switch self.photometric {
