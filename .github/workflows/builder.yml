@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [centos7, centos8, amazonlinux2]
+        image: [centos8, amazonlinux2]
     steps:
     - uses: actions/checkout@v1
       with:
