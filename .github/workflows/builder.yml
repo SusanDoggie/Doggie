@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [centos8, amazonlinux2]
+        image: [centos7, centos8, amazonlinux2]
     steps:
     - uses: actions/checkout@v1
       with:
@@ -149,7 +149,7 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        image: [nightly-centos8, nightly-amazonlinux2]
+        image: [nightly-centos7, nightly-centos8, nightly-amazonlinux2]
     steps:
     - uses: actions/checkout@v1
       with:
