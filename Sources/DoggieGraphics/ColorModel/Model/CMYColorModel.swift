@@ -193,18 +193,9 @@ extension CMYColorModel {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension CMYColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension CMYColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     

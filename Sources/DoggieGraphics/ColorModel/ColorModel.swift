@@ -29,11 +29,15 @@ public protocol _ColorModel: PolymorphicHashable {
 
 public protocol ColorModel: _ColorModel, Hashable, Tensor where Scalar == Double {
     
+    associatedtype Float16Components: ColorComponents where Float16Components.Model == Self, Float16Components.Scalar == float16
+    
     associatedtype Float32Components: ColorComponents where Float32Components.Model == Self, Float32Components.Scalar == Float
     
     static func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
     
     init<T: ColorComponents>(_ components: T) where T.Model == Self
+    
+    var float16Components: Float16Components { get set }
     
     var float32Components: Float32Components { get set }
     
@@ -41,19 +45,6 @@ public protocol ColorModel: _ColorModel, Hashable, Tensor where Scalar == Double
     
     func denormalized() -> Self
 }
-
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-public protocol _Float16ColorModelProtocol {
-    
-    associatedtype Float16Components: ColorComponents where Float16Components.Model == Self, Float16Components.Scalar == Float16
-    
-    var float16Components: Float16Components { get set }
-    
-}
-
-#endif
 
 public protocol ColorComponents: Hashable, Tensor {
     
@@ -110,6 +101,17 @@ extension ColorModel {
     
     @inlinable
     @inline(__always)
+    public var float16Components: Float16Components {
+        get {
+            return Float16Components(self)
+        }
+        set {
+            self = newValue.model
+        }
+    }
+    
+    @inlinable
+    @inline(__always)
     public var float32Components: Float32Components {
         get {
             return Float32Components(self)
@@ -119,22 +121,3 @@ extension ColorModel {
         }
     }
 }
-
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension _Float16ColorModelProtocol {
-    
-    @inlinable
-    @inline(__always)
-    public var float16Components: Float16Components {
-        get {
-            return Float16Components(self)
-        }
-        set {
-            self = newValue.model
-        }
-    }
-}
-
-#endif

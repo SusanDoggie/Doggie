@@ -193,6 +193,140 @@ extension Float16: FloatingMathProtocol {
 
 #endif
 
+extension float16: FloatingMathProtocol {
+    
+    @_transparent
+    public static func exp(_ x: float16) -> float16 {
+        return float16(Foundation.exp(Float(x)))
+    }
+    
+    @_transparent
+    public static func exp2(_ x: float16) -> float16 {
+        return float16(Foundation.exp2(Float(x)))
+    }
+    
+    @_transparent
+    public static func expm1(_ x: float16) -> float16 {
+        return float16(Foundation.expm1(Float(x)))
+    }
+    
+    @_transparent
+    public static func log(_ x: float16) -> float16 {
+        return float16(Foundation.log(Float(x)))
+    }
+    
+    @_transparent
+    public static func log10(_ x: float16) -> float16 {
+        return float16(Foundation.log10(Float(x)))
+    }
+    
+    @_transparent
+    public static func log2(_ x: float16) -> float16 {
+        return float16(Foundation.log2(Float(x)))
+    }
+    
+    @_transparent
+    public static func log1p(_ x: float16) -> float16 {
+        return float16(Foundation.log1p(Float(x)))
+    }
+    
+    @_transparent
+    public static func pow(_ x: float16, _ y: float16) -> float16 {
+        return float16(Foundation.pow(Float(x), Float(y)))
+    }
+    
+    @_transparent
+    public static func cbrt(_ x: float16) -> float16 {
+        return float16(Foundation.cbrt(Float(x)))
+    }
+    
+    @_transparent
+    public static func hypot(_ x: float16, _ y: float16) -> float16 {
+        return float16(Foundation.hypot(Float(x), Float(y)))
+    }
+    
+    @_transparent
+    public static func sin(_ x: float16) -> float16 {
+        return float16(Foundation.sin(Float(x)))
+    }
+    
+    @_transparent
+    public static func cos(_ x: float16) -> float16 {
+        return float16(Foundation.cos(Float(x)))
+    }
+    
+    @_transparent
+    public static func tan(_ x: float16) -> float16 {
+        return float16(Foundation.tan(Float(x)))
+    }
+    
+    @_transparent
+    public static func asin(_ x: float16) -> float16 {
+        return float16(Foundation.asin(Float(x)))
+    }
+    
+    @_transparent
+    public static func acos(_ x: float16) -> float16 {
+        return float16(Foundation.acos(Float(x)))
+    }
+    
+    @_transparent
+    public static func atan(_ x: float16) -> float16 {
+        return float16(Foundation.atan(Float(x)))
+    }
+    
+    @_transparent
+    public static func atan2(_ y: float16, _ x: float16) -> float16 {
+        return float16(Foundation.atan2(Float(y), Float(x)))
+    }
+    
+    @_transparent
+    public static func sinh(_ x: float16) -> float16 {
+        return float16(Foundation.sinh(Float(x)))
+    }
+    
+    @_transparent
+    public static func cosh(_ x: float16) -> float16 {
+        return float16(Foundation.cosh(Float(x)))
+    }
+    
+    @_transparent
+    public static func tanh(_ x: float16) -> float16 {
+        return float16(Foundation.tanh(Float(x)))
+    }
+    
+    @_transparent
+    public static func asinh(_ x: float16) -> float16 {
+        return float16(Foundation.asinh(Float(x)))
+    }
+    
+    @_transparent
+    public static func acosh(_ x: float16) -> float16 {
+        return float16(Foundation.acosh(Float(x)))
+    }
+    
+    @_transparent
+    public static func atanh(_ x: float16) -> float16 {
+        return float16(Foundation.atanh(Float(x)))
+    }
+    
+    @_transparent
+    public static func erf(_ x: float16) -> float16 {
+        return float16(Foundation.erf(Float(x)))
+    }
+    
+    @_transparent
+    public static func erfc(_ x: float16) -> float16 {
+        return float16(Foundation.erfc(Float(x)))
+    }
+    
+    @_transparent
+    public static func tgamma(_ x: float16) -> float16 {
+        return float16(Foundation.tgamma(Float(x)))
+    }
+    
+}
+
 extension Float: FloatingMathProtocol {
     
     @_transparent

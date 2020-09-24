@@ -54,6 +54,12 @@ extension Float16: ScalarProtocol {
 
 #endif
 
+extension float16: ScalarProtocol {
+    
+    public typealias Scalar = float16
+    
+}
+
 extension Float: ScalarProtocol {
     
     public typealias Scalar = Float

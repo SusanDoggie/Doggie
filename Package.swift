@@ -43,6 +43,7 @@ let package = Package(
         .library(name: "Doggie", targets: ["Doggie"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/SusanDoggie/Float16.git", .branch("master")),
         .package(url: "https://github.com/SusanDoggie/brotli.git", .branch("master")),
         .package(url: "https://github.com/SusanDoggie/libwebp.git", .branch("master")),
         .package(url: "https://github.com/SusanDoggie/libjpeg.git", .branch("master")),
@@ -56,6 +57,7 @@ let package = Package(
         .target(
             name: "DoggieCore",
             dependencies: [
+                "Float16",
                 "zlib_c",
                 "brotli",
             ]

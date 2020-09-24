@@ -1978,6 +1978,8 @@ extension DeviceFColorModel {
 
 extension Device2ColorModel {
     
+    public typealias Float16Components = FloatComponents<float16>
+    
     public typealias Float32Components = FloatComponents<Float>
     
     @frozen
@@ -2071,18 +2073,9 @@ extension Device2ColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension Device3ColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension Device3ColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -2185,18 +2178,9 @@ extension Device3ColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension Device4ColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension Device4ColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -2307,18 +2291,9 @@ extension Device4ColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension Device5ColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension Device5ColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -2447,18 +2422,9 @@ extension Device5ColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension Device6ColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension Device6ColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -2595,18 +2561,9 @@ extension Device6ColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension Device7ColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension Device7ColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -2755,18 +2712,9 @@ extension Device7ColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension Device8ColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension Device8ColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -2923,18 +2871,9 @@ extension Device8ColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension Device9ColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension Device9ColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -3099,18 +3038,9 @@ extension Device9ColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension DeviceAColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension DeviceAColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -3287,18 +3217,9 @@ extension DeviceAColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension DeviceBColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension DeviceBColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -3483,18 +3404,9 @@ extension DeviceBColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension DeviceCColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension DeviceCColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -3687,18 +3599,9 @@ extension DeviceCColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension DeviceDColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension DeviceDColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -3903,18 +3806,9 @@ extension DeviceDColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension DeviceEColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension DeviceEColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     
@@ -4127,18 +4021,9 @@ extension DeviceEColorModel.FloatComponents {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension DeviceFColorModel: _Float16ColorModelProtocol {
-    
-    public typealias Float16Components = FloatComponents<Float16>
-    
-}
-
-#endif
-
 extension DeviceFColorModel {
+    
+    public typealias Float16Components = FloatComponents<float16>
     
     public typealias Float32Components = FloatComponents<Float>
     

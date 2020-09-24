@@ -137,20 +137,6 @@ extension CGImage {
     }
 }
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-protocol _Float16CGImageDataProtocol {
-    
-}
-
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-extension MappedBuffer: _Float16CGImageDataProtocol where Element: _Float16ColorModelProtocol {
-    
-}
-
-#endif
-
 private struct CGImageData {
     
     let width: Int
@@ -166,22 +152,6 @@ private struct CGImageData {
         
         self.width = width
         self.height = height
-        
-        #if !os(macOS) && !targetEnvironment(macCatalyst)
-        
-        if #available(iOS 14.0, tvOS 14.0, watchOS 7.0, *), pixels is _Float16CGImageDataProtocol {
-            
-            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
-            self.bitsPerComponent = 16
-            
-            self.bitmapInfo = CGBitmapInfo.byteOrder16Host.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
-            
-            self.pixels = pixels.data
-            
-            return
-        }
-        
-        #endif
         
         switch pixels {
         
@@ -254,6 +224,15 @@ private struct CGImageData {
             self.bitsPerComponent = 16
             
             self.bitmapInfo = CGBitmapInfo.byteOrder16Host.rawValue | CGImageAlphaInfo.last.rawValue
+            
+            self.pixels = pixels.data
+            
+        case is MappedBuffer<Float16ColorPixel<RawPixel.Model>>:
+            
+            self.bytesPerPixel = MemoryLayout<RawPixel>.stride
+            self.bitsPerComponent = 16
+            
+            self.bitmapInfo = CGBitmapInfo.byteOrder16Host.rawValue | CGBitmapInfo.floatComponents.rawValue | CGImageAlphaInfo.last.rawValue
             
             self.pixels = pixels.data
             

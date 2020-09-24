@@ -137,9 +137,6 @@ extension MTLDevice {
         return self._makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
     
-    #if !os(macOS) && !targetEnvironment(macCatalyst)
-    
-    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == Float16ColorPixel<RGBColorModel> {
         
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: image.width, height: image.height, mipmapped: false)
@@ -147,8 +144,6 @@ extension MTLDevice {
         
         return self._makeTexture(image.pixels, descriptor: descriptor, options: options)
     }
-    
-    #endif
     
     public func makeTexture<Image: RawPixelProtocol>(_ image: Image, usage: MTLTextureUsage = .shaderRead, options: MTLResourceOptions = []) -> MTLTexture? where Image.RawPixel == Float32ColorPixel<RGBColorModel> {
         

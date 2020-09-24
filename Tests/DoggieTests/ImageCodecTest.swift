@@ -280,9 +280,6 @@ class ImageCodecTest: XCTestCase {
         }
     }
     
-    #if !os(macOS) && !targetEnvironment(macCatalyst)
-    
-    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     func testRGBFloat16Big() {
         
         let width = 256
@@ -292,9 +289,9 @@ class ImageCodecTest: XCTestCase {
         var data = Data()
         
         for _ in 0..<length {
-            let red = Float16.random(in: 0...1)
-            let green = Float16.random(in: 0...1)
-            let blue = Float16.random(in: 0...1)
+            let red = float16.random(in: 0...1)
+            let green = float16.random(in: 0...1)
+            let blue = float16.random(in: 0...1)
             withUnsafeBytes(of: red.bitPattern.bigEndian) { data.append(contentsOf: $0) }
             withUnsafeBytes(of: green.bitPattern.bigEndian) { data.append(contentsOf: $0) }
             withUnsafeBytes(of: blue.bitPattern.bigEndian) { data.append(contentsOf: $0) }
@@ -324,7 +321,6 @@ class ImageCodecTest: XCTestCase {
         XCTAssertEqual(data, result)
     }
     
-    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     func testRGBFloat16Little() {
         
         let width = 256
@@ -334,9 +330,9 @@ class ImageCodecTest: XCTestCase {
         var data = Data()
         
         for _ in 0..<length {
-            let red = Float16.random(in: 0...1)
-            let green = Float16.random(in: 0...1)
-            let blue = Float16.random(in: 0...1)
+            let red = float16.random(in: 0...1)
+            let green = float16.random(in: 0...1)
+            let blue = float16.random(in: 0...1)
             withUnsafeBytes(of: red.bitPattern.littleEndian) { data.append(contentsOf: $0) }
             withUnsafeBytes(of: green.bitPattern.littleEndian) { data.append(contentsOf: $0) }
             withUnsafeBytes(of: blue.bitPattern.littleEndian) { data.append(contentsOf: $0) }
@@ -365,8 +361,6 @@ class ImageCodecTest: XCTestCase {
         
         XCTAssertEqual(data, result)
     }
-    
-    #endif
     
     func testRGBFloat32Big() {
         

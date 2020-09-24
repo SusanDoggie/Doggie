@@ -23,28 +23,25 @@
 //  THE SOFTWARE.
 //
 
-#if !os(macOS) && !targetEnvironment(macCatalyst)
-
 @frozen
-@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-public struct Float16ColorPixel<Model: _Float16ColorModelProtocol>: _FloatComponentPixel {
+public struct Float16ColorPixel<Model: ColorModel>: _FloatComponentPixel {
     
-    public typealias Scalar = Float16
+    public typealias Scalar = float16
     
     public var _color: Model.Float16Components
     
-    public var _opacity: Float16
+    public var _opacity: float16
     
     @inlinable
     @inline(__always)
     public init(color: Model, opacity: Double = 1) {
         self._color = Model.Float16Components(color)
-        self._opacity = Float16(opacity)
+        self._opacity = float16(opacity)
     }
     
     @inlinable
     @inline(__always)
-    public init(color: Model.Float16Components, opacity: Float16 = 1) {
+    public init(color: Model.Float16Components, opacity: float16 = 1) {
         self._color = color
         self._opacity = opacity
     }
@@ -72,5 +69,3 @@ public struct Float16ColorPixel<Model: _Float16ColorModelProtocol>: _FloatCompon
     }
     
 }
-
-#endif

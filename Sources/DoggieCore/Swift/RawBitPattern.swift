@@ -41,6 +41,10 @@ extension Float16: RawBitPattern {
 
 #endif
 
+extension float16: RawBitPattern {
+    
+}
+
 extension Float: RawBitPattern {
     
 }

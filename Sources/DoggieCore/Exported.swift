@@ -25,6 +25,8 @@
 
 @_exported import Foundation
 
+@_exported import Float16
+
 @_exported import zlib_c
 
 @_exported import brotli
