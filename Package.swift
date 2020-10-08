@@ -43,6 +43,7 @@ let package = Package(
         .library(name: "Doggie", targets: ["Doggie"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-algorithms.git", .upToNextMinor(from: "0.0.1")),
         .package(url: "https://github.com/SusanDoggie/Float16.git", .branch("master")),
         .package(url: "https://github.com/SusanDoggie/brotli.git", .branch("master")),
         .package(url: "https://github.com/SusanDoggie/libwebp.git", .branch("master")),
@@ -57,6 +58,7 @@ let package = Package(
         .target(
             name: "DoggieCore",
             dependencies: [
+                .product(name: "Algorithms", package: "swift-algorithms"),
                 "Float16",
                 "zlib_c",
                 "brotli",

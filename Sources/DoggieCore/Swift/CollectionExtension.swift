@@ -156,41 +156,33 @@ extension MutableCollection {
 extension Sequence {
     
     @inlinable
-    public func appended(_ newElement: Element) -> LazyConcatSequence<Self, CollectionOfOne<Element>> {
-        return self.concat(CollectionOfOne(newElement))
-    }
-}
-
-extension Collection {
-    
-    @inlinable
-    public func appended(_ newElement: Element) -> LazyConcatCollection<Self, CollectionOfOne<Element>> {
-        return self.concat(CollectionOfOne(newElement))
+    public func appended(_ newElement: Element) -> Chain<Self, CollectionOfOne<Element>> {
+        return self.chained(with: CollectionOfOne(newElement))
     }
 }
 
 extension Collection where SubSequence: Collection {
     
     @inlinable
-    public func rotated(at index: Index) -> LazyConcatCollection<SubSequence, SubSequence> {
-        return self.suffix(from: index).concat(self.prefix(upTo: index))
+    public func rotated(at index: Index) -> Chain<SubSequence, SubSequence> {
+        return self.suffix(from: index).chained(with: self.prefix(upTo: index))
     }
 }
 
 extension Collection where SubSequence: Collection {
     
     @inlinable
-    public func rotated(_ n: Int) -> LazyConcatCollection<SubSequence, SubSequence> {
+    public func rotated(_ n: Int) -> Chain<SubSequence, SubSequence> {
         let count = self.count
         if count == 0 {
-            return self[...].concat(self[...])
+            return self[...].chained(with: self[...])
         }
         if n < 0 {
             let _n = -n % count
-            return self.suffix(_n).concat(self.dropLast(_n))
+            return self.suffix(_n).chained(with: self.dropLast(_n))
         }
         let _n = n % count
-        return self.dropFirst(_n).concat(self.prefix(_n))
+        return self.dropFirst(_n).chained(with: self.prefix(_n))
     }
 }
 
@@ -318,35 +310,6 @@ extension BidirectionalCollection where Self: MutableCollection {
                 break
             }
         }
-    }
-}
-
-extension BidirectionalCollection where Self: MutableCollection {
-    
-    @inlinable
-    public mutating func nextPermute(by areInIncreasingOrder: (Element, Element) -> Bool) {
-        if !self.isEmpty {
-            if let k = self.indices.dropLast().last(where: { areInIncreasingOrder(self[$0], self[self.index(after: $0)]) }) {
-                let range = self.indices.suffix(from: self.index(after: k))
-                self.swapAt(k, range.last { areInIncreasingOrder(self[k], self[$0]) }!)
-                self.reverseSubrange(range)
-            } else {
-                self.reverse()
-            }
-        }
-    }
-    
-    @inlinable
-    public mutating func nextPermute<R: Comparable>(by: (Element) -> R) {
-        self.nextPermute { by($0) < by($1) }
-    }
-}
-
-extension BidirectionalCollection where Self: MutableCollection, Element: Comparable {
-    
-    @inlinable
-    public mutating func nextPermute() {
-        self.nextPermute(by: <)
     }
 }
 

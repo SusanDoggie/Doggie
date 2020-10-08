@@ -71,72 +71,6 @@ class CollectionTest: XCTestCase {
         XCTAssertEqual(array.range(of: [1, 4, 5]), nil)
     }
     
-    func testNextPermute1() {
-        
-        var array = [1, 2, 3]
-        
-        let answer = [
-            [1, 2, 3],
-            [1, 3, 2],
-            [2, 1, 3],
-            [2, 3, 1],
-            [3, 1, 2],
-            [3, 2, 1],
-        ]
-        
-        for _answer in answer {
-            
-            XCTAssertEqual(array, _answer)
-            
-            array.nextPermute()
-        }
-    }
-    
-    func testNextPermute2() {
-        
-        var array = [1, 2, 2, 3, 3]
-        
-        let answer = [
-            [1, 2, 2, 3, 3],
-            [1, 2, 3, 2, 3],
-            [1, 2, 3, 3, 2],
-            [1, 3, 2, 2, 3],
-            [1, 3, 2, 3, 2],
-            [1, 3, 3, 2, 2],
-            [2, 1, 2, 3, 3],
-            [2, 1, 3, 2, 3],
-            [2, 1, 3, 3, 2],
-            [2, 2, 1, 3, 3],
-            [2, 2, 3, 1, 3],
-            [2, 2, 3, 3, 1],
-            [2, 3, 1, 2, 3],
-            [2, 3, 1, 3, 2],
-            [2, 3, 2, 1, 3],
-            [2, 3, 2, 3, 1],
-            [2, 3, 3, 1, 2],
-            [2, 3, 3, 2, 1],
-            [3, 1, 2, 2, 3],
-            [3, 1, 2, 3, 2],
-            [3, 1, 3, 2, 2],
-            [3, 2, 1, 2, 3],
-            [3, 2, 1, 3, 2],
-            [3, 2, 2, 1, 3],
-            [3, 2, 2, 3, 1],
-            [3, 2, 3, 1, 2],
-            [3, 2, 3, 2, 1],
-            [3, 3, 1, 2, 2],
-            [3, 3, 2, 1, 2],
-            [3, 3, 2, 2, 1],
-        ]
-        
-        for _answer in answer {
-            
-            XCTAssertEqual(array, _answer)
-            
-            array.nextPermute()
-        }
-    }
-    
     func testIndexedCollection() {
         
         let a = [1, 2, 3, 4, 5, 6, 7, 8, 9][1..<6]
@@ -145,18 +79,6 @@ class CollectionTest: XCTestCase {
         let answer = [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]
         
         XCTAssert(result.elementsEqual(answer) { $0.0 == $1.0 && $0.1 == $1.1 })
-    }
-    
-    func testConcatCollection() {
-        
-        let a = [1, 2, 3]
-        let b = [4, 5, 6]
-        
-        let result = a.concat(b)
-        let answer = a + b
-        
-        XCTAssert(result.elementsEqual(answer))
-        XCTAssertEqual(Array(result), answer)
     }
     
     func testRecursiveMap() {

@@ -310,7 +310,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         let t = split.flatMap { abs(self._curvature($0)) > 0.05 ? [$0, $0 - 0.0625, $0 + 0.0625] : [$0] }.sorted().filter { !$0.almostZero() && !$0.almostEqual(1) && 0...1 ~= $0 }
         
         var last_direction: Point?
-        for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
+        for ((s, t), segment) in zip(zip(CollectionOfOne(0).chained(with: t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
             
             if let d0 = last_direction {
                 try segment.__offset_arc(a, d0, calback)
@@ -411,7 +411,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         let t = (1..<degree).map { Double($0) / Double(degree) }
         
         var last_direction: Point?
-        for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) {
+        for ((s, t), segment) in zip(zip(CollectionOfOne(0).chained(with: t), t.appended(1)), self.split(t)) {
             
             let c = t - s
             
@@ -469,7 +469,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
         }
         
         var last_direction: Point?
-        for ((s, t), segment) in zip(zip(CollectionOfOne(0).concat(t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
+        for ((s, t), segment) in zip(zip(CollectionOfOne(0).chained(with: t), t.appended(1)), self.split(t)) where !s.almostEqual(t) {
             
             let c = t - s
             

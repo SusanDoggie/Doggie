@@ -280,11 +280,11 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
         if _S.almostZero() {
             let _b = 2 * m
             let _c = m * m
-            return Array(Set(degree2roots(_b, _c).concat(degree2roots(_b, _c))))
+            return Array(Set(degree2roots(_b, _c).chained(with: degree2roots(_b, _c))))
         }
         if _S.sign == .minus {
             let S = 0.25 * (_S + de0 / _S - 2 * p) / 3
-            return Array(Set(degree2roots(2 * m, m * m - S).concat(degree2roots(2 * m, m * m - S))))
+            return Array(Set(degree2roots(2 * m, m * m - S).chained(with: degree2roots(2 * m, m * m - S))))
         }
         S = 0.5 * sqrt((_S + de0 / _S - 2 * p) / 3)
     }
@@ -295,7 +295,7 @@ public func degree4roots(_ b: Double, _ c: Double, _ d: Double, _ e: Double) -> 
     let k1 = m + S
     let k2 = m - S
     
-    return Array(Set(degree2roots(2 * k1, k1 * k1 - 0.25 * t1).concat(degree2roots(2 * k2, k2 * k2 - 0.25 * t2))))
+    return Array(Set(degree2roots(2 * k1, k1 * k1 - 0.25 * t1).chained(with: degree2roots(2 * k2, k2 * k2 - 0.25 * t2))))
 }
 
 // MARK: Interpolation
