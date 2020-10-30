@@ -27,7 +27,7 @@ private let ShapeCacheInterscetionResultKey = "ShapeCacheInterscetionResultKey"
 
 extension Collection where SubSequence: Collection {
     
-    func rotateZip() -> Zip2Sequence<Self, Chain<SubSequence, SubSequence>> {
+    func rotateZip() -> Zip2Sequence<Self, Chain2<SubSequence, SubSequence>> {
         return zip(self, self.rotated(1))
     }
 }
@@ -278,19 +278,19 @@ extension Shape.Component {
                 let b = self.bezier.suffix(from: start.index)
                 let c = self.bezier.prefix(upTo: start.index)
                 let d = OptionOneCollection(end.split == 0 ? nil : splits[0])
-                return Array(a.chained(with: b.chained(with: c).dropFirst()).chained(with: d))
+                return Array(chain(chain(a, chain(b, c).dropFirst()), d))
             }
         } else if start.index < end.index {
             let a = CollectionOfOne(self.bezier[start.index].split(start.split).1)
             let b = self.bezier[start.index..<end.index]
             let c = CollectionOfOne(self.bezier[end.index].split(end.split).0)
-            return Array(a.chained(with: b.dropFirst()).chained(with: c))
+            return Array(chain(chain(a, b.dropFirst()), c))
         } else {
             let a = CollectionOfOne(self.bezier[start.index].split(start.split).1)
             let b = self.bezier.suffix(from: start.index)
             let c = self.bezier.prefix(upTo: end.index)
             let d = CollectionOfOne(self.bezier[end.index].split(end.split).0)
-            return Array(a.chained(with: b.chained(with: c).dropFirst()).chained(with: d))
+            return Array(chain(chain(a, chain(b, c).dropFirst()), d))
         }
     }
     

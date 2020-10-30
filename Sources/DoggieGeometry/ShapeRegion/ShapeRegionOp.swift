@@ -81,7 +81,7 @@ extension ShapeRegion.Solid {
         let b = self.holes.subtracting(other._solid, reference: reference)
         let c = other.holes.subtracting(self._solid, reference: reference)
         
-        return union.subtracting(ShapeRegion(solids: a.chained(with: b).chained(with: c)), reference: reference).solids
+        return union.subtracting(ShapeRegion(solids: chain(chain(a, b), c)), reference: reference).solids
     }
     fileprivate func intersection(_ other: ShapeRegion.Solid, reference: Double) -> [ShapeRegion.Solid] {
         
@@ -110,7 +110,7 @@ extension ShapeRegion.Solid {
         if superset {
             return [ShapeRegion.Solid(solid: self.solid, holes: self.holes.union(ShapeRegion(solid: other), reference: reference))]
         } else if let subtracting = _subtracting {
-            let a = subtracting.chained(with: other.holes.intersection(self._solid, reference: reference))
+            let a = chain(subtracting, other.holes.intersection(self._solid, reference: reference))
             return self.holes.isEmpty ? Array(a) : ShapeRegion(solids: a).subtracting(self.holes, reference: reference).solids
         } else {
             return [self]
@@ -157,7 +157,7 @@ extension ShapeRegion {
             return self
         }
         if !self.boundary.isIntersect(other.boundary) {
-            return ShapeRegion(solids: self.solids.chained(with: other.solids))
+            return ShapeRegion(solids: chain(self.solids, other.solids))
         }
         
         var result1 = self.solids
@@ -173,7 +173,7 @@ extension ShapeRegion {
             }
             result2.append(rhs)
         }
-        return ShapeRegion(solids: result1.chained(with: result2))
+        return ShapeRegion(solids: chain(result1, result2))
     }
     
     @usableFromInline
@@ -212,11 +212,11 @@ extension ShapeRegion {
             return self
         }
         if !self.boundary.isIntersect(other.boundary) {
-            return ShapeRegion(solids: self.solids.chained(with: other.solids))
+            return ShapeRegion(solids: chain(self.solids, other.solids))
         }
         
         let a = self.subtracting(other, reference: reference).solids
         let b = other.subtracting(self, reference: reference).solids
-        return ShapeRegion(solids: a.chained(with: b))
+        return ShapeRegion(solids: chain(a, b))
     }
 }

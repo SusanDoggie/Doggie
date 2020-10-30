@@ -167,8 +167,8 @@ extension ShapeRegion.Solid {
         return ShapeRegion.Solid(solid: solid.reversed(), holes: holes)
     }
     
-    fileprivate func components(_ sign: FloatingPointSign) -> Chain<CollectionOfOne<Shape.Component>, [Shape.Component]> {
-        return CollectionOfOne(solid.area.sign == sign ? solid : solid.reversed()).chained(with: holes.components(sign == .plus ? .minus : .plus))
+    fileprivate func components(_ sign: FloatingPointSign) -> Chain2<CollectionOfOne<Shape.Component>, [Shape.Component]> {
+        return chain(CollectionOfOne(solid.area.sign == sign ? solid : solid.reversed()), holes.components(sign == .plus ? .minus : .plus))
     }
 }
 

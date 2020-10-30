@@ -270,7 +270,7 @@ public struct Graph<Node: Hashable, Link>: Collection {
     /// A set of nodes which has connection with `nearNode`.
     @inlinable
     public func nodes(near nearNode: Node) -> Set<Node> {
-        return Set(self.nodes(from: nearNode).chained(with: self.nodes(to: nearNode)).lazy.map { $0.0 })
+        return Set(chain(self.nodes(from: nearNode), self.nodes(to: nearNode)).lazy.map { $0.0 })
     }
     
     /// A collection of nodes which connected from `fromNode`.
