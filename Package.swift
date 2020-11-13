@@ -43,11 +43,11 @@ let package = Package(
         .library(name: "Doggie", targets: ["Doggie"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-algorithms.git", .exact("0.0.2")),
-        .package(url: "https://github.com/SusanDoggie/Float16.git", .branch("master")),
-        .package(url: "https://github.com/SusanDoggie/brotli.git", .branch("master")),
-        .package(url: "https://github.com/SusanDoggie/libwebp.git", .branch("master")),
-        .package(url: "https://github.com/SusanDoggie/libjpeg.git", .branch("master")),
+        .package(url: "https://github.com/apple/swift-algorithms", .exact("0.0.2")),
+        .package(url: "https://github.com/SusanDoggie/Float16", .branch("master")),
+        .package(url: "https://github.com/SusanDoggie/brotli", .branch("master")),
+        .package(url: "https://github.com/SusanDoggie/libwebp", .branch("master")),
+        .package(url: "https://github.com/SusanDoggie/libjpeg", .branch("master")),
     ],
     targets: [
         .target(
