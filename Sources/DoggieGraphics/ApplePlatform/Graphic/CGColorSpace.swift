@@ -67,7 +67,7 @@ extension ColorSpace {
         }
         
         return self.cache.load(for: ColorSpaceCacheCGColorSpaceKey) {
-            return self.iccData.map { CGColorSpace(iccData: $0 as CFData) }
+            return self.iccData.flatMap { CGColorSpace(iccData: $0 as CFData) }
         }
     }
 }
