@@ -110,7 +110,7 @@ extension CGContext {
         self.concatenate(transform)
     }
     
-    open func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: AnyColorSpace, gradient: Gradient<C>) {
+    open func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: AnyColorSpace, color gradient: Gradient<C>) {
         
         let boundary = shape.originalBoundary
         guard !boundary.isEmpty else { return }
@@ -139,8 +139,8 @@ extension CGContext {
         self.endTransparencyLayer()
     }
     
-    open func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, colorSpace: AnyColorSpace, gradient: Gradient<AnyColor>) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, colorSpace: colorSpace, gradient: gradient)
+    open func draw(shape: Shape, colorSpace: AnyColorSpace, stroke: Stroke<Gradient<AnyColor>>) {
+        self.draw(shape: shape.strokePath(stroke), winding: .nonZero, colorSpace: colorSpace, color: stroke.color)
     }
 }
 

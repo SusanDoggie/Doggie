@@ -119,8 +119,8 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color)
+    public func draw(shape: Shape, stroke: Stroke<CGColor>) {
+        self.draw(shape: shape.strokePath(stroke), winding: .nonZero, color: stroke.color)
     }
 }
 
@@ -136,14 +136,14 @@ extension GPContext {
     public func draw(ellipseIn rect: Rect, color: CGColor) {
         self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color)
     }
-    public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
-        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, color: color)
+    public func draw(rect: Rect, stroke: Stroke<CGColor>) {
+        self.draw(shape: Shape(rect: rect), stroke: stroke)
     }
-    public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
-        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, color: color)
+    public func draw(roundedRect rect: Rect, radius: Radius, stroke: Stroke<CGColor>) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), stroke: stroke)
     }
-    public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: CGColor) {
-        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color)
+    public func draw(ellipseIn rect: Rect, stroke: Stroke<CGColor>) {
+        self.draw(shape: Shape(ellipseIn: rect), stroke: stroke)
     }
 }
 
@@ -257,7 +257,7 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: AnyColorSpace, gradient: Gradient<C>) {
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: AnyColorSpace, color gradient: Gradient<C>) {
         
         let boundary = shape.originalBoundary
         guard !boundary.isEmpty else { return }
@@ -282,15 +282,15 @@ extension GPContext {
         self.endTransparencyLayer()
     }
     
-    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, colorSpace: AnyColorSpace, gradient: Gradient<C>) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, colorSpace: colorSpace, gradient: gradient)
+    public func draw<C>(shape: Shape, colorSpace: AnyColorSpace, stroke: Stroke<Gradient<C>>) {
+        self.draw(shape: shape.strokePath(stroke), winding: .nonZero, colorSpace: colorSpace, color: stroke.color)
     }
 }
 
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
-    public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: ColorSpace<RGBColorModel>, gradient: MeshGradient<C>) {
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: ColorSpace<RGBColorModel>, color gradient: MeshGradient<C>) {
         
         let boundary = shape.originalBoundary
         guard !boundary.isEmpty else { return }
@@ -310,8 +310,8 @@ extension GPContext {
         self.endTransparencyLayer()
     }
     
-    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, colorSpace: ColorSpace<RGBColorModel>, gradient: MeshGradient<C>) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, colorSpace: colorSpace, gradient: gradient)
+    public func draw<C>(shape: Shape, colorSpace: ColorSpace<RGBColorModel>, stroke: Stroke<MeshGradient<C>>) {
+        self.draw(shape: shape.strokePath(stroke), winding: .nonZero, colorSpace: colorSpace, color: stroke.color)
     }
 }
 

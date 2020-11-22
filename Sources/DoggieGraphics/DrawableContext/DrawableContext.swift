@@ -65,25 +65,25 @@ public protocol DrawableContext: AnyObject {
     
     func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C)
     
-    func stroke<C: ColorProtocol>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C)
+    func draw<C: ColorProtocol>(shape: Shape, stroke: Stroke<C>)
     
-    func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>)
+    func draw<C>(shape: Shape, winding: Shape.WindingRule, color: Gradient<C>)
     
-    func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>)
+    func draw<C>(shape: Shape, stroke: Stroke<Gradient<C>>)
     
     func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode)
     
     func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode)
     
-    func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: MeshGradient<C>)
+    func draw<C>(shape: Shape, winding: Shape.WindingRule, color: MeshGradient<C>)
     
-    func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: MeshGradient<C>)
+    func draw<C>(shape: Shape, stroke: Stroke<MeshGradient<C>>)
     
     func drawMeshGradient<C>(_ mesh: MeshGradient<C>)
     
-    func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern)
+    func draw(shape: Shape, winding: Shape.WindingRule, color: Pattern)
     
-    func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern)
+    func draw(shape: Shape, stroke: Stroke<Pattern>)
     
     func drawPattern(_ pattern: Pattern)
 }
@@ -170,8 +170,8 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func stroke<C: ColorProtocol>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color)
+    public func draw<C: ColorProtocol>(shape: Shape, stroke: Stroke<C>) {
+        self.draw(shape: shape.strokePath(stroke), winding: .nonZero, color: stroke.color)
     }
 }
 
@@ -194,18 +194,18 @@ extension DrawableContext {
     }
     @inlinable
     @inline(__always)
-    public func stroke<C: ColorProtocol>(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
-        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, color: color)
+    public func draw<C: ColorProtocol>(rect: Rect, stroke: Stroke<C>) {
+        self.draw(shape: Shape(rect: rect), stroke: stroke)
     }
     @inlinable
     @inline(__always)
-    public func stroke<C: ColorProtocol>(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
-        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, color: color)
+    public func draw<C: ColorProtocol>(roundedRect rect: Rect, radius: Radius, stroke: Stroke<C>) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), stroke: stroke)
     }
     @inlinable
     @inline(__always)
-    public func stroke<C: ColorProtocol>(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: C) {
-        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color)
+    public func draw<C: ColorProtocol>(ellipseIn rect: Rect, stroke: Stroke<C>) {
+        self.draw(shape: Shape(ellipseIn: rect), stroke: stroke)
     }
 }
 
@@ -247,7 +247,7 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, color gradient: Gradient<C>) {
         
         let boundary = shape.originalBoundary
         guard !boundary.isEmpty else { return }
@@ -272,8 +272,8 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, gradient: gradient)
+    public func draw<C>(shape: Shape, stroke: Stroke<Gradient<C>>) {
+        self.draw(shape: shape.strokePath(stroke), winding: .nonZero, color: stroke.color)
     }
 }
 
@@ -281,33 +281,33 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func draw<C>(rect: Rect, gradient: Gradient<C>) {
-        self.draw(shape: Shape(rect: rect), winding: .nonZero, gradient: gradient)
+    public func draw<C>(rect: Rect, color: Gradient<C>) {
+        self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color)
     }
     @inlinable
     @inline(__always)
-    public func draw<C>(roundedRect rect: Rect, radius: Radius, gradient: Gradient<C>) {
-        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, gradient: gradient)
+    public func draw<C>(roundedRect rect: Rect, radius: Radius, color: Gradient<C>) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, color: color)
     }
     @inlinable
     @inline(__always)
-    public func draw<C>(ellipseIn rect: Rect, gradient: Gradient<C>) {
-        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, gradient: gradient)
+    public func draw<C>(ellipseIn rect: Rect, color: Gradient<C>) {
+        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color)
     }
     @inlinable
     @inline(__always)
-    public func stroke<C>(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>) {
-        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, gradient: gradient)
+    public func draw<C>(rect: Rect, stroke: Stroke<Gradient<C>>) {
+        self.draw(shape: Shape(rect: rect), stroke: stroke)
     }
     @inlinable
     @inline(__always)
-    public func stroke<C>(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>) {
-        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, gradient: gradient)
+    public func draw<C>(roundedRect rect: Rect, radius: Radius, stroke: Stroke<Gradient<C>>) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), stroke: stroke)
     }
     @inlinable
     @inline(__always)
-    public func stroke<C>(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: Gradient<C>) {
-        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, gradient: gradient)
+    public func draw<C>(ellipseIn rect: Rect, stroke: Stroke<Gradient<C>>) {
+        self.draw(shape: Shape(ellipseIn: rect), stroke: stroke)
     }
 }
 
@@ -315,7 +315,7 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: MeshGradient<C>) {
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, color gradient: MeshGradient<C>) {
         
         let boundary = shape.originalBoundary
         guard !boundary.isEmpty else { return }
@@ -337,8 +337,8 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func stroke<C>(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: MeshGradient<C>) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, gradient: gradient)
+    public func draw<C>(shape: Shape, stroke: Stroke<MeshGradient<C>>) {
+        self.draw(shape: shape.strokePath(stroke), winding: .nonZero, color: stroke.color)
     }
 }
 
@@ -346,33 +346,33 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func draw<C>(rect: Rect, gradient: MeshGradient<C>) {
-        self.draw(shape: Shape(rect: rect), winding: .nonZero, gradient: gradient)
+    public func draw<C>(rect: Rect, color: MeshGradient<C>) {
+        self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color)
     }
     @inlinable
     @inline(__always)
-    public func draw<C>(roundedRect rect: Rect, radius: Radius, gradient: MeshGradient<C>) {
-        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, gradient: gradient)
+    public func draw<C>(roundedRect rect: Rect, radius: Radius, color: MeshGradient<C>) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, color: color)
     }
     @inlinable
     @inline(__always)
-    public func draw<C>(ellipseIn rect: Rect, gradient: MeshGradient<C>) {
-        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, gradient: gradient)
+    public func draw<C>(ellipseIn rect: Rect, color: MeshGradient<C>) {
+        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color)
     }
     @inlinable
     @inline(__always)
-    public func stroke<C>(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: MeshGradient<C>) {
-        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, gradient: gradient)
+    public func draw<C>(rect: Rect, stroke: Stroke<MeshGradient<C>>) {
+        self.draw(shape: Shape(rect: rect), stroke: stroke)
     }
     @inlinable
     @inline(__always)
-    public func stroke<C>(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: MeshGradient<C>) {
-        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, gradient: gradient)
+    public func draw<C>(roundedRect rect: Rect, radius: Radius, stroke: Stroke<MeshGradient<C>>) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), stroke: stroke)
     }
     @inlinable
     @inline(__always)
-    public func stroke<C>(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, gradient: MeshGradient<C>) {
-        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, gradient: gradient)
+    public func draw<C>(ellipseIn rect: Rect, stroke: Stroke<MeshGradient<C>>) {
+        self.draw(shape: Shape(ellipseIn: rect), stroke: stroke)
     }
 }
 
@@ -380,7 +380,7 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern) {
+    public func draw(shape: Shape, winding: Shape.WindingRule, color pattern: Pattern) {
         
         self.beginTransparencyLayer()
         
@@ -393,8 +393,8 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, pattern: pattern)
+    public func draw(shape: Shape, stroke: Stroke<Pattern>) {
+        self.draw(shape: shape.strokePath(stroke), winding: .nonZero, color: stroke.color)
     }
 }
 
@@ -402,32 +402,32 @@ extension DrawableContext {
     
     @inlinable
     @inline(__always)
-    public func draw(rect: Rect, pattern: Pattern) {
-        self.draw(shape: Shape(rect: rect), winding: .nonZero, pattern: pattern)
+    public func draw(rect: Rect, color: Pattern) {
+        self.draw(shape: Shape(rect: rect), winding: .nonZero, color: color)
     }
     @inlinable
     @inline(__always)
-    public func draw(roundedRect rect: Rect, radius: Radius, pattern: Pattern) {
-        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, pattern: pattern)
+    public func draw(roundedRect rect: Rect, radius: Radius, color: Pattern) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), winding: .nonZero, color: color)
     }
     @inlinable
     @inline(__always)
-    public func draw(ellipseIn rect: Rect, pattern: Pattern) {
-        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, pattern: pattern)
+    public func draw(ellipseIn rect: Rect, color: Pattern) {
+        self.draw(shape: Shape(ellipseIn: rect), winding: .nonZero, color: color)
     }
     @inlinable
     @inline(__always)
-    public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern) {
-        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, pattern: pattern)
+    public func draw(rect: Rect, stroke: Stroke<Pattern>) {
+        self.draw(shape: Shape(rect: rect), stroke: stroke)
     }
     @inlinable
     @inline(__always)
-    public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern) {
-        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, pattern: pattern)
+    public func draw(roundedRect rect: Rect, radius: Radius, stroke: Stroke<Pattern>) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), stroke: stroke)
     }
     @inlinable
     @inline(__always)
-    public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, pattern: Pattern) {
-        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, pattern: pattern)
+    public func draw(ellipseIn rect: Rect, stroke: Stroke<Pattern>) {
+        self.draw(shape: Shape(ellipseIn: rect), stroke: stroke)
     }
 }

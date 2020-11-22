@@ -1262,7 +1262,7 @@ extension PDFContext.Page {
         }
     }
     
-    func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern) {
+    func draw(shape: Shape, winding: Shape.WindingRule, color pattern: Pattern) {
         
         let shape = shape * _mirrored_transform
         

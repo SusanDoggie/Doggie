@@ -451,7 +451,7 @@ extension PDFRenderer {
                 
                 _pattern.transform = pattern.transform
                 
-                context.draw(shape: state.path, winding: winding, pattern: _pattern)
+                context.draw(shape: state.path, winding: winding, color: _pattern)
                 
             case 2:
                 
@@ -473,7 +473,7 @@ extension PDFRenderer {
                     
                     _pattern.transform = pattern.transform
                     
-                    context.draw(shape: state.path, winding: winding, pattern: _pattern)
+                    context.draw(shape: state.path, winding: winding, color: _pattern)
                 }
                 
                 context.draw(shape: state.path, winding: winding, color: alphaMask ? AnyColor.white : fill ?? .black)
@@ -520,7 +520,9 @@ extension PDFRenderer {
                 
                 _pattern.transform = pattern.transform
                 
-                context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, pattern: _pattern)
+                let _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: _pattern)
+                
+                context.draw(shape: state.path, stroke: _stroke)
                 
             case 2:
                 
@@ -542,10 +544,14 @@ extension PDFRenderer {
                     
                     _pattern.transform = pattern.transform
                     
-                    context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, pattern: _pattern)
+                    let _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: _pattern)
+                    
+                    context.draw(shape: state.path, stroke: _stroke)
                 }
                 
-                context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
+                let _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
+                
+                context.draw(shape: state.path, stroke: _stroke)
                 
                 context.endTransparencyLayer()
                 
@@ -554,7 +560,9 @@ extension PDFRenderer {
             
         } else {
             
-            context.stroke(shape: state.path, width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
+            let _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
+            
+            context.draw(shape: state.path, stroke: _stroke)
         }
         
         state.path = Shape()

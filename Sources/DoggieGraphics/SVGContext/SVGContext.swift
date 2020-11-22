@@ -985,7 +985,7 @@ extension SVGContext {
         return "url(#\(id))"
     }
     
-    public func draw<C>(shape: Shape, winding: Shape.WindingRule, gradient: Gradient<C>) {
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, color gradient: Gradient<C>) {
         
         guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
         
@@ -1209,7 +1209,7 @@ extension SVGContext {
         return "url(#\(id))"
     }
     
-    public func draw(shape: Shape, winding: Shape.WindingRule, pattern: Pattern) {
+    public func draw(shape: Shape, winding: Shape.WindingRule, color pattern: Pattern) {
         
         guard !self.transform.determinant.almostZero() else { return }
         guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }

@@ -49,7 +49,7 @@ class ShapeRegionTest: XCTestCase {
         context.clipToDrawing { (context: ImageContext<Gray16ColorPixel>) in
             
             context.draw(shape: shape2, winding: winding2, color: .white)
-            context.stroke(shape: shape2, width: 5, cap: .round, join: .round, color: .black)
+            context.draw(shape: shape2, stroke: Stroke(width: 5, cap: .round, join: .round, color: .black))
         }
         
         context.beginTransparencyLayer()

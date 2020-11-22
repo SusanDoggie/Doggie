@@ -34,8 +34,8 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func stroke(shape: Shape, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
-        self.draw(shape: shape.strokePath(width: width, cap: cap, join: join), winding: .nonZero, color: color, opacity: opacity)
+    public func draw(shape: Shape, stroke: Stroke<Pixel.Model>, opacity: Double = 1) {
+        self.draw(shape: shape.strokePath(stroke), winding: .nonZero, color: stroke.color, opacity: opacity)
     }
 }
 
@@ -58,18 +58,18 @@ extension ImageContext {
     }
     @inlinable
     @inline(__always)
-    public func stroke(rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
-        self.stroke(shape: Shape(rect: rect), width: width, cap: cap, join: join, color: color, opacity: opacity)
+    public func draw(rect: Rect, stroke: Stroke<Pixel.Model>, opacity: Double = 1) {
+        self.draw(shape: Shape(rect: rect), stroke: stroke, opacity: opacity)
     }
     @inlinable
     @inline(__always)
-    public func stroke(roundedRect rect: Rect, radius: Radius, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
-        self.stroke(shape: Shape(roundedRect: rect, radius: radius), width: width, cap: cap, join: join, color: color, opacity: opacity)
+    public func draw(roundedRect rect: Rect, radius: Radius, stroke: Stroke<Pixel.Model>, opacity: Double = 1) {
+        self.draw(shape: Shape(roundedRect: rect, radius: radius), stroke: stroke, opacity: opacity)
     }
     @inlinable
     @inline(__always)
-    public func stroke(ellipseIn rect: Rect, width: Double, cap: Shape.LineCap, join: Shape.LineJoin, color: Pixel.Model, opacity: Double = 1) {
-        self.stroke(shape: Shape(ellipseIn: rect), width: width, cap: cap, join: join, color: color, opacity: opacity)
+    public func draw(ellipseIn rect: Rect, stroke: Stroke<Pixel.Model>, opacity: Double = 1) {
+        self.draw(shape: Shape(ellipseIn: rect), stroke: stroke, opacity: opacity)
     }
 }
 

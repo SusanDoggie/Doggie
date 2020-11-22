@@ -30,7 +30,7 @@ context.draw(shape: ellipse, winding: .nonZero, color: RGBColorModel(red: 247/25
 
 ```swift
 
-context.stroke(shape: ellipse, width: 1, cap: .round, join: .round, color: RGBColorModel())
+context.draw(shape: ellipse, stroke: Stroke(width: 1, cap: .round, join: .round, color: RGBColorModel()))
 
 ```
 
