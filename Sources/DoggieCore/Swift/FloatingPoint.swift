@@ -32,22 +32,18 @@ public func positive_mod<T: FloatingPoint>(_ x: T, _ m: T) -> T {
 extension FloatingPoint {
     
     @_transparent
-    public static var defaultAlmostEqualEpsilon: Self {
-        return Self(sign: .plus, exponent: Self.ulpOfOne.exponent / 2, significand: 1)
+    public func almostZero(epsilon: Self = Self.ulpOfOne.squareRoot(), reference: Self = 0) -> Bool {
+        if self == 0 { return true }
+        return self.isFinite && abs(self) < abs(epsilon) * max(1, abs(reference))
     }
     
     @_transparent
-    public func almostZero(epsilon: Self = Self.defaultAlmostEqualEpsilon, reference: Self = 0) -> Bool {
-        return self == 0 || abs(self) < abs(epsilon) * max(1, abs(reference))
-    }
-    
-    @_transparent
-    public func almostEqual(_ other: Self, epsilon: Self = Self.defaultAlmostEqualEpsilon) -> Bool {
+    public func almostEqual(_ other: Self, epsilon: Self = Self.ulpOfOne.squareRoot()) -> Bool {
         return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: self)
     }
     
     @_transparent
-    public func almostEqual(_ other: Self, epsilon: Self = Self.defaultAlmostEqualEpsilon, reference: Self) -> Bool {
+    public func almostEqual(_ other: Self, epsilon: Self = Self.ulpOfOne.squareRoot(), reference: Self) -> Bool {
         return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: reference)
     }
 }
