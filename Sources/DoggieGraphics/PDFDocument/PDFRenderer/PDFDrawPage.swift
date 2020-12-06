@@ -281,45 +281,27 @@ extension PDFRenderer {
                 
                 self.path.append(Shape.Component(rect: Rect(x: x, y: y, width: width, height: height)))
                 
-            case "S": self.drawStroke()
+            case "S": self.strokePath()
                 
             case "s":
                 
                 self.path.close()
-                self.drawStroke()
+                self.strokePath()
                 
-            case "f", "F": self.draw(winding: .nonZero)
-            case "f*": self.draw(winding: .evenOdd)
-                
-            case "B":
-                
-                let path = self.path
-                self.draw(winding: .nonZero)
-                self.path = path
-                self.drawStroke()
-                
-            case "B*":
-                
-                let path = self.path
-                self.draw(winding: .evenOdd)
-                self.path = path
-                self.drawStroke()
+            case "f", "F": self.fillPath(winding: .nonZero)
+            case "f*": self.fillPath(winding: .evenOdd)
+            case "B": self.fillStroke(winding: .nonZero)
+            case "B*": self.fillStroke(winding: .evenOdd)
                 
             case "b":
                 
                 self.path.close()
-                let path = self.path
-                self.draw(winding: .nonZero)
-                self.path = path
-                self.drawStroke()
+                self.fillStroke(winding: .nonZero)
                 
             case "b*":
                 
                 self.path.close()
-                let path = self.path
-                self.draw(winding: .evenOdd)
-                self.path = path
-                self.drawStroke()
+                self.fillStroke(winding: .evenOdd)
                 
             case "n": self.path = Shape()
             case "W": self.clip(winding: .nonZero)
@@ -708,7 +690,7 @@ extension PDFRenderer {
                             }
                             
                             self.path = Shape(rect: Rect(x: 0, y: 0, width: 1, height: 1))
-                            self.draw(winding: .nonZero)
+                            self.fillPath(winding: .nonZero)
                             
                         } else if let image = image, let mask = mask {
                             
@@ -897,7 +879,7 @@ extension PDFRenderer {
                 }
                 
                 self.path = Shape(rect: Rect(x: 0, y: 0, width: 1, height: 1))
-                self.draw(winding: .nonZero)
+                self.fillPath(winding: .nonZero)
                 
             } else if width == mask_width && height == mask_height, let mask = create_mask_bitmap() {
                 

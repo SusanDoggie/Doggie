@@ -119,9 +119,13 @@ extension PDFContext {
             if state.is_clip {
                 self.state.commands.append(.name("DeviceGray"))
                 self.state.commands.append(.command("cs"))
+                self.state.commands.append(.name("DeviceGray"))
+                self.state.commands.append(.command("CS"))
             } else {
                 self.state.commands.append(.name("Cs1"))
                 self.state.commands.append(.command("cs"))
+                self.state.commands.append(.name("Cs1"))
+                self.state.commands.append(.command("CS"))
             }
             
             self.state.commands.append(.command("q"))
@@ -136,7 +140,16 @@ extension PDFContext {
     fileprivate struct CurrentStyle {
         
         var color: [PDFCommand]? = nil
+        var stroke: [PDFCommand]? = nil
+        
+        var strokeWidth: PDFName? = nil
+        var strokeCap: PDFName? = nil
+        var strokeJoin: PDFName? = nil
+        var miterLimit: PDFName? = nil
+        
         var opacity: PDFName? = nil
+        var strokeOpacity: PDFName? = nil
+        
         var blend: PDFName? = nil
     }
     
@@ -262,8 +275,32 @@ extension PDFContext.CurrentStyle {
             context.state.commands.append(contentsOf: color)
             context.state.commands.append(.command("sc"))
         }
+        if let stroke = self.stroke {
+            context.state.commands.append(contentsOf: stroke)
+            context.state.commands.append(.command("SC"))
+        }
+        if let strokeWidth = self.strokeWidth {
+            context.state.commands.append(.name(strokeWidth))
+            context.state.commands.append(.command("gs"))
+        }
+        if let strokeCap = self.strokeCap {
+            context.state.commands.append(.name(strokeCap))
+            context.state.commands.append(.command("gs"))
+        }
+        if let strokeJoin = self.strokeJoin {
+            context.state.commands.append(.name(strokeJoin))
+            context.state.commands.append(.command("gs"))
+        }
+        if let miterLimit = self.miterLimit {
+            context.state.commands.append(.name(miterLimit))
+            context.state.commands.append(.command("gs"))
+        }
         if let opacity = self.opacity {
             context.state.commands.append(.name(opacity))
+            context.state.commands.append(.command("gs"))
+        }
+        if let strokeOpacity = self.strokeOpacity {
+            context.state.commands.append(.name(strokeOpacity))
             context.state.commands.append(.command("gs"))
         }
         if let blend = self.blend {
@@ -573,6 +610,21 @@ extension PDFContext.Page {
         }
     }
     
+    func set_stroke_opacity(_ opacity: Double) {
+        
+        let gstate: PDFObject = ["CA": PDFObject(opacity)]
+        if resources.extGState[gstate] == nil {
+            resources.extGState[gstate] = PDFName("Gs\(resources.extGState.count + 1)")
+        }
+        
+        let _opacity = resources.extGState[gstate]!
+        if current_layer.state.currentStyle.strokeOpacity != _opacity {
+            current_layer.state.commands.append(.name(_opacity))
+            current_layer.state.commands.append(.command("gs"))
+            current_layer.state.currentStyle.strokeOpacity = _opacity
+        }
+    }
+    
     func set_blendmode() {
         
         let _mode: PDFName
@@ -606,6 +658,76 @@ extension PDFContext.Page {
         }
     }
     
+    func set_stroke_state<C>(_ stroke: Stroke<C>) {
+        
+        let _cap: Int
+        let _join: Int
+        var _limit: Double = 4
+        
+        switch stroke.cap {
+        case .butt: _cap = 0
+        case .round: _cap = 1
+        case .square: _cap = 2
+        }
+        switch stroke.join {
+        case let .miter(limit):
+            _join = 0
+            _limit = limit
+        case .round: _join = 1
+        case .bevel: _join = 2
+        }
+        
+        let _strokeWidth: PDFName = {
+            let gstate: PDFObject = ["LW": PDFObject(stroke.width)]
+            if resources.extGState[gstate] == nil {
+                resources.extGState[gstate] = PDFName("Gs\(resources.extGState.count + 1)")
+            }
+            return resources.extGState[gstate]!
+        }()
+        let _strokeCap: PDFName = {
+            let gstate: PDFObject = ["LC": PDFObject(_cap)]
+            if resources.extGState[gstate] == nil {
+                resources.extGState[gstate] = PDFName("Gs\(resources.extGState.count + 1)")
+            }
+            return resources.extGState[gstate]!
+        }()
+        let _strokeJoin: PDFName = {
+            let gstate: PDFObject = ["LJ": PDFObject(_join)]
+            if resources.extGState[gstate] == nil {
+                resources.extGState[gstate] = PDFName("Gs\(resources.extGState.count + 1)")
+            }
+            return resources.extGState[gstate]!
+        }()
+        let _miterLimit: PDFName = {
+            let gstate: PDFObject = ["ML": PDFObject(_limit)]
+            if resources.extGState[gstate] == nil {
+                resources.extGState[gstate] = PDFName("Gs\(resources.extGState.count + 1)")
+            }
+            return resources.extGState[gstate]!
+        }()
+        
+        if current_layer.state.currentStyle.strokeWidth != _strokeWidth {
+            current_layer.state.commands.append(.name(_strokeWidth))
+            current_layer.state.commands.append(.command("gs"))
+            current_layer.state.currentStyle.strokeWidth = _strokeWidth
+        }
+        if current_layer.state.currentStyle.strokeCap != _strokeCap {
+            current_layer.state.commands.append(.name(_strokeCap))
+            current_layer.state.commands.append(.command("gs"))
+            current_layer.state.currentStyle.strokeCap = _strokeCap
+        }
+        if current_layer.state.currentStyle.strokeJoin != _strokeJoin {
+            current_layer.state.commands.append(.name(_strokeJoin))
+            current_layer.state.commands.append(.command("gs"))
+            current_layer.state.currentStyle.strokeJoin = _strokeJoin
+        }
+        if current_layer.state.currentStyle.miterLimit != _miterLimit {
+            current_layer.state.commands.append(.name(_miterLimit))
+            current_layer.state.commands.append(.command("gs"))
+            current_layer.state.currentStyle.miterLimit = _miterLimit
+        }
+    }
+    
     func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
         let shape = shape * _mirrored_transform
@@ -629,6 +751,97 @@ extension PDFContext.Page {
         case .nonZero: current_layer.state.commands.append(.command("f"))
         case .evenOdd: current_layer.state.commands.append(.command("f*"))
         }
+    }
+    
+    func draw<C: ColorProtocol>(shape: Shape, stroke: Stroke<C>) {
+        
+        let transform = _mirrored_transform
+        let _transform = [
+            transform.a,
+            transform.d,
+            transform.b,
+            transform.e,
+            transform.c,
+            transform.f,
+        ]
+        
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        set_blendmode()
+        set_stroke_opacity(stroke.color.opacity * self.opacity)
+        
+        let color = stroke.color.convert(to: colorSpace, intent: renderingIntent)
+        let _color = (0..<color.numberOfComponents - 1).map { PDFCommand(color.component($0)) }
+        
+        if current_layer.state.currentStyle.stroke != _color {
+            current_layer.state.commands.append(contentsOf: _color)
+            current_layer.state.commands.append(.command("SC"))
+            current_layer.state.currentStyle.stroke = _color
+        }
+        
+        set_stroke_state(stroke)
+        
+        current_layer.state.commands.append(.command("q"))
+        
+        current_layer.state.commands.append(contentsOf: _transform.map { PDFCommand($0) })
+        current_layer.state.commands.append(.command("cm"))
+        
+        self.encode_path(shape: shape, commands: &current_layer.state.commands)
+        current_layer.state.commands.append(.command("S"))
+        
+        current_layer.state.commands.append(.command("Q"))
+    }
+    
+    func draw<C1: ColorProtocol, C2: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<C2>) {
+        
+        let transform = _mirrored_transform
+        let _transform = [
+            transform.a,
+            transform.d,
+            transform.b,
+            transform.e,
+            transform.c,
+            transform.f,
+        ]
+        
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        set_blendmode()
+        set_opacity(color.opacity * self.opacity)
+        set_stroke_opacity(stroke.color.opacity * self.opacity)
+        
+        let color = color.convert(to: colorSpace, intent: renderingIntent)
+        let _color = (0..<color.numberOfComponents - 1).map { PDFCommand(color.component($0)) }
+        
+        let stroke_color = stroke.color.convert(to: colorSpace, intent: renderingIntent)
+        let _stroke_color = (0..<stroke_color.numberOfComponents - 1).map { PDFCommand(stroke_color.component($0)) }
+        
+        if current_layer.state.currentStyle.color != _color {
+            current_layer.state.commands.append(contentsOf: _color)
+            current_layer.state.commands.append(.command("sc"))
+            current_layer.state.currentStyle.color = _color
+        }
+        
+        if current_layer.state.currentStyle.stroke != _stroke_color {
+            current_layer.state.commands.append(contentsOf: _stroke_color)
+            current_layer.state.commands.append(.command("SC"))
+            current_layer.state.currentStyle.stroke = _stroke_color
+        }
+        
+        set_stroke_state(stroke)
+        
+        current_layer.state.commands.append(.command("q"))
+        
+        current_layer.state.commands.append(contentsOf: _transform.map { PDFCommand($0) })
+        current_layer.state.commands.append(.command("cm"))
+        
+        self.encode_path(shape: shape, commands: &current_layer.state.commands)
+        switch winding {
+        case .nonZero: current_layer.state.commands.append(.command("B"))
+        case .evenOdd: current_layer.state.commands.append(.command("B*"))
+        }
+        
+        current_layer.state.commands.append(.command("Q"))
     }
 }
 

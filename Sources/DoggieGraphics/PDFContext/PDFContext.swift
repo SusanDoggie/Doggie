@@ -231,6 +231,12 @@ extension PDFContext {
     public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         current_page.draw(shape: shape, winding: winding, color: color)
     }
+    public func draw<C: ColorProtocol>(shape: Shape, stroke: Stroke<C>) {
+        current_page.draw(shape: shape, stroke: stroke)
+    }
+    public func draw<C1: ColorProtocol, C2: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<C2>) {
+        current_page.draw(shape: shape, winding: winding, color: color, stroke: stroke)
+    }
 }
 
 extension PDFContext {

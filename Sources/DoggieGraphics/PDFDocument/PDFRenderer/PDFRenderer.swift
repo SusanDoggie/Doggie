@@ -346,7 +346,7 @@ extension PDFRenderer {
     func set_clip_list(_ clipPath: [(Shape, Shape.WindingRule)]) {
         
         switch clipPath.count {
-            
+        
         case 0: return
             
         case 1: context.clip(shape: clipPath[0].0 * context.transform.inverse, winding: clipPath[0].1)
@@ -439,12 +439,12 @@ extension PDFRenderer {
         context.draw(image: image, transform: SDTransform.scale(x: 1 / Double(image.width), y: 1 / Double(image.height)) * SDTransform.reflectY(0.5))
     }
     
-    func draw(winding: Shape.WindingRule) {
+    func fillPath(winding: Shape.WindingRule) {
         
         if case .pattern = self.fillColorSpace, let pattern = self.fillPattern {
             
             switch pattern.paintType {
-                
+            
             case 1:
                 
                 var _pattern = Pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) { pattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
@@ -491,7 +491,7 @@ extension PDFRenderer {
         state.path = Shape()
     }
     
-    func drawStroke() {
+    func strokePath() {
         
         let cap: Shape.LineCap
         switch state.strokeCap {
@@ -513,7 +513,7 @@ extension PDFRenderer {
         if case .pattern = self.strokeColorSpace, let pattern = self.strokePattern {
             
             switch pattern.paintType {
-                
+            
             case 1:
                 
                 var _pattern = Pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) { pattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
@@ -570,6 +570,118 @@ extension PDFRenderer {
         context.opacity = opacity
     }
     
+    func fillStroke(winding: Shape.WindingRule) {
+        
+        if context.opacity != 1 || state.strokeOpacity != 1 {
+            
+            let path = state.path
+            self.fillPath(winding: winding)
+            state.path = path
+            self.strokePath()
+            return
+        }
+        
+        let cap: Shape.LineCap
+        switch state.strokeCap {
+        case .butt: cap = .butt
+        case .round: cap = .round
+        case .square: cap = .square
+        }
+        
+        let join: Shape.LineJoin
+        switch state.strokeJoin {
+        case .miter: join = .miter(limit: state.miterLimit)
+        case .round: join = .round
+        case .bevel: join = .bevel
+        }
+        
+        if case .pattern = self.fillColorSpace, let fillPattern = self.fillPattern {
+            
+            switch fillPattern.paintType {
+            
+            case 1:
+                
+                var _fill = Pattern(bound: fillPattern.bound, xStep: fillPattern.xStep, yStep: fillPattern.yStep) { fillPattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
+                
+                _fill.transform = fillPattern.transform
+                
+                if case .pattern = self.strokeColorSpace, let strokePattern = self.strokePattern {
+                    
+                    switch strokePattern.paintType {
+                    
+                    case 1:
+                        
+                        var _stroke_pattern = Pattern(bound: strokePattern.bound, xStep: strokePattern.xStep, yStep: strokePattern.yStep) { strokePattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
+                        
+                        _stroke_pattern.transform = strokePattern.transform
+                        
+                        let _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: _stroke_pattern)
+                        
+                        context.draw(shape: state.path, winding: winding, color: _fill, stroke: _stroke)
+                        
+                    default:
+                        
+                        let path = state.path
+                        self.fillPath(winding: winding)
+                        state.path = path
+                        self.strokePath()
+                        return
+                    }
+                    
+                } else {
+                    
+                    let _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
+                    
+                    context.draw(shape: state.path, winding: winding, color: _fill, stroke: _stroke)
+                }
+                
+            default:
+                
+                let path = state.path
+                self.fillPath(winding: winding)
+                state.path = path
+                self.strokePath()
+                return
+            }
+            
+        } else {
+            
+            let _fill = alphaMask ? AnyColor.white : fill ?? .black
+            
+            if case .pattern = self.strokeColorSpace, let strokePattern = self.strokePattern {
+                
+                switch strokePattern.paintType {
+                
+                case 1:
+                    
+                    var _stroke_pattern = Pattern(bound: strokePattern.bound, xStep: strokePattern.xStep, yStep: strokePattern.yStep) { strokePattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
+                    
+                    _stroke_pattern.transform = strokePattern.transform
+                    
+                    let _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: _stroke_pattern)
+                    
+                    context.draw(shape: state.path, winding: winding, color: _fill, stroke: _stroke)
+                    
+                default:
+                    
+                    let path = state.path
+                    self.fillPath(winding: winding)
+                    state.path = path
+                    self.strokePath()
+                    return
+                }
+                
+            } else {
+                
+                let _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: alphaMask ? AnyColor.white : stroke ?? AnyColor.black)
+                
+                context.draw(shape: state.path, winding: winding, color: _fill, stroke: _stroke)
+            }
+            
+            state.path = Shape()
+        }
+    }
+    
     private struct PDFGradientStop: Hashable {
         
         public var offset: Double
@@ -584,7 +696,7 @@ extension PDFRenderer {
     private func make_gradient_stops(function: PDFFunction) -> [PDFGradientStop]? {
         
         switch function.type {
-            
+        
         case 2:
             
             guard let domain = function.domain.first else { return nil }
@@ -742,7 +854,7 @@ extension PDFRenderer {
             }
             
             switch functions.count {
-                
+            
             case 0:
                 
                 func interpolate(_ x: UInt, _ decode: ArraySlice<Double>) -> Double {
@@ -940,7 +1052,7 @@ extension PDFRenderer {
             let colors = patch_data.colors.chunked(by: colorSpace.numberOfComponents)
             
             switch patch_data.flag {
-                
+            
             case 1:
                 
                 guard var _prev_patch = prev_patch else { return }
@@ -997,7 +1109,7 @@ extension PDFRenderer {
             }
             
             switch patch_data.flag {
-                
+            
             case 0:
                 
                 draw_patches(patches)
