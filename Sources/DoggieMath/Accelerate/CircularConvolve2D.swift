@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int), _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: (Int, Int), _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: (Int, Int), _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T: FloatingMathProtocol {
+public func Radix2CircularConvolve2D<T: BinaryFloatingPoint>(_ log2n: (Int, Int), _ signal: UnsafePointer<T>, _ signal_stride: Int, _ signal_count: (Int, Int), _ kernel: UnsafePointer<T>, _ kernel_stride: Int, _ kernel_count: (Int, Int), _ output: UnsafeMutablePointer<T>, _ out_stride: Int, _ temp: UnsafeMutablePointer<T>, _ temp_stride: Int) where T: ElementaryFunctions {
     
     let width = 1 << log2n.0
     let height = 1 << log2n.1

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol {
+extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPixel.Scalar: BinaryFloatingPoint & ElementaryFunctions {
     
     @inlinable
     @inline(__always)
@@ -141,7 +141,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
     }
 }
 
-extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol {
+extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPixel.Scalar: BinaryFloatingPoint & ElementaryFunctions {
     
     @inlinable
     @inline(__always)
@@ -317,7 +317,7 @@ extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPix
     }
 }
 
-extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol {
+extension _TextureProtocolImplement where RawPixel: ScalarMultiplicative, RawPixel.Scalar: BinaryFloatingPoint & ElementaryFunctions {
     
     @inlinable
     @inline(__always)
@@ -423,7 +423,7 @@ extension StencilTexture: _ImageConvolutionProtocol {
     }
 }
 
-extension Texture: _ImageConvolutionProtocol where RawPixel: _FloatComponentPixel, RawPixel.Scalar: FloatingMathProtocol {
+extension Texture: _ImageConvolutionProtocol where RawPixel: _FloatComponentPixel, RawPixel.Scalar: ElementaryFunctions {
     
     public typealias _ConvolutionFilterScalar = RawPixel.Scalar
     
@@ -440,7 +440,7 @@ extension Texture: _ImageConvolutionProtocol where RawPixel: _FloatComponentPixe
     }
 }
 
-extension Image: _ImageConvolutionProtocol where Pixel: _FloatComponentPixel, Pixel.Scalar: FloatingMathProtocol {
+extension Image: _ImageConvolutionProtocol where Pixel: _FloatComponentPixel, Pixel.Scalar: ElementaryFunctions {
     
     public typealias _ConvolutionFilterScalar = Pixel.Scalar
     

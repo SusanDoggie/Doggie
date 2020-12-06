@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: ScalarProtocol, T.Scalar: FloatingMathProtocol {
+public struct StencilTexture<T: BinaryFloatingPoint>: TextureProtocol where T: ScalarProtocol, T.Scalar: ElementaryFunctions {
     
     public typealias RawPixel = T
     
@@ -107,7 +107,7 @@ extension StencilTexture {
     }
 }
 
-extension Image where Pixel: ScalarMultiplicative, Pixel.Scalar: BinaryFloatingPoint, Pixel.Scalar: FloatingMathProtocol {
+extension Image where Pixel: ScalarMultiplicative, Pixel.Scalar: BinaryFloatingPoint, Pixel.Scalar: ElementaryFunctions {
     
     @inlinable
     @inline(__always)

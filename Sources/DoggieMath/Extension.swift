@@ -82,19 +82,19 @@ extension Complex {
     
     @inlinable
     @inline(__always)
-    public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
+    public func almostZero(epsilon: Double = Double.ulpOfOne.squareRoot(), reference: Double = 0) -> Bool {
         return self.real.almostZero(epsilon: epsilon, reference: reference) && self.imag.almostZero(epsilon: epsilon, reference: reference)
     }
     
     @inlinable
     @inline(__always)
-    public func almostEqual(_ other: Complex, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
+    public func almostEqual(_ other: Complex, epsilon: Double = Double.ulpOfOne.squareRoot()) -> Bool {
         return self.real.almostEqual(other.real, epsilon: epsilon) && self.imag.almostEqual(other.imag, epsilon: epsilon)
     }
     
     @inlinable
     @inline(__always)
-    public func almostEqual(_ other: Complex, epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double) -> Bool {
+    public func almostEqual(_ other: Complex, epsilon: Double = Double.ulpOfOne.squareRoot(), reference: Double) -> Bool {
         return self.real.almostEqual(other.real, epsilon: epsilon, reference: reference) && self.imag.almostEqual(other.imag, epsilon: epsilon, reference: reference)
     }
 }
@@ -103,19 +103,19 @@ extension Polynomial {
     
     @inlinable
     @inline(__always)
-    public func almostZero(epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double = 0) -> Bool {
+    public func almostZero(epsilon: Double = Double.ulpOfOne.squareRoot(), reference: Double = 0) -> Bool {
         return self.allSatisfy { $0.almostZero(epsilon: epsilon, reference: reference) }
     }
     
     @inlinable
     @inline(__always)
-    public func almostEqual(_ other: Polynomial, epsilon: Double = Double.defaultAlmostEqualEpsilon) -> Bool {
+    public func almostEqual(_ other: Polynomial, epsilon: Double = Double.ulpOfOne.squareRoot()) -> Bool {
         return (0..<Swift.max(self.count, other.count)).allSatisfy { self[$0].almostEqual(other[$0], epsilon: epsilon) }
     }
     
     @inlinable
     @inline(__always)
-    public func almostEqual(_ other: Polynomial, epsilon: Double = Double.defaultAlmostEqualEpsilon, reference: Double) -> Bool {
+    public func almostEqual(_ other: Polynomial, epsilon: Double = Double.ulpOfOne.squareRoot(), reference: Double) -> Bool {
         return (0..<Swift.max(self.count, other.count)).allSatisfy { self[$0].almostEqual(other[$0], epsilon: epsilon, reference: reference) }
     }
 }

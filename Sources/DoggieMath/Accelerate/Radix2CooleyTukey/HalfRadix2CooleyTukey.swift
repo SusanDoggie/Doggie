@@ -25,7 +25,7 @@
 
 @inlinable
 @inline(__always)
-func cooleytukey_twiddling<T: BinaryFloatingPoint>(_ log2n: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T: FloatingMathProtocol {
+func cooleytukey_twiddling<T: BinaryFloatingPoint>(_ log2n: Int, _ real: UnsafeMutablePointer<T>, _ imag: UnsafeMutablePointer<T>, _ stride: Int) where T: ElementaryFunctions {
     
     let length = 1 << log2n
     let half = length >> 1
@@ -84,7 +84,7 @@ func cooleytukey_twiddling<T: BinaryFloatingPoint>(_ log2n: Int, _ real: UnsafeM
 
 @inlinable
 @inline(__always)
-public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T: FloatingMathProtocol {
+public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ input: UnsafePointer<T>, _ in_stride: Int, _ in_count: Int, _ out_real: UnsafeMutablePointer<T>, _ out_imag: UnsafeMutablePointer<T>, _ out_stride: Int) where T: ElementaryFunctions {
     
     let length = 1 << log2n
     let half = length >> 1
@@ -124,7 +124,7 @@ public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ input:
 }
 @inlinable
 @inline(__always)
-public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ buffer: UnsafeMutablePointer<T>, _ stride: Int) where T: FloatingMathProtocol {
+public func HalfRadix2CooleyTukey<T: BinaryFloatingPoint>(_ log2n: Int, _ buffer: UnsafeMutablePointer<T>, _ stride: Int) where T: ElementaryFunctions {
     
     switch log2n {
         

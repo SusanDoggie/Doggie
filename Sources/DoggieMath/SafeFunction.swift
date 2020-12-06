@@ -85,7 +85,7 @@ public func Radix2FiniteImpulseFilter(_ signal: [Complex], _ kernel: [Complex]) 
 
 @inlinable
 @inline(__always)
-public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ kernel: [T]) -> [T] where T: FloatingMathProtocol {
+public func Radix2CircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ kernel: [T]) -> [T] where T: ElementaryFunctions {
     precondition(signal.count.isPower2, "size of signal must be power of 2.")
     precondition(signal.count == kernel.count, "mismatch count of inputs.")
     if signal.count == 1 {
@@ -113,7 +113,7 @@ public func Radix2CircularConvolve(_ signal: [Complex], _ kernel: [Complex]) -> 
 
 @inlinable
 @inline(__always)
-public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ n: T) -> [T] where T: FloatingMathProtocol {
+public func Radix2PowerCircularConvolve<T: BinaryFloatingPoint>(_ signal: [T], _ n: T) -> [T] where T: RealFunctions {
     precondition(signal.count.isPower2, "size of signal must be power of 2.")
     if signal.count == 1 {
         return [T.pow(signal[0], n)]

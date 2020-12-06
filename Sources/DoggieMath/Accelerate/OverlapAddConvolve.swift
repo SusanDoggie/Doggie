@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & FloatingMathProtocol> {
+public struct Radix2OverlapAddConvolve<T: BinaryFloatingPoint & ElementaryFunctions> {
     
     @usableFromInline
     let fft_length: Int

@@ -46,7 +46,7 @@ extension ResamplingAlgorithm {
 @usableFromInline
 protocol _ResamplingImplement {
     
-    associatedtype Pixel: ScalarMultiplicative where Pixel.Scalar: BinaryFloatingPoint & FloatingMathProtocol
+    associatedtype Pixel: ScalarMultiplicative where Pixel.Scalar: BinaryFloatingPoint & ElementaryFunctions
     
     var resamplingAlgorithm: ResamplingAlgorithm { get }
     

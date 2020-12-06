@@ -85,7 +85,7 @@ extension ColorPixel where Self: _FloatComponentPixel {
     }
 }
 
-extension ColorPixel where Self: _FloatComponentPixel, Scalar: FloatingMathProtocol {
+extension ColorPixel where Self: _FloatComponentPixel, Scalar: RealFunctions {
     
     @inlinable
     @inline(__always)

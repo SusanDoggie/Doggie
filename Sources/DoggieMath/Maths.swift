@@ -308,7 +308,7 @@ public func LinearInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ 
 
 @inlinable
 @inline(__always)
-public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T where T.Scalar: FloatingMathProtocol {
+public func CosineInterpolate<T: ScalarMultiplicative>(_ t: T.Scalar, _ a: T, _ b: T) -> T where T.Scalar: ElementaryFunctions, T.Scalar: FloatingPoint {
     let u = 1 - T.Scalar.cos(t * T.Scalar.pi)
     let v = 0.5 * u
     return LinearInterpolate(v, a, b)

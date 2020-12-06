@@ -27,6 +27,8 @@
 
 @_exported import Algorithms
 
+@_exported import RealModule
+
 @_exported import Float16
 
 @_exported import zlib_c
