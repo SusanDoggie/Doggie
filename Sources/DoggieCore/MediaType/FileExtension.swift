@@ -29,6 +29,12 @@ import CoreServices
 
 #endif
 
+#if canImport(MobileCoreServices)
+
+import MobileCoreServices
+
+#endif
+
 extension MediaType {
     
     #if canImport(CoreServices)

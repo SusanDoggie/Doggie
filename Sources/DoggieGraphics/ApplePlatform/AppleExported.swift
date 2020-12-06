@@ -35,12 +35,6 @@
 
 #endif
 
-#if canImport(MobileCoreServices)
-
-@_exported import MobileCoreServices
-
-#endif
-
 #if canImport(CoreImage)
 
 @_exported import CoreImage

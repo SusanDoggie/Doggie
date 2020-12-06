@@ -29,6 +29,12 @@ import CoreServices
 
 #endif
 
+#if canImport(MobileCoreServices)
+
+import MobileCoreServices
+
+#endif
+
 @frozen
 public struct MIMEType: Hashable {
     
@@ -107,7 +113,7 @@ extension MIMEType {
     public static let otf: MIMEType                = "font/otf"
     public static let ttf: MIMEType                = "font/ttf"
     public static let woff: MIMEType               = "font/woff"
-    public static let woff2: MIMEType               = "font/woff2"
+    public static let woff2: MIMEType              = "font/woff2"
     
 }
 

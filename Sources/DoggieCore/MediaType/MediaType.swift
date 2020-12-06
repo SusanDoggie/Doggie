@@ -29,6 +29,12 @@ import CoreServices
 
 #endif
 
+#if canImport(MobileCoreServices)
+
+import MobileCoreServices
+
+#endif
+
 @frozen
 public struct MediaType: RawRepresentable, Hashable, ExpressibleByStringLiteral {
     
@@ -85,7 +91,7 @@ extension MediaType {
     public static let otf: MediaType                = "public.opentype-font"
     public static let ttf: MediaType                = "public.truetype-ttf-font"
     public static let woff: MediaType               = "org.w3c.woff"
-    public static let woff2: MediaType               = "org.w3c.woff2"
+    public static let woff2: MediaType              = "org.w3c.woff2"
     
 }
 
