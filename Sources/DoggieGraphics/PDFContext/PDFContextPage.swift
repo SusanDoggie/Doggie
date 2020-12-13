@@ -1668,9 +1668,9 @@ extension PDFContext.Page {
         guard self.transform.invertible else { return }
         guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
         
-        guard !color.bound.width.almostZero() && !color.bound.height.almostZero() && !color.xStep.almostZero() && !color.yStep.almostZero() else { return }
-        guard !color.bound.isEmpty && color.xStep.isFinite && color.yStep.isFinite else { return }
-        guard color.transform.invertible else { return }
+        guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
+        guard !pattern.bound.isEmpty && pattern.xStep.isFinite && pattern.yStep.isFinite else { return }
+        guard pattern.transform.invertible else { return }
         
         let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: colorSpace, intent: renderingIntent))
         self._draw(pattern, stroke, shape, winding)
