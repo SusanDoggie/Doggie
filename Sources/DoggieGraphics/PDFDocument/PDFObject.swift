@@ -430,19 +430,19 @@ extension PDFObject {
     }
     
     @inlinable
-    public var stream: PDFStream? {
-        switch base {
-        case let .xref(xref): return self.xref[xref]?.stream
-        case let .stream(value): return value
-        default: return nil
-        }
-    }
-    
-    @inlinable
     func dereference() -> PDFObject {
         switch base {
         case let .xref(xref): return self.xref[xref]?._apply_xref(self.xref) ?? PDFObject(xref)._apply_xref(self.xref)
         default: return self._apply_xref(xref)
+        }
+    }
+    
+    @inlinable
+    public var stream: PDFStream? {
+        switch base {
+        case let .xref(xref): return self.xref[xref]?.stream
+        case let .stream(value): return PDFStream(dictionary: value.dictionary.mapValues { $0._apply_xref(self.xref).dereference() }, data: value.data)
+        default: return nil
         }
     }
     
@@ -462,6 +462,40 @@ extension PDFObject {
         case let .stream(value): return value.dictionary.mapValues { $0._apply_xref(self.xref).dereference() }
         case let .dictionary(value): return value.mapValues { $0._apply_xref(self.xref).dereference() }
         default: return nil
+        }
+    }
+}
+
+extension PDFObject {
+    
+    @inlinable
+    func dereferenceAll() -> PDFObject {
+        var xref = self.xref
+        for (key, value) in xref {
+            xref[key] = value._apply_xref(xref)._dereference_all([key])
+        }
+        return self._apply_xref(xref)._dereference_all()._apply_xref(xref)
+    }
+    
+    @inlinable
+    func _dereference_all(_ stack: Set<PDFXref> = []) -> PDFObject {
+        
+        switch base {
+        
+        case let .array(array): return PDFObject(array.map { $0._apply_xref(xref)._dereference_all(stack) })
+        case let .dictionary(dictionary): return PDFObject(dictionary.mapValues { $0._apply_xref(xref)._dereference_all(stack) })
+        case let .stream(stream): return PDFObject(stream.dictionary.mapValues { $0._apply_xref(xref)._dereference_all(stack) }, stream.data)
+            
+        case let .xref(xref):
+            
+            guard !stack.contains(xref), let target = self.xref[xref] else { return self }
+            
+            var stack = stack
+            stack.insert(xref)
+            
+            return target._apply_xref(self.xref)._dereference_all(stack)
+            
+        default: return self
         }
     }
 }

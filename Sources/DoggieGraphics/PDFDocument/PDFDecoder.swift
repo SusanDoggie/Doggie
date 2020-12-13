@@ -122,34 +122,13 @@ extension PDFDocument {
         try self.init(PDFDocument.decode_trailer(data, data.dropFirst(xref_offset), [xref_offset]))
     }
     
-    static func dereference_all(_ object: PDFObject, _ xref_table: [PDFXref: PDFObject], _ stack: Set<PDFXref> = []) -> PDFObject {
-        
-        switch object.base {
-            
-        case let .array(array): return PDFObject(array.map { dereference_all($0, xref_table, stack)._apply_xref(xref_table) })
-        case let .dictionary(dictionary): return PDFObject(dictionary.mapValues { dereference_all($0, xref_table, stack)._apply_xref(xref_table) })
-        case let .stream(stream): return PDFObject(stream.dictionary.mapValues { dereference_all($0, xref_table, stack)._apply_xref(xref_table) }, stream.data)
-            
-        case let .xref(xref):
-            
-            guard !stack.contains(xref), let target = xref_table[xref] else { return object }
-            
-            var stack = stack
-            stack.insert(xref)
-            
-            return dereference_all(target, xref_table, stack)
-            
-        default: return object
-        }
-    }
-    
     private static func decode_trailer(_ data: Data, _ xref_data: Data, _ stack: Set<Int>) throws -> PDFObject {
         
         let (trailer, _xref_table) = try _decode_trailer(data, xref_data, stack)
         
         let xref_table = Dictionary(uniqueKeysWithValues: _xref_table.compactMap { key, data in PDFObject.decode_indirect_object(key, data, _xref_table, []).map { (key, $0.1) } })
         
-        return dereference_all(trailer, xref_table)._apply_xref(xref_table)
+        return trailer._apply_xref(xref_table).dereferenceAll()
     }
     
     private static func _decode_object_stream(_ object: PDFObject, _ xref_table: [PDFXref: Data]) throws -> [PDFXref: Data] {
