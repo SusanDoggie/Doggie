@@ -516,7 +516,7 @@ extension SVGContext {
         }
         
         if self.opacity < 1 {
-            element.setAttribute(for: "opacity", value: "\(self.opacity)")
+            element.setAttribute(for: "opacity", value: "\(Decimal(self.opacity).rounded(scale: 9))")
         }
         
         switch self.blendMode {
@@ -644,6 +644,7 @@ extension SVGContext {
     public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
         guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
         
         let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
@@ -656,10 +657,43 @@ extension SVGContext {
         element.setAttribute(for: "fill", value: create_color(color))
         
         if color.opacity < 1 {
-            element.setAttribute(for: "fill-opacity", value: "\(color.opacity)")
+            element.setAttribute(for: "fill-opacity", value: "\(Decimal(color.opacity).rounded(scale: 9))")
         }
         
         self.append(element, shape, true, .identity)
+    }
+    public func draw<C: ColorProtocol>(shape: Shape, stroke: Stroke<C>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
+        
+        element.setAttribute(for: "fill", value: "none")
+        element.setAttribute(for: "stroke", value: create_color(stroke.color))
+        
+        if stroke.color.opacity < 1 {
+            element.setAttribute(for: "stroke-opacity", value: "\(Decimal(stroke.color.opacity).rounded(scale: 9))")
+        }
+        
+        element.setAttribute(for: "stroke-width", value: "\(Decimal(stroke.width).rounded(scale: 9))")
+        
+        switch stroke.cap {
+        case .butt: element.setAttribute(for: "stroke-linecap", value: "butt")
+        case .round: element.setAttribute(for: "stroke-linecap", value: "round")
+        case .square: element.setAttribute(for: "stroke-linecap", value: "square")
+        }
+        switch stroke.join {
+        case let .miter(limit):
+            element.setAttribute(for: "stroke-linejoin", value: "miter")
+            element.setAttribute(for: "stroke-miterlimit", value: "\(Decimal(limit).rounded(scale: 9))")
+        case .round: element.setAttribute(for: "stroke-linejoin", value: "round")
+        case .bevel: element.setAttribute(for: "stroke-linejoin", value: "bevel")
+        }
+        
+        element.setAttribute(for: "transform", value: self.transform.attributeStr())
+        
+        self.append(element, shape.strokePath(stroke), true, self.transform)
     }
 }
 
@@ -987,6 +1021,7 @@ extension SVGContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, color gradient: Gradient<C>) {
         
+        guard !self.transform.determinant.almostZero() else { return }
         guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
         
         var gradient = gradient
@@ -1010,10 +1045,52 @@ extension SVGContext {
         element.setAttribute(for: "fill", value: create_gradient(gradient))
         
         if gradient.opacity < 1 {
-            element.setAttribute(for: "fill-opacity", value: "\(gradient.opacity)")
+            element.setAttribute(for: "fill-opacity", value: "\(Decimal(gradient.opacity).rounded(scale: 9))")
         }
         
         self.append(element, shape, true, .identity)
+    }
+    public func draw<C>(shape: Shape, stroke: Stroke<Gradient<C>>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let shape_identity = shape.identity
+        let strokePath = shape.strokePath(stroke)
+        
+        var element = SDXMLElement(name: "path", attributes: ["d": shape_identity.encode()])
+        
+        var gradient = stroke.color
+        gradient.transform *= SDTransform.scale(x: strokePath.originalBoundary.width, y: strokePath.originalBoundary.height)
+        gradient.transform *= SDTransform.translate(x: strokePath.originalBoundary.minX, y: strokePath.originalBoundary.minY)
+        gradient.transform *= SDTransform.translate(x: shape_identity.originalBoundary.minX, y: shape_identity.originalBoundary.minY).inverse
+        gradient.transform *= SDTransform.scale(x: shape_identity.originalBoundary.width, y: shape_identity.originalBoundary.height).inverse
+        
+        element.setAttribute(for: "fill", value: "none")
+        element.setAttribute(for: "stroke", value: create_gradient(gradient))
+        
+        if stroke.color.opacity < 1 {
+            element.setAttribute(for: "stroke-opacity", value: "\(Decimal(stroke.color.opacity).rounded(scale: 9))")
+        }
+        
+        element.setAttribute(for: "stroke-width", value: "\(Decimal(stroke.width).rounded(scale: 9))")
+        
+        switch stroke.cap {
+        case .butt: element.setAttribute(for: "stroke-linecap", value: "butt")
+        case .round: element.setAttribute(for: "stroke-linecap", value: "round")
+        case .square: element.setAttribute(for: "stroke-linecap", value: "square")
+        }
+        switch stroke.join {
+        case let .miter(limit):
+            element.setAttribute(for: "stroke-linejoin", value: "miter")
+            element.setAttribute(for: "stroke-miterlimit", value: "\(Decimal(limit).rounded(scale: 9))")
+        case .round: element.setAttribute(for: "stroke-linejoin", value: "round")
+        case .bevel: element.setAttribute(for: "stroke-linejoin", value: "bevel")
+        }
+        
+        element.setAttribute(for: "transform", value: self.transform.attributeStr())
+        
+        self.append(element, strokePath, true, self.transform)
     }
 }
 
@@ -1226,10 +1303,48 @@ extension SVGContext {
         element.setAttribute(for: "fill", value: create_pattern(pattern: pattern))
         
         if pattern.opacity < 1 {
-            element.setAttribute(for: "fill-opacity", value: "\(pattern.opacity)")
+            element.setAttribute(for: "fill-opacity", value: "\(Decimal(pattern.opacity).rounded(scale: 9))")
         }
         
         self.append(element, shape, true, .identity)
+    }
+    public func draw(shape: Shape, stroke: Stroke<Pattern>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard !stroke.color.bound.width.almostZero() && !stroke.color.bound.height.almostZero() && !stroke.color.xStep.almostZero() && !stroke.color.yStep.almostZero() else { return }
+        guard !stroke.color.transform.determinant.almostZero() else { return }
+        
+        var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
+        
+        var pattern = stroke.color
+        pattern.transform *= self.transform.inverse
+        
+        element.setAttribute(for: "fill", value: "none")
+        element.setAttribute(for: "stroke", value: create_pattern(pattern: pattern))
+        
+        if stroke.color.opacity < 1 {
+            element.setAttribute(for: "stroke-opacity", value: "\(Decimal(stroke.color.opacity).rounded(scale: 9))")
+        }
+        
+        element.setAttribute(for: "stroke-width", value: "\(Decimal(stroke.width).rounded(scale: 9))")
+        
+        switch stroke.cap {
+        case .butt: element.setAttribute(for: "stroke-linecap", value: "butt")
+        case .round: element.setAttribute(for: "stroke-linecap", value: "round")
+        case .square: element.setAttribute(for: "stroke-linecap", value: "square")
+        }
+        switch stroke.join {
+        case let .miter(limit):
+            element.setAttribute(for: "stroke-linejoin", value: "miter")
+            element.setAttribute(for: "stroke-miterlimit", value: "\(Decimal(limit).rounded(scale: 9))")
+        case .round: element.setAttribute(for: "stroke-linejoin", value: "round")
+        case .bevel: element.setAttribute(for: "stroke-linejoin", value: "bevel")
+        }
+        
+        element.setAttribute(for: "transform", value: self.transform.attributeStr())
+        
+        self.append(element, shape.strokePath(stroke), true, self.transform)
     }
     
     public func drawPattern(_ pattern: Pattern) {
@@ -1271,10 +1386,201 @@ extension SVGContext {
         element.setAttribute(for: "fill", value: create_pattern(pattern: pattern))
         
         if pattern.opacity < 1 {
-            element.setAttribute(for: "fill-opacity", value: "\(pattern.opacity)")
+            element.setAttribute(for: "fill-opacity", value: "\(Decimal(pattern.opacity).rounded(scale: 9))")
         }
         
         self.append(element, objectBound, clip_object, .identity)
+    }
+}
+
+extension SVGContext {
+    
+    private func _draw<C1, C2>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<C2>) {
+        
+        let shape_identity = shape.identity
+        let strokePath = shape.strokePath(stroke)
+        
+        var element = SDXMLElement(name: "path", attributes: ["d": shape_identity.encode()])
+        
+        switch winding {
+        case .nonZero: element.setAttribute(for: "fill-rule", value: "nonzero")
+        case .evenOdd: element.setAttribute(for: "fill-rule", value: "evenodd")
+        }
+        
+        switch color {
+        case let color as Color<RGBColorModel>:
+            
+            element.setAttribute(for: "fill", value: create_color(color))
+            
+            if color.opacity < 1 {
+                element.setAttribute(for: "fill-opacity", value: "\(Decimal(color.opacity).rounded(scale: 9))")
+            }
+            
+        case var gradient as Gradient<Color<RGBColorModel>>:
+            
+            gradient.transform *= SDTransform.scale(x: shape.originalBoundary.width, y: shape.originalBoundary.height)
+            gradient.transform *= SDTransform.translate(x: shape.originalBoundary.minX, y: shape.originalBoundary.minY)
+            gradient.transform *= shape.transform
+            
+            gradient.transform *= SDTransform.translate(x: shape_identity.originalBoundary.minX, y: shape_identity.originalBoundary.minY).inverse
+            gradient.transform *= SDTransform.scale(x: shape_identity.originalBoundary.width, y: shape_identity.originalBoundary.height).inverse
+            
+            element.setAttribute(for: "fill", value: create_gradient(gradient))
+            
+            if gradient.opacity < 1 {
+                element.setAttribute(for: "fill-opacity", value: "\(Decimal(gradient.opacity).rounded(scale: 9))")
+            }
+            
+        case var pattern as Pattern:
+            
+            pattern.transform *= self.transform.inverse
+            
+            element.setAttribute(for: "fill", value: create_pattern(pattern: pattern))
+            
+            if pattern.opacity < 1 {
+                element.setAttribute(for: "fill-opacity", value: "\(Decimal(pattern.opacity).rounded(scale: 9))")
+            }
+            
+        default: break
+        }
+        
+        switch stroke.color {
+        case let color as Color<RGBColorModel>:
+            
+            element.setAttribute(for: "stroke", value: create_color(color))
+            
+            if color.opacity < 1 {
+                element.setAttribute(for: "stroke-opacity", value: "\(Decimal(color.opacity).rounded(scale: 9))")
+            }
+            
+        case var gradient as Gradient<Color<RGBColorModel>>:
+            
+            gradient.transform *= SDTransform.scale(x: strokePath.originalBoundary.width, y: strokePath.originalBoundary.height)
+            gradient.transform *= SDTransform.translate(x: strokePath.originalBoundary.minX, y: strokePath.originalBoundary.minY)
+            gradient.transform *= SDTransform.translate(x: shape_identity.originalBoundary.minX, y: shape_identity.originalBoundary.minY).inverse
+            gradient.transform *= SDTransform.scale(x: shape_identity.originalBoundary.width, y: shape_identity.originalBoundary.height).inverse
+            
+            element.setAttribute(for: "stroke", value: create_gradient(gradient))
+            
+            if gradient.opacity < 1 {
+                element.setAttribute(for: "stroke-opacity", value: "\(Decimal(gradient.opacity).rounded(scale: 9))")
+            }
+            
+        case var pattern as Pattern:
+            
+            pattern.transform *= self.transform.inverse
+            
+            element.setAttribute(for: "stroke", value: create_pattern(pattern: pattern))
+            
+            if pattern.opacity < 1 {
+                element.setAttribute(for: "stroke-opacity", value: "\(Decimal(pattern.opacity).rounded(scale: 9))")
+            }
+            
+        default: break
+        }
+        
+        element.setAttribute(for: "stroke-width", value: "\(Decimal(stroke.width).rounded(scale: 9))")
+        
+        switch stroke.cap {
+        case .butt: element.setAttribute(for: "stroke-linecap", value: "butt")
+        case .round: element.setAttribute(for: "stroke-linecap", value: "round")
+        case .square: element.setAttribute(for: "stroke-linecap", value: "square")
+        }
+        switch stroke.join {
+        case let .miter(limit):
+            element.setAttribute(for: "stroke-linejoin", value: "miter")
+            element.setAttribute(for: "stroke-miterlimit", value: "\(Decimal(limit).rounded(scale: 9))")
+        case .round: element.setAttribute(for: "stroke-linejoin", value: "round")
+        case .bevel: element.setAttribute(for: "stroke-linejoin", value: "bevel")
+        }
+        
+        element.setAttribute(for: "transform", value: self.transform.attributeStr())
+        
+        self.append(element, shape.strokePath(stroke), true, self.transform)
+    }
+    
+    public func draw<C1: ColorProtocol, C2: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<C2>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
+        let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
+        self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
+    }
+    
+    public func draw<C1: ColorProtocol, C2>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<Gradient<C2>>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
+        let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
+        self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
+    }
+    
+    public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C, stroke: Stroke<Pattern>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
+        self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
+    }
+    
+    public func draw<C1, C2: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: Gradient<C1>, stroke: Stroke<C2>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
+        let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
+        self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
+    }
+    
+    public func draw<C1, C2>(shape: Shape, winding: Shape.WindingRule, color: Gradient<C1>, stroke: Stroke<Gradient<C2>>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
+        let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
+        self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
+    }
+    
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, color: Gradient<C>, stroke: Stroke<Pattern>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
+        self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
+    }
+    
+    public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: Pattern, stroke: Stroke<C>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
+        self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
+    }
+    
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, color: Pattern, stroke: Stroke<Gradient<C>>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
+        self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
+    }
+    
+    public func draw(shape: Shape, winding: Shape.WindingRule, color: Pattern, stroke: Stroke<Pattern>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
     }
 }
 

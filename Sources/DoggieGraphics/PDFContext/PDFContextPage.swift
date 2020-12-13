@@ -730,6 +730,8 @@ extension PDFContext.Page {
     
     func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
+        guard !self.transform.determinant.almostZero() else { return }
+        
         let shape = shape * _mirrored_transform
         
         guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
@@ -754,6 +756,8 @@ extension PDFContext.Page {
     }
     
     func draw<C: ColorProtocol>(shape: Shape, stroke: Stroke<C>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
         
         let transform = _mirrored_transform
         let _transform = [
@@ -788,58 +792,6 @@ extension PDFContext.Page {
         
         self.encode_path(shape: shape, commands: &current_layer.state.commands)
         current_layer.state.commands.append(.command("S"))
-        
-        current_layer.state.commands.append(.command("Q"))
-    }
-    
-    func draw<C1: ColorProtocol, C2: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<C2>) {
-        
-        let transform = _mirrored_transform
-        let _transform = [
-            transform.a,
-            transform.d,
-            transform.b,
-            transform.e,
-            transform.c,
-            transform.f,
-        ]
-        
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
-        
-        set_blendmode()
-        set_opacity(color.opacity * self.opacity)
-        set_stroke_opacity(stroke.color.opacity * self.opacity)
-        
-        let color = color.convert(to: colorSpace, intent: renderingIntent)
-        let _color = (0..<color.numberOfComponents - 1).map { PDFCommand(color.component($0)) }
-        
-        let stroke_color = stroke.color.convert(to: colorSpace, intent: renderingIntent)
-        let _stroke_color = (0..<stroke_color.numberOfComponents - 1).map { PDFCommand(stroke_color.component($0)) }
-        
-        if current_layer.state.currentStyle.color != _color {
-            current_layer.state.commands.append(contentsOf: _color)
-            current_layer.state.commands.append(.command("sc"))
-            current_layer.state.currentStyle.color = _color
-        }
-        
-        if current_layer.state.currentStyle.stroke != _stroke_color {
-            current_layer.state.commands.append(contentsOf: _stroke_color)
-            current_layer.state.commands.append(.command("SC"))
-            current_layer.state.currentStyle.stroke = _stroke_color
-        }
-        
-        set_stroke_state(stroke)
-        
-        current_layer.state.commands.append(.command("q"))
-        
-        current_layer.state.commands.append(contentsOf: _transform.map { PDFCommand($0) })
-        current_layer.state.commands.append(.command("cm"))
-        
-        self.encode_path(shape: shape, commands: &current_layer.state.commands)
-        switch winding {
-        case .nonZero: current_layer.state.commands.append(.command("B"))
-        case .evenOdd: current_layer.state.commands.append(.command("B*"))
-        }
         
         current_layer.state.commands.append(.command("Q"))
     }
@@ -979,6 +931,9 @@ extension PDFContext.Page {
             transform.f,
         ]
         
+        set_blendmode()
+        set_opacity(self.opacity)
+        
         current_layer.state.commands.append(.command("q"))
         
         if let mask = mask {
@@ -1023,9 +978,6 @@ extension PDFContext.Page {
             current_layer.state.commands.append(.command("gs"))
         }
         
-        set_blendmode()
-        set_opacity(self.opacity)
-        
         if resources.shading[color] == nil {
             resources.shading[color] = PDFName("Sh\(resources.shading.count + 1)")
         }
@@ -1039,6 +991,8 @@ extension PDFContext.Page {
     }
     
     func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
         
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
         guard stops.count >= 2 else { return }
@@ -1072,6 +1026,8 @@ extension PDFContext.Page {
     }
     
     func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
         
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
         guard stops.count >= 2 else { return }
@@ -1390,35 +1346,24 @@ extension PDFContext.Page {
 
 extension PDFContext.Page {
     
-    private func _draw_pattern(_ pattern: Pattern, _ shape: Shape, _ winding: Shape.WindingRule, _ clip: PDFContext.Clip?) {
+    private func _draw_pattern(_ pattern: Pattern, _ shape: Shape, _ winding: Shape.WindingRule, _ disable_clip: Bool) {
         
-        current_layer.state.commands.append(.command("Q"))
-        current_layer.state.commands.append(.command("q"))
-        current_layer.state.currentStyle.apply(to: current_layer)
-        
-        switch clip {
+        if disable_clip {
             
-        case let .clip(shape, winding):
+            current_layer.state.commands.append(.command("Q"))
+            current_layer.state.commands.append(.command("q"))
+            current_layer.state.currentStyle.apply(to: current_layer)
             
-            self.encode_path(shape: shape, commands: &current_layer.state.commands)
+            set_blendmode()
+            set_opacity(pattern.opacity * self.opacity)
             
-            switch winding {
-            case .nonZero: current_layer.state.commands.append(.command("W"))
-            case .evenOdd: current_layer.state.commands.append(.command("W*"))
-            }
+        } else {
             
-            current_layer.state.commands.append(.command("n"))
+            set_blendmode()
+            set_opacity(pattern.opacity * self.opacity)
             
-        case let .mask(name):
-            
-            current_layer.state.commands.append(.name(name))
-            current_layer.state.commands.append(.command("gs"))
-            
-        default: break
+            current_layer.state.commands.append(.command("q"))
         }
-        
-        set_blendmode()
-        set_opacity(pattern.opacity * self.opacity)
         
         let pattern_context = PDFContext.Page(media: pattern.bound, crop: pattern.bound, bleed: pattern.bound, trim: pattern.bound, margin: pattern.bound, colorSpace: colorSpace)
         pattern_context.initialize()
@@ -1449,33 +1394,42 @@ extension PDFContext.Page {
         case .evenOdd: current_layer.state.commands.append(.command("f*"))
         }
         
-        current_layer.state.commands.append(.command("Q"))
-        current_layer.state.commands.append(.command("q"))
-        current_layer.state.currentStyle.apply(to: current_layer)
-        
-        switch current_layer.state.clip {
+        if disable_clip {
             
-        case let .clip(shape, winding):
+            current_layer.state.commands.append(.command("Q"))
+            current_layer.state.commands.append(.command("q"))
+            current_layer.state.currentStyle.apply(to: current_layer)
             
-            self.encode_path(shape: shape, commands: &current_layer.state.commands)
+            switch current_layer.state.clip {
             
-            switch winding {
-            case .nonZero: current_layer.state.commands.append(.command("W"))
-            case .evenOdd: current_layer.state.commands.append(.command("W*"))
+            case let .clip(shape, winding):
+                
+                self.encode_path(shape: shape, commands: &current_layer.state.commands)
+                
+                switch winding {
+                case .nonZero: current_layer.state.commands.append(.command("W"))
+                case .evenOdd: current_layer.state.commands.append(.command("W*"))
+                }
+                
+                current_layer.state.commands.append(.command("n"))
+                
+            case let .mask(name):
+                
+                current_layer.state.commands.append(.name(name))
+                current_layer.state.commands.append(.command("gs"))
+                
+            default: break
             }
             
-            current_layer.state.commands.append(.command("n"))
+        } else {
             
-        case let .mask(name):
-            
-            current_layer.state.commands.append(.name(name))
-            current_layer.state.commands.append(.command("gs"))
-            
-        default: break
+            current_layer.state.commands.append(.command("Q"))
         }
     }
     
     func draw(shape: Shape, winding: Shape.WindingRule, color pattern: Pattern) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
         
         let shape = shape * _mirrored_transform
         
@@ -1483,7 +1437,7 @@ extension PDFContext.Page {
         guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
         guard !pattern.transform.determinant.almostZero() else { return }
         
-        self._draw_pattern(pattern, shape, winding, current_layer.state.clip)
+        self._draw_pattern(pattern, shape, winding, false)
     }
     
     func drawPattern(_ pattern: Pattern) {
@@ -1494,18 +1448,23 @@ extension PDFContext.Page {
         
         if case let .clip(shape, winding) = current_layer.state.clip {
             
-            self._draw_pattern(pattern, shape, winding, nil)
+            self._draw_pattern(pattern, shape, winding, true)
             
         } else {
             
-            self._draw_pattern(pattern, Shape(rect: self.media), .nonZero, current_layer.state.clip)
+            self._draw_pattern(pattern, Shape(rect: self.media), .nonZero, false)
         }
     }
 }
 
 extension PDFContext.Page {
     
-    func drawShading(_ shader: PDFFunction) {
+    func draw(shape: Shape, stroke: Stroke<Pattern>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard !stroke.color.bound.width.almostZero() && !stroke.color.bound.height.almostZero() && !stroke.color.xStep.almostZero() && !stroke.color.yStep.almostZero() else { return }
+        guard !stroke.color.transform.determinant.almostZero() else { return }
         
         let transform = _mirrored_transform
         let _transform = [
@@ -1517,10 +1476,232 @@ extension PDFContext.Page {
             transform.f,
         ]
         
+        set_blendmode()
+        set_stroke_state(stroke)
+        
         current_layer.state.commands.append(.command("q"))
+        
+        let pattern = stroke.color
+        
+        set_stroke_opacity(pattern.opacity * self.opacity)
+        
+        let pattern_context = PDFContext.Page(media: pattern.bound, crop: pattern.bound, bleed: pattern.bound, trim: pattern.bound, margin: pattern.bound, colorSpace: colorSpace)
+        pattern_context.initialize()
+        
+        pattern.callback(PDFContext(pages: [pattern_context]))
+        
+        let name = PDFName("P\(resources.pattern.count + 1)")
+        resources.pattern[name] = PDFContext.PDFPattern(
+            type: 1,
+            paintType: 1,
+            tilingType: 3,
+            bound: pattern.bound,
+            xStep: pattern.xStep,
+            yStep: pattern.yStep,
+            transform: .reflectY(pattern.bound.midY) * pattern.transform * _mirrored_transform,
+            resources: pattern_context.resources,
+            commands: pattern_context.finalize()
+        )
+        
+        current_layer.state.commands.append(.name("Pattern"))
+        current_layer.state.commands.append(.command("CS"))
+        current_layer.state.commands.append(.name(name))
+        current_layer.state.commands.append(.command("SCN"))
+        
+        current_layer.state.commands.append(contentsOf: _transform.map { PDFCommand($0) })
+        current_layer.state.commands.append(.command("cm"))
+        
+        self.encode_path(shape: shape, commands: &current_layer.state.commands)
+        current_layer.state.commands.append(.command("S"))
+        
+        current_layer.state.commands.append(.command("Q"))
+    }
+}
+
+extension PDFContext.Page {
+    
+    private func _draw<C1, C2>(_ color: C1, _ stroke: Stroke<C2>, _ shape: Shape, _ winding: Shape.WindingRule) {
+        
+        let transform = _mirrored_transform
+        let _transform = [
+            transform.a,
+            transform.d,
+            transform.b,
+            transform.e,
+            transform.c,
+            transform.f,
+        ]
+        
+        set_blendmode()
+        set_stroke_state(stroke)
+        
+        var fill_pattern: PDFName?
+        var stroke_pattern: PDFName?
+        
+        switch color {
+        
+        case let color as AnyColor:
+            
+            set_opacity(color.opacity * self.opacity)
+            
+            let _color = (0..<color.numberOfComponents - 1).map { PDFCommand(color.component($0)) }
+            
+            if current_layer.state.currentStyle.color != _color {
+                current_layer.state.commands.append(contentsOf: _color)
+                current_layer.state.commands.append(.command("sc"))
+                current_layer.state.currentStyle.color = _color
+            }
+            
+        case let pattern as Pattern:
+            
+            set_opacity(pattern.opacity * self.opacity)
+            
+            let pattern_context = PDFContext.Page(media: pattern.bound, crop: pattern.bound, bleed: pattern.bound, trim: pattern.bound, margin: pattern.bound, colorSpace: colorSpace)
+            pattern_context.initialize()
+            
+            pattern.callback(PDFContext(pages: [pattern_context]))
+            
+            let name = PDFName("P\(resources.pattern.count + 1)")
+            resources.pattern[name] = PDFContext.PDFPattern(
+                type: 1,
+                paintType: 1,
+                tilingType: 3,
+                bound: pattern.bound,
+                xStep: pattern.xStep,
+                yStep: pattern.yStep,
+                transform: .reflectY(pattern.bound.midY) * pattern.transform * _mirrored_transform,
+                resources: pattern_context.resources,
+                commands: pattern_context.finalize()
+            )
+            
+            fill_pattern = name
+            
+        default: break
+        }
+        
+        switch stroke.color {
+        
+        case let color as AnyColor:
+            
+            set_stroke_opacity(color.opacity * self.opacity)
+            
+            let _color = (0..<color.numberOfComponents - 1).map { PDFCommand(color.component($0)) }
+            
+            if current_layer.state.currentStyle.stroke != _color {
+                current_layer.state.commands.append(contentsOf: _color)
+                current_layer.state.commands.append(.command("SC"))
+                current_layer.state.currentStyle.stroke = _color
+            }
+            
+        case let pattern as Pattern:
+            
+            set_stroke_opacity(pattern.opacity * self.opacity)
+            
+            let pattern_context = PDFContext.Page(media: pattern.bound, crop: pattern.bound, bleed: pattern.bound, trim: pattern.bound, margin: pattern.bound, colorSpace: colorSpace)
+            pattern_context.initialize()
+            
+            pattern.callback(PDFContext(pages: [pattern_context]))
+            
+            let name = PDFName("P\(resources.pattern.count + 1)")
+            resources.pattern[name] = PDFContext.PDFPattern(
+                type: 1,
+                paintType: 1,
+                tilingType: 3,
+                bound: pattern.bound,
+                xStep: pattern.xStep,
+                yStep: pattern.yStep,
+                transform: .reflectY(pattern.bound.midY) * pattern.transform * _mirrored_transform,
+                resources: pattern_context.resources,
+                commands: pattern_context.finalize()
+            )
+            
+            stroke_pattern = name
+            
+        default: break
+        }
+        
+        current_layer.state.commands.append(.command("q"))
+        
+        if let name = fill_pattern {
+            current_layer.state.commands.append(.name("Pattern"))
+            current_layer.state.commands.append(.command("cs"))
+            current_layer.state.commands.append(.name(name))
+            current_layer.state.commands.append(.command("scn"))
+        }
+        if let name = stroke_pattern {
+            current_layer.state.commands.append(.name("Pattern"))
+            current_layer.state.commands.append(.command("CS"))
+            current_layer.state.commands.append(.name(name))
+            current_layer.state.commands.append(.command("SCN"))
+        }
+        
+        current_layer.state.commands.append(contentsOf: _transform.map { PDFCommand($0) })
+        current_layer.state.commands.append(.command("cm"))
+        
+        self.encode_path(shape: shape, commands: &current_layer.state.commands)
+        switch winding {
+        case .nonZero: current_layer.state.commands.append(.command("B"))
+        case .evenOdd: current_layer.state.commands.append(.command("B*"))
+        }
+        
+        current_layer.state.commands.append(.command("Q"))
+    }
+    
+    func draw<C1: ColorProtocol, C2: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<C2>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let color = color.convert(to: colorSpace, intent: renderingIntent)
+        let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: colorSpace, intent: renderingIntent))
+        self._draw(color, stroke, shape, winding)
+    }
+    
+    func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color pattern: Pattern, stroke: Stroke<C>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: colorSpace, intent: renderingIntent))
+        self._draw(pattern, stroke, shape, winding)
+    }
+    func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C, stroke: Stroke<Pattern>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        let color = color.convert(to: colorSpace, intent: renderingIntent)
+        self._draw(color, stroke, shape, winding)
+    }
+    func draw(shape: Shape, winding: Shape.WindingRule, color: Pattern, stroke: Stroke<Pattern>) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        
+        self._draw(color, stroke, shape, winding)
+    }
+}
+
+extension PDFContext.Page {
+    
+    func drawShading(_ shader: PDFFunction) {
+        
+        guard !self.transform.determinant.almostZero() else { return }
+        
+        let transform = _mirrored_transform
+        let _transform = [
+            transform.a,
+            transform.d,
+            transform.b,
+            transform.e,
+            transform.c,
+            transform.f,
+        ]
         
         set_blendmode()
         set_opacity(self.opacity)
+        
+        current_layer.state.commands.append(.command("q"))
         
         let shading = PDFContext.PDFShading(
             type: 1,

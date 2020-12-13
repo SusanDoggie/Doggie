@@ -27,6 +27,8 @@ extension PDFContext.Page {
     
     func _draw(image: AnyImage, transform: SDTransform, properties: [PDFContext.PropertyKey: Any]) {
         
+        guard !self.transform.determinant.almostZero() else { return }
+        
         let key = image.imageTableKey
         
         let name: PDFName
