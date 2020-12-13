@@ -455,7 +455,7 @@ extension PDFRenderer {
                 
                 var _pattern = Pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) { pattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
                 
-                _pattern.transform = SDTransform.reflectY(pattern.bound.midY) * pattern.transform * base_transform * context.transform.inverse
+                _pattern.transform = pattern.transform * base_transform * context.transform.inverse
                 _pattern.opacity = opacity
                 
                 context.draw(shape: state.path, winding: winding, color: _pattern)
@@ -478,7 +478,7 @@ extension PDFRenderer {
                         pattern.callback(renderer)
                     }
                     
-                    _pattern.transform = SDTransform.reflectY(pattern.bound.midY) * pattern.transform * base_transform * context.transform.inverse
+                    _pattern.transform = pattern.transform * base_transform * context.transform.inverse
                     
                     context.draw(shape: state.path, winding: winding, color: _pattern)
                 }
@@ -532,7 +532,7 @@ extension PDFRenderer {
                 
                 var _pattern = Pattern(bound: pattern.bound, xStep: pattern.xStep, yStep: pattern.yStep) { pattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
                 
-                _pattern.transform = SDTransform.reflectY(pattern.bound.midY) * pattern.transform * base_transform * context.transform.inverse
+                _pattern.transform = pattern.transform * base_transform * context.transform.inverse
                 
                 var _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: _pattern)
                 _stroke.color.opacity = state.strokeOpacity
@@ -557,7 +557,7 @@ extension PDFRenderer {
                         pattern.callback(renderer)
                     }
                     
-                    _pattern.transform = SDTransform.reflectY(pattern.bound.midY) * pattern.transform * base_transform * context.transform.inverse
+                    _pattern.transform = pattern.transform * base_transform * context.transform.inverse
                     
                     let _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: _pattern)
                     
@@ -609,7 +609,7 @@ extension PDFRenderer {
                 
                 var _fill = Pattern(bound: fillPattern.bound, xStep: fillPattern.xStep, yStep: fillPattern.yStep) { fillPattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
                 
-                _fill.transform = SDTransform.reflectY(fillPattern.bound.midY) * fillPattern.transform * base_transform * context.transform.inverse
+                _fill.transform = fillPattern.transform * base_transform * context.transform.inverse
                 _fill.opacity = context.opacity
                 
                 if case .pattern = self.strokeColorSpace, let strokePattern = self.strokePattern {
@@ -624,7 +624,7 @@ extension PDFRenderer {
                         
                         var _stroke_pattern = Pattern(bound: strokePattern.bound, xStep: strokePattern.xStep, yStep: strokePattern.yStep) { strokePattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
                         
-                        _stroke_pattern.transform = SDTransform.reflectY(strokePattern.bound.midY) * strokePattern.transform * base_transform * context.transform.inverse
+                        _stroke_pattern.transform = strokePattern.transform * base_transform * context.transform.inverse
                         
                         var _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: _stroke_pattern)
                         _stroke.color.opacity = state.strokeOpacity
@@ -678,7 +678,7 @@ extension PDFRenderer {
                     
                     var _stroke_pattern = Pattern(bound: strokePattern.bound, xStep: strokePattern.xStep, yStep: strokePattern.yStep) { strokePattern.callback(PDFRenderer(context: $0, alphaMask: false)) }
                     
-                    _stroke_pattern.transform = SDTransform.reflectY(strokePattern.bound.midY) * strokePattern.transform * base_transform * context.transform.inverse
+                    _stroke_pattern.transform = strokePattern.transform * base_transform * context.transform.inverse
                     
                     var _stroke = Stroke(width: state.strokeWidth, cap: cap, join: join, color: _stroke_pattern)
                     _stroke.color.opacity = state.strokeOpacity
