@@ -113,11 +113,6 @@ extension GPContext {
             
             let frame = Rect(x: 0, y: 0, width: self.width, height: self.height)._applying(self.transform.inverse)
             
-            print(frame)
-            print(pattern.bound)
-            print(pattern.xStep)
-            print(pattern.yStep)
-            
             let minX = Int(((frame.minX - pattern.bound.minX) / pattern.xStep).rounded(.down))
             let maxX = Int(((frame.maxX - pattern.bound.minX) / pattern.xStep).rounded(.up))
             let minY = Int(((frame.minY - pattern.bound.minY) / pattern.yStep).rounded(.down))
