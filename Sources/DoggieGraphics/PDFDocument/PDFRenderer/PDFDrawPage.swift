@@ -44,6 +44,7 @@ extension PDFRenderer {
         guard let mediaBox = page.mediaBox else { return }
         
         self.concatenate(.reflectY(mediaBox.midY))
+        self.base_transform = self.transform
         
         let resources = page.resources
         self._render(PageInfo(contents: contents, resources: resources), false, [])
