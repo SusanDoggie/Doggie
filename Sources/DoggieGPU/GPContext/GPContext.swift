@@ -382,7 +382,7 @@ extension GPContext {
     
     public func draw(path: CGPath, rule: CGPathFillRule, color: CGColor) {
         
-        guard !path.isEmpty && width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
+        guard !path.isEmpty && width != 0 && height != 0 && self.transform.invertible else { return }
         
         var color = color
         
@@ -459,7 +459,7 @@ extension GPContext {
         
         let transform = transform * self.transform
         
-        guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
+        guard width != 0 && height != 0 && transform.invertible else { return }
         
         var image = transform == .identity ? image : image.transformed(by: transform)
         image = image.clamped(to: extent).cropped(to: extent)._insertingIntermediate()
@@ -476,7 +476,7 @@ extension GPContext {
         
         self.clearClipBuffer(with: 0)
         
-        guard !path.isEmpty && width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
+        guard !path.isEmpty && width != 0 && height != 0 && self.transform.invertible else { return }
         
         let path = path.transformed(by: self.transform)
         let intersection = path.boundingBoxOfPath.intersection(CGRect(extent))
@@ -524,7 +524,7 @@ extension GPContext {
         let width = self.width
         let height = self.height
         
-        guard width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
+        guard width != 0 && height != 0 && self.transform.invertible else { return }
         
         guard colorSpace.model == .rgb else { return }
         

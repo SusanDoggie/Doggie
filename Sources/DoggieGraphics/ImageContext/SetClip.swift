@@ -39,7 +39,7 @@ extension ImageContext {
         let shouldAntialias = self.shouldAntialias
         let antialias = self.antialias
         
-        guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
+        guard width != 0 && height != 0 && transform.invertible else { return }
         
         let (bound, stencil) = self._stencil(shape: shape)
         

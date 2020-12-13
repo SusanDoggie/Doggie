@@ -27,7 +27,7 @@ extension ShapeRegion {
     
     public init(_ shape: Shape, winding: Shape.WindingRule) {
         
-        if shape.transform.determinant.almostZero() {
+        if !shape.transform.invertible {
             self.init()
             return
         }

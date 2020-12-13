@@ -111,6 +111,13 @@ extension SDTransform {
     
     @inlinable
     @inline(__always)
+    public var invertible: Bool {
+        let determinant = self.determinant
+        return determinant.isFinite && !determinant.almostZero()
+    }
+    
+    @inlinable
+    @inline(__always)
     public var inverse: SDTransform {
         let det = self.determinant
         return SDTransform(a: e / det, b: -b / det, c: (b * f - c * e) / det, d: -d / det, e: a / det, f: (c * d - a * f) / det)

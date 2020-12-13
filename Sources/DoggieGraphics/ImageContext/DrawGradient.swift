@@ -32,7 +32,7 @@ extension ImageContext {
         let width = self.width
         let height = self.height
         
-        guard width != 0 && height != 0 && !self.transform.determinant.almostZero() else { return }
+        guard width != 0 && height != 0 && self.transform.invertible else { return }
         
         let transform = self.transform.inverse
         

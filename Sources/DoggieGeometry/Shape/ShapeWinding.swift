@@ -353,7 +353,7 @@ extension Shape {
     @inlinable
     public func winding(_ position: Point) -> Int {
         
-        guard !transform.determinant.almostZero() else { return 0 }
+        guard transform.invertible else { return 0 }
         
         let position = position * transform.inverse
         

@@ -219,7 +219,7 @@ extension ImageContext {
         let cullingMode = self.renderCullingMode
         let depthCompareMode = self.renderDepthCompareMode
         
-        guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
+        guard width != 0 && height != 0 && transform.invertible else { return }
         
         @inline(__always)
         func _render(rasterizer: ImageContextRenderBuffer<Pixel>) {

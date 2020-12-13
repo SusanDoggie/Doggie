@@ -730,11 +730,11 @@ extension PDFContext.Page {
     
     func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
         
         let shape = shape * _mirrored_transform
         
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
         
         set_blendmode()
         set_opacity(color.opacity * self.opacity)
@@ -757,7 +757,7 @@ extension PDFContext.Page {
     
     func draw<C: ColorProtocol>(shape: Shape, stroke: Stroke<C>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
         
         let transform = _mirrored_transform
         let _transform = [
@@ -769,7 +769,7 @@ extension PDFContext.Page {
             transform.f,
         ]
         
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
         
         set_blendmode()
         set_stroke_opacity(stroke.color.opacity * self.opacity)
@@ -992,7 +992,7 @@ extension PDFContext.Page {
     
     func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
         
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
         guard stops.count >= 2 else { return }
@@ -1027,7 +1027,7 @@ extension PDFContext.Page {
     
     func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
         
         let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
         guard stops.count >= 2 else { return }
@@ -1073,7 +1073,7 @@ extension PDFContext.Page {
     
     public func drawMeshGradient<C>(_ mesh: MeshGradient<C>) {
         
-        guard !self.transform.determinant.almostZero() && !mesh.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible && mesh.transform.invertible else { return }
         
         let mesh = mesh.convert(to: colorSpace, intent: renderingIntent)
         
@@ -1429,22 +1429,26 @@ extension PDFContext.Page {
     
     func draw(shape: Shape, winding: Shape.WindingRule, color pattern: Pattern) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
         
         let shape = shape * _mirrored_transform
         
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
         guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
-        guard !pattern.transform.determinant.almostZero() else { return }
+        guard !pattern.bound.isEmpty && pattern.xStep.isFinite && pattern.yStep.isFinite else { return }
+        guard pattern.transform.invertible else { return }
         
         self._draw_pattern(pattern, shape, winding, false)
     }
     
     func drawPattern(_ pattern: Pattern) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        
         guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
-        guard !pattern.transform.determinant.almostZero() else { return }
+        guard !pattern.bound.isEmpty && pattern.xStep.isFinite && pattern.yStep.isFinite else { return }
+        guard pattern.transform.invertible else { return }
         
         if case let .clip(shape, winding) = current_layer.state.clip {
             
@@ -1461,10 +1465,12 @@ extension PDFContext.Page {
     
     func draw(shape: Shape, stroke: Stroke<Pattern>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
         guard !stroke.color.bound.width.almostZero() && !stroke.color.bound.height.almostZero() && !stroke.color.xStep.almostZero() && !stroke.color.yStep.almostZero() else { return }
-        guard !stroke.color.transform.determinant.almostZero() else { return }
+        guard !stroke.color.bound.isEmpty && stroke.color.xStep.isFinite && stroke.color.yStep.isFinite else { return }
+        guard stroke.color.transform.invertible else { return }
         
         let transform = _mirrored_transform
         let _transform = [
@@ -1649,8 +1655,8 @@ extension PDFContext.Page {
     
     func draw<C1: ColorProtocol, C2: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<C2>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
         
         let color = color.convert(to: colorSpace, intent: renderingIntent)
         let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: colorSpace, intent: renderingIntent))
@@ -1659,24 +1665,36 @@ extension PDFContext.Page {
     
     func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color pattern: Pattern, stroke: Stroke<C>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard !color.bound.width.almostZero() && !color.bound.height.almostZero() && !color.xStep.almostZero() && !color.yStep.almostZero() else { return }
+        guard !color.bound.isEmpty && color.xStep.isFinite && color.yStep.isFinite else { return }
+        guard color.transform.invertible else { return }
         
         let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: colorSpace, intent: renderingIntent))
         self._draw(pattern, stroke, shape, winding)
     }
     func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C, stroke: Stroke<Pattern>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
         
         let color = color.convert(to: colorSpace, intent: renderingIntent)
         self._draw(color, stroke, shape, winding)
     }
     func draw(shape: Shape, winding: Shape.WindingRule, color: Pattern, stroke: Stroke<Pattern>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard !color.bound.width.almostZero() && !color.bound.height.almostZero() && !color.xStep.almostZero() && !color.yStep.almostZero() else { return }
+        guard !color.bound.isEmpty && color.xStep.isFinite && color.yStep.isFinite else { return }
+        guard color.transform.invertible else { return }
+        
+        guard !stroke.color.bound.width.almostZero() && !stroke.color.bound.height.almostZero() && !stroke.color.xStep.almostZero() && !stroke.color.yStep.almostZero() else { return }
+        guard !stroke.color.bound.isEmpty && stroke.color.xStep.isFinite && stroke.color.yStep.isFinite else { return }
+        guard stroke.color.transform.invertible else { return }
         
         self._draw(color, stroke, shape, winding)
     }
@@ -1686,7 +1704,7 @@ extension PDFContext.Page {
     
     func drawShading(_ shader: PDFFunction) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
         
         let transform = _mirrored_transform
         let _transform = [

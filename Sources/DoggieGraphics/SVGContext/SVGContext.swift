@@ -578,7 +578,7 @@ extension SVGContext {
     
     private func append(_ newElement: SDXMLElement, _ visibleBound: Rect, _ objectBound: Shape, _ clip_object: Bool, _ object_transform: SDTransform) {
         
-        guard !self.transform.determinant.almostZero() && !visibleBound.isEmpty else { return }
+        guard self.transform.invertible && !visibleBound.isEmpty else { return }
         
         var newElement = newElement
         var visibleBound = visibleBound
@@ -643,8 +643,8 @@ extension SVGContext {
     
     public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
         
         let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
@@ -664,8 +664,8 @@ extension SVGContext {
     }
     public func draw<C: ColorProtocol>(shape: Shape, stroke: Stroke<C>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
         
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
         
@@ -789,7 +789,7 @@ extension SVGContext {
     
     private func _draw(image: SVGImageProtocol, transform: SDTransform, using storageType: MediaType, resolution: Resolution, properties: Any) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
         
         guard let key = image.imageTableKey else { return }
         
@@ -1021,8 +1021,10 @@ extension SVGContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, color gradient: Gradient<C>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard gradient.transform.invertible else { return }
         
         var gradient = gradient
         gradient.transform *= SDTransform.scale(x: shape.originalBoundary.width, y: shape.originalBoundary.height)
@@ -1052,8 +1054,10 @@ extension SVGContext {
     }
     public func draw<C>(shape: Shape, stroke: Stroke<Gradient<C>>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard stroke.color.transform.invertible else { return }
         
         let shape_identity = shape.identity
         let strokePath = shape.strokePath(stroke)
@@ -1136,7 +1140,7 @@ extension SVGContext {
     
     public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, spreadMethod: GradientSpreadMode) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
         
         let objectBound: Shape
         let clip_object: Bool
@@ -1184,7 +1188,7 @@ extension SVGContext {
     
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, spreadMethod: GradientSpreadMode) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
         
         let objectBound: Shape
         let clip_object: Bool
@@ -1288,9 +1292,11 @@ extension SVGContext {
     
     public func draw(shape: Shape, winding: Shape.WindingRule, color pattern: Pattern) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        
         guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
-        guard !pattern.transform.determinant.almostZero() else { return }
+        guard !pattern.bound.isEmpty && pattern.xStep.isFinite && pattern.yStep.isFinite else { return }
+        guard pattern.transform.invertible else { return }
         
         let shape = shape * self.transform
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
@@ -1310,10 +1316,12 @@ extension SVGContext {
     }
     public func draw(shape: Shape, stroke: Stroke<Pattern>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
         guard !stroke.color.bound.width.almostZero() && !stroke.color.bound.height.almostZero() && !stroke.color.xStep.almostZero() && !stroke.color.yStep.almostZero() else { return }
-        guard !stroke.color.transform.determinant.almostZero() else { return }
+        guard !stroke.color.bound.isEmpty && stroke.color.xStep.isFinite && stroke.color.yStep.isFinite else { return }
+        guard stroke.color.transform.invertible else { return }
         
         var element = SDXMLElement(name: "path", attributes: ["d": shape.identity.encode()])
         
@@ -1349,9 +1357,11 @@ extension SVGContext {
     
     public func drawPattern(_ pattern: Pattern) {
         
-        guard !self.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        
         guard !pattern.bound.width.almostZero() && !pattern.bound.height.almostZero() && !pattern.xStep.almostZero() && !pattern.yStep.almostZero() else { return }
-        guard !pattern.transform.determinant.almostZero() else { return }
+        guard !pattern.bound.isEmpty && pattern.xStep.isFinite && pattern.yStep.isFinite else { return }
+        guard pattern.transform.invertible else { return }
         
         let objectBound: Shape
         let clip_object: Bool
@@ -1501,8 +1511,8 @@ extension SVGContext {
     
     public func draw<C1: ColorProtocol, C2: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<C2>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
         
         let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
         let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
@@ -1511,8 +1521,10 @@ extension SVGContext {
     
     public func draw<C1: ColorProtocol, C2>(shape: Shape, winding: Shape.WindingRule, color: C1, stroke: Stroke<Gradient<C2>>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard stroke.color.transform.invertible else { return }
         
         let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
         let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
@@ -1521,8 +1533,12 @@ extension SVGContext {
     
     public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: C, stroke: Stroke<Pattern>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard !stroke.color.bound.width.almostZero() && !stroke.color.bound.height.almostZero() && !stroke.color.xStep.almostZero() && !stroke.color.yStep.almostZero() else { return }
+        guard !stroke.color.bound.isEmpty && stroke.color.xStep.isFinite && stroke.color.yStep.isFinite else { return }
+        guard stroke.color.transform.invertible else { return }
         
         let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
         self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
@@ -1530,8 +1546,10 @@ extension SVGContext {
     
     public func draw<C1, C2: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: Gradient<C1>, stroke: Stroke<C2>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard color.transform.invertible else { return }
         
         let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
         let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
@@ -1540,8 +1558,11 @@ extension SVGContext {
     
     public func draw<C1, C2>(shape: Shape, winding: Shape.WindingRule, color: Gradient<C1>, stroke: Stroke<Gradient<C2>>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard color.transform.invertible else { return }
+        guard stroke.color.transform.invertible else { return }
         
         let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
         let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
@@ -1550,8 +1571,14 @@ extension SVGContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, color: Gradient<C>, stroke: Stroke<Pattern>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard color.transform.invertible else { return }
+        
+        guard !stroke.color.bound.width.almostZero() && !stroke.color.bound.height.almostZero() && !stroke.color.xStep.almostZero() && !stroke.color.yStep.almostZero() else { return }
+        guard !stroke.color.bound.isEmpty && stroke.color.xStep.isFinite && stroke.color.yStep.isFinite else { return }
+        guard stroke.color.transform.invertible else { return }
         
         let color = color.convert(to: ColorSpace.sRGB, intent: renderingIntent)
         self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
@@ -1559,8 +1586,12 @@ extension SVGContext {
     
     public func draw<C: ColorProtocol>(shape: Shape, winding: Shape.WindingRule, color: Pattern, stroke: Stroke<C>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard !color.bound.width.almostZero() && !color.bound.height.almostZero() && !color.xStep.almostZero() && !color.yStep.almostZero() else { return }
+        guard !color.bound.isEmpty && color.xStep.isFinite && color.yStep.isFinite else { return }
+        guard color.transform.invertible else { return }
         
         let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
         self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
@@ -1568,8 +1599,14 @@ extension SVGContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, color: Pattern, stroke: Stroke<Gradient<C>>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard !color.bound.width.almostZero() && !color.bound.height.almostZero() && !color.xStep.almostZero() && !color.yStep.almostZero() else { return }
+        guard !color.bound.isEmpty && color.xStep.isFinite && color.yStep.isFinite else { return }
+        guard color.transform.invertible else { return }
+        
+        guard stroke.color.transform.invertible else { return }
         
         let stroke = Stroke(width: stroke.width, cap: stroke.cap, join: stroke.join, color: stroke.color.convert(to: ColorSpace.sRGB, intent: renderingIntent))
         self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
@@ -1577,8 +1614,16 @@ extension SVGContext {
     
     public func draw(shape: Shape, winding: Shape.WindingRule, color: Pattern, stroke: Stroke<Pattern>) {
         
-        guard !self.transform.determinant.almostZero() else { return }
-        guard shape.contains(where: { !$0.isEmpty }) && !shape.transform.determinant.almostZero() else { return }
+        guard self.transform.invertible else { return }
+        guard shape.contains(where: { !$0.isEmpty }) && shape.transform.invertible else { return }
+        
+        guard !color.bound.width.almostZero() && !color.bound.height.almostZero() && !color.xStep.almostZero() && !color.yStep.almostZero() else { return }
+        guard !color.bound.isEmpty && color.xStep.isFinite && color.yStep.isFinite else { return }
+        guard color.transform.invertible else { return }
+        
+        guard !stroke.color.bound.width.almostZero() && !stroke.color.bound.height.almostZero() && !stroke.color.xStep.almostZero() && !stroke.color.yStep.almostZero() else { return }
+        guard !stroke.color.bound.isEmpty && stroke.color.xStep.isFinite && stroke.color.yStep.isFinite else { return }
+        guard stroke.color.transform.invertible else { return }
         
         self._draw(shape: shape, winding: winding, color: color, stroke: stroke)
     }

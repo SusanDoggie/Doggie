@@ -114,7 +114,7 @@ extension ImageContext {
         let height = self.height
         let transform = self.transform
         
-        guard width != 0 && height != 0 && !transform.determinant.almostZero() else { return }
+        guard width != 0 && height != 0 && transform.invertible else { return }
         
         let patches = mesh.patches
         let colors = mesh.patch_colors.map { (

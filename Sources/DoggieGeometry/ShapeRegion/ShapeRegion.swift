@@ -309,7 +309,7 @@ extension ShapeRegion {
 
 @inlinable
 public func * (lhs: ShapeRegion, rhs: SDTransform) -> ShapeRegion {
-    return rhs.determinant.almostZero() ? ShapeRegion() : ShapeRegion(solids: lhs.solids.map { ShapeRegion.Solid(solid: $0.solid * rhs, holes: $0.holes * rhs) })
+    return rhs.invertible ? ShapeRegion(solids: lhs.solids.map { ShapeRegion.Solid(solid: $0.solid * rhs, holes: $0.holes * rhs) }) : ShapeRegion()
 }
 
 @inlinable

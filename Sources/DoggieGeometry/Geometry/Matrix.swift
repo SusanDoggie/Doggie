@@ -133,6 +133,13 @@ extension Matrix {
     
     @inlinable
     @inline(__always)
+    public var invertible: Bool {
+        let determinant = self.determinant
+        return determinant.isFinite && !determinant.almostZero()
+    }
+    
+    @inlinable
+    @inline(__always)
     public var inverse: Matrix {
         let _a = g * j - f * k
         let _b = c * j - b * k
