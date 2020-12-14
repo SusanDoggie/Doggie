@@ -114,7 +114,7 @@ extension PDFPage {
                 object = object["Parent"]
             } while value == nil && object != nil
             
-            return value
+            return value._apply_xref(self.object.xref)
         }
         set {
             self.object["Resources"] = newValue

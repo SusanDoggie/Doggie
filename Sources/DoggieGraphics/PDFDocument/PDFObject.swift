@@ -433,14 +433,14 @@ extension PDFObject {
     func dereference() -> PDFObject {
         switch base {
         case let .xref(xref): return self.xref[xref]?._apply_xref(self.xref) ?? PDFObject(xref)._apply_xref(self.xref)
-        default: return self._apply_xref(xref)
+        default: return self
         }
     }
     
     @inlinable
     public var stream: PDFStream? {
         switch base {
-        case let .xref(xref): return self.xref[xref]?.stream
+        case let .xref(xref): return self.xref[xref]?.stream.map { PDFStream(dictionary: $0.dictionary.mapValues { $0._apply_xref(self.xref).dereference() }, data: $0.data) }
         case let .stream(value): return PDFStream(dictionary: value.dictionary.mapValues { $0._apply_xref(self.xref).dereference() }, data: value.data)
         default: return nil
         }
@@ -470,11 +470,7 @@ extension PDFObject {
     
     @inlinable
     func dereferenceAll() -> PDFObject {
-        var xref = self.xref
-        for (key, value) in xref {
-            xref[key] = value._apply_xref(xref)._dereference_all([key])
-        }
-        return self._apply_xref(xref)._dereference_all()._apply_xref(xref)
+        return self._dereference_all()._apply_xref(xref)
     }
     
     @inlinable
@@ -526,7 +522,7 @@ extension PDFObject {
             }
             
             array[index] = newValue
-            self = PDFObject(array)
+            self = PDFObject(array)._apply_xref(xref)
         }
     }
     
@@ -547,9 +543,9 @@ extension PDFObject {
             
             if var stream = self.stream {
                 stream.dictionary = dictionary
-                self = PDFObject(stream)
+                self = PDFObject(stream)._apply_xref(xref)
             } else {
-                self = PDFObject(dictionary)
+                self = PDFObject(dictionary)._apply_xref(xref)
             }
         }
     }
@@ -565,8 +561,8 @@ extension PDFObject {
     @inlinable
     public func merging(_ other: PDFObject, uniquingKeysWith combine: (PDFObject, PDFObject) throws -> PDFObject) rethrows -> PDFObject {
         switch (self.base, other.base) {
-        case let (.dictionary(lhs), .dictionary(rhs)): return try PDFObject(lhs.merging(rhs) { try $0.merging($1, uniquingKeysWith: combine) })
-        default: return try combine(self, other)
+        case let (.dictionary(lhs), .dictionary(rhs)): return try PDFObject(lhs.merging(rhs) { try $0.merging($1, uniquingKeysWith: combine) })._apply_xref(xref)
+        default: return try combine(self, other)._apply_xref(xref)
         }
     }
 }
