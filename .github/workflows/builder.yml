@@ -99,7 +99,7 @@ jobs:
       with:
         submodules: recursive
     - name: Prepare		
-      run: yum update -y --allowerasing
+      run: yum update -y
     - name: Install fonts
       run: yum install -y fontconfig google-noto-*
     - name: Build
@@ -154,7 +154,7 @@ jobs:
       with:
         submodules: recursive
     - name: Prepare		
-      run: yum update -y --allowerasing
+      run: yum update -y
     - name: Install fonts
       run: yum install -y fontconfig google-noto-*
     - name: Build
