@@ -43,9 +43,9 @@ extension Int: Multiplicative {
     
 }
 
-#if !((os(macOS) || targetEnvironment(macCatalyst)) && arch(x86_64))
+#if !os(macOS) && !targetEnvironment(macCatalyst)
 
-@available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 extension Float16: ScalarProtocol {
     
     public typealias Scalar = Float16
