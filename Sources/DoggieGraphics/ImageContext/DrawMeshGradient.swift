@@ -23,36 +23,42 @@
 //  THE SOFTWARE.
 //
 
-@frozen
-@usableFromInline
-struct ImageContextMeshGradientRasterizeBuffer<P: ColorPixel>: RasterizeBufferProtocol {
+extension ImageContext {
     
+    @frozen
     @usableFromInline
-    var blender: ImageContextPixelBlender<P>
-    
-    @usableFromInline
-    var width: Int
-    
-    @usableFromInline
-    var height: Int
+    struct MeshGradientRasterizeBuffer: RasterizeBufferProtocol {
+        
+        @usableFromInline
+        var blender: PixelBlender
+        
+        @usableFromInline
+        var width: Int
+        
+        @usableFromInline
+        var height: Int
+        
+        @inlinable
+        @inline(__always)
+        init(blender: PixelBlender, width: Int, height: Int) {
+            self.blender = blender
+            self.width = width
+            self.height = height
+        }
+    }
+}
+
+extension ImageContext.MeshGradientRasterizeBuffer {
     
     @inlinable
     @inline(__always)
-    init(blender: ImageContextPixelBlender<P>, width: Int, height: Int) {
-        self.blender = blender
-        self.width = width
-        self.height = height
+    static func + (lhs: Self, rhs: Int) -> Self {
+        return Self(blender: lhs.blender + rhs, width: lhs.width, height: lhs.height)
     }
     
     @inlinable
     @inline(__always)
-    static func + (lhs: ImageContextMeshGradientRasterizeBuffer, rhs: Int) -> ImageContextMeshGradientRasterizeBuffer {
-        return ImageContextMeshGradientRasterizeBuffer(blender: lhs.blender + rhs, width: lhs.width, height: lhs.height)
-    }
-    
-    @inlinable
-    @inline(__always)
-    static func += (lhs: inout ImageContextMeshGradientRasterizeBuffer, rhs: Int) {
+    static func += (lhs: inout Self, rhs: Int) {
         lhs.blender += rhs
     }
 }
@@ -61,7 +67,7 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
-    func _drawMeshGradient(_ rasterizer: ImageContextMeshGradientRasterizeBuffer<Pixel>, _ patch: CubicBezierPatch<Point>, _ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>, _ c2: Float32ColorPixel<Pixel.Model>, _ c3: Float32ColorPixel<Pixel.Model>) {
+    func _drawMeshGradient(_ rasterizer: MeshGradientRasterizeBuffer, _ patch: CubicBezierPatch<Point>, _ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>, _ c2: Float32ColorPixel<Pixel.Model>, _ c3: Float32ColorPixel<Pixel.Model>) {
         
         let (p0, p1, p2, p3) = patch.split(0.5, 0.5)
         
@@ -133,7 +139,7 @@ extension ImageContext {
                 c2.opacity *= mesh.opacity
                 c3.opacity *= mesh.opacity
                 
-                let rasterizer = ImageContextMeshGradientRasterizeBuffer(blender: blender, width: width, height: height)
+                let rasterizer = MeshGradientRasterizeBuffer(blender: blender, width: width, height: height)
                 
                 _drawMeshGradient(rasterizer, patch * transform, c0, c1, c2, c3)
             }

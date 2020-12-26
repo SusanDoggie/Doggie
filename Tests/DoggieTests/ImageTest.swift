@@ -429,7 +429,7 @@ class ImageTest: XCTestCase {
         }
     }
     
-     func testPerspectiveProjectPerformance() {
+    func testPerspectiveProjectPerformance() {
         
         self.measure() {
             

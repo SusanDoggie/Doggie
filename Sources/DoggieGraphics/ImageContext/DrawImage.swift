@@ -144,73 +144,41 @@ extension ImageContext {
 
 extension StencilTexture {
     
-    @inlinable
-    @inline(__always)
-    func withUnsafeStencilTexture<R>(_ body: (_UnsafeStencilTexture<T>) throws -> R) rethrows -> R {
+    @usableFromInline
+    struct _UnsafeStencilTexture: _ResamplingImplement {
         
-        let width = self.width
-        let height = self.height
-        let resamplingAlgorithm = self.resamplingAlgorithm
-        let horizontalWrappingMode = self.horizontalWrappingMode
-        let verticalWrappingMode = self.verticalWrappingMode
+        @usableFromInline
+        let pixels: UnsafeBufferPointer<RawPixel>
         
-        return try withUnsafeBufferPointer { try body(_UnsafeStencilTexture($0, width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, horizontalWrappingMode: horizontalWrappingMode, verticalWrappingMode: verticalWrappingMode)) }
+        @usableFromInline
+        let width: Int
+        
+        @usableFromInline
+        let height: Int
+        
+        @usableFromInline
+        let resamplingAlgorithm: ResamplingAlgorithm
+        
+        @usableFromInline
+        let horizontalWrappingMode: WrappingMode
+        
+        @usableFromInline
+        let verticalWrappingMode: WrappingMode
+        
+        @inlinable
+        @inline(__always)
+        init(_ pixels: UnsafeBufferPointer<T>, width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, horizontalWrappingMode: WrappingMode, verticalWrappingMode: WrappingMode) {
+            self.pixels = pixels
+            self.width = width
+            self.height = height
+            self.resamplingAlgorithm = resamplingAlgorithm
+            self.horizontalWrappingMode = horizontalWrappingMode
+            self.verticalWrappingMode = verticalWrappingMode
+        }
     }
 }
 
-extension Texture {
-    
-    @inlinable
-    @inline(__always)
-    func withUnsafeTexture<R>(_ body: (_UnsafeTexture<Texture>) throws -> R) rethrows -> R {
-        
-        let width = self.width
-        let height = self.height
-        let resamplingAlgorithm = self.resamplingAlgorithm
-        let horizontalWrappingMode = self.horizontalWrappingMode
-        let verticalWrappingMode = self.verticalWrappingMode
-        
-        return try withUnsafeBufferPointer { try body(_UnsafeTexture($0, width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, horizontalWrappingMode: horizontalWrappingMode, verticalWrappingMode: verticalWrappingMode)) }
-    }
-}
-
-@usableFromInline
-struct _UnsafeStencilTexture<T: BinaryFloatingPoint>: _ResamplingImplement where T: ScalarProtocol, T.Scalar: ElementaryFunctions {
-    
-    @usableFromInline
-    typealias RawPixel = T
-    
-    @usableFromInline
-    typealias Pixel = T
-    
-    @usableFromInline
-    let pixels: UnsafeBufferPointer<RawPixel>
-    
-    @usableFromInline
-    let width: Int
-    
-    @usableFromInline
-    let height: Int
-    
-    @usableFromInline
-    let resamplingAlgorithm: ResamplingAlgorithm
-    
-    @usableFromInline
-    let horizontalWrappingMode: WrappingMode
-    
-    @usableFromInline
-    let verticalWrappingMode: WrappingMode
-    
-    @inlinable
-    @inline(__always)
-    init(_ pixels: UnsafeBufferPointer<T>, width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, horizontalWrappingMode: WrappingMode, verticalWrappingMode: WrappingMode) {
-        self.pixels = pixels
-        self.width = width
-        self.height = height
-        self.resamplingAlgorithm = resamplingAlgorithm
-        self.horizontalWrappingMode = horizontalWrappingMode
-        self.verticalWrappingMode = verticalWrappingMode
-    }
+extension StencilTexture._UnsafeStencilTexture {
     
     @inlinable
     @inline(__always)
@@ -226,43 +194,59 @@ struct _UnsafeStencilTexture<T: BinaryFloatingPoint>: _ResamplingImplement where
     }
 }
 
-@usableFromInline
-struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement where Base.RawPixel: ColorPixel {
-    
-    @usableFromInline
-    typealias RawPixel = Base.RawPixel
-    
-    @usableFromInline
-    typealias Pixel = Float32ColorPixel<RawPixel.Model>
-    
-    @usableFromInline
-    let pixels: UnsafeBufferPointer<RawPixel>
-    
-    @usableFromInline
-    let width: Int
-    
-    @usableFromInline
-    let height: Int
-    
-    @usableFromInline
-    let resamplingAlgorithm: ResamplingAlgorithm
-    
-    @usableFromInline
-    let horizontalWrappingMode: WrappingMode
-    
-    @usableFromInline
-    let verticalWrappingMode: WrappingMode
+extension StencilTexture {
     
     @inlinable
     @inline(__always)
-    init(_ pixels: UnsafeBufferPointer<RawPixel>, width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, horizontalWrappingMode: WrappingMode, verticalWrappingMode: WrappingMode) {
-        self.pixels = pixels
-        self.width = width
-        self.height = height
-        self.resamplingAlgorithm = resamplingAlgorithm
-        self.horizontalWrappingMode = horizontalWrappingMode
-        self.verticalWrappingMode = verticalWrappingMode
+    func withUnsafeStencilTexture<R>(_ body: (_UnsafeStencilTexture) throws -> R) rethrows -> R {
+        
+        let width = self.width
+        let height = self.height
+        let resamplingAlgorithm = self.resamplingAlgorithm
+        let horizontalWrappingMode = self.horizontalWrappingMode
+        let verticalWrappingMode = self.verticalWrappingMode
+        
+        return try withUnsafeBufferPointer { try body(_UnsafeStencilTexture($0, width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, horizontalWrappingMode: horizontalWrappingMode, verticalWrappingMode: verticalWrappingMode)) }
     }
+}
+
+extension Texture {
+    
+    @usableFromInline
+    struct _UnsafeTexture: _ResamplingImplement {
+        
+        @usableFromInline
+        let pixels: UnsafeBufferPointer<RawPixel>
+        
+        @usableFromInline
+        let width: Int
+        
+        @usableFromInline
+        let height: Int
+        
+        @usableFromInline
+        let resamplingAlgorithm: ResamplingAlgorithm
+        
+        @usableFromInline
+        let horizontalWrappingMode: WrappingMode
+        
+        @usableFromInline
+        let verticalWrappingMode: WrappingMode
+        
+        @inlinable
+        @inline(__always)
+        init(_ pixels: UnsafeBufferPointer<RawPixel>, width: Int, height: Int, resamplingAlgorithm: ResamplingAlgorithm, horizontalWrappingMode: WrappingMode, verticalWrappingMode: WrappingMode) {
+            self.pixels = pixels
+            self.width = width
+            self.height = height
+            self.resamplingAlgorithm = resamplingAlgorithm
+            self.horizontalWrappingMode = horizontalWrappingMode
+            self.verticalWrappingMode = verticalWrappingMode
+        }
+    }
+}
+
+extension Texture._UnsafeTexture {
     
     @inlinable
     @inline(__always)
@@ -278,3 +262,18 @@ struct _UnsafeTexture<Base: _TextureProtocolImplement>: _ResamplingImplement whe
     }
 }
 
+extension Texture {
+    
+    @inlinable
+    @inline(__always)
+    func withUnsafeTexture<R>(_ body: (_UnsafeTexture) throws -> R) rethrows -> R {
+        
+        let width = self.width
+        let height = self.height
+        let resamplingAlgorithm = self.resamplingAlgorithm
+        let horizontalWrappingMode = self.horizontalWrappingMode
+        let verticalWrappingMode = self.verticalWrappingMode
+        
+        return try withUnsafeBufferPointer { try body(_UnsafeTexture($0, width: width, height: height, resamplingAlgorithm: resamplingAlgorithm, horizontalWrappingMode: horizontalWrappingMode, verticalWrappingMode: verticalWrappingMode)) }
+    }
+}

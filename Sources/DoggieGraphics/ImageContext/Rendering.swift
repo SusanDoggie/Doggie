@@ -23,40 +23,46 @@
 //  THE SOFTWARE.
 //
 
-@frozen
-@usableFromInline
-struct ImageContextRenderBuffer<P: ColorPixel>: RasterizeBufferProtocol {
+extension ImageContext {
     
+    @frozen
     @usableFromInline
-    var blender: ImageContextPixelBlender<P>
-    
-    @usableFromInline
-    var depth: UnsafeMutablePointer<Float>?
-    
-    @usableFromInline
-    var width: Int
-    
-    @usableFromInline
-    var height: Int
+    struct RenderBuffer: RasterizeBufferProtocol {
+        
+        @usableFromInline
+        var blender: PixelBlender
+        
+        @usableFromInline
+        var depth: UnsafeMutablePointer<Float>?
+        
+        @usableFromInline
+        var width: Int
+        
+        @usableFromInline
+        var height: Int
+        
+        @inlinable
+        @inline(__always)
+        init(blender: PixelBlender, depth: UnsafeMutablePointer<Float>?, width: Int, height: Int) {
+            self.blender = blender
+            self.depth = depth
+            self.width = width
+            self.height = height
+        }
+    }
+}
+
+extension ImageContext.RenderBuffer {
     
     @inlinable
     @inline(__always)
-    init(blender: ImageContextPixelBlender<P>, depth: UnsafeMutablePointer<Float>?, width: Int, height: Int) {
-        self.blender = blender
-        self.depth = depth
-        self.width = width
-        self.height = height
+    static func + (lhs: Self, rhs: Int) -> Self {
+        return Self(blender: lhs.blender + rhs, depth: lhs.depth.map { $0 + rhs }, width: lhs.width, height: lhs.height)
     }
     
     @inlinable
     @inline(__always)
-    static func + (lhs: ImageContextRenderBuffer, rhs: Int) -> ImageContextRenderBuffer {
-        return ImageContextRenderBuffer(blender: lhs.blender + rhs, depth: lhs.depth.map { $0 + rhs }, width: lhs.width, height: lhs.height)
-    }
-    
-    @inlinable
-    @inline(__always)
-    static func += (lhs: inout ImageContextRenderBuffer, rhs: Int) {
+    static func += (lhs: inout Self, rhs: Int) {
         lhs.blender += rhs
         lhs.depth = lhs.depth.map { $0 + rhs }
     }
@@ -222,7 +228,7 @@ extension ImageContext {
         guard width != 0 && height != 0 && transform.invertible else { return }
         
         @inline(__always)
-        func _render(rasterizer: ImageContextRenderBuffer<Pixel>) {
+        func _render(rasterizer: RenderBuffer) {
             
             triangles.render(projection: projection) { v0, v1, v2 in
                 
@@ -295,7 +301,7 @@ extension ImageContext {
             
             self.withUnsafePixelBlender { blender in
                 
-                let rasterizer = ImageContextRenderBuffer(blender: blender, depth: nil, width: width, height: height)
+                let rasterizer = RenderBuffer(blender: blender, depth: nil, width: width, height: height)
                 
                 _render(rasterizer: rasterizer)
             }
@@ -308,7 +314,7 @@ extension ImageContext {
                 
                 self.withUnsafePixelBlender { blender in
                     
-                    let rasterizer = ImageContextRenderBuffer(blender: blender, depth: _depth, width: width, height: height)
+                    let rasterizer = RenderBuffer(blender: blender, depth: _depth, width: width, height: height)
                     
                     _render(rasterizer: rasterizer)
                 }
