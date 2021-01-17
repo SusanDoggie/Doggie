@@ -31,11 +31,11 @@ jobs:
       with:
         submodules: recursive
     - name: Build
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: build
     - name: Run tests
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: test
     - uses: codecov/codecov-action@v1
@@ -50,11 +50,11 @@ jobs:
       with:
         submodules: recursive
     - name: Build
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: build
     - name: Run tests
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: test
   ubuntu_swift_latest:
@@ -79,11 +79,11 @@ jobs:
         echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
         apt-get install -y fontconfig fonts-noto ttf-mscorefonts-installer
     - name: Build
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: build
     - name: Run tests
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: test
   linux_swift_latest:
@@ -103,11 +103,11 @@ jobs:
     - name: Install fonts
       run: yum install -y fontconfig google-noto-*
     - name: Build
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: build
     - name: Run tests
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: test
   ubuntu_swift_nightly:
@@ -133,11 +133,11 @@ jobs:
         echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
         apt-get install -y fontconfig fonts-noto ttf-mscorefonts-installer
     - name: Build
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: build
     - name: Run tests
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: test
   linux_swift_nightly:
@@ -158,10 +158,10 @@ jobs:
     - name: Install fonts
       run: yum install -y fontconfig google-noto-*
     - name: Build
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: build
     - name: Run tests
-      uses: SusanDoggie/swift-action@master
+      uses: SusanDoggie/swift-action@main
       with:
         action: test
