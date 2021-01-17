@@ -45,10 +45,10 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-numerics", from: "0.0.1"),
         .package(url: "https://github.com/apple/swift-algorithms", from: "0.0.2"),
-        .package(url: "https://github.com/SusanDoggie/Float16", .branch("master")),
-        .package(url: "https://github.com/SusanDoggie/brotli", .branch("master")),
-        .package(url: "https://github.com/SusanDoggie/libwebp", .branch("master")),
-        .package(url: "https://github.com/SusanDoggie/libjpeg", .branch("master")),
+        .package(url: "https://github.com/SusanDoggie/Float16", .branch("main")),
+        .package(url: "https://github.com/SusanDoggie/brotli", .branch("main")),
+        .package(url: "https://github.com/SusanDoggie/libwebp", .branch("main")),
+        .package(url: "https://github.com/SusanDoggie/libjpeg", .branch("main")),
     ],
     targets: [
         .target(
