@@ -23,33 +23,37 @@
 //  THE SOFTWARE.
 //
 
-public struct Regex: Equatable {
+public struct Regex {
     
-    fileprivate let matcher: NSRegularExpression
+    fileprivate let regex: NSRegularExpression
+    
+    public init(_ regex: NSRegularExpression) {
+        self.regex = regex
+    }
     
     public init(pattern: String) throws {
-        self.matcher = try NSRegularExpression(pattern: pattern, options: [])
+        self.regex = try NSRegularExpression(pattern: pattern, options: [])
     }
     
     public init(pattern: String, options: NSRegularExpression.Options) throws {
-        self.matcher = try NSRegularExpression(pattern: pattern, options: options)
+        self.regex = try NSRegularExpression(pattern: pattern, options: options)
     }
     
     /// Returns the regular expression pattern.
     public var pattern: String {
-        return matcher.pattern
+        return regex.pattern
     }
     
     /// Returns the options used when the regular expression option was created.
     public var options: NSRegularExpression.Options {
-        return matcher.options
+        return regex.options
     }
     
     /// Returns the number of capture groups in the regular expression.
     ///
     /// A capture group consists of each possible match within a regular expression. Each capture group can then be used in a replacement template to insert that value into a replacement string.
     public var numberOfCaptureGroups: Int {
-        return matcher.numberOfCaptureGroups
+        return regex.numberOfCaptureGroups
     }
 }
 
@@ -64,6 +68,20 @@ extension Regex: CustomStringConvertible {
     
     public var description: String {
         return pattern
+    }
+}
+
+extension Regex: Hashable {
+    
+    @inlinable
+    public static func == (lhs: Regex, rhs: Regex) -> Bool {
+        return lhs.pattern == rhs.pattern && lhs.options == rhs.options
+    }
+    
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.pattern)
+        hasher.combine(self.options.rawValue)
     }
 }
 
@@ -112,21 +130,21 @@ extension String: RegularExpressionMatchable {
     public func count(regex: Regex) -> Int {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
-        return regex.matcher.numberOfMatches(in: self, options: [], range: range)
+        return regex.regex.numberOfMatches(in: self, options: [], range: range)
     }
     
     /// Returns true if any match of the regular expression in the string.
     public func isMatch(regex: Regex) -> Bool {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
-        return regex.matcher.firstMatch(in: self, options: [], range: range) != nil
+        return regex.regex.firstMatch(in: self, options: [], range: range) != nil
     }
     
     /// Returns the first match of the regular expression in the string.
     public func firstMatch(regex: Regex) -> String? {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
-        let match_result = regex.matcher.firstMatch(in: self, options: [], range: range)
+        let match_result = regex.regex.firstMatch(in: self, options: [], range: range)
         return match_result.map { nsstring.substring(with: $0.range) }
     }
     
@@ -135,7 +153,7 @@ extension String: RegularExpressionMatchable {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
         var match_result = [String]()
-        regex.matcher.enumerateMatches(in: self, options: [], range: range) { result, _, _ in
+        regex.regex.enumerateMatches(in: self, options: [], range: range) { result, _, _ in
             if let _result = result {
                 match_result.append(nsstring.substring(with: _result.range))
             }
@@ -151,16 +169,11 @@ extension String: RegularExpressionMatchable {
     public func replace(regex: Regex, template: String) -> String {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
-        return regex.matcher.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: template)
+        return regex.regex.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: template)
     }
 }
 
 @inlinable
 public func ~=<T: RegularExpressionMatchable> (lhs: Regex, rhs: T) -> Bool {
     return rhs.isMatch(regex: lhs)
-}
-
-@inlinable
-public func ==(lhs: Regex, rhs: Regex) -> Bool {
-    return lhs.pattern == rhs.pattern && lhs.options == rhs.options
 }
