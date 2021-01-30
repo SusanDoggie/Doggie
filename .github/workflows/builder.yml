@@ -25,6 +25,8 @@ jobs:
             use_xcodebuild: true
             sdk: appletvsimulator
             destination: 'platform=tvOS Simulator,name=Apple TV 4K'
+          - name: macOS(SwiftPM)
+            use_xcodebuild: false
     env:
       use_xcodebuild: ${{ matrix.use_xcodebuild }}
       sdk: ${{ matrix.sdk }}
