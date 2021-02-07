@@ -707,7 +707,7 @@ extension DataPack {
         switch self.base {
         case let .signed(value): return Decimal(value)
         case let .unsigned(value): return Decimal(value)
-        case let .number(value): return Int64(exactly: value).map { Decimal($0) }
+        case let .number(value): return Decimal(value)
         default: return nil
         }
     }
