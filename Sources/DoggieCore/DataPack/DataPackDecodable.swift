@@ -31,6 +31,8 @@ extension DataPack {
         
         case unsupportedType
         
+        case invalidDateFormat
+        
     }
     
     /// The strategy to use for decoding `Date` values.
@@ -331,12 +333,12 @@ extension DataPack._Decoder: SingleValueDecodingContainer {
             
             case .iso8601:
                 
-                guard let value = DataPack.DateDecodingStrategy._iso8601Formatter.date(from: string) else { throw DataPack.DecodeError.unsupportedType }
+                guard let value = DataPack.DateDecodingStrategy._iso8601Formatter.date(from: string) else { throw DataPack.DecodeError.invalidDateFormat }
                 return value
                 
             case let .formatted(formatter):
                 
-                guard let value = formatter.date(from: string) else { throw DataPack.DecodeError.unsupportedType }
+                guard let value = formatter.date(from: string) else { throw DataPack.DecodeError.invalidDateFormat }
                 return value
                 
             case let .custom(closure): return try closure(self)
