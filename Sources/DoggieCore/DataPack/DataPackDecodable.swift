@@ -83,7 +83,7 @@ extension DataPack.DateDecodingStrategy {
 extension DataPack {
     
     @inlinable
-    public func decode<T>(_ type: T.Type, options: DecoderOptions = DecoderOptions()) throws -> T where T: Decodable {
+    public func decode<T: Decodable>(_ type: T.Type, options: DecoderOptions = DecoderOptions()) throws -> T {
         return try T(from: _Decoder(value: self, codingPath: [], options: options))
     }
     
@@ -108,7 +108,7 @@ extension DataPack {
         }
         
         @inlinable
-        func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key: Swift.CodingKey {
+        func container<Key: Swift.CodingKey>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> {
             
             guard !value.isNil else { throw DataPack.DecodeError.valueNotFound }
             guard case let .dictionary(dictionary) = value.base else { throw DataPack.DecodeError.unsupportedType }
@@ -376,7 +376,7 @@ extension DataPack._Decoder: SingleValueDecodingContainer {
     }
     
     @inlinable
-    func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
+    func decode<T: Decodable>(_ type: T.Type) throws -> T {
         switch type {
         case is Bool.Type: return try self._decode(Bool.self) as! T
         case is Float.Type: return try self._decode(Float.self) as! T
@@ -420,13 +420,13 @@ extension DataPack._KeyedDecodingContainer: KeyedDecodingContainerProtocol {
     }
     
     @inlinable
-    func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
+    func decode<T: Decodable>(_ type: T.Type, forKey key: Key) throws -> T {
         guard let entry = value[key.stringValue] else { throw DataPack.DecodeError.valueNotFound }
         return try entry.decode(type)
     }
     
     @inlinable
-    func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+    func nestedContainer<NestedKey: CodingKey>(keyedBy type: NestedKey.Type, forKey key: Key) throws -> KeyedDecodingContainer<NestedKey> {
         
         guard let entry = self.value[key.stringValue] else { throw DataPack.DecodeError.valueNotFound }
         guard case let .dictionary(dictionary) = entry.base else { throw DataPack.DecodeError.unsupportedType }
@@ -500,7 +500,7 @@ extension DataPack._UnkeyedDecodingContainer: UnkeyedDecodingContainer {
     }
     
     @inlinable
-    mutating func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
+    mutating func decode<T: Decodable>(_ type: T.Type) throws -> T {
         
         guard !self.isAtEnd else { throw DataPack.DecodeError.valueNotFound }
         
@@ -511,7 +511,7 @@ extension DataPack._UnkeyedDecodingContainer: UnkeyedDecodingContainer {
     }
     
     @inlinable
-    mutating func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+    mutating func nestedContainer<NestedKey: CodingKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> {
         
         guard !self.isAtEnd else { throw DataPack.DecodeError.valueNotFound }
         
