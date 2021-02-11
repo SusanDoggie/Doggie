@@ -5,6 +5,7 @@ jobs:
     name: ${{ matrix.name }}
     runs-on: macOS-latest
     strategy:
+      fail-fast: false
       matrix:
         name: [macOS, macCatalyst, iOS, tvOS, macOS(SwiftPM)]
         include:
@@ -52,6 +53,7 @@ jobs:
       image: docker://swift:${{ matrix.image }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         image: [xenial, bionic, focal]
     steps:
@@ -81,6 +83,7 @@ jobs:
       image: docker://swift:${{ matrix.image }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         image: [centos8, amazonlinux2]
     steps:
@@ -106,6 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
         image: [nightly-xenial, nightly-bionic, nightly-focal]
     steps:
@@ -136,6 +140,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     strategy:
+      fail-fast: false
       matrix:
         image: [nightly-centos8, nightly-amazonlinux2]
     steps:
