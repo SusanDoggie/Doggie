@@ -880,7 +880,7 @@ func _png_filter(ihdr: PNGDecoder.IHDR, width: Int, height: Int, data: Data) -> 
                     
                     func scanner(_ data: UnsafeBufferPointer<UInt8>) {
                         
-                        interlace_state.scan(data) { state, data in
+                        interlace_state.reductions(data) { state, data in
                             
                             if pass != state.pass {
                                 decoder = png_filter0_decoder(row_length: state.scanline_size, bitsPerPixel: bitsPerPixel)

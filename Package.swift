@@ -43,8 +43,8 @@ let package = Package(
         .library(name: "Doggie", targets: ["Doggie"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-numerics", from: "0.0.1"),
-        .package(url: "https://github.com/apple/swift-algorithms", from: "0.0.2"),
+        .package(url: "https://github.com/apple/swift-numerics", from: "0.1.0"),
+        .package(url: "https://github.com/apple/swift-algorithms", from: "0.0.4"),
         .package(url: "https://github.com/SusanDoggie/Float16", .branch("main")),
         .package(url: "https://github.com/SusanDoggie/brotli", .branch("main")),
         .package(url: "https://github.com/SusanDoggie/libwebp", .branch("main")),

@@ -87,14 +87,6 @@ extension BidirectionalCollection where SubSequence == Self {
     }
 }
 
-extension BidirectionalCollection {
-    
-    @inlinable
-    public func suffix(while predicate: (Element) throws -> Bool) rethrows -> SubSequence {
-        return self.suffix(from: try self.reversed().firstIndex { try !predicate($0) }?.base ?? self.startIndex)
-    }
-}
-
 extension RandomAccessCollection {
     
     /// Returns first range of `pattern` appear in `self`, or `nil` if not match.

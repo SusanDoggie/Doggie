@@ -73,7 +73,7 @@ extension CIImage {
             return self.convolve(horizontal, 0, orderX, 1).convolve(vertical, bias, 1, orderY)
         }
         
-        let matrix = Array(matrix.chunked(by: orderX).lazy.map { $0.reversed() }.joined())
+        let matrix = Array(matrix.chunks(ofCount: orderX).lazy.map { $0.reversed() }.joined())
         
         let _orderX = orderX | 1
         let _orderY = orderY | 1
@@ -83,7 +83,7 @@ extension CIImage {
         let append_x = _orderX - orderX
         let append_y = _orderY - orderY
         
-        var _matrix = Array(matrix.chunked(by: orderX).joined(separator: repeatElement(0, count: append_x)))
+        var _matrix = Array(matrix.chunks(ofCount: orderX).joined(separator: repeatElement(0, count: append_x)))
         _matrix.append(contentsOf: repeatElement(0, count: append_x + _orderX * append_y))
         
         let inset_x = -(_orderX + 1) / 2

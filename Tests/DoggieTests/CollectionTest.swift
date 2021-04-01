@@ -155,23 +155,6 @@ class CollectionTest: XCTestCase {
         XCTAssertEqual(Array(c), [42])
     }
     
-    func testSequenceScan() {
-        
-        let result = (1..<6).scan(0, +)
-        let answer = [0, 1, 3, 6, 10, 15]
-        
-        XCTAssertEqual(result, answer)
-    }
-    
-    func testLazySequenceScan() {
-        
-        let result = (1..<6).lazy.scan(0, +)
-        let answer = [0, 1, 3, 6, 10, 15]
-        
-        XCTAssert(result.elementsEqual(answer))
-        XCTAssertEqual(Array(result), answer)
-    }
-    
     func testSequenceStorageEqual() {
         
         let a = [1, 2, 3, 4, 5, 6]

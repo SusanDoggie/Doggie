@@ -103,7 +103,7 @@ extension PDFFunction {
         guard let type = object["FunctionType"].intValue else { return nil }
         guard let _domain = object["Domain"].array?.compactMap({ $0.doubleValue }), _domain.count & 1 == 0 else { return nil }
         
-        let domain = _domain.chunked(by: 2)
+        let domain = _domain.chunks(ofCount: 2)
         guard domain.allSatisfy({ $0.first! <= $0.last! }) else { return nil }
         
         self.type = type
@@ -150,7 +150,7 @@ extension PDFFunction {
             
             self.functions = functions
             self.bounds = bounds
-            self.encode = encode.chunked(by: 2).map { Encode($0.first!, $0.last!) }
+            self.encode = encode.chunks(ofCount: 2).map { Encode($0.first!, $0.last!) }
             
             self.c0 = []
             self.c1 = []

@@ -44,7 +44,7 @@ class FontTest: XCTestCase {
             let string = "Doggie\u{0301}".precomposedStringWithCanonicalMapping
             
             let glyphs = font.glyphs(with: string)
-            let advances = glyphs.map { font.advance(forGlyph: $0) }.scan(0, +)
+            let advances = glyphs.map { font.advance(forGlyph: $0) }.reductions(0, +)
             
             var shape = Shape()
             

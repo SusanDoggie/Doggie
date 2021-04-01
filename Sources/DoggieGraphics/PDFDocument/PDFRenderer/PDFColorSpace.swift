@@ -148,7 +148,7 @@ extension PDFColorSpace {
                 
             guard (hival + 1) * base.numberOfComponents <= data.count else { return nil }
             
-            let table = data.chunked(by: base.numberOfComponents).prefix(hival + 1)
+            let table = data.chunks(ofCount: base.numberOfComponents).prefix(hival + 1)
             
             self = .indexed(base, Array(table))
             

@@ -546,7 +546,7 @@ struct TIFFPage: ImageRepBase {
                 
                 var premultiplied = false
                 
-                for (i, (strips, (bits, format))) in zip(strips.chunked(by: stripsPerImage), zip(self.bitsPerSample, self.sampleFormat)).enumerated() {
+                for (i, (strips, (bits, format))) in zip(strips.chunks(ofCount: stripsPerImage), zip(self.bitsPerSample, self.sampleFormat)).enumerated() {
                     
                     let channel_index: Int
                     

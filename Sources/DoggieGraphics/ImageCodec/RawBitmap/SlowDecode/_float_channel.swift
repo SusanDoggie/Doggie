@@ -42,7 +42,7 @@ extension Image {
         let channelBytesOffset = channel.bitRange.lowerBound >> 3
         let channelBitsShift = channel.bitRange.lowerBound & 7
         
-        let chunks: LazyChunkSequence = channel.bitRange.lazy.chunked(by: 8)
+        let chunks: LazyChunkSequence = channel.bitRange.lazy.chunks(ofCount: 8)
         
         let _base = (1 as UInt64) << (channel.bitRange.count - 1)
         let _mask = ((1 as UInt64) << channel.bitRange.count) &- 1

@@ -320,7 +320,7 @@ extension Bezier where Element == Double {
     
     @inlinable
     public init(_ polynomial: Polynomial) {
-        let de = (0..<Swift.max(1, polynomial.degree)).scan(polynomial) { p, _ in p.derivative / Double(p.degree) }
+        let de = (0..<Swift.max(1, polynomial.degree)).reductions(polynomial) { p, _ in p.derivative / Double(p.degree) }
         var points: [Double] = []
         for n in de.indices {
             let s = zip(CombinationList(UInt(n)), de)

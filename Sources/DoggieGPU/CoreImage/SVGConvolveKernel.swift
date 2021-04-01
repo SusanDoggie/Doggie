@@ -139,7 +139,7 @@ extension CIImage {
         guard orderX > 0 && orderY > 0 && matrix.count == orderX * orderY else { return .empty() }
         guard 0..<orderX ~= targetX && 0..<orderY ~= targetY else { return .empty() }
         
-        let matrix = Array(matrix.chunked(by: orderX).reversed().joined())
+        let matrix = Array(matrix.chunks(ofCount: orderX).reversed().joined())
         
         var extent = self.extent
         

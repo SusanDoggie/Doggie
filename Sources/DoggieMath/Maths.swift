@@ -24,21 +24,16 @@
 //
 
 @inlinable
-public func FactorialList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<Slice<ClosedRange<T>>, T> {
-    return (0...n).dropFirst().lazy.scan(1, *)
+public func FactorialList<T: UnsignedInteger>(_ n: T) -> ExclusiveReductions<T, LazySequence<Slice<ClosedRange<T>>>> {
+    return (0...n).dropFirst().lazy.reductions(1, *)
 }
 @inlinable
-public func PermutationList<T: UnsignedInteger>(_ n: T) -> LazyScanSequence<ReversedCollection<Slice<ClosedRange<T>>>, T> {
-    return (0...n).dropFirst().reversed().lazy.scan(1, *)
+public func PermutationList<T: UnsignedInteger>(_ n: T) -> ExclusiveReductions<T, LazySequence<ReversedCollection<Slice<ClosedRange<T>>>>> {
+    return (0...n).dropFirst().reversed().lazy.reductions(1, *)
 }
 @inlinable
-public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<Zip2Sequence<LazyScanSequence<ReversedCollection<Slice<ClosedRange<T>>>, T>, LazyScanSequence<Slice<ClosedRange<T>>, T>>, T> {
+public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazySequence<Zip2Sequence<ExclusiveReductions<T, LazySequence<ReversedCollection<Slice<ClosedRange<T>>>>>, ExclusiveReductions<T, LazySequence<Slice<ClosedRange<T>>>>>>.Elements, T> where T.Stride : SignedInteger {
     return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
-}
-
-@inlinable
-public func FibonacciList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazyScanSequence<Range<T>, (Int, Int)>, Int> {
-    return (0..<n).dropLast().lazy.scan((1, 1)) { x, _ in (x.1, x.0 + x.1) }.map { $0.0 }
 }
 
 // MARK: Prime

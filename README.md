@@ -43,7 +43,7 @@ if let font = collection.first?.with(size: 64) {
     let string = "Doggie\u{0301}".precomposedStringWithCanonicalMapping
 
     let glyphs = font.glyphs(with: string.unicodeScalars)
-    let advances = glyphs.map { font.advance(forGlyph: $0) }.scan(0, +)
+    let advances = glyphs.map { font.advance(forGlyph: $0) }.reductions(0, +)
 
     var shape = Shape()
 

@@ -890,11 +890,11 @@ extension PDFRenderer {
                 }
                 
                 func decode_color(_ x: ArraySlice<UInt>) -> [Double] {
-                    return zip(x, decode.dropFirst(4).chunked(by: 2)).map { interpolate($0, $1) }
+                    return zip(x, decode.dropFirst(4).chunks(ofCount: 2)).map { interpolate($0, $1) }
                 }
                 
-                self.coords = self._coords.chunked(by: 2).flatMap(decode_coord)
-                self.colors = self._colors.chunked(by: numberOfComponents).flatMap(decode_color)
+                self.coords = self._coords.chunks(ofCount: 2).flatMap(decode_coord)
+                self.colors = self._colors.chunks(ofCount: numberOfComponents).flatMap(decode_color)
                 
             case 1:
                 
@@ -902,7 +902,7 @@ extension PDFRenderer {
                     return functions[0].eval(Double(x) / Double(max_color) * (decode[5] - decode[4]) + decode[4])
                 }
                 
-                self.coords = self._coords.chunked(by: 2).flatMap(decode_coord)
+                self.coords = self._coords.chunks(ofCount: 2).flatMap(decode_coord)
                 self.colors = self._colors.flatMap(decode_color)
                 
             default:
@@ -912,7 +912,7 @@ extension PDFRenderer {
                     return functions.map { $0.eval(t)[0] }
                 }
                 
-                self.coords = self._coords.chunked(by: 2).flatMap(decode_coord)
+                self.coords = self._coords.chunks(ofCount: 2).flatMap(decode_coord)
                 self.colors = self._colors.flatMap(decode_color)
             }
         }
@@ -1076,8 +1076,8 @@ extension PDFRenderer {
             var patch_data = patch_data[i]
             patch_data.decode(functions: functions, colorSpace: colorSpace, bitsPerCoordinate: bitsPerCoordinate, bitsPerComponent: bitsPerComponent, decode: decode)
             
-            let points = patch_data.coords.chunked(by: 2).map { Point(x: $0.first!, y: $0.last!) }
-            let colors = patch_data.colors.chunked(by: colorSpace.numberOfComponents)
+            let points = patch_data.coords.chunks(ofCount: 2).map { Point(x: $0.first!, y: $0.last!) }
+            let colors = patch_data.colors.chunks(ofCount: colorSpace.numberOfComponents)
             
             switch patch_data.flag {
             
