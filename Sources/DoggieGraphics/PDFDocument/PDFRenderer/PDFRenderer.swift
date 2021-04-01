@@ -1077,7 +1077,7 @@ extension PDFRenderer {
             patch_data.decode(functions: functions, colorSpace: colorSpace, bitsPerCoordinate: bitsPerCoordinate, bitsPerComponent: bitsPerComponent, decode: decode)
             
             let points = patch_data.coords.chunks(ofCount: 2).map { Point(x: $0.first!, y: $0.last!) }
-            let colors = patch_data.colors.chunks(ofCount: colorSpace.numberOfComponents)
+            let colors = Array(patch_data.colors.chunks(ofCount: colorSpace.numberOfComponents))
             
             switch patch_data.flag {
             

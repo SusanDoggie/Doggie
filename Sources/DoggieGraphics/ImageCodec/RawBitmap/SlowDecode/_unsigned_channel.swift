@@ -42,7 +42,7 @@ extension Image {
         let channelBytesOffset = channel.bitRange.lowerBound >> 3
         let channelBitsShift = channel.bitRange.lowerBound & 7
         
-        let chunks: LazyChunkSequence = channel.bitRange.lazy.chunks(ofCount: 8)
+        let chunks = channel.bitRange.chunks(ofCount: 8)
         
         @inline(__always)
         func read_pixel(_ source: UnsafePointer<UInt8>, _ offset: Int, _ i: Int) -> UInt8 {
