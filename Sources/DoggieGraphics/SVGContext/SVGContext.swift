@@ -154,24 +154,18 @@ extension SVGContext {
         
         static func ==(lhs: ImageTableKey, rhs: ImageTableKey) -> Bool {
             
+            switch (lhs, rhs) {
+            case let (.image(lhs), .image(rhs)): return lhs.isStorageEqual(rhs)
+            case let (.data(lhs), .data(rhs)): return lhs.isStorageEqual(rhs)
+                
             #if canImport(CoreGraphics)
             
-            switch (lhs, rhs) {
-            case let (.image(lhs), .image(rhs)): return lhs.isStorageEqual(rhs)
-            case let (.data(lhs), .data(rhs)): return lhs.isStorageEqual(rhs)
             case let (.cgimage(lhs), .cgimage(rhs)): return lhs === rhs
-            default: return false
-            }
-            
-            #else
-            
-            switch (lhs, rhs) {
-            case let (.image(lhs), .image(rhs)): return lhs.isStorageEqual(rhs)
-            case let (.data(lhs), .data(rhs)): return lhs.isStorageEqual(rhs)
-            default: return false
-            }
-            
+                
             #endif
+            
+            default: return false
+            }
         }
         
         #if canImport(CoreGraphics)

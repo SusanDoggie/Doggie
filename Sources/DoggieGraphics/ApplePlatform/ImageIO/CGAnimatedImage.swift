@@ -86,9 +86,9 @@ extension CGAnimatedImage {
             
             _typed_properties[kCGImagePropertyPNGCompressionFilter] = filter
             
+        #if canImport(AVFoundation)
+        
         case .heic:
-            
-            #if canImport(AVFoundation)
             
             guard #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *) else { return nil }
             
@@ -96,12 +96,8 @@ extension CGAnimatedImage {
             kCGImagePropertyLoopCount = kCGImagePropertyHEICSLoopCount
             kCGImagePropertyDelayTime = kCGImagePropertyHEICSDelayTime
             
-            #else
-            
-            return nil
-            
-            #endif
-            
+        #endif
+        
         case .webp:
             
             var _properties: [ImageRep.PropertyKey: Any] = [:]
