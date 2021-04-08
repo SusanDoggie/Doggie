@@ -189,3 +189,8 @@ extension String: RegularExpressionMatchable {
 public func ~=<T: RegularExpressionMatchable> (lhs: Regex, rhs: T) -> Bool {
     return rhs.isMatch(regex: lhs)
 }
+
+@inlinable
+public func =~<T: RegularExpressionMatchable> (lhs: T, rhs: Regex) -> Bool {
+    return lhs.isMatch(regex: rhs)
+}
