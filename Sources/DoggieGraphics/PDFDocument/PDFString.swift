@@ -66,11 +66,16 @@ extension PDFString {
     }
 }
 
-extension PDFString: ExpressibleByStringLiteral {
+extension PDFString: ExpressibleByStringInterpolation {
     
     @inlinable
     public init(stringLiteral value: StringLiteralType) {
         self.init(value)
+    }
+    
+    @inlinable
+    public init(stringInterpolation: String.StringInterpolation) {
+        self.init(String(stringInterpolation: stringInterpolation))
     }
 }
 

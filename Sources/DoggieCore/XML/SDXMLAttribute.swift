@@ -45,10 +45,13 @@ public struct SDXMLAttribute: Hashable {
     }
 }
 
-extension SDXMLAttribute: ExpressibleByStringLiteral {
+extension SDXMLAttribute: ExpressibleByStringInterpolation {
     
     public init(stringLiteral value: StringLiteralType) {
         self.init(attribute: value)
     }
+    
+    public init(stringInterpolation: String.StringInterpolation) {
+        self.init(attribute: String(stringInterpolation: stringInterpolation))
+    }
 }
-

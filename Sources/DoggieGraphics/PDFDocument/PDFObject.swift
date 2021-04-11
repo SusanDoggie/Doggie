@@ -148,11 +148,16 @@ extension PDFObject: ExpressibleByFloatLiteral {
     }
 }
 
-extension PDFObject: ExpressibleByStringLiteral {
+extension PDFObject: ExpressibleByStringInterpolation {
     
     @inlinable
     public init(stringLiteral value: StringLiteralType) {
         self.init(value)
+    }
+    
+    @inlinable
+    public init(stringInterpolation: String.StringInterpolation) {
+        self.init(String(stringInterpolation: stringInterpolation))
     }
 }
 

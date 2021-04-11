@@ -59,11 +59,16 @@ public struct Regex {
     }
 }
 
-extension Regex: ExpressibleByStringLiteral {
+extension Regex: ExpressibleByStringInterpolation {
     
     @inlinable
     public init(stringLiteral value: StringLiteralType) {
         try! self.init(pattern: value)
+    }
+    
+    @inlinable
+    public init(stringInterpolation: String.StringInterpolation) {
+        try! self.init(pattern: String(stringInterpolation: stringInterpolation))
     }
 }
 

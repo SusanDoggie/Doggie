@@ -101,10 +101,14 @@ public struct SDXMLElement {
     }
 }
 
-extension SDXMLElement: ExpressibleByStringLiteral {
+extension SDXMLElement: ExpressibleByStringInterpolation {
     
     public init(stringLiteral value: StringLiteralType) {
         self.init(characters: value)
+    }
+    
+    public init(stringInterpolation: String.StringInterpolation) {
+        self.init(characters: String(stringInterpolation: stringInterpolation))
     }
 }
 
