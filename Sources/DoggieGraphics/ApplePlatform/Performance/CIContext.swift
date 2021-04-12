@@ -41,7 +41,7 @@ extension CIContext {
                 try result.waitUntilCompleted()
             }
             
-        } catch let error {
+        } catch {
             
             NSLog("%@", "\(error)")
         }

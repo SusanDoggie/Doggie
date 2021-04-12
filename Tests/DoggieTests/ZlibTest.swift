@@ -65,7 +65,7 @@ class ZlibTest: XCTestCase {
             
             XCTAssertEqual(result, sample)
             
-        } catch let error {
+        } catch {
             
             XCTFail("\(error)")
             
@@ -86,7 +86,7 @@ class ZlibTest: XCTestCase {
             
             XCTAssertEqual(result, sample)
             
-        } catch let error {
+        } catch {
             
             XCTFail("\(error)")
             
@@ -106,7 +106,7 @@ class ZlibTest: XCTestCase {
                 
                 XCTAssert(try deflate.process(sample).count > 0)
                 
-            } catch let error {
+            } catch {
                 
                 XCTFail("\(error)")
                 
@@ -130,7 +130,7 @@ class ZlibTest: XCTestCase {
                     
                     XCTAssert(try inflate.process(sample).count > 0)
                     
-                } catch let error {
+                } catch {
                     
                     XCTFail("\(error)")
                     
@@ -138,7 +138,7 @@ class ZlibTest: XCTestCase {
                 
             }
             
-        } catch let error {
+        } catch {
             
             XCTFail("\(error)")
             

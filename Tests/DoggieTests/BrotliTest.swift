@@ -65,7 +65,7 @@ class BrotliTest: XCTestCase {
             
             XCTAssertEqual(result, sample)
             
-        } catch let error {
+        } catch {
             
             XCTFail("\(error)")
             
@@ -85,7 +85,7 @@ class BrotliTest: XCTestCase {
                 
                 XCTAssert(try encoder.process(sample).count > 0)
                 
-            } catch let error {
+            } catch {
                 
                 XCTFail("\(error)")
                 
@@ -109,7 +109,7 @@ class BrotliTest: XCTestCase {
                     
                     XCTAssert(try decoder.process(sample).count > 0)
                     
-                } catch let error {
+                } catch {
                     
                     XCTFail("\(error)")
                     
@@ -117,7 +117,7 @@ class BrotliTest: XCTestCase {
                 
             }
             
-        } catch let error {
+        } catch {
             
             XCTFail("\(error)")
             

@@ -72,7 +72,7 @@ class XMLTest: XCTestCase {
             XCTAssertEqual(doc[0][0][3].namespace, "DAV:")
             XCTAssertEqual(doc[0][0][3].count, 0)
             
-        } catch let error {
+        } catch {
             XCTFail("XML parser error: \(error)")
         }
     }
