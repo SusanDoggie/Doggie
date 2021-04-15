@@ -27,6 +27,8 @@
 
 @_exported import Algorithms
 
+@_exported import Collections
+
 @_exported import RealModule
 
 @_exported import Float16

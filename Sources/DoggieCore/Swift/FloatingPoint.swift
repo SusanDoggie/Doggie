@@ -47,3 +47,16 @@ extension FloatingPoint {
         return self == other || abs(self - other).almostZero(epsilon: epsilon, reference: reference)
     }
 }
+
+extension BinaryFloatingPoint where Self: RawBitPattern {
+    
+    @_transparent
+    public init(bigEndian value: Self) {
+        self.init(bitPattern: BitPattern(bigEndian: value.bitPattern))
+    }
+    
+    @_transparent
+    public init(littleEndian value: Self) {
+        self.init(bitPattern: BitPattern(littleEndian: value.bitPattern))
+    }
+}

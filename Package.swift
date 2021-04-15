@@ -45,6 +45,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-numerics", from: "0.1.0"),
         .package(url: "https://github.com/apple/swift-algorithms", from: "0.0.4"),
+        .package(url: "https://github.com/apple/swift-collections", from: "0.0.2"),
         .package(url: "https://github.com/SusanDoggie/Float16", .branch("main")),
         .package(url: "https://github.com/SusanDoggie/brotli", .branch("main")),
         .package(url: "https://github.com/SusanDoggie/libwebp", .branch("main")),
@@ -61,6 +62,7 @@ let package = Package(
             dependencies: [
                 .product(name: "RealModule", package: "swift-numerics"),
                 .product(name: "Algorithms", package: "swift-algorithms"),
+                .product(name: "Collections", package: "swift-collections"),
                 "Float16",
                 "zlib_c",
                 "brotli",
