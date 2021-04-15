@@ -83,6 +83,11 @@ public struct Json: Hashable {
     public init(_ elements: [String: Json]) {
         self.base = .dictionary(elements)
     }
+    
+    @inlinable
+    public init(_ elements: OrderedDictionary<String, Json>) {
+        self.base = .dictionary(Dictionary(uniqueKeysWithValues: elements.lazy.map { ($0.key, $0.value) }))
+    }
 }
 
 extension Json {
