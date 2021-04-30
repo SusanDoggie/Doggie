@@ -44,14 +44,6 @@ public struct Color<Model: ColorModel>: ColorProtocol, Hashable {
     }
 }
 
-extension Color {
-    
-    @inlinable
-    public init<P: ColorPixel>(colorSpace: DoggieGraphics.ColorSpace<Model>, color: P) where Model == P.Model {
-        self.init(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
-    }
-}
-
 extension Color where Model == XYZColorModel {
     
     @inlinable

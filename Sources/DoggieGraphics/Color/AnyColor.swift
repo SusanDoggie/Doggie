@@ -106,14 +106,6 @@ public struct AnyColor: ColorProtocol, Hashable {
 extension AnyColor {
     
     @inlinable
-    public init<P: ColorPixel>(colorSpace: DoggieGraphics.ColorSpace<P.Model>, color: P) {
-        self.init(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
-    }
-}
-
-extension AnyColor {
-    
-    @inlinable
     public func hash(into hasher: inout Hasher) {
         _base.hash(into: &hasher)
     }

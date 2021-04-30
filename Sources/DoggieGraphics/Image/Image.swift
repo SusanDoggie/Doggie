@@ -310,14 +310,16 @@ extension Image {
     @inline(__always)
     public func color(x: Int, y: Int) -> DoggieGraphics.Color<Pixel.Model> {
         precondition(0..<width ~= x && 0..<height ~= y)
-        return Color(colorSpace: colorSpace, color: pixels[width * y + x])
+        let pixel = pixels[width * y + x]
+        return Color(colorSpace: colorSpace, color: pixel.color, opacity: pixel.opacity)
     }
     
     @inlinable
     @inline(__always)
     public func color(x: Int, y: Int) -> AnyColor {
         precondition(0..<width ~= x && 0..<height ~= y)
-        return AnyColor(colorSpace: colorSpace, color: pixels[width * y + x])
+        let pixel = pixels[width * y + x]
+        return AnyColor(colorSpace: colorSpace, color: pixel.color, opacity: pixel.opacity)
     }
     
     @inlinable
