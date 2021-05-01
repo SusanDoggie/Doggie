@@ -171,7 +171,7 @@ extension ColorSpace: CGGradientConvertibleProtocol {
         if stops.count == 1 {
             
             let color = stops[0].1
-            interpolate = { _ in Color(colorSpace: self, color: color) }
+            interpolate = { _ in Color(colorSpace: self, color: color.color, opacity: color.opacity) }
             
         } else {
             
@@ -181,19 +181,20 @@ extension ColorSpace: CGGradientConvertibleProtocol {
             interpolate = { t in
                 
                 if t <= first.0 {
-                    return Color(colorSpace: self, color: first.1)
+                    return Color(colorSpace: self, color: first.1.color, opacity: first.1.opacity)
                 }
                 if t >= last.0 {
-                    return Color(colorSpace: self, color: last.1)
+                    return Color(colorSpace: self, color: last.1.color, opacity: last.1.opacity)
                 }
                 
                 for (lhs, rhs) in zip(stops, stops.dropFirst()) where lhs.0 != rhs.0 && t >= lhs.0 && t <= rhs.0 {
                     
                     let s = (t - lhs.0) / (rhs.0 - lhs.0)
-                    return Color(colorSpace: self, color: lhs.1 * (1 - s) + rhs.1 * s)
+                    let c = lhs.1 * (1 - s) + rhs.1 * s
+                    return Color(colorSpace: self, color: c.color, opacity: c.opacity)
                 }
                 
-                return Color(colorSpace: self, color: first.1)
+                return Color(colorSpace: self, color: first.1.color, opacity: first.1.opacity)
             }
         }
         
