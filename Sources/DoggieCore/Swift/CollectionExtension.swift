@@ -153,7 +153,7 @@ extension Sequence {
     }
 }
 
-extension Collection where SubSequence: Collection {
+extension Collection {
     
     @inlinable
     public func rotated(at index: Index) -> Chain2<SubSequence, SubSequence> {
@@ -161,7 +161,7 @@ extension Collection where SubSequence: Collection {
     }
 }
 
-extension Collection where SubSequence: Collection {
+extension Collection {
     
     @inlinable
     public func rotated(_ n: Int) -> Chain2<SubSequence, SubSequence> {

@@ -25,7 +25,7 @@
 
 private let ShapeCacheInterscetionResultKey = "ShapeCacheInterscetionResultKey"
 
-extension Collection where SubSequence: Collection {
+extension Collection {
     
     func rotateZip() -> Zip2Sequence<Self, Chain2<SubSequence, SubSequence>> {
         return zip(self, self.rotated(1))
