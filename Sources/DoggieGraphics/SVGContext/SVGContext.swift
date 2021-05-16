@@ -1117,7 +1117,7 @@ extension SVGContext {
         default: break
         }
         
-        for (_, stop) in stops.indexed().sorted(by: { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }) {
+        for stop in stops.sorted() {
             var _stop = SDXMLElement(name: "stop")
             _stop.setAttribute(for: "offset", value: "\(Decimal(stop.offset).rounded(scale: 9))")
             _stop.setAttribute(for: "stop-color", value: create_color(stop.color))

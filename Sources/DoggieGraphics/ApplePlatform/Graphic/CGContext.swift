@@ -164,37 +164,39 @@ extension ColorSpace: CGGradientConvertibleProtocol {
     
     func shading_function<C>(colorSpace: CGColorSpace, stops: [GradientStop<C>]) -> ((CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void)? {
         
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { (Float($0.1.offset), Float32ColorPixel($0.1.color.convert(to: self, intent: .default))) }
-        
         let interpolate: (Float) -> Color<Model>
         
         if stops.count == 1 {
             
-            let color = stops[0].1
-            interpolate = { _ in Color(colorSpace: self, color: color.color, opacity: color.opacity) }
+            let stops = stops.sorted().map { $0.convert(to: self, intent: .default) }
+            let color = stops[0].color
+            interpolate = { _ in color }
             
         } else {
+            
+            let stops = stops.sorted().map { $0.convert(to: self, intent: .default) }
+            let _stops = stops.sorted().map { Float32GradientStop($0) }
             
             let first = stops.first!
             let last = stops.last!
             
             interpolate = { t in
                 
-                if t <= first.0 {
-                    return Color(colorSpace: self, color: first.1.color, opacity: first.1.opacity)
+                if t <= first.offset {
+                    return first.color
                 }
-                if t >= last.0 {
-                    return Color(colorSpace: self, color: last.1.color, opacity: last.1.opacity)
+                if t >= last.offset {
+                    return last.color
                 }
                 
-                for (lhs, rhs) in zip(stops, stops.dropFirst()) where lhs.0 != rhs.0 && t >= lhs.0 && t <= rhs.0 {
+                for (lhs, rhs) in zip(_stops, _stops.dropFirst()) where lhs.offset != rhs.offset && t >= lhs.offset && t <= rhs.offset {
                     
-                    let s = (t - lhs.0) / (rhs.0 - lhs.0)
-                    let c = lhs.1 * (1 - s) + rhs.1 * s
+                    let s = (t - lhs.offset) / (rhs.offset - lhs.offset)
+                    let c = lhs.color * (1 - s) + rhs.color * s
                     return Color(colorSpace: self, color: c.color, opacity: c.opacity)
                 }
                 
-                return Color(colorSpace: self, color: first.1.color, opacity: first.1.opacity)
+                return first.color
             }
         }
         

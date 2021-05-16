@@ -994,7 +994,7 @@ extension PDFContext.Page {
         
         guard self.transform.invertible else { return }
         
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
+        let stops = stops.sorted()
         guard stops.count >= 2 else { return }
         
         let color = PDFContext.PDFShading(
@@ -1029,7 +1029,7 @@ extension PDFContext.Page {
         
         guard self.transform.invertible else { return }
         
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $0.1 }
+        let stops = stops.sorted()
         guard stops.count >= 2 else { return }
         
         let color = PDFContext.PDFShading(

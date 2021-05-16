@@ -161,46 +161,79 @@ extension ImageContext {
     }
 }
 
+@usableFromInline
+protocol _GradientStop {
+    
+    var offset: Double { get }
+}
+extension GradientStop: _GradientStop { }
+
+extension Array where Element: _GradientStop {
+    
+    @inlinable
+    @inline(__always)
+    func sorted() -> [Element] {
+        return self.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { $1 }
+    }
+}
+
+@usableFromInline
+struct Float32GradientStop<Model: ColorModel> {
+    
+    @usableFromInline
+    var offset: Float
+    
+    @usableFromInline
+    var color: Float32ColorPixel<Model>
+    
+    @inlinable
+    @inline(__always)
+    init(_ stop: GradientStop<Color<Model>>) {
+        self.offset = Float(stop.offset)
+        self.color = Float32ColorPixel(stop.color)
+    }
+}
+
 extension ImageContext {
     
     @inlinable
     @inline(__always)
-    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
+    func _drawGradient<C>(stops: [GradientStop<C>], shading: ((Double) -> Float32ColorPixel<Pixel.Model>) -> Void) {
         
         let colorSpace = self.colorSpace
         let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { (Float($0.1.offset), Float32ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
+        let stops = stops.sorted().map { Float32GradientStop($0.convert(to: colorSpace, intent: renderingIntent)) }
         
         switch stops.count {
         case 0: break
         case 1:
             
-            let color = stops[0].1
-            axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { _ in color }
+            let color = stops[0].color
+            shading { _ in color }
             
         default:
             
             let first = stops.first!
             let last = stops.last!
             
-            axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread) { t -> Float32ColorPixel<Pixel.Model> in
+            shading { t in
                 
                 let t = Float(t)
                 
-                if t <= first.0 {
-                    return first.1
+                if t <= first.offset {
+                    return first.color
                 }
-                if t >= last.0 {
-                    return last.1
+                if t >= last.offset {
+                    return last.color
                 }
                 
-                for (lhs, rhs) in zip(stops, stops.dropFirst()) where lhs.0 != rhs.0 && t >= lhs.0 && t <= rhs.0 {
+                for (lhs, rhs) in zip(stops, stops.dropFirst()) where lhs.offset != rhs.offset && t >= lhs.offset && t <= rhs.offset {
                     
-                    let s = (t - lhs.0) / (rhs.0 - lhs.0)
-                    return lhs.1 * (1 - s) + rhs.1 * s
+                    let s = (t - lhs.offset) / (rhs.offset - lhs.offset)
+                    return lhs.color * (1 - s) + rhs.color * s
                 }
                 
-                return first.1
+                return first.color
             }
         }
     }
@@ -210,43 +243,13 @@ extension ImageContext {
     
     @inlinable
     @inline(__always)
+    public func drawLinearGradient<C>(stops: [GradientStop<C>], start: Point, end: Point, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
+        self._drawGradient(stops: stops) { axialShading(start: start, end: end, startSpread: startSpread, endSpread: endSpread, shading: $0) }
+    }
+    
+    @inlinable
+    @inline(__always)
     public func drawRadialGradient<C>(stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, startSpread: GradientSpreadMode, endSpread: GradientSpreadMode) {
-        
-        let colorSpace = self.colorSpace
-        let renderingIntent = self.renderingIntent
-        let stops = stops.indexed().sorted { ($0.1.offset, $0.0) < ($1.1.offset, $1.0) }.map { (Float($0.1.offset), Float32ColorPixel($0.1.color.convert(to: colorSpace, intent: renderingIntent))) }
-        
-        switch stops.count {
-        case 0: break
-        case 1:
-            
-            let color = stops[0].1
-            radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { _ in color }
-            
-        default:
-            
-            let first = stops.first!
-            let last = stops.last!
-            
-            radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread) { t -> Float32ColorPixel<Pixel.Model> in
-                
-                let t = Float(t)
-                
-                if t <= first.0 {
-                    return first.1
-                }
-                if t >= last.0 {
-                    return last.1
-                }
-                
-                for (lhs, rhs) in zip(stops, stops.dropFirst()) where lhs.0 != rhs.0 && t >= lhs.0 && t <= rhs.0 {
-                    
-                    let s = (t - lhs.0) / (rhs.0 - lhs.0)
-                    return lhs.1 * (1 - s) + rhs.1 * s
-                }
-                
-                return first.1
-            }
-        }
+        self._drawGradient(stops: stops) { radialShading(start: start, startRadius: startRadius, end: end, endRadius: endRadius, startSpread: startSpread, endSpread: endSpread, shading: $0) }
     }
 }
