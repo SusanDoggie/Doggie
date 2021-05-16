@@ -182,7 +182,7 @@ extension ColorSpace: CGGradientConvertibleProtocol {
             
             interpolate = { t in
                 
-                let _t = Float(t)
+                let _t = Double(t)
                 
                 if _t <= first.offset {
                     return first.color
