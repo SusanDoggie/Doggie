@@ -302,7 +302,7 @@ extension Shape {
     @usableFromInline
     final class Cache {
         
-        let lck = NSLock()
+        let lck = NSRecursiveLock()
         
         var originalBoundary: Rect?
         var originalArea: Double?
