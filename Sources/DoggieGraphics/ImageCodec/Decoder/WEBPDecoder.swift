@@ -86,7 +86,7 @@ extension WEBPDecoder {
     
     class Decoder {
         
-        let lck = SDLock()
+        let lck = NSLock()
         
         let decoder: OpaquePointer
         let anim_info: WebPAnimInfo

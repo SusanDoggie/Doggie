@@ -99,7 +99,7 @@ extension ImageRep {
     @usableFromInline
     final class Cache {
         
-        let lck = SDLock()
+        let lck = NSLock()
         
         var image: AnyImage?
         var pages: [Int: ImageRep]

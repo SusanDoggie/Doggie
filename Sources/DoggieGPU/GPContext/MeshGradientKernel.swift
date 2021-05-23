@@ -74,7 +74,7 @@ extension GPContext {
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private class MeshGradientKernel: CIImageProcessorKernel {
     
-    private static let lck = SDLock()
+    private static let lck = NSLock()
     private static var pipeline: WeakDictionary<MTLDevice, Pipeline> = WeakDictionary()
     
     private static func make_pipeline(_ device: MTLDevice) -> Pipeline? {
@@ -191,7 +191,7 @@ extension MeshGradientKernel {
     
     class Cache {
         
-        let lck = SDLock()
+        let lck = NSLock()
         
         var buffers = WeakDictionary<MTLDevice, Buffers>()
     }

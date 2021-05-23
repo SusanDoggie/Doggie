@@ -40,7 +40,7 @@ open class CIContextPool {
     
     public let commandQueue: MTLCommandQueue?
     
-    private let lck = SDLock()
+    private let lck = NSLock()
     private var table: [CIContextOptions: CIContext] = [:]
     
     public init() {

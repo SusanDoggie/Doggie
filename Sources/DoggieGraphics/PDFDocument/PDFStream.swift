@@ -54,7 +54,7 @@ extension PDFStream {
     @usableFromInline
     class Cache {
         
-        let lck = SDLock()
+        let lck = NSLock()
         
         var image: ImageRep?
         

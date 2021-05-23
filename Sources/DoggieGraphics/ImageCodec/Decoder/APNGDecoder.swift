@@ -27,7 +27,7 @@ extension PNGDecoder {
     
     class Frame {
         
-        let lck = SDLock()
+        let lck = NSLock()
         
         let prev_frame: Frame?
         

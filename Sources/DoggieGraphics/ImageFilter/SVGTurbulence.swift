@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-private let cache_lck = SDLock()
+private let cache_lck = NSLock()
 private var cache: [SVGNoiseGenerator] = []
 
 @usableFromInline

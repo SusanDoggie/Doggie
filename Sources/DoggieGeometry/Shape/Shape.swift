@@ -302,7 +302,7 @@ extension Shape {
     @usableFromInline
     final class Cache {
         
-        let lck = SDLock()
+        let lck = NSLock()
         
         var originalBoundary: Rect?
         var originalArea: Double?
@@ -387,7 +387,7 @@ extension Shape.Component {
     @usableFromInline
     final class CacheArray {
         
-        let lck = SDLock()
+        let lck = NSLock()
         var storage: [Element]
         
         @usableFromInline
@@ -419,7 +419,7 @@ extension Shape.Component.CacheArray {
 extension Shape.Component.Cache {
     
     @usableFromInline
-    var lck: SDLock {
+    var lck: NSLock {
         return list.lck
     }
     
@@ -464,19 +464,6 @@ extension Shape.Component.Cache {
     
     func load<Value>(for key: String) -> Value? {
         return lck.synchronized { table[key] as? Value }
-    }
-    
-    func load<Value>(for key: String, body: () -> Value) -> Value {
-        
-        return lck.synchronized {
-            
-            if let object = table[key], let value = object as? Value {
-                return value
-            }
-            let value = body()
-            table[key] = value
-            return value
-        }
     }
     
     func store<Value>(value: Value, for key: String) {

@@ -27,7 +27,7 @@
 
 extension CIImageProcessorKernel {
     
-    private static let lck = SDLock()
+    private static let lck = NSLock()
     private static var libraries: WeakDictionary<MTLDevice, MTLLibrary> = WeakDictionary()
     private static var pipelines: WeakDictionary<MTLDevice, [String: [MTLFunctionConstantValues?: MTLComputePipelineState]]> = WeakDictionary()
     

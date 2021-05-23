@@ -72,7 +72,7 @@ extension SVGTurbulenceKernel {
     
     private class ProcessorKernel: CIImageProcessorKernel {
         
-        private static let lck = SDLock()
+        private static let lck = NSLock()
         private static var function_constants: [SVGTurbulenceType: [Bool: [Int: MTLFunctionConstantValues]]] = [:]
         
         static func make_function_constant(_ type: SVGTurbulenceType, _ isStitchTile: Bool, _ numOctaves: Int) -> MTLFunctionConstantValues {
@@ -95,7 +95,7 @@ extension SVGTurbulenceKernel {
             return constants
         }
         
-        static let cache_lck = SDLock()
+        static let cache_lck = NSLock()
         static var cache: [SVGNoiseGeneratorBuffer] = []
         
         static func svg_noise_generator(_ seed: Int, _ device: MTLDevice) -> (MTLBuffer, MTLBuffer)? {

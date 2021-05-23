@@ -72,7 +72,7 @@ extension CGImageRep {
     @usableFromInline
     final class Cache {
         
-        let lck = SDLock()
+        let lck = NSLock()
         
         var image: CGImage?
         var pages: [Int: CGImageRep]

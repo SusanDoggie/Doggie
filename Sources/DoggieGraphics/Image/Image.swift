@@ -162,7 +162,7 @@ extension Image where Pixel: _RGBColorPixel {
 final class ImageCache {
     
     @usableFromInline
-    let lck = SDLock()
+    let lck = NSLock()
     
     var isOpaque: Bool?
     var visibleRect: Rect?

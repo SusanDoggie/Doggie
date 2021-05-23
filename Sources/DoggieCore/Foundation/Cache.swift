@@ -64,7 +64,7 @@ extension Cache {
     final class Base {
         
         @usableFromInline
-        let lck = SDLock()
+        let lck = NSLock()
         
         @usableFromInline
         var table: [Key: Any]

@@ -29,7 +29,7 @@ extension CIImage {
     
     private class SVGConvolveKernel: CIImageProcessorKernel {
         
-        private static let lck = SDLock()
+        private static let lck = NSLock()
         private static var function_constants: [String: MTLFunctionConstantValues] = [:]
         
         static func make_function_constant(_ orderX: Int, _ orderY: Int) -> MTLFunctionConstantValues {

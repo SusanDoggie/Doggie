@@ -134,7 +134,7 @@ extension Font {
     
     private class Cache {
         
-        let lck = SDLock()
+        let lck = NSLock()
         
         var coveredCharacterSet: CharacterSet?
         var glyphs: [Int: [Shape.Component]] = [:]
