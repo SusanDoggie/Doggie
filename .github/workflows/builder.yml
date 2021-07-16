@@ -116,6 +116,9 @@ jobs:
       matrix:
         swift_version: [5.5, main]
         distro: [xenial, bionic, focal]
+        exclude:
+          - swift_version: main
+            distro: xenial
     steps:
     - uses: actions/checkout@v1
       with:
