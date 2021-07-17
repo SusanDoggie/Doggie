@@ -151,12 +151,15 @@ jobs:
       matrix:
         swift_version: [5.5, main]
         distro: [centos8, amazonlinux2]
+        include:
+          - distro: centos8
+            allowerasing: --allowerasing
     steps:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
     - name: Prepare		
-      run: yum update -y --allowerasing
+      run: yum update -y ${{ matrix.allowerasing }}
     - name: Install fonts
       run: yum install -y fontconfig google-noto-*
     - name: Build
