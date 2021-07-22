@@ -453,16 +453,16 @@ extension Bezier where Element == Point {
         let bx = self.x
         let by = self.y
         
-        let _x = bx.stationary.lazy.map { bx.eval($0.clamped(to: 0...1)) }
-        let _y = by.stationary.lazy.map { by.eval($0.clamped(to: 0...1)) }
+        let _x = bx.stationary.lazy.map { bx.eval($0.clamped(to: 0...1)) }.minAndMax()
+        let _y = by.stationary.lazy.map { by.eval($0.clamped(to: 0...1)) }.minAndMax()
         
         let first = points[0]
         let last = points[points.count - 1]
         
-        let minX = _x.min().map { Swift.min(first.x, last.x, $0) } ?? Swift.min(first.x, last.x)
-        let minY = _y.min().map { Swift.min(first.y, last.y, $0) } ?? Swift.min(first.y, last.y)
-        let maxX = _x.max().map { Swift.max(first.x, last.x, $0) } ?? Swift.max(first.x, last.x)
-        let maxY = _y.max().map { Swift.max(first.y, last.y, $0) } ?? Swift.max(first.y, last.y)
+        let minX = _x.map { Swift.min(first.x, last.x, $0.min) } ?? Swift.min(first.x, last.x)
+        let minY = _y.map { Swift.min(first.y, last.y, $0.min) } ?? Swift.min(first.y, last.y)
+        let maxX = _x.map { Swift.max(first.x, last.x, $0.max) } ?? Swift.max(first.x, last.x)
+        let maxY = _y.map { Swift.max(first.y, last.y, $0.max) } ?? Swift.max(first.y, last.y)
         
         return Rect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
     }

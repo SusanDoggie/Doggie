@@ -310,10 +310,8 @@ extension PDFContext.Page {
                 let _coord = shader.coord.flatMap { $0.coord }
                 let _color = shader.color.joined()
                 
-                guard let min_x = _coord.lazy.map({ $0.x }).min() else { break }
-                guard let max_x = _coord.lazy.map({ $0.x }).max() else { break }
-                guard let min_y = _coord.lazy.map({ $0.y }).min() else { break }
-                guard let max_y = _coord.lazy.map({ $0.y }).max() else { break }
+                guard let (min_x, max_x) = _coord.lazy.map({ $0.x }).minAndMax() else { break }
+                guard let (min_y, max_y) = _coord.lazy.map({ $0.y }).minAndMax() else { break }
                 
                 let min_color = (0..<shader.numberOfComponents).map { i in min(0, _color.lazy.map { $0[i] }.min() ?? 0) }
                 let max_color = (0..<shader.numberOfComponents).map { i in max(1, _color.lazy.map { $0[i] }.max() ?? 1) }
