@@ -148,7 +148,7 @@ extension MutableCollection {
 extension Sequence {
     
     @inlinable
-    public func appended(_ newElement: Element) -> Chain2<Self, CollectionOfOne<Element>> {
+    public func appended(_ newElement: Element) -> Chain2Sequence<Self, CollectionOfOne<Element>> {
         return chain(self, CollectionOfOne(newElement))
     }
 }
@@ -156,7 +156,7 @@ extension Sequence {
 extension Collection {
     
     @inlinable
-    public func rotated(at index: Index) -> Chain2<SubSequence, SubSequence> {
+    public func rotated(at index: Index) -> Chain2Sequence<SubSequence, SubSequence> {
         return chain(self.suffix(from: index), self.prefix(upTo: index))
     }
 }
@@ -164,7 +164,7 @@ extension Collection {
 extension Collection {
     
     @inlinable
-    public func rotated(_ n: Int) -> Chain2<SubSequence, SubSequence> {
+    public func rotated(_ n: Int) -> Chain2Sequence<SubSequence, SubSequence> {
         let count = self.count
         if count == 0 {
             return chain(self[...], self[...])
