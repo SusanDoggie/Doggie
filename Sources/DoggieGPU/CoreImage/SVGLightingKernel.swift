@@ -136,7 +136,7 @@ extension CIImage {
                 
             case let light_source as SVGPointLight:
                 
-                let pipeline_name = input == nil ? "svg_\(lighting_type)_point_light" : "svg_\(lighting_type)_distant_light2"
+                let pipeline_name = input == nil ? "svg_\(lighting_type)_point_light" : "svg_\(lighting_type)_point_light2"
                 
                 guard let point_lighting = self.make_pipeline(encoder.device, pipeline_name) else { return }
                 
@@ -154,7 +154,7 @@ extension CIImage {
                 
             case let light_source as SVGSpotLight:
                 
-                let pipeline_name = input == nil ? "svg_\(lighting_type)_spot_light" : "svg_\(lighting_type)_distant_light2"
+                let pipeline_name = input == nil ? "svg_\(lighting_type)_spot_light" : "svg_\(lighting_type)_spot_light2"
                 
                 guard let spot_lighting = self.make_pipeline(encoder.device, pipeline_name) else { return }
                 
