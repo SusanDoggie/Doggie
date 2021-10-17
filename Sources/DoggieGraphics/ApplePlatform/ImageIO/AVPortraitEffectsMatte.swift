@@ -25,7 +25,7 @@
 
 #if canImport(CoreGraphics) && canImport(ImageIO) && canImport(AVFoundation)
 
-@available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
+@available(macOS 10.14, macCatalyst 14.0, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
 extension AVPortraitEffectsMatte {
     
     public convenience init<T>(texture: StencilTexture<T>) throws {
@@ -50,7 +50,7 @@ extension AVPortraitEffectsMatte {
 
 extension CGImageRep {
     
-    @available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
+    @available(macOS 10.14, macCatalyst 14.0, iOS 12.0, tvOS 12.0, watchOS 5.0, *)
     public var portraitEffectsMatte: AVPortraitEffectsMatte? {
         guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypePortraitEffectsMatte as String) else { return nil }
         return try? AVPortraitEffectsMatte(fromDictionaryRepresentation: info)

@@ -132,7 +132,7 @@ extension CGImageRep {
             
             #if !os(watchOS)
             
-            if #available(macOS 10.13, iOS 11.0, tvOS 11.0, *), let depthData = properties[.depthData] as? AVDepthData {
+            if #available(macOS 10.13, macCatalyst 14.0, iOS 11.0, tvOS 11.0, *), let depthData = properties[.depthData] as? AVDepthData {
                 
                 var type: NSString?
                 let dictionary = depthData.dictionaryRepresentation(forAuxiliaryDataType: &type)
@@ -144,7 +144,7 @@ extension CGImageRep {
             
             #endif
             
-            if #available(macOS 10.14, iOS 12.0, tvOS 12.0, watchOS 5.0, *), let matteData = properties[.matteData] as? AVPortraitEffectsMatte {
+            if #available(macOS 10.14, macCatalyst 14.0, iOS 12.0, tvOS 12.0, watchOS 5.0, *), let matteData = properties[.matteData] as? AVPortraitEffectsMatte {
                 
                 var type: NSString?
                 let dictionary = matteData.dictionaryRepresentation(forAuxiliaryDataType: &type)
