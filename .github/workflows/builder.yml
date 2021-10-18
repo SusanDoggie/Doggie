@@ -46,7 +46,7 @@ jobs:
       uses: SusanDoggie/swift-action@main
       with:
         action: test
-    - uses: codecov/codecov-action@v1
+    - uses: codecov/codecov-action@v2
       if: ${{ matrix.enable_codecov }}
   ubuntu_swift:
     name: ${{ matrix.swift_version }}-${{ matrix.distro }}
