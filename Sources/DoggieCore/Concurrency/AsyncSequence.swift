@@ -29,18 +29,16 @@
 extension AsyncSequence {
     
     @inlinable
-    func collect() async rethrows -> [Element] {
+    public func collect() async rethrows -> [Element] {
         return try await self.reduce(into: []) { $0.append($1) }
     }
 }
 
 @frozen
-@usableFromInline
 @available(macOS 12, iOS 15, watchOS 8, tvOS 15, *)
-struct _AsyncSequenceBox<S: Sequence>: AsyncSequence {
+public struct _AsyncSequenceBox<S: Sequence>: AsyncSequence {
     
-    @usableFromInline
-    typealias Element = S.Element
+    public typealias Element = S.Element
     
     @usableFromInline
     let base: S
@@ -50,14 +48,12 @@ struct _AsyncSequenceBox<S: Sequence>: AsyncSequence {
         self.base = base
     }
     
-    @inlinable
-    func makeAsyncIterator() -> AsyncIterator {
+    public func makeAsyncIterator() -> AsyncIterator {
         return AsyncIterator(base)
     }
     
     @frozen
-    @usableFromInline
-    struct AsyncIterator: AsyncIteratorProtocol {
+    public struct AsyncIterator: AsyncIteratorProtocol {
         
         @usableFromInline
         var base: S.Iterator
@@ -67,8 +63,7 @@ struct _AsyncSequenceBox<S: Sequence>: AsyncSequence {
             self.base = base.makeIterator()
         }
         
-        @inlinable
-        mutating func next() async -> S.Element? {
+        public mutating func next() async -> S.Element? {
             return self.base.next()
         }
     }
@@ -78,22 +73,22 @@ struct _AsyncSequenceBox<S: Sequence>: AsyncSequence {
 extension Sequence {
     
     @inlinable
-    func map<T>(_ transform: @escaping (Element) async -> T) -> AsyncMapSequence<_AsyncSequenceBox<Self>, T> {
+    public func map<T>(_ transform: @escaping (Element) async -> T) -> AsyncMapSequence<_AsyncSequenceBox<Self>, T> {
         return _AsyncSequenceBox(self).map(transform)
     }
     
     @inlinable
-    func map<T>(_ transform: @escaping (Element) async throws -> T) -> AsyncThrowingMapSequence<_AsyncSequenceBox<Self>, T> {
+    public func map<T>(_ transform: @escaping (Element) async throws -> T) -> AsyncThrowingMapSequence<_AsyncSequenceBox<Self>, T> {
         return _AsyncSequenceBox(self).map(transform)
     }
     
     @inlinable
-    func filter(_ isIncluded: @escaping (Element) async -> Bool) -> AsyncFilterSequence<_AsyncSequenceBox<Self>> {
+    public func filter(_ isIncluded: @escaping (Element) async -> Bool) -> AsyncFilterSequence<_AsyncSequenceBox<Self>> {
         return _AsyncSequenceBox(self).filter(isIncluded)
     }
     
     @inlinable
-    func filter(_ isIncluded: @escaping (Element) async throws -> Bool) -> AsyncThrowingFilterSequence<_AsyncSequenceBox<Self>> {
+    public func filter(_ isIncluded: @escaping (Element) async throws -> Bool) -> AsyncThrowingFilterSequence<_AsyncSequenceBox<Self>> {
         return _AsyncSequenceBox(self).filter(isIncluded)
     }
     
@@ -103,20 +98,66 @@ extension Sequence {
     }
     
     @inlinable
-    func flatMap<SegmentOfResult: AsyncSequence>(_ transform: @escaping (Element) async throws -> SegmentOfResult) -> AsyncThrowingFlatMapSequence<_AsyncSequenceBox<Self>, SegmentOfResult> {
+    public func flatMap<SegmentOfResult: AsyncSequence>(_ transform: @escaping (Element) async throws -> SegmentOfResult) -> AsyncThrowingFlatMapSequence<_AsyncSequenceBox<Self>, SegmentOfResult> {
         return _AsyncSequenceBox(self).flatMap(transform)
     }
     
     @inlinable
-    func compactMap<ElementOfResult>(_ transform: @escaping (Element) async -> ElementOfResult?) -> AsyncCompactMapSequence<_AsyncSequenceBox<Self>, ElementOfResult> {
+    public func compactMap<ElementOfResult>(_ transform: @escaping (Element) async -> ElementOfResult?) -> AsyncCompactMapSequence<_AsyncSequenceBox<Self>, ElementOfResult> {
         return _AsyncSequenceBox(self).compactMap(transform)
     }
     
     @inlinable
-    func compactMap<ElementOfResult>(_ transform: @escaping (Element) async throws -> ElementOfResult?) -> AsyncThrowingCompactMapSequence<_AsyncSequenceBox<Self>, ElementOfResult> {
+    public func compactMap<ElementOfResult>(_ transform: @escaping (Element) async throws -> ElementOfResult?) -> AsyncThrowingCompactMapSequence<_AsyncSequenceBox<Self>, ElementOfResult> {
         return _AsyncSequenceBox(self).compactMap(transform)
     }
     
+    @inlinable
+    public func drop(while predicate: @escaping (Element) async -> Bool) -> AsyncDropWhileSequence<_AsyncSequenceBox<Self>> {
+        return _AsyncSequenceBox(self).drop(while: predicate)
+    }
+    
+    @inlinable
+    public func prefix(while predicate: @escaping (Element) async -> Bool) -> AsyncPrefixWhileSequence<_AsyncSequenceBox<Self>> {
+        return _AsyncSequenceBox(self).prefix(while: predicate)
+    }
+    
+    @inlinable
+    public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (_ partialResult: Result, Element) async throws -> Result) async rethrows -> Result {
+        return try await _AsyncSequenceBox(self).reduce(initialResult, nextPartialResult)
+    }
+    
+    @inlinable
+    public func reduce<Result>(into initialResult: Result, _ updateAccumulatingResult: (_ partialResult: inout Result, Element) async throws -> Void) async rethrows -> Result {
+        return try await _AsyncSequenceBox(self).reduce(into: initialResult, updateAccumulatingResult)
+    }
+    
+    @inlinable
+    public func contains(where predicate: (Element) async throws -> Bool) async rethrows -> Bool {
+        return try await _AsyncSequenceBox(self).contains(where: predicate)
+    }
+    
+    @inlinable
+    public func allSatisfy(_ predicate: (Element) async throws -> Bool) async rethrows -> Bool {
+        return try await _AsyncSequenceBox(self).allSatisfy(predicate)
+    }
+    
+    @inlinable
+    public func first(where predicate: (Element) async throws -> Bool) async rethrows -> Element? {
+        return try await _AsyncSequenceBox(self).first(where: predicate)
+    }
+    
+    @inlinable
+    @warn_unqualified_access
+    public func min(by areInIncreasingOrder: (Element, Element) async throws -> Bool) async rethrows -> Element? {
+        return try await _AsyncSequenceBox(self).min(by: areInIncreasingOrder)
+    }
+    
+    @inlinable
+    @warn_unqualified_access
+    public func max(by areInIncreasingOrder: (Element, Element) async throws -> Bool) async rethrows -> Element? {
+        return try await _AsyncSequenceBox(self).max(by: areInIncreasingOrder)
+    }
 }
 
 #endif
