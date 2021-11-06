@@ -118,8 +118,18 @@ extension Sequence {
     }
     
     @inlinable
+    public func drop(while predicate: @escaping (Element) async throws -> Bool) -> AsyncThrowingDropWhileSequence<_AsyncSequenceBox<Self>> {
+        return _AsyncSequenceBox(self).drop(while: predicate)
+    }
+    
+    @inlinable
     public func prefix(while predicate: @escaping (Element) async -> Bool) -> AsyncPrefixWhileSequence<_AsyncSequenceBox<Self>> {
         return _AsyncSequenceBox(self).prefix(while: predicate)
+    }
+    
+    @inlinable
+    public func prefix(while predicate: @escaping (Element) async throws -> Bool) rethrows -> AsyncThrowingPrefixWhileSequence<_AsyncSequenceBox<Self>> {
+        return try _AsyncSequenceBox(self).prefix(while: predicate)
     }
     
     @inlinable
