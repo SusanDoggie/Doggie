@@ -23,6 +23,8 @@
 //  THE SOFTWARE.
 //
 
+#if compiler(>=5.5) && canImport(_Concurrency)
+
 import Doggie
 import XCTest
 
@@ -102,3 +104,5 @@ class ConcurrencyTest: XCTestCase {
     }
     
 }
+
+#endif
