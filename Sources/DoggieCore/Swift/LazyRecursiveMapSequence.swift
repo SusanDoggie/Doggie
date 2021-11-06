@@ -28,72 +28,71 @@ extension Sequence {
     @inlinable
     public func recursiveMap<C: Collection>(_ transform: (Element) throws -> C) rethrows -> [Element] where C.Element == Element {
         var result: [Element] = Array(self)
-        var unmapped = try result.flatMap(transform)
+        var mapped = try result.flatMap(transform)
         repeat {
-            result.append(contentsOf: unmapped)
-            unmapped = try unmapped.flatMap(transform)
-        } while !unmapped.isEmpty
+            result.append(contentsOf: mapped)
+            mapped = try mapped.flatMap(transform)
+        } while !mapped.isEmpty
         return result
     }
 }
 
 @frozen
-public struct LazyRecursiveMapSequence<Base: Sequence, Transformed: Collection>: LazySequenceProtocol, IteratorProtocol where Base.Element == Transformed.Element {
+public struct LazyRecursiveMapSequence<Base: Sequence, Transformed: Collection>: LazySequenceProtocol where Base.Element == Transformed.Element {
     
     @usableFromInline
-    var mapped: EitherIterator
+    let base: Base
     
     @usableFromInline
-    var unmapped: [Base.Element]?
-    
-    @usableFromInline
-    var transform: (Base.Element) -> Transformed
+    let transform: (Base.Element) -> Transformed
     
     @inlinable
     init(_ base: Base, _ transform: @escaping (Base.Element) -> Transformed) {
-        self.mapped = EitherIterator(base: base.makeIterator())
-        self.unmapped = base.flatMap(transform)
+        self.base = base
         self.transform = transform
     }
     
     @inlinable
-    public mutating func next() -> Base.Element? {
-        
-        if let element = self.mapped.next() {
-            return element
-        }
-        
-        if let unmapped = unmapped {
-            self.mapped = EitherIterator(transformed: unmapped.makeIterator())
-            self.unmapped = unmapped.flatMap(transform)
-            self.unmapped = self.unmapped?.isEmpty == false ? self.unmapped : nil
-        }
-        
-        return self.mapped.next()
+    public func makeIterator() -> Iterator {
+        return Iterator(Array(base), transform)
     }
 }
 
 extension LazyRecursiveMapSequence {
     
     @frozen
-    @usableFromInline
-    struct EitherIterator: IteratorProtocol {
+    public struct Iterator: IteratorProtocol {
         
         @usableFromInline
-        var base: Base.Iterator?
+        var result: Array<Base.Element>.Iterator
         
         @usableFromInline
-        var transformed: Array<Base.Element>.Iterator?
+        var mapped: [Base.Element]?
         
         @usableFromInline
-        init(base: Base.Iterator? = nil, transformed: Array<Base.Element>.Iterator? = nil) {
-            self.base = base
-            self.transformed = transformed
+        var transform: (Base.Element) -> Transformed
+        
+        @inlinable
+        init(_ base: [Base.Element], _ transform: @escaping (Base.Element) -> Transformed) {
+            self.result = base.makeIterator()
+            self.mapped = base.flatMap(transform)
+            self.transform = transform
         }
         
         @inlinable
-        mutating func next() -> Base.Element? {
-            return base?.next() ?? transformed?.next()
+        public mutating func next() -> Base.Element? {
+            
+            if let element = self.result.next() {
+                return element
+            }
+            
+            if let mapped = mapped {
+                self.result = mapped.makeIterator()
+                self.mapped = mapped.flatMap(transform)
+                self.mapped = self.mapped?.isEmpty == false ? self.mapped : nil
+            }
+            
+            return self.result.next()
         }
     }
 }
