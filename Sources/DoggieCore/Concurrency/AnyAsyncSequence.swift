@@ -36,10 +36,12 @@ public struct AnyAsyncSequence<Element>: AsyncSequence {
     @usableFromInline
     let _makeAsyncIterator: () -> AnyAsyncIterator<Element>
     
+    @inlinable
     public init<S: AsyncSequence>(_ base: S) where S.Element == Element {
         self._makeAsyncIterator = { AnyAsyncIterator(base.makeAsyncIterator()) }
     }
     
+    @inlinable
     public func makeAsyncIterator() -> AnyAsyncIterator<Element> {
         return _makeAsyncIterator()
     }
@@ -54,11 +56,13 @@ public struct AnyAsyncIterator<Element>: AsyncIteratorProtocol {
     @usableFromInline
     let _next: () async throws -> Element?
     
+    @inlinable
     public init<I: AsyncIteratorProtocol>(_ base: I) where I.Element == Element {
         var base = base
         self._next = { try await base.next() }
     }
     
+    @inlinable
     public mutating func next() async throws -> Element? {
         return try await _next()
     }
