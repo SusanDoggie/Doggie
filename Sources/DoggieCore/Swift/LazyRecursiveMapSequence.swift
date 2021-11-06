@@ -26,7 +26,7 @@
 extension Sequence {
     
     @inlinable
-    public func recursiveMap<C: Collection>(_ transform: (Element) throws -> C) rethrows -> [Element] where C.Element == Element {
+    public func recursiveMap<S: Sequence>(_ transform: (Element) throws -> S) rethrows -> [Element] where S.Element == Element {
         var result: [Element] = Array(self)
         var mapped = try result.flatMap(transform)
         repeat {
@@ -38,7 +38,7 @@ extension Sequence {
 }
 
 @frozen
-public struct LazyRecursiveMapSequence<Base: Sequence, Transformed: Collection>: LazySequenceProtocol where Base.Element == Transformed.Element {
+public struct LazyRecursiveMapSequence<Base: Sequence, Transformed: Sequence>: LazySequenceProtocol where Base.Element == Transformed.Element {
     
     @usableFromInline
     let base: Base
@@ -100,7 +100,7 @@ extension LazyRecursiveMapSequence {
 extension LazySequenceProtocol {
     
     @inlinable
-    public func recursiveMap<C>(_ transform: @escaping (Element) -> C) -> LazyRecursiveMapSequence<Elements, C> {
+    public func recursiveMap<S>(_ transform: @escaping (Element) -> S) -> LazyRecursiveMapSequence<Elements, S> {
         return LazyRecursiveMapSequence(self.elements, transform)
     }
 }
