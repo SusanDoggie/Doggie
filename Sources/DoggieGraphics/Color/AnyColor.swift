@@ -49,8 +49,6 @@ protocol AnyColorBaseProtocol: PolymorphicHashable {
     func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent) -> Color<Model>
     
     func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyColor
-    
-    func _blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> AnyColorBaseProtocol
 }
 
 extension Color: AnyColorBaseProtocol {
@@ -68,11 +66,6 @@ extension Color: AnyColorBaseProtocol {
     @inlinable
     func _with(opacity: Double) -> AnyColorBaseProtocol {
         return self.with(opacity: opacity)
-    }
-    
-    @inlinable
-    func _blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> AnyColorBaseProtocol {
-        return self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
 }
 
@@ -224,19 +217,6 @@ extension AnyColor {
     @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyColor {
         return _base.convert(to: colorSpace, intent: intent)
-    }
-}
-
-extension AnyColor {
-    
-    @inlinable
-    public func blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> AnyColor {
-        return AnyColor(base: _base._blended(source: source, compositingMode: compositingMode, blendMode: blendMode))
-    }
-    
-    @inlinable
-    public mutating func blend<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) {
-        self = self.blended(source: source, compositingMode: compositingMode, blendMode: blendMode)
     }
 }
 
