@@ -441,7 +441,9 @@ extension Color {
     
     @inlinable
     public var cieXYZ: Color<XYZColorModel> {
-        return Color<XYZColorModel>(colorSpace: colorSpace.cieXYZ, color: colorSpace.convertToXYZ(color), opacity: opacity)
+        let _colorSpace = colorSpace.cieXYZ
+        let _color = colorSpace.convertToXYZ(color)
+        return Color<XYZColorModel>(colorSpace: _colorSpace, color: _color, opacity: opacity)
     }
 }
 
@@ -449,7 +451,9 @@ extension Color {
     
     @inlinable
     public func linearTone() -> Color {
-        return Color(colorSpace: colorSpace.linearTone, color: colorSpace.convertToLinear(color), opacity: opacity)
+        let _colorSpace = colorSpace.linearTone
+        let _color = colorSpace.convertToLinear(color)
+        return Color(colorSpace: _colorSpace, color: _color, opacity: opacity)
     }
 }
 
@@ -465,7 +469,8 @@ extension Color {
     
     @inlinable
     public func convert<Model>(to colorSpace: DoggieGraphics.ColorSpace<Model>, intent: RenderingIntent = .default) -> Color<Model> {
-        return Color<Model>(colorSpace: colorSpace, color: self.colorSpace.convert(self.color, to: colorSpace, intent: intent), opacity: self.opacity)
+        let _color = self.colorSpace.convert(self.color, to: colorSpace, intent: intent)
+        return Color<Model>(colorSpace: colorSpace, color: _color, opacity: self.opacity)
     }
 }
 
