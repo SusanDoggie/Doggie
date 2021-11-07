@@ -349,7 +349,7 @@ extension Image {
     @inlinable
     @inline(__always)
     public func linearTone() -> Image {
-        let colorSpace = colorSpace
+        let colorSpace = self.colorSpace
         let pixels = self.pixels.map { Pixel(color: colorSpace.convertToLinear($0.color), opacity: $0.opacity) }
         return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace.linearTone, pixels: pixels)
     }
@@ -367,7 +367,7 @@ extension Image {
         
         let pixels = self.pixels.map { Pixel(color: colorSpace.convertFromXYZ(colorSpace.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
         
-        return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace.linearTone, pixels: pixels)
+        return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace, pixels: pixels)
     }
 }
 
