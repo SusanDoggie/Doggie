@@ -115,7 +115,7 @@ public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
                 self.height = image.height
                 self.resolution = image.resolution
                 self.colorSpace = colorSpace
-                self._pixels = image.colorSpace.convert(image.pixels, to: colorSpace, intent: intent)
+                self._pixels = image.colorSpace.convert_buffer(image.pixels, to: colorSpace, intent: intent)
                 
                 let _self = self
                 image.cache.lck.synchronized { image.cache.color_conversion[key] = _self }
