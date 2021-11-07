@@ -249,39 +249,6 @@ extension ColorSpace {
     }
 }
 
-extension ColorSpace {
-    
-    @inlinable
-    public func convertToLinear<S: ColorPixel>(_ color: S) -> S where S.Model == Model {
-        return S(color: self.convertToLinear(color.color), opacity: color.opacity)
-    }
-    
-    @inlinable
-    public func convertFromLinear<S: ColorPixel>(_ color: S) -> S where S.Model == Model {
-        return S(color: self.convertFromLinear(color.color), opacity: color.opacity)
-    }
-    
-    @inlinable
-    public func convertLinearToXYZ<S: ColorPixel, T: ColorPixel>(_ color: S) -> T where S.Model == Model, T.Model == XYZColorModel {
-        return T(color: self.convertLinearToXYZ(color.color), opacity: color.opacity)
-    }
-    
-    @inlinable
-    public func convertLinearFromXYZ<S: ColorPixel, T: ColorPixel>(_ color: T) -> S where S.Model == Model, T.Model == XYZColorModel {
-        return S(color: self.convertLinearFromXYZ(color.color), opacity: color.opacity)
-    }
-    
-    @inlinable
-    public func convertToXYZ<S: ColorPixel, T: ColorPixel>(_ color: S) -> T where S.Model == Model, T.Model == XYZColorModel {
-        return T(color: self.convertToXYZ(color.color), opacity: color.opacity)
-    }
-    
-    @inlinable
-    public func convertFromXYZ<S: ColorPixel, T: ColorPixel>(_ color: T) -> S where S.Model == Model, T.Model == XYZColorModel {
-        return S(color: self.convertFromXYZ(color.color), opacity: color.opacity)
-    }
-}
-
 extension CIEXYZColorSpace {
     
     @inlinable

@@ -52,11 +52,11 @@ protocol AnyImageBaseProtocol: PolymorphicHashable {
     
     mutating func setColor<C: ColorProtocol>(x: Int, y: Int, color: C)
     
-    mutating func setWhiteBalance(_ white: Point)
-    
     mutating func setOrientation(_ orientation: ImageOrientation)
     
     func _linearTone() -> AnyImageBaseProtocol
+    
+    func _withWhiteBalance(_ white: Point) -> AnyImageBaseProtocol
     
     func _premultiplied() -> AnyImageBaseProtocol
     
@@ -85,6 +85,11 @@ extension Image: AnyImageBaseProtocol {
     @inlinable
     func _linearTone() -> AnyImageBaseProtocol {
         return self.linearTone()
+    }
+    
+    @inlinable
+    func _withWhiteBalance(_ white: Point) -> AnyImageBaseProtocol {
+        return self.withWhiteBalance(white)
     }
     
     @inlinable
@@ -259,11 +264,6 @@ extension AnyImage {
     }
     
     @inlinable
-    public mutating func setWhiteBalance(_ white: Point) {
-        return _base.setWhiteBalance(white)
-    }
-    
-    @inlinable
     public mutating func setOrientation(_ orientation: ImageOrientation) {
         return _base.setOrientation(orientation)
     }
@@ -271,6 +271,11 @@ extension AnyImage {
     @inlinable
     public func linearTone() -> AnyImage {
         return AnyImage(base: _base._linearTone())
+    }
+    
+    @inlinable
+    public func withWhiteBalance(_ white: Point) -> AnyImage {
+        return AnyImage(base: _base._withWhiteBalance(white))
     }
     
     @inlinable

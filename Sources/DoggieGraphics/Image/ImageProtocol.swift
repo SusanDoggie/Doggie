@@ -71,7 +71,7 @@ public protocol ImageProtocol: Hashable {
     
     func horizontalFlipped() -> Self
     
-    mutating func setWhiteBalance(_ white: Point)
+    func withWhiteBalance(_ white: Point) -> Self
     
     func convert<P>(to colorSpace: DoggieGraphics.ColorSpace<P.Model>, intent: RenderingIntent) -> Image<P>
     

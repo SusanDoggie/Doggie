@@ -349,14 +349,14 @@ extension Image {
     @inlinable
     @inline(__always)
     public func linearTone() -> Image {
-        return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace.linearTone, pixels: pixels.map(colorSpace.convertToLinear))
+        let colorSpace = colorSpace
+        let pixels = self.pixels.map { Pixel(color: colorSpace.convertToLinear($0.color), opacity: $0.opacity) }
+        return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace.linearTone, pixels: pixels)
     }
     
     @inlinable
     @inline(__always)
-    public mutating func setWhiteBalance(_ white: Point) {
-        
-        cache = ImageCache()
+    public func withWhiteBalance(_ white: Point) -> Image {
         
         let colorSpace = self.colorSpace
         
@@ -365,15 +365,9 @@ extension Image {
         
         let matrix = m1 * m2
         
-        _pixels.withUnsafeMutableBufferPointer {
-            
-            guard var buffer = $0.baseAddress else { return }
-            
-            for _ in 0..<$0.count {
-                buffer.pointee.color = colorSpace.convertFromXYZ(colorSpace.convertToXYZ(buffer.pointee.color) * matrix)
-                buffer += 1
-            }
-        }
+        let pixels = self.pixels.map { Pixel(color: colorSpace.convertFromXYZ(colorSpace.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
+        
+        return Image(width: width, height: height, resolution: resolution, colorSpace: colorSpace.linearTone, pixels: pixels)
     }
 }
 
