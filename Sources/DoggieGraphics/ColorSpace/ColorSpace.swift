@@ -270,11 +270,6 @@ extension ColorSpace {
         let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
         return matrix.almostEqual(.identity) ? other.convertFromXYZ(self.convertToXYZ(color)) : other.convertFromXYZ(self.convertToXYZ(color) * matrix)
     }
-    
-    @inlinable
-    public func convert<S: ColorPixel, R: ColorPixel>(_ color: S, to other: ColorSpace<R.Model>, intent: RenderingIntent = .default) -> R where S.Model == Model {
-        return R(color: self.convert(color.color, to: other, intent: intent), opacity: color.opacity)
-    }
 }
 
 extension ColorSpace {
