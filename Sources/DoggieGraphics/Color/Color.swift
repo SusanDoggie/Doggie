@@ -479,7 +479,9 @@ extension Color {
     @inlinable
     public func blended<C: ColorProtocol>(source: C, compositingMode: ColorCompositingMode = .default, blendMode: ColorBlendMode = .default) -> Color {
         let source = source.convert(to: colorSpace, intent: .default)
-        let color = Float64ColorPixel(color: self.color, opacity: self.opacity).blended(source: Float64ColorPixel(color: source.color, opacity: source.opacity), compositingMode: compositingMode, blendMode: blendMode)
+        let _source = Float64ColorPixel(color: source.color, opacity: source.opacity)
+        let _destination = Float64ColorPixel(color: self.color, opacity: self.opacity)
+        let color = _destination.blended(source: _source, compositingMode: compositingMode, blendMode: blendMode)
         return Color(colorSpace: colorSpace, color: color.color, opacity: color.opacity)
     }
     
