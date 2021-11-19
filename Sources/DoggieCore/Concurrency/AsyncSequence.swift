@@ -93,7 +93,7 @@ extension Sequence {
     }
     
     @inlinable
-    func flatMap<SegmentOfResult: AsyncSequence>(_ transform: @escaping (Element) async -> SegmentOfResult) -> AsyncFlatMapSequence<_AsyncSequenceBox<Self>, SegmentOfResult> {
+    public func flatMap<SegmentOfResult: AsyncSequence>(_ transform: @escaping (Element) async -> SegmentOfResult) -> AsyncFlatMapSequence<_AsyncSequenceBox<Self>, SegmentOfResult> {
         return _AsyncSequenceBox(self).flatMap(transform)
     }
     
@@ -128,8 +128,8 @@ extension Sequence {
     }
     
     @inlinable
-    public func prefix(while predicate: @escaping (Element) async throws -> Bool) rethrows -> AsyncThrowingPrefixWhileSequence<_AsyncSequenceBox<Self>> {
-        return try _AsyncSequenceBox(self).prefix(while: predicate)
+    public func prefix(while predicate: @escaping (Element) async throws -> Bool) -> AsyncThrowingPrefixWhileSequence<_AsyncSequenceBox<Self>> {
+        return try! _AsyncSequenceBox(self).prefix(while: predicate)
     }
     
     @inlinable
