@@ -25,7 +25,7 @@
 
 extension UUID {
     
-    init?(hexString: String) {
+    public init?(hexString: String) {
         
         guard hexString.count == 32 else { return nil }
         
