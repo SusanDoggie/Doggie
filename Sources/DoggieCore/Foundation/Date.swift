@@ -44,6 +44,7 @@ extension DateFormatter {
 
 extension String {
     
+    @available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
     public var iso8601: Date? {
         
         let formatter = ISO8601DateFormatter()

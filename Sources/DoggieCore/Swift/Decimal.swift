@@ -70,3 +70,143 @@ extension Decimal {
         return result
     }
 }
+
+extension Decimal {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Double) {
+        self.init(value)
+        guard self.doubleValue == value else { return nil }
+    }
+}
+
+extension Decimal {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: String) {
+        self.init(string: value, locale: Locale(identifier: "en_US"))
+        guard self.description == value else { return nil }
+    }
+}
+
+extension Float {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).floatValue
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension Double {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).doubleValue
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension UInt8 {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).uint8Value
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension Int8 {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).int8Value
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension UInt16 {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).uint16Value
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension Int16 {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).int16Value
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension UInt32 {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).uint32Value
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension Int32 {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).int32Value
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension UInt64 {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).uint64Value
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension Int64 {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).int64Value
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension UInt {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).uintValue
+        guard Decimal(self) == value else { return nil }
+    }
+}
+
+extension Int {
+    
+    @inlinable
+    @inline(__always)
+    public init?(exactly value: Decimal) {
+        self = NSDecimalNumber(decimal: value).intValue
+        guard Decimal(self) == value else { return nil }
+    }
+}
