@@ -23,127 +23,92 @@
 //  THE SOFTWARE.
 //
 
-public enum JsonType: Hashable {
+@frozen
+public enum Json: Hashable {
     
     case null
-    case boolean
-    case string
-    case number
-    case array
-    case dictionary
-}
-
-@frozen
-public struct Json: Hashable {
     
-    @usableFromInline
-    let base: Base
+    case boolean(Bool)
     
-    @inlinable
-    public init(_ value: Bool) {
-        self.base = .boolean(value)
-    }
+    case string(String)
     
-    @inlinable
-    public init(_ value: String) {
-        self.base = .string(value)
-    }
+    case signed(Int64)
     
-    @inlinable
-    public init<S: StringProtocol>(_ value: S) {
-        self.base = .string(String(value))
-    }
+    case unsigned(UInt64)
     
-    @inlinable
-    public init<T: BinaryInteger>(_ value: T) {
-        self.base = .number(Number(value))
-    }
+    case number(Double)
     
-    @inlinable
-    public init<T: BinaryFloatingPoint>(_ value: T) {
-        self.base = .number(Number(value))
-    }
+    case decimal(Decimal)
     
-    @inlinable
-    public init(_ value: Decimal) {
-        self.base = .number(Number(value))
-    }
+    case array([Json])
     
-    @inlinable
-    init(_ value: Number) {
-        self.base = .number(value)
-    }
+    case dictionary([String: Json])
     
-    @inlinable
-    public init<S: Sequence>(_ elements: S) where S.Element == Json {
-        self.base = .array(Array(elements))
-    }
-    
-    @inlinable
-    public init(_ elements: [String: Json]) {
-        self.base = .dictionary(elements)
-    }
-    
-    @inlinable
-    public init(_ elements: OrderedDictionary<String, Json>) {
-        self.base = .dictionary(Dictionary(uniqueKeysWithValues: elements.lazy.map { ($0.key, $0.value) }))
-    }
 }
 
 extension Json {
     
-    @usableFromInline
-    struct Number: Hashable {
-        
-        @usableFromInline
-        var int64: Int64?
-        
-        @usableFromInline
-        var uint64: UInt64?
-        
-        @usableFromInline
-        var decimal: Decimal?
-        
-        @usableFromInline
-        var double: Double
-        
-        @inlinable
-        init(int64: Int64?, uint64: UInt64?, decimal: Decimal?, double: Double) {
-            self.int64 = int64
-            self.uint64 = uint64
-            self.decimal = decimal
-            self.double = double
-        }
-        
-        @inlinable
-        init<T: BinaryInteger>(_ value: T) {
-            self.int64 = Int64(exactly: value)
-            self.uint64 = UInt64(exactly: value)
-            self.decimal = UInt64(exactly: value).map(Decimal.init) ?? Int64(exactly: value).map(Decimal.init) ?? Decimal(exactly: value)
-            self.double = Double(value)
-        }
-        
-        @inlinable
-        init(_ value: Decimal) {
-            self.decimal = value
-            self.double = value.doubleValue
-        }
-        
-        @inlinable
-        init<T: BinaryFloatingPoint>(_ value: T) {
-            self.int64 = Int64(exactly: value)
-            self.uint64 = UInt64(exactly: value)
-            self.double = Double(value)
-        }
+    @inlinable
+    public init(_ value: Bool) {
+        self = .boolean(value)
     }
     
+    @inlinable
+    public init(_ value: String) {
+        self = .string(value)
+    }
+    
+    @inlinable
+    public init<S: StringProtocol>(_ value: S) {
+        self = .string(String(value))
+    }
+    
+    @inlinable
+    public init<T: FixedWidthInteger & SignedInteger>(_ value: T) {
+        self = .signed(Int64(value))
+    }
+    
+    @inlinable
+    public init<T: FixedWidthInteger & UnsignedInteger>(_ value: T) {
+        self = .unsigned(UInt64(value))
+    }
+    
+    @inlinable
+    public init<T: BinaryFloatingPoint>(_ value: T) {
+        self = .number(Double(value))
+    }
+    
+    @inlinable
+    public init(_ value: Decimal) {
+        self = .decimal(value)
+    }
+    
+    @inlinable
+    public init<Wrapped: JsonConvertible>(_ value: Wrapped?) {
+        self = value.toJson()
+    }
+    
+    @inlinable
+    public init<S: Sequence>(_ elements: S) where S.Element: JsonConvertible {
+        self = .array(elements.map { $0.toJson() })
+    }
+    
+    @inlinable
+    public init<Value: JsonConvertible>(_ elements: [String: Value]) {
+        self = .dictionary(elements.mapValues { $0.toJson() })
+    }
+    
+    @inlinable
+    public init<Value: JsonConvertible>(_ elements: OrderedDictionary<String, Value>) {
+        self = .dictionary(Dictionary(elements.mapValues { $0.toJson() }))
+    }
 }
 
 extension Json: ExpressibleByNilLiteral {
     
     @inlinable
     public init(nilLiteral value: Void) {
-        self.base = .null
+        self = .null
     }
 }
 
@@ -200,14 +165,48 @@ extension Json: ExpressibleByDictionaryLiteral {
     }
 }
 
+extension Json {
+    
+    @inlinable
+    public static func ==(lhs: Json, rhs: Json) -> Bool {
+        switch (lhs, rhs) {
+        case (.null, .null): return true
+        case let (.boolean(lhs), .boolean(rhs)): return lhs == rhs
+        case let (.string(lhs), .string(rhs)): return lhs == rhs
+        case let (.signed(lhs), .signed(rhs)): return lhs == rhs
+        case let (.signed(lhs), .unsigned(rhs)): return lhs == rhs
+        case let (.signed(lhs), .number(rhs)): return lhs == Int64(exactly: rhs)
+        case let (.signed(lhs), .decimal(rhs)): return lhs == Int64(exactly: rhs)
+        case let (.unsigned(lhs), .signed(rhs)): return lhs == rhs
+        case let (.unsigned(lhs), .unsigned(rhs)): return lhs == rhs
+        case let (.unsigned(lhs), .number(rhs)): return lhs == UInt64(exactly: rhs)
+        case let (.unsigned(lhs), .decimal(rhs)): return lhs == UInt64(exactly: rhs)
+        case let (.number(lhs), .signed(rhs)): return Int64(exactly: lhs) == rhs
+        case let (.number(lhs), .unsigned(rhs)): return UInt64(exactly: lhs) == rhs
+        case let (.number(lhs), .number(rhs)): return lhs == rhs
+        case let (.number(lhs), .decimal(rhs)): return lhs == rhs.doubleValue
+        case let (.decimal(lhs), .signed(rhs)): return Int64(exactly: lhs) == rhs
+        case let (.decimal(lhs), .unsigned(rhs)): return UInt64(exactly: lhs) == rhs
+        case let (.decimal(lhs), .number(rhs)): return lhs.doubleValue == rhs
+        case let (.decimal(lhs), .decimal(rhs)): return lhs == rhs
+        case let (.array(lhs), .array(rhs)): return lhs == rhs
+        case let (.dictionary(lhs), .dictionary(rhs)): return lhs == rhs
+        default: return false
+        }
+    }
+}
+
 extension Json: CustomStringConvertible {
     
     public var description: String {
-        switch self.base {
+        switch self {
         case .null: return "nil"
         case let .boolean(bool): return "\(bool)"
         case let .string(string): return "\"\(string.escaped(asASCII: false))\""
-        case let .number(number): return "\(number.double)"
+        case let .signed(value): return "\(value)"
+        case let .unsigned(value): return "\(value)"
+        case let .number(value): return "\(value)"
+        case let .decimal(value): return "\(value)"
         case let .array(array): return "\(array)"
         case let .dictionary(dictionary): return "\(dictionary)"
         }
@@ -217,70 +216,61 @@ extension Json: CustomStringConvertible {
 extension Json {
     
     @inlinable
-    public var type: JsonType {
-        return base.type
-    }
-    
-    @inlinable
     public var isNil: Bool {
-        return type == .null
+        switch self {
+        case .null: return true
+        default: return false
+        }
     }
     
     @inlinable
     public var isBool: Bool {
-        return type == .boolean
+        switch self {
+        case .boolean: return true
+        default: return false
+        }
     }
     
     @inlinable
     public var isString: Bool {
-        return type == .string
+        switch self {
+        case .string: return true
+        default: return false
+        }
     }
     
     @inlinable
     public var isArray: Bool {
-        return type == .array
+        switch self {
+        case .array: return true
+        default: return false
+        }
     }
     
     @inlinable
     public var isObject: Bool {
-        return type == .dictionary
+        switch self {
+        case .dictionary: return true
+        default: return false
+        }
     }
     
     @inlinable
     public var isNumber: Bool {
-        return type == .number
+        switch self {
+        case .signed: return true
+        case .unsigned: return true
+        case .number: return true
+        case .decimal: return true
+        default: return false
+        }
     }
 }
 
 extension Json {
     
-    @usableFromInline
-    enum Base: Hashable {
-        case null
-        case boolean(Bool)
-        case string(String)
-        case number(Number)
-        case array([Json])
-        case dictionary([String: Json])
-    }
-}
-
-extension Json.Base {
-    
     @inlinable
-    var type: JsonType {
-        switch self {
-        case .null: return .null
-        case .boolean: return .boolean
-        case .string: return .string
-        case .number: return .number
-        case .array: return .array
-        case .dictionary: return .dictionary
-        }
-    }
-    
-    @inlinable
-    var boolValue: Bool? {
+    public var boolValue: Bool? {
         switch self {
         case let .boolean(value): return value
         default: return nil
@@ -288,39 +278,163 @@ extension Json.Base {
     }
     
     @inlinable
-    var int64Value: Int64? {
+    public var int8Value: Int8? {
         switch self {
-        case let .number(value): return value.int64 ?? Int64(exactly: value.double)
+        case let .signed(value): return Int8(exactly: value)
+        case let .unsigned(value): return Int8(exactly: value)
+        case let .number(value): return Int8(exactly: value)
+        case let .decimal(value): return Int8(exactly: value)
+        case let .string(string): return Int8(string)
         default: return nil
         }
     }
     
     @inlinable
-    var uint64Value: UInt64? {
+    public var uint8Value: UInt8? {
         switch self {
-        case let .number(value): return value.uint64 ?? UInt64(exactly: value.double)
+        case let .signed(value): return UInt8(exactly: value)
+        case let .unsigned(value): return UInt8(exactly: value)
+        case let .number(value): return UInt8(exactly: value)
+        case let .decimal(value): return UInt8(exactly: value)
+        case let .string(string): return UInt8(string)
         default: return nil
         }
     }
     
     @inlinable
-    var decimalValue: Decimal? {
+    public var int16Value: Int16? {
         switch self {
-        case let .number(value): return value.decimal ?? Decimal(value.double)
+        case let .signed(value): return Int16(exactly: value)
+        case let .unsigned(value): return Int16(exactly: value)
+        case let .number(value): return Int16(exactly: value)
+        case let .decimal(value): return Int16(exactly: value)
+        case let .string(string): return Int16(string)
         default: return nil
         }
     }
     
     @inlinable
-    var doubleValue: Double? {
+    public var uint16Value: UInt16? {
         switch self {
-        case let .number(value): return value.double
+        case let .signed(value): return UInt16(exactly: value)
+        case let .unsigned(value): return UInt16(exactly: value)
+        case let .number(value): return UInt16(exactly: value)
+        case let .decimal(value): return UInt16(exactly: value)
+        case let .string(string): return UInt16(string)
         default: return nil
         }
     }
     
     @inlinable
-    var stringValue: String? {
+    public var int32Value: Int32? {
+        switch self {
+        case let .signed(value): return Int32(exactly: value)
+        case let .unsigned(value): return Int32(exactly: value)
+        case let .number(value): return Int32(exactly: value)
+        case let .decimal(value): return Int32(exactly: value)
+        case let .string(string): return Int32(string)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var uint32Value: UInt32? {
+        switch self {
+        case let .signed(value): return UInt32(exactly: value)
+        case let .unsigned(value): return UInt32(exactly: value)
+        case let .number(value): return UInt32(exactly: value)
+        case let .decimal(value): return UInt32(exactly: value)
+        case let .string(string): return UInt32(string)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var int64Value: Int64? {
+        switch self {
+        case let .signed(value): return value
+        case let .unsigned(value): return Int64(exactly: value)
+        case let .number(value): return Int64(exactly: value)
+        case let .decimal(value): return Int64(exactly: value)
+        case let .string(string): return Int64(string)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var uint64Value: UInt64? {
+        switch self {
+        case let .signed(value): return UInt64(exactly: value)
+        case let .unsigned(value): return value
+        case let .number(value): return UInt64(exactly: value)
+        case let .decimal(value): return UInt64(exactly: value)
+        case let .string(string): return UInt64(string)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var intValue: Int? {
+        switch self {
+        case let .signed(value): return Int(exactly: value)
+        case let .unsigned(value): return Int(exactly: value)
+        case let .number(value): return Int(exactly: value)
+        case let .decimal(value): return Int(exactly: value)
+        case let .string(string): return Int(string)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var uintValue: UInt? {
+        switch self {
+        case let .signed(value): return UInt(exactly: value)
+        case let .unsigned(value): return UInt(exactly: value)
+        case let .number(value): return UInt(exactly: value)
+        case let .decimal(value): return UInt(exactly: value)
+        case let .string(string): return UInt(string)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var floatValue: Float? {
+        switch self {
+        case let .signed(value): return Float(exactly: value)
+        case let .unsigned(value): return Float(exactly: value)
+        case let .number(value): return Float(value)
+        case let .decimal(value): return Float(exactly: value)
+        case let .string(string): return Float(string)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var doubleValue: Double? {
+        switch self {
+        case let .signed(value): return Double(exactly: value)
+        case let .unsigned(value): return Double(exactly: value)
+        case let .number(value): return value
+        case let .decimal(value): return Double(exactly: value)
+        case let .string(string): return Double(string)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var decimalValue: Decimal? {
+        switch self {
+        case let .signed(value): return Decimal(exactly: value)
+        case let .unsigned(value): return Decimal(exactly: value)
+        case let .number(value): return Decimal(exactly: value)
+        case let .decimal(value): return value
+        case let .string(string): return Decimal(exactly: string)
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var stringValue: String? {
         switch self {
         case let .string(value): return value
         default: return nil
@@ -328,7 +442,7 @@ extension Json.Base {
     }
     
     @inlinable
-    var array: [Json]? {
+    public var array: [Json]? {
         switch self {
         case let .array(value): return value
         default: return nil
@@ -336,7 +450,7 @@ extension Json.Base {
     }
     
     @inlinable
-    var dictionary: [String: Json]? {
+    public var dictionary: [String: Json]? {
         switch self {
         case let .dictionary(value): return value
         default: return nil
@@ -347,88 +461,8 @@ extension Json.Base {
 extension Json {
     
     @inlinable
-    public var boolValue: Bool? {
-        return base.boolValue
-    }
-    
-    @inlinable
-    public var int8Value: Int8? {
-        return int64Value.flatMap { Int8(exactly: $0) }
-    }
-    
-    @inlinable
-    public var uint8Value: UInt8? {
-        return uint64Value.flatMap { UInt8(exactly: $0) }
-    }
-    
-    @inlinable
-    public var int16Value: Int16? {
-        return int64Value.flatMap { Int16(exactly: $0) }
-    }
-    
-    @inlinable
-    public var uint16Value: UInt16? {
-        return uint64Value.flatMap { UInt16(exactly: $0) }
-    }
-    
-    @inlinable
-    public var int32Value: Int32? {
-        return int64Value.flatMap { Int32(exactly: $0) }
-    }
-    
-    @inlinable
-    public var uint32Value: UInt32? {
-        return uint64Value.flatMap { UInt32(exactly: $0) }
-    }
-    
-    @inlinable
-    public var intValue: Int? {
-        return int64Value.flatMap { Int(exactly: $0) }
-    }
-    
-    @inlinable
-    public var uintValue: UInt? {
-        return uint64Value.flatMap { UInt(exactly: $0) }
-    }
-    
-    @inlinable
-    public var int64Value: Int64? {
-        return base.int64Value
-    }
-    
-    @inlinable
-    public var uint64Value: UInt64? {
-        return base.uint64Value
-    }
-    
-    @inlinable
-    public var doubleValue: Double? {
-        return base.doubleValue
-    }
-    
-    @inlinable
-    public var decimalValue: Decimal? {
-        return base.decimalValue
-    }
-    @inlinable
-    public var stringValue: String? {
-        return base.stringValue
-    }
-    @inlinable
-    public var array: [Json]? {
-        return base.array
-    }
-    @inlinable
-    public var dictionary: [String: Json]? {
-        return base.dictionary
-    }
-}
-
-extension Json {
-    
-    @inlinable
     public var count: Int {
-        switch base {
+        switch self {
         case let .array(value): return value.count
         case let .dictionary(value): return value.count
         default: fatalError("Not an array or object.")
@@ -439,13 +473,13 @@ extension Json {
     public subscript(index: Int) -> Json {
         get {
             guard 0..<count ~= index else { return nil }
-            switch base {
+            switch self {
             case let .array(value): return value[index]
             default: return nil
             }
         }
         set {
-            switch base {
+            switch self {
             case var .array(value):
                 
                 if index >= value.count {
@@ -461,177 +495,20 @@ extension Json {
     
     @inlinable
     public var keys: Dictionary<String, Json>.Keys {
-        guard case let .dictionary(value) = base else { return [:].keys }
+        guard case let .dictionary(value) = self else { return [:].keys }
         return value.keys
     }
     
     @inlinable
     public subscript(key: String) -> Json {
         get {
-            guard case let .dictionary(value) = base else { return nil }
+            guard case let .dictionary(value) = self else { return nil }
             return value[key] ?? nil
         }
         set {
-            guard case var .dictionary(value) = base else { fatalError("Not an object.") }
+            guard case var .dictionary(value) = self else { fatalError("Not an object.") }
             value[key] = newValue.isNil ? nil : newValue
             self = Json(value)
         }
-    }
-}
-
-extension Json: Encodable {
-    
-    @usableFromInline
-    struct CodingKey: Swift.CodingKey {
-        
-        @usableFromInline
-        var stringValue: String
-        
-        @usableFromInline
-        var intValue: Int? { nil }
-        
-        @inlinable
-        init(stringValue: String) {
-            self.stringValue = stringValue
-        }
-        
-        @inlinable
-        init?(intValue: Int) {
-            return nil
-        }
-    }
-    
-    @inlinable
-    public func encode(to encoder: Encoder) throws {
-        
-        switch self.base {
-        case .null:
-            
-            var container = encoder.singleValueContainer()
-            try container.encodeNil()
-            
-        case let .boolean(bool):
-            
-            var container = encoder.singleValueContainer()
-            try container.encode(bool)
-            
-        case let .string(string):
-            
-            var container = encoder.singleValueContainer()
-            try container.encode(string)
-            
-        case let .number(number):
-            
-            var container = encoder.singleValueContainer()
-            
-            if let value = number.decimal {
-                try container.encode(value)
-            } else {
-                try container.encode(number.double)
-            }
-            
-        case let .array(array):
-            
-            var container = encoder.unkeyedContainer()
-            try container.encode(contentsOf: array)
-            
-        case let .dictionary(dictionary):
-            
-            var container = encoder.container(keyedBy: CodingKey.self)
-            
-            for (key, value) in dictionary {
-                try container.encode(value, forKey: CodingKey(stringValue: key))
-            }
-        }
-    }
-}
-
-extension Json: Decodable {
-    
-    @inlinable
-    public init(from decoder: Decoder) throws {
-        
-        let container = try decoder.singleValueContainer()
-        
-        if container.decodeNil() {
-            self.init(nilLiteral: ())
-            return
-        }
-        
-        if let bool = try? container.decode(Bool.self) {
-            self.init(bool)
-            return
-        }
-        
-        if let double = try? container.decode(Double.self) {
-            
-            let int64 = try? container.decode(Int64.self)
-            let uint64 = try? container.decode(UInt64.self)
-            let decimal = try? container.decode(Decimal.self)
-            
-            self.init(Number(int64: int64, uint64: uint64, decimal: decimal, double: double))
-            return
-        }
-        
-        if let string = try? container.decode(String.self) {
-            self.init(string)
-            return
-        }
-        
-        if let array = try? container.decode([Json].self) {
-            self.init(array)
-            return
-        }
-        
-        if let object = try? container.decode([String: Json].self) {
-            self.init(object)
-            return
-        }
-        
-        throw DecodingError.dataCorrupted(DecodingError.Context(
-            codingPath: decoder.codingPath,
-            debugDescription: "Attempted to decode Json from unknown structure.")
-        )
-    }
-}
-
-extension Json {
-    
-    @inlinable
-    public init(decode string: String) throws {
-        self = try JSONDecoder().decode(Json.self, from: string._utf8_data)
-    }
-    
-    @inlinable
-    public init(decode data: Data) throws {
-        self = try JSONDecoder().decode(Json.self, from: data)
-    }
-    
-    @inlinable
-    public init(contentsOf url: URL, options: Data.ReadingOptions = []) throws {
-        try self.init(decode: Data(contentsOf: url, options: options))
-    }
-    
-    @inlinable
-    public init(contentsOfFile path: String, options: Data.ReadingOptions = []) throws {
-        try self.init(decode: Data(contentsOf: URL(fileURLWithPath: path), options: options))
-    }
-}
-
-extension Json {
-    
-    @inlinable
-    public func data(prettyPrinted: Bool = false) -> Data? {
-        let encoder = JSONEncoder()
-        if prettyPrinted {
-            encoder.outputFormatting.insert(.prettyPrinted)
-        }
-        return try? encoder.encode(self)
-    }
-    
-    @inlinable
-    public func json(prettyPrinted: Bool = false) -> String? {
-        guard let data = self.data(prettyPrinted: prettyPrinted) else { return nil }
-        return String(data: data, encoding: String.Encoding.utf8)
     }
 }

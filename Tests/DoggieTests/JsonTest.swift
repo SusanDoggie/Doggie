@@ -59,6 +59,31 @@ class JsonTest: XCTestCase {
             }
             """)
             
+            let json2: Json = [
+                "firstName": "John",
+                "lastName": "Smith",
+                "isAlive": true,
+                "age": 27,
+                "address": [
+                    "streetAddress": "21 2nd Street",
+                    "city": "New York",
+                    "state": "NY",
+                    "postalCode": "10021-3100"
+                ],
+                "phoneNumbers": [
+                    [
+                        "type": "home",
+                        "number": "212 555-1234"
+                    ],
+                    [
+                        "type": "office",
+                        "number": "646 555-4567"
+                    ]
+                ],
+                "children": [],
+                "spouse": .null
+            ]
+            
             XCTAssertTrue(json.isObject)
             
             XCTAssertEqual(json["firstName"].stringValue, "John")
@@ -83,6 +108,8 @@ class JsonTest: XCTestCase {
             XCTAssertEqual(json["children"].array?.count, 0)
             
             XCTAssertTrue(json["spouse"].isNil)
+            
+            XCTAssertEqual(json, json2)
             
         } catch {
             XCTFail("Json parser error: \(error)")
