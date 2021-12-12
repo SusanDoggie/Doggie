@@ -41,3 +41,20 @@ extension DateFormatter {
         return formatter
     }()
 }
+
+extension String {
+    
+    public var iso8601: Date? {
+        
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = .withInternetDateTime
+        
+        if let date = formatter.date(from: self) {
+            return date
+        }
+        
+        formatter.formatOptions.formUnion(.withFractionalSeconds)
+        
+        return formatter.date(from: self)
+    }
+}
