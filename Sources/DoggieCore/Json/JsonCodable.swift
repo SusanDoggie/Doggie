@@ -64,25 +64,29 @@ extension Json: Encodable {
             var container = encoder.singleValueContainer()
             try container.encode(string)
             
-        case let .signed(number):
-            
-            var container = encoder.singleValueContainer()
-            try container.encode(number)
-            
-        case let .unsigned(number):
-            
-            var container = encoder.singleValueContainer()
-            try container.encode(number)
-            
         case let .number(number):
             
-            var container = encoder.singleValueContainer()
-            try container.encode(number)
-            
-        case let .decimal(number):
-            
-            var container = encoder.singleValueContainer()
-            try container.encode(number)
+            switch number {
+            case let .signed(number):
+                
+                var container = encoder.singleValueContainer()
+                try container.encode(number)
+                
+            case let .unsigned(number):
+                
+                var container = encoder.singleValueContainer()
+                try container.encode(number)
+                
+            case let .number(number):
+                
+                var container = encoder.singleValueContainer()
+                try container.encode(number)
+                
+            case let .decimal(number):
+                
+                var container = encoder.singleValueContainer()
+                try container.encode(number)
+            }
             
         case let .array(array):
             
@@ -103,7 +107,7 @@ extension Json: Encodable {
 extension Json: Decodable {
     
     @inlinable
-    static func _decode_number(_ container: SingleValueDecodingContainer) -> Json? {
+    static func _decode_number(_ container: SingleValueDecodingContainer) -> JsonNumber? {
         
         if let double = try? container.decode(Double.self) {
             
@@ -149,7 +153,7 @@ extension Json: Decodable {
         }
         
         if let number = Json._decode_number(container) {
-            self = number
+            self = .number(number)
             return
         }
         
