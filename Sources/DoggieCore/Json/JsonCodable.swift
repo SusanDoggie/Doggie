@@ -107,7 +107,7 @@ extension Json: Encodable {
 extension Json: Decodable {
     
     @inlinable
-    static func _decode_number(_ container: SingleValueDecodingContainer) -> JsonNumber? {
+    static func _decode_number(_ container: SingleValueDecodingContainer) -> Number? {
         
         if let double = try? container.decode(Double.self) {
             

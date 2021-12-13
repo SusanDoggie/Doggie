@@ -32,7 +32,7 @@ public enum Json: Hashable {
     
     case string(String)
     
-    case number(JsonNumber)
+    case number(Number)
     
     case array([Json])
     
@@ -58,22 +58,22 @@ extension Json {
     
     @inlinable
     public init<T: FixedWidthInteger & SignedInteger>(_ value: T) {
-        self = .number(.signed(Int64(value)))
+        self = .number(Number(value))
     }
     
     @inlinable
     public init<T: FixedWidthInteger & UnsignedInteger>(_ value: T) {
-        self = .number(.unsigned(UInt64(value)))
+        self = .number(Number(value))
     }
     
     @inlinable
     public init<T: BinaryFloatingPoint>(_ value: T) {
-        self = .number(.number(Double(value)))
+        self = .number(Number(value))
     }
     
     @inlinable
     public init(_ value: Decimal) {
-        self = .number(.decimal(value))
+        self = .number(Number(value))
     }
     
     @inlinable

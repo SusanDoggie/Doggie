@@ -23,27 +23,53 @@
 //  THE SOFTWARE.
 //
 
-@frozen
-public enum JsonNumber {
+extension Json {
     
-    case signed(Int64)
-    
-    case unsigned(UInt64)
-    
-    case number(Double)
-    
-    case decimal(Decimal)
+    @frozen
+    public enum Number {
+        
+        case signed(Int64)
+        
+        case unsigned(UInt64)
+        
+        case number(Double)
+        
+        case decimal(Decimal)
+    }
 }
 
-extension JsonNumber: Equatable {
+extension Json.Number {
     
     @inlinable
-    public static func ==(lhs: JsonNumber, rhs: JsonNumber) -> Bool {
+    public init<T: FixedWidthInteger & SignedInteger>(_ value: T) {
+        self = .signed(Int64(value))
+    }
+    
+    @inlinable
+    public init<T: FixedWidthInteger & UnsignedInteger>(_ value: T) {
+        self = .unsigned(UInt64(value))
+    }
+    
+    @inlinable
+    public init<T: BinaryFloatingPoint>(_ value: T) {
+        self = .number(Double(value))
+    }
+    
+    @inlinable
+    public init(_ value: Decimal) {
+        self = .decimal(value)
+    }
+}
+
+extension Json.Number: Equatable {
+    
+    @inlinable
+    public static func ==(lhs: Json.Number, rhs: Json.Number) -> Bool {
         return lhs.doubleValue == rhs.doubleValue
     }
 }
 
-extension JsonNumber: Hashable {
+extension Json.Number: Hashable {
     
     @inlinable
     public func hash(into hasher: inout Hasher) {
@@ -51,7 +77,7 @@ extension JsonNumber: Hashable {
     }
 }
 
-extension JsonNumber: CustomStringConvertible {
+extension Json.Number: CustomStringConvertible {
     
     public var description: String {
         switch self {
@@ -63,7 +89,7 @@ extension JsonNumber: CustomStringConvertible {
     }
 }
 
-extension JsonNumber {
+extension Json.Number {
     
     @inlinable
     public var int8Value: Int8? {
