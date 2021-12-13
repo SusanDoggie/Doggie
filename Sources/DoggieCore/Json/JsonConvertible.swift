@@ -30,6 +30,7 @@ public protocol JsonConvertible {
 
 extension Json: JsonConvertible {
     
+    @inlinable
     public func toJson() -> Json {
         return self
     }
@@ -37,6 +38,7 @@ extension Json: JsonConvertible {
 
 extension Optional: JsonConvertible where Wrapped: JsonConvertible {
     
+    @inlinable
     public func toJson() -> Json {
         return self?.toJson() ?? nil
     }
@@ -44,6 +46,7 @@ extension Optional: JsonConvertible where Wrapped: JsonConvertible {
 
 extension Bool: JsonConvertible {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(self)
     }
@@ -51,6 +54,7 @@ extension Bool: JsonConvertible {
 
 extension SignedInteger where Self: FixedWidthInteger {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(self)
     }
@@ -58,6 +62,7 @@ extension SignedInteger where Self: FixedWidthInteger {
 
 extension UnsignedInteger where Self: FixedWidthInteger {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(self)
     }
@@ -76,6 +81,7 @@ extension Int64: JsonConvertible { }
 
 extension BinaryFloatingPoint {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(self)
     }
@@ -94,6 +100,7 @@ extension Double: JsonConvertible { }
 
 extension Decimal: JsonConvertible {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(self)
     }
@@ -101,6 +108,7 @@ extension Decimal: JsonConvertible {
 
 extension StringProtocol {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(String(self))
     }
@@ -108,6 +116,7 @@ extension StringProtocol {
 
 extension String: JsonConvertible {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(self)
     }
@@ -117,6 +126,7 @@ extension Substring: JsonConvertible { }
 
 extension Array: JsonConvertible where Element: JsonConvertible {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(self)
     }
@@ -124,6 +134,7 @@ extension Array: JsonConvertible where Element: JsonConvertible {
 
 extension Dictionary: JsonConvertible where Key == String, Value: JsonConvertible {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(self)
     }
@@ -131,6 +142,7 @@ extension Dictionary: JsonConvertible where Key == String, Value: JsonConvertibl
 
 extension OrderedDictionary: JsonConvertible where Key == String, Value: JsonConvertible {
     
+    @inlinable
     public func toJson() -> Json {
         return Json(self)
     }
