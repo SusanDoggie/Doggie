@@ -79,6 +79,7 @@ extension Json.Number: Hashable {
 
 extension Json.Number: CustomStringConvertible {
     
+    @inlinable
     public var description: String {
         switch self {
         case let .signed(value): return "\(value)"
