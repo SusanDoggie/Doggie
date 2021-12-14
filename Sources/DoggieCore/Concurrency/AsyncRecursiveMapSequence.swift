@@ -23,10 +23,10 @@
 //  THE SOFTWARE.
 //
 
-#if compiler(>=5.5) && canImport(_Concurrency)
+#if compiler(>=5.5.2) && canImport(_Concurrency)
 
 @frozen
-@available(macOS 12, iOS 15, watchOS 8, tvOS 15, *)
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 public struct AsyncRecursiveMapSequence<Base: AsyncSequence, Transformed: AsyncSequence>: AsyncSequence where Base.Element == Transformed.Element {
     
     public typealias Element = Base.Element
@@ -49,7 +49,7 @@ public struct AsyncRecursiveMapSequence<Base: AsyncSequence, Transformed: AsyncS
     }
 }
 
-@available(macOS 12, iOS 15, watchOS 8, tvOS 15, *)
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension AsyncRecursiveMapSequence {
     
     @frozen
@@ -97,7 +97,7 @@ extension AsyncRecursiveMapSequence {
     }
 }
 
-@available(macOS 12, iOS 15, watchOS 8, tvOS 15, *)
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension AsyncSequence {
     
     @inlinable

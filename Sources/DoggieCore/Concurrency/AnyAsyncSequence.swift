@@ -23,10 +23,10 @@
 //  THE SOFTWARE.
 //
 
-#if compiler(>=5.5) && canImport(_Concurrency)
+#if compiler(>=5.5.2) && canImport(_Concurrency)
 
 @frozen
-@available(macOS 12, iOS 15, watchOS 8, tvOS 15, *)
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 public struct AnyAsyncSequence<Element>: AsyncSequence {
     
     public typealias AsyncIterator = AnyAsyncIterator<Element>
@@ -48,7 +48,7 @@ public struct AnyAsyncSequence<Element>: AsyncSequence {
 }
 
 @frozen
-@available(macOS 12, iOS 15, watchOS 8, tvOS 15, *)
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 public struct AnyAsyncIterator<Element>: AsyncIteratorProtocol {
     
     public typealias Element = Element
