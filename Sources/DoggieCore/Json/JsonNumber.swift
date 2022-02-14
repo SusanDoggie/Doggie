@@ -75,6 +75,30 @@ extension Json.Number: Equatable {
     }
 }
 
+extension Json.Number: Comparable {
+    
+    @inlinable
+    var _doubleValue: Double {
+        switch self {
+        case let .signed(value): return Double(value)
+        case let .unsigned(value): return Double(value)
+        case let .number(value): return value
+        case let .decimal(value): return value.doubleValue
+        }
+    }
+    
+    @inlinable
+    public static func < (lhs: Json.Number, rhs: Json.Number) -> Bool {
+        switch (lhs.normalized, rhs.normalized) {
+        case let (.signed(lhs), .signed(rhs)): return lhs < rhs
+        case let (.unsigned(lhs), .unsigned(rhs)): return lhs < rhs
+        case let (.number(lhs), .number(rhs)): return lhs < rhs
+        case let (.decimal(lhs), .decimal(rhs)): return lhs < rhs
+        default: return lhs._doubleValue < rhs._doubleValue
+        }
+    }
+}
+
 extension Json.Number: Hashable {
     
     @inlinable
