@@ -94,7 +94,7 @@ extension Regex: Hashable {
     }
 }
 
-public protocol RegularExpressionMatchable {
+public protocol RegularExpressionMatchable: Collection {
     
     associatedtype Matching
     associatedtype Replacement
@@ -113,6 +113,8 @@ public protocol RegularExpressionMatchable {
     
     /// Returns true if any match of the regular expression.
     func isMatch(regex: Regex) -> Bool
+    
+    func split(separator: Regex) -> [Matching]
 }
 
 extension RegularExpressionMatchable {
@@ -133,6 +135,32 @@ extension RegularExpressionMatchable {
     @inlinable
     public func isMatch(regex: Regex) -> Bool {
         return self.firstMatch(regex: regex) != nil
+    }
+}
+
+extension NSString {
+    
+    open func components(separatedBy separator: NSRegularExpression) -> [String] {
+        let len = length
+        var lrange = separator.rangeOfFirstMatch(in: self as String, range: NSRange(location: 0, length: len))
+        if lrange.length == 0 {
+            return [self as String]
+        } else {
+            var array = [String]()
+            var srange = NSRange(location: 0, length: len)
+            while true {
+                let trange = NSRange(location: srange.location, length: lrange.location - srange.location)
+                array.append(substring(with: trange))
+                srange.location = lrange.location + lrange.length
+                srange.length = len - srange.location
+                lrange = separator.rangeOfFirstMatch(in: self as String, range:srange)
+                if lrange.length == 0 {
+                    break
+                }
+            }
+            array.append(substring(with: srange))
+            return array
+        }
     }
 }
 
@@ -187,6 +215,12 @@ extension String: RegularExpressionMatchable {
         let nsstring = NSString(string: self)
         let range = NSRange(location: 0, length: nsstring.length)
         return regex.nsRegex.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: template)
+    }
+    
+    @inlinable
+    public func split(separator: Regex) -> [String] {
+        let nsstring = NSString(string: self)
+        return nsstring.components(separatedBy: separator.nsRegex)
     }
 }
 
