@@ -106,6 +106,14 @@ extension Decimal: JsonConvertible {
     }
 }
 
+extension Json.Number: JsonConvertible {
+    
+    @inlinable
+    public func toJson() -> Json {
+        return .number(self)
+    }
+}
+
 extension StringProtocol {
     
     @inlinable

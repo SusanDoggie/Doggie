@@ -77,6 +77,11 @@ extension Json {
     }
     
     @inlinable
+    public init(_ value: Number) {
+        self = .number(value)
+    }
+    
+    @inlinable
     public init<Wrapped: JsonConvertible>(_ value: Wrapped?) {
         self = value.toJson()
     }
@@ -333,6 +338,14 @@ extension Json {
     public var decimalValue: Decimal? {
         switch self {
         case let .number(value): return value.decimalValue
+        default: return nil
+        }
+    }
+    
+    @inlinable
+    public var numberValue: Number? {
+        switch self {
+        case let .number(value): return value
         default: return nil
         }
     }
