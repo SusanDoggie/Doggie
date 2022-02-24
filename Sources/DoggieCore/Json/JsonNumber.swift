@@ -301,3 +301,193 @@ extension Json.Number {
         }
     }
 }
+
+extension Json.Number {
+    
+    @inlinable
+    public func remainder(dividingBy other: Json.Number) -> Json.Number {
+        switch (self, other) {
+        case let (.signed(lhs), .signed(rhs)): return .init(lhs % rhs)
+        case let (.unsigned(lhs), .unsigned(rhs)): return .init(lhs % rhs)
+        default: return .init(self._doubleValue.remainder(dividingBy: other._doubleValue))
+        }
+    }
+}
+
+extension Json.Number {
+    
+    @inlinable
+    public static func abs(_ value: Json.Number) -> Json.Number {
+        switch value.normalized {
+        case let .signed(value): return .init(value < 0 ? -value : value)
+        case let .unsigned(value): return .init(value)
+        case let .number(value): return .init(value < 0 ? -value : value)
+        case let .decimal(value): return .init(value < 0 ? -value : value)
+        }
+    }
+    
+    @inlinable
+    public static func floor(_ value: Json.Number) -> Json.Number {
+        switch value.normalized {
+        case let .signed(value): return .init(value)
+        case let .unsigned(value): return .init(value)
+        case let .number(value): return .init(value.rounded(.down))
+        case let .decimal(value): return .init(value.rounded(scale: 0, roundingMode: .down))
+        }
+    }
+    
+    @inlinable
+    public static func ceil(_ value: Json.Number) -> Json.Number {
+        switch value.normalized {
+        case let .signed(value): return .init(value)
+        case let .unsigned(value): return .init(value)
+        case let .number(value): return .init(value.rounded(.up))
+        case let .decimal(value): return .init(value.rounded(scale: 0, roundingMode: .up))
+        }
+    }
+    
+    @inlinable
+    public static func round(_ value: Json.Number) -> Json.Number {
+        switch value.normalized {
+        case let .signed(value): return .init(value)
+        case let .unsigned(value): return .init(value)
+        case let .number(value): return .init(value.rounded(.toNearestOrAwayFromZero))
+        case let .decimal(value): return .init(value.rounded(scale: 0, roundingMode: .plain))
+        }
+    }
+    
+    @inlinable
+    public static func trunc(_ value: Json.Number) -> Json.Number {
+        switch value.normalized {
+        case let .signed(value): return .init(value)
+        case let .unsigned(value): return .init(value)
+        case let .number(value): return .init(value.rounded(.towardZero))
+        case let .decimal(value): return .init(value.rounded(scale: 0, roundingMode: value < 0 ? .up : .down))
+        }
+    }
+}
+
+extension Json.Number {
+    
+    @inlinable
+    static func _pow(_ x: Decimal, _ n: UInt64) -> Decimal {
+        if x == 0 { return 0 }
+        if n == 0 { return 1 }
+        return n & 1 == 1 ? x * _pow(x * x, n >> 1) : _pow(x * x, n >> 1)
+    }
+    
+    @inlinable
+    static func _pow<T: FixedWidthInteger>(_ x: T, _ n: UInt64) -> T? {
+        if x == 0 { return 0 }
+        if n == 0 { return 1 }
+        let (mul, overflow) = x.multipliedReportingOverflow(by: x)
+        guard overflow, let p = _pow(mul, n >> 1) else { return nil }
+        return n & 1 == 1 ? x * p : p
+    }
+    
+    @inlinable
+    public static func pow(_ lhs: Json.Number, _ rhs: Json.Number) -> Json.Number {
+        switch (lhs.normalized, rhs.normalized) {
+        case let (.signed(_lhs), .unsigned(_rhs)): return _pow(_lhs, _rhs).map { .init($0) } ?? .init(Double.pow(lhs._doubleValue, rhs._doubleValue))
+        case let (.unsigned(_lhs), .unsigned(_rhs)): return _pow(_lhs, _rhs).map { .init($0) } ?? .init(Double.pow(lhs._doubleValue, rhs._doubleValue))
+        case let (.decimal(_lhs), .unsigned(_rhs)): return .init(_pow(_lhs, _rhs))
+        default: return .init(Double.pow(lhs._doubleValue, rhs._doubleValue))
+        }
+    }
+}
+
+extension Json.Number {
+    
+    @inlinable
+    public static prefix func +(value: Json.Number) -> Json.Number {
+        return value
+    }
+    
+    @inlinable
+    public static prefix func -(value: Json.Number) -> Json.Number {
+        switch value.normalized {
+        case let .signed(value): return .init(-value)
+        case let .unsigned(value): return .init(-Int64(value))
+        case let .number(value): return .init(-value)
+        case let .decimal(value): return .init(-value)
+        }
+    }
+    
+    @inlinable
+    public static func +(lhs: Json.Number, rhs: Json.Number) -> Json.Number {
+        
+        switch (lhs.normalized, rhs.normalized) {
+        case let (.signed(_lhs), .signed(_rhs)):
+            
+            let (result, overflow) = _lhs.addingReportingOverflow(_rhs)
+            return overflow ? .init(lhs._doubleValue + rhs._doubleValue) : .init(result)
+            
+        case let (.unsigned(_lhs), .unsigned(_rhs)):
+            
+            let (result, overflow) = _lhs.addingReportingOverflow(_rhs)
+            return overflow ? .init(lhs._doubleValue + rhs._doubleValue) : .init(result)
+            
+        case let (.number(_lhs), .number(_rhs)): return .init(_lhs + _rhs)
+        case let (.decimal(_lhs), .decimal(_rhs)): return .init(_lhs + _rhs)
+        default: return .init(lhs._doubleValue + rhs._doubleValue)
+        }
+    }
+    
+    @inlinable
+    public static func -(lhs: Json.Number, rhs: Json.Number) -> Json.Number {
+        
+        switch (lhs.normalized, rhs.normalized) {
+        case let (.signed(_lhs), .signed(_rhs)):
+            
+            let (result, overflow) = _lhs.subtractingReportingOverflow(_rhs)
+            return overflow ? .init(lhs._doubleValue - rhs._doubleValue) : .init(result)
+            
+        case let (.unsigned(_lhs), .unsigned(_rhs)):
+            
+            let (result, overflow) = _lhs.subtractingReportingOverflow(_rhs)
+            return overflow ? .init(lhs._doubleValue - rhs._doubleValue) : .init(result)
+            
+        case let (.number(_lhs), .number(_rhs)): return .init(_lhs - _rhs)
+        case let (.decimal(_lhs), .decimal(_rhs)): return .init(_lhs - _rhs)
+        default: return .init(lhs._doubleValue - rhs._doubleValue)
+        }
+    }
+    
+    @inlinable
+    public static func *(lhs: Json.Number, rhs: Json.Number) -> Json.Number {
+        
+        switch (lhs.normalized, rhs.normalized) {
+        case let (.signed(_lhs), .signed(_rhs)):
+            
+            let (result, overflow) = _lhs.multipliedReportingOverflow(by: _rhs)
+            return overflow ? .init(lhs._doubleValue * rhs._doubleValue) : .init(result)
+            
+        case let (.unsigned(_lhs), .unsigned(_rhs)):
+            
+            let (result, overflow) = _lhs.multipliedReportingOverflow(by: _rhs)
+            return overflow ? .init(lhs._doubleValue * rhs._doubleValue) : .init(result)
+            
+        case let (.decimal(_lhs), .decimal(_rhs)): return .init(_lhs * _rhs)
+        default: return .init(lhs._doubleValue * rhs._doubleValue)
+        }
+    }
+    
+    @inlinable
+    public static func /(lhs: Json.Number, rhs: Json.Number) -> Json.Number {
+        
+        switch (lhs.normalized, rhs.normalized) {
+        case let (.signed(_lhs), .signed(_rhs)):
+            
+            let (result, remainder) = _lhs.quotientAndRemainder(dividingBy: _rhs)
+            return remainder == 0 ? .init(result) : .init(lhs._doubleValue / rhs._doubleValue)
+            
+        case let (.unsigned(_lhs), .unsigned(_rhs)):
+            
+            let (result, remainder) = _lhs.quotientAndRemainder(dividingBy: _rhs)
+            return remainder == 0 ? .init(result) : .init(lhs._doubleValue / rhs._doubleValue)
+            
+        case let (.decimal(_lhs), .decimal(_rhs)): return .init(_lhs / _rhs)
+        default: return .init(lhs._doubleValue / rhs._doubleValue)
+        }
+    }
+}
