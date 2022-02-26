@@ -65,7 +65,7 @@ extension _Z_STREAM {
 
 extension _Z_STREAM {
     
-    private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         var buffer = [UInt8](repeating: 0, count: 4096)
         
@@ -80,13 +80,13 @@ extension _Z_STREAM {
                 
                 guard status == Z_OK || status == Z_BUF_ERROR || status == Z_STREAM_END else { throw Error(code: status, msg: stream.msg) }
                 
-                callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - Int(stream.avail_out))))
+                try callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - Int(stream.avail_out))))
                 
             } while stream.avail_in != 0 || stream.avail_out == 0
         }
     }
     
-    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         guard let _source = source.baseAddress, source.count != 0 else { return }
         
@@ -96,7 +96,7 @@ extension _Z_STREAM {
         try _process(Z_NO_FLUSH, callback)
     }
     
-    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         stream.next_in = nil
         stream.avail_in = 0

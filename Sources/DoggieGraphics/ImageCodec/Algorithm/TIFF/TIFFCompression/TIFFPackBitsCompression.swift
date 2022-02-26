@@ -43,7 +43,7 @@ public class TIFFPackBitsEncoder: CompressionCodec {
         self.repeat_count = 0
     }
     
-    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         guard !isEndOfStream else { throw Error.endOfStream }
         
@@ -88,13 +88,13 @@ public class TIFFPackBitsEncoder: CompressionCodec {
             }
             
             if buffer.count > 4095 {
-                buffer.withUnsafeBufferPointer(callback)
+                try buffer.withUnsafeBufferPointer(callback)
                 buffer.removeAll(keepingCapacity: true)
             }
         }
     }
     
-    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         guard !isEndOfStream else { throw Error.endOfStream }
         
@@ -111,7 +111,7 @@ public class TIFFPackBitsEncoder: CompressionCodec {
         
         buffer.append(128)
         
-        buffer.withUnsafeBufferPointer(callback)
+        try buffer.withUnsafeBufferPointer(callback)
         
         isEndOfStream = true
     }

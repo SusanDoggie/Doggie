@@ -63,7 +63,7 @@ extension AppleCompression {
     
     private static let empty = [UInt8](repeating: 0, count: 4096)
     
-    private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    private func _process(_ flag: Int32, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         var buffer = [UInt8](repeating: 0, count: 4096)
         
@@ -78,13 +78,13 @@ extension AppleCompression {
                 
                 guard status == COMPRESSION_STATUS_OK || status == COMPRESSION_STATUS_END else { throw Error() }
                 
-                callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - stream.dst_size)))
+                try callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - stream.dst_size)))
                 
             } while stream.src_size != 0 || stream.dst_size == 0
         }
     }
     
-    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         guard let _source = source.baseAddress, source.count != 0 else { return }
         
@@ -94,7 +94,7 @@ extension AppleCompression {
         try _process(0, callback)
     }
     
-    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         try AppleCompression.empty.withUnsafeBufferPointer { empty in
             

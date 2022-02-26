@@ -53,7 +53,7 @@ extension BrotliDecoder {
 
 extension BrotliDecoder {
     
-    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         var buffer = [UInt8](repeating: 0, count: 4096)
         
@@ -71,13 +71,13 @@ extension BrotliDecoder {
                 
                 guard status != BROTLI_DECODER_RESULT_ERROR else { throw Error(code: BrotliDecoderGetErrorCode(stream)) }
                 
-                callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - avail_out)))
+                try callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - avail_out)))
                 
             } while avail_in != 0 || BrotliDecoderHasMoreOutput(stream) == BROTLI_TRUE
         }
     }
     
-    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         try update(UnsafeBufferPointer(start: nil, count: 0), callback)
     }
 }

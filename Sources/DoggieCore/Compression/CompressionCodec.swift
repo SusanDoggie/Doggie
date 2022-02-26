@@ -25,9 +25,9 @@
 
 public protocol CompressionCodec: AnyObject {
     
-    func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws
+    func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws
     
-    func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws
+    func finalize(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws
     
     func process<C: RangeReplaceableCollection>(_ source: Data, _ output: inout C) throws where C.Element == UInt8
 }
@@ -35,7 +35,7 @@ public protocol CompressionCodec: AnyObject {
 extension CompressionCodec {
     
     @inlinable
-    public func update<S: DataProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func update<S: DataProtocol>(_ source: S, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         try source.regions.forEach { try $0.withUnsafeBytes { try update($0.bindMemory(to: UInt8.self), callback) } }
     }
     

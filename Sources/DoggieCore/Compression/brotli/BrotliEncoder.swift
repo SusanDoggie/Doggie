@@ -61,7 +61,7 @@ extension BrotliEncoder {
 
 extension BrotliEncoder {
     
-    private func _process(_ op: BrotliEncoderOperation, _ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    private func _process(_ op: BrotliEncoderOperation, _ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         var buffer = [UInt8](repeating: 0, count: 4096)
         
@@ -79,17 +79,17 @@ extension BrotliEncoder {
                 
                 guard status == BROTLI_TRUE else { throw Error.unknown }
                 
-                callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - avail_out)))
+                try callback(UnsafeBufferPointer(rebasing: buf.prefix(4096 - avail_out)))
                 
             } while avail_in != 0 || BrotliEncoderHasMoreOutput(stream.ptr) == BROTLI_TRUE
         }
     }
     
-    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         try _process(BROTLI_OPERATION_PROCESS, source, callback)
     }
     
-    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         try _process(BROTLI_OPERATION_FINISH, UnsafeBufferPointer(start: nil, count: 0), callback)
     }
 }

@@ -87,7 +87,7 @@ public class TIFFLZWEncoder: CompressionCodec {
         self.table.reserveCapacity(tableLimit - 258)
     }
     
-    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func update(_ source: UnsafeBufferPointer<UInt8>, _ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         guard !isEndOfStream else { throw Error.endOfStream }
         
@@ -126,13 +126,13 @@ public class TIFFLZWEncoder: CompressionCodec {
             }
             
             if writer.buffer.count > 4095 {
-                writer.buffer.withUnsafeBufferPointer(callback)
+                try writer.buffer.withUnsafeBufferPointer(callback)
                 writer.buffer.removeAll(keepingCapacity: true)
             }
         }
     }
     
-    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) -> Void) throws {
+    public func finalize(_ callback: (UnsafeBufferPointer<UInt8>) throws -> Void) throws {
         
         guard !isEndOfStream else { throw Error.endOfStream }
         
@@ -140,7 +140,7 @@ public class TIFFLZWEncoder: CompressionCodec {
         
         writer.finalize()
         
-        writer.buffer.withUnsafeBufferPointer(callback)
+        try writer.buffer.withUnsafeBufferPointer(callback)
         
         isEndOfStream = true
     }
