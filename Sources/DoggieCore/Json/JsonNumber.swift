@@ -370,13 +370,6 @@ extension Json.Number {
 extension Json.Number {
     
     @inlinable
-    static func _pow(_ x: Decimal, _ n: UInt64) -> Decimal {
-        if x == 0 { return 0 }
-        if n == 0 { return 1 }
-        return n & 1 == 1 ? x * _pow(x * x, n >> 1) : _pow(x * x, n >> 1)
-    }
-    
-    @inlinable
     static func _pow<T: FixedWidthInteger>(_ x: T, _ n: UInt64) -> T? {
         if x == 0 { return 0 }
         if n == 0 { return 1 }
@@ -390,7 +383,7 @@ extension Json.Number {
         switch (lhs.normalized, rhs.normalized) {
         case let (.signed(_lhs), .unsigned(_rhs)): return _pow(_lhs, _rhs).map { .init($0) } ?? .init(Double.pow(lhs._doubleValue, rhs._doubleValue))
         case let (.unsigned(_lhs), .unsigned(_rhs)): return _pow(_lhs, _rhs).map { .init($0) } ?? .init(Double.pow(lhs._doubleValue, rhs._doubleValue))
-        case let (.decimal(_lhs), .unsigned(_rhs)): return .init(_pow(_lhs, _rhs))
+        case let (.decimal(_lhs), .unsigned(_rhs)): return Int(exactly: _rhs).map { .init(Foundation.pow(_lhs, $0)) } ?? .init(Double.pow(lhs._doubleValue, rhs._doubleValue))
         default: return .init(Double.pow(lhs._doubleValue, rhs._doubleValue))
         }
     }
