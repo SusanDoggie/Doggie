@@ -519,7 +519,7 @@ extension PDFNumber {
         var copy = data
         
         guard let str = String(data: copy.popFirst(copy.prefix { PDFNumber.is_number($0) }.count), encoding: .ascii) else { return nil }
-        guard let value = Decimal(string: str) else { return nil }
+        guard let value = Decimal(string: str, locale: Locale(identifier: "en_US")) else { return nil }
         
         data = copy
         self.init(value)
