@@ -107,7 +107,7 @@ extension ColorPixel {
         let d_alpha = self.opacity
         let s_alpha = source.opacity
         
-        let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
+        let r_alpha = compositingMode.rawValue.mix(s_alpha, s_alpha, d_alpha, d_alpha)
         
         if r_alpha > 0 {
             let _destination = self.color
@@ -119,7 +119,7 @@ extension ColorPixel {
     }
 }
 
-extension _FloatComponentPixel where Self: ColorPixel, ColorComponents: DoggieGraphics.ColorComponents {
+extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)
@@ -128,7 +128,7 @@ extension _FloatComponentPixel where Self: ColorPixel, ColorComponents: DoggieGr
         let d_alpha = self._opacity
         let s_alpha = source._opacity
         
-        let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
+        let r_alpha = compositingMode.rawValue.mix(s_alpha, s_alpha, d_alpha, d_alpha)
         
         if r_alpha > 0 {
             let _destination = self._color
