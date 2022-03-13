@@ -89,7 +89,10 @@ class ColorTest: XCTestCase {
             return 1 - 2 * (1 - s) * (1 - d)
         })
         XCTAssertEqual(blended(.difference), combined { s, d in abs(d - s) })
-        XCTAssertEqual(blended(.exclusion), combined { s, d in d + s - 2 * d * s })
+        XCTAssertEqual(blended(.exclusion), combined { s, d in
+            let u = 2 * d * s
+            return d + s - u
+        })
         XCTAssertEqual(blended(.plusDarker), combined { s, d in max(0, 1 - ((1 - d) + (1 - s))) })
         XCTAssertEqual(blended(.plusLighter), combined { s, d in min(1, d + s) })
         
