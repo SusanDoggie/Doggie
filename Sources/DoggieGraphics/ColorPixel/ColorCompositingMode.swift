@@ -98,15 +98,6 @@ extension ColorCompositingMode {
     public static let xor = ColorCompositingMode(rawValue: XorCompositingKernel.self)
 }
 
-extension ColorCompositingMode {
-    
-    @inlinable
-    @inline(__always)
-    func mix<T: ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
-        return rawValue.mix(source, source_alpha, destination, destination_alpha)
-    }
-}
-
 extension ColorPixel {
     
     @inlinable
@@ -121,14 +112,14 @@ extension ColorPixel {
         if r_alpha > 0 {
             let _destination = self.color
             let _source = blendMode.rawValue.combine(source.color, _destination, d_alpha)
-            return Self(color: compositingMode.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
+            return Self(color: compositingMode.rawValue.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return Self()
         }
     }
 }
 
-extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGraphics.ColorComponents {
+extension _FloatComponentPixel where Self: ColorPixel, ColorComponents: DoggieGraphics.ColorComponents {
     
     @inlinable
     @inline(__always)
@@ -142,7 +133,7 @@ extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGr
         if r_alpha > 0 {
             let _destination = self._color
             let _source = blendMode.rawValue.combine(source._color, _destination, d_alpha)
-            return Self(color: compositingMode.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
+            return Self(color: compositingMode.rawValue.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
         } else {
             return Self()
         }
