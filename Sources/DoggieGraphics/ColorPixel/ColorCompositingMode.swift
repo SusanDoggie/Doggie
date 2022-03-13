@@ -68,7 +68,7 @@ extension ColorCompositingMode {
     public static let clear = ColorCompositingMode(rawValue: ClearCompositingKernel.self)
     
     /// R = S
-    public static let copy = ColorCompositingMode(rawValue: SourceOverCompositingKernel.self)
+    public static let copy = ColorCompositingMode(rawValue: CopyCompositingKernel.self)
     
     /// R = S + D * (1 - Sa)
     public static let sourceOver = ColorCompositingMode(rawValue: SourceOverCompositingKernel.self)
