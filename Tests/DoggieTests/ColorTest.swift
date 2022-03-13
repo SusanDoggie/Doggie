@@ -27,7 +27,7 @@ import Doggie
 import XCTest
 
 class ColorTest: XCTestCase {
-
+    
     func testBlendMode() {
         
         let destination = Float32ColorPixel(
@@ -52,20 +52,46 @@ class ColorTest: XCTestCase {
             return destination.blended(source: source, compositingMode: .copy, blendMode: blendMode)._color
         }
         
-        XCTAssertEqual(combined { s, d in s }, blended(.normal))
-        XCTAssertEqual(combined { s, d in d * s }, blended(.multiply))
-        XCTAssertEqual(combined { s, d in d + s - d * s }, blended(.screen))
-        XCTAssertEqual(combined { s, d in d < 0.5 ? 2 * d * s : 1 - 2 * (1 - d) * (1 - s) }, blended(.overlay))
-        XCTAssertEqual(combined { s, d in min(d, s) }, blended(.darken))
-        XCTAssertEqual(combined { s, d in max(d, s) }, blended(.lighten))
-        XCTAssertEqual(combined { s, d in s < 1 ? min(1, d / (1 - s)) : 1 }, blended(.colorDodge))
-        XCTAssertEqual(combined { s, d in s > 0 ? 1 - min(1, (1 - d) / s) : 0 }, blended(.colorBurn))
-        XCTAssertEqual(combined { s, d in s < 0.5 ? d - (1 - 2 * s) * d * (1 - d) : d + (2 * s - 1) * ((d < 0.25 ? ((16 * d - 12) * d + 4) * d : sqrt(d)) - d) }, blended(.softLight))
-        XCTAssertEqual(combined { s, d in d < 0.5 ? 2 * s * d : 1 - 2 * (1 - s) * (1 - d) }, blended(.hardLight))
-        XCTAssertEqual(combined { s, d in abs(d - s) }, blended(.difference))
-        XCTAssertEqual(combined { s, d in d + s - 2 * d * s }, blended(.exclusion))
-        XCTAssertEqual(combined { s, d in max(0, 1 - ((1 - d) + (1 - s))) }, blended(.plusDarker))
-        XCTAssertEqual(combined { s, d in min(1, d + s) }, blended(.plusLighter))
+        XCTAssertEqual(blended(.normal), combined { s, d in s })
+        XCTAssertEqual(blended(.multiply), combined { s, d in d * s })
+        XCTAssertEqual(blended(.screen), combined { s, d in d + s - d * s })
+        XCTAssertEqual(blended(.overlay), combined { s, d in
+            if d < 0.5 {
+                return 2 * d * s
+            }
+            return 1 - 2 * (1 - d) * (1 - s)
+        })
+        XCTAssertEqual(blended(.darken), combined { s, d in min(d, s) })
+        XCTAssertEqual(blended(.lighten), combined { s, d in max(d, s) })
+        XCTAssertEqual(blended(.colorDodge), combined { s, d in
+            if s < 1 {
+                return min(1, d / (1 - s))
+            }
+            return 1
+        })
+        XCTAssertEqual(blended(.colorBurn), combined { s, d in
+            if s > 0 {
+                return 1 - min(1, (1 - d) / s)
+            }
+            return 0
+        })
+        XCTAssertEqual(blended(.softLight), combined { s, d in
+            if s < 0.5  {
+                return d - (1 - 2 * s) * d * (1 - d)
+            }
+            let t = d < 0.25 ? ((16 * d - 12) * d + 4) * d : sqrt(d)
+            return d + (2 * s - 1) * (t - d)
+        })
+        XCTAssertEqual(blended(.hardLight), combined { s, d in
+            if d < 0.5  {
+                return 2 * s * d
+            }
+            return 1 - 2 * (1 - s) * (1 - d)
+        })
+        XCTAssertEqual(blended(.difference), combined { s, d in abs(d - s) })
+        XCTAssertEqual(blended(.exclusion), combined { s, d in d + s - 2 * d * s })
+        XCTAssertEqual(blended(.plusDarker), combined { s, d in max(0, 1 - ((1 - d) + (1 - s))) })
+        XCTAssertEqual(blended(.plusLighter), combined { s, d in min(1, d + s) })
         
     }
     
