@@ -23,41 +23,34 @@
 //  THE SOFTWARE.
 //
 
-public enum ColorCompositingMode: CaseIterable {
+@frozen
+public struct ColorCompositingMode: Hashable {
     
-    /// R = 0
-    case clear
+    @usableFromInline
+    var rawValue: ColorCompositingKernel.Type
     
-    /// R = S
-    case copy
+    @inlinable
+    init(rawValue: ColorCompositingKernel.Type) {
+        self.rawValue = rawValue
+    }
+}
+
+extension ColorCompositingMode {
     
-    /// R = S + D * (1 - Sa)
-    case sourceOver
+    @inlinable
+    public var identifier: ObjectIdentifier {
+        return ObjectIdentifier(rawValue)
+    }
     
-    /// R = S * Da
-    case sourceIn
+    @inlinable
+    public static func == (lhs: ColorCompositingMode, rhs: ColorCompositingMode) -> Bool {
+        return lhs.identifier == rhs.identifier
+    }
     
-    /// R = S * (1 - Da)
-    case sourceOut
-    
-    /// R = S * Da + D * (1 - Sa)
-    case sourceAtop
-    
-    /// R = S * (1 - Da) + D
-    case destinationOver
-    
-    /// R = D * Sa
-    case destinationIn
-    
-    /// R = D * (1 - Sa)
-    case destinationOut
-    
-    /// R = S * (1 - Da) + D * Sa
-    case destinationAtop
-    
-    /// R = S * (1 - Da) + D * (1 - Sa)
-    case xor
-    
+    @inlinable
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
 }
 
 extension ColorCompositingMode {
@@ -71,26 +64,46 @@ extension ColorCompositingMode {
 
 extension ColorCompositingMode {
     
+    /// R = 0
+    public static let clear = ColorCompositingMode(rawValue: ClearCompositingKernel.self)
+    
+    /// R = S
+    public static let copy = ColorCompositingMode(rawValue: SourceOverCompositingKernel.self)
+    
+    /// R = S + D * (1 - Sa)
+    public static let sourceOver = ColorCompositingMode(rawValue: SourceOverCompositingKernel.self)
+    
+    /// R = S * Da
+    public static let sourceIn = ColorCompositingMode(rawValue: SourceInCompositingKernel.self)
+    
+    /// R = S * (1 - Da)
+    public static let sourceOut = ColorCompositingMode(rawValue: SourceOutCompositingKernel.self)
+    
+    /// R = S * Da + D * (1 - Sa)
+    public static let sourceAtop = ColorCompositingMode(rawValue: SourceAtopCompositingKernel.self)
+    
+    /// R = S * (1 - Da) + D
+    public static let destinationOver = ColorCompositingMode(rawValue: DestinationOverCompositingKernel.self)
+    
+    /// R = D * Sa
+    public static let destinationIn = ColorCompositingMode(rawValue: DestinationInCompositingKernel.self)
+    
+    /// R = D * (1 - Sa)
+    public static let destinationOut = ColorCompositingMode(rawValue: DestinationOutCompositingKernel.self)
+    
+    /// R = S * (1 - Da) + D * Sa
+    public static let destinationAtop = ColorCompositingMode(rawValue: DestinationAtopCompositingKernel.self)
+    
+    /// R = S * (1 - Da) + D * (1 - Sa)
+    public static let xor = ColorCompositingMode(rawValue: XorCompositingKernel.self)
+}
+
+extension ColorCompositingMode {
+    
     @inlinable
     @inline(__always)
     func mix<T: ScalarMultiplicative>(_ source: T, _ source_alpha: T.Scalar, _ destination: T, _ destination_alpha: T.Scalar) -> T {
-        
-        switch self {
-        case .clear: return .zero
-        case .copy: return source
-        case .sourceOver: return source + destination * (1 - source_alpha)
-        case .sourceIn: return source * destination_alpha
-        case .sourceOut: return source * (1 - destination_alpha)
-        case .sourceAtop: return source * destination_alpha + destination * (1 - source_alpha)
-        case .destinationOver: return source * (1 - destination_alpha) + destination
-        case .destinationIn: return destination * source_alpha
-        case .destinationOut: return destination * (1 - source_alpha)
-        case .destinationAtop: return source * (1 - destination_alpha) + destination * source_alpha
-        case .xor:
-            let _s = source * (1 - destination_alpha)
-            let _d = destination * (1 - source_alpha)
-            return _s + _d
-        }
+        return rawValue.mix(source, source_alpha, destination, destination_alpha)
     }
 }
 
@@ -100,73 +113,17 @@ extension ColorPixel {
     @inline(__always)
     public func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self {
         
-        switch (compositingMode, blendMode) {
-        case (.clear, _): return Self()
-        case (.copy, .normal): return source
-        case (.copy, _):
-            
-            let d_alpha = self.opacity
-            let s_alpha = source.opacity
-            
-            switch (d_alpha, s_alpha) {
-            case (0, 0): return Self()
-            case (0, _): return source
-            case (1, _):
-                
-                let _source = source.color
-                let _destination = self.color
-                let blended = _destination.blended(source: _source, blendMode: blendMode)
-                
-                return Self(color: blended, opacity: s_alpha)
-                
-            default:
-                
-                let _source = source.color
-                let _destination = self.color
-                let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
-                
-                return Self(color: blended, opacity: s_alpha)
-            }
-            
-        case (_, .normal):
-            
-            let d_alpha = self.opacity
-            let s_alpha = source.opacity
-            
-            switch (d_alpha, s_alpha) {
-            case (0, 0): return Self()
-            case (0, _), (_, 1): return source
-            case (_, 0): return self
-            case (1, _):
-                
-                let _source = source.color
-                let _destination = self.color
-                return Self(color: compositingMode.mix(s_alpha * _source, s_alpha, _destination, 1), opacity: 1)
-                
-            default:
-                
-                let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-                
-                let _source = source.color
-                let _destination = self.color
-                return Self(color: compositingMode.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
-            }
-            
-        default:
-            
-            let d_alpha = self.opacity
-            let s_alpha = source.opacity
-            
-            let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-            
-            if r_alpha > 0 {
-                let _source = source.color
-                let _destination = self.color
-                let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
-                return Self(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
-            } else {
-                return Self()
-            }
+        let d_alpha = self.opacity
+        let s_alpha = source.opacity
+        
+        let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
+        
+        if r_alpha > 0 {
+            let _destination = self.color
+            let _source = blendMode.rawValue.combine(source.color, _destination, d_alpha)
+            return Self(color: compositingMode.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
+        } else {
+            return Self()
         }
     }
 }
@@ -177,73 +134,17 @@ extension ColorPixel where Self: _FloatComponentPixel, ColorComponents: DoggieGr
     @inline(__always)
     public func blended(source: Self, compositingMode: ColorCompositingMode, blendMode: ColorBlendMode) -> Self {
         
-        switch (compositingMode, blendMode) {
-        case (.clear, _): return Self()
-        case (.copy, .normal): return source
-        case (.copy, _):
-            
-            let d_alpha = self._opacity
-            let s_alpha = source._opacity
-            
-            switch (d_alpha, s_alpha) {
-            case (0, 0): return Self()
-            case (0, _): return source
-            case (1, _):
-                
-                let _source = source._color
-                let _destination = self._color
-                let blended = _destination.blended(source: _source, blendMode: blendMode)
-                
-                return Self(color: blended, opacity: s_alpha)
-                
-            default:
-                
-                let _source = source._color
-                let _destination = self._color
-                let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
-                
-                return Self(color: blended, opacity: s_alpha)
-            }
-            
-        case (_, .normal):
-            
-            let d_alpha = self._opacity
-            let s_alpha = source._opacity
-            
-            switch (d_alpha, s_alpha) {
-            case (0, 0): return Self()
-            case (0, _), (_, 1): return source
-            case (_, 0): return self
-            case (1, _):
-                
-                let _source = source._color
-                let _destination = self._color
-                return Self(color: compositingMode.mix(s_alpha * _source, s_alpha, _destination, 1), opacity: 1)
-                
-            default:
-                
-                let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-                
-                let _source = source._color
-                let _destination = self._color
-                return Self(color: compositingMode.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
-            }
-            
-        default:
-            
-            let d_alpha = self._opacity
-            let s_alpha = source._opacity
-            
-            let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
-            
-            if r_alpha > 0 {
-                let _source = source._color
-                let _destination = self._color
-                let blended = (1 - d_alpha) * _source + d_alpha * _destination.blended(source: _source, blendMode: blendMode)
-                return Self(color: compositingMode.mix(s_alpha / r_alpha * blended, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
-            } else {
-                return Self()
-            }
+        let d_alpha = self._opacity
+        let s_alpha = source._opacity
+        
+        let r_alpha = compositingMode.mix(s_alpha, s_alpha, d_alpha, d_alpha)
+        
+        if r_alpha > 0 {
+            let _destination = self._color
+            let _source = blendMode.rawValue.combine(source._color, _destination, d_alpha)
+            return Self(color: compositingMode.mix(s_alpha / r_alpha * _source, s_alpha, d_alpha / r_alpha * _destination, d_alpha), opacity: r_alpha)
+        } else {
+            return Self()
         }
     }
 }

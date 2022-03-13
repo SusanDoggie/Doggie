@@ -24,12 +24,13 @@
 //
 
 @frozen
-public struct ColorBlendMode: RawRepresentable, Hashable {
+public struct ColorBlendMode: Hashable {
     
-    public var rawValue: ColorBlendKernel.Type
+    @usableFromInline
+    var rawValue: ColorBlendKernel.Type
     
     @inlinable
-    public init(rawValue: ColorBlendKernel.Type) {
+    init(rawValue: ColorBlendKernel.Type) {
         self.rawValue = rawValue
     }
 }
@@ -69,10 +70,10 @@ extension ColorBlendMode {
     /// B(cb, cs) = cb * cs
     public static let multiply = ColorBlendMode(rawValue: MultiplyBlendKernel.self)
     
-    /// B(cb, cs) = cb + cs – cb * cs
+    /// B(cb, cs) = cb + cs - cb * cs
     public static let screen = ColorBlendMode(rawValue: ScreenBlendKernel.self)
     
-    /// B(cb, cs) = cs < 0.5 ? 2 * cb * cs : 1 - 2 * (1 - cb) * (1 - cs)
+    /// B(cb, cs) = cb < 0.5 ? 2 * cb * cs : 1 - 2 * (1 - cb) * (1 - cs)
     public static let overlay = ColorBlendMode(rawValue: OverlayBlendKernel.self)
     
     /// B(cb, cs) = min(cb, cs)
@@ -81,23 +82,23 @@ extension ColorBlendMode {
     /// B(cb, cs) = max(cb, cs)
     public static let lighten = ColorBlendMode(rawValue: LightenBlendKernel.self)
     
-    /// B(cb, cs) = cs < 1 ? min(1, cb / (1 – cs)) : 1
+    /// B(cb, cs) = cs < 1 ? min(1, cb / (1 - cs)) : 1
     public static let colorDodge = ColorBlendMode(rawValue: ColorDodgeBlendKernel.self)
     
-    /// B(cb, cs) = cs > 0 ? 1 – min(1, (1 – cb) / cs) : 0
+    /// B(cb, cs) = cs > 0 ? 1 - min(1, (1 - cb) / cs) : 0
     public static let colorBurn = ColorBlendMode(rawValue: ColorBurnBlendKernel.self)
     
-    /// B(cb, cs) = cs < 0.5 ? cb – (1 – 2 * cs) * cb * (1 – cb) : cb + (2 * cs – 1) * (D(cb) – cb)
-    /// where D(x) = x < 0.25 ? ((16 * x – 12) * x + 4) * x : sqrt(x)
+    /// B(cb, cs) = cs < 0.5 ? cb - (1 - 2 * cs) * cb * (1 - cb) : cb + (2 * cs - 1) * (D(cb) - cb)
+    /// where D(x) = x < 0.25 ? ((16 * x - 12) * x + 4) * x : sqrt(x)
     public static let softLight = ColorBlendMode(rawValue: SoftLightBlendKernel.self)
     
     /// B(cb, cs) = Overlay(cs, cb)
     public static let hardLight = ColorBlendMode(rawValue: HardLightBlendKernel.self)
     
-    /// B(cb, cs) = abs(cb – cs)
+    /// B(cb, cs) = abs(cb - cs)
     public static let difference = ColorBlendMode(rawValue: DifferenceBlendKernel.self)
     
-    /// B(cb, cs) = cb + cs – 2 * cb * cs
+    /// B(cb, cs) = cb + cs - 2 * cb * cs
     public static let exclusion = ColorBlendMode(rawValue: ExclusionBlendKernel.self)
     
     /// B(cb, cs) = max(0, 1 - ((1 - cb) + (1 - cs)))
@@ -106,34 +107,3 @@ extension ColorBlendMode {
     /// B(cb, cs) = min(1, cb + cs)
     public static let plusLighter = ColorBlendMode(rawValue: PlusLighterBlendKernel.self)
 }
-
-extension ColorModel {
-    
-    @inlinable
-    @inline(__always)
-    public mutating func blend(source: Self, blendMode: ColorBlendMode = .default) {
-        self = self.blended(source: source, blendMode: blendMode)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func blended(source: Self, blendMode: ColorBlendMode = .default) -> Self {
-        return blendMode.rawValue.blend(self, source)
-    }
-}
-
-extension ColorComponents {
-    
-    @inlinable
-    @inline(__always)
-    public mutating func blend(source: Self, blendMode: ColorBlendMode = .default) {
-        self = self.blended(source: source, blendMode: blendMode)
-    }
-    
-    @inlinable
-    @inline(__always)
-    public func blended(source: Self, blendMode: ColorBlendMode = .default) -> Self {
-        return blendMode.rawValue.blend(self, source)
-    }
-}
-
