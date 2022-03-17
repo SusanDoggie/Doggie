@@ -56,71 +56,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        swift_version: [5.3, 5.4, 5.5]
-        distro: [xenial, bionic, focal]
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: recursive
-    - name: Prepare		
-      run: apt-get update
-    - name: Install ICC profiles
-      run: apt-get install -y icc-profiles
-    - name: Install fonts
-      run: |
-        export DEBIAN_FRONTEND=noninteractive
-        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
-        apt-get install -y fontconfig fonts-noto ttf-mscorefonts-installer
-    - name: Build
-      uses: SusanDoggie/swift-action@main
-      with:
-        action: build
-    - name: Run tests
-      uses: SusanDoggie/swift-action@main
-      with:
-        action: test
-  linux_swift:
-    name: ${{ matrix.swift_version }}-${{ matrix.distro }}
-    container:
-      image: docker://swift:${{ matrix.swift_version }}-${{ matrix.distro }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        swift_version: [5.3, 5.4, 5.5]
-        distro: [centos8, amazonlinux2]
-        include:
-          - distro: centos8
-            allowerasing: --allowerasing
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: recursive
-    - name: Prepare		
-      run: yum update -y ${{ matrix.allowerasing }}
-    - name: Install fonts
-      run: yum install -y fontconfig google-noto-*
-    - name: Build
-      uses: SusanDoggie/swift-action@main
-      with:
-        action: build
-    - name: Run tests
-      uses: SusanDoggie/swift-action@main
-      with:
-        action: test
-  ubuntu_swift_nightly:
-    name: nightly-${{ matrix.swift_version }}-${{ matrix.distro }}
-    container:
-      image: docker://swiftlang/swift:nightly-${{ matrix.swift_version }}-${{ matrix.distro }}
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      matrix:
-        swift_version: [5.6, main]
+        swift_version: [5.3, 5.4, 5.5, 5.6]
         distro: [xenial, bionic, focal]
         exclude:
-          - swift_version: main
+          - swift_version: 5.6
             distro: xenial
     steps:
     - uses: actions/checkout@v1
@@ -143,7 +82,7 @@ jobs:
       uses: SusanDoggie/swift-action@main
       with:
         action: test
-  linux_swift_nightly:
+  ubuntu_swift_nightly:
     name: nightly-${{ matrix.swift_version }}-${{ matrix.distro }}
     container:
       image: docker://swiftlang/swift:nightly-${{ matrix.swift_version }}-${{ matrix.distro }}
@@ -152,19 +91,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        swift_version: [5.6, main]
-        distro: [centos8, amazonlinux2]
-        include:
-          - distro: centos8
-            allowerasing: --allowerasing
+        swift_version: [main]
+        distro: [xenial, bionic, focal]
+        exclude:
+          - swift_version: main
+            distro: xenial
     steps:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
     - name: Prepare		
-      run: yum update -y ${{ matrix.allowerasing }}
+      run: apt-get update
+    - name: Install ICC profiles
+      run: apt-get install -y icc-profiles
     - name: Install fonts
-      run: yum install -y fontconfig google-noto-*
+      run: |
+        export DEBIAN_FRONTEND=noninteractive
+        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+        apt-get install -y fontconfig fonts-noto ttf-mscorefonts-installer
     - name: Build
       uses: SusanDoggie/swift-action@main
       with:
