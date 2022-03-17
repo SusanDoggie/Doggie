@@ -92,10 +92,7 @@ jobs:
       fail-fast: false
       matrix:
         swift_version: [main]
-        distro: [xenial, bionic, focal]
-        exclude:
-          - swift_version: main
-            distro: xenial
+        distro: [bionic, focal]
     steps:
     - uses: actions/checkout@v1
       with:
