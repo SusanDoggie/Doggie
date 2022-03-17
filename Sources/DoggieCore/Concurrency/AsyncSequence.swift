@@ -73,12 +73,12 @@ public struct _AsyncSequenceBox<S: Sequence>: AsyncSequence {
 extension Sequence {
     
     @inlinable
-    public func map<T>(_ transform: @escaping (Element) async -> T) -> AsyncMapSequence<_AsyncSequenceBox<Self>, T> {
+    public func map<ElementOfResult>(_ transform: @escaping (Element) async -> ElementOfResult) -> AsyncMapSequence<_AsyncSequenceBox<Self>, ElementOfResult> {
         return _AsyncSequenceBox(self).map(transform)
     }
     
     @inlinable
-    public func map<T>(_ transform: @escaping (Element) async throws -> T) -> AsyncThrowingMapSequence<_AsyncSequenceBox<Self>, T> {
+    public func map<ElementOfResult>(_ transform: @escaping (Element) async throws -> ElementOfResult) -> AsyncThrowingMapSequence<_AsyncSequenceBox<Self>, ElementOfResult> {
         return _AsyncSequenceBox(self).map(transform)
     }
     
@@ -167,6 +167,124 @@ extension Sequence {
     @warn_unqualified_access
     public func max(by areInIncreasingOrder: (Element, Element) async throws -> Bool) async rethrows -> Element? {
         return try await _AsyncSequenceBox(self).max(by: areInIncreasingOrder)
+    }
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Sequence {
+    
+    @inlinable
+    public func parallelEach(_ callback: @escaping (Element) async -> Void) async {
+        
+        await withTaskGroup(of: Void.self) { group in
+            
+            for item in self {
+                group.addTask { await callback(item) }
+            }
+            
+            await group.waitForAll()
+        }
+    }
+    
+    @inlinable
+    public func parallelEach(_ callback: @escaping (Element) async throws -> Void) async throws {
+        
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            
+            for item in self {
+                group.addTask { try await callback(item) }
+            }
+            
+            try await group.waitForAll()
+        }
+    }
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Sequence {
+    
+    @inlinable
+    public func parallelMap<ElementOfResult>(_ callback: @escaping (Element) async -> ElementOfResult) async -> [ElementOfResult] {
+        
+        return await withTaskGroup(of: ElementOfResult.self) { group in
+            
+            for item in self {
+                group.addTask { await callback(item) }
+            }
+            
+            var result: [ElementOfResult] = []
+            
+            for await item in group {
+                result.append(item)
+            }
+            
+            return result
+        }
+    }
+    
+    @inlinable
+    public func parallelMap<ElementOfResult>(_ callback: @escaping (Element) async throws -> ElementOfResult) async throws -> [ElementOfResult] {
+        
+        return try await withThrowingTaskGroup(of: ElementOfResult.self) { group in
+            
+            for item in self {
+                group.addTask { try await callback(item) }
+            }
+            
+            var result: [ElementOfResult] = []
+            
+            for try await item in group {
+                result.append(item)
+            }
+            
+            return result
+        }
+    }
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Sequence {
+    
+    @inlinable
+    public func parallelCompactMap<ElementOfResult>(_ callback: @escaping (Element) async -> ElementOfResult?) async -> [ElementOfResult] {
+        
+        return await withTaskGroup(of: Optional<ElementOfResult>.self) { group in
+            
+            for item in self {
+                group.addTask { await callback(item) }
+            }
+            
+            var result: [ElementOfResult] = []
+            
+            for await item in group {
+                if let item = item {
+                    result.append(item)
+                }
+            }
+            
+            return result
+        }
+    }
+    
+    @inlinable
+    public func parallelCompactMap<ElementOfResult>(_ callback: @escaping (Element) async throws -> ElementOfResult?) async throws -> [ElementOfResult] {
+        
+        return try await withThrowingTaskGroup(of: Optional<ElementOfResult>.self) { group in
+            
+            for item in self {
+                group.addTask { try await callback(item) }
+            }
+            
+            var result: [ElementOfResult] = []
+            
+            for try await item in group {
+                if let item = item {
+                    result.append(item)
+                }
+            }
+            
+            return result
+        }
     }
 }
 
