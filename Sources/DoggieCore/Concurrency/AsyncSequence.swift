@@ -174,7 +174,9 @@ extension Sequence {
 extension Sequence {
     
     @inlinable
-    public func parallelEach(_ callback: @escaping (Element) async -> Void) async {
+    public func parallelEach(
+        _ callback: @escaping (Element) async -> Void
+    ) async {
         
         await withTaskGroup(of: Void.self) { group in
             
@@ -187,7 +189,9 @@ extension Sequence {
     }
     
     @inlinable
-    public func parallelEach(_ callback: @escaping (Element) async throws -> Void) async throws {
+    public func parallelEach(
+        _ callback: @escaping (Element) async throws -> Void
+    ) async throws {
         
         try await withThrowingTaskGroup(of: Void.self) { group in
             
@@ -204,15 +208,18 @@ extension Sequence {
 extension Sequence {
     
     @inlinable
-    public func parallelMap<ElementOfResult>(_ callback: @escaping (Element) async -> ElementOfResult) async -> [ElementOfResult] {
+    public func parallelMap<ElementOfResult>(
+        _ transform: @escaping (Element) async -> ElementOfResult
+    ) async -> [ElementOfResult] {
         
         return await withTaskGroup(of: ElementOfResult.self) { group in
             
             for item in self {
-                group.addTask { await callback(item) }
+                group.addTask { await transform(item) }
             }
             
             var result: [ElementOfResult] = []
+            result.reserveCapacity(underestimatedCount)
             
             for await item in group {
                 result.append(item)
@@ -223,15 +230,18 @@ extension Sequence {
     }
     
     @inlinable
-    public func parallelMap<ElementOfResult>(_ callback: @escaping (Element) async throws -> ElementOfResult) async throws -> [ElementOfResult] {
+    public func parallelMap<ElementOfResult>(
+        _ transform: @escaping (Element) async throws -> ElementOfResult
+    ) async throws -> [ElementOfResult] {
         
         return try await withThrowingTaskGroup(of: ElementOfResult.self) { group in
             
             for item in self {
-                group.addTask { try await callback(item) }
+                group.addTask { try await transform(item) }
             }
             
             var result: [ElementOfResult] = []
+            result.reserveCapacity(underestimatedCount)
             
             for try await item in group {
                 result.append(item)
@@ -246,15 +256,18 @@ extension Sequence {
 extension Sequence {
     
     @inlinable
-    public func parallelCompactMap<ElementOfResult>(_ callback: @escaping (Element) async -> ElementOfResult?) async -> [ElementOfResult] {
+    public func parallelCompactMap<ElementOfResult>(
+        _ transform: @escaping (Element) async -> ElementOfResult?
+    ) async -> [ElementOfResult] {
         
         return await withTaskGroup(of: Optional<ElementOfResult>.self) { group in
             
             for item in self {
-                group.addTask { await callback(item) }
+                group.addTask { await transform(item) }
             }
             
             var result: [ElementOfResult] = []
+            result.reserveCapacity(underestimatedCount)
             
             for await item in group {
                 if let item = item {
@@ -267,15 +280,18 @@ extension Sequence {
     }
     
     @inlinable
-    public func parallelCompactMap<ElementOfResult>(_ callback: @escaping (Element) async throws -> ElementOfResult?) async throws -> [ElementOfResult] {
+    public func parallelCompactMap<ElementOfResult>(
+        _ transform: @escaping (Element) async throws -> ElementOfResult?
+    ) async throws -> [ElementOfResult] {
         
         return try await withThrowingTaskGroup(of: Optional<ElementOfResult>.self) { group in
             
             for item in self {
-                group.addTask { try await callback(item) }
+                group.addTask { try await transform(item) }
             }
             
             var result: [ElementOfResult] = []
+            result.reserveCapacity(underestimatedCount)
             
             for try await item in group {
                 if let item = item {
@@ -285,6 +301,38 @@ extension Sequence {
             
             return result
         }
+    }
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Sequence {
+    
+    @inlinable
+    public func reductions<Result>(
+        _ initial: Result,
+        _ transform: (Result, Element) async throws -> Result
+    ) async rethrows -> [Result] {
+        try await reductions(into: initial) { result, element in
+            result = try await transform(result, element)
+        }
+    }
+    
+    @inlinable
+    public func reductions<Result>(
+        into initial: Result,
+        _ transform: (inout Result, Element) async throws -> Void
+    ) async rethrows -> [Result] {
+        
+        var result: [Result] = [initial]
+        result.reserveCapacity(underestimatedCount + 1)
+        
+        var initial = initial
+        for element in self {
+            try await transform(&initial, element)
+            result.append(initial)
+        }
+        
+        return result
     }
 }
 
