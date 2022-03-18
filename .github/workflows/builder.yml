@@ -65,7 +65,7 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
-    - name: Prepare		
+    - name: Prepare
       run: apt-get update
     - name: Install ICC profiles
       run: apt-get install -y icc-profiles
@@ -97,7 +97,7 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: recursive
-    - name: Prepare		
+    - name: Prepare
       run: apt-get update
     - name: Install ICC profiles
       run: apt-get install -y icc-profiles
