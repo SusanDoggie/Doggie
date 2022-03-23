@@ -212,21 +212,16 @@ extension Sequence {
         _ transform: @escaping (Element) async -> ElementOfResult
     ) async -> [ElementOfResult] {
         
-        return await withTaskGroup(of: ElementOfResult.self) { group in
-            
-            for item in self {
-                group.addTask { await transform(item) }
-            }
-            
-            var result: [ElementOfResult] = []
-            result.reserveCapacity(underestimatedCount)
-            
-            for await item in group {
-                result.append(item)
-            }
-            
-            return result
+        let group: [Task<ElementOfResult, Never>] = self.map { element in Task { await transform(element) } }
+        
+        var result: [ElementOfResult] = []
+        result.reserveCapacity(underestimatedCount)
+        
+        for task in group {
+            await result.append(task.value)
         }
+        
+        return result
     }
     
     @inlinable
@@ -234,21 +229,16 @@ extension Sequence {
         _ transform: @escaping (Element) async throws -> ElementOfResult
     ) async throws -> [ElementOfResult] {
         
-        return try await withThrowingTaskGroup(of: ElementOfResult.self) { group in
-            
-            for item in self {
-                group.addTask { try await transform(item) }
-            }
-            
-            var result: [ElementOfResult] = []
-            result.reserveCapacity(underestimatedCount)
-            
-            for try await item in group {
-                result.append(item)
-            }
-            
-            return result
+        let group: [Task<ElementOfResult, Error>] = self.map { element in Task { try await transform(element) } }
+        
+        var result: [ElementOfResult] = []
+        result.reserveCapacity(underestimatedCount)
+        
+        for task in group {
+            try await result.append(task.value)
         }
+        
+        return result
     }
 }
 
@@ -260,23 +250,18 @@ extension Sequence {
         _ transform: @escaping (Element) async -> ElementOfResult?
     ) async -> [ElementOfResult] {
         
-        return await withTaskGroup(of: Optional<ElementOfResult>.self) { group in
-            
-            for item in self {
-                group.addTask { await transform(item) }
+        let group: [Task<ElementOfResult?, Never>] = self.map { element in Task { await transform(element) } }
+        
+        var result: [ElementOfResult] = []
+        result.reserveCapacity(underestimatedCount)
+        
+        for task in group {
+            if let value = await task.value {
+                result.append(value)
             }
-            
-            var result: [ElementOfResult] = []
-            result.reserveCapacity(underestimatedCount)
-            
-            for await item in group {
-                if let item = item {
-                    result.append(item)
-                }
-            }
-            
-            return result
         }
+        
+        return result
     }
     
     @inlinable
@@ -284,23 +269,18 @@ extension Sequence {
         _ transform: @escaping (Element) async throws -> ElementOfResult?
     ) async throws -> [ElementOfResult] {
         
-        return try await withThrowingTaskGroup(of: Optional<ElementOfResult>.self) { group in
-            
-            for item in self {
-                group.addTask { try await transform(item) }
+        let group: [Task<ElementOfResult?, Error>] = self.map { element in Task { try await transform(element) } }
+        
+        var result: [ElementOfResult] = []
+        result.reserveCapacity(underestimatedCount)
+        
+        for task in group {
+            if let value = try await task.value {
+                result.append(value)
             }
-            
-            var result: [ElementOfResult] = []
-            result.reserveCapacity(underestimatedCount)
-            
-            for try await item in group {
-                if let item = item {
-                    result.append(item)
-                }
-            }
-            
-            return result
         }
+        
+        return result
     }
 }
 

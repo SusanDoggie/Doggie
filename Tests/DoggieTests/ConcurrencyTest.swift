@@ -49,6 +49,18 @@ class ConcurrencyTest: XCTestCase {
         
     }
     
+    func testAsyncParallelMap() async throws {
+        
+        let array: [Int] = try await (0..<10).parallelMap { i in
+            
+            try await Task.sleep(nanoseconds: 1000)
+            
+            return i
+        }
+        
+        XCTAssertEqual(array, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    }
+    
     func testAsyncRecursiveMap() async {
         
         var list: [Dir] = []
