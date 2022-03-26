@@ -30,13 +30,14 @@ extension AsyncSequence {
     
     @inlinable
     public func parallelEach(
+        priority: TaskPriority? = nil,
         _ callback: @escaping (Element) async throws -> Void
     ) async rethrows {
         
         try await withThrowingTaskGroup(of: Void.self) { group in
             
             for try await item in self {
-                group.addTask { try await callback(item) }
+                group.addTask(priority: priority) { try await callback(item) }
             }
         }
     }
@@ -47,14 +48,19 @@ extension AsyncSequence {
     
     @inlinable
     public func parallelMap<ElementOfResult>(
+        priority: TaskPriority? = nil,
         _ transform: @escaping (Element) async -> ElementOfResult
     ) async rethrows -> [ElementOfResult] {
         
-        let group = self.map { element in Task { await transform(element) } }
+        var group: [Task<ElementOfResult, Never>] = []
+        for try await element in self {
+            group.append(Task(priority: priority) { await transform(element) })
+        }
         
         var result: [ElementOfResult] = []
+        result.reserveCapacity(group.count)
         
-        for try await task in group {
+        for task in group {
             await result.append(task.value)
         }
         
@@ -63,14 +69,19 @@ extension AsyncSequence {
     
     @inlinable
     public func parallelMap<ElementOfResult>(
+        priority: TaskPriority? = nil,
         _ transform: @escaping (Element) async throws -> ElementOfResult
     ) async throws -> [ElementOfResult] {
         
-        let group = self.map { element in Task { try await transform(element) } }
+        var group: [Task<ElementOfResult, Error>] = []
+        for try await element in self {
+            group.append(Task(priority: priority) { try await transform(element) })
+        }
         
         var result: [ElementOfResult] = []
+        result.reserveCapacity(group.count)
         
-        for try await task in group {
+        for task in group {
             try await result.append(task.value)
         }
         
@@ -83,14 +94,19 @@ extension AsyncSequence {
     
     @inlinable
     public func parallelCompactMap<ElementOfResult>(
+        priority: TaskPriority? = nil,
         _ transform: @escaping (Element) async -> ElementOfResult?
     ) async rethrows -> [ElementOfResult] {
         
-        let group = self.map { element in Task { await transform(element) } }
+        var group: [Task<ElementOfResult?, Never>] = []
+        for try await element in self {
+            group.append(Task(priority: priority) { await transform(element) })
+        }
         
         var result: [ElementOfResult] = []
+        result.reserveCapacity(group.count)
         
-        for try await task in group {
+        for task in group {
             if let value = await task.value {
                 result.append(value)
             }
@@ -101,14 +117,19 @@ extension AsyncSequence {
     
     @inlinable
     public func parallelCompactMap<ElementOfResult>(
+        priority: TaskPriority? = nil,
         _ transform: @escaping (Element) async throws -> ElementOfResult?
     ) async throws -> [ElementOfResult] {
         
-        let group = self.map { element in Task { try await transform(element) } }
+        var group: [Task<ElementOfResult?, Error>] = []
+        for try await element in self {
+            group.append(Task(priority: priority) { try await transform(element) })
+        }
         
         var result: [ElementOfResult] = []
+        result.reserveCapacity(group.count)
         
-        for try await task in group {
+        for task in group {
             if let value = try await task.value {
                 result.append(value)
             }
