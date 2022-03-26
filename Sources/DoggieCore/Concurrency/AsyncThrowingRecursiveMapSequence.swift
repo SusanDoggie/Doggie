@@ -56,43 +56,48 @@ extension AsyncThrowingRecursiveMapSequence {
     public struct AsyncIterator: AsyncIteratorProtocol {
         
         @usableFromInline
-        let base: Base
+        var base: Base.AsyncIterator?
         
         @usableFromInline
-        var result: Array<Base.Element>.Iterator?
+        var mapped: ArraySlice<Transformed> = []
         
         @usableFromInline
-        var mapped: [Base.Element]?
+        var mapped_iterator: Transformed.AsyncIterator?
         
         @usableFromInline
         var transform: (Base.Element) async throws -> Transformed
         
         @inlinable
         init(_ base: Base, _ transform: @escaping (Base.Element) async throws -> Transformed) {
-            self.base = base
+            self.base = base.makeAsyncIterator()
             self.transform = transform
         }
         
         @inlinable
         public mutating func next() async throws -> Base.Element? {
             
-            if self.result == nil {
-                let base = try await self.base.collect()
-                self.result = base.makeIterator()
-                self.mapped = try await base.flatMap(transform).collect()
+            if self.base != nil {
+                
+                if let element = try await self.base?.next() {
+                    try await mapped.append(transform(element))
+                    return element
+                }
+                
+                self.base = nil
+                self.mapped_iterator = mapped.popFirst()?.makeAsyncIterator()
             }
             
-            if let element = self.result!.next() {
-                return element
+            while self.mapped_iterator != nil {
+                
+                if let element = try await self.mapped_iterator?.next() {
+                    try await mapped.append(transform(element))
+                    return element
+                }
+                
+                self.mapped_iterator = mapped.popFirst()?.makeAsyncIterator()
             }
             
-            if let mapped = mapped {
-                self.result = mapped.makeIterator()
-                self.mapped = try await mapped.flatMap(transform).collect()
-                self.mapped = self.mapped?.isEmpty == false ? self.mapped : nil
-            }
-            
-            return self.result!.next()
+            return nil
         }
     }
 }

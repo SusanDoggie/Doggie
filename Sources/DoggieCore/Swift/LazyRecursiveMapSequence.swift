@@ -54,7 +54,7 @@ public struct LazyRecursiveMapSequence<Base: Sequence, Transformed: Sequence>: L
     
     @inlinable
     public func makeIterator() -> Iterator {
-        return Iterator(Array(base), transform)
+        return Iterator(base, transform)
     }
 }
 
@@ -64,35 +64,48 @@ extension LazyRecursiveMapSequence {
     public struct Iterator: IteratorProtocol {
         
         @usableFromInline
-        var result: Array<Base.Element>.Iterator
+        var base: Base.Iterator?
         
         @usableFromInline
-        var mapped: [Base.Element]?
+        var mapped: ArraySlice<Transformed> = []
+        
+        @usableFromInline
+        var mapped_iterator: Transformed.Iterator?
         
         @usableFromInline
         var transform: (Base.Element) -> Transformed
         
         @inlinable
-        init(_ base: [Base.Element], _ transform: @escaping (Base.Element) -> Transformed) {
-            self.result = base.makeIterator()
-            self.mapped = base.flatMap(transform)
+        init(_ base: Base, _ transform: @escaping (Base.Element) -> Transformed) {
+            self.base = base.makeIterator()
             self.transform = transform
         }
         
         @inlinable
         public mutating func next() -> Base.Element? {
             
-            if let element = self.result.next() {
-                return element
+            if self.base != nil {
+                
+                if let element = self.base?.next() {
+                    mapped.append(transform(element))
+                    return element
+                }
+                
+                self.base = nil
+                self.mapped_iterator = mapped.popFirst()?.makeIterator()
             }
             
-            if let mapped = mapped {
-                self.result = mapped.makeIterator()
-                self.mapped = mapped.flatMap(transform)
-                self.mapped = self.mapped?.isEmpty == false ? self.mapped : nil
+            while self.mapped_iterator != nil {
+                
+                if let element = self.mapped_iterator?.next() {
+                    mapped.append(transform(element))
+                    return element
+                }
+                
+                self.mapped_iterator = mapped.popFirst()?.makeIterator()
             }
             
-            return self.result.next()
+            return nil
         }
     }
 }

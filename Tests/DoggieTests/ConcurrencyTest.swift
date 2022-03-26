@@ -29,6 +29,15 @@ import Doggie
 import XCTest
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Sequence {
+    
+    func stream() -> AsyncStream<Element> {
+        var iterator = self.makeIterator()
+        return AsyncStream(unfolding: { iterator.next() })
+    }
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 class ConcurrencyTest: XCTestCase {
     
     struct Dir: Hashable {
@@ -51,7 +60,7 @@ class ConcurrencyTest: XCTestCase {
     
     func testAsyncParallelMap() async throws {
         
-        let array: [Int] = try await (0..<10).parallelMap { i in
+        let array: [Int] = try await (0..<10).stream().parallelMap { i in
             
             try await Task.sleep(nanoseconds: 1000)
             
@@ -80,10 +89,15 @@ class ConcurrencyTest: XCTestCase {
             Path(id: list[4].id, path: "/root/Users/Susan/Desktop"),
         ]
         
-        let _result: AsyncRecursiveMapSequence = list.compactMap { $0.parent == nil ? Path(id: $0.id, path: "/\($0.name)") : nil }
-            .recursiveMap { parent in list.compactMap { $0.parent == parent.id ? Path(id: $0.id, path: "\(parent.path)/\($0.name)") : nil } }
+        let _result: AsyncRecursiveMapSequence = list.stream()
+            .compactMap { $0.parent == nil ? Path(id: $0.id, path: "/\($0.name)") : nil }
+            .recursiveMap { parent in list.stream().compactMap { $0.parent == parent.id ? Path(id: $0.id, path: "\(parent.path)/\($0.name)") : nil } }
         
-        let result = await _result.collect()
+        var result: [Path] = []
+        
+        for await item in _result {
+            result.append(item)
+        }
         
         XCTAssertEqual(result, answer)
     }
@@ -107,10 +121,15 @@ class ConcurrencyTest: XCTestCase {
             Path(id: list[4].id, path: "/root/Users/Susan/Desktop"),
         ]
         
-        let _result: AsyncThrowingRecursiveMapSequence = list.compactMap { $0.parent == nil ? Path(id: $0.id, path: "/\($0.name)") : nil }
-            .recursiveMap { parent in list.compactMap { $0.parent == parent.id ? Path(id: $0.id, path: "\(parent.path)/\($0.name)") : nil } }
+        let _result: AsyncThrowingRecursiveMapSequence = list.stream()
+            .compactMap { $0.parent == nil ? Path(id: $0.id, path: "/\($0.name)") : nil }
+            .recursiveMap { parent in list.stream().compactMap { $0.parent == parent.id ? Path(id: $0.id, path: "\(parent.path)/\($0.name)") : nil } }
         
-        let result = try await _result.collect()
+        var result: [Path] = []
+        
+        for try await item in _result {
+            result.append(item)
+        }
         
         XCTAssertEqual(result, answer)
     }
