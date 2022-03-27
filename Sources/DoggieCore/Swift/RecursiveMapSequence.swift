@@ -1,5 +1,5 @@
 //
-//  LazyRecursiveMapSequence.swift
+//  RecursiveMapSequence.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2022 Susan Cheng. All rights reserved.
@@ -26,19 +26,13 @@
 extension Sequence {
     
     @inlinable
-    public func recursiveMap<S: Sequence>(_ transform: (Element) throws -> S) rethrows -> [Element] where S.Element == Element {
-        var result: [Element] = Array(self)
-        var mapped = try result.flatMap(transform)
-        repeat {
-            result.append(contentsOf: mapped)
-            mapped = try mapped.flatMap(transform)
-        } while !mapped.isEmpty
-        return result
+    public func recursiveMap<S>(_ transform: @escaping (Element) -> S) -> RecursiveMapSequence<Self, S> {
+        return RecursiveMapSequence(self, transform)
     }
 }
 
 @frozen
-public struct LazyRecursiveMapSequence<Base: Sequence, Transformed: Sequence>: LazySequenceProtocol where Base.Element == Transformed.Element {
+public struct RecursiveMapSequence<Base: Sequence, Transformed: Sequence>: Sequence where Base.Element == Transformed.Element {
     
     @usableFromInline
     let base: Base
@@ -58,7 +52,7 @@ public struct LazyRecursiveMapSequence<Base: Sequence, Transformed: Sequence>: L
     }
 }
 
-extension LazyRecursiveMapSequence {
+extension RecursiveMapSequence {
     
     @frozen
     public struct Iterator: IteratorProtocol {
@@ -110,10 +104,4 @@ extension LazyRecursiveMapSequence {
     }
 }
 
-extension LazySequenceProtocol {
-    
-    @inlinable
-    public func recursiveMap<S>(_ transform: @escaping (Element) -> S) -> LazyRecursiveMapSequence<Elements, S> {
-        return LazyRecursiveMapSequence(self.elements, transform)
-    }
-}
+extension RecursiveMapSequence: LazySequenceProtocol where Base: LazySequenceProtocol { }
