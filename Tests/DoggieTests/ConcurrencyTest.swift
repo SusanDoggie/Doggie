@@ -89,9 +89,11 @@ class ConcurrencyTest: XCTestCase {
             Path(id: list[4].id, path: "/root/Users/Susan/Desktop"),
         ]
         
+        let _list = list
+        
         let _result: AsyncRecursiveMapSequence = list.stream()
             .compactMap { $0.parent == nil ? Path(id: $0.id, path: "/\($0.name)") : nil }
-            .recursiveMap { parent in list.stream().compactMap { $0.parent == parent.id ? Path(id: $0.id, path: "\(parent.path)/\($0.name)") : nil } }
+            .recursiveMap { parent in _list.stream().compactMap { $0.parent == parent.id ? Path(id: $0.id, path: "\(parent.path)/\($0.name)") : nil } }
         
         var result: [Path] = []
         
@@ -121,9 +123,11 @@ class ConcurrencyTest: XCTestCase {
             Path(id: list[4].id, path: "/root/Users/Susan/Desktop"),
         ]
         
+        let _list = list
+        
         let _result: AsyncThrowingRecursiveMapSequence = list.stream()
             .compactMap { $0.parent == nil ? Path(id: $0.id, path: "/\($0.name)") : nil }
-            .recursiveMap { parent in list.stream().compactMap { $0.parent == parent.id ? Path(id: $0.id, path: "\(parent.path)/\($0.name)") : nil } }
+            .recursiveMap { parent in _list.stream().compactMap { $0.parent == parent.id ? Path(id: $0.id, path: "\(parent.path)/\($0.name)") : nil } }
         
         var result: [Path] = []
         
