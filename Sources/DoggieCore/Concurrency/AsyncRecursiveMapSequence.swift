@@ -25,6 +25,15 @@
 
 #if compiler(>=5.5.2) && canImport(_Concurrency)
 
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension AsyncSequence {
+    
+    @inlinable
+    public func recursiveMap<C>(_ transform: @Sendable @escaping (Element) async -> C) -> AsyncRecursiveMapSequence<Self, C> {
+        return AsyncRecursiveMapSequence(self, transform)
+    }
+}
+
 @frozen
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 public struct AsyncRecursiveMapSequence<Base: AsyncSequence, Transformed: AsyncSequence>: AsyncSequence where Base.Element == Transformed.Element {
@@ -35,10 +44,10 @@ public struct AsyncRecursiveMapSequence<Base: AsyncSequence, Transformed: AsyncS
     let base: Base
     
     @usableFromInline
-    let transform: (Base.Element) async -> Transformed
+    let transform: @Sendable (Base.Element) async -> Transformed
     
     @inlinable
-    init(_ base: Base, _ transform: @escaping (Base.Element) async -> Transformed) {
+    init(_ base: Base, _ transform: @Sendable @escaping (Base.Element) async -> Transformed) {
         self.base = base
         self.transform = transform
     }
@@ -65,10 +74,10 @@ extension AsyncRecursiveMapSequence {
         var mapped_iterator: Transformed.AsyncIterator?
         
         @usableFromInline
-        var transform: (Base.Element) async -> Transformed
+        var transform: @Sendable (Base.Element) async -> Transformed
         
         @inlinable
-        init(_ base: Base, _ transform: @escaping (Base.Element) async -> Transformed) {
+        init(_ base: Base, _ transform: @Sendable @escaping (Base.Element) async -> Transformed) {
             self.base = base.makeAsyncIterator()
             self.transform = transform
         }
@@ -103,12 +112,10 @@ extension AsyncRecursiveMapSequence {
 }
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
-extension AsyncSequence {
-    
-    @inlinable
-    public func recursiveMap<C>(_ transform: @escaping (Element) async -> C) -> AsyncRecursiveMapSequence<Self, C> {
-        return AsyncRecursiveMapSequence(self, transform)
-    }
-}
+extension AsyncRecursiveMapSequence: Sendable where Base: Sendable, Base.Element: Sendable, Transformed: Sendable { }
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension AsyncRecursiveMapSequence.AsyncIterator: Sendable
+where Base.AsyncIterator: Sendable, Base.Element: Sendable, Transformed: Sendable, Transformed.AsyncIterator: Sendable { }
 
 #endif
