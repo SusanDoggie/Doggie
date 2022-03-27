@@ -30,11 +30,11 @@ public class SerialRunLoop: @unchecked Sendable {
     
     private var queue: AsyncStream<() async -> Void>.Continuation!
     
-    public init() {
+    public init(priority: TaskPriority? = nil) {
         
         let stream = AsyncStream { self.queue = $0 }
         
-        Task {
+        Task.detached(priority: priority) {
             for await task in stream {
                 await task()
             }
