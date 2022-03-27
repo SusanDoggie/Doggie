@@ -103,7 +103,7 @@ class CollectionTest: XCTestCase {
         let result = list.lazy.compactMap { $0.parent == nil ? Path(id: $0.id, path: "/\($0.name)") : nil }
             .recursiveMap { parent in list.lazy.compactMap { $0.parent == parent.id ? Path(id: $0.id, path: "\(parent.path)/\($0.name)") : nil } }
         
-        XCTAssertEqual(Array(result), answer)
+        XCTAssert(result.elementsEqual(answer))
     }
     
     func testOptionOneCollection1() {
@@ -113,7 +113,6 @@ class CollectionTest: XCTestCase {
         XCTAssertEqual(c.count, 0)
         
         XCTAssert(c.elementsEqual([]))
-        XCTAssertEqual(Array(c), [])
     }
     
     func testOptionOneCollection2() {
@@ -127,7 +126,6 @@ class CollectionTest: XCTestCase {
         }
         
         XCTAssert(c.elementsEqual([42]))
-        XCTAssertEqual(Array(c), [42])
     }
     
     func testSequenceStorageEqual() {
