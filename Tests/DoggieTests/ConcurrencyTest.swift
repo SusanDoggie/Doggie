@@ -74,18 +74,11 @@ class ConcurrencyTest: XCTestCase {
         
         let runloop = SerialRunLoop()
         
+        XCTAssertFalse(runloop.inRunloop)
+        
         await runloop.perform {
             
             XCTAssertTrue(runloop.inRunloop)
-            
-        }
-    }
-    
-    func testSerialRunLoop2() async {
-        
-        let runloop = SerialRunLoop()
-        
-        await runloop.perform {
             
             let task = Task {
                 
@@ -95,6 +88,9 @@ class ConcurrencyTest: XCTestCase {
             
             await task.value
         }
+        
+        XCTAssertFalse(runloop.inRunloop)
+        
     }
     
 }
