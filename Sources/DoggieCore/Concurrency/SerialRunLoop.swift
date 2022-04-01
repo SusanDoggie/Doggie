@@ -30,19 +30,31 @@ public class SerialRunLoop: @unchecked Sendable {
     
     private var queue: AsyncStream<() async -> Void>.Continuation!
     
+    private let in_runloop = TaskLocal(wrappedValue: false)
+    
     public init(priority: TaskPriority? = nil) {
         
         let stream = AsyncStream { self.queue = $0 }
+        let in_runloop = self.in_runloop
         
         Task.detached(priority: priority) {
+            
             for await task in stream {
-                await task()
+                await in_runloop.withValue(true, operation: task)
             }
         }
     }
     
     deinit {
         self.queue.finish()
+    }
+}
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension SerialRunLoop {
+    
+    public var inRunloop: Bool {
+        return in_runloop.get()
     }
 }
 
