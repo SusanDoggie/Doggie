@@ -29,46 +29,7 @@ import Doggie
 import XCTest
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
-extension Sequence {
-    
-    func stream() -> AsyncStream<Element> {
-        var iterator = self.makeIterator()
-        return AsyncStream(unfolding: { iterator.next() })
-    }
-}
-
-@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 class ConcurrencyTest: XCTestCase {
-    
-    struct Dir: Hashable {
-        
-        var id: UUID = UUID()
-        
-        var parent: UUID?
-        
-        var name: String
-        
-    }
-    
-    struct Path: Hashable {
-        
-        var id: UUID
-        
-        var path: String
-        
-    }
-    
-    func testAsyncParallelMap() async throws {
-        
-        let array: [Int] = try await (0..<10).stream().parallelMap { i in
-            
-            try await Task.sleep(nanoseconds: 1000)
-            
-            return i
-        }
-        
-        XCTAssertEqual(array, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-    }
     
     func testSerialRunLoop() async {
         

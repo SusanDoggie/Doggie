@@ -61,46 +61,38 @@ extension SerialRunLoop {
     }
 }
 
-@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
-extension SerialRunLoop {
-    
-    public func enqueue(_ task: @escaping () async -> Void) {
-        self.queue.yield(task)
-    }
+@rethrows protocol _Rethrow {
+    associatedtype Success
+    func get() throws -> Success
 }
+
+extension _Rethrow {
+    func _rethrowGet() rethrows -> Success { try get() }
+}
+
+extension Result: _Rethrow { }
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension SerialRunLoop {
     
-    public func perform<T>(_ task: @escaping () async -> T) async -> T {
+    public func perform<T>(_ task: @escaping () async throws -> T) async rethrows -> T {
         
-        return await withUnsafeContinuation { continuation in
+        let result: Result<T, Error> = await withUnsafeContinuation { continuation in
             
-            self.enqueue {
-                
-                continuation.resume(returning: await task())
-            }
-        }
-    }
-    
-    public func perform<T>(_ task: @escaping () async throws -> T) async throws -> T {
-        
-        return try await withUnsafeThrowingContinuation { continuation in
-            
-            self.enqueue {
+            self.queue.yield {
                 
                 do {
                     
-                    let result = try await task()
-                    
-                    continuation.resume(returning: result)
+                    try await continuation.resume(returning: .success(task()))
                     
                 } catch {
                     
-                    continuation.resume(throwing: error)
+                    continuation.resume(returning: .failure(error))
                 }
             }
         }
+        
+        return try result._rethrowGet()
     }
 }
 
