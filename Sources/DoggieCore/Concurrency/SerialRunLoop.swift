@@ -74,7 +74,7 @@ extension SerialRunLoop {
     
     public func perform<T>(_ task: @escaping () async -> T) async -> T {
         
-        return await withCheckedContinuation { continuation in
+        return await withUnsafeContinuation { continuation in
             
             self.enqueue {
                 
@@ -85,7 +85,7 @@ extension SerialRunLoop {
     
     public func perform<T>(_ task: @escaping () async throws -> T) async throws -> T {
         
-        return try await withCheckedThrowingContinuation { continuation in
+        return try await withUnsafeThrowingContinuation { continuation in
             
             self.enqueue {
                 
