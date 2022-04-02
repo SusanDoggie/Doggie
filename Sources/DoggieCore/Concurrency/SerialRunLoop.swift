@@ -39,8 +39,11 @@ public class SerialRunLoop: @unchecked Sendable {
         
         Task.detached(priority: priority) {
             
-            for await task in stream {
-                await in_runloop.withValue(true, operation: task)
+            await in_runloop.withValue(true) {
+                
+                for await task in stream {
+                    await task()
+                }
             }
         }
     }
