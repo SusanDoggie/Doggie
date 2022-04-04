@@ -140,7 +140,7 @@ extension RegularExpressionMatchable {
 
 extension NSString {
     
-    open func components(separatedBy separator: NSRegularExpression) -> [String] {
+    public func components(separatedBy separator: NSRegularExpression) -> [String] {
         let len = length
         var lrange = separator.rangeOfFirstMatch(in: self as String, range: NSRange(location: 0, length: len))
         if lrange.length == 0 {
