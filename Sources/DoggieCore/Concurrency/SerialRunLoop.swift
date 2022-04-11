@@ -28,7 +28,7 @@
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 public class SerialRunLoop: @unchecked Sendable {
     
-    private var queue: AsyncStream<() async -> Void>.Continuation!
+    private var queue: AsyncStream<@Sendable () async -> Void>.Continuation!
     
     private let in_runloop = TaskLocal(wrappedValue: false)
     
@@ -75,7 +75,7 @@ extension Result: _Rethrow { }
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension SerialRunLoop {
     
-    public func perform<T>(_ task: @escaping () async throws -> T) async rethrows -> T {
+    public func perform<T: Sendable>(_ task: @Sendable @escaping () async throws -> T) async rethrows -> T {
         
         let result: Result<T, Error> = await withUnsafeContinuation { continuation in
             
