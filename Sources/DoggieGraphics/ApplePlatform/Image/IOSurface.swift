@@ -28,12 +28,12 @@
 extension IOSurfaceRef {
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open class func propertyAlignment(forKey key: String) -> Int {
+    public class func propertyAlignment(forKey key: String) -> Int {
         return IOSurfaceGetPropertyAlignment(key as CFString)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open class func propertyMaximum(forKey key: String) -> Int {
+    public class func propertyMaximum(forKey key: String) -> Int {
         return IOSurfaceGetPropertyMaximum(key as CFString)
     }
 }
@@ -41,134 +41,134 @@ extension IOSurfaceRef {
 extension IOSurfaceRef {
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var allocationSize: Int {
+    public var allocationSize: Int {
         return IOSurfaceGetAllocSize(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var width: Int {
+    public var width: Int {
         return IOSurfaceGetWidth(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var height: Int {
+    public var height: Int {
         return IOSurfaceGetHeight(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var baseAddress: UnsafeMutableRawPointer {
+    public var baseAddress: UnsafeMutableRawPointer {
         return IOSurfaceGetBaseAddress(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var pixelFormat: OSType {
+    public var pixelFormat: OSType {
         return IOSurfaceGetPixelFormat(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var bytesPerRow: Int {
+    public var bytesPerRow: Int {
         return IOSurfaceGetBytesPerRow(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var bytesPerElement: Int {
+    public var bytesPerElement: Int {
         return IOSurfaceGetBytesPerElement(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var elementWidth: Int {
+    public var elementWidth: Int {
         return IOSurfaceGetElementWidth(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var elementHeight: Int {
+    public var elementHeight: Int {
         return IOSurfaceGetElementHeight(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var seed: UInt32 {
+    public var seed: UInt32 {
         return IOSurfaceGetSeed(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var planeCount: Int {
+    public var planeCount: Int {
         return IOSurfaceGetPlaneCount(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func widthOfPlane(at planeIndex: Int) -> Int {
+    public func widthOfPlane(at planeIndex: Int) -> Int {
         return IOSurfaceGetWidthOfPlane(self, planeIndex)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func heightOfPlane(at planeIndex: Int) -> Int {
+    public func heightOfPlane(at planeIndex: Int) -> Int {
         return IOSurfaceGetHeightOfPlane(self, planeIndex)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func bytesPerRowOfPlane(at planeIndex: Int) -> Int {
+    public func bytesPerRowOfPlane(at planeIndex: Int) -> Int {
         return IOSurfaceGetBytesPerRowOfPlane(self, planeIndex)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func bytesPerElementOfPlane(at planeIndex: Int) -> Int {
+    public func bytesPerElementOfPlane(at planeIndex: Int) -> Int {
         return IOSurfaceGetBytesPerElementOfPlane(self, planeIndex)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func elementWidthOfPlane(at planeIndex: Int) -> Int {
+    public func elementWidthOfPlane(at planeIndex: Int) -> Int {
         return IOSurfaceGetElementWidthOfPlane(self, planeIndex)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func elementHeightOfPlane(at planeIndex: Int) -> Int {
+    public func elementHeightOfPlane(at planeIndex: Int) -> Int {
         return IOSurfaceGetElementHeightOfPlane(self, planeIndex)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func baseAddressOfPlane(at planeIndex: Int) -> UnsafeMutableRawPointer {
+    public func baseAddressOfPlane(at planeIndex: Int) -> UnsafeMutableRawPointer {
         return IOSurfaceGetBaseAddressOfPlane(self, planeIndex)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var isInUse: Bool {
+    public var isInUse: Bool {
         return IOSurfaceIsInUse(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func incrementUseCount() {
+    public func incrementUseCount() {
         IOSurfaceIncrementUseCount(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func decrementUseCount() {
+    public func decrementUseCount() {
         IOSurfaceDecrementUseCount(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var localUseCount: Int32 {
+    public var localUseCount: Int32 {
         return IOSurfaceGetUseCount(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open var allowsPixelSizeCasting: Bool {
+    public var allowsPixelSizeCasting: Bool {
         return IOSurfaceAllowsPixelSizeCasting(self)
     }
     
     @available(iOS 11.0, tvOS 11.0, *)
-    open func setPurgeable(_ newState: IOSurfacePurgeabilityState, oldState: UnsafeMutablePointer<IOSurfacePurgeabilityState>?) -> kern_return_t {
+    public func setPurgeable(_ newState: IOSurfacePurgeabilityState, oldState: UnsafeMutablePointer<IOSurfacePurgeabilityState>?) -> kern_return_t {
         return IOSurfaceSetPurgeable(self, newState.rawValue, UnsafeMutableRawPointer(oldState)?.assumingMemoryBound(to: UInt32.self))
     }
     
     @discardableResult
     @available(iOS 11.0, tvOS 11.0, *)
-    open func lock(options: IOSurfaceLockOptions = [], seed: UnsafeMutablePointer<UInt32>?) -> kern_return_t {
+    public func lock(options: IOSurfaceLockOptions = [], seed: UnsafeMutablePointer<UInt32>?) -> kern_return_t {
         return IOSurfaceLock(self, options, seed)
     }
     
     @discardableResult
     @available(iOS 11.0, tvOS 11.0, *)
-    open func unlock(options: IOSurfaceLockOptions = [], seed: UnsafeMutablePointer<UInt32>?) -> kern_return_t {
+    public func unlock(options: IOSurfaceLockOptions = [], seed: UnsafeMutablePointer<UInt32>?) -> kern_return_t {
         return IOSurfaceUnlock(self, options, seed)
     }
 }
@@ -176,32 +176,32 @@ extension IOSurfaceRef {
 extension IOSurfaceRef {
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func numberOfComponentsOfPlane(at planeIndex: Int) -> Int {
+    public func numberOfComponentsOfPlane(at planeIndex: Int) -> Int {
         return IOSurfaceGetNumberOfComponentsOfPlane(self, planeIndex)
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func nameOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> IOSurfaceComponentName {
+    public func nameOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> IOSurfaceComponentName {
         return IOSurfaceGetNameOfComponentOfPlane(self, planeIndex, componentIndex)
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func rangeOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> IOSurfaceComponentRange {
+    public func rangeOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> IOSurfaceComponentRange {
         return IOSurfaceGetRangeOfComponentOfPlane(self, planeIndex, componentIndex)
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func bitDepthOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> Int {
+    public func bitDepthOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> Int {
         return IOSurfaceGetBitDepthOfComponentOfPlane(self, planeIndex, componentIndex)
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func bitOffsetOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> Int {
+    public func bitOffsetOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> Int {
         return IOSurfaceGetBitOffsetOfComponentOfPlane(self, planeIndex, componentIndex)
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func typeOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> IOSurfaceComponentType {
+    public func typeOfComponentOfPlane(_ componentIndex: Int, at planeIndex: Int) -> IOSurfaceComponentType {
         return IOSurfaceGetTypeOfComponentOfPlane(self, planeIndex, componentIndex)
     }
 }

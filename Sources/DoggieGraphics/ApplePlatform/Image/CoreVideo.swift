@@ -27,74 +27,74 @@
 
 extension CVImageBuffer {
     
-    open var encodedSize: CGSize {
+    public var encodedSize: CGSize {
         return CVImageBufferGetEncodedSize(self)
     }
     
-    open var displaySize: CGSize {
+    public var displaySize: CGSize {
         return CVImageBufferGetDisplaySize(self)
     }
     
-    open var cleanRect: CGRect {
+    public var cleanRect: CGRect {
         return CVImageBufferGetCleanRect(self)
     }
     
-    open var isFlipped: Bool {
+    public var isFlipped: Bool {
         return CVImageBufferIsFlipped(self)
     }
 }
 
 extension CVPixelBuffer {
     
-    open var width: Int {
+    public var width: Int {
         return CVPixelBufferGetWidth(self)
     }
     
-    open var height: Int {
+    public var height: Int {
         return CVPixelBufferGetHeight(self)
     }
     
-    open var pixelFormat: CVPixelFormat {
+    public var pixelFormat: CVPixelFormat {
         return CVPixelFormat(rawValue: CVPixelBufferGetPixelFormatType(self))
     }
     
-    open var baseAddress: UnsafeMutableRawPointer? {
+    public var baseAddress: UnsafeMutableRawPointer? {
         return CVPixelBufferGetBaseAddress(self)
     }
     
-    open var bytesPerRow: Int {
+    public var bytesPerRow: Int {
         return CVPixelBufferGetBytesPerRow(self)
     }
     
-    open var dataSize: Int {
+    public var dataSize: Int {
         return CVPixelBufferGetDataSize(self)
     }
     
-    open var isPlanar: Bool {
+    public var isPlanar: Bool {
         return CVPixelBufferIsPlanar(self)
     }
     
-    open var planeCount: Int {
+    public var planeCount: Int {
         return CVPixelBufferGetPlaneCount(self)
     }
     
-    open var ioSurface: Unmanaged<IOSurfaceRef>? {
+    public var ioSurface: Unmanaged<IOSurfaceRef>? {
         return CVPixelBufferGetIOSurface(self)
     }
     
-    open func widthOfPlane(_ planeIndex: Int) -> Int {
+    public func widthOfPlane(_ planeIndex: Int) -> Int {
         return CVPixelBufferGetWidthOfPlane(self, planeIndex)
     }
     
-    open func heightOfPlane(_ planeIndex: Int) -> Int {
+    public func heightOfPlane(_ planeIndex: Int) -> Int {
         return CVPixelBufferGetHeightOfPlane(self, planeIndex)
     }
     
-    open func baseAddressOfPlane(_ planeIndex: Int) -> UnsafeMutableRawPointer? {
+    public func baseAddressOfPlane(_ planeIndex: Int) -> UnsafeMutableRawPointer? {
         return CVPixelBufferGetBaseAddressOfPlane(self, planeIndex)
     }
     
-    open func bytesPerRowOfPlane(_ planeIndex: Int) -> Int {
+    public func bytesPerRowOfPlane(_ planeIndex: Int) -> Int {
         return CVPixelBufferGetBytesPerRowOfPlane(self, planeIndex)
     }
     
@@ -110,23 +110,23 @@ extension CVPixelBuffer {
         public var bottom: Int
     }
 
-    open var extendedPixels: ExtendedPixels {
+    public var extendedPixels: ExtendedPixels {
         var extended = ExtendedPixels(top: 0, left: 0, right: 0, bottom: 0)
         CVPixelBufferGetExtendedPixels(self, &extended.left, &extended.right, &extended.top, &extended.bottom)
         return extended
     }
     
-    open func fillExtendedPixels() -> CVReturn {
+    public func fillExtendedPixels() -> CVReturn {
         return CVPixelBufferFillExtendedPixels(self)
     }
     
     @discardableResult
-    open func lock(_ lockFlags: CVPixelBufferLockFlags = []) -> CVReturn {
+    public func lock(_ lockFlags: CVPixelBufferLockFlags = []) -> CVReturn {
         return CVPixelBufferLockBaseAddress(self, lockFlags)
     }
     
     @discardableResult
-    open func unlock(_ unlockFlags: CVPixelBufferLockFlags = []) -> CVReturn {
+    public func unlock(_ unlockFlags: CVPixelBufferLockFlags = []) -> CVReturn {
         return CVPixelBufferUnlockBaseAddress(self, unlockFlags)
     }
     

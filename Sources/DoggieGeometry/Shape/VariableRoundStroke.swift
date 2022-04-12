@@ -31,7 +31,7 @@ extension LineSegment where Element == Point {
     }
 }
 
-extension BezierProtocol where Scalar == Double, Element == Point {
+extension BezierProtocol where Element == Point {
     
     fileprivate func _offset(_ a0: Double, _ a1: Double) -> (Point, Point, [Shape.Segment])? {
         

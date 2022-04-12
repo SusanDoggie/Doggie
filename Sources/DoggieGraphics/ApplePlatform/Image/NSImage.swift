@@ -35,10 +35,10 @@ extension NSImage {
         self.init(cgImage: CIContext(options: nil).createCGImage(image, from: image.extent)!)
     }
     
-    open var cgImage: CGImage? {
+    public var cgImage: CGImage? {
         return cgImage(forProposedRect: nil, context: nil, hints: nil)
     }
-    open var ciImage: CIImage? {
+    public var ciImage: CIImage? {
         if let cgImage = self.cgImage {
             return CoreImage.CIImage(cgImage: cgImage)
         }
@@ -48,7 +48,7 @@ extension NSImage {
 
 extension NSImage {
     
-    open func fileBacked() -> NSImage? {
+    public func fileBacked() -> NSImage? {
         guard let cgImage = self.cgImage?.fileBacked() else { return nil }
         return NSImage(cgImage: cgImage)
     }

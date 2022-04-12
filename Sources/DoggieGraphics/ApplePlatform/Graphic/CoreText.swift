@@ -27,17 +27,17 @@
 
 extension CTFramesetter {
     
-    open var typesetter: CTTypesetter {
+    public var typesetter: CTTypesetter {
         return CTFramesetterGetTypesetter(self)
     }
     
-    open func createFrame(_ path: CGPath,
+    public func createFrame(_ path: CGPath,
                             _ stringRange: CFRange = CFRange(),
                             _ frameAttributes: CFDictionary? = nil) -> CTFrame {
         return CTFramesetterCreateFrame(self, stringRange, path, frameAttributes)
     }
     
-    open func suggestFrameSize(_ constraints: CGSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude),
+    public func suggestFrameSize(_ constraints: CGSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude),
                                  _ stringRange: CFRange = CFRange(),
                                  _ frameAttributes: CFDictionary? = nil,
                                  _ fitRange: UnsafeMutablePointer<CFRange>? = nil) -> CGSize {
@@ -47,91 +47,91 @@ extension CTFramesetter {
 
 extension CTFrame {
     
-    open var stringRange: CFRange {
+    public var stringRange: CFRange {
         return CTFrameGetStringRange(self)
     }
     
-    open var visibleStringRange: CFRange {
+    public var visibleStringRange: CFRange {
         return CTFrameGetVisibleStringRange(self)
     }
     
-    open var path: CGPath {
+    public var path: CGPath {
         return CTFrameGetPath(self)
     }
     
-    open var attributes: CFDictionary? {
+    public var attributes: CFDictionary? {
         return CTFrameGetFrameAttributes(self)
     }
     
-    open var lines: [CTLine] {
+    public var lines: [CTLine] {
         return CTFrameGetLines(self) as? [CTLine] ?? []
     }
 }
 
 extension CTLine {
     
-    open func truncatedLine(_ width: Double, _ truncationType: CTLineTruncationType, _ truncationToken: CTLine?) -> CTLine? {
+    public func truncatedLine(_ width: Double, _ truncationType: CTLineTruncationType, _ truncationToken: CTLine?) -> CTLine? {
         return CTLineCreateTruncatedLine(self, width, truncationType, truncationToken)
     }
     
-    open func justifiedLine(_ justificationFactor: CGFloat, _ justificationWidth: Double) -> CTLine? {
+    public func justifiedLine(_ justificationFactor: CGFloat, _ justificationWidth: Double) -> CTLine? {
         return CTLineCreateJustifiedLine(self, justificationFactor, justificationWidth)
     }
     
-    open var glyphCount: Int {
+    public var glyphCount: Int {
         return CTLineGetGlyphCount(self)
     }
     
-    open var glyphRuns: [CTRun] {
+    public var glyphRuns: [CTRun] {
         return CTLineGetGlyphRuns(self) as? [CTRun] ?? []
     }
     
-    open var stringRange: CFRange {
+    public var stringRange: CFRange {
         return CTLineGetStringRange(self)
     }
     
-    open func penOffsetForFlush(_ flushFactor: CGFloat, _ flushWidth: Double) -> Double {
+    public func penOffsetForFlush(_ flushFactor: CGFloat, _ flushWidth: Double) -> Double {
         return CTLineGetPenOffsetForFlush(self, flushFactor, flushWidth)
     }
     
-    open func imageBounds(_ context: CGContext?) -> CGRect {
+    public func imageBounds(_ context: CGContext?) -> CGRect {
         return CTLineGetImageBounds(self, context)
     }
     
-    open func typographicBounds(_ ascent: UnsafeMutablePointer<CGFloat>?,
+    public func typographicBounds(_ ascent: UnsafeMutablePointer<CGFloat>?,
                                   _ descent: UnsafeMutablePointer<CGFloat>?,
                                   _ leading: UnsafeMutablePointer<CGFloat>?) -> Double {
         return CTLineGetTypographicBounds(self, ascent, descent, leading)
     }
     
-    open var trailingWhitespaceWidth: Double {
+    public var trailingWhitespaceWidth: Double {
         return CTLineGetTrailingWhitespaceWidth(self)
     }
     
-    open func stringIndexForPosition(_ position: CGPoint) -> CFIndex {
+    public func stringIndexForPosition(_ position: CGPoint) -> CFIndex {
         return CTLineGetStringIndexForPosition(self, position)
     }
     
-    open func offsetForStringIndex(_ charIndex: CFIndex, _ secondaryOffset: UnsafeMutablePointer<CGFloat>?) -> CGFloat {
+    public func offsetForStringIndex(_ charIndex: CFIndex, _ secondaryOffset: UnsafeMutablePointer<CGFloat>?) -> CGFloat {
         return CTLineGetOffsetForStringIndex(self, charIndex, secondaryOffset)
     }
 }
 
 extension CTRun {
     
-    open var glyphCount: Int {
+    public var glyphCount: Int {
         return CTRunGetGlyphCount(self)
     }
     
-    open var attributes: CFDictionary {
+    public var attributes: CFDictionary {
         return CTRunGetAttributes(self)
     }
     
-    open var status: CTRunStatus {
+    public var status: CTRunStatus {
         return CTRunGetStatus(self)
     }
     
-    open var glyphs: [CGGlyph] {
+    public var glyphs: [CGGlyph] {
         let count = glyphCount
         return Array(unsafeUninitializedCapacity: count) { buffer, initializedCount in
             guard let buffer = buffer.baseAddress else { return }
@@ -140,7 +140,7 @@ extension CTRun {
         }
     }
     
-    open var positions: [CGPoint] {
+    public var positions: [CGPoint] {
         let count = glyphCount
         return Array(unsafeUninitializedCapacity: count) { buffer, initializedCount in
             guard let buffer = buffer.baseAddress else { return }
@@ -149,7 +149,7 @@ extension CTRun {
         }
     }
     
-    open var advances: [CGSize] {
+    public var advances: [CGSize] {
         let count = glyphCount
         return Array(unsafeUninitializedCapacity: count) { buffer, initializedCount in
             guard let buffer = buffer.baseAddress else { return }
@@ -158,7 +158,7 @@ extension CTRun {
         }
     }
     
-    open var stringIndices: [CFIndex] {
+    public var stringIndices: [CFIndex] {
         let count = glyphCount
         return Array(unsafeUninitializedCapacity: count) { buffer, initializedCount in
             guard let buffer = buffer.baseAddress else { return }
@@ -167,43 +167,43 @@ extension CTRun {
         }
     }
     
-    open var stringRange: CFRange {
+    public var stringRange: CFRange {
         return CTRunGetStringRange(self)
     }
     
-    open func typographicBounds(_ range: CFRange = CFRange(),
+    public func typographicBounds(_ range: CFRange = CFRange(),
                                   _ ascent: UnsafeMutablePointer<CGFloat>?,
                                   _ descent: UnsafeMutablePointer<CGFloat>?,
                                   _ leading: UnsafeMutablePointer<CGFloat>?) -> Double {
         return CTRunGetTypographicBounds(self, range, ascent, descent, leading)
     }
     
-    open func imageBounds(_ context: CGContext?, _ range: CFRange = CFRange()) -> CGRect {
+    public func imageBounds(_ context: CGContext?, _ range: CFRange = CFRange()) -> CGRect {
         return CTRunGetImageBounds(self, context, range)
     }
     
-    open var textMatrix: CGAffineTransform {
+    public var textMatrix: CGAffineTransform {
         return CTRunGetTextMatrix(self)
     }
 }
 
 extension CGContext {
     
-    open func draw(_ string: CFAttributedString, in path: CGPath) {
+    public func draw(_ string: CFAttributedString, in path: CGPath) {
         let framesetter = CTFramesetterCreateWithAttributedString(string)
         let frame = framesetter.createFrame(path)
         self.draw(frame)
     }
     
-    open func draw(_ frame: CTFrame) {
+    public func draw(_ frame: CTFrame) {
         CTFrameDraw(frame, self)
     }
     
-    open func draw(_ line: CTLine) {
+    public func draw(_ line: CTLine) {
         CTLineDraw(line, self)
     }
     
-    open func draw(_ run: CTRun, _ range: CFRange = CFRange()) {
+    public func draw(_ run: CTRun, _ range: CFRange = CFRange()) {
         CTRunDraw(run, self, range)
     }
 }

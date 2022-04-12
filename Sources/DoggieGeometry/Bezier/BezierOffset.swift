@@ -89,7 +89,7 @@ public func CubicBezierFitting(_ p0: Point, _ p3: Point, _ m0: Point, _ m1: Poin
     return CubicBezier(p0, p0 + u * m0, p3 + v * m1, p3)
 }
 
-extension BezierProtocol where Scalar == Double, Element == Point {
+extension BezierProtocol where Element == Point {
     
     @inlinable
     public func _direction(_ t: Double) -> Point {
@@ -222,7 +222,7 @@ extension LineSegment where Element == Point {
     }
 }
 
-extension BezierProtocol where Scalar == Double, Element == Point {
+extension BezierProtocol where Element == Point {
     
     @inlinable
     func __offset_arc(_ a: Double, _ last_direction: Point, _ calback: (CubicBezier<Point>) throws -> Void) rethrows {
@@ -335,7 +335,7 @@ extension BezierProtocol where Scalar == Double, Element == Point {
     }
 }
 
-extension BezierProtocol where Scalar == Double, Element == Point {
+extension BezierProtocol where Element == Point {
     
     @inlinable
     func __offset_arc(_ minus_signed: Bool, _ width: (Double) -> Point, _ last_direction: Point, _ calback: (CubicBezier<Point>) throws -> Void) rethrows {

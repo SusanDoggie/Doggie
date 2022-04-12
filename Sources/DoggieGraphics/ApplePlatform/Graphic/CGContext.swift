@@ -27,69 +27,69 @@
 
 extension CGContext {
     
-    open func addPath(_ shape: Shape) {
+    public func addPath(_ shape: Shape) {
         self.addPath(shape.cgPath)
     }
     
-    open func draw<C>(_ image: Image<C>, in rect: CGRect, byTiling: Bool = false) {
+    public func draw<C>(_ image: Image<C>, in rect: CGRect, byTiling: Bool = false) {
         guard let cgImage = image.cgImage else { return }
         self.draw(cgImage, in: rect, byTiling: byTiling)
     }
     
-    open func draw(_ image: AnyImage, in rect: CGRect, byTiling: Bool = false) {
+    public func draw(_ image: AnyImage, in rect: CGRect, byTiling: Bool = false) {
         guard let cgImage = image.cgImage else { return }
         self.draw(cgImage, in: rect, byTiling: byTiling)
     }
     
-    open func setFillColor<M>(_ color: Color<M>) {
+    public func setFillColor<M>(_ color: Color<M>) {
         guard let cgColor = color.cgColor else { return }
         self.setFillColor(cgColor)
     }
     
-    open func setFillColor(_ color: AnyColor) {
+    public func setFillColor(_ color: AnyColor) {
         guard let cgColor = color.cgColor else { return }
         self.setFillColor(cgColor)
     }
     
-    open func setFillColorSpace<M>(_ colorSpace: ColorSpace<M>) {
+    public func setFillColorSpace<M>(_ colorSpace: ColorSpace<M>) {
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
         self.setFillColorSpace(cgColorSpace)
     }
     
-    open func setFillColorSpace(_ colorSpace: AnyColorSpace) {
+    public func setFillColorSpace(_ colorSpace: AnyColorSpace) {
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
         self.setFillColorSpace(cgColorSpace)
     }
     
-    open func setStrokeColor<M>(_ color: Color<M>) {
+    public func setStrokeColor<M>(_ color: Color<M>) {
         guard let cgColor = color.cgColor else { return }
         self.setStrokeColor(cgColor)
     }
     
-    open func setStrokeColor(_ color: AnyColor) {
+    public func setStrokeColor(_ color: AnyColor) {
         guard let cgColor = color.cgColor else { return }
         self.setStrokeColor(cgColor)
     }
     
-    open func setStrokeColorSpace<M>(_ colorSpace: ColorSpace<M>) {
+    public func setStrokeColorSpace<M>(_ colorSpace: ColorSpace<M>) {
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
         self.setStrokeColorSpace(cgColorSpace)
     }
     
-    open func setStrokeColorSpace(_ colorSpace: AnyColorSpace) {
+    public func setStrokeColorSpace(_ colorSpace: AnyColorSpace) {
         guard let cgColorSpace = colorSpace.cgColorSpace else { return }
         self.setStrokeColorSpace(cgColorSpace)
     }
     
-    open func beginTransparencyLayer() {
+    public func beginTransparencyLayer() {
         self.beginTransparencyLayer(auxiliaryInfo: nil)
     }
     
-    open func concatenate(_ transform: SDTransform) {
+    public func concatenate(_ transform: SDTransform) {
         self.concatenate(CGAffineTransform(transform))
     }
     
-    open func clipToDrawing(colorSpace: CGColorSpace = CGColorSpaceCreateDeviceGray(), body: (CGContext) throws -> Void) rethrows {
+    public func clipToDrawing(colorSpace: CGColorSpace = CGColorSpaceCreateDeviceGray(), body: (CGContext) throws -> Void) rethrows {
         
         let width = self.width
         let height = self.height
@@ -110,7 +110,7 @@ extension CGContext {
         self.concatenate(transform)
     }
     
-    open func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: AnyColorSpace, color gradient: Gradient<C>) {
+    public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: AnyColorSpace, color gradient: Gradient<C>) {
         
         let boundary = shape.originalBoundary
         guard !boundary.isEmpty else { return }
@@ -139,7 +139,7 @@ extension CGContext {
         self.endTransparencyLayer()
     }
     
-    open func draw(shape: Shape, colorSpace: AnyColorSpace, stroke: Stroke<Gradient<AnyColor>>) {
+    public func draw(shape: Shape, colorSpace: AnyColorSpace, stroke: Stroke<Gradient<AnyColor>>) {
         self.draw(shape: shape.strokePath(stroke), winding: .nonZero, colorSpace: colorSpace, color: stroke.color)
     }
 }
@@ -237,7 +237,7 @@ extension ColorSpace: CGGradientConvertibleProtocol {
 
 extension CGContext {
     
-    open func drawLinearGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, end: Point, options: CGGradientDrawingOptions) {
+    public func drawLinearGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, end: Point, options: CGGradientDrawingOptions) {
         
         guard let _colorSpace = colorSpace.base as? CGGradientConvertibleProtocol else { return }
         guard !stops.isEmpty else { return }
@@ -263,7 +263,7 @@ extension CGContext {
         self.drawLinearGradient(colorSpace: cgColorSpace, start: CGPoint(start), end: CGPoint(end), options: options, callbacks: function)
     }
     
-    open func drawRadialGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
+    public func drawRadialGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, startRadius: Double, end: Point, endRadius: Double, options: CGGradientDrawingOptions) {
         
         guard let _colorSpace = colorSpace.base as? CGGradientConvertibleProtocol else { return }
         guard !stops.isEmpty else { return }
@@ -294,7 +294,7 @@ extension CGContext {
 
 extension CGContext {
     
-    open func draw(_ image: CIImage, in inRect: CGRect, from fromRect: CGRect, options: [CIContextOption : Any]? = nil) {
+    public func draw(_ image: CIImage, in inRect: CGRect, from fromRect: CGRect, options: [CIContextOption : Any]? = nil) {
         let renderer = CIContext(cgContext: self, options: options)
         renderer.draw(image, in: inRect, from: fromRect)
     }

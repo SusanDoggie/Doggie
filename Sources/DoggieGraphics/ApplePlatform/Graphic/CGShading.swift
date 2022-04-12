@@ -89,7 +89,7 @@ public func CGShadingCreate(radialSpace space: CGColorSpace, start: CGPoint, sta
 
 extension CGContext {
     
-    open func drawLinearGradient(colorSpace: CGColorSpace, start: CGPoint, end: CGPoint, options: CGGradientDrawingOptions, callbacks: @escaping (CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void) {
+    public func drawLinearGradient(colorSpace: CGColorSpace, start: CGPoint, end: CGPoint, options: CGGradientDrawingOptions, callbacks: @escaping (CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void) {
         
         guard let shading = CGShadingCreate(
             axialSpace: colorSpace,
@@ -103,7 +103,7 @@ extension CGContext {
         self.drawShading(shading)
     }
     
-    open func drawRadialGradient(colorSpace: CGColorSpace, start: CGPoint, startRadius: CGFloat, end: CGPoint, endRadius: CGFloat, options: CGGradientDrawingOptions, callbacks: @escaping (CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void) {
+    public func drawRadialGradient(colorSpace: CGColorSpace, start: CGPoint, startRadius: CGFloat, end: CGPoint, endRadius: CGFloat, options: CGGradientDrawingOptions, callbacks: @escaping (CGFloat, UnsafeMutableBufferPointer<CGFloat>) -> Void) {
         
         guard let shading = CGShadingCreate(
             radialSpace: colorSpace,
