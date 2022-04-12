@@ -57,24 +57,7 @@ extension AnyImage {
     }
 }
 
-extension ColorSpaceProtocol {
-    
-    @inlinable
-    func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> any ImageProtocol {
-        if let colorSpace = self as? ColorSpace<P.Model> {
-            return Image<P>(image: image, colorSpace: colorSpace, intent: intent)
-        } else {
-            return Image<Float32ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
-        }
-    }
-}
-
 extension AnyImage {
-    
-    @inlinable
-    public init<P>(image: Image<P>, colorSpace: AnyColorSpace, intent: RenderingIntent = .default) {
-        self.init(colorSpace.base._create_image(image: image, intent: intent))
-    }
     
     @inlinable
     public var colorSpace: AnyColorSpace {
@@ -189,19 +172,5 @@ extension AnyImage {
     @inlinable
     public func horizontalFlipped() -> AnyImage {
         return AnyImage(base.horizontalFlipped())
-    }
-}
-
-extension Image {
-    
-    @inlinable
-    public init(image: AnyImage, colorSpace: ColorSpace<Pixel.Model>, intent: RenderingIntent = .default) {
-        self = image.base._convert(colorSpace: colorSpace, intent: intent)
-    }
-    
-    @inlinable
-    public init?(_ image: AnyImage) {
-        guard let image = image.base as? Image ?? image.base._copy() else { return nil }
-        self = image
     }
 }
