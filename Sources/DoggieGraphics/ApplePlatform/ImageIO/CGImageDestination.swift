@@ -173,19 +173,19 @@ extension CGImageRep {
 
 extension CGImage {
     
-    open func representation(using storageType: MediaType, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey: Any]) -> Data? {
+    public func representation(using storageType: MediaType, resolution: Resolution = .default, properties: [CGImageRep.PropertyKey: Any]) -> Data? {
         return CGImageRep(cgImage: self, resolution: resolution).representation(using: storageType, properties: properties)
     }
     
-    open func tiffRepresentation(resolution: Resolution = .default, compression: CGImageRep.TIFFCompressionScheme = .none) -> Data? {
+    public func tiffRepresentation(resolution: Resolution = .default, compression: CGImageRep.TIFFCompressionScheme = .none) -> Data? {
         return self.representation(using: .tiff, resolution: resolution, properties: [.compression: compression])
     }
     
-    open func pngRepresentation(resolution: Resolution = .default, predictor: PNGPrediction = .all, interlaced: Bool = false) -> Data? {
+    public func pngRepresentation(resolution: Resolution = .default, predictor: PNGPrediction = .all, interlaced: Bool = false) -> Data? {
         return self.representation(using: .png, resolution: resolution, properties: [.predictor: predictor, .interlaced: interlaced])
     }
     
-    open func jpegRepresentation(resolution: Resolution = .default, compressionQuality: Double) -> Data? {
+    public func jpegRepresentation(resolution: Resolution = .default, compressionQuality: Double) -> Data? {
         return self.representation(using: .jpeg, resolution: resolution, properties: [.compressionQuality: compressionQuality])
     }
 }

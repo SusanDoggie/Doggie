@@ -34,7 +34,7 @@ private struct CIContextOptions: Hashable {
     var workingFormat: CIFormat
 }
 
-open class CIContextPool {
+public class CIContextPool {
     
     public static let `default`: CIContextPool = CIContextPool()
     
@@ -97,7 +97,7 @@ extension CIContextPool {
         }
     }
     
-    open func makeContext(colorSpace: ColorSpace<RGBColorModel>? = nil, outputPremultiplied: Bool = true, workingFormat: CIFormat = .BGRA8) -> CIContext? {
+    public func makeContext(colorSpace: ColorSpace<RGBColorModel>? = nil, outputPremultiplied: Bool = true, workingFormat: CIFormat = .BGRA8) -> CIContext? {
         
         lck.lock()
         defer { lck.unlock() }
@@ -115,7 +115,7 @@ extension CIContextPool {
         return table[options]
     }
     
-    open func clearCaches() {
+    public func clearCaches() {
         
         lck.lock()
         defer { lck.unlock() }

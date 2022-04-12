@@ -28,7 +28,7 @@
 @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension CIContext {
     
-    open func render(_ image: CIImage, to texture: MTLTexture, commandBuffer: MTLCommandBuffer?, bounds: CGRect, at atPoint: CGPoint, colorSpace: CGColorSpace?) {
+    public func render(_ image: CIImage, to texture: MTLTexture, commandBuffer: MTLCommandBuffer?, bounds: CGRect, at atPoint: CGPoint, colorSpace: CGColorSpace?) {
         
         do {
             
@@ -50,7 +50,7 @@ extension CIContext {
 
 extension CIContext {
     
-    open func createImage(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>, fileBacked: Bool = false) -> Image<RGBA32ColorPixel>? {
+    public func createImage(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>, fileBacked: Bool = false) -> Image<RGBA32ColorPixel>? {
         
         guard let width = Int(exactly: ceil(fromRect.width)) else { return nil }
         guard let height = Int(exactly: ceil(fromRect.height)) else { return nil }
@@ -67,7 +67,7 @@ extension CIContext {
         return result
     }
     
-    open func createTexture(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>? = nil, fileBacked: Bool = false) -> Texture<RGBA32ColorPixel>? {
+    public func createTexture(_ image: CIImage, from fromRect: Rect, colorSpace: ColorSpace<RGBColorModel>? = nil, fileBacked: Bool = false) -> Texture<RGBA32ColorPixel>? {
         
         guard let width = Int(exactly: ceil(fromRect.width)) else { return nil }
         guard let height = Int(exactly: ceil(fromRect.height)) else { return nil }
@@ -88,7 +88,7 @@ extension CIContext {
 
 extension CIContext {
     
-    open func createCVPixelBuffer(_ image: CIImage, from fromRect: CGRect, colorSpace: CGColorSpace? = nil) -> CVPixelBuffer? {
+    public func createCVPixelBuffer(_ image: CIImage, from fromRect: CGRect, colorSpace: CGColorSpace? = nil) -> CVPixelBuffer? {
         
         guard let width = Int(exactly: ceil(fromRect.width)) else { return nil }
         guard let height = Int(exactly: ceil(fromRect.height)) else { return nil }
