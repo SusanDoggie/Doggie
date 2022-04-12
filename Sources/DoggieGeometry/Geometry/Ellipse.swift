@@ -78,6 +78,13 @@ extension Radius: Codable {
     }
 }
 
+#if compiler(>=5.5.2) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Radius: Sendable { }
+
+#endif
+
 @inlinable
 @inline(__always)
 public func Ellipse(_ t: Double, _ p: Point, _ r: Radius) -> Point {

@@ -74,6 +74,13 @@ extension OptionOneCollection: Hashable where T: Hashable {
     
 }
 
+#if compiler(>=5.5.2) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension OptionOneCollection: Sendable where T: Sendable { }
+
+#endif
+
 extension OptionOneCollection: ContiguousBytes where Element == UInt8 {
     
     @inlinable

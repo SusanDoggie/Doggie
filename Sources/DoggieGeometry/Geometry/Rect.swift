@@ -98,6 +98,13 @@ extension Rect: Codable {
     }
 }
 
+#if compiler(>=5.5.2) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
+extension Rect: Sendable { }
+
+#endif
+
 extension Rect {
     
     @inlinable
