@@ -42,7 +42,7 @@ public struct AnyColor: ColorProtocol {
 extension ColorModel {
     
     @inlinable
-    static func _create_color<S>(colorSpace: any ColorSpaceProtocol, components: S, opacity: Double) -> Color<Self> where S: Sequence, S.Element == Double {
+    static func _create_color<S>(colorSpace: any ColorSpaceProtocol, components: S, opacity: Double) -> any ColorProtocol where S: Sequence, S.Element == Double {
         var color = Self()
         var counter = 0
         for (i, v) in components.enumerated() {
