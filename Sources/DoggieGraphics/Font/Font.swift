@@ -280,7 +280,7 @@ extension Font {
     }
 }
 
-protocol FontFeatureBase: PolymorphicHashable, CustomStringConvertible {
+protocol FontFeatureBase: Hashable, CustomStringConvertible {
     
     var defaultSetting: Int { get }
     
@@ -291,9 +291,9 @@ protocol FontFeatureBase: PolymorphicHashable, CustomStringConvertible {
 
 public struct FontFeature: Hashable, CustomStringConvertible {
     
-    var base: FontFeatureBase
+    var base: any FontFeatureBase
     
-    init(_ base: FontFeatureBase) {
+    init(_ base: any FontFeatureBase) {
         self.base = base
     }
     
@@ -321,7 +321,7 @@ extension FontFeature {
     }
     
     public static func ==(lhs: FontFeature, rhs: FontFeature) -> Bool {
-        return lhs.base.isEqual(rhs.base)
+        return lhs.base._equalTo(rhs.base)
     }
 }
 

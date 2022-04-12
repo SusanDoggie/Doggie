@@ -39,7 +39,7 @@ struct WrappedColorSpace<Model: ColorModel, Base: ColorModel>: ColorSpaceBasePro
     let token = UUID()
     
     @usableFromInline
-    let base: _ColorSpaceBaseProtocol
+    let base: any ColorSpaceBaseProtocol
     
     @usableFromInline
     let convertFromBase: (Base) -> Model
@@ -57,22 +57,6 @@ struct WrappedColorSpace<Model: ColorModel, Base: ColorModel>: ColorSpaceBasePro
 
 extension WrappedColorSpace {
     
-    @usableFromInline
-    var cieXYZ: CIEXYZColorSpace {
-        return base.cieXYZ
-    }
-}
-
-extension WrappedColorSpace {
-    
-    @inlinable
-    var localizedName: String? {
-        return "WrappedColorSpace(base: \(base)))"
-    }
-}
-
-extension WrappedColorSpace {
-    
     @inlinable
     func hash(into hasher: inout Hasher) {
         hasher.combine("WrappedColorSpace")
@@ -82,13 +66,34 @@ extension WrappedColorSpace {
     
     @inlinable
     static func ==(lhs: WrappedColorSpace, rhs: WrappedColorSpace) -> Bool {
-        return lhs.token == rhs.token && lhs.base.isEqual(rhs.base)
+        return lhs.token == rhs.token && lhs.base._equalTo(rhs.base)
     }
     
     @inlinable
-    func isStorageEqual(_ other: _ColorSpaceBaseProtocol) -> Bool {
+    func isStorageEqual(_ other: any ColorSpaceBaseProtocol) -> Bool {
         guard let other = other as? WrappedColorSpace else { return false }
         return self.token == other.token && self.base.isStorageEqual(other.base)
+    }
+}
+
+extension WrappedColorSpace {
+    
+    @usableFromInline
+    var cieXYZ: CIEXYZColorSpace {
+        return base.cieXYZ
+    }
+}
+
+extension WrappedColorSpace {
+    
+    @inlinable
+    var iccData: Data? {
+        return nil
+    }
+    
+    @inlinable
+    var localizedName: String? {
+        return "WrappedColorSpace(base: \(base)))"
     }
 }
 
@@ -114,12 +119,11 @@ extension WrappedColorSpace {
     
     @inlinable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
-        return base._convertToXYZ(convertToBase(color))
+        return base.convertToXYZ(convertToBase(color))
     }
     
     @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
-        return convertFromBase(base._convertFromXYZ(color))
+        return convertFromBase(base.convertFromXYZ(color))
     }
 }
-

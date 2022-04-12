@@ -31,7 +31,7 @@ public enum MeshGradientPatchType: CaseIterable {
 }
 
 @frozen
-public struct MeshGradient<Color: ColorProtocol> {
+public struct MeshGradient<Color: ColorProtocol>: Hashable {
     
     public var type: MeshGradientPatchType
     
@@ -114,14 +114,6 @@ extension MeshGradient {
         
         self.init(type: type, column: column, row: row, points: _points, colors: _colors)
     }
-}
-
-extension MeshGradient: Equatable where Color: Equatable {
-    
-}
-
-extension MeshGradient: Hashable where Color: Hashable {
-    
 }
 
 extension MeshGradient {

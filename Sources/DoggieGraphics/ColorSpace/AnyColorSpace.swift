@@ -23,104 +23,19 @@
 //  THE SOFTWARE.
 //
 
-@usableFromInline
-protocol AnyColorSpaceBaseProtocol: PolymorphicHashable {
-    
-    var model: _ColorModel.Type { get }
-    
-    var iccData: Data? { get }
-    
-    var localizedName: String? { get }
-    
-    var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm { get set }
-    
-    var numberOfComponents: Int { get }
-    
-    func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
-    
-    var cieXYZ: ColorSpace<XYZColorModel> { get }
-    
-    var _linearTone: AnyColorSpaceBaseProtocol { get }
-    
-    var referenceWhite: XYZColorModel { get }
-    
-    var referenceBlack: XYZColorModel { get }
-    
-    var luminance: Double { get }
-    
-    func _create_color<S: Sequence>(components: S, opacity: Double) -> AnyColorBaseProtocol where S.Element == Double
-    
-    func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> AnyImageBaseProtocol
-    
-    func _create_image(image: AnyImage, intent: RenderingIntent) -> AnyImageBaseProtocol
-    
-    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> AnyImageBaseProtocol
-    
-    func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol
-    
-    func _isStorageEqual(_ other: AnyColorSpaceBaseProtocol) -> Bool
-}
-
-extension ColorSpace: AnyColorSpaceBaseProtocol {
-    
-    @inlinable
-    var _linearTone: AnyColorSpaceBaseProtocol {
-        return self.linearTone
-    }
-    
-    @inlinable
-    func _create_color<S>(components: S, opacity: Double) -> AnyColorBaseProtocol where S: Sequence, S.Element == Double {
-        var color = Model()
-        var counter = 0
-        for (i, v) in components.enumerated() {
-            precondition(i < Model.numberOfComponents, "invalid count of components.")
-            color[i] = v
-            counter = i
-        }
-        precondition(counter == Model.numberOfComponents - 1, "invalid count of components.")
-        return Color(colorSpace: self, color: color, opacity: opacity)
-    }
-    
-    @inlinable
-    func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> AnyImageBaseProtocol {
-        if let colorSpace = self as? ColorSpace<P.Model> {
-            return Image<P>(image: image, colorSpace: colorSpace, intent: intent)
-        } else {
-            return Image<Float32ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
-        }
-    }
-    
-    @inlinable
-    func _create_image(image: AnyImage, intent: RenderingIntent) -> AnyImageBaseProtocol {
-        return Image<Float32ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
-    }
-    
-    @inlinable
-    func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> AnyColorBaseProtocol {
-        return color.convert(to: self, intent: intent)
-    }
-    
-    @inlinable
-    func _isStorageEqual(_ other: AnyColorSpaceBaseProtocol) -> Bool {
-        guard let other = other as? ColorSpace else { return false }
-        return self.isStorageEqual(other)
-    }
-}
-
 @frozen
-public struct AnyColorSpace: ColorSpaceProtocol, Hashable {
-
+public struct AnyColorSpace: ColorSpaceProtocol {
+    
     @usableFromInline
-    var _base: AnyColorSpaceBaseProtocol
+    var base: any ColorSpaceProtocol
     
     @inlinable
-    init(base: AnyColorSpaceBaseProtocol) {
-        self._base = base
-    }
-    
-    @inlinable
-    public init<Model>(_ colorSpace: ColorSpace<Model>) {
-        self._base = colorSpace
+    public init(_ colorSpace: any ColorSpaceProtocol) {
+        if let colorSpace = colorSpace as? AnyColorSpace {
+            self = colorSpace
+        } else {
+            self.base = colorSpace
+        }
     }
 }
 
@@ -128,85 +43,80 @@ extension AnyColorSpace {
     
     @inlinable
     public func hash(into hasher: inout Hasher) {
-        _base.hash(into: &hasher)
+        base.hash(into: &hasher)
     }
     
     @inlinable
     public static func ==(lhs: AnyColorSpace, rhs: AnyColorSpace) -> Bool {
-        return lhs._base.isEqual(rhs._base)
+        return lhs.base._equalTo(rhs.base)
     }
     
     @inlinable
     public func isStorageEqual(_ other: AnyColorSpace) -> Bool {
-        return _base._isStorageEqual(other._base)
+        return base._isStorageEqual(other.base)
     }
 }
 
 extension AnyColorSpace {
     
     @inlinable
-    public var base: Any {
-        return _base
-    }
-    
-    @inlinable
-    public var model: _ColorModel.Type {
-        return _base.model
+    public var model: any ColorModel.Type {
+        return base.model
     }
     
     @inlinable
     public var iccData: Data? {
-        return _base.iccData
+        return base.iccData
     }
     
     @inlinable
     public var localizedName: String? {
-        return _base.localizedName
+        return base.localizedName
     }
     
     @inlinable
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
         get {
-            return _base.chromaticAdaptationAlgorithm
+            return base.chromaticAdaptationAlgorithm
         }
         set {
-            _base.chromaticAdaptationAlgorithm = newValue
+            base.chromaticAdaptationAlgorithm = newValue
         }
     }
     
     @inlinable
     public var numberOfComponents: Int {
-        return _base.numberOfComponents
+        return base.numberOfComponents
     }
     
     @inlinable
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
-        return _base.rangeOfComponent(i)
+        return base.rangeOfComponent(i)
     }
     
     @inlinable
     public var cieXYZ: ColorSpace<XYZColorModel> {
-        return _base.cieXYZ
+        return base.cieXYZ
     }
     
     @inlinable
     public var linearTone: AnyColorSpace {
-        return AnyColorSpace(base: _base._linearTone)
+        return AnyColorSpace(base.linearTone)
     }
     
     @inlinable
     public var referenceWhite: XYZColorModel {
-        return _base.referenceWhite
+        return base.referenceWhite
     }
     
     @inlinable
     public var referenceBlack: XYZColorModel {
-        return _base.referenceBlack
+        return base.referenceBlack
     }
     
     @inlinable
     public var luminance: Double {
-        return _base.luminance
+        return base.luminance
     }
 }
 
@@ -214,7 +124,7 @@ extension AnyColorSpace: CustomStringConvertible {
     
     @inlinable
     public var description: String {
-        return "\(_base)"
+        return "\(base)"
     }
 }
 

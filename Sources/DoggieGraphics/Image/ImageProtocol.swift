@@ -80,6 +80,15 @@ public protocol ImageProtocol: Hashable {
     func isStorageEqual(_ other: Self) -> Bool
 }
 
+extension ImageProtocol {
+    
+    @inlinable
+    func _isStorageEqual(_ other: any ImageProtocol) -> Bool {
+        guard let other = other as? Self else { return false }
+        return self.isStorageEqual(other)
+    }
+}
+
 extension Image {
     
     @inlinable

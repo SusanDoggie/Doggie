@@ -23,76 +23,49 @@
 //  THE SOFTWARE.
 //
 
-@usableFromInline
-protocol AnyColorBaseProtocol: PolymorphicHashable {
-    
-    var _colorSpace: AnyColorSpaceBaseProtocol { get }
-    
-    func _linearTone() -> AnyColorBaseProtocol
-    
-    var cieXYZ: Color<XYZColorModel> { get }
-    
-    func _with(opacity: Double) -> AnyColorBaseProtocol
-    
-    var numberOfComponents: Int { get }
-    
-    func rangeOfComponent(_ i: Int) -> ClosedRange<Double>
-    
-    func component(_ index: Int) -> Double
-    
-    mutating func setComponent(_ index: Int, _ value: Double)
-    
-    var opacity: Double { get set }
-    
-    var isOpaque: Bool { get }
-    
-    func convert<Model>(to colorSpace: ColorSpace<Model>, intent: RenderingIntent) -> Color<Model>
-    
-    func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent) -> AnyColor
-}
-
-extension Color: AnyColorBaseProtocol {
-    
-    @inlinable
-    var _colorSpace: AnyColorSpaceBaseProtocol {
-        return self.colorSpace
-    }
-    
-    @inlinable
-    func _linearTone() -> AnyColorBaseProtocol {
-        return self.linearTone()
-    }
-    
-    @inlinable
-    func _with(opacity: Double) -> AnyColorBaseProtocol {
-        return self.with(opacity: opacity)
-    }
-}
-
 @frozen
-public struct AnyColor: ColorProtocol, Hashable {
+public struct AnyColor: ColorProtocol {
     
     @usableFromInline
-    var _base: AnyColorBaseProtocol
+    var base: any ColorProtocol
     
     @inlinable
-    init(base: AnyColorBaseProtocol) {
-        self._base = base
+    public init(_ color: any ColorProtocol) {
+        if let color = color as? AnyColor {
+            self = color
+        } else {
+            self.base = color
+        }
     }
+}
+
+extension ColorModel {
+    
+    @inlinable
+    static func _create_color<S>(colorSpace: any ColorSpaceProtocol, components: S, opacity: Double) -> Color<Self> where S: Sequence, S.Element == Double {
+        var color = Self()
+        var counter = 0
+        for (i, v) in components.enumerated() {
+            precondition(i < Self.numberOfComponents, "invalid count of components.")
+            color[i] = v
+            counter = i
+        }
+        precondition(counter == Self.numberOfComponents - 1, "invalid count of components.")
+        return Color(colorSpace: colorSpace as! ColorSpace<Self>, color: color, opacity: opacity)
+    }
+}
+
+extension AnyColor {
     
     @inlinable
     public init<S: Sequence>(colorSpace: AnyColorSpace, components: S, opacity: Double = 1) where S.Element == Double {
-        self._base = colorSpace._base._create_color(components: components, opacity: opacity)
+        let colorSpace = colorSpace.base
+        self.base = colorSpace.model._create_color(colorSpace: colorSpace, components: components, opacity: opacity)
     }
     
     @inlinable
     public init<Model: ColorModel>(colorSpace: DoggieGraphics.ColorSpace<Model>, color: Model, opacity: Double = 1) {
-        self._base = Color(colorSpace: colorSpace, color: color, opacity: opacity)
-    }
-    
-    @inlinable
-    public init<Model>(_ color: Color<Model>) {
-        self._base = color
+        self.base = Color(colorSpace: colorSpace, color: color, opacity: opacity)
     }
 }
 
@@ -100,12 +73,12 @@ extension AnyColor {
     
     @inlinable
     public func hash(into hasher: inout Hasher) {
-        _base.hash(into: &hasher)
+        base.hash(into: &hasher)
     }
     
     @inlinable
     public static func ==(lhs: AnyColor, rhs: AnyColor) -> Bool {
-        return lhs._base.isEqual(rhs._base)
+        return lhs.base._equalTo(rhs.base)
     }
 }
 
@@ -150,73 +123,68 @@ extension AnyColor {
 extension AnyColor {
     
     @inlinable
-    public var base: Any {
-        return _base
-    }
-    
-    @inlinable
     public var colorSpace: AnyColorSpace {
-        return AnyColorSpace(base: _base._colorSpace)
+        return AnyColorSpace(base.colorSpace)
     }
     
     @inlinable
     public func linearTone() -> AnyColor {
-        return AnyColor(base: _base._linearTone())
+        return AnyColor(base.linearTone())
     }
     
     @inlinable
     public var cieXYZ: Color<XYZColorModel> {
-        return _base.cieXYZ
+        return base.cieXYZ
     }
     
     @inlinable
     public func with(opacity: Double) -> AnyColor {
-        return AnyColor(base: _base._with(opacity: opacity))
+        return AnyColor(base.with(opacity: opacity))
     }
     
     @inlinable
     public var numberOfComponents: Int {
-        return _base.numberOfComponents
+        return base.numberOfComponents
     }
     
     @inlinable
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
-        return _base.rangeOfComponent(i)
+        return base.rangeOfComponent(i)
     }
     
     @inlinable
     public func component(_ index: Int) -> Double {
-        return _base.component(index)
+        return base.component(index)
     }
     
     @inlinable
     public mutating func setComponent(_ index: Int, _ value: Double) {
-        return _base.setComponent(index, value)
+        return base.setComponent(index, value)
     }
     
     @inlinable
     public var opacity: Double {
         get {
-            return _base.opacity
+            return base.opacity
         }
         set {
-            _base.opacity = newValue
+            base.opacity = newValue
         }
     }
     
     @inlinable
     public var isOpaque: Bool {
-        return _base.isOpaque
+        return base.isOpaque
     }
     
     @inlinable
     public func convert<Model>(to colorSpace: Color<Model>.ColorSpace, intent: RenderingIntent = .default) -> Color<Model> {
-        return _base.convert(to: colorSpace, intent: intent)
+        return base.convert(to: colorSpace, intent: intent)
     }
     
     @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyColor {
-        return _base.convert(to: colorSpace, intent: intent)
+        return base.convert(to: colorSpace, intent: intent)
     }
 }
 
@@ -224,7 +192,7 @@ extension Color {
     
     @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyColor {
-        return AnyColor(base: colorSpace._base._convert(color: self, intent: intent))
+        return AnyColor(colorSpace.base.convert(color: self, intent: intent))
     }
 }
 

@@ -26,15 +26,19 @@
 public enum GradientSpreadMode: CaseIterable {
     
     case none
+    
     case pad
+    
     case reflect
+    
     case `repeat`
 }
 
 @frozen
-public struct GradientStop<Color: ColorProtocol> {
+public struct GradientStop<Color: ColorProtocol>: Hashable {
     
     public var offset: Double
+    
     public var color: Color
     
     @inlinable
@@ -42,25 +46,6 @@ public struct GradientStop<Color: ColorProtocol> {
     public init(offset: Double, color: Color) {
         self.offset = offset
         self.color = color
-    }
-}
-
-extension GradientStop: Equatable where Color: Equatable {
-    
-    @inlinable
-    @inline(__always)
-    public static func ==(lhs: GradientStop, rhs: GradientStop) -> Bool {
-        return lhs.offset == rhs.offset && lhs.color == rhs.color
-    }
-}
-
-extension GradientStop: Hashable where Color: Hashable {
-    
-    @inlinable
-    @inline(__always)
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(offset)
-        hasher.combine(color)
     }
 }
 
@@ -102,11 +87,12 @@ public enum GradientType: CaseIterable {
 }
 
 @frozen
-public struct Gradient<Color: ColorProtocol> {
+public struct Gradient<Color: ColorProtocol>: Hashable {
     
     public var type: GradientType
     
     public var start: Point
+    
     public var end: Point
     
     @inlinable
@@ -164,14 +150,6 @@ extension Gradient where Color == AnyColor {
         self.startSpread = gradient.startSpread
         self.endSpread = gradient.endSpread
     }
-}
-
-extension Gradient: Equatable where Color: Equatable {
-    
-}
-
-extension Gradient: Hashable where Color: Hashable {
-    
 }
 
 extension Gradient {

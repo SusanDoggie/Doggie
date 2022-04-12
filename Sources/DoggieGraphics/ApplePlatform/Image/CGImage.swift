@@ -400,7 +400,7 @@ extension AnyImage {
     }
     
     public var cgImage: CGImage? {
-        if let base = _base as? CGImageConvertibleProtocol {
+        if let base = self.base as? CGImageConvertibleProtocol {
             return base.cgImage
         }
         return nil

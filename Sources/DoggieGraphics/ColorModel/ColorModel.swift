@@ -23,11 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol _ColorModel: PolymorphicHashable {
-    
-}
-
-public protocol ColorModel: _ColorModel, Hashable, Tensor where Scalar == Double {
+public protocol ColorModel: Hashable, Tensor where Scalar == Double {
     
     associatedtype Float16Components: ColorComponents where Float16Components.Model == Self, Float16Components.Scalar == float16
     

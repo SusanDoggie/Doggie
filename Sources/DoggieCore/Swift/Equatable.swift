@@ -1,5 +1,5 @@
 //
-//  Polymorphic.swift
+//  Equatable.swift
 //
 //  The MIT License
 //  Copyright (c) 2015 - 2022 Susan Cheng. All rights reserved.
@@ -23,23 +23,10 @@
 //  THE SOFTWARE.
 //
 
-public protocol PolymorphicEquatable {
+extension Equatable {
     
-    func isEqual(_ other: PolymorphicEquatable) -> Bool
-    
-}
-
-extension PolymorphicEquatable where Self: Equatable {
-    
-    @inlinable
-    public func isEqual(_ other: PolymorphicEquatable) -> Bool {
+    public func _equalTo(_ other: any Equatable) -> Bool {
         guard let other = other as? Self else { return false }
         return self == other
     }
-}
-
-public protocol PolymorphicHashable: PolymorphicEquatable {
-    
-    func hash(into hasher: inout Hasher)
-    
 }

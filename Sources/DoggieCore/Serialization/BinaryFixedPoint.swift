@@ -296,7 +296,7 @@ extension BinaryFixedPoint {
     
     @inlinable
     @inline(__always)
-    public func isEqual(to other: Self) -> Bool {
+    public func _equalTo(to other: Self) -> Bool {
         return self.bitPattern == other.bitPattern
     }
     

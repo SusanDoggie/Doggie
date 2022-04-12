@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorProtocol {
+public protocol ColorProtocol: Hashable {
     
     associatedtype ColorSpace: ColorSpaceProtocol
     
@@ -55,7 +55,7 @@ public protocol ColorProtocol {
 extension ColorProtocol {
     
     @inlinable
-    public var model: _ColorModel.Type {
+    public var model: any ColorModel.Type {
         return colorSpace.model
     }
     

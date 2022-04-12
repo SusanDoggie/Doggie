@@ -78,6 +78,11 @@ extension LinearToneColorSpace {
 extension LinearToneColorSpace {
     
     @inlinable
+    var iccData: Data? {
+        return nil
+    }
+    
+    @inlinable
     var localizedName: String? {
         return base.localizedName.map { "LinearToneColorSpace<\($0)>" }
     }

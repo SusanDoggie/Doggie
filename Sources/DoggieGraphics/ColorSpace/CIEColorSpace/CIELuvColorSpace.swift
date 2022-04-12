@@ -74,6 +74,11 @@ extension CIELuvColorSpace {
 extension CIELuvColorSpace {
     
     @inlinable
+    var iccData: Data? {
+        return nil
+    }
+    
+    @inlinable
     var localizedName: String? {
         return "Doggie Luv Profile (\(CIE1931(rawValue: cieXYZ.white.point)))"
     }

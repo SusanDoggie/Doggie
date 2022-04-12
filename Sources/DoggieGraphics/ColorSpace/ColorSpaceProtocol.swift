@@ -23,9 +23,9 @@
 //  THE SOFTWARE.
 //
 
-public protocol ColorSpaceProtocol {
+public protocol ColorSpaceProtocol: Hashable {
     
-    var model: _ColorModel.Type { get }
+    var model: any ColorModel.Type { get }
     
     var iccData: Data? { get }
     
@@ -50,3 +50,11 @@ public protocol ColorSpaceProtocol {
     func isStorageEqual(_ other: Self) -> Bool
 }
 
+extension ColorSpaceProtocol {
+    
+    @inlinable
+    func _isStorageEqual(_ other: any ColorSpaceProtocol) -> Bool {
+        guard let other = other as? Self else { return false }
+        return self.isStorageEqual(other)
+    }
+}

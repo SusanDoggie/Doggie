@@ -242,7 +242,7 @@ extension ShapeRegion {
 extension ShapeRegion {
     
     @inlinable
-    public func isEqual(to other: ShapeRegion) -> Bool {
+    public func _equalTo(to other: ShapeRegion) -> Bool {
         return self.symmetricDifference(other).isEmpty
     }
     
