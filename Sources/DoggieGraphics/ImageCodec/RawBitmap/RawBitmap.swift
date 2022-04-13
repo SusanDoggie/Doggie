@@ -28,7 +28,7 @@ extension _ColorSpaceProtocol {
     @inlinable
     @inline(__always)
     func __create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> any _ImageProtocol {
-         let colorSpace = self as! ColorSpace<Model>
+        let colorSpace = self as! ColorSpace<Model>
         return colorSpace._create_image(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked)
     }
 }
