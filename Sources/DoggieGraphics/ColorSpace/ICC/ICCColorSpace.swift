@@ -173,34 +173,34 @@ extension AnyColorSpace {
         
         switch profile.header.colorSpace {
             
-        case .XYZ: self.base = try ColorSpace<XYZColorModel>(iccData: iccData, profile: profile)
-        case .Lab: self.base = try ColorSpace<LabColorModel>(iccData: iccData, profile: profile)
-        case .Luv: self.base = try ColorSpace<LuvColorModel>(iccData: iccData, profile: profile)
-        case .YCbCr: self.base = try ColorSpace<YCbCrColorModel>(iccData: iccData, profile: profile)
-        case .Yxy: self.base = try ColorSpace<YxyColorModel>(iccData: iccData, profile: profile)
-        case .Rgb: self.base = try ColorSpace<RGBColorModel>(iccData: iccData, profile: profile)
-        case .Gray: self.base = try ColorSpace<GrayColorModel>(iccData: iccData, profile: profile)
-        case .Hsv: self.base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
-        case .Hls: self.base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
-        case .Cmyk: self.base = try ColorSpace<CMYKColorModel>(iccData: iccData, profile: profile)
-        case .Cmy: self.base = try ColorSpace<CMYColorModel>(iccData: iccData, profile: profile)
+        case .XYZ: self._base = try ColorSpace<XYZColorModel>(iccData: iccData, profile: profile)
+        case .Lab: self._base = try ColorSpace<LabColorModel>(iccData: iccData, profile: profile)
+        case .Luv: self._base = try ColorSpace<LuvColorModel>(iccData: iccData, profile: profile)
+        case .YCbCr: self._base = try ColorSpace<YCbCrColorModel>(iccData: iccData, profile: profile)
+        case .Yxy: self._base = try ColorSpace<YxyColorModel>(iccData: iccData, profile: profile)
+        case .Rgb: self._base = try ColorSpace<RGBColorModel>(iccData: iccData, profile: profile)
+        case .Gray: self._base = try ColorSpace<GrayColorModel>(iccData: iccData, profile: profile)
+        case .Hsv: self._base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
+        case .Hls: self._base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
+        case .Cmyk: self._base = try ColorSpace<CMYKColorModel>(iccData: iccData, profile: profile)
+        case .Cmy: self._base = try ColorSpace<CMYColorModel>(iccData: iccData, profile: profile)
             
         case .Named: throw AnyColorSpace.ICCError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
             
-        case .color2: self.base = try ColorSpace<Device2ColorModel>(iccData: iccData, profile: profile)
-        case .color3: self.base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
-        case .color4: self.base = try ColorSpace<Device4ColorModel>(iccData: iccData, profile: profile)
-        case .color5: self.base = try ColorSpace<Device5ColorModel>(iccData: iccData, profile: profile)
-        case .color6: self.base = try ColorSpace<Device6ColorModel>(iccData: iccData, profile: profile)
-        case .color7: self.base = try ColorSpace<Device7ColorModel>(iccData: iccData, profile: profile)
-        case .color8: self.base = try ColorSpace<Device8ColorModel>(iccData: iccData, profile: profile)
-        case .color9: self.base = try ColorSpace<Device9ColorModel>(iccData: iccData, profile: profile)
-        case .colorA: self.base = try ColorSpace<DeviceAColorModel>(iccData: iccData, profile: profile)
-        case .colorB: self.base = try ColorSpace<DeviceBColorModel>(iccData: iccData, profile: profile)
-        case .colorC: self.base = try ColorSpace<DeviceCColorModel>(iccData: iccData, profile: profile)
-        case .colorD: self.base = try ColorSpace<DeviceDColorModel>(iccData: iccData, profile: profile)
-        case .colorE: self.base = try ColorSpace<DeviceEColorModel>(iccData: iccData, profile: profile)
-        case .colorF: self.base = try ColorSpace<DeviceFColorModel>(iccData: iccData, profile: profile)
+        case .color2: self._base = try ColorSpace<Device2ColorModel>(iccData: iccData, profile: profile)
+        case .color3: self._base = try ColorSpace<Device3ColorModel>(iccData: iccData, profile: profile)
+        case .color4: self._base = try ColorSpace<Device4ColorModel>(iccData: iccData, profile: profile)
+        case .color5: self._base = try ColorSpace<Device5ColorModel>(iccData: iccData, profile: profile)
+        case .color6: self._base = try ColorSpace<Device6ColorModel>(iccData: iccData, profile: profile)
+        case .color7: self._base = try ColorSpace<Device7ColorModel>(iccData: iccData, profile: profile)
+        case .color8: self._base = try ColorSpace<Device8ColorModel>(iccData: iccData, profile: profile)
+        case .color9: self._base = try ColorSpace<Device9ColorModel>(iccData: iccData, profile: profile)
+        case .colorA: self._base = try ColorSpace<DeviceAColorModel>(iccData: iccData, profile: profile)
+        case .colorB: self._base = try ColorSpace<DeviceBColorModel>(iccData: iccData, profile: profile)
+        case .colorC: self._base = try ColorSpace<DeviceCColorModel>(iccData: iccData, profile: profile)
+        case .colorD: self._base = try ColorSpace<DeviceDColorModel>(iccData: iccData, profile: profile)
+        case .colorE: self._base = try ColorSpace<DeviceEColorModel>(iccData: iccData, profile: profile)
+        case .colorF: self._base = try ColorSpace<DeviceFColorModel>(iccData: iccData, profile: profile)
         default: throw AnyColorSpace.ICCError.unsupported(message: "ColorSpace: \(profile.header.colorSpace)")
         }
     }
@@ -437,7 +437,7 @@ extension ColorSpace {
             }
         }
         
-        self.base = try _createICCColorSpace()
+        self._base = try _createICCColorSpace()
     }
     
     static func _PCSXYZ_black_point(a2b: iccTransform, b2a: iccTransform) -> XYZColorModel {

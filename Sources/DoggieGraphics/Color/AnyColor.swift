@@ -26,7 +26,7 @@
 @frozen
 public struct AnyColor: ColorProtocol {
     
-    public let base: any ColorProtocol
+    public private(set) var base: any ColorProtocol
     
     @inlinable
     public init(_ color: any ColorProtocol) {

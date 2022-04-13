@@ -26,7 +26,7 @@
 @frozen
 public struct AnyImage: ImageProtocol {
     
-    public let base: any ImageProtocol
+    public private(set) var base: any ImageProtocol
     
     @inlinable
     public init(_ image: any ImageProtocol) {

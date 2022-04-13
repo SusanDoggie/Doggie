@@ -26,11 +26,12 @@
 @frozen
 public struct AnyColorSpace: ColorSpaceProtocol {
     
-    public let base: any _ColorSpaceProtocol
+    @usableFromInline
+    private(set) var _base: any _ColorSpaceProtocol
     
     @inlinable
     init(base colorSpace: any _ColorSpaceProtocol) {
-        self.base = colorSpace
+        self._base = colorSpace
     }
     
     @inlinable
@@ -40,7 +41,7 @@ public struct AnyColorSpace: ColorSpaceProtocol {
     
     @inlinable
     public init<Model>(_ colorSpace: ColorSpace<Model>) {
-        self.base = colorSpace
+        self._base = colorSpace
     }
 }
 
@@ -48,80 +49,84 @@ extension AnyColorSpace {
     
     @inlinable
     public func hash(into hasher: inout Hasher) {
-        base.hash(into: &hasher)
+        _base.hash(into: &hasher)
     }
     
     @inlinable
     public static func ==(lhs: AnyColorSpace, rhs: AnyColorSpace) -> Bool {
-        return lhs.base._equalTo(rhs.base)
+        return lhs._base._equalTo(rhs._base)
     }
     
     @inlinable
     public func isStorageEqual(_ other: AnyColorSpace) -> Bool {
-        return base._isStorageEqual(other.base)
+        return _base._isStorageEqual(other._base)
     }
 }
 
 extension AnyColorSpace {
     
+    public var base: any ColorSpaceProtocol {
+        return self._base
+    }
+    
     @inlinable
     public var model: any ColorModel.Type {
-        return base.model
+        return _base.model
     }
     
     @inlinable
     public var iccData: Data? {
-        return base.iccData
+        return _base.iccData
     }
     
     @inlinable
     public var localizedName: String? {
-        return base.localizedName
+        return _base.localizedName
     }
     
     @inlinable
     public var chromaticAdaptationAlgorithm: ChromaticAdaptationAlgorithm {
         get {
-            return base.chromaticAdaptationAlgorithm
+            return _base.chromaticAdaptationAlgorithm
         }
         set {
-            base.chromaticAdaptationAlgorithm = newValue
+            _base.chromaticAdaptationAlgorithm = newValue
         }
     }
     
     @inlinable
     public var numberOfComponents: Int {
-        return base.numberOfComponents
+        return _base.numberOfComponents
     }
     
     @inlinable
     public func rangeOfComponent(_ i: Int) -> ClosedRange<Double> {
-        return base.rangeOfComponent(i)
+        return _base.rangeOfComponent(i)
     }
     
     @inlinable
     public var cieXYZ: ColorSpace<XYZColorModel> {
-        return base.cieXYZ
+        return _base.cieXYZ
     }
     
     @inlinable
     public var linearTone: AnyColorSpace {
-        return AnyColorSpace(base: base.linearTone)
+        return AnyColorSpace(_base: _base.linearTone)
     }
     
     @inlinable
     public var referenceWhite: XYZColorModel {
-        return base.referenceWhite
+        return _base.referenceWhite
     }
     
     @inlinable
     public var referenceBlack: XYZColorModel {
-        return base.referenceBlack
+        return _base.referenceBlack
     }
     
     @inlinable
     public var luminance: Double {
-        return base.luminance
+        return _base.luminance
     }
 }
 
@@ -129,7 +134,7 @@ extension AnyColorSpace: CustomStringConvertible {
     
     @inlinable
     public var description: String {
-        return "\(base)"
+        return "\(_base)"
     }
 }
 
