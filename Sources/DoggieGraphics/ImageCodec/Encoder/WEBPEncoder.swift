@@ -51,7 +51,7 @@ extension WEBPEncoder {
         switch image.base {
         case let image as Image<RGBA32ColorPixel>:
             
-            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: image.convert(to: .sRGB), properties: properties) }
             
             pixels = image.pixels.data
             bytesPerRow = 4 * image.width
@@ -60,7 +60,7 @@ extension WEBPEncoder {
             
         case let image as Image<BGRA32ColorPixel>:
             
-            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: image.convert(to: .sRGB), properties: properties) }
             
             pixels = image.pixels.data
             bytesPerRow = 4 * image.width
@@ -69,9 +69,9 @@ extension WEBPEncoder {
             
         default:
             
-            let image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
+            let image = Image<RGBA32ColorPixel>(image) ?? image.convert(to: .sRGB)
             
-            guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: image.convert(to: .sRGB), properties: properties) }
             
             pixels = image.pixels.data
             bytesPerRow = 4 * image.width

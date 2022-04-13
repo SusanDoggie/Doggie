@@ -297,7 +297,7 @@ struct PNGEncoder: ImageRepEncoder {
             return encodeRGB(image: image, region: region, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced)?.data
         }
         
-        return encodeRGB(image: Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB), region: region, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced)?.data
+        return encodeRGB(image: image.convert(to: .sRGB) as Image<ARGB32ColorPixel>, region: region, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced)?.data
     }
 }
 
