@@ -29,8 +29,6 @@ public protocol ImageProtocol: Hashable {
     
     typealias ColorSpace = Color.ColorSpace
     
-    init<Image: ImageProtocol>(image: Image, colorSpace: ColorSpace, intent: RenderingIntent)
-    
     var colorSpace: ColorSpace { get }
     
     var numberOfComponents: Int { get }
@@ -92,52 +90,5 @@ extension Image {
     @inlinable
     public func convert<P>(to colorSpace: DoggieGraphics.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
         return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
-    }
-    
-    @inlinable
-    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
-        return AnyImage(image: self, colorSpace: colorSpace, intent: intent)
-    }
-}
-
-extension AnyImage {
-    
-    @inlinable
-    public func convert<P>(to colorSpace: DoggieGraphics.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
-        return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
-    }
-    
-    @inlinable
-    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
-        return AnyImage(image: self, colorSpace: colorSpace, intent: intent)
-    }
-}
-
-extension ColorSpaceProtocol {
-    
-    @inlinable
-    func _create_image<Image: ImageProtocol>(image: Image, intent: RenderingIntent) -> any ImageProtocol {
-        if let colorSpace = self as? ColorSpace<P.Model> {
-            return Image<P>(image: image, colorSpace: colorSpace, intent: intent)
-        } else {
-            return Image<Float32ColorPixel<Model>>(image: image, colorSpace: self, intent: intent)
-        }
-    }
-}
-
-extension ImageProtocol {
-    
-    @inlinable
-    public init<Image: ImageProtocol>(image: Image, colorSpace: ColorSpace, intent: RenderingIntent) {
-        self.init(AnyColorSpace(colorSpace).base._create_image(image: image, intent: intent))
-    }
-}
-
-extension Image {
-    
-    @inlinable
-    public init?(_ image: AnyImage) {
-        guard let image = image.base as? Image ?? image.base._copy() else { return nil }
-        self = image
     }
 }

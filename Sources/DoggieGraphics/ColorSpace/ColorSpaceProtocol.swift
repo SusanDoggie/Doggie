@@ -58,3 +58,10 @@ extension ColorSpaceProtocol {
         return self.isStorageEqual(other)
     }
 }
+
+@usableFromInline
+protocol _ColorSpaceProtocol: ColorSpaceProtocol {
+    
+    associatedtype Model: ColorModel
+    
+}

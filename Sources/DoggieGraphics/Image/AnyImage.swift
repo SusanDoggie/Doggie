@@ -26,8 +26,7 @@
 @frozen
 public struct AnyImage: ImageProtocol {
     
-    @usableFromInline
-    var base: any ImageProtocol
+    public let base: any ImageProtocol
     
     @inlinable
     public init(_ image: any ImageProtocol) {
@@ -172,5 +171,57 @@ extension AnyImage {
     @inlinable
     public func horizontalFlipped() -> AnyImage {
         return AnyImage(base.horizontalFlipped())
+    }
+}
+
+extension AnyImage {
+    
+    @inlinable
+    public func convert<P>(to colorSpace: DoggieGraphics.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
+        return self.base.convert(to: colorSpace, intent: intent)
+    }
+    
+    @inlinable
+    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
+        return self.base.convert(to: colorSpace, intent: intent)
+    }
+}
+
+extension _ColorSpaceProtocol {
+    
+    @inlinable
+    func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> any ImageProtocol {
+        if let colorSpace = self as? ColorSpace<P.Model> {
+            return Image<P>(image: image, colorSpace: colorSpace, intent: intent)
+        } else {
+            return Image<Float32ColorPixel<Model>>(image: image, colorSpace: self as! ColorSpace<Model>, intent: intent)
+        }
+    }
+}
+
+extension Image {
+    
+    @inlinable
+    public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
+        return AnyImage(colorSpace.base._create_image(image: self, intent: intent))
+    }
+}
+
+extension ImageProtocol {
+    
+    @inlinable
+    func _copy<Pixel>() -> Image<Pixel>? {
+        guard let colorSpace = self.colorSpace as? ColorSpace<Pixel.Model> else { return nil }
+        let pixels = self.pixels as? MappedBuffer<Pixel> ?? self.pixels.map { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }
+        return Image<Pixel>(width: self.width, height: self.height, resolution: self.resolution, colorSpace: colorSpace, pixels: pixels)
+    }
+}
+
+extension Image {
+    
+    @inlinable
+    public init?(_ image: AnyImage) {
+        guard let image = image.base as? Image ?? image.base._copy() else { return nil }
+        self = image
     }
 }

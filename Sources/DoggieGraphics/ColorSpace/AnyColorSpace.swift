@@ -26,16 +26,21 @@
 @frozen
 public struct AnyColorSpace: ColorSpaceProtocol {
     
-    @usableFromInline
-    var base: any ColorSpaceProtocol
+    public let base: any _ColorSpaceProtocol
     
     @inlinable
-    public init(_ colorSpace: any ColorSpaceProtocol) {
-        if let colorSpace = colorSpace as? AnyColorSpace {
-            self = colorSpace
-        } else {
-            self.base = colorSpace
-        }
+    init(base colorSpace: any _ColorSpaceProtocol) {
+        self.base = colorSpace
+    }
+    
+    @inlinable
+    public init(_ colorSpace: AnyColorSpace) {
+        self = colorSpace
+    }
+    
+    @inlinable
+    public init<Model>(_ colorSpace: ColorSpace<Model>) {
+        self.base = colorSpace
     }
 }
 
@@ -101,7 +106,7 @@ extension AnyColorSpace {
     
     @inlinable
     public var linearTone: AnyColorSpace {
-        return AnyColorSpace(base.linearTone)
+        return AnyColorSpace(base: base.linearTone)
     }
     
     @inlinable

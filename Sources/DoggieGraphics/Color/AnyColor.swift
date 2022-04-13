@@ -26,8 +26,7 @@
 @frozen
 public struct AnyColor: ColorProtocol {
     
-    @usableFromInline
-    var base: any ColorProtocol
+    public let base: any ColorProtocol
     
     @inlinable
     public init(_ color: any ColorProtocol) {
@@ -39,19 +38,19 @@ public struct AnyColor: ColorProtocol {
     }
 }
 
-extension ColorModel {
+extension _ColorSpaceProtocol {
     
     @inlinable
-    static func _create_color<S>(colorSpace: any ColorSpaceProtocol, components: S, opacity: Double) -> any ColorProtocol where S: Sequence, S.Element == Double {
-        var color = Self()
+    func _create_color<S>(components: S, opacity: Double) -> any ColorProtocol where S: Sequence, S.Element == Double {
+        var color = Model()
         var counter = 0
         for (i, v) in components.enumerated() {
-            precondition(i < Self.numberOfComponents, "invalid count of components.")
+            precondition(i < Model.numberOfComponents, "invalid count of components.")
             color[i] = v
             counter = i
         }
-        precondition(counter == Self.numberOfComponents - 1, "invalid count of components.")
-        return Color(colorSpace: colorSpace as! ColorSpace<Self>, color: color, opacity: opacity)
+        precondition(counter == Model.numberOfComponents - 1, "invalid count of components.")
+        return Color(colorSpace: self as! ColorSpace<Model>, color: color, opacity: opacity)
     }
 }
 
@@ -59,8 +58,7 @@ extension AnyColor {
     
     @inlinable
     public init<S: Sequence>(colorSpace: AnyColorSpace, components: S, opacity: Double = 1) where S.Element == Double {
-        let colorSpace = colorSpace.base
-        self.base = colorSpace.model._create_color(colorSpace: colorSpace, components: components, opacity: opacity)
+        self.base = colorSpace.base._create_color(components: components, opacity: opacity)
     }
     
     @inlinable

@@ -83,7 +83,7 @@ extension ColorSpaceBaseProtocol {
 }
 
 @frozen
-public struct ColorSpace<Model: ColorModel>: ColorSpaceProtocol {
+public struct ColorSpace<Model: ColorModel>: ColorSpaceProtocol, _ColorSpaceProtocol {
     
     @usableFromInline
     let base : any ColorSpaceBaseProtocol
