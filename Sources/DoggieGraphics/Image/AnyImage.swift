@@ -152,37 +152,37 @@ extension AnyImage {
     
     @inlinable
     public func linearTone() -> AnyImage {
-        return AnyImage(_base.linearTone())
+        return AnyImage(base: _base.linearTone())
     }
     
     @inlinable
     public func withWhiteBalance(_ white: Point) -> AnyImage {
-        return AnyImage(_base.withWhiteBalance(white))
+        return AnyImage(base: _base.withWhiteBalance(white))
     }
     
     @inlinable
     public func premultiplied() -> AnyImage {
-        return AnyImage(_base.premultiplied())
+        return AnyImage(base: _base.premultiplied())
     }
     
     @inlinable
     public func unpremultiplied() -> AnyImage {
-        return AnyImage(_base.unpremultiplied())
+        return AnyImage(base: _base.unpremultiplied())
     }
     
     @inlinable
     public func transposed() -> AnyImage {
-        return AnyImage(_base.transposed())
+        return AnyImage(base: _base.transposed())
     }
     
     @inlinable
     public func verticalFlipped() -> AnyImage {
-        return AnyImage(_base.verticalFlipped())
+        return AnyImage(base: _base.verticalFlipped())
     }
     
     @inlinable
     public func horizontalFlipped() -> AnyImage {
-        return AnyImage(_base.horizontalFlipped())
+        return AnyImage(base: _base.horizontalFlipped())
     }
 }
 
@@ -223,7 +223,7 @@ extension _ImageProtocol {
     
     @inlinable
     func _copy<Pixel>() -> Image<Pixel>? {
-        guard let colorSpace = self.colorSpace as? ColorSpace<Pixel.Model> else { return nil }
+        guard let colorSpace = self.colorSpace as? ColorSpace else { return nil }
         let pixels = self.pixels as? MappedBuffer<Pixel> ?? self.pixels.map { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }
         return Image<Pixel>(width: self.width, height: self.height, resolution: self.resolution, colorSpace: colorSpace, pixels: pixels)
     }
