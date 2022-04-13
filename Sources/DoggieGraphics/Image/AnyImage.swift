@@ -224,7 +224,7 @@ extension _ImageProtocol {
     
     @inlinable
     func _copy<Pixel>() -> Image<Pixel>? {
-        guard let colorSpace = self.colorSpace as? ColorSpace<Pixel.Model> else { return nil }
+        guard let colorSpace = self.colorSpace as? DoggieGraphics.ColorSpace<Pixel.Model> else { return nil }
         let pixels = self.pixels as? MappedBuffer<Pixel> ?? self.pixels.map { Pixel(color: $0.color as! Pixel.Model, opacity: $0.opacity) }
         return Image<Pixel>(width: self.width, height: self.height, resolution: self.resolution, colorSpace: colorSpace, pixels: pixels)
     }
