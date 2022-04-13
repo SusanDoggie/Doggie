@@ -134,7 +134,7 @@ extension AnyColor {
     
     @inlinable
     public var colorSpace: AnyColorSpace {
-        return AnyColorSpace(_base.colorSpace)
+        return AnyColorSpace(base: _base.colorSpace)
     }
     
     @inlinable
