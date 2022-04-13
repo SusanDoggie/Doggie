@@ -94,9 +94,9 @@ extension Image {
 }
 
 @usableFromInline
-protocol _ImageProtocol: ImageProtocol, RawPixelProtocol where Self.Color == DoggieGraphics.Color<Model>, RawPixel: ColorPixel, RawPixel.Model == Model {
+protocol _ImageProtocol: ImageProtocol, RawPixelProtocol where RawPixel: ColorPixel, RawPixel.Model == Model, Color == DoggieGraphics.Color<Model> {
     
-    associatedtype Model: ColorModel
+    associatedtype Model
     
     func color(x: Int, y: Int) -> AnyColor
     
