@@ -27,7 +27,7 @@
 public struct AnyColorSpace: ColorSpaceProtocol {
     
     @usableFromInline
-    private(set) var _base: any _ColorSpaceProtocol
+    var _base: any _ColorSpaceProtocol
     
     @inlinable
     init(base colorSpace: any _ColorSpaceProtocol) {
@@ -65,6 +65,7 @@ extension AnyColorSpace {
 
 extension AnyColorSpace {
     
+    @inlinable
     public var base: any ColorSpaceProtocol {
         return self._base
     }

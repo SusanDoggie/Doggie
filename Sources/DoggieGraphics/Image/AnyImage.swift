@@ -26,14 +26,15 @@
 @frozen
 public struct AnyImage: ImageProtocol {
     
-    public private(set) var base: any ImageProtocol
+    @usableFromInline
+    var _base: any ImageProtocol
     
     @inlinable
     public init(_ image: any ImageProtocol) {
         if let image = image as? AnyImage {
             self = image
         } else {
-            self.base = image
+            self._base = image
         }
     }
 }
@@ -42,135 +43,140 @@ extension AnyImage {
     
     @inlinable
     public func hash(into hasher: inout Hasher) {
-        base.hash(into: &hasher)
+        _base.hash(into: &hasher)
     }
     
     @inlinable
     public static func ==(lhs: AnyImage, rhs: AnyImage) -> Bool {
-        return lhs.base._equalTo(rhs.base)
+        return lhs._base._equalTo(rhs._base)
     }
     
     @inlinable
     public func isStorageEqual(_ other: AnyImage) -> Bool {
-        return base._isStorageEqual(other.base)
+        return _base._isStorageEqual(other._base)
     }
 }
 
 extension AnyImage {
     
     @inlinable
+    public var base: any ImageProtocol {
+        return self._base
+    }
+    
+    @inlinable
     public var colorSpace: AnyColorSpace {
-        return AnyColorSpace(base.colorSpace)
+        return AnyColorSpace(_base.colorSpace)
     }
     
     @inlinable
     public var numberOfComponents: Int {
-        return base.numberOfComponents
+        return _base.numberOfComponents
     }
     
     @inlinable
     public var width: Int {
-        return base.width
+        return _base.width
     }
     
     @inlinable
     public var height: Int {
-        return base.height
+        return _base.height
     }
     
     @inlinable
     public subscript(x: Int, y: Int) -> AnyColor {
         get {
-            return base.color(x: x, y: y)
+            return _base.color(x: x, y: y)
         }
         set {
-            base.setColor(x: x, y: y, color: newValue)
+            _base.setColor(x: x, y: y, color: newValue)
         }
     }
     
     @inlinable
     public var resolution: Resolution {
         get {
-            return base.resolution
+            return _base.resolution
         }
         set {
-            base.resolution = newValue
+            _base.resolution = newValue
         }
     }
     
     @inlinable
     public var isOpaque: Bool {
-        return base.isOpaque
+        return _base.isOpaque
     }
     
     @inlinable
     public var visibleRect: Rect {
-        return base.visibleRect
+        return _base.visibleRect
     }
     
     @inlinable
     public var fileBacked: Bool {
         get {
-            return base.fileBacked
+            return _base.fileBacked
         }
         set {
-            base.fileBacked = newValue
+            _base.fileBacked = newValue
         }
     }
     
     @inlinable
     public func setMemoryAdvise(_ advise: MemoryAdvise) {
-        return base.setMemoryAdvise(advise)
+        return _base.setMemoryAdvise(advise)
     }
     
     @inlinable
     public func memoryLock() {
-        base.memoryLock()
+        _base.memoryLock()
     }
     
     @inlinable
     public func memoryUnlock() {
-        base.memoryUnlock()
+        _base.memoryUnlock()
     }
     
     @inlinable
     public mutating func setOrientation(_ orientation: ImageOrientation) {
-        return base.setOrientation(orientation)
+        return _base.setOrientation(orientation)
     }
     
     @inlinable
     public func linearTone() -> AnyImage {
-        return AnyImage(base.linearTone())
+        return AnyImage(_base.linearTone())
     }
     
     @inlinable
     public func withWhiteBalance(_ white: Point) -> AnyImage {
-        return AnyImage(base.withWhiteBalance(white))
+        return AnyImage(_base.withWhiteBalance(white))
     }
     
     @inlinable
     public func premultiplied() -> AnyImage {
-        return AnyImage(base.premultiplied())
+        return AnyImage(_base.premultiplied())
     }
     
     @inlinable
     public func unpremultiplied() -> AnyImage {
-        return AnyImage(base.unpremultiplied())
+        return AnyImage(_base.unpremultiplied())
     }
     
     @inlinable
     public func transposed() -> AnyImage {
-        return AnyImage(base.transposed())
+        return AnyImage(_base.transposed())
     }
     
     @inlinable
     public func verticalFlipped() -> AnyImage {
-        return AnyImage(base.verticalFlipped())
+        return AnyImage(_base.verticalFlipped())
     }
     
     @inlinable
     public func horizontalFlipped() -> AnyImage {
-        return AnyImage(base.horizontalFlipped())
+        return AnyImage(_base.horizontalFlipped())
     }
 }
 
@@ -178,12 +184,12 @@ extension AnyImage {
     
     @inlinable
     public func convert<P>(to colorSpace: DoggieGraphics.ColorSpace<P.Model>, intent: RenderingIntent = .default) -> Image<P> {
-        return self.base.convert(to: colorSpace, intent: intent)
+        return self._base.convert(to: colorSpace, intent: intent)
     }
     
     @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
-        return self.base.convert(to: colorSpace, intent: intent)
+        return self._base.convert(to: colorSpace, intent: intent)
     }
 }
 
@@ -203,7 +209,7 @@ extension Image {
     
     @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
-        return AnyImage(colorSpace.base._create_image(image: self, intent: intent))
+        return AnyImage(colorSpace._base._create_image(image: self, intent: intent))
     }
 }
 
@@ -221,7 +227,7 @@ extension Image {
     
     @inlinable
     public init?(_ image: AnyImage) {
-        guard let image = image.base as? Image ?? image.base._copy() else { return nil }
+        guard let image = image._base as? Image ?? image._base._copy() else { return nil }
         self = image
     }
 }
