@@ -437,7 +437,7 @@ extension ColorSpace {
             }
         }
         
-        self._base = try _createICCColorSpace()
+        self.base = try _createICCColorSpace()
     }
     
     static func _PCSXYZ_black_point(a2b: iccTransform, b2a: iccTransform) -> XYZColorModel {
