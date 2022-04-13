@@ -75,8 +75,10 @@ extension ColorProtocol {
 }
 
 @usableFromInline
-protocol _ColorProtocol: ColorProtocol where Self.ColorSpace == DoggieGraphics.ColorSpace<Model> {
+protocol _ColorProtocol: ColorProtocol {
     
     associatedtype Model: ColorModel
+    
+    typealias ColorSpace = DoggieGraphics.ColorSpace<Model>
     
 }
