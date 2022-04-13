@@ -98,4 +98,8 @@ protocol _ImageProtocol: ImageProtocol, RawPixelProtocol where Self.Color == Dog
     
     associatedtype Model: ColorModel
     
+    func color(x: Int, y: Int) -> AnyColor
+    
+    mutating func setColor<C: ColorProtocol>(x: Int, y: Int, color: C)
+    
 }
