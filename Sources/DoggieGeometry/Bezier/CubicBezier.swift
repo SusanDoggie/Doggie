@@ -89,12 +89,8 @@ extension CubicBezier: Encodable where Element: Encodable {
     }
 }
 
-#if compiler(>=5.5.2) && canImport(_Concurrency)
-
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension CubicBezier: Sendable where Element: Sendable { }
-
-#endif
 
 extension CubicBezier {
     

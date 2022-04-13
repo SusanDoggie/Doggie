@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-#if compiler(>=5.5.2) && canImport(_Concurrency)
-
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 @propertyWrapper
 public struct UnsafeSendable<Wrapped> : @unchecked Sendable {
@@ -35,5 +33,3 @@ public struct UnsafeSendable<Wrapped> : @unchecked Sendable {
         self.wrappedValue = wrappedValue
     }
 }
-
-#endif

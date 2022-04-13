@@ -23,8 +23,6 @@
 //  THE SOFTWARE.
 //
 
-#if compiler(>=5.5.2) && canImport(_Concurrency)
-
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension Decimal: @unchecked Sendable { }
 
@@ -60,5 +58,3 @@ extension OrderedSet: @unchecked Sendable where Element: Sendable { }
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension OrderedDictionary: @unchecked Sendable where Key: Sendable, Value: Sendable { }
-
-#endif

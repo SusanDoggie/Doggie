@@ -87,15 +87,11 @@ extension WeakDictionary {
     }
 }
 
-#if compiler(>=5.5.2) && canImport(_Concurrency)
-
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension WeakDictionary: Sendable where Key: Sendable, Value: Sendable { }
 
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension WeakDictionary.ValueContainer: Sendable where Key: Sendable, Value: Sendable { }
-
-#endif
 
 extension WeakDictionary {
     

@@ -61,12 +61,8 @@ public struct Complex: Hashable {
     }
 }
 
-#if compiler(>=5.5.2) && canImport(_Concurrency)
-
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension Complex: Sendable { }
-
-#endif
 
 extension Complex {
     

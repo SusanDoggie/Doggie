@@ -131,12 +131,8 @@ extension Point: Codable {
     }
 }
 
-#if compiler(>=5.5.2) && canImport(_Concurrency)
-
 @available(macOS 10.15, iOS 13, tvOS 13, watchOS 6, *)
 extension Point: Sendable { }
-
-#endif
 
 extension Point: Tensor {
     
