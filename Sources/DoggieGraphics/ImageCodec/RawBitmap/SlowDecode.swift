@@ -39,7 +39,7 @@ extension ColorSpace {
     
     @inlinable
     @inline(__always)
-    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> any ImageProtocol {
+    func _create_image(width: Int, height: Int, resolution: Resolution, bitmaps: [RawBitmap], premultiplied: Bool, fileBacked: Bool) -> any _ImageProtocol {
         
         if let image = _fast_create_image(width: width, height: height, resolution: resolution, bitmaps: bitmaps, premultiplied: premultiplied, fileBacked: fileBacked) {
             return image
