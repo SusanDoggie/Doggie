@@ -62,7 +62,7 @@ extension WEBPAnimatedEncoder {
         
         for frame in image.frames {
             
-            let image = Image<RGBA32ColorPixel>(image: frame.image, colorSpace: colorSpace)
+            let image: Image<RGBA32ColorPixel> = frame.image.convert(to: colorSpace)
             
             frames.append(Frame(bytesPerRow: 4 * image.width, pixels: image.pixels.data, duration: frame.duration))
         }

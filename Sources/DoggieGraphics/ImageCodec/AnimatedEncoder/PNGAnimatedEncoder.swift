@@ -225,7 +225,7 @@ extension PNGEncoder: AnimatedImageEncoder {
             
             ihdr = IHDR(width: first.image.width, height: first.image.height, bitDepth: 8, colour: opaque ? 0 : 4, interlaced: interlaced)
             
-            let frames = image.frames.map { Frame(image: Image<Gray16ColorPixel>(image: $0.image, colorSpace: colorSpace), duration: $0.duration) }
+            let frames = image.frames.map { Frame(image: $0.image.convert(to: colorSpace) as Image<Gray16ColorPixel>, duration: $0.duration) }
             
             guard let _frame_chunks = encodeFrames(frames: frames, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced, opaque: opaque) else { return nil }
             
@@ -244,7 +244,7 @@ extension PNGEncoder: AnimatedImageEncoder {
             
             ihdr = IHDR(width: first.image.width, height: first.image.height, bitDepth: 8, colour: opaque ? 2 : 6, interlaced: interlaced)
             
-            let frames = image.frames.map { Frame(image: Image<RGBA32ColorPixel>(image: $0.image, colorSpace: colorSpace), duration: $0.duration) }
+            let frames = image.frames.map { Frame(image: $0.image.convert(to: colorSpace) as Image<RGBA32ColorPixel>, duration: $0.duration) }
             
             guard let _frame_chunks = encodeFrames(frames: frames, deflate_level: deflate_level, predictor: predictor, interlaced: interlaced, opaque: opaque) else { return nil }
             
