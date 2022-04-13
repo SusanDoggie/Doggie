@@ -51,13 +51,13 @@ extension JPEGEncoder {
         
         var _pixels = Data(count: pixels.count)
         
-        _pixels.withUnsafeMutableBufferPointer {
+        pixels.withUnsafeBufferPointer {
             
-            guard var destination = $0.baseAddress else { return }
+            guard var source = $0.baseAddress else { return }
             
-            pixels.withUnsafeBufferPointer {
+            _pixels.withUnsafeMutableBufferPointer {
                 
-                guard var source = $0.baseAddress else { return }
+                guard var destination = $0.baseAddress else { return }
                 
                 for _ in 0..<$0.count {
                     
