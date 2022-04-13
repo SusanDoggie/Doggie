@@ -219,7 +219,7 @@ extension Image {
     }
 }
 
-extension ImageProtocol {
+extension _ImageProtocol {
     
     @inlinable
     func _copy<Pixel>() -> Image<Pixel>? {
