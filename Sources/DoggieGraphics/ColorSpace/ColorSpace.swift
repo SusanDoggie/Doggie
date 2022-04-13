@@ -109,18 +109,8 @@ extension ColorSpaceBaseProtocol {
     }
     
     @inlinable
-    func _convertLinearFromXYZ(_ color: XYZColorModel) -> any ColorModel {
-        return self.convertLinearFromXYZ(color)
-    }
-    
-    @inlinable
     func _convertToXYZ(_ color: any ColorModel) -> XYZColorModel {
         return self.convertToXYZ(color as! Model)
-    }
-    
-    @inlinable
-    func _convertFromXYZ(_ color: XYZColorModel) -> any ColorModel {
-        return self.convertFromXYZ(color)
     }
 }
 
@@ -148,7 +138,7 @@ extension ColorSpace {
     
     @inlinable
     public func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
-        return self.base._convertLinearFromXYZ(color) as! Model
+        return self.base.convertLinearFromXYZ(color) as! Model
     }
     
     @inlinable
@@ -158,7 +148,7 @@ extension ColorSpace {
     
     @inlinable
     public func convertFromXYZ(_ color: XYZColorModel) -> Model {
-        return self.base._convertFromXYZ(color) as! Model
+        return self.base.convertFromXYZ(color) as! Model
     }
 }
 

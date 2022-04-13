@@ -119,11 +119,11 @@ extension WrappedColorSpace {
     
     @inlinable
     func convertLinearToXYZ(_ color: Model) -> XYZColorModel {
-        return base.convertToXYZ(convertToBase(color))
+        return base._convertToXYZ(convertToBase(color))
     }
     
     @inlinable
     func convertLinearFromXYZ(_ color: XYZColorModel) -> Model {
-        return convertFromBase(base.convertFromXYZ(color))
+        return convertFromBase(base.convertFromXYZ(color) as! Base)
     }
 }
