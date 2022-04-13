@@ -139,7 +139,7 @@ extension AnyColor {
     
     @inlinable
     public func linearTone() -> AnyColor {
-        return AnyColor(_base.linearTone())
+        return AnyColor(base: _base.linearTone())
     }
     
     @inlinable
@@ -149,7 +149,7 @@ extension AnyColor {
     
     @inlinable
     public func with(opacity: Double) -> AnyColor {
-        return AnyColor(_base.with(opacity: opacity))
+        return AnyColor(base: _base.with(opacity: opacity))
     }
     
     @inlinable
