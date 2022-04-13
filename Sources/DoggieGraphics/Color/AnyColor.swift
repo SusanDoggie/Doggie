@@ -198,11 +198,19 @@ extension AnyColor {
     }
 }
 
+extension _ColorSpaceProtocol {
+    
+    @inlinable
+    func _convert<Model>(color: Color<Model>, intent: RenderingIntent) -> any _ColorProtocol {
+        return color.convert(to: self as! ColorSpace<Model>, intent: intent)
+    }
+}
+
 extension Color {
     
     @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyColor {
-        return AnyColor(colorSpace._base.convert(color: self, intent: intent))
+        return AnyColor(base: colorSpace._base._convert(color: self, intent: intent))
     }
 }
 
