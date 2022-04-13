@@ -27,7 +27,7 @@ struct BMPEncoder: ImageRepEncoder {
     
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
-        let image = Image<ARGB32ColorPixel>(image: image, colorSpace: .sRGB)
+        let image: Image<ARGB32ColorPixel> = image.convert(to: .sRGB)
         
         let resolution = image.resolution.convert(to: .meter)
         
