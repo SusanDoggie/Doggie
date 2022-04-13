@@ -112,7 +112,7 @@ extension AnyColorSpace {
     
     @inlinable
     public var linearTone: AnyColorSpace {
-        return AnyColorSpace(_base: _base.linearTone)
+        return AnyColorSpace(base: _base.linearTone)
     }
     
     @inlinable
