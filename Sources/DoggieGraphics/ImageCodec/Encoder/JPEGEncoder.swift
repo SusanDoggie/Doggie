@@ -91,7 +91,7 @@ extension JPEGEncoder {
             
         case var image as Image<ARGB32ColorPixel>:
             
-            guard let _iccData = image.colorSpace.iccData else { return encode(image: image.convert(to: colorSpace: .sRGB), properties: properties) }
+            guard let _iccData = image.colorSpace.iccData else { return encode(image: image.convert(to: .sRGB), properties: properties) }
             
             image.withUnsafeMutableBufferPointer {
                 
