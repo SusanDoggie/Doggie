@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Image<Pixel: ColorPixel>: ImageProtocol, RawPixelProtocol {
+public struct Image<Pixel: ColorPixel>: ImageProtocol, _ImageProtocol, RawPixelProtocol {
     
     public let width: Int
     public let height: Int

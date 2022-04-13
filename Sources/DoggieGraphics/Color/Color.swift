@@ -24,7 +24,7 @@
 //
 
 @frozen
-public struct Color<Model: ColorModel>: ColorProtocol {
+public struct Color<Model: ColorModel>: ColorProtocol, _ColorProtocol {
     
     public var colorSpace: DoggieGraphics.ColorSpace<Model>
     

@@ -73,3 +73,10 @@ extension ColorProtocol {
             && _self.color.z.almostEqual(_other.color.z, epsilon: epsilon)
     }
 }
+
+@usableFromInline
+protocol _ColorProtocol: ColorProtocol where Self.ColorSpace == DoggieGraphics.ColorSpace<Model> {
+    
+    associatedtype Model: ColorModel
+    
+}

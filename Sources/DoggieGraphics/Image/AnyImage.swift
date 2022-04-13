@@ -27,15 +27,21 @@
 public struct AnyImage: ImageProtocol {
     
     @usableFromInline
-    var _base: any ImageProtocol
+    var _base: any _ImageProtocol
     
     @inlinable
-    public init(_ image: any ImageProtocol) {
-        if let image = image as? AnyImage {
-            self = image
-        } else {
-            self._base = image
-        }
+    init(base image: any _ImageProtocol) {
+        self._base = image
+    }
+    
+    @inlinable
+    public init(_ image: AnyImage) {
+        self = image
+    }
+    
+    @inlinable
+    public init<Pixel>(_ image: Image<Pixel>) {
+        self._base = image
     }
 }
 
@@ -196,7 +202,7 @@ extension AnyImage {
 extension _ColorSpaceProtocol {
     
     @inlinable
-    func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> any ImageProtocol {
+    func _create_image<P>(image: Image<P>, intent: RenderingIntent) -> any _ImageProtocol {
         if let colorSpace = self as? ColorSpace<P.Model> {
             return Image<P>(image: image, colorSpace: colorSpace, intent: intent)
         } else {
@@ -209,7 +215,7 @@ extension Image {
     
     @inlinable
     public func convert(to colorSpace: AnyColorSpace, intent: RenderingIntent = .default) -> AnyImage {
-        return AnyImage(colorSpace._base._create_image(image: self, intent: intent))
+        return AnyImage(base: colorSpace._base._create_image(image: self, intent: intent))
     }
 }
 

@@ -92,3 +92,10 @@ extension Image {
         return Image<P>(image: self, colorSpace: colorSpace, intent: intent)
     }
 }
+
+@usableFromInline
+protocol _ImageProtocol: ImageProtocol, RawPixelProtocol where Self.Color == DoggieGraphics.Color<Model>, RawPixel: ColorPixel, RawPixel.Model == Model {
+    
+    associatedtype Model: ColorModel
+    
+}

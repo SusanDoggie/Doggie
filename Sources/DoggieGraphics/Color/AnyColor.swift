@@ -27,22 +27,28 @@
 public struct AnyColor: ColorProtocol {
     
     @usableFromInline
-    var _base: any ColorProtocol
+    var _base: any _ColorProtocol
     
     @inlinable
-    public init(_ color: any ColorProtocol) {
-        if let color = color as? AnyColor {
-            self = color
-        } else {
-            self._base = color
-        }
+    init(base color: any _ColorProtocol) {
+        self._base = color
+    }
+    
+    @inlinable
+    public init(_ color: AnyColor) {
+        self = color
+    }
+    
+    @inlinable
+    public init<Model>(_ color: Color<Model>) {
+        self._base = color
     }
 }
 
 extension _ColorSpaceProtocol {
     
     @inlinable
-    func _create_color<S>(components: S, opacity: Double) -> any ColorProtocol where S: Sequence, S.Element == Double {
+    func _create_color<S>(components: S, opacity: Double) -> any _ColorProtocol where S: Sequence, S.Element == Double {
         var color = Model()
         var counter = 0
         for (i, v) in components.enumerated() {
