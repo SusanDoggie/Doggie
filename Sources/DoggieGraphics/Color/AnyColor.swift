@@ -213,4 +213,3 @@ extension Color {
         return AnyColor(base: colorSpace._base._convert(color: self, intent: intent))
     }
 }
-
