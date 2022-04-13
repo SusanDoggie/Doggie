@@ -88,7 +88,10 @@ struct TIFFEncoder: ImageRepEncoder {
         }
         
         let colorSpace = photometric == 8 ? AnyColorSpace.genericLab : image.colorSpace
-        guard let iccData = colorSpace.iccData else { return encode(image: AnyImage(Image<Float32ColorPixel<LabColorModel>>(image: image, colorSpace: .genericLab)), properties: properties) }
+        guard let iccData = colorSpace.iccData else {
+            let image: Image<Float32ColorPixel<LabColorModel>> = image.convert(to: .genericLab)
+            return encode(image: AnyImage(image), properties: properties)
+        }
         
         let isOpaque = image.isOpaque
         let samplesPerPixel = isOpaque ? image.colorSpace.numberOfComponents : image.colorSpace.numberOfComponents + 1
@@ -166,7 +169,8 @@ struct TIFFEncoder: ImageRepEncoder {
                 if let image = image.base as? Image<Float64ColorPixel<LabColorModel>>, image.colorSpace == .genericLab {
                     pixelData = tiff_color_data(image, predictor, isOpaque)
                 } else {
-                    pixelData = tiff_color_data(Image<Float32ColorPixel<LabColorModel>>(image: image, colorSpace: .genericLab), predictor, isOpaque)
+                    let image: Image<Float32ColorPixel<LabColorModel>> = image.convert(to: .genericLab)
+                    pixelData = tiff_color_data(image, predictor, isOpaque)
                 }
             } else {
                 guard let image = image.base as? TIFFRawRepresentable else { return nil }
