@@ -125,6 +125,14 @@ extension AnyColor {
     }
 }
 
+extension _ColorProtocol {
+    
+    @inlinable
+    var _colorSpace: any _ColorSpaceProtocol {
+        return colorSpace
+    }
+}
+
 extension AnyColor {
     
     @inlinable
@@ -134,8 +142,7 @@ extension AnyColor {
     
     @inlinable
     public var colorSpace: AnyColorSpace {
-        let colorSpace = _base.colorSpace
-        return AnyColorSpace(base: colorSpace)
+        return AnyColorSpace(base: _base._colorSpace)
     }
     
     @inlinable
