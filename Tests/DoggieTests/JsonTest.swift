@@ -116,5 +116,25 @@ class JsonTest: XCTestCase {
         }
     }
     
+    func testJsonUpdate() {
+        
+        var json: Json = [1, 2, 3]
+        
+        json[5] = 5
+        
+        XCTAssertEqual(json, [1, 2, 3, nil, nil, 5])
+    }
+    
+    func testJsonUpdate2() {
+        
+        var json: Json = [
+            "a": 1,
+            "b": 2,
+        ]
+        
+        json["c"] = 3
+        
+        XCTAssertEqual(json, ["a": 1, "b": 2, "c": 3])
+    }
 }
 
