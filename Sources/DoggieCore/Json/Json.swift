@@ -406,11 +406,13 @@ extension Json {
             switch self {
             case var .array(value):
                 
-                if index >= value.count {
-                    value.append(contentsOf: repeatElement(nil, count: index - value.count + 1))
+                replaceValue(&self) {
+                    if index >= value.count {
+                        value.append(contentsOf: repeatElement(nil, count: index - value.count + 1))
+                    }
+                    value[index] = newValue
+                    return Json(value)
                 }
-                value[index] = newValue
-                self = Json(value)
                 
             default: fatalError("Not an array.")
             }
@@ -430,9 +432,13 @@ extension Json {
             return value[key] ?? nil
         }
         set {
+            
             guard case var .dictionary(value) = self else { fatalError("Not an object.") }
-            value[key] = newValue.isNil ? nil : newValue
-            self = Json(value)
+            
+            replaceValue(&self) {
+                value[key] = newValue.isNil ? nil : newValue
+                return Json(value)
+            }
         }
     }
 }
