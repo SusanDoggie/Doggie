@@ -168,21 +168,32 @@ extension CIEXYZColorSpace {
 extension ColorSpace {
     
     @inlinable
+    func _convert<R>(_ color: Model, to other: ColorSpace<R>, matrix: Matrix) -> R {
+        return matrix.almostEqual(.identity) ? other.convertFromXYZ(self.convertToXYZ(color)) : other.convertFromXYZ(self.convertToXYZ(color) * matrix)
+    }
+    
+    @inlinable
     public func convert<R>(_ color: Model, to other: ColorSpace<R>, intent: RenderingIntent = .default) -> R {
         guard self != other as? ColorSpace else { return color as! R }
         let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
-        return matrix.almostEqual(.identity) ? other.convertFromXYZ(self.convertToXYZ(color)) : other.convertFromXYZ(self.convertToXYZ(color) * matrix)
+        return self._convert(color, to: other, matrix: matrix)
     }
-}
-
-extension ColorSpace {
     
     @inlinable
-    @inline(__always)
-    func convert_buffer<S, R>(_ color: MappedBuffer<S>, to other: ColorSpace<R.Model>, intent: RenderingIntent) -> MappedBuffer<R> where S: ColorPixel, S.Model == Model, R: ColorPixel {
+    func _convert<S: ColorPixel, R: ColorPixel>(_ pixel: S, to other: ColorSpace<R.Model>) -> R where S.Model == Model {
+        return R(color: other.convertFromXYZ(self.convertToXYZ(pixel.color)), opacity: pixel.opacity)
+    }
+    
+    @inlinable
+    func _convert<S: ColorPixel, R: ColorPixel>(_ pixel: S, to other: ColorSpace<R.Model>, matrix: Matrix) -> R where S.Model == Model {
+        return R(color: other.convertFromXYZ(self.convertToXYZ(pixel.color) * matrix), opacity: pixel.opacity)
+    }
+    
+    @inlinable
+    func convert_buffer<S: ColorPixel, R: ColorPixel>(_ color: MappedBuffer<S>, to other: ColorSpace<R.Model>, intent: RenderingIntent) -> MappedBuffer<R> where S.Model == Model {
         guard self != other as? ColorSpace else { return color as? MappedBuffer<R> ?? color.map { R(color: $0.color as! R.Model, opacity: $0.opacity) } }
         let matrix = self.base.cieXYZ._intentMatrix(to: other.base.cieXYZ, chromaticAdaptationAlgorithm: chromaticAdaptationAlgorithm, intent: intent)
-        return matrix.almostEqual(.identity) ? color.map { R(color: other.convertFromXYZ(self.convertToXYZ($0.color)), opacity: $0.opacity) } : color.map { R(color: other.convertFromXYZ(self.convertToXYZ($0.color) * matrix), opacity: $0.opacity) }
+        return matrix.almostEqual(.identity) ? color.map { self._convert($0, to: other) } : color.map { self._convert($0, to: other, matrix: matrix) }
     }
 }
 
