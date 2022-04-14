@@ -268,7 +268,7 @@ extension CIImage {
         }
     }
     
-    open func diffuseLighting(_ lighting: SVGDiffuseLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) -> CIImage {
+    public func diffuseLighting(_ lighting: SVGDiffuseLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
@@ -367,7 +367,7 @@ extension CIImage {
         }
     }
     
-    open func specularLighting(_ lighting: SVGSpecularLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) -> CIImage {
+    public func specularLighting(_ lighting: SVGSpecularLighting, _ unit: Size = Size(width: 1, height: 1), _ scale: Double = 1) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         

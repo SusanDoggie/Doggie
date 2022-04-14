@@ -70,7 +70,7 @@ extension CIImage {
         }
     }
     
-    open func wrapTile() -> CIImage {
+    public func wrapTile() -> CIImage {
         
         if extent.isEmpty { return .empty() }
         if extent.isInfinite { return self }

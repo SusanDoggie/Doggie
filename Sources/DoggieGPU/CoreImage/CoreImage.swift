@@ -27,7 +27,7 @@
 
 extension CIImage {
     
-    open func sharpenLuminance(sharpness: Float = 0.4,
+    public func sharpenLuminance(sharpness: Float = 0.4,
                                radius: Float = 1.69) -> CIImage {
         
         guard let filter = CIFilter(name: "CISharpenLuminance") else { return .empty() }
@@ -39,7 +39,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func unsharpMask(radius: Float = 2.5,
+    public func unsharpMask(radius: Float = 2.5,
                           intensity: Float = 0.5) -> CIImage {
         
         guard let filter = CIFilter(name: "CIUnsharpMask") else { return .empty() }
@@ -51,7 +51,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func circularScreen(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func circularScreen(center: CGPoint = CGPoint(x: 150, y: 150),
                              width: Float = 6,
                              sharpness: Float = 0.7) -> CIImage {
         
@@ -65,7 +65,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func cmykHalftone(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func cmykHalftone(center: CGPoint = CGPoint(x: 150, y: 150),
                            width: Float = 6,
                            angle: Float = 0,
                            sharpness: Float = 0.7,
@@ -85,7 +85,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func dotScreen(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func dotScreen(center: CGPoint = CGPoint(x: 150, y: 150),
                         angle: Float = 0,
                         width: Float = 6,
                         sharpness: Float = 0.7) -> CIImage {
@@ -101,7 +101,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func hatchedScreen(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func hatchedScreen(center: CGPoint = CGPoint(x: 150, y: 150),
                             angle: Float = 0,
                             width: Float = 6,
                             sharpness: Float = 0.7) -> CIImage {
@@ -117,7 +117,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func lineScreen(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func lineScreen(center: CGPoint = CGPoint(x: 150, y: 150),
                          angle: Float = 0,
                          width: Float = 6,
                          sharpness: Float = 0.7) -> CIImage {
@@ -134,7 +134,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func bicubicScaleTransform(scale: Float = 1,
+    public func bicubicScaleTransform(scale: Float = 1,
                                     aspectRatio: Float = 1,
                                     b: Float = 0,
                                     c: Float = 0.75) -> CIImage {
@@ -150,7 +150,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func edgePreserveUpsample(smallImage: CIImage,
+    public func edgePreserveUpsample(smallImage: CIImage,
                                    spatialSigma: Float = 3,
                                    lumaSigma: Float = 0.15) -> CIImage {
         
@@ -165,7 +165,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func keystoneCorrectionCombined(focalLength: Float = 28) -> CIImage {
+    public func keystoneCorrectionCombined(focalLength: Float = 28) -> CIImage {
         
         let filter = CIFilter.keystoneCorrectionCombined()
         
@@ -176,7 +176,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func keystoneCorrectionHorizontal(focalLength: Float = 28) -> CIImage {
+    public func keystoneCorrectionHorizontal(focalLength: Float = 28) -> CIImage {
         
         let filter = CIFilter.keystoneCorrectionHorizontal()
         
@@ -187,7 +187,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func keystoneCorrectionVertical(focalLength: Float = 28) -> CIImage {
+    public func keystoneCorrectionVertical(focalLength: Float = 28) -> CIImage {
         
         let filter = CIFilter.keystoneCorrectionVertical()
         
@@ -197,7 +197,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func lanczosScaleTransform(scale: Float = 1,
+    public func lanczosScaleTransform(scale: Float = 1,
                                     aspectRatio: Float = 1) -> CIImage {
         
         guard let filter = CIFilter(name: "CILanczosScaleTransform") else { return .empty() }
@@ -209,7 +209,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func perspectiveCorrection(topLeft: CGPoint = CGPoint(x: 118, y: 484),
+    public func perspectiveCorrection(topLeft: CGPoint = CGPoint(x: 118, y: 484),
                                     topRight: CGPoint = CGPoint(x: 646, y: 507),
                                     bottomRight: CGPoint = CGPoint(x: 548, y: 140),
                                     bottomLeft: CGPoint = CGPoint(x: 155, y: 153),
@@ -228,7 +228,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func perspectiveRotate(focalLength: Float = 28,
+    public func perspectiveRotate(focalLength: Float = 28,
                                 pitch: Float = 0,
                                 yaw: Float = 0,
                                 roll: Float = 0) -> CIImage {
@@ -244,7 +244,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func perspectiveTransform(topLeft: CGPoint = CGPoint(x: 118, y: 484),
+    public func perspectiveTransform(topLeft: CGPoint = CGPoint(x: 118, y: 484),
                                    topRight: CGPoint = CGPoint(x: 646, y: 507),
                                    bottomRight: CGPoint = CGPoint(x: 548, y: 140),
                                    bottomLeft: CGPoint = CGPoint(x: 155, y: 153)) -> CIImage {
@@ -260,7 +260,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func perspectiveTransformWithExtent(extent: CGRect = CGRect(x: 0, y: 0, width: 300, height: 300),
+    public func perspectiveTransformWithExtent(extent: CGRect = CGRect(x: 0, y: 0, width: 300, height: 300),
                                              topLeft: CGPoint = CGPoint(x: 118, y: 484),
                                              topRight: CGPoint = CGPoint(x: 646, y: 507),
                                              bottomRight: CGPoint = CGPoint(x: 548, y: 140),
@@ -278,7 +278,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func straighten(angle: Float = 0) -> CIImage {
+    public func straighten(angle: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIStraightenFilter") else { return .empty() }
         
@@ -288,7 +288,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func accordionFoldTransition(targetImage: CIImage,
+    public func accordionFoldTransition(targetImage: CIImage,
                                       bottomHeight: Float = 0,
                                       numberOfFolds: Float = 3,
                                       foldShadowAmount: Float = 0.1,
@@ -306,7 +306,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func barsSwipeTransition(targetImage: CIImage,
+    public func barsSwipeTransition(targetImage: CIImage,
                                   angle: Float = 3.141592653589793,
                                   width: Float = 30,
                                   barOffset: Float = 10,
@@ -324,7 +324,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func copyMachineTransition(targetImage: CIImage,
+    public func copyMachineTransition(targetImage: CIImage,
                                     extent: CGRect = CGRect(x: 0, y: 0, width: 300, height: 300),
                                     color: CIColor = CIColor(red: 0.6, green: 1, blue: 0.8, alpha: 1),
                                     time: Float = 0,
@@ -346,7 +346,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func disintegrateWithMaskTransition(targetImage: CIImage,
+    public func disintegrateWithMaskTransition(targetImage: CIImage,
                                              maskImage: CIImage,
                                              time: Float = 0,
                                              shadowRadius: Float = 8,
@@ -366,7 +366,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func dissolveTransition(targetImage: CIImage,
+    public func dissolveTransition(targetImage: CIImage,
                                  time: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIDissolveTransition") else { return .empty() }
@@ -378,7 +378,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func flashTransition(targetImage: CIImage,
+    public func flashTransition(targetImage: CIImage,
                               center: CGPoint = CGPoint(x: 150, y: 150),
                               extent: CGRect = CGRect(x: 0, y: 0, width: 300, height: 300),
                               color: CIColor = CIColor(red: 1, green: 0.8, blue: 0.6, alpha: 1),
@@ -404,7 +404,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func modTransition(targetImage: CIImage,
+    public func modTransition(targetImage: CIImage,
                             center: CGPoint = CGPoint(x: 150, y: 150),
                             time: Float = 0,
                             angle: Float = 2,
@@ -424,7 +424,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func pageCurlTransition(targetImage: CIImage,
+    public func pageCurlTransition(targetImage: CIImage,
                                  backsideImage: CIImage,
                                  shadingImage: CIImage,
                                  extent: CGRect = CGRect(x: 0, y: 0, width: 300, height: 300),
@@ -446,7 +446,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func pageCurlWithShadowTransition(targetImage: CIImage,
+    public func pageCurlWithShadowTransition(targetImage: CIImage,
                                            backsideImage: CIImage,
                                            extent: CGRect = CGRect(x: 0, y: 0, width: 0, height: 0),
                                            time: Float = 0,
@@ -472,7 +472,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func rippleTransition(targetImage: CIImage,
+    public func rippleTransition(targetImage: CIImage,
                                shadingImage: CIImage,
                                center: CGPoint = CGPoint(x: 150, y: 150),
                                extent: CGRect = CGRect(x: 0, y: 0, width: 300, height: 300),
@@ -494,7 +494,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func swipeTransition(targetImage: CIImage,
+    public func swipeTransition(targetImage: CIImage,
                               extent: CGRect = CGRect(x: 0, y: 0, width: 300, height: 300),
                               color: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1),
                               time: Float = 0,
@@ -516,7 +516,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func colorClamp(minComponents: CIVector = CIVector(x: 0, y: 0, z: 0, w: 0),
+    public func colorClamp(minComponents: CIVector = CIVector(x: 0, y: 0, z: 0, w: 0),
                          maxComponents: CIVector = CIVector(x: 1, y: 1, z: 1, w: 1)) -> CIImage {
         
         guard let filter = CIFilter(name: "CIColorClamp") else { return .empty() }
@@ -528,7 +528,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func colorControls(saturation: Float = 1,
+    public func colorControls(saturation: Float = 1,
                             brightness: Float = 0,
                             contrast: Float = 1) -> CIImage {
         
@@ -542,7 +542,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func colorMatrix(rVector: CIVector = CIVector(x: 1, y: 0, z: 0, w: 0),
+    public func colorMatrix(rVector: CIVector = CIVector(x: 1, y: 0, z: 0, w: 0),
                           gVector: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0),
                           bVector: CIVector = CIVector(x: 0, y: 0, z: 1, w: 0),
                           aVector: CIVector = CIVector(x: 0, y: 0, z: 0, w: 1),
@@ -560,7 +560,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func colorPolynomial(redCoefficients: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0),
+    public func colorPolynomial(redCoefficients: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0),
                               greenCoefficients: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0),
                               blueCoefficients: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0),
                               alphaCoefficients: CIVector = CIVector(x: 0, y: 1, z: 0, w: 0)) -> CIImage {
@@ -577,16 +577,16 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func depthToDisparity() -> CIImage {
+    public func depthToDisparity() -> CIImage {
         return self.applyingFilter("CIDepthToDisparity", parameters: [:])
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func disparityToDepth() -> CIImage {
+    public func disparityToDepth() -> CIImage {
         return self.applyingFilter("CIDisparityToDepth", parameters: [:])
     }
     
-    open func exposureAdjust(ev: Float = 0) -> CIImage {
+    public func exposureAdjust(ev: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIExposureAdjust") else { return .empty() }
         
@@ -596,7 +596,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func gammaAdjust(power: Float = 1) -> CIImage {
+    public func gammaAdjust(power: Float = 1) -> CIImage {
         
         guard let filter = CIFilter(name: "CIGammaAdjust") else { return .empty() }
         
@@ -606,7 +606,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func hueAdjust(angle: Float = 0) -> CIImage {
+    public func hueAdjust(angle: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIHueAdjust") else { return .empty() }
         
@@ -616,15 +616,15 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func linearToSRGBToneCurve() -> CIImage {
+    public func linearToSRGBToneCurve() -> CIImage {
         return self.applyingFilter("CILinearToSRGBToneCurve", parameters: [:])
     }
     
-    open func sRGBToneCurveToLinear() -> CIImage {
+    public func sRGBToneCurveToLinear() -> CIImage {
         return self.applyingFilter("CISRGBToneCurveToLinear", parameters: [:])
     }
     
-    open func temperatureAndTint(neutral: CIVector = CIVector(x: 6500, y: 0),
+    public func temperatureAndTint(neutral: CIVector = CIVector(x: 6500, y: 0),
                                  targetNeutral: CIVector = CIVector(x: 6500, y: 0)) -> CIImage {
         
         guard let filter = CIFilter(name: "CITemperatureAndTint") else { return .empty() }
@@ -636,7 +636,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func toneCurve(point0: CGPoint = CGPoint(x: 0, y: 0),
+    public func toneCurve(point0: CGPoint = CGPoint(x: 0, y: 0),
                         point1: CGPoint = CGPoint(x: 0.25, y: 0.25),
                         point2: CGPoint = CGPoint(x: 0.5, y: 0.5),
                         point3: CGPoint = CGPoint(x: 0.75, y: 0.75),
@@ -654,7 +654,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func vibrance(amount: Float = 0) -> CIImage {
+    public func vibrance(amount: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIVibrance") else { return .empty() }
         
@@ -664,7 +664,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func whitePointAdjust(color: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1)) -> CIImage {
+    public func whitePointAdjust(color: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1)) -> CIImage {
         
         guard let filter = CIFilter(name: "CIWhitePointAdjust") else { return .empty() }
         
@@ -674,7 +674,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func colorCrossPolynomial(redCoefficients: CIVector = CIVector([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+    public func colorCrossPolynomial(redCoefficients: CIVector = CIVector([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                                    greenCoefficients: CIVector = CIVector([0, 1, 0, 0, 0, 0, 0, 0, 0, 0]),
                                    blueCoefficients: CIVector = CIVector([0, 0, 1, 0, 0, 0, 0, 0, 0, 0])) -> CIImage {
         
@@ -688,11 +688,11 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func colorInvert() -> CIImage {
+    public func colorInvert() -> CIImage {
         return self.applyingFilter("CIColorInvert", parameters: [:])
     }
     
-    open func colorMap(gradientImage: CIImage) -> CIImage {
+    public func colorMap(gradientImage: CIImage) -> CIImage {
         
         guard let filter = CIFilter(name: "CIColorMap") else { return .empty() }
         
@@ -702,7 +702,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func colorMonochrome(color: CIColor = CIColor(red: 0.6, green: 0.45, blue: 0.3, alpha: 1),
+    public func colorMonochrome(color: CIColor = CIColor(red: 0.6, green: 0.45, blue: 0.3, alpha: 1),
                               intensity: Float = 1) -> CIImage {
         
         guard let filter = CIFilter(name: "CIColorMonochrome") else { return .empty() }
@@ -714,7 +714,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func colorPosterize(levels: Float = 6) -> CIImage {
+    public func colorPosterize(levels: Float = 6) -> CIImage {
         
         guard let filter = CIFilter(name: "CIColorPosterize") else { return .empty() }
         
@@ -725,7 +725,7 @@ extension CIImage {
     }
     
     @available(macOS 10.14, iOS 12.0, tvOS 12.0, *)
-    open func dither(intensity: Float = 0.1) -> CIImage {
+    public func dither(intensity: Float = 0.1) -> CIImage {
         
         guard let filter = CIFilter(name: "CIDither") else { return .empty() }
         
@@ -736,7 +736,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func documentEnhancer(amount: Float = 1) -> CIImage {
+    public func documentEnhancer(amount: Float = 1) -> CIImage {
         
         let filter = CIFilter.documentEnhancer()
         
@@ -746,7 +746,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func falseColor(color0: CIColor = CIColor(red: 0.3, green: 0, blue: 0, alpha: 1),
+    public func falseColor(color0: CIColor = CIColor(red: 0.3, green: 0, blue: 0, alpha: 1),
                          color1: CIColor = CIColor(red: 1, green: 0.9, blue: 0.8, alpha: 1)) -> CIImage {
         
         guard let filter = CIFilter(name: "CIFalseColor") else { return .empty() }
@@ -759,7 +759,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func labDeltaE(image2: CIImage) -> CIImage {
+    public func labDeltaE(image2: CIImage) -> CIImage {
         
         guard let filter = CIFilter(name: "CILabDeltaE") else { return .empty() }
         
@@ -769,20 +769,20 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func maskToAlpha() -> CIImage {
+    public func maskToAlpha() -> CIImage {
         return self.applyingFilter("CIMaskToAlpha", parameters: [:])
     }
     
-    open func maximumComponent() -> CIImage {
+    public func maximumComponent() -> CIImage {
         return self.applyingFilter("CIMaximumComponent", parameters: [:])
     }
     
-    open func minimumComponent() -> CIImage {
+    public func minimumComponent() -> CIImage {
         return self.applyingFilter("CIMinimumComponent", parameters: [:])
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func paletteCentroid(paletteImage: CIImage,
+    public func paletteCentroid(paletteImage: CIImage,
                               perceptual: Bool = false) -> CIImage {
         
         let filter = CIFilter.paletteCentroid()
@@ -795,7 +795,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func palettize(paletteImage: CIImage,
+    public func palettize(paletteImage: CIImage,
                         perceptual: Bool = false) -> CIImage {
         
         let filter = CIFilter.palettize()
@@ -807,39 +807,39 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func photoEffectChrome() -> CIImage {
+    public func photoEffectChrome() -> CIImage {
         return self.applyingFilter("CIPhotoEffectChrome", parameters: [:])
     }
     
-    open func photoEffectFade() -> CIImage {
+    public func photoEffectFade() -> CIImage {
         return self.applyingFilter("CIPhotoEffectFade", parameters: [:])
     }
     
-    open func photoEffectInstant() -> CIImage {
+    public func photoEffectInstant() -> CIImage {
         return self.applyingFilter("CIPhotoEffectInstant", parameters: [:])
     }
     
-    open func photoEffectMono() -> CIImage {
+    public func photoEffectMono() -> CIImage {
         return self.applyingFilter("CIPhotoEffectMono", parameters: [:])
     }
     
-    open func photoEffectNoir() -> CIImage {
+    public func photoEffectNoir() -> CIImage {
         return self.applyingFilter("CIPhotoEffectNoir", parameters: [:])
     }
     
-    open func photoEffectProcess() -> CIImage {
+    public func photoEffectProcess() -> CIImage {
         return self.applyingFilter("CIPhotoEffectProcess", parameters: [:])
     }
     
-    open func photoEffectTonal() -> CIImage {
+    public func photoEffectTonal() -> CIImage {
         return self.applyingFilter("CIPhotoEffectTonal", parameters: [:])
     }
     
-    open func photoEffectTransfer() -> CIImage {
+    public func photoEffectTransfer() -> CIImage {
         return self.applyingFilter("CIPhotoEffectTransfer", parameters: [:])
     }
     
-    open func sepiaTone(intensity: Float = 1) -> CIImage {
+    public func sepiaTone(intensity: Float = 1) -> CIImage {
         
         guard let filter = CIFilter(name: "CISepiaTone") else { return .empty() }
         
@@ -849,11 +849,11 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func thermal() -> CIImage {
+    public func thermal() -> CIImage {
         return self.applyingFilter("CIThermal", parameters: [:])
     }
     
-    open func vignette(intensity: Float = 0,
+    public func vignette(intensity: Float = 0,
                        radius: Float = 1) -> CIImage {
         
         guard let filter = CIFilter(name: "CIVignette") else { return .empty() }
@@ -865,7 +865,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func vignetteEffect(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func vignetteEffect(center: CGPoint = CGPoint(x: 150, y: 150),
                              radius: Float = 150,
                              intensity: Float = 1,
                              falloff: Float = 0.5) -> CIImage {
@@ -881,11 +881,11 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func xRay() -> CIImage {
+    public func xRay() -> CIImage {
         return self.applyingFilter("CIXRay", parameters: [:])
     }
     
-    open func affineClamp(transform: CGAffineTransform = .identity) -> CIImage {
+    public func affineClamp(transform: CGAffineTransform = .identity) -> CIImage {
         
         guard let filter = CIFilter(name: "CIAffineClamp") else { return .empty() }
         
@@ -905,7 +905,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func affineTile(transform: CGAffineTransform = .identity) -> CIImage {
+    public func affineTile(transform: CGAffineTransform = .identity) -> CIImage {
         
         guard let filter = CIFilter(name: "CIAffineTile") else { return .empty() }
         
@@ -926,7 +926,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func eightfoldReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func eightfoldReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                      angle: Float = 0,
                                      width: Float = 100) -> CIImage {
         
@@ -940,7 +940,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func fourfoldReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func fourfoldReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                     angle: Float = 0,
                                     width: Float = 100,
                                     acuteAngle: Float = 1.570796326794897) -> CIImage {
@@ -956,7 +956,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func fourfoldRotatedTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func fourfoldRotatedTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                   angle: Float = 0,
                                   width: Float = 100) -> CIImage {
         
@@ -970,7 +970,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func fourfoldTranslatedTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func fourfoldTranslatedTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                      angle: Float = 0,
                                      width: Float = 100,
                                      acuteAngle: Float = 1.570796326794897) -> CIImage {
@@ -986,7 +986,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func glideReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func glideReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                  angle: Float = 0,
                                  width: Float = 100) -> CIImage {
         
@@ -1000,7 +1000,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func kaleidoscope(count: Int = 6,
+    public func kaleidoscope(count: Int = 6,
                            center: CGPoint = CGPoint(x: 150, y: 150),
                            angle: Float = 0) -> CIImage {
         
@@ -1014,7 +1014,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func opTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func opTile(center: CGPoint = CGPoint(x: 150, y: 150),
                      scale: Float = 2.8,
                      angle: Float = 0,
                      width: Float = 65) -> CIImage {
@@ -1030,7 +1030,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func parallelogramTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func parallelogramTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                 angle: Float = 0,
                                 acuteAngle: Float = 1.570796326794897,
                                 width: Float = 100) -> CIImage {
@@ -1046,7 +1046,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func perspectiveTile(topLeft: CGPoint = CGPoint(x: 118, y: 484),
+    public func perspectiveTile(topLeft: CGPoint = CGPoint(x: 118, y: 484),
                               topRight: CGPoint = CGPoint(x: 646, y: 507),
                               bottomRight: CGPoint = CGPoint(x: 548, y: 140),
                               bottomLeft: CGPoint = CGPoint(x: 155, y: 153)) -> CIImage {
@@ -1062,7 +1062,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func sixfoldReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func sixfoldReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                    angle: Float = 0,
                                    width: Float = 100) -> CIImage {
         
@@ -1076,7 +1076,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func sixfoldRotatedTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func sixfoldRotatedTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                  angle: Float = 0,
                                  width: Float = 100) -> CIImage {
         
@@ -1090,7 +1090,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func triangleKaleidoscope(point: CGPoint = CGPoint(x: 150, y: 150),
+    public func triangleKaleidoscope(point: CGPoint = CGPoint(x: 150, y: 150),
                                    size: Float = 700,
                                    rotation: Float = 5.924285296593801,
                                    decay: Float = 0.85) -> CIImage {
@@ -1106,7 +1106,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func triangleTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func triangleTile(center: CGPoint = CGPoint(x: 150, y: 150),
                            angle: Float = 0,
                            width: Float = 100) -> CIImage {
         
@@ -1120,7 +1120,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func twelvefoldReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func twelvefoldReflectedTile(center: CGPoint = CGPoint(x: 150, y: 150),
                                       angle: Float = 0,
                                       width: Float = 100) -> CIImage {
         
@@ -1134,7 +1134,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func blendWithAlphaMask(backgroundImage: CIImage,
+    public func blendWithAlphaMask(backgroundImage: CIImage,
                                  maskImage: CIImage) -> CIImage {
         
         guard let filter = CIFilter(name: "CIBlendWithAlphaMask") else { return .empty() }
@@ -1147,7 +1147,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func blendWithBlueMask(backgroundImage: CIImage,
+    public func blendWithBlueMask(backgroundImage: CIImage,
                                 maskImage: CIImage) -> CIImage {
         
         guard let filter = CIFilter(name: "CIBlendWithBlueMask") else { return .empty() }
@@ -1159,7 +1159,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func blendWithMask(backgroundImage: CIImage,
+    public func blendWithMask(backgroundImage: CIImage,
                             maskImage: CIImage) -> CIImage {
         
         guard let filter = CIFilter(name: "CIBlendWithMask") else { return .empty() }
@@ -1172,7 +1172,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func blendWithRedMask(backgroundImage: CIImage,
+    public func blendWithRedMask(backgroundImage: CIImage,
                                maskImage: CIImage) -> CIImage {
         
         guard let filter = CIFilter(name: "CIBlendWithRedMask") else { return .empty() }
@@ -1184,7 +1184,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func bloom(radius: Float = 10,
+    public func bloom(radius: Float = 10,
                     intensity: Float = 0.5) -> CIImage {
         
         guard let filter = CIFilter(name: "CIBloom") else { return .empty() }
@@ -1196,11 +1196,11 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func comicEffect() -> CIImage {
+    public func comicEffect() -> CIImage {
         return self.applyingFilter("CIComicEffect", parameters: [:])
     }
     
-    open func crystallize(radius: Float = 20,
+    public func crystallize(radius: Float = 20,
                           center: CGPoint = CGPoint(x: 150, y: 150)) -> CIImage {
         
         guard let filter = CIFilter(name: "CICrystallize") else { return .empty() }
@@ -1212,7 +1212,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func depthOfField(point0: CGPoint = CGPoint(x: 0, y: 300),
+    public func depthOfField(point0: CGPoint = CGPoint(x: 0, y: 300),
                            point1: CGPoint = CGPoint(x: 300, y: 300),
                            saturation: Float = 1.5,
                            unsharpMaskRadius: Float = 2.5,
@@ -1232,7 +1232,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func edges(intensity: Float = 1) -> CIImage {
+    public func edges(intensity: Float = 1) -> CIImage {
         
         guard let filter = CIFilter(name: "CIEdges") else { return .empty() }
         
@@ -1242,7 +1242,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func edgeWork(radius: Float = 3) -> CIImage {
+    public func edgeWork(radius: Float = 3) -> CIImage {
         
         guard let filter = CIFilter(name: "CIEdgeWork") else { return .empty() }
         
@@ -1253,7 +1253,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func gaborGradients() -> CIImage {
+    public func gaborGradients() -> CIImage {
         
         let filter = CIFilter.gaborGradients()
         
@@ -1262,7 +1262,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func gloom(radius: Float = 10,
+    public func gloom(radius: Float = 10,
                     intensity: Float = 0.5) -> CIImage {
         
         guard let filter = CIFilter(name: "CIGloom") else { return .empty() }
@@ -1274,7 +1274,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func heightFieldFromMask(radius: Float = 10) -> CIImage {
+    public func heightFieldFromMask(radius: Float = 10) -> CIImage {
         
         guard let filter = CIFilter(name: "CIHeightFieldFromMask") else { return .empty() }
         
@@ -1284,7 +1284,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func hexagonalPixellate(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func hexagonalPixellate(center: CGPoint = CGPoint(x: 150, y: 150),
                                  scale: Float = 8) -> CIImage {
         
         guard let filter = CIFilter(name: "CIHexagonalPixellate") else { return .empty() }
@@ -1296,7 +1296,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func highlightShadowAdjust(radius: Float = 0,
+    public func highlightShadowAdjust(radius: Float = 0,
                                     shadowAmount: Float = 0,
                                     highlightAmount: Float = 1) -> CIImage {
         
@@ -1310,7 +1310,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func lineOverlay(nrNoiseLevel: Float = 0.07000000000000001,
+    public func lineOverlay(nrNoiseLevel: Float = 0.07000000000000001,
                           nrSharpness: Float = 0.71,
                           edgeIntensity: Float = 1,
                           threshold: Float = 0.1,
@@ -1329,7 +1329,7 @@ extension CIImage {
     }
     
     @available(macOS 10.14, iOS 12.0, tvOS 12.0, *)
-    open func mix(backgroundImage: CIImage,
+    public func mix(backgroundImage: CIImage,
                   amount: Float = 1) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMix") else { return .empty() }
@@ -1341,7 +1341,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func pixellate(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func pixellate(center: CGPoint = CGPoint(x: 150, y: 150),
                         scale: Float = 8) -> CIImage {
         
         guard let filter = CIFilter(name: "CIPixellate") else { return .empty() }
@@ -1353,7 +1353,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func pointillize(radius: Float = 20,
+    public func pointillize(radius: Float = 20,
                           center: CGPoint = CGPoint(x: 150, y: 150)) -> CIImage {
         
         guard let filter = CIFilter(name: "CIPointillize") else { return .empty() }
@@ -1366,11 +1366,11 @@ extension CIImage {
     }
     
     @available(macOS 10.14, iOS 12.0, tvOS 12.0, *)
-    open func saliencyMap() -> CIImage {
+    public func saliencyMap() -> CIImage {
         return self.applyingFilter("CISaliencyMapFilter", parameters: [:])
     }
     
-    open func shadedMaterial(shadingImage: CIImage,
+    public func shadedMaterial(shadingImage: CIImage,
                              scale: Float = 10) -> CIImage {
         
         guard let filter = CIFilter(name: "CIShadedMaterial") else { return .empty() }
@@ -1382,7 +1382,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func spotColor(centerColor1: CIColor = CIColor(red: 0.0784, green: 0.0627, blue: 0.0706, alpha: 1),
+    public func spotColor(centerColor1: CIColor = CIColor(red: 0.0784, green: 0.0627, blue: 0.0706, alpha: 1),
                         replacementColor1: CIColor = CIColor(red: 0.4392, green: 0.1922, blue: 0.1961, alpha: 1),
                         closeness1: Float = 0.22,
                         contrast1: Float = 0.98,
@@ -1414,7 +1414,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func spotLight(lightPosition: CIVector = CIVector(x: 400, y: 600, z: 150),
+    public func spotLight(lightPosition: CIVector = CIVector(x: 400, y: 600, z: 150),
                         lightPointsAt: CIVector = CIVector(x: 200, y: 200, z: 0),
                         brightness: Float = 3,
                         concentration: Float = 0.1,
@@ -1433,7 +1433,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func bokehBlur(radius: Float = 20,
+    public func bokehBlur(radius: Float = 20,
                         ringAmount: Float = 0,
                         ringSize: Float = 0.1,
                         softness: Float = 1) -> CIImage {
@@ -1449,7 +1449,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func boxBlur(radius: Float = 10) -> CIImage {
+    public func boxBlur(radius: Float = 10) -> CIImage {
         
         guard let filter = CIFilter(name: "CIBoxBlur") else { return .empty() }
         
@@ -1459,7 +1459,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func discBlur(radius: Float = 8) -> CIImage {
+    public func discBlur(radius: Float = 8) -> CIImage {
         
         guard let filter = CIFilter(name: "CIDiscBlur") else { return .empty() }
         
@@ -1469,7 +1469,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func maskedVariableBlur(mask: CIImage,
+    public func maskedVariableBlur(mask: CIImage,
                                  radius: Float = 5) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMaskedVariableBlur") else { return .empty() }
@@ -1481,12 +1481,12 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func median() -> CIImage {
+    public func median() -> CIImage {
         return self.applyingFilter("CIMedianFilter", parameters: [:])
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func morphologyGradient(radius: Float = 5) -> CIImage {
+    public func morphologyGradient(radius: Float = 5) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMorphologyGradient") else { return .empty() }
         
@@ -1497,7 +1497,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func morphologyMaximum(radius: Float = 0) -> CIImage {
+    public func morphologyMaximum(radius: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMorphologyMaximum") else { return .empty() }
         
@@ -1508,7 +1508,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
-    open func morphologyMinimum(radius: Float = 0) -> CIImage {
+    public func morphologyMinimum(radius: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMorphologyMinimum") else { return .empty() }
         
@@ -1519,7 +1519,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func morphologyRectangleMaximum(width: Float = 5,
+    public func morphologyRectangleMaximum(width: Float = 5,
                                          height: Float = 5) -> CIImage {
         
         let filter = CIFilter.morphologyRectangleMaximum()
@@ -1532,7 +1532,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open func morphologyRectangleMinimum(width: Float = 5,
+    public func morphologyRectangleMinimum(width: Float = 5,
                                          height: Float = 5) -> CIImage {
         
         let filter = CIFilter.morphologyRectangleMinimum()
@@ -1544,7 +1544,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func motionBlur(radius: Float = 20,
+    public func motionBlur(radius: Float = 20,
                          angle: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMotionBlur") else { return .empty() }
@@ -1556,7 +1556,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func noiseReduction(noiseLevel: Float = 0.02,
+    public func noiseReduction(noiseLevel: Float = 0.02,
                              sharpness: Float = 0.4) -> CIImage {
         
         guard let filter = CIFilter(name: "CINoiseReduction") else { return .empty() }
@@ -1568,7 +1568,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open func zoomBlur(center: CGPoint = CGPoint(x: 150, y: 150),
+    public func zoomBlur(center: CGPoint = CGPoint(x: 150, y: 150),
                        amount: Float = 20) -> CIImage {
         
         guard let filter = CIFilter(name: "CIZoomBlur") else { return .empty() }
@@ -1584,7 +1584,7 @@ extension CIImage {
 
 extension CIImage {
     
-    open class func GaussianGradient(center: CGPoint = CGPoint(x: 150, y: 150),
+    public class func GaussianGradient(center: CGPoint = CGPoint(x: 150, y: 150),
                                      color0: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1),
                                      color1: CIColor = CIColor(red: 0, green: 0, blue: 0, alpha: 0),
                                      radius: Float = 300) -> CIImage {
@@ -1599,7 +1599,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func HueSaturationValueGradient(value: Float = 1,
+    public class func HueSaturationValueGradient(value: Float = 1,
                                                radius: Float = 300,
                                                softness: Float = 1,
                                                dither: Float = 1,
@@ -1616,7 +1616,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func LinearGradient(point0: CGPoint = CGPoint(x: 0, y: 0),
+    public class func LinearGradient(point0: CGPoint = CGPoint(x: 0, y: 0),
                                    point1: CGPoint = CGPoint(x: 200, y: 200),
                                    color0: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1),
                                    color1: CIColor = CIColor(red: 0, green: 0, blue: 0, alpha: 1)) -> CIImage {
@@ -1631,7 +1631,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func RadialGradient(center: CGPoint = CGPoint(x: 150, y: 150),
+    public class func RadialGradient(center: CGPoint = CGPoint(x: 150, y: 150),
                                    radius0: Float = 5,
                                    radius1: Float = 100,
                                    color0: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1),
@@ -1648,7 +1648,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func SmoothLinearGradient(point0: CGPoint = CGPoint(x: 0, y: 0),
+    public class func SmoothLinearGradient(point0: CGPoint = CGPoint(x: 0, y: 0),
                                          point1: CGPoint = CGPoint(x: 200, y: 200),
                                          color0: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1),
                                          color1: CIColor = CIColor(red: 0, green: 0, blue: 0, alpha: 1)) -> CIImage {
@@ -1664,7 +1664,7 @@ extension CIImage {
     }
     
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-    open class func RoundedRectangleGenerator(extent: CGRect = CGRect(x: 0, y: 0, width: 100, height: 100),
+    public class func RoundedRectangleGenerator(extent: CGRect = CGRect(x: 0, y: 0, width: 100, height: 100),
                                               radius: Float = 10,
                                               color: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1)) -> CIImage {
         
@@ -1677,7 +1677,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func StarShineGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
+    public class func StarShineGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
                                        color: CIColor = CIColor(red: 1, green: 0.8, blue: 0.6, alpha: 1),
                                        radius: Float = 50,
                                        crossScale: Float = 15,
@@ -1700,7 +1700,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func StripesGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
+    public class func StripesGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
                                      color0: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1),
                                      color1: CIColor = CIColor(red: 0, green: 0, blue: 0, alpha: 1),
                                      width: Float = 80,
@@ -1717,7 +1717,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func SunbeamsGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
+    public class func SunbeamsGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
                                       color: CIColor = CIColor(red: 1, green: 0.5, blue: 0, alpha: 1),
                                       sunRadius: Float = 40,
                                       maxStriationRadius: Float = 2.58,
@@ -1738,7 +1738,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func AztecCodeGenerator(message: String,
+    public class func AztecCodeGenerator(message: String,
                                        correction level: Float = 23,
                                        layers: Float? = nil,
                                        compact: Bool = false) -> CIImage {
@@ -1763,7 +1763,7 @@ extension CIImage {
         case high = "H"
     }
     
-    open class func QRCodeGenerator(message: String,
+    public class func QRCodeGenerator(message: String,
                                     correction level: QRCorrectionLevel = .medium) -> CIImage {
         
         guard let data = message.data(using: .isoLatin1) else { return .empty() }
@@ -1776,7 +1776,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func Code128BarcodeGenerator(message: String,
+    public class func Code128BarcodeGenerator(message: String,
                                             quietSpace: Float = 7,
                                             barcodeHeight: Float = 32) -> CIImage {
         
@@ -1791,7 +1791,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func CheckerboardGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
+    public class func CheckerboardGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
                                           color0: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1),
                                           color1: CIColor = CIColor(red: 0, green: 0, blue: 0, alpha: 1),
                                           width: Float = 80,
@@ -1808,7 +1808,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func LenticularHaloGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
+    public class func LenticularHaloGenerator(center: CGPoint = CGPoint(x: 150, y: 150),
                                             color: CIColor = CIColor(red: 1, green: 0.9, blue: 0.8, alpha: 1),
                                             haloRadius: Float = 70,
                                             haloWidth: Float = 87,
@@ -1831,7 +1831,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func PDF417BarcodeGenerator(message: String,
+    public class func PDF417BarcodeGenerator(message: String,
                                            minWidth: Float,
                                            maxWidth: Float,
                                            minHeight: Float,
@@ -1864,7 +1864,7 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    open class func RandomGenerator() -> CIImage {
+    public class func RandomGenerator() -> CIImage {
         return CIFilter(name: "CIRandomGenerator")?.outputImage ?? .empty()
     }
     

@@ -132,7 +132,7 @@ extension CIImage {
         }
     }
     
-    open func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int, _ targetX: Int, _ targetY: Int, _ edgeMode: SVGConvolveMatrixEffect.EdgeMode, _ preserveAlpha: Bool, _ unit: Size = Size(width: 1, height: 1)) -> CIImage {
+    public func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int, _ targetX: Int, _ targetY: Int, _ edgeMode: SVGConvolveMatrixEffect.EdgeMode, _ preserveAlpha: Bool, _ unit: Size = Size(width: 1, height: 1)) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         

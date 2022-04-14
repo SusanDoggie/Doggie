@@ -594,7 +594,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample1.pngRepresentation() else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -603,7 +603,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample2.pngRepresentation() else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -612,7 +612,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample3.pngRepresentation() else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample3.pixels, result.pixels)
     }
@@ -621,7 +621,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample4.pngRepresentation() else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample4.pixels, result.pixels)
     }
@@ -630,7 +630,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample1.pngRepresentation(interlaced: true) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -639,7 +639,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample2.pngRepresentation(interlaced: true) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -648,7 +648,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample3.pngRepresentation(interlaced: true) else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample3.pixels, result.pixels)
     }
@@ -657,7 +657,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample4.pngRepresentation(interlaced: true) else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample4.pixels, result.pixels)
     }
@@ -666,7 +666,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample1.representation(using: .bmp, properties: [:]) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -675,7 +675,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample2.representation(using: .bmp, properties: [:]) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -684,7 +684,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample1.tiffRepresentation() else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -693,7 +693,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample2.tiffRepresentation() else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -702,7 +702,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample3.tiffRepresentation() else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample3.pixels, result.pixels)
     }
@@ -711,7 +711,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample4.tiffRepresentation() else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample4.pixels, result.pixels)
     }
@@ -720,7 +720,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation() else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -729,7 +729,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation() else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -738,7 +738,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample1.tiffRepresentation(compression: .packBits) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -747,7 +747,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample2.tiffRepresentation(compression: .packBits) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -756,7 +756,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample3.tiffRepresentation(compression: .packBits) else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample3.pixels, result.pixels)
     }
@@ -765,7 +765,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample4.tiffRepresentation(compression: .packBits) else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample4.pixels, result.pixels)
     }
@@ -774,7 +774,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation(compression: .packBits) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -783,7 +783,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation(compression: .packBits) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -792,7 +792,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample1.tiffRepresentation(compression: .lzw) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -801,7 +801,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample2.tiffRepresentation(compression: .lzw) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -810,7 +810,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample3.tiffRepresentation(compression: .lzw) else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample3.pixels, result.pixels)
     }
@@ -819,7 +819,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample4.tiffRepresentation(compression: .lzw) else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample4.pixels, result.pixels)
     }
@@ -828,7 +828,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation(compression: .lzw) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -837,7 +837,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation(compression: .lzw) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -846,7 +846,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample1.tiffRepresentation(compression: .deflate) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -855,7 +855,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample2.tiffRepresentation(compression: .deflate) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }
@@ -864,7 +864,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample3.tiffRepresentation(compression: .deflate) else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample3.pixels, result.pixels)
     }
@@ -873,7 +873,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = sample4.tiffRepresentation(compression: .deflate) else { XCTFail(); return }
         
-        let result = try Image<Gray16ColorPixel>(image: AnyImage(data: data), colorSpace: .genericGamma22Gray)
+        let result: Image<Gray16ColorPixel> = try AnyImage(data: data).convert(to: .genericGamma22Gray)
         
         XCTAssertEqual(sample4.pixels, result.pixels)
     }
@@ -882,7 +882,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample1, colorSpace: .default).tiffRepresentation(compression: .deflate) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample1.pixels, result.pixels)
     }
@@ -891,7 +891,7 @@ class ImageCodecTest: XCTestCase {
         
         guard let data = Image<Float32ColorPixel<LabColorModel>>(image: sample2, colorSpace: .default).tiffRepresentation(compression: .deflate) else { XCTFail(); return }
         
-        let result = try Image<ARGB32ColorPixel>(image: AnyImage(data: data), colorSpace: .sRGB)
+        let result: Image<ARGB32ColorPixel> = try AnyImage(data: data).convert(to: .sRGB)
         
         XCTAssertEqual(sample2.pixels, result.pixels)
     }

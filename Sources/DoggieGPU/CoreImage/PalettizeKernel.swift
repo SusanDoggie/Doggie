@@ -72,7 +72,7 @@ extension CIImage {
         }
     }
     
-    open func palettize(palette: CIImage) -> CIImage {
+    public func palettize(palette: CIImage) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
@@ -81,7 +81,7 @@ extension CIImage {
         return rendered ?? .empty()
     }
     
-    open func palettize<C: Collection>(palette: C) -> CIImage where C.Element: ColorPixel, C.Element.Model == RGBColorModel {
+    public func palettize<C: Collection>(palette: C) -> CIImage where C.Element: ColorPixel, C.Element.Model == RGBColorModel {
         
         if extent.isEmpty { return .empty() }
         
