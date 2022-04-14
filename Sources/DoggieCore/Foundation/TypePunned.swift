@@ -27,13 +27,17 @@
 @inline(__always)
 public func withUnsafeTypePunnedPointer<T, U, R>(of value: T, to: U.Type, do body: (UnsafePointer<U>) throws -> R) rethrows -> R {
     
-    return try withUnsafePointer(to: value) {
+    return try withUnsafePointer(to: value) { ptr in
         
         precondition(MemoryLayout<T>.stride % MemoryLayout<U>.stride == 0)
         
         let capacity = MemoryLayout<T>.stride / MemoryLayout<U>.stride
+        let raw_ptr = UnsafeRawPointer(ptr)
         
-        return try $0.withMemoryRebound(to: U.self, capacity: capacity) { try body($0) }
+        let binding = raw_ptr.bindMemory(to: U.self, capacity: capacity)
+        defer { raw_ptr.bindMemory(to: T.self, capacity: 1) }
+        
+        return try body(binding)
     }
 }
 
@@ -41,13 +45,17 @@ public func withUnsafeTypePunnedPointer<T, U, R>(of value: T, to: U.Type, do bod
 @inline(__always)
 public func withUnsafeMutableTypePunnedPointer<T, U, R>(of value: inout T, to: U.Type, do body: (UnsafeMutablePointer<U>) throws -> R) rethrows -> R {
     
-    return try withUnsafeMutablePointer(to: &value) {
+    return try withUnsafeMutablePointer(to: &value) { ptr in
         
         precondition(MemoryLayout<T>.stride % MemoryLayout<U>.stride == 0)
         
         let capacity = MemoryLayout<T>.stride / MemoryLayout<U>.stride
+        let raw_ptr = UnsafeMutableRawPointer(ptr)
         
-        return try $0.withMemoryRebound(to: U.self, capacity: capacity) { try body($0) }
+        let binding = raw_ptr.bindMemory(to: U.self, capacity: capacity)
+        defer { raw_ptr.bindMemory(to: T.self, capacity: 1) }
+        
+        return try body(binding)
     }
 }
 
@@ -57,13 +65,21 @@ extension UnsafeBufferPointer {
     @inline(__always)
     public func withUnsafeTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (UnsafeBufferPointer<T>) throws -> R) rethrows -> R {
         
-        precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
+        if MemoryLayout<Element>.stride > MemoryLayout<T>.stride {
+            precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
+        } else {
+            precondition(MemoryLayout<T>.stride % MemoryLayout<Element>.stride == 0)
+        }
         
         guard let baseAddress = self.baseAddress else { return try body(UnsafeBufferPointer<T>(start: nil, count: 0)) }
         
         let capacity = self.count * MemoryLayout<Element>.stride / MemoryLayout<T>.stride
+        let raw_ptr = UnsafeRawPointer(baseAddress)
         
-        return try baseAddress.withMemoryRebound(to: T.self, capacity: capacity) { try body(UnsafeBufferPointer<T>(start: $0, count: capacity)) }
+        let binding = raw_ptr.bindMemory(to: T.self, capacity: capacity)
+        defer { raw_ptr.bindMemory(to: Element.self, capacity: self.count) }
+        
+        return try body(UnsafeBufferPointer<T>(start: binding, count: capacity))
     }
 }
 
@@ -73,7 +89,11 @@ extension UnsafeMutableBufferPointer {
     @inline(__always)
     public mutating func withUnsafeMutableTypePunnedBufferPointer<T, R>(to: T.Type, _ body: (inout UnsafeMutableBufferPointer<T>) throws -> R) rethrows -> R {
         
-        precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
+        if MemoryLayout<Element>.stride > MemoryLayout<T>.stride {
+            precondition(MemoryLayout<Element>.stride % MemoryLayout<T>.stride == 0)
+        } else {
+            precondition(MemoryLayout<T>.stride % MemoryLayout<Element>.stride == 0)
+        }
         
         guard let baseAddress = self.baseAddress else {
             
@@ -86,16 +106,17 @@ extension UnsafeMutableBufferPointer {
         }
         
         let capacity = self.count * MemoryLayout<Element>.stride / MemoryLayout<T>.stride
+        let raw_ptr = UnsafeMutableRawPointer(baseAddress)
         
-        return try baseAddress.withMemoryRebound(to: T.self, capacity: capacity) { baseAddress in
-            
-            var buf = UnsafeMutableBufferPointer<T>(start: baseAddress, count: capacity)
-            
-            defer { precondition(buf.baseAddress == baseAddress) }
-            defer { precondition(buf.count == capacity) }
-            
-            return try body(&buf)
-        }
+        let binding = raw_ptr.bindMemory(to: T.self, capacity: capacity)
+        defer { raw_ptr.bindMemory(to: Element.self, capacity: self.count) }
+        
+        var buf = UnsafeMutableBufferPointer<T>(start: binding, count: capacity)
+        
+        defer { precondition(buf.baseAddress == binding) }
+        defer { precondition(buf.count == capacity) }
+        
+        return try body(&buf)
     }
 }
 

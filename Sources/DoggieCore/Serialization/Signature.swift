@@ -53,7 +53,7 @@ extension SignatureProtocol {
     @inline(__always)
     public init(stringLiteral value: StaticString) {
         assert(value.utf8CodeUnitCount == Bytes.bitWidth >> 3)
-        self.init(rawValue: value.utf8Start.withMemoryRebound(to: Bytes.self, capacity: 1) { Bytes(bigEndian: $0.pointee) })
+        self.init(rawValue: value.withUTF8Buffer { $0.withUnsafeTypePunnedBufferPointer(to: Bytes.self) { Bytes(bigEndian: $0.baseAddress!.pointee) } })
     }
     
     @inlinable
