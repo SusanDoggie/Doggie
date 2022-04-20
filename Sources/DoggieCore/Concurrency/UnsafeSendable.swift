@@ -32,4 +32,6 @@ public struct UnsafeSendable<Wrapped> : @unchecked Sendable {
     public init(wrappedValue: Wrapped) {
         self.wrappedValue = wrappedValue
     }
+    
+    public var projectedValue: UnsafeSendable { self }
 }
