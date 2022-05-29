@@ -39,7 +39,7 @@ extension Data {
     public func load<T>(fromByteOffset offset: Int = 0, as type: T.Type) -> T {
         assert(offset >= 0, "Data.load with negative offset")
         assert(offset + MemoryLayout<T>.stride <= self.count, "Data.load out of bounds")
-        return self.withUnsafeBytes { ($0.baseAddress! + offset).bindMemory(to: T.self, capacity: 1).pointee }
+        return self.withUnsafeBytes { $0.loadUnaligned(fromByteOffset: offset, as: T.self) }
     }
     
     @inlinable
