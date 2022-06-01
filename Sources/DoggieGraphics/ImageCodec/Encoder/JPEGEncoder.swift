@@ -47,6 +47,32 @@ struct JPEGEncoder: ImageRepEncoder {
 
 extension JPEGEncoder {
     
+    static func _encodeGray<Pixel: _GrayColorPixel>(_ pixel: Pixel) -> UInt8 where Pixel.Component == UInt8 {
+        
+        let w = UInt16(pixel.w)
+        let a = UInt16(pixel.a)
+        
+        return UInt8((a * w + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
+    }
+    
+    static func _encodeRGB<Pixel: _RGBColorPixel>(_ pixel: Pixel) -> Pixel where Pixel.Component == UInt8 {
+        
+        let r = UInt16(pixel.r)
+        let g = UInt16(pixel.g)
+        let b = UInt16(pixel.b)
+        let a = UInt16(pixel.a)
+        
+        return Pixel(
+            red: UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF),
+            green: UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF),
+            blue: UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF),
+            opacity: pixel.a
+        )
+    }
+}
+
+extension JPEGEncoder {
+    
     static func encode(image: AnyImage, properties: [ImageRep.PropertyKey: Any]) -> Data? {
         
         let pixels: Data
@@ -60,146 +86,47 @@ extension JPEGEncoder {
             
             guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .genericGamma22Gray), properties: properties) }
             
-            var _pixels = Data(count: image.pixels.count)
-            
-            _pixels.withUnsafeMutableBufferPointer {
-                
-                guard var destination = $0.baseAddress else { return }
-                
-                image.pixels.withUnsafeBufferPointer {
-                    
-                    guard var source = $0.baseAddress else { return }
-                    
-                    for _ in 0..<$0.count {
-                        
-                        let w = UInt16(source.pointee.w)
-                        let a = UInt16(source.pointee.a)
-                        
-                        destination.pointee = UInt8((a * w + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                        
-                        destination += 1
-                        source += 1
-                    }
-                }
-            }
-            
-            pixels = _pixels
+            pixels = image.pixels.map(JPEGEncoder._encodeGray).data
             bytesPerRow = image.width
             format = JCS_GRAYSCALE
             components = 1
             iccData = _iccData
             
-        case var image as Image<ARGB32ColorPixel>:
+        case let image as Image<ARGB32ColorPixel>:
             
             guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
             
-            image.withUnsafeMutableBufferPointer {
-                
-                guard var pixels = $0.baseAddress else { return }
-                
-                for _ in 0..<$0.count {
-                    
-                    let r = UInt16(pixels.pointee.r)
-                    let g = UInt16(pixels.pointee.g)
-                    let b = UInt16(pixels.pointee.b)
-                    let a = UInt16(pixels.pointee.a)
-                    
-                    pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    
-                    pixels += 1
-                }
-            }
-            
-            pixels = image.pixels.data
+            pixels = image.pixels.map(JPEGEncoder._encodeRGB).data
             bytesPerRow = 4 * image.width
             format = JCS_EXT_XRGB
             components = 4
             iccData = _iccData
             
-        case var image as Image<RGBA32ColorPixel>:
+        case let image as Image<RGBA32ColorPixel>:
             
             guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
             
-            image.withUnsafeMutableBufferPointer {
-                
-                guard var pixels = $0.baseAddress else { return }
-                
-                for _ in 0..<$0.count {
-                    
-                    let r = UInt16(pixels.pointee.r)
-                    let g = UInt16(pixels.pointee.g)
-                    let b = UInt16(pixels.pointee.b)
-                    let a = UInt16(pixels.pointee.a)
-                    
-                    pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    
-                    pixels += 1
-                }
-            }
-            
-            pixels = image.pixels.data
+            pixels = image.pixels.map(JPEGEncoder._encodeRGB).data
             bytesPerRow = 4 * image.width
             format = JCS_EXT_RGBX
             components = 4
             iccData = _iccData
             
-        case var image as Image<ABGR32ColorPixel>:
+        case let image as Image<ABGR32ColorPixel>:
             
             guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
             
-            image.withUnsafeMutableBufferPointer {
-                
-                guard var pixels = $0.baseAddress else { return }
-                
-                for _ in 0..<$0.count {
-                    
-                    let r = UInt16(pixels.pointee.r)
-                    let g = UInt16(pixels.pointee.g)
-                    let b = UInt16(pixels.pointee.b)
-                    let a = UInt16(pixels.pointee.a)
-                    
-                    pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    
-                    pixels += 1
-                }
-            }
-            
-            pixels = image.pixels.data
+            pixels = image.pixels.map(JPEGEncoder._encodeRGB).data
             bytesPerRow = 4 * image.width
             format = JCS_EXT_XBGR
             components = 4
             iccData = _iccData
             
-        case var image as Image<BGRA32ColorPixel>:
+        case let image as Image<BGRA32ColorPixel>:
             
             guard let _iccData = image.colorSpace.iccData else { return encode(image: AnyImage(image: image, colorSpace: .sRGB), properties: properties) }
             
-            image.withUnsafeMutableBufferPointer {
-                
-                guard var pixels = $0.baseAddress else { return }
-                
-                for _ in 0..<$0.count {
-                    
-                    let r = UInt16(pixels.pointee.r)
-                    let g = UInt16(pixels.pointee.g)
-                    let b = UInt16(pixels.pointee.b)
-                    let a = UInt16(pixels.pointee.a)
-                    
-                    pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                    
-                    pixels += 1
-                }
-            }
-            
-            pixels = image.pixels.data
+            pixels = image.pixels.map(JPEGEncoder._encodeRGB).data
             bytesPerRow = 4 * image.width
             format = JCS_EXT_BGRX
             components = 4
@@ -213,30 +140,7 @@ extension JPEGEncoder {
                 
                 guard let _iccData = _image.colorSpace.iccData else { return encode(image: AnyImage(image: _image, colorSpace: .genericGamma22Gray), properties: properties) }
                 
-                var _pixels = Data(count: _image.pixels.count)
-                
-                _pixels.withUnsafeMutableBufferPointer {
-                    
-                    guard var destination = $0.baseAddress else { return }
-                    
-                    _image.pixels.withUnsafeBufferPointer {
-                        
-                        guard var source = $0.baseAddress else { return }
-                        
-                        for _ in 0..<$0.count {
-                            
-                            let w = UInt16(source.pointee.w)
-                            let a = UInt16(source.pointee.a)
-                            
-                            destination.pointee = UInt8((a * w + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                            
-                            destination += 1
-                            source += 1
-                        }
-                    }
-                }
-                
-                pixels = _pixels
+                pixels = _image.pixels.map(JPEGEncoder._encodeGray).data
                 bytesPerRow = _image.width
                 format = JCS_GRAYSCALE
                 components = 1
@@ -244,30 +148,11 @@ extension JPEGEncoder {
                 
             } else {
                 
-                var _image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
+                let _image = Image<RGBA32ColorPixel>(image) ?? Image<RGBA32ColorPixel>(image: image, colorSpace: .sRGB)
                 
                 guard let _iccData = _image.colorSpace.iccData else { return encode(image: AnyImage(image: _image, colorSpace: .sRGB), properties: properties) }
                 
-                _image.withUnsafeMutableBufferPointer {
-                    
-                    guard var pixels = $0.baseAddress else { return }
-                    
-                    for _ in 0..<$0.count {
-                        
-                        let r = UInt16(pixels.pointee.r)
-                        let g = UInt16(pixels.pointee.g)
-                        let b = UInt16(pixels.pointee.b)
-                        let a = UInt16(pixels.pointee.a)
-                        
-                        pixels.pointee.r = UInt8((a * r + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                        pixels.pointee.g = UInt8((a * g + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                        pixels.pointee.b = UInt8((a * b + 0xFF * (0xFF - a) + 0x7F) / 0xFF)
-                        
-                        pixels += 1
-                    }
-                }
-                
-                pixels = _image.pixels.data
+                pixels = _image.pixels.map(JPEGEncoder._encodeRGB).data
                 bytesPerRow = 4 * _image.width
                 format = JCS_EXT_RGBX
                 components = 4
