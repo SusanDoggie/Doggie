@@ -92,7 +92,7 @@ jobs:
       fail-fast: false
       matrix:
         swift_version: [main]
-        distro: [bionic, focal]
+        distro: [bionic, focal, jammy]
     steps:
     - uses: actions/checkout@v1
       with:
