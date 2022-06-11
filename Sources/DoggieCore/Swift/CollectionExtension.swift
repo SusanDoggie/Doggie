@@ -103,9 +103,9 @@ extension RandomAccessCollection {
         var cursor = self.index(startIndex, offsetBy: pattern_count - 1, limitedBy: endIndex) ?? endIndex
         while cursor < endIndex {
             guard let not_match = try zip(self.indices.prefix(through: cursor).reversed(), reverse_pattern).first(where: { try !isEquivalent(self[$0], $1) }) else {
-                let strat = self.index(cursor, offsetBy: 1 - pattern_count)
+                let start = self.index(cursor, offsetBy: 1 - pattern_count)
                 let end = self.index(cursor, offsetBy: 1)
-                return strat..<end
+                return start..<end
             }
             let notMatchValue = self[not_match.0]
             if let pos = try reverse_pattern.dropFirst().firstIndex(where: { try isEquivalent(notMatchValue, $0) }) {
@@ -115,8 +115,8 @@ extension RandomAccessCollection {
             }
         }
         if try self.reversed().starts(with: reverse_pattern, by: isEquivalent) {
-            let strat = self.index(endIndex, offsetBy: -pattern_count)
-            return strat..<endIndex
+            let start = self.index(endIndex, offsetBy: -pattern_count)
+            return start..<endIndex
         }
         return nil
     }
