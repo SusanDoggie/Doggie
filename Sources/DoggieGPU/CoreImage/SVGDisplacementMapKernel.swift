@@ -104,7 +104,7 @@ extension CIImage {
         }
     }
     
-    open func displacementMap(_ displacement: CIImage, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Size) -> CIImage {
+    public func displacementMap(_ displacement: CIImage, _ xChannelSelector: Int, _ yChannelSelector: Int, _ scale: Size) -> CIImage {
         
         let x_selector: String
         let y_selector: String

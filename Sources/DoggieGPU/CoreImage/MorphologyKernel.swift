@@ -64,7 +64,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, *)
-    open func areaMin(_ radius: Size) -> CIImage {
+    public func areaMin(_ radius: Size) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
@@ -135,7 +135,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, *)
-    open func areaMax(_ radius: Size) -> CIImage {
+    public func areaMax(_ radius: Size) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         

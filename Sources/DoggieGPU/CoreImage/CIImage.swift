@@ -27,22 +27,22 @@
 
 extension CGImage {
     
-    open func applyingFilter(_ filterName: String, withInputParameters params: [String: Any]) -> CIImage {
+    public func applyingFilter(_ filterName: String, withInputParameters params: [String: Any]) -> CIImage {
         return CIImage(cgImage: self).applyingFilter(filterName, parameters: params)
     }
 }
 
 extension CIImage {
     
-    open func transformed(by transform: SDTransform) -> CIImage {
+    public func transformed(by transform: SDTransform) -> CIImage {
         return self.transformed(by: CGAffineTransform(transform))
     }
     
-    open func clamped(to rect: Rect) -> CIImage {
+    public func clamped(to rect: Rect) -> CIImage {
         return self.clamped(to: CGRect(rect))
     }
     
-    open func cropped(to rect: Rect) -> CIImage {
+    public func cropped(to rect: Rect) -> CIImage {
         return self.cropped(to: CGRect(rect))
     }
 }

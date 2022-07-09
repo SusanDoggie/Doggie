@@ -86,7 +86,7 @@ extension CIImage {
         }
     }
     
-    open func bilateralFilter(_ spatial: Size, _ range: Double) -> CIImage {
+    public func bilateralFilter(_ spatial: Size, _ range: Double) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         
