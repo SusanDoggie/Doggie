@@ -326,37 +326,21 @@ public func lcm<T: SignedInteger>(_ a: T, _ b: T) -> T {
 
 @inlinable
 @inline(__always)
-public func factorial<T: UnsignedInteger>(_ x: T) -> T where T.Stride: SignedInteger {
-    if x == 0 || x == 1 {
-        return 1
-    }
-    var _a: T = 1
-    for i in 2...x {
-        _a = _a * i
-    }
-    return _a
+public func factorial<T: UnsignedInteger>(_ n: T) -> T where T.Stride: SignedInteger {
+    return (0...n).dropFirst().reduce(1, *)
 }
 
 @inlinable
 @inline(__always)
 public func permutation<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride: SignedInteger {
-    if k == 0 {
-        return 1
-    }
-    if n < k {
-        return 0
-    }
-    var _a: T = 1
-    for i in (n - k + 1)...n {
-        _a = _a * i
-    }
-    return _a
+    return (k...n).dropFirst().reduce(1, *)
 }
 
 @inlinable
 @inline(__always)
 public func combination<T: UnsignedInteger>(_ n: T, _ k: T) -> T where T.Stride: SignedInteger {
-    return permutation(n, k) / factorial(k)
+    let s = n - k
+    return zip(max(k, s)...n, 0...min(k, s)).dropFirst().reduce(1) { $0 * $1.0 / $1.1 }
 }
 
 @inlinable
