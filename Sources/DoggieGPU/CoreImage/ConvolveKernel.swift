@@ -63,7 +63,7 @@ extension CIImage {
     }
     
     @available(macOS 10.13, *)
-    open func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int) -> CIImage {
+    public func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int) -> CIImage {
         
         if extent.isEmpty { return .empty() }
         

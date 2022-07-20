@@ -50,6 +50,7 @@ private struct PathDataScanner<I: IteratorProtocol>: IteratorProtocol, Sequence 
 }
 
 private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?\\d*\\.?\\d+([eE][+-]?\\d+)?"
+private let commandSymbols = Array("MmLlHhVvCcSsQqTtAaZz".utf8)
 
 extension Shape {
     
@@ -86,8 +87,6 @@ extension Shape {
         var lastcontrol = Point()
         var lastbezier = 0
         
-        let commandsymbol = Array("MmLlHhVvCcSsQqTtAaZz".utf8)
-        
         g.next()
         while let command = g.current {
             g.next()
@@ -104,7 +103,7 @@ extension Shape {
                     relative = move
                     lastcontrol = move
                     lastbezier = 0
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "m":
                 repeat {
                     if !component.isEmpty {
@@ -117,7 +116,7 @@ extension Shape {
                     relative = move
                     lastcontrol = move
                     lastbezier = 0
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "L":
                 repeat {
                     let line = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
@@ -125,7 +124,7 @@ extension Shape {
                     lastcontrol = line
                     lastbezier = 0
                     component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "l":
                 repeat {
                     let line = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
@@ -133,7 +132,7 @@ extension Shape {
                     lastcontrol = line
                     lastbezier = 0
                     component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "H":
                 repeat {
                     let line = Point(x: try toDouble(g.current), y: relative.y)
@@ -141,7 +140,7 @@ extension Shape {
                     lastcontrol = line
                     lastbezier = 0
                     component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "h":
                 repeat {
                     let line = Point(x: try toDouble(g.current) + relative.x, y: relative.y)
@@ -149,7 +148,7 @@ extension Shape {
                     lastcontrol = line
                     lastbezier = 0
                     component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "V":
                 repeat {
                     let line = Point(x: relative.x, y: try toDouble(g.current))
@@ -157,7 +156,7 @@ extension Shape {
                     lastcontrol = line
                     lastbezier = 0
                     component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "v":
                 repeat {
                     let line = Point(x: relative.x, y: try toDouble(g.current) + relative.y)
@@ -165,7 +164,7 @@ extension Shape {
                     lastcontrol = line
                     lastbezier = 0
                     component.append(.line(line))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "C":
                 repeat {
                     let p1 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
@@ -175,7 +174,7 @@ extension Shape {
                     lastcontrol = p2
                     lastbezier = 2
                     component.append(.cubic(p1, p2, p3))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "c":
                 repeat {
                     let p1 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
@@ -185,7 +184,7 @@ extension Shape {
                     lastcontrol = p2
                     lastbezier = 2
                     component.append(.cubic(p1, p2, p3))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "S":
                 repeat {
                     let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
@@ -195,7 +194,7 @@ extension Shape {
                     lastcontrol = p2
                     lastbezier = 2
                     component.append(.cubic(p1, p2, p3))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "s":
                 repeat {
                     let p1 = lastbezier == 2 ? 2 * relative - lastcontrol : relative
@@ -205,7 +204,7 @@ extension Shape {
                     lastcontrol = p2
                     lastbezier = 2
                     component.append(.cubic(p1, p2, p3))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "Q":
                 repeat {
                     let p1 = Point(x: try toDouble(g.current), y: try toDouble(g.next()))
@@ -214,7 +213,7 @@ extension Shape {
                     lastcontrol = p1
                     lastbezier = 1
                     component.append(.quad(p1, p2))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "q":
                 repeat {
                     let p1 = Point(x: try toDouble(g.current) + relative.x, y: try toDouble(g.next()) + relative.y)
@@ -223,7 +222,7 @@ extension Shape {
                     lastcontrol = p1
                     lastbezier = 1
                     component.append(.quad(p1, p2))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "T":
                 repeat {
                     let p1 = lastbezier == 1 ? 2 * relative - lastcontrol : relative
@@ -232,7 +231,7 @@ extension Shape {
                     lastcontrol = p1
                     lastbezier = 1
                     component.append(.quad(p1, p2))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "t":
                 repeat {
                     let p1 = lastbezier == 1 ? 2 * relative - lastcontrol : relative
@@ -241,7 +240,7 @@ extension Shape {
                     lastcontrol = p1
                     lastbezier = 1
                     component.append(.quad(p1, p2))
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "A":
                 repeat {
                     let rx = try toDouble(g.current)
@@ -280,7 +279,7 @@ extension Shape {
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
                     component.arc(to: Point(x: x, y: y), radius: Radius(x: rx, y: ry), rotate: .pi * rotate / 180, largeArc: largeArc, sweep: sweep)
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "a":
                 repeat {
                     let rx = try toDouble(g.current)
@@ -319,7 +318,7 @@ extension Shape {
                     lastcontrol = Point(x: x, y: y)
                     lastbezier = 0
                     component.arc(to: Point(x: x, y: y), radius: Radius(x: rx, y: ry), rotate: .pi * rotate / 180, largeArc: largeArc, sweep: sweep)
-                } while g.next() != nil && !commandsymbol.contains(g.current.utf8.first!)
+                } while g.next() != nil && !commandSymbols.contains(g.current.utf8.first!)
             case "Z", "z":
                 if !component.isEmpty {
                     component.isClosed = true

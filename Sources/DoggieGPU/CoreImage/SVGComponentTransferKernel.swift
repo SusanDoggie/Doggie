@@ -191,7 +191,7 @@ extension CIImage {
         }
     }
     
-    open func componentTransfer(red: SVGComponentTransferEffect.TransferFunction,
+    public func componentTransfer(red: SVGComponentTransferEffect.TransferFunction,
                                 green: SVGComponentTransferEffect.TransferFunction,
                                 blue: SVGComponentTransferEffect.TransferFunction,
                                 alpha: SVGComponentTransferEffect.TransferFunction) -> CIImage {
