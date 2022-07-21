@@ -32,8 +32,8 @@ public func PermutationList<T: UnsignedInteger>(_ n: T) -> ExclusiveReductionsSe
     return (0...n).dropFirst().reversed().lazy.reductions(1, *)
 }
 @inlinable
-public func CombinationList<T: UnsignedInteger>(_ n: T) -> LazyMapSequence<LazySequence<Zip2Sequence<ExclusiveReductionsSequence<ReversedCollection<Slice<ClosedRange<T>>>, T>, ExclusiveReductionsSequence<Slice<ClosedRange<T>>, T>>>.Elements, T> where T.Stride : SignedInteger {
-    return zip(PermutationList(n), FactorialList(n)).lazy.map(/)
+public func CombinationList<T: UnsignedInteger>(_ n: T) -> ExclusiveReductionsSequence<LazySequence<Zip2Sequence<ReversedCollection<(ClosedRange<T>)>, PartialRangeFrom<T>>>.Elements, T> where T.Stride : SignedInteger {
+    return zip((1...n).reversed(), 1...).lazy.reductions(1) { $0 * $1.0 / $1.1 }
 }
 
 // MARK: Prime

@@ -44,6 +44,9 @@ class MathTest: XCTestCase {
     
     func testPermutation() {
         
+        XCTAssertEqual(permutation(1, 0) as UInt, 1)
+        XCTAssertEqual(permutation(1, 1) as UInt, 1)
+        
         XCTAssertEqual(permutation(2, 0) as UInt, 2)
         XCTAssertEqual(permutation(2, 1) as UInt, 2)
         XCTAssertEqual(permutation(2, 2) as UInt, 1)
@@ -69,6 +72,9 @@ class MathTest: XCTestCase {
     
     func testCombination() {
         
+        XCTAssertEqual(combination(1, 0) as UInt, 1)
+        XCTAssertEqual(combination(1, 1) as UInt, 1)
+        
         XCTAssertEqual(combination(2, 0) as UInt, 1)
         XCTAssertEqual(combination(2, 1) as UInt, 2)
         XCTAssertEqual(combination(2, 2) as UInt, 1)
@@ -90,6 +96,32 @@ class MathTest: XCTestCase {
         XCTAssertEqual(combination(5, 3) as UInt, 10)
         XCTAssertEqual(combination(5, 4) as UInt, 5)
         XCTAssertEqual(combination(5, 5) as UInt, 1)
+        
+    }
+    
+    func testFactorialList() {
+        
+        XCTAssertEqual(Array(FactorialList(8 as UInt)), [1, 1, 2, 6, 24, 120, 720, 5040, 40320])
+        
+    }
+    
+    func testPermutationList() {
+        
+        XCTAssertEqual(Array(PermutationList(1 as UInt)), [1, 1])
+        XCTAssertEqual(Array(PermutationList(2 as UInt)), [1, 2, 2])
+        XCTAssertEqual(Array(PermutationList(3 as UInt)), [1, 3, 6, 6])
+        XCTAssertEqual(Array(PermutationList(4 as UInt)), [1, 4, 12, 24, 24])
+        XCTAssertEqual(Array(PermutationList(5 as UInt)), [1, 5, 20, 60, 120, 120])
+        
+    }
+    
+    func testCombinationList() {
+        
+        XCTAssertEqual(Array(CombinationList(1 as UInt)), [1, 1])
+        XCTAssertEqual(Array(CombinationList(2 as UInt)), [1, 2, 1])
+        XCTAssertEqual(Array(CombinationList(3 as UInt)), [1, 3, 3, 1])
+        XCTAssertEqual(Array(CombinationList(4 as UInt)), [1, 4, 6, 4, 1])
+        XCTAssertEqual(Array(CombinationList(5 as UInt)), [1, 5, 10, 10, 5, 1])
         
     }
     
