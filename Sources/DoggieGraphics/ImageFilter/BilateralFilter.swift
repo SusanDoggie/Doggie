@@ -25,6 +25,14 @@
 
 @inlinable
 @inline(__always)
+func _dot<Pixel: _FloatComponentPixel>(_ c0: Pixel, _ c1: Pixel) -> Pixel.Scalar {
+    let d = c0 - c1
+    let e = d._opacity * d._opacity
+    return d._color.reduce(e) { fma($1, $1, $0) }
+}
+
+@inlinable
+@inline(__always)
 public func BilateralFilter<Pixel>(_ image: Image<Pixel>, _ spatial: Double, _ range: Double) -> Image<Pixel> {
     return Image(texture: BilateralFilter(Texture(image: image), spatial, range), resolution: image.resolution, colorSpace: image.colorSpace)
 }
@@ -47,13 +55,6 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _
     
     precondition(spatial.width > 0 || spatial.height > 0, "spatial is less than or equal to zero.")
     precondition(range > 0, "range is less than or equal to zero.")
-    
-    @inline(__always)
-    func dot(_ c0: Float32ColorPixel<Pixel.Model>, _ c1: Float32ColorPixel<Pixel.Model>) -> Float {
-        let d = c0 - c1
-        let e = d._opacity * d._opacity
-        return d._color.reduce(e) { fma($1, $1, $0) }
-    }
     
     let _r0 = Int(ceil(6 * spatial.width)) >> 1
     let _r1 = Int(ceil(6 * spatial.height)) >> 1
@@ -98,7 +99,7 @@ public func BilateralFilter<Pixel>(_ texture: Texture<Pixel>, _ spatial: Size, _
                             let _k = Float32ColorPixel(_kernel.pointee)
                             let _x = _c0 * Float(x * x)
                             let _y = _c1 * Float(y * y)
-                            let _z = _c2 * dot(_p, _k)
+                            let _z = _c2 * _dot(_p, _k)
                             let w = exp(_x + _y + _z)
                             
                             s += w * _k
@@ -145,13 +146,6 @@ public func BilateralFilter<Pixel: _FloatComponentPixel>(_ texture: Texture<Pixe
     precondition(spatial.width > 0 || spatial.height > 0, "spatial is less than or equal to zero.")
     precondition(range > 0, "range is less than or equal to zero.")
     
-    @inline(__always)
-    func dot(_ c0: Pixel, _ c1: Pixel) -> Pixel.Scalar {
-        let d = c0 - c1
-        let e = d._opacity * d._opacity
-        return d._color.reduce(e) { fma($1, $1, $0) }
-    }
-    
     let _r0 = Int(ceil(6 * spatial.width)) >> 1
     let _r1 = Int(ceil(6 * spatial.height)) >> 1
     
@@ -195,7 +189,7 @@ public func BilateralFilter<Pixel: _FloatComponentPixel>(_ texture: Texture<Pixe
                             let _k = _kernel.pointee
                             let _x = _c0 * Pixel.Scalar(x * x)
                             let _y = _c1 * Pixel.Scalar(y * y)
-                            let _z = _c2 * dot(_p, _k)
+                            let _z = _c2 * _dot(_p, _k)
                             let w = Pixel.Scalar.exp(_x + _y + _z)
                             
                             s += w * _k
