@@ -25,7 +25,6 @@
 
 #if canImport(CoreGraphics) && canImport(ImageIO) && canImport(AVFoundation) && !os(watchOS)
 
-@available(macOS 10.13, macCatalyst 14.0, iOS 11.0, tvOS 11.0, *)
 extension AVDepthData {
     
     public convenience init<T>(texture: StencilTexture<T>, metadata: CGImageMetadata? = nil) throws {
@@ -54,13 +53,11 @@ extension AVDepthData {
 
 extension CGImageRep {
     
-    @available(macOS 10.13, macCatalyst 14.0, iOS 11.0, tvOS 11.0, *)
     public var disparityData: AVDepthData? {
         guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypeDisparity as String) else { return nil }
         return try? AVDepthData(fromDictionaryRepresentation: info)
     }
     
-    @available(macOS 10.13, macCatalyst 14.0, iOS 11.0, tvOS 11.0, *)
     public var depthData: AVDepthData? {
         guard let info = self.auxiliaryDataInfo(kCGImageAuxiliaryDataTypeDepth as String) else { return nil }
         return try? AVDepthData(fromDictionaryRepresentation: info)

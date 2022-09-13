@@ -143,7 +143,6 @@ struct _CGImageSourceImageRepBase: CGImageRepBase {
     }
     
     func auxiliaryDataInfo(_ type: String) -> [String: AnyObject]? {
-        guard #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) else { return nil }
         return CGImageSourceCopyAuxiliaryDataInfoAtIndex(source, index, type as CFString) as? [String: AnyObject]
     }
     

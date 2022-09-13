@@ -133,7 +133,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func bicubicScaleTransform(scale: Float = 1,
                                     aspectRatio: Float = 1,
                                     b: Float = 0,
@@ -576,12 +575,10 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func depthToDisparity() -> CIImage {
         return self.applyingFilter("CIDepthToDisparity", parameters: [:])
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func disparityToDepth() -> CIImage {
         return self.applyingFilter("CIDisparityToDepth", parameters: [:])
     }
@@ -758,7 +755,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func labDeltaE(image2: CIImage) -> CIImage {
         
         guard let filter = CIFilter(name: "CILabDeltaE") else { return .empty() }
@@ -1146,7 +1142,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func blendWithBlueMask(backgroundImage: CIImage,
                                 maskImage: CIImage) -> CIImage {
         
@@ -1171,7 +1166,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func blendWithRedMask(backgroundImage: CIImage,
                                maskImage: CIImage) -> CIImage {
         
@@ -1432,7 +1426,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func bokehBlur(radius: Float = 20,
                         ringAmount: Float = 0,
                         ringSize: Float = 0.1,
@@ -1485,7 +1478,6 @@ extension CIImage {
         return self.applyingFilter("CIMedianFilter", parameters: [:])
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func morphologyGradient(radius: Float = 5) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMorphologyGradient") else { return .empty() }
@@ -1496,7 +1488,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func morphologyMaximum(radius: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMorphologyMaximum") else { return .empty() }
@@ -1507,7 +1498,6 @@ extension CIImage {
         return filter.outputImage ?? .empty()
     }
     
-    @available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
     public func morphologyMinimum(radius: Float = 0) -> CIImage {
         
         guard let filter = CIFilter(name: "CIMorphologyMinimum") else { return .empty() }

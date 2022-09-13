@@ -127,47 +127,23 @@ extension CGPath {
     
     fileprivate func _copy<Other: BezierPathConvertible>(to path: inout Other) {
         
-        if #available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *) {
+        var _path = path
+        
+        self.applyWithBlock { element in
             
-            var _path = path
+            let points = element.pointee.points
             
-            self.applyWithBlock { element in
-                
-                let points = element.pointee.points
-                
-                switch element.pointee.type {
-                case .moveToPoint: _path._move(to: Point(points[0]))
-                case .addLineToPoint: _path._line(to: Point(points[0]))
-                case .addQuadCurveToPoint: _path._quad(to: Point(points[1]), control: Point(points[0]))
-                case .addCurveToPoint: _path._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
-                case .closeSubpath: _path._close()
-                @unknown default: break
-                }
+            switch element.pointee.type {
+            case .moveToPoint: _path._move(to: Point(points[0]))
+            case .addLineToPoint: _path._line(to: Point(points[0]))
+            case .addQuadCurveToPoint: _path._quad(to: Point(points[1]), control: Point(points[0]))
+            case .addCurveToPoint: _path._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
+            case .closeSubpath: _path._close()
+            @unknown default: break
             }
-            
-            path = _path
-            
-        } else {
-            
-            var _path: BezierPathConvertible = path
-            
-            self.apply(info: &_path) { info, element in
-                
-                let path = info!.assumingMemoryBound(to: BezierPathConvertible.self)
-                let points = element.pointee.points
-                
-                switch element.pointee.type {
-                case .moveToPoint: path.pointee._move(to: Point(points[0]))
-                case .addLineToPoint: path.pointee._line(to: Point(points[0]))
-                case .addQuadCurveToPoint: path.pointee._quad(to: Point(points[1]), control: Point(points[0]))
-                case .addCurveToPoint: path.pointee._curve(to: Point(points[2]), control1: Point(points[0]), control2: Point(points[1]))
-                case .closeSubpath: path.pointee._close()
-                @unknown default: break
-                }
-            }
-            
-            path = _path as! Other
         }
+        
+        path = _path
     }
 }
 

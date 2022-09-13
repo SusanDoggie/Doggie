@@ -42,7 +42,6 @@ extension CubicBezierPatch where Element == Point {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func drawMeshGradient<C>(colorSpace: ColorSpace<RGBColorModel>, mesh: MeshGradient<C>) {
@@ -71,7 +70,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private class MeshGradientKernel: CIImageProcessorKernel {
     
     private static let lck = NSLock()
@@ -175,7 +173,6 @@ private class MeshGradientKernel: CIImageProcessorKernel {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension MeshGradientKernel {
     
     struct Gradient {
@@ -204,7 +201,6 @@ extension MeshGradientKernel {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension MeshGradientKernel.Gradient {
     
     fileprivate func prepare_buffers(device: MTLDevice) -> MeshGradientKernel.Buffers? {
@@ -249,7 +245,6 @@ extension MeshGradientKernel.Gradient {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension MeshGradientKernel {
     
     struct Pipeline {

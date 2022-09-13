@@ -27,7 +27,6 @@
 
 extension CIImage {
     
-    @available(macOS 10.13, *)
     private class ConvolveKernel: CIImageProcessorKernel {
         
         override class var synchronizeInputs: Bool {
@@ -62,7 +61,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.13, *)
     public func convolve(_ matrix: [Double], _ bias: Double, _ orderX: Int, _ orderY: Int) -> CIImage {
         
         if extent.isEmpty { return .empty() }

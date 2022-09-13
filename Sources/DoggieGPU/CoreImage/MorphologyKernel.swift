@@ -27,7 +27,6 @@
 
 extension CIImage {
     
-    @available(macOS 10.13, *)
     private class AreaMinKernel: CIImageProcessorKernel {
         
         override class var synchronizeInputs: Bool {
@@ -63,7 +62,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.13, *)
     public func areaMin(_ radius: Size) -> CIImage {
         
         if extent.isEmpty { return .empty() }
@@ -98,7 +96,6 @@ extension CIImage {
 
 extension CIImage {
     
-    @available(macOS 10.13, *)
     private class AreaMaxKernel: CIImageProcessorKernel {
         
         override class var synchronizeInputs: Bool {
@@ -134,7 +131,6 @@ extension CIImage {
         }
     }
     
-    @available(macOS 10.13, *)
     public func areaMax(_ radius: Size) -> CIImage {
         
         if extent.isEmpty { return .empty() }

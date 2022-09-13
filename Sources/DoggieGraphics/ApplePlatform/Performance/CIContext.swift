@@ -25,7 +25,6 @@
 
 #if canImport(CoreImage)
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension CIContext {
     
     public func render(_ image: CIImage, to texture: MTLTexture, commandBuffer: MTLCommandBuffer?, bounds: CGRect, at atPoint: CGPoint, colorSpace: CGColorSpace?) {

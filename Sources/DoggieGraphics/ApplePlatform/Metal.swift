@@ -25,7 +25,6 @@
 
 #if canImport(Metal)
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension MTLDevice {
     
     public func makeTexture<T>(_ buffer: MappedBuffer<T>, descriptor: MTLTextureDescriptor, bytesPerRow: Int) -> MTLTexture? {

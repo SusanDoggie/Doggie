@@ -25,7 +25,6 @@
 
 #if canImport(CoreImage)
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func stroke(path: CGPath, width: CGFloat, lineCap: CGLineCap, lineJoin: CGLineJoin, miterLimit: CGFloat, color: CGColor) {
@@ -34,7 +33,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func draw(shape: Shape, winding: Shape.WindingRule, color: CGColor) {
@@ -60,7 +58,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func concatenate(_ transform: SDTransform) {
@@ -100,7 +97,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func clip(rect: Rect) {
@@ -116,7 +112,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func draw(shape: Shape, stroke: Stroke<CGColor>) {
@@ -124,7 +119,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func draw(rect: Rect, color: CGColor) {
@@ -147,7 +141,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func draw(image: CGImage, in rect: Rect) {
@@ -164,7 +157,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func draw<C>(_ image: Image<C>, in rect: Rect) {
@@ -188,7 +180,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func drawLinearGradient(colorSpace: CGColorSpace, gradient: CGGradient, start startPoint: CGPoint, end endPoint: CGPoint, options: CGGradientDrawingOptions) {
@@ -212,7 +203,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func drawLinearGradient<C>(colorSpace: AnyColorSpace, stops: [GradientStop<C>], start: Point, end: Point, options: CGGradientDrawingOptions) {
@@ -254,7 +244,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: AnyColorSpace, color gradient: Gradient<C>) {
@@ -287,7 +276,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func draw<C>(shape: Shape, winding: Shape.WindingRule, colorSpace: ColorSpace<RGBColorModel>, color gradient: MeshGradient<C>) {

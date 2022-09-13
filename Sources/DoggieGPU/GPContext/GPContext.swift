@@ -25,7 +25,6 @@
 
 #if canImport(CoreImage)
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private struct GPContextStyles {
     
     static let defaultShadowColor = CGColor(colorSpace: CGColorSpaceCreateDeviceGray(), components: [0.0 as CGFloat, 1.0 as CGFloat / 3.0])!
@@ -43,7 +42,6 @@ private struct GPContextStyles {
     
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private struct GraphicState {
     
     var clip: CIImage?
@@ -61,7 +59,6 @@ private struct GraphicState {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 private struct GPContextState {
     
     var clip: CIImage?
@@ -70,7 +67,6 @@ private struct GPContextState {
     
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 public class GPContext {
     
     private var _image: GPContextBase
@@ -91,7 +87,6 @@ public class GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     private convenience init(copyStates context: GPContext) {
@@ -105,7 +100,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     private static let black: CIImage = {
@@ -145,7 +139,6 @@ extension CIImage {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func clearClipBuffer(with value: Double = 1) {
@@ -163,7 +156,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func saveGraphicState() {
@@ -175,7 +167,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public var width: Int {
@@ -187,7 +178,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public var isRasterContext: Bool {
@@ -258,7 +248,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     private func blend_layer(_ image: GPContextBase) {
@@ -328,7 +317,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func beginTransparencyLayer() {
@@ -377,7 +365,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func draw(path: CGPath, rule: CGPathFillRule, color: CGColor) {
@@ -452,7 +439,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func draw(image: CIImage, transform: SDTransform) {
@@ -469,7 +455,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func clip(path: CGPath, rule: CGPathFillRule) {
@@ -490,7 +475,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func clipToDrawing(body: (GPContext) throws -> Void) rethrows {
@@ -516,7 +500,6 @@ extension GPContext {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, *)
 extension GPContext {
     
     public func drawLayer(colorSpace: CGColorSpace, callback: @escaping (CGContext) throws -> Void) {

@@ -132,7 +132,7 @@ extension CGImageRep {
             
             #if !os(watchOS)
             
-            if #available(macOS 10.13, macCatalyst 14.0, iOS 11.0, tvOS 11.0, *), let depthData = properties[.depthData] as? AVDepthData {
+            if let depthData = properties[.depthData] as? AVDepthData {
                 
                 var type: NSString?
                 let dictionary = depthData.dictionaryRepresentation(forAuxiliaryDataType: &type)

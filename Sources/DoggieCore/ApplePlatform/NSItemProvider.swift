@@ -25,7 +25,6 @@
 
 #if canImport(ObjectiveC)
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 public protocol NSItemProviderDecoder {
     
     static var readableTypeIdentifiersForItemProvider: [String] { get }
@@ -33,7 +32,6 @@ public protocol NSItemProviderDecoder {
     static func object(withItemProviderData data: Data, typeIdentifier: String) throws -> Self
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 public protocol NSItemProviderEncoder {
     
     static var writableTypeIdentifiersForItemProvider: [String] { get }
@@ -47,7 +45,6 @@ public protocol NSItemProviderEncoder {
     func loadData(withTypeIdentifier typeIdentifier: String, forItemProviderCompletionHandler completionHandler: @escaping (Data?, Error?) -> Void) -> Progress?
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 extension NSItemProviderEncoder {
     
     public var writableTypeIdentifiersForItemProvider: [String] {
@@ -63,7 +60,6 @@ extension NSItemProviderEncoder {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 private final class _ItemProvider<Item>: NSObject, NSItemProviderReading, NSItemProviderWriting {
     
     let item: Item
@@ -108,7 +104,6 @@ private final class _ItemProvider<Item>: NSObject, NSItemProviderReading, NSItem
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 extension NSItemProvider {
     
     public convenience init<Encoder: NSItemProviderEncoder>(object: Encoder) {
@@ -116,7 +111,6 @@ extension NSItemProvider {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 extension NSItemProvider {
     
     public func canLoadObject<Decoder: NSItemProviderDecoder>(ofType aType: Decoder.Type) -> Bool {
@@ -129,7 +123,6 @@ extension NSItemProvider {
     }
 }
 
-@available(macOS 10.13, iOS 11.0, tvOS 11.0, watchOS 4.0, *)
 extension NSItemProviderEncoder {
     
     fileprivate var itemProvider: NSItemProvider {
@@ -143,7 +136,6 @@ extension NSItemProviderEncoder {
 
 import UIKit
 
-@available(iOS 11.0, *)
 extension UIDragItem {
     
     public convenience init(object: NSItemProviderWriting) {
@@ -157,7 +149,6 @@ extension UIDragItem {
     }
 }
 
-@available(iOS 11.0, *)
 extension UIDragDropSession {
     
     public func canLoadObjects<Decoder: NSItemProviderDecoder>(ofType aType: Decoder.Type) -> Bool {
@@ -165,7 +156,6 @@ extension UIDragDropSession {
     }
 }
 
-@available(iOS 11.0, *)
 extension UIDropSession {
     
     @discardableResult
@@ -174,7 +164,6 @@ extension UIDropSession {
     }
 }
 
-@available(iOS 11.0, *)
 extension UIPasteboard {
     
     public func setObjects(_ objects: [NSItemProviderEncoder], localOnly: Bool = false, expirationDate: Date? = nil) {
@@ -182,7 +171,6 @@ extension UIPasteboard {
     }
 }
 
-@available(iOS 11.0, *)
 extension UIPasteConfiguration {
     
     public convenience init<Decoder: NSItemProviderDecoder>(forAccepting aType: Decoder.Type) {
