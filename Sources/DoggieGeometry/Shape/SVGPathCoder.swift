@@ -49,8 +49,23 @@ private struct PathDataScanner<I: IteratorProtocol>: IteratorProtocol, Sequence 
     }
 }
 
-private let pathDataMatcher: Regex = "[MmLlHhVvCcSsQqTtAaZz]|[+-]?\\d*\\.?\\d+([eE][+-]?\\d+)?"
+private let pathDataMatcher = try! NSRegularExpression(pattern: "[MmLlHhVvCcSsQqTtAaZz]|[+-]?\\d*\\.?\\d+([eE][+-]?\\d+)?")
 private let commandSymbols = Array("MmLlHhVvCcSsQqTtAaZz".utf8)
+
+extension String {
+    
+    fileprivate func match(regex: NSRegularExpression) -> [String] {
+        let nsstring = NSString(string: self)
+        let range = NSRange(location: 0, length: nsstring.length)
+        var match_result = [String]()
+        regex.enumerateMatches(in: self, options: [], range: range) { result, _, _ in
+            if let _result = result {
+                match_result.append(nsstring.substring(with: _result.range))
+            }
+        }
+        return match_result
+    }
+}
 
 extension Shape {
     
