@@ -57,7 +57,7 @@ jobs:
       fail-fast: false
       matrix:
         swift_version: [5.7]
-        distro: [bionic, focal]
+        distro: [bionic, focal, jammy]
     steps:
     - uses: actions/checkout@v1
       with:
@@ -90,9 +90,6 @@ jobs:
       matrix:
         swift_version: [main, 5.7]
         distro: [bionic, focal, jammy]
-        exclude:
-          - swift_version: 5.7
-            distro: jammy
     steps:
     - uses: actions/checkout@v1
       with:
