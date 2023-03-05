@@ -159,42 +159,6 @@ public func degree2roots(_ b: Double, _ c: Double) -> Degree2Roots {
 
 @inlinable
 @inline(__always)
-public func degree3decompose(_ b: Double, _ c: Double, _ d: Double) -> (Double, (Double, Double)) {
-    if d.almostZero() {
-        return (0, (b, c))
-    }
-    let b2 = b * b
-    let b3 = b * b2
-    let de0 = b2 - 3 * c
-    let de1 = 2 * b3 - 9 * c * b + 27 * d
-    let de2 = de1 * de1 - 4 * de0 * de0 * de0
-    
-    if de2.sign == .minus { // delta > 0, three real roots
-        let m = b / 3
-        let p = -de0 / 3
-        let q = de1 / 27
-        let p_3 = p / 3
-        let s = 2 * sqrt(-p_3)
-        let t = acos(q / (p_3 * s)) / 3
-        let u = Double.pi * 2 / 3
-        let cos1 = cos(t)
-        let cos2 = cos(t - u)
-        let cos3 = cos(t - 2 * u)
-        let s_cos1 = s * cos1
-        let s_cos2 = s * cos2
-        let s_cos3 = s * cos3
-        let k = m - s_cos1 - s_cos3
-        return (s_cos2 - m, (m + k, s_cos1 * s_cos3 + m * k))
-    }
-    
-    let c1 = cbrt(0.5 * (de1 + sqrt(de2)))
-    let c2 = cbrt(0.5 * (de1 - sqrt(de2)))
-    let c3 = c1 + c2
-    return ((-b - c3) / 3, ((2 * b - c3) / 3, (b2 - b * c3 + c3 * c3 - 3 * c1 * c2) / 9))
-}
-
-@inlinable
-@inline(__always)
 public func degree3roots(_ b: Double, _ c: Double, _ d: Double) -> [Double] {
     if d.almostZero() {
         let z = Array(degree2roots(b, c))
