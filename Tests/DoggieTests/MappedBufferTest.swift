@@ -40,7 +40,7 @@ class MappedBufferTest: XCTestCase {
     func testMappedBufferAlloc2() {
         
         let mapped = MappedBuffer(repeating: 0, count: 64)
-        let array = MappedBuffer(repeating: 0, count: 64)
+        let array = Array(repeating: 0, count: 64)
         
         XCTAssertEqual(array.count, mapped.count)
         XCTAssertTrue(array.elementsEqual(mapped))
@@ -49,7 +49,7 @@ class MappedBufferTest: XCTestCase {
     func testMappedBufferAlloc3() {
         
         let mapped = MappedBuffer(repeating: 0, count: 64, fileBacked: true)
-        let array = MappedBuffer(repeating: 0, count: 64)
+        let array = Array(repeating: 0, count: 64)
         
         XCTAssertEqual(array.count, mapped.count)
         XCTAssertTrue(array.elementsEqual(mapped))
