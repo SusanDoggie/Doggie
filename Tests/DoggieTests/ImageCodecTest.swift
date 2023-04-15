@@ -189,9 +189,13 @@ class ImageCodecTest: XCTestCase {
         
         for (i, pixel) in zip(answer, pixels) {
             
-            let red = round(Double(((i >> 10) & 0x1F) * 0xFF) / 31) / 255
-            let green = round(Double(((i >> 5) & 0x1F) * 0xFF) / 31) / 255
-            let blue = round(Double((i & 0x1F) * 0xFF) / 31) / 255
+            let r = ((i >> 10) & 0x1F) * 0xFF
+            let g = ((i >> 5) & 0x1F) * 0xFF
+            let b = (i & 0x1F) * 0xFF
+            
+            let red = round(Double(r) / 31) / 255
+            let green = round(Double(g) / 31) / 255
+            let blue = round(Double(b) / 31) / 255
             
             XCTAssertEqual(red, pixel.red)
             XCTAssertEqual(green, pixel.green)
@@ -229,9 +233,13 @@ class ImageCodecTest: XCTestCase {
         
         for (i, pixel) in zip(answer, pixels) {
             
-            let red = round(Double(((i >> 10) & 0x1F) * 0xFF) / 31) / 255
-            let green = round(Double(((i >> 5) & 0x1F) * 0xFF) / 31) / 255
-            let blue = round(Double((i & 0x1F) * 0xFF) / 31) / 255
+            let r = ((i >> 10) & 0x1F) * 0xFF
+            let g = ((i >> 5) & 0x1F) * 0xFF
+            let b = (i & 0x1F) * 0xFF
+            
+            let red = round(Double(r) / 31) / 255
+            let green = round(Double(g) / 31) / 255
+            let blue = round(Double(b) / 31) / 255
             
             XCTAssertEqual(red, pixel.red)
             XCTAssertEqual(green, pixel.green)
@@ -269,9 +277,13 @@ class ImageCodecTest: XCTestCase {
         
         for (i, pixel) in zip(answer, pixels) {
             
-            let red = round(Double(((i >> 24) & 0xFF) * 0xFFFF) / 255) / 65535
-            let green = round(Double(((i >> 16) & 0xFF) * 0xFFFF) / 255) / 65535
-            let blue = Double(i & 0xFFFF) / 65535
+            let r = ((i >> 24) & 0xFF) * 0xFFFF
+            let g = ((i >> 16) & 0xFF) * 0xFFFF
+            let b = i & 0xFFFF
+            
+            let red = round(Double(r) / 255) / 65535
+            let green = round(Double(g) / 255) / 65535
+            let blue = Double(b) / 65535
             
             XCTAssertEqual(red, pixel.red)
             XCTAssertEqual(green, pixel.green)
