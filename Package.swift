@@ -89,6 +89,10 @@ let package = Package(
             name: "DoggieGPU",
             dependencies: [
                 "DoggieGraphics",
+            ],
+            resources: [
+                .process("CoreImage/Shaders"),
+                .process("GPContext/Shaders"),
             ]
         ),
         .target(
