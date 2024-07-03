@@ -1574,6 +1574,21 @@ extension CIImage {
 
 extension CIImage {
     
+    public class func LineSegments(color: CIColor,
+                                   width: Float,
+                                   lines: [(start: CGPoint, end: CGPoint)]) -> CIImage {
+        
+        guard let filter = CIFilter(name: "CIMeshGenerator") else { return .empty() }
+        
+        let mesh = lines.map { CIVector(x: $0.start.x, y: $0.start.y, z: $0.end.x, w: $0.end.y) }
+        
+        filter.setValue(color, forKey: "inputColor")
+        filter.setValue(width, forKey: "inputWidth")
+        filter.setValue(mesh, forKey: "inputMesh")
+        
+        return filter.outputImage ?? .empty()
+    }
+    
     public class func GaussianGradient(center: CGPoint = CGPoint(x: 150, y: 150),
                                      color0: CIColor = CIColor(red: 1, green: 1, blue: 1, alpha: 1),
                                      color1: CIColor = CIColor(red: 0, green: 0, blue: 0, alpha: 0),
