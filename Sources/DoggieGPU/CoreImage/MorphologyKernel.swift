@@ -81,7 +81,7 @@ extension CIImage {
             
             if extent.isEmpty { return .empty() }
             
-            let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+            let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
             
             var rendered = try? AreaMinKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius])
             
@@ -148,7 +148,7 @@ extension CIImage {
             
             let extent = self.extent.insetBy(dx: CGFloat(-ceil(abs(radius.width))), dy: CGFloat(-ceil(abs(radius.height))))
             
-            let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+            let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
             
             var rendered = try? AreaMaxKernel.apply(withExtent: _extent, inputs: [self], arguments: ["radius": radius])
             

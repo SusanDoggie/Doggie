@@ -59,7 +59,7 @@ extension SVGTurbulenceKernel {
         
         if extent.isEmpty { return .empty() }
         
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         
         var rendered = try? ProcessorKernel.apply(withExtent: _extent, inputs: nil, arguments: ["info": self]).premultiplyingAlpha()
         

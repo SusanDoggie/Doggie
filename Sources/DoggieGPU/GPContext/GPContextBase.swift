@@ -67,7 +67,7 @@ extension GPContextBase {
         guard let colorSpace = graphic_stack.first?.colorSpace else { return self._image ?? .empty() }
         guard let _extent = graphic_stack.lazy.map({ $0.path.boundingBoxOfPath }).reduce({ $0.union($1) }) else { return self._image ?? .empty() }
         
-        let extent = CGRect(self.extent).intersection(_extent).insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let extent = CGRect(self.extent).intersection(_extent).insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         
         let layer = try? CGContextProcessorKernel.apply(withExtent: extent, colorSpace: colorSpace, transform: .identity, shouldAntialias: true) { context in
             

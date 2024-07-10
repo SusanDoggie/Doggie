@@ -57,7 +57,7 @@ extension GPContext {
         let colors = mesh.colors.map { $0.with(opacity: $0.opacity * mesh.opacity) }.map { RGBA32ColorPixel($0.convert(to: colorSpace, intent: .default)) }
         let gradient = MeshGradientKernel.Gradient(column: mesh.column, row: mesh.row, patches: patches, colors: colors)
         
-        let extent = self.extent.inset(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let extent = self.extent.inset(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         guard var image = try? MeshGradientKernel.apply(withExtent: CGRect(extent), inputs: nil, arguments: ["gradient": gradient]).premultiplyingAlpha() else { return }
         
         image = image.matchedToWorkingSpace(from: cgColorSpace) ?? image

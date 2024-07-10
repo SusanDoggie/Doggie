@@ -151,7 +151,7 @@ extension CIImage {
             extent = CGRect(x: minX, y: minY, width: width, height: height)
         }
         
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         
         let inputs: [CIImage]
         

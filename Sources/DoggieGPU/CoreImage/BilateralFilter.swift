@@ -92,7 +92,7 @@ extension CIImage {
         
         let extent = self.extent.insetBy(dx: CGFloat(-ceil(3 * abs(spatial.width))), dy: CGFloat(-ceil(3 * abs(spatial.height))))
         
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         
         var rendered = try? BilateralKernel.apply(withExtent: _extent, inputs: [self.unpremultiplyingAlpha()], arguments: ["spatial": spatial, "range": range]).premultiplyingAlpha()
         

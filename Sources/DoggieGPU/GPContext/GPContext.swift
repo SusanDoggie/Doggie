@@ -426,7 +426,7 @@ extension GPContext {
             
         } else {
             
-            let extent = intersection.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+            let extent = intersection.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
             guard var mask = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule, shouldAntialias: self.shouldAntialias) else { return }
             
             if is_shadow {
@@ -468,7 +468,7 @@ extension GPContext {
         
         guard !intersection.isNull else { return }
         
-        let extent = intersection.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let extent = intersection.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         guard let clip = try? CGPathProcessorKernel.apply(withExtent: extent, path: path, rule: rule, shouldAntialias: self.shouldAntialias) else { return }
         
         current_layer.state.clip = clip.composited(over: GPContext.black)._insertingIntermediate()
@@ -511,7 +511,7 @@ extension GPContext {
         
         guard colorSpace.model == .rgb else { return }
         
-        let extent = self.extent.inset(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let extent = self.extent.inset(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         guard var layer = try? CGContextProcessorKernel.apply(withExtent: CGRect(extent), colorSpace: colorSpace, transform: CGAffineTransform(self.transform), shouldAntialias: self.shouldAntialias, callback: callback) else { return }
         
         if shadowColor.alpha > 0 && shadowBlur > 0 {

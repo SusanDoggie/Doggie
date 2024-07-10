@@ -272,7 +272,7 @@ extension CIImage {
         
         if extent.isEmpty { return .empty() }
         
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         
         var rendered = try? SVGDiffuseLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale]).premultiplyingAlpha()
         
@@ -371,7 +371,7 @@ extension CIImage {
         
         if extent.isEmpty { return .empty() }
         
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         
         var rendered = try? SVGSpecularLightingKernel.apply(withExtent: _extent, inputs: [self], arguments: ["lighting": lighting, "unit": unit, "scale": scale]).premultiplyingAlpha()
         

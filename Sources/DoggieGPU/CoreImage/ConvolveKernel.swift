@@ -87,7 +87,7 @@ extension CIImage {
         let inset_x = -(_orderX + 1) / 2
         let inset_y = -(_orderY + 1) / 2
         let extent = self.extent.insetBy(dx: CGFloat(inset_x), dy: CGFloat(inset_y))
-        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -1..<0), dy: .random(in: -1..<0))
+        let _extent = extent.isInfinite ? extent : extent.insetBy(dx: .random(in: -0.4..<0), dy: .random(in: -0.4..<0))
         
         var rendered = try? ConvolveKernel.apply(withExtent: _extent, inputs: [self], arguments: ["matrix": _matrix, "bias": bias, "orderX": _orderX, "orderY": _orderY])
         
